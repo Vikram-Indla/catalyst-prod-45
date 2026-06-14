@@ -18,8 +18,11 @@ describe('deriveRouteWord', () => {
     expect(deriveRouteWord('/project-hub/BAU/summary')).toBe('Summary');
   });
 
-  it('also matches product-hub routes', () => {
-    expect(deriveRouteWord('/product-hub/PRD/backlog')).toBe('Backlog');
+  it('product-hub routes prefix "Product" before the route word', () => {
+    expect(deriveRouteWord('/product-hub/PRD/backlog')).toBe('Product Backlog');
+    expect(deriveRouteWord('/product-hub/INV/allwork')).toBe('Product Work');
+    expect(deriveRouteWord('/product-hub/INV/filters')).toBe('Product Filters');
+    expect(deriveRouteWord('/product-hub/INV/dashboard')).toBe('Product Dashboard');
   });
 
   it('returns null for non-hub or segment-less paths', () => {
@@ -42,5 +45,11 @@ describe('buildProjectHeaderTitle', () => {
 
   it('renders the word alone when key is missing (never fabricates a key)', () => {
     expect(buildProjectHeaderTitle('/project-hub/BAU/backlog', null)).toBe('Backlog');
+  });
+
+  it('product-hub routes include "Product" prefix in the full title', () => {
+    expect(buildProjectHeaderTitle('/product-hub/INV/backlog', 'INV')).toBe('INV Product Backlog');
+    expect(buildProjectHeaderTitle('/product-hub/INV/allwork', 'INV')).toBe('INV Product Work');
+    expect(buildProjectHeaderTitle('/product-hub/INV/filters', 'INV')).toBe('INV Product Filters');
   });
 });

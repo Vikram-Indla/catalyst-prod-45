@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import type { WorkItem, WorkItemType, WorkItemStatus, WorkItemPriority } from '@/types/workItem.types';
 import type { FilterState } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
+import { translate, applyJqlToQuery } from '@/lib/jql';
 
 /* ── helpers ── */
 
@@ -306,6 +307,7 @@ const DEFAULT_ALL_WORK_ROWS_PER_PAGE = 25;
 export function useProjectAllWorkItems(
   projectKey: string | undefined,
   filter?: FilterState,
+  rawJql?: string,
 ): AllWorkPaginationState {
   const { user } = useAuth();
   const [rowsPerPage, setRowsPerPageState] = useState(DEFAULT_ALL_WORK_ROWS_PER_PAGE);
@@ -318,7 +320,7 @@ export function useProjectAllWorkItems(
   // Reset to page 1 whenever the filter changes so the user sees the first
   // page of the filtered result set (not a stale offset into the old set).
   const prevFilterRef = useRef<string>('');
-  const filterKey = JSON.stringify(filter ?? {});
+  const filterKey = rawJql ? `jql:${rawJql}` : JSON.stringify(filter ?? {});
   useEffect(() => {
     if (filterKey !== prevFilterRef.current) {
       prevFilterRef.current = filterKey;
@@ -340,16 +342,26 @@ export function useProjectAllWorkItems(
       let qb = supabase
         .from('ph_issues')
         .select(PH_ISSUES_SELECT)
-        .eq('project_key', projectKey)
         .in('issue_type', ALLOWED_ISSUE_TYPES)
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
         .is('archived_at', null)
         .is('deleted_at', null);
 
-      // Server-side filter predicates BEFORE ordering + range, so the page
-      // window operates on the filtered result set.
-      qb = applyServerFilter(qb, filter);
+      if (rawJql) {
+        // JQL engine path — honours the full JQL including project clauses
+        try {
+          const jqlFilters = translate(rawJql);
+          qb = applyJqlToQuery(qb, jqlFilters);
+        } catch {
+          qb = qb.eq('project_key', projectKey);
+        }
+      } else {
+        qb = qb.eq('project_key', projectKey);
+        // Server-side filter predicates BEFORE ordering + range, so the page
+        // window operates on the filtered result set.
+        qb = applyServerFilter(qb, filter);
+      }
 
       qb = qb
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
@@ -379,13 +391,22 @@ export function useProjectAllWorkItems(
       let qb = supabase
         .from('ph_issues')
         .select('*', { count: 'exact', head: true })
-        .eq('project_key', projectKey)
         .in('issue_type', ALLOWED_ISSUE_TYPES)
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
         .is('archived_at', null)
         .is('deleted_at', null);
-      qb = applyServerFilter(qb, filter);
+      if (rawJql) {
+        try {
+          const jqlFilters = translate(rawJql);
+          qb = applyJqlToQuery(qb, jqlFilters);
+        } catch {
+          qb = qb.eq('project_key', projectKey);
+        }
+      } else {
+        qb = qb.eq('project_key', projectKey);
+        qb = applyServerFilter(qb, filter);
+      }
       const { count, error: err } = await qb;
       if (err) throw err;
       return count ?? 0;

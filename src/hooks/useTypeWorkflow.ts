@@ -121,7 +121,7 @@ export function useTypeWorkflow(projectKey: string, workItemType: WorkItemType) 
         initialStatusId: initialRow?.status_id ?? null,
       };
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
     enabled: Boolean(projectKey) && Boolean(workItemType),
   });
 }

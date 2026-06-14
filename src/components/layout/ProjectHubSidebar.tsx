@@ -7,8 +7,7 @@
  * - Project nav with PLANNING sections when inside a project
  */
 
-import { useMemo, useState } from 'react';
-import { token } from '@atlaskit/tokens';
+import { useMemo } from 'react';
 import {
   LayoutGrid,
   LayoutDashboard,
@@ -19,20 +18,15 @@ import {
   GitBranch,
   FolderKanban,
   Columns3,
-  ChevronRight,
-  Clock,
-  X,
   Filter,
   Map,
+  GanttChart,
 } from '@/lib/atlaskit-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 import { useProjectFavorites, useProjects } from '@/hooks/useProjectHub';
 import { padProjectKey } from '@/lib/project-key';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useTheme } from '@/hooks/useTheme';
 
 const preloaded = { done: false };
 function preloadProjectHubChunks() {
@@ -98,7 +92,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
 
     const projectConfig: SidebarConfig = {
       badge: keyCode,
-      label: keyCode,
+      label: projectName ?? keyCode,
       showFavorites: false,
       // Design critique (2026-04-19): flattened from 3 sections ('', Boards,
       // Planning) to a single unlabeled group. Rationale:
@@ -134,6 +128,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             // carry it.
             { id: 'allwork', title: 'Project Work', path: `${base}/allwork`, icon: GitBranch, exact: false },
             { id: 'filters', title: 'Project Filters', path: `${base}/filters`, icon: Filter, exact: false },
+            { id: 'timeline', title: 'Project Timeline', path: `${base}/timeline`, icon: GanttChart, exact: false },
             { id: 'roadmaps', title: 'Project Roadmaps', path: `${base}/roadmaps`, icon: Map, exact: false },
             // Story / Epic / Feature Backlog pages were removed — their scope
             // is fully covered by the unified Backlog view above. Routes now
@@ -168,74 +163,10 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
   return <ModuleLevelSidebar expanded={expanded} onToggle={onToggle} className={className} favouritesSection={favouritesSection} />;
 }
 
-/* ═══ Module-level sidebar with RECENTS ═══ */
+/* ═══ Module-level sidebar ═══ */
 function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }: {
   expanded: boolean; onToggle: () => void; className?: string; favouritesSection: SidebarSection | null;
 }) {
-  const navigate = useNavigate();
-  const { isDark } = useTheme();
-  const [recentsExpanded, setRecentsExpanded] = useState(true);
-
-  // Fetch recently visited projects only — architecture change 2026-06-02.
-  // Shows recently accessed projects instead of individual tickets.
-  const { data: recentItems = [] } = useQuery({
-    queryKey: ['global-recent-projects'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-      const { data, error } = await supabase
-        .from('user_recent_items')
-        .select('id, entity_type, entity_id, entity_key, display_summary, nav_path, visited_at, project_id')
-        .eq('user_id', user.id)
-        .eq('entity_type', 'project')
-        .order('visited_at', { ascending: false })
-        .limit(40);
-      if (error) { console.warn('global recents error:', error.message); return []; }
-      // Deduplicate by entity_key (project key) — newest-first, cap at 10.
-      const seen = new Set<string>();
-      const deduped: typeof data = [];
-      for (const item of data ?? []) {
-        const key = item.entity_key ?? item.entity_id;
-        if (!seen.has(key)) {
-          seen.add(key);
-          deduped.push(item);
-          if (deduped.length === 10) break;
-        }
-      }
-      return deduped;
-    },
-    staleTime: 30_000,
-  });
-
-  // Group recents by time bucket (Atlassian convention)
-  const groupedRecents = useMemo(() => {
-    const now = Date.now();
-    const dayMs = 24 * 60 * 60 * 1000;
-    const groups: { label: string; items: typeof recentItems }[] = [
-      { label: 'Today', items: [] },
-      { label: 'Yesterday', items: [] },
-      { label: 'Earlier this week', items: [] },
-      { label: 'Earlier', items: [] },
-    ];
-    for (const item of recentItems) {
-      const age = now - new Date(item.visited_at).getTime();
-      if (age < dayMs) groups[0].items.push(item);
-      else if (age < 2 * dayMs) groups[1].items.push(item);
-      else if (age < 7 * dayMs) groups[2].items.push(item);
-      else groups[3].items.push(item);
-    }
-    return groups.filter(g => g.items.length > 0);
-  }, [recentItems]);
-
-  const removeRecent = async (itemId: string) => {
-    await supabase.from('user_recent_items').delete().eq('id', itemId);
-  };
-
-  const handleRecentClick = (item: typeof recentItems[0]) => {
-    navigate(item.nav_path);
-  };
-
-
   const sections: SidebarSection[] = [
     {
       title: '',
@@ -251,144 +182,10 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
 
   const moduleConfig: SidebarConfig = {
     badge: 'PH',
-    // Block A rule 7 (2026-05-01): canonical spaced casing.
     label: 'Projects',
     showFavorites: false,
     sections,
   };
 
-  const recentsSection = expanded && recentItems.length > 0 ? (
-    <div style={{ marginTop: 8 }}>
-      <div style={{ height: 1, background: token('color.border'), margin: '4px 12px 8px' }} />
-      <button
-        onClick={() => setRecentsExpanded(p => !p)}
-        className="flex items-center w-full"
-        style={{ padding: '8px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
-        aria-expanded={recentsExpanded}
-      >
-        <ChevronRight
-          size={12}
-          style={{
-            color: token('color.text.subtlest'),
-            transform: recentsExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-            transition: 'transform 150ms ease',
-          }}
-        />
-        <Clock size={12} style={{ color: token('color.text.subtlest') }} />
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: token('color.text.subtlest'),
-            fontFamily: 'var(--cp-font-body)',
-          }}
-        >
-          Recent
-        </span>
-        <span
-          style={{
-            marginLeft: 'auto',
-            fontSize: 10,
-            fontWeight: 600,
-            color: token('color.text.subtlest'),
-            fontFamily: 'var(--cp-font-mono)',
-          }}
-        >
-          {recentItems.length}
-        </span>
-      </button>
-
-      {recentsExpanded && (
-        <div style={{ padding: '0 0' }}>
-          {groupedRecents.map((group) => (
-            <div key={group.label}>
-              <div
-                style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  color: token('color.text.subtlest'),
-                  padding: '6px 12px 2px 28px',
-                  fontFamily: 'var(--cp-font-body)',
-                }}
-              >
-                {group.label}
-              </div>
-              {group.items.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => handleRecentClick(item)}
-                  className="group"
-                  style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 8,
-                    padding: '5px 12px 5px 28px', cursor: 'pointer',
-                    borderRadius: 3, margin: '0 4px',
-                    transition: 'background 80ms ease',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = token('color.background.neutral.subtle.hovered')}
-                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                >
-                  <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>
-                    <ProjectIcon projectKey={item.entity_key ?? ''} size="xsmall" />
-                  </span>
-                  {/* Two-line block: summary (primary) + key (secondary)
-                      Strip leading bracket tags e.g. "[CRUD-H] Story" → "Story"
-                      so the meaningful name is visible in the narrow sidebar column. */}
-                  <span
-                    style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}
-                  >
-                    <span
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 500,
-                        color: token('color.text'),
-                        fontFamily: 'var(--cp-font-body)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                      title={item.display_summary ?? undefined}
-                    >
-                      {(item.display_summary ?? '').replace(/^\[.*?\]\s*/, '') || item.display_summary}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 400,
-                        color: token('color.text.subtlest'),
-                        fontFamily: 'var(--cp-font-mono)',
-                        letterSpacing: '0.01em',
-                      }}
-                    >
-                      {item.entity_key}
-                    </span>
-                  </span>
-                  <button
-                    className="opacity-0 group-hover:opacity-100"
-                    onClick={(e) => { e.stopPropagation(); removeRecent(item.id); }}
-                    style={{
-                      width: 18, height: 18, borderRadius: 3,
-                      border: 'none', background: 'transparent',
-                      cursor: 'pointer', flexShrink: 0,
-                      color: token('color.text.subtlest'),
-                      marginTop: 2,
-                    }}
-                    title="Remove from recents"
-                    aria-label="Remove from recents"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  ) : null;
-
-  return <SidebarBase config={moduleConfig} expanded={expanded} onToggle={onToggle} className={className}>{recentsSection}</SidebarBase>;
+  return <SidebarBase config={moduleConfig} expanded={expanded} onToggle={onToggle} className={className} />;
 }

@@ -1,7 +1,6 @@
 /**
- * Catalyst Login & Marketing Page
- * Full-page marketing layout with embedded sign-in card.
- * Auth logic: Supabase (signIn / signUp / ForcePasswordReset).
+ * Catalyst Portal — marketing page with embedded sign-in (no CTA gate).
+ * Auth logic: Supabase (signIn / OTP / forgot / ForcePasswordReset). Unchanged.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -14,54 +13,94 @@ import {
   captureLastLoginForDisplay,
   storeCurrentLoginTime,
 } from '@/hooks/useSessionPersistence';
-import { LoginHeroPanel } from './LoginHeroPanel';
 import { LoginFormPanel } from './LoginFormPanel';
+import { CatyMascot } from './CatyMascot';
 import { useLoginState } from './useLoginState';
 import { ForcePasswordReset } from '@/components/auth/ForcePasswordReset';
 import { FileText } from '@/lib/atlaskit-icons';
 import { useThemeMode } from '@/providers/ThemeProvider';
 import { useLanguage } from './useLanguage';
 import { t } from './translations';
+// ads-scanner:ignore-next-line
 import './login-styles.css';
 
-// C-mark SVG shared by nav + footer
-function CMarkSvg({ size = 40, className = '' }: { size?: number; className?: string }) {
+// C-mark (full logo) — nav + footer
+function CMarkSvg({ size = 32, className = '' }: { size?: number; className?: string }) {
   return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 512 512"
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="Catalyst"
-    >
-      <rect width="512" height="512" rx="129.62" fill="#1868DB" />
-      <g transform="translate(256 256) scale(0.95) translate(-256 -256)">
-        <path
-          d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z"
-          fill="white"
-        />
-      </g>
+    <svg className={className} width={size} height={size} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Catalyst">
+      <rect width="512" height="512" rx="129.62" fill="var(--ds-background-brand-bold, #1868DB)" />
+      <path d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z" fill="white" />
     </svg>
   );
 }
 
+// Bare C-path — oversized brand watermark (uses currentColor)
+function CPathSvg({ className = '' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="100%" height="100%">
+      <path d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+const MODULES = [
+  { no: '01', key: 'hub.01', desc: 'hub.01.desc', tag: 'ai.tag.align' },
+  { no: '02', key: 'hub.02', desc: 'hub.02.desc', tag: 'ai.tag.req' },
+  { no: '03', key: 'hub.03', desc: 'hub.03.desc', tag: 'ai.tag.search' },
+  { no: '04', key: 'hub.04', desc: 'hub.04.desc', tag: 'ai.tag.esc' },
+  { no: '05', key: 'hub.05', desc: 'hub.05.desc', tag: 'ai.tag.caty' },
+  { no: '06', key: 'hub.06', desc: 'hub.06.desc', tag: 'ai.tag.pm' },
+  { no: '07', key: 'hub.plan', desc: 'hub.plan.desc', tag: 'ai.tag.cap' },
+  { no: '08', key: 'hub.r360', desc: 'hub.r360.desc', tag: 'ai.tag.beh' },
+] as const;
+
+const AGENTS = ['ag.1', 'ag.2', 'ag.3', 'ag.4', 'ag.5', 'ag.6'] as const;
+
 export function CatalystLoginPage() {
   const navigate = useNavigate();
   const { signIn, signUp, sendOtp, verifyOtp, user, loading } = useAuth();
-  const { userType, authType, handleUserTypeChange, handleAuthTypeChange } = useLoginState();
+  const { userType, handleUserTypeChange, handleAuthTypeChange } = useLoginState();
   const { resolvedTheme, setTheme } = useThemeMode();
   const { lang, toggleLang } = useLanguage();
 
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!loginError) return;
+    const t = window.setTimeout(() => setLoginError(null), 6000);
+    return () => window.clearTimeout(t);
+  }, [loginError]);
   const [mustChangePassword, setMustChangePassword] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showPendingMessage, setShowPendingMessage] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const checkedUserRef = useRef<string | null>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const menu = mobileMenuRef.current;
+    if (!menu) return;
+    const focusables = Array.from(menu.querySelectorAll<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])'));
+    focusables[0]?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setMobileMenuOpen(false); return; }
+      if (e.key !== 'Tab') return;
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => document.removeEventListener('keydown', onKeyDown, true);
+  }, [mobileMenuOpen]);
 
   const checkMustChangePassword = useCallback(async (userId: string): Promise<boolean> => {
     try {
@@ -246,29 +285,44 @@ export function CatalystLoginPage() {
   };
 
   const handleExternalSubmit = async (data: import('./LoginFormPanel').ExternalAccessRequest): Promise<void> => {
-    // Store the access request in a transient localStorage queue so admins
-    // can review it at /admin/access once a Supabase access_requests table
-    // is provisioned. Until then this prevents data loss on form submit.
     try {
       const existing = JSON.parse(localStorage.getItem('catalyst_access_requests') || '[]');
       existing.push({ ...data, submittedAt: new Date().toISOString() });
       localStorage.setItem('catalyst_access_requests', JSON.stringify(existing));
     } catch {
-      // Non-critical — success state still shows
+      // Non-critical
     }
   };
 
   const isDark = resolvedTheme === 'dark';
 
+  // Scroll-reveal for marketing sections
+  useEffect(() => {
+    if (isTransitioning || showPendingMessage || mustChangePassword) return;
+    const els = Array.from(document.querySelectorAll('.clmp-rv'));
+    if (!('IntersectionObserver' in window) || els.length === 0) {
+      els.forEach(el => el.classList.add('in'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }),
+      { threshold: 0.12 }
+    );
+    els.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, [isTransitioning, showPendingMessage, mustChangePassword, lang]);
+
   // ── Full-page auth states ──────────────────────────────────────────
   if (isTransitioning || (user && loading)) {
     return (
-      <div className="clmp-fullstate">
-        <div className="clmp-fullstate-inner">
-          <div className="clmp-fullstate-spinner" />
-          <span style={{ color: 'var(--clmp-p60)', fontSize: '0.875rem', fontWeight: 500 }}>
-            Signing you in…
-          </span>
+      <div className="clmp-root">
+        <div className="clmp-fullstate">
+          <div className="clmp-fullstate-inner">
+            <div className="clmp-fullstate-spinner" />
+            <span style={{ color: 'var(--clmp-text-subtle)', fontSize: '0.875rem', fontWeight: 600 }}>
+              Signing you in…
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -276,21 +330,19 @@ export function CatalystLoginPage() {
 
   if (showPendingMessage) {
     return (
-      <div className="clmp-fullstate">
-        <div className="clmp-fullstate-inner">
-          <div className="clmp-fullstate-icon">
-            <FileText style={{ width: '32px', height: '32px', color: 'var(--clmp-p60)' }} />
+      <div className="clmp-root">
+        <div className="clmp-fullstate">
+          <div className="clmp-fullstate-inner">
+            <div className="clmp-fullstate-icon">
+              <FileText style={{ width: '32px', height: '32px', color: 'var(--clmp-brand-text)' }} />
+            </div>
+            <h2>Registration Submitted</h2>
+            <p>Thanks for registering. Your account is pending approval.</p>
+            <p className="small">You can sign in once an administrator approves your request.</p>
+            <button type="button" className="clmp-btn clmp-btn-primary" onClick={() => { setShowPendingMessage(false); handleAuthTypeChange('signin'); }}>
+              Back to Sign In
+            </button>
           </div>
-          <h2>Registration Submitted</h2>
-          <p>Thanks for registering. Your account is pending approval.</p>
-          <p className="small">You can sign in once an administrator approves your request.</p>
-          <button
-            type="button"
-            className="clmp-back-btn"
-            onClick={() => { setShowPendingMessage(false); handleAuthTypeChange('signin'); }}
-          >
-            Back to Sign In
-          </button>
         </div>
       </div>
     );
@@ -298,397 +350,278 @@ export function CatalystLoginPage() {
 
   if (mustChangePassword && currentUserId) {
     return (
-      <div className="clmp-fullstate">
-        <div className="clmp-fullstate-inner" style={{ maxWidth: '420px', width: '100%' }}>
-          <ForcePasswordReset userId={currentUserId} email={user?.email ?? ''} onSuccess={handlePasswordResetSuccess} />
+      <div className="clmp-root">
+        <div className="clmp-fullstate">
+          <div className="clmp-fullstate-inner" style={{ maxWidth: '420px', width: '100%' }}>
+            <ForcePasswordReset userId={currentUserId} email={user?.email ?? ''} onSuccess={handlePasswordResetSuccess} />
+          </div>
         </div>
       </div>
     );
   }
 
-  // ── Full marketing page ───────────────────────────────────────────
+  // ── Portal page ───────────────────────────────────────────────────
   return (
     <div className="clmp-root">
-      <a href="#main-form" className="clmp-skip-link">Skip to login form</a>
+      <a href="#main-form" className="clmp-skip-link">Skip to sign in</a>
 
       {/* NAV */}
       <nav className="clmp-nav" aria-label="Site navigation">
-        <div className="clmp-container clmp-nav-inner">
+        <div className="clmp-nav-inner">
           <a href="#top" className="clmp-brand" aria-label="Catalyst — home">
-            <CMarkSvg size={40} className="clmp-brand-mark" />
+            <CMarkSvg size={32} className="clmp-brand-mark" />
             <span className="clmp-brand-word">Catalyst</span>
             <span className="clmp-brand-tagline">{t(lang, 'nav.tagline')}</span>
           </a>
+          <div className="clmp-nav-links">
+            <a href="#ai">{t(lang, 'nav.ai')}</a>
+            <a href="#mods">{t(lang, 'hubs.eyebrow')}</a>
+            <a href="#why">{t(lang, 'why.eyebrow')}</a>
+          </div>
           <div className="clmp-nav-right">
-            <button
-              type="button"
-              className="clmp-nav-btn"
-              onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
+            <button type="button" className="clmp-nav-btn" onClick={() => setTheme(isDark ? 'light' : 'dark')} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
               {isDark ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="5" />
-                  <line x1="12" y1="1" x2="12" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="23" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                  <line x1="1" y1="12" x2="3" y2="12" />
-                  <line x1="21" y1="12" x2="23" y2="12" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                 </svg>
               ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               )}
               <span>{isDark ? t(lang, 'nav.light') : t(lang, 'nav.dark')}</span>
             </button>
+            <button type="button" className="clmp-nav-btn" onClick={toggleLang} aria-label={lang === 'en' ? 'Switch to Arabic' : 'Switch to English'}>
+              {lang === 'en' ? t(lang, 'nav.ar') : t(lang, 'nav.en')}
+            </button>
+            <a className="clmp-btn clmp-btn-quiet" style={{ height: 34, fontSize: 13 }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
             <button
               type="button"
-              className="clmp-nav-btn clmp-lang-btn"
-              onClick={toggleLang}
-              aria-label={lang === 'en' ? 'Switch to Arabic' : 'Switch to English'}
+              className="clmp-ham"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="clmp-mobile-menu"
+              onClick={() => setMobileMenuOpen(v => !v)}
             >
-              {lang === 'en' ? t(lang, 'nav.ar') : t(lang, 'nav.en')}
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                {mobileMenuOpen ? (
+                  <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                ) : (
+                  <>
+                    <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </>
+                )}
+              </svg>
             </button>
           </div>
         </div>
+        {mobileMenuOpen && (
+          <div id="clmp-mobile-menu" className="clmp-mobile-menu" role="dialog" aria-label="Navigation menu" aria-modal="true" ref={mobileMenuRef}>
+            <a href="#ai" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'nav.ai')}</a>
+            <a href="#mods" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'hubs.eyebrow')}</a>
+            <a href="#why" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'why.eyebrow')}</a>
+            <a className="clmp-btn clmp-btn-primary" style={{ marginBlockStart: 8 }} href="#main-form" onClick={() => setMobileMenuOpen(false)}>{t(lang, 'form.tab.signin')}</a>
+          </div>
+        )}
       </nav>
 
-      {/* HERO */}
-      <section className="clmp-hero" id="top">
-        <div className="clmp-container">
-          <div className="clmp-hero-grid">
-            <LoginHeroPanel lang={lang} />
-            <LoginFormPanel
-              userType={userType}
-              authType={authType}
-              onUserTypeChange={handleUserTypeChange}
-              onAuthTypeChange={handleAuthTypeChange}
-              onSignIn={handleSignIn}
-              onSignUp={handleSignUp}
-              onExternalSubmit={handleExternalSubmit}
-              onSendOtp={handleSendOtp}
-              onVerifyOtp={handleVerifyOtp}
-              onForgotPassword={handleForgotPassword}
-              loading={isLoading}
-              error={loginError}
-              lang={lang}
-            />
-            {/* authType / onAuthTypeChange kept in props signature for useLoginState compatibility */}
+      {/* HERO with embedded sign-in */}
+      <header className="clmp-hero" id="top">
+        <span className="clmp-hero-watermark"><CPathSvg /></span>
+        <div className="clmp-container clmp-hero-grid">
+          <div>
+            <span className="clmp-eyebrow"><span className="clmp-pulse" />{t(lang, 'hero.eyebrow')}</span>
+            <h1 className="clmp-tagline">
+              {t(lang, 'hero.tagline1')}<br />
+              <span className="clmp-tagline-accent">{t(lang, 'hero.tagline2')}</span>
+            </h1>
+            <p className="clmp-lede">{t(lang, 'hero.lede')}</p>
+            <div className="clmp-stat-row" role="list">
+              <div className="clmp-stat" role="listitem"><div className="clmp-stat-value">8</div><div className="clmp-stat-label">{t(lang, 'stat.modules')}</div></div>
+              <div className="clmp-stat" role="listitem"><div className="clmp-stat-value">8+</div><div className="clmp-stat-label">{t(lang, 'stat.agents')}</div></div>
+              <div className="clmp-stat" role="listitem"><div className="clmp-stat-value">∞</div><div className="clmp-stat-label">{t(lang, 'stat.jira')}</div></div>
+              <div className="clmp-stat" role="listitem"><div className="clmp-stat-value">360°</div><div className="clmp-stat-label">{t(lang, 'stat.resource')}</div></div>
+            </div>
+            <div className="clmp-hero-foot">
+              <span>{t(lang, 'trust.jira')}</span><span className="clmp-dot" />
+              <span>{t(lang, 'trust.rls')}</span><span className="clmp-dot" />
+              <span>{t(lang, 'trust.residency')}</span><span className="clmp-dot" />
+              <span>{t(lang, 'trust.ar')}</span>
+            </div>
+          </div>
+
+          <LoginFormPanel
+            userType={userType}
+            onUserTypeChange={handleUserTypeChange}
+            onSignIn={handleSignIn}
+            onSignUp={handleSignUp}
+            onExternalSubmit={handleExternalSubmit}
+            onSendOtp={handleSendOtp}
+            onVerifyOtp={handleVerifyOtp}
+            onForgotPassword={handleForgotPassword}
+            loading={isLoading}
+            error={loginError}
+            lang={lang}
+          />
+        </div>
+      </header>
+
+      {/* AI BAND — Ask CATY */}
+      <section className="clmp-ai-band" id="ai">
+        <span className="clmp-ai-watermark"><CPathSvg /></span>
+        <div className="clmp-container clmp-ai-grid">
+          <div className="clmp-rv">
+            <CatyMascot state="awake" variant="gradient" className="clmp-caty-hero" />
+            <span className="clmp-ai-kicker">✦ {t(lang, 'ai.kicker')}</span>
+            <h2>{t(lang, 'ai.title1')} <span className="clmp-ai-hl">{t(lang, 'ai.title2')}</span><br />{t(lang, 'ai.title3')}</h2>
+            <p className="clmp-ai-sub">{t(lang, 'ai.sub')}</p>
+            <div className="clmp-agent-list">
+              {AGENTS.map(a => (
+                <div className="clmp-agent" key={a}>
+                  <span className="clmp-agent-mk">✦</span>
+                  <span><b>{t(lang, `${a}.t`)}</b><small>{t(lang, `${a}.b`)}</small></span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="clmp-chat clmp-rv" aria-hidden="true">
+            <div className="clmp-chat-top">
+              <CatyMascot state="awake" className="clmp-chat-av" />
+              <span className="clmp-chat-ttl">Ask <i>CATY</i></span>
+              <span className="clmp-chat-on"><span className="clmp-pulse clmp-pulse-mint" />{t(lang, 'chat.online')}</span>
+            </div>
+            <div className="clmp-chat-body">
+              <div className="clmp-msg clmp-msg-user">{t(lang, 'chat.q')}</div>
+              <div className="clmp-msg clmp-msg-caty">
+                <span className="clmp-msg-who"><CatyMascot state="excited" className="clmp-msg-mini" />ASK CATY</span>
+                {t(lang, 'chat.a')}
+                <span className="clmp-msg-act">
+                  <span>{t(lang, 'chat.c1')}</span><span>{t(lang, 'chat.c2')}</span><span>{t(lang, 'chat.c3')}</span>
+                </span>
+              </div>
+              <div className="clmp-msg clmp-msg-caty" style={{ paddingBlock: 12 }}>
+                <span className="clmp-typing"><i /><i /><i /></span>
+              </div>
+            </div>
+            <div className="clmp-chat-in">{t(lang, 'chat.ph')}<span className="clmp-chat-send">➤</span></div>
           </div>
         </div>
       </section>
 
-      {/* TRUST STRIP */}
-      <div className="clmp-trust">
+      {/* AI CAPABILITIES */}
+      <section className="clmp-section">
         <div className="clmp-container">
-          <span><strong>{t(lang, 'trust.jira')}</strong></span>
-          <span className="clmp-trust-dot">·</span>
-          <span><strong>{t(lang, 'trust.servicenow')}</strong></span>
-          <span className="clmp-trust-dot">·</span>
-          <span><strong>{t(lang, 'trust.rls')}</strong></span>
-          <span className="clmp-trust-dot">·</span>
-          <span><strong>{t(lang, 'trust.residency')}</strong></span>
-          <span className="clmp-trust-dot">·</span>
-          <span><strong>{t(lang, 'trust.currency')}</strong></span>
-        </div>
-      </div>
-
-      {/* ARCHITECTURE */}
-      <section className="clmp-arch-band">
-        <div className="clmp-container">
-          <div className="clmp-section-head center">
-            <div className="clmp-section-eyebrow">{t(lang, 'arch.eyebrow')}</div>
-            <h2>{t(lang, 'arch.title')}</h2>
-            <p>{t(lang, 'arch.desc')}</p>
+          <div className="clmp-section-head center clmp-rv">
+            <div className="clmp-section-eyebrow">{t(lang, 'caps.kicker')}</div>
+            <h2>{t(lang, 'caps.title')}</h2>
+            <p>{t(lang, 'caps.sub')}</p>
           </div>
-
-          <div className="clmp-arch-v2">
-
-            {/* LEFT — Source integrations */}
-            <div>
-              <div className="clmp-arch-v2-col-label">{t(lang, 'arch.col1')}</div>
-              <div className="clmp-arch-integ-col">
-
-                {/* Jira */}
-                <div className="clmp-arch-integ-card">
-                  <div className="clmp-arch-integ-mark" style={{ background: '#1868DB' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M12 2C7.03 2 3 6.03 3 11c0 3.1 1.5 5.86 3.83 7.61L12 22l5.17-3.39A9.965 9.965 0 0 0 21 11c0-4.97-4.03-9-9-9zm0 16-3.58-2.34A7.975 7.975 0 0 1 4 11c0-4.41 3.59-8 8-8s8 3.59 8 8a7.975 7.975 0 0 1-4.42 7.66L12 18z" fill="white"/>
-                    </svg>
-                  </div>
-                  <div className="clmp-arch-integ-info">
-                    <div className="clmp-arch-integ-name">Jira</div>
-                    <div className="clmp-arch-integ-cat">{t(lang, 'arch.jira.cat')}</div>
-                  </div>
-                  <div className="clmp-arch-integ-dot" />
-                </div>
-
-                {/* ServiceNow */}
-                <div className="clmp-arch-integ-card">
-                  <div className="clmp-arch-integ-mark" style={{ background: '#62B229' }}>
-                    <span style={{ color: '#fff', fontWeight: 700, fontSize: '11px', letterSpacing: '-0.5px', fontFamily: 'var(--ds-font-family-body, sans-serif)' }}>SN</span>
-                  </div>
-                  <div className="clmp-arch-integ-info">
-                    <div className="clmp-arch-integ-name">ServiceNow</div>
-                    <div className="clmp-arch-integ-cat">{t(lang, 'arch.sn.cat')}</div>
-                  </div>
-                  <div className="clmp-arch-integ-dot" />
-                </div>
-
-                {/* Active Directory */}
-                <div className="clmp-arch-integ-card">
-                  <div className="clmp-arch-integ-mark" style={{ background: '#0078D4' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <rect x="2" y="2" width="9" height="9" rx="1" fill="rgba(255,255,255,0.95)"/>
-                      <rect x="13" y="2" width="9" height="9" rx="1" fill="rgba(255,255,255,0.6)"/>
-                      <rect x="2" y="13" width="9" height="9" rx="1" fill="rgba(255,255,255,0.6)"/>
-                      <rect x="13" y="13" width="9" height="9" rx="1" fill="rgba(255,255,255,0.3)"/>
-                    </svg>
-                  </div>
-                  <div className="clmp-arch-integ-info">
-                    <div className="clmp-arch-integ-name">Active Directory</div>
-                    <div className="clmp-arch-integ-cat">{t(lang, 'arch.ad.cat')}</div>
-                  </div>
-                  <div className="clmp-arch-integ-dot" />
-                </div>
-
-                {/* Notion */}
-                <div className="clmp-arch-integ-card">
-                  <div className="clmp-arch-integ-mark" style={{ background: '#191919' }}>
-                    <span style={{ color: '#fff', fontWeight: 700, fontSize: '15px', fontFamily: 'Georgia, serif', lineHeight: 1 }}>N</span>
-                  </div>
-                  <div className="clmp-arch-integ-info">
-                    <div className="clmp-arch-integ-name">Notion</div>
-                    <div className="clmp-arch-integ-cat">{t(lang, 'arch.notion.cat')}</div>
-                  </div>
-                  <div className="clmp-arch-integ-dot" />
-                </div>
-
-                {/* Slack */}
-                <div className="clmp-arch-integ-card">
-                  <div className="clmp-arch-integ-mark" style={{ background: '#4A154B' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <rect x="5" y="9" width="14" height="2.5" rx="1.25" fill="white"/>
-                      <rect x="5" y="12.5" width="14" height="2.5" rx="1.25" fill="white"/>
-                      <rect x="8.75" y="5" width="2.5" height="14" rx="1.25" fill="white"/>
-                      <rect x="12.75" y="5" width="2.5" height="14" rx="1.25" fill="white"/>
-                    </svg>
-                  </div>
-                  <div className="clmp-arch-integ-info">
-                    <div className="clmp-arch-integ-name">Slack</div>
-                    <div className="clmp-arch-integ-cat">{t(lang, 'arch.slack.cat')}</div>
-                  </div>
-                  <div className="clmp-arch-integ-dot" />
-                </div>
-
-              </div>
+          <div className="clmp-caps clmp-rv">
+            <div className="clmp-cap">
+              <div className="clmp-cap-ic caty"><CatyMascot state="sleep" /></div>
+              <div className="clmp-cap-t">{t(lang, 'cap.1.t')}</div><div className="clmp-cap-b">{t(lang, 'cap.1.b')}</div>
             </div>
-
-            {/* Flow → sync */}
-            <div className="clmp-arch-v2-flow" aria-hidden="true">
-              <svg width="48" height="20" viewBox="0 0 48 20" fill="none">
-                <defs>
-                  <marker id="archArrowL" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                    <path d="M0 0L6 3L0 6z" fill="var(--ds-border-information,#0055CC)"/>
-                  </marker>
-                </defs>
-                <line x1="2" y1="10" x2="40" y2="10" stroke="var(--ds-border-information,#0055CC)" strokeWidth="1.5" strokeDasharray="4 3" markerEnd="url(#archArrowL)"/>
-              </svg>
-              <span className="clmp-arch-v2-flow-label">{t(lang, 'arch.sync')}</span>
+            <div className="clmp-cap">
+              <div className="clmp-cap-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg></div>
+              <div className="clmp-cap-t">{t(lang, 'cap.2.t')}</div><div className="clmp-cap-b">{t(lang, 'cap.2.b')}</div>
             </div>
-
-            {/* CENTER — Catalyst Core */}
-            <div className="clmp-arch-core-v2">
-              <div className="clmp-arch-core-v2-title">{t(lang, 'arch.core')}</div>
-              <div className="clmp-arch-core-v2-sub">{t(lang, 'arch.core.name')}</div>
-              <div className="clmp-arch-mod-grid-v2">
-                {(['01','02','03','04','05','06','07','08','09'] as const).map(n => (
-                  <div key={n} className="clmp-arch-mod-v2">{t(lang, `hub.${n}`)}</div>
-                ))}
-              </div>
+            <div className="clmp-cap">
+              <div className="clmp-cap-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+              <div className="clmp-cap-t">{t(lang, 'cap.3.t')}</div><div className="clmp-cap-b">{t(lang, 'cap.3.b')}</div>
             </div>
-
-            {/* Flow → insights */}
-            <div className="clmp-arch-v2-flow" aria-hidden="true">
-              <svg width="48" height="20" viewBox="0 0 48 20" fill="none">
-                <defs>
-                  <marker id="archArrowR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                    <path d="M0 0L6 3L0 6z" fill="var(--ds-border-information,#0055CC)"/>
-                  </marker>
-                </defs>
-                <line x1="2" y1="10" x2="40" y2="10" stroke="var(--ds-border-information,#0055CC)" strokeWidth="1.5" strokeDasharray="4 3" markerEnd="url(#archArrowR)"/>
-              </svg>
-              <span className="clmp-arch-v2-flow-label">{t(lang, 'arch.insights.label')}</span>
+            <div className="clmp-cap">
+              <div className="clmp-cap-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M3 16.5h7M6.5 13v7"/></svg></div>
+              <div className="clmp-cap-t">{t(lang, 'cap.4.t')}</div><div className="clmp-cap-b">{t(lang, 'cap.4.b')}</div>
             </div>
-
-            {/* RIGHT — Stakeholder outputs */}
-            <div>
-              <div className="clmp-arch-v2-col-label">{t(lang, 'arch.col3')}</div>
-              <div className="clmp-arch-output-col">
-
-                {/* Executive Insights */}
-                <div className="clmp-arch-output-card">
-                  <div className="clmp-arch-output-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
-                      <rect x="3" y="12" width="4" height="9"/>
-                      <rect x="10" y="7" width="4" height="14"/>
-                      <rect x="17" y="3" width="4" height="18"/>
-                    </svg>
-                  </div>
-                  <div className="clmp-arch-output-body">
-                    <div className="clmp-arch-output-title">{t(lang, 'arch.s1')}</div>
-                    <div className="clmp-arch-output-desc">{t(lang, 'arch.s1.desc')}</div>
-                  </div>
-                </div>
-
-                {/* Portfolio Visibility */}
-                <div className="clmp-arch-output-card">
-                  <div className="clmp-arch-output-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="3" y="3" width="7" height="7" rx="1"/>
-                      <rect x="14" y="3" width="7" height="7" rx="1"/>
-                      <rect x="3" y="14" width="7" height="7" rx="1"/>
-                      <rect x="14" y="14" width="7" height="7" rx="1"/>
-                    </svg>
-                  </div>
-                  <div className="clmp-arch-output-body">
-                    <div className="clmp-arch-output-title">{t(lang, 'arch.s2')}</div>
-                    <div className="clmp-arch-output-desc">{t(lang, 'arch.s2.desc')}</div>
-                  </div>
-                </div>
-
-                {/* Delivery Intelligence */}
-                <div className="clmp-arch-output-card">
-                  <div className="clmp-arch-output-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                    </svg>
-                  </div>
-                  <div className="clmp-arch-output-body">
-                    <div className="clmp-arch-output-title">{t(lang, 'arch.s3')}</div>
-                    <div className="clmp-arch-output-desc">{t(lang, 'arch.s3.desc')}</div>
-                  </div>
-                </div>
-
-              </div>
+            <div className="clmp-cap">
+              <div className="clmp-cap-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+              <div className="clmp-cap-t">{t(lang, 'cap.5.t')}</div><div className="clmp-cap-b">{t(lang, 'cap.5.b')}</div>
             </div>
-
+            <div className="clmp-cap">
+              <div className="clmp-cap-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></div>
+              <div className="clmp-cap-t">{t(lang, 'cap.6.t')}</div><div className="clmp-cap-b">{t(lang, 'cap.6.b')}</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 9 MODULES */}
-      <section className="clmp-section-band">
+      {/* MODULES */}
+      <section className="clmp-section-band" id="mods">
         <div className="clmp-container">
-          <div className="clmp-section-head">
+          <div className="clmp-section-head center clmp-rv">
             <div className="clmp-section-eyebrow">{t(lang, 'hubs.eyebrow')}</div>
             <h2>{t(lang, 'hubs.title')}</h2>
             <p>{t(lang, 'hubs.desc')}</p>
           </div>
-          <div className="clmp-hub-grid">
-            {(['01','02','03','04','05','06','07','08','09'] as const).map(n => (
-              <div key={n} className="clmp-hub-card">
-                <span className="clmp-hub-num">{n}</span>
-                <span className="clmp-hub-name">{t(lang, `hub.${n}`)}</span>
-                <div className="clmp-hub-desc">{t(lang, `hub.${n}.desc`)}</div>
+          <div className="clmp-mod-grid">
+            {MODULES.map(m => (
+              <div className="clmp-mod clmp-rv" key={m.no}>
+                <span className="clmp-mod-num">{m.no}</span>
+                <div className="clmp-mod-name">{t(lang, m.key)}</div>
+                <div className="clmp-mod-desc">{t(lang, m.desc)}</div>
+                <span className="clmp-mod-tag">✦ {t(lang, m.tag)}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* RESOURCE 360° */}
-      <section className="clmp-section">
+      {/* TRUST */}
+      <div className="clmp-trust">
         <div className="clmp-container">
-          <div className="clmp-r360-block">
-            <div className="clmp-section-eyebrow">{t(lang, 'r360.eyebrow')}</div>
-            <h2>{t(lang, 'r360.title')}</h2>
-            <p className="clmp-r360-lede">{t(lang, 'r360.desc')}</p>
-            <div className="clmp-r360-grid">
-              {(['f1','f2','f3','f4','f5','f6'] as const).map(f => (
-                <div key={f} className="clmp-r360-card">
-                  <div className="clmp-r360-icon" aria-hidden="true" />
-                  <div className="clmp-r360-feat-name">{t(lang, `r360.${f}.t`)}</div>
-                  <div className="clmp-r360-feat-desc">{t(lang, `r360.${f}.b`)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+          {(['trust.jira', 'trust.servicenow', 'trust.rls', 'trust.residency', 'trust.currency'] as const).map(k => (
+            <span key={k}>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
+              {t(lang, k)}
+            </span>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* WHY CATALYST */}
-      <section className="clmp-section-band">
+      {/* WHY */}
+      <section className="clmp-section" id="why">
         <div className="clmp-container">
-          <div className="clmp-section-head">
+          <div className="clmp-section-head clmp-rv">
             <div className="clmp-section-eyebrow">{t(lang, 'why.eyebrow')}</div>
             <h2>{t(lang, 'why.title')}</h2>
             <p>{t(lang, 'why.desc')}</p>
           </div>
           <div className="clmp-why-grid">
-            {(['1','2','3','4','5','6'] as const).map(n => (
-              <div key={n} className="clmp-why-card">
-                <div className="clmp-why-num">0{n}</div>
-                <div className="clmp-why-title">{t(lang, `why.${n}.t`)}</div>
-                <div className="clmp-why-body">{t(lang, `why.${n}.b`)}</div>
+            {(['1', '2', '3', '4', '5', '6'] as const).map(n => (
+              <div className="clmp-why-card clmp-rv" key={n}>
+                <span className="clmp-why-num">0{n}</span>
+                <span>
+                  <div className="clmp-why-title">{t(lang, `why.${n}.t`)}</div>
+                  <div className="clmp-why-body">{t(lang, `why.${n}.b`)}</div>
+                </span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* COMPARISON */}
-      <section className="clmp-section">
-        <div className="clmp-container">
-          <div className="clmp-section-head">
-            <div className="clmp-section-eyebrow">{t(lang, 'compare.eyebrow')}</div>
-            <h2>{t(lang, 'compare.title')}</h2>
-            <p>{t(lang, 'compare.desc')}</p>
-          </div>
-          <div className="clmp-compare-wrap">
-            <table className="clmp-compare-table">
-              <thead>
-                <tr>
-                  <th>{t(lang, 'compare.h.capability')}</th>
-                  <th className="catalyst-col">
-                    {t(lang, 'compare.h.catalyst')}
-                    <span className="recommended">{t(lang, 'compare.recommended')}</span>
-                  </th>
-                  <th className="opt">{t(lang, 'compare.h.jira-align')}</th>
-                  <th className="opt">{t(lang, 'compare.h.planview')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(['r1','r2','r3','r4','r5','r6','r7'] as const).map(r => (
-                  <tr key={r}>
-                    <td className="label">{t(lang, `compare.${r}.l`)}</td>
-                    <td className="catalyst-col"><span className="clmp-check">{t(lang, `compare.${r}.c`)}</span></td>
-                    <td className="other opt">{t(lang, `compare.${r}.j`)}</td>
-                    <td className="other opt">{t(lang, `compare.${r}.p`)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      {/* FINAL */}
+      <div className="clmp-final">
+        <span className="clmp-final-watermark"><CPathSvg /></span>
+        <div className="clmp-container clmp-rv">
+          <h2>{t(lang, 'final.title')}</h2>
+          <p>{t(lang, 'final.sub')}</p>
+          <a className="clmp-btn clmp-btn-primary" style={{ height: 46, paddingInline: 32, fontSize: 15 }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
         </div>
-      </section>
+      </div>
 
       {/* FOOTER */}
       <footer className="clmp-footer">
         <div className="clmp-container">
           <div className="clmp-foot-brand">
-            <CMarkSvg size={24} className="clmp-foot-brand-mark" />
+            <CMarkSvg size={24} />
             <span>{t(lang, 'foot.copy')}</span>
           </div>
           <div className="clmp-foot-legal">
             <span>{t(lang, 'foot.conf')}</span>
-            <a href="#privacy">{t(lang, 'foot.privacy')}</a>
-            <a href="#terms">{t(lang, 'foot.terms')}</a>
-            <a href="#security">{t(lang, 'foot.security')}</a>
+            <span className="clmp-foot-link-coming">{t(lang, 'foot.privacy')}</span>
+            <span className="clmp-foot-link-coming">{t(lang, 'foot.terms')}</span>
+            <span className="clmp-foot-link-coming">{t(lang, 'foot.security')}</span>
           </div>
         </div>
       </footer>
@@ -698,5 +631,5 @@ export function CatalystLoginPage() {
 
 export * from './constants';
 export * from './useLoginState';
-export { LoginHeroPanel } from './LoginHeroPanel';
 export { LoginFormPanel } from './LoginFormPanel';
+

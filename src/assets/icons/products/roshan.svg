@@ -1,0 +1,6 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14B8A6"></stop><stop offset="1" stop-color="#0F766E"></stop></linearGradient>
+  <linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.20"></stop><stop offset="0.55" stop-color="#fff" stop-opacity="0"></stop></linearGradient></defs>
+  <rect width="80" height="80" rx="18" fill="url(#bg)"></rect><rect width="80" height="80" rx="18" fill="url(#gl)"></rect>
+<path d="M21 24H59L55 18.5H25Z" fill="#ffffff"></path><rect x="24" y="24" width="32" height="33" rx="1.5" fill="#ffffff"></rect><rect x="29" y="57" width="22" height="4" fill="#ffffff"></rect><g stroke="url(#bg)" stroke-width="2" opacity="0.85"><line x1="32" y1="26" x2="32" y2="56"></line><line x1="40" y1="26" x2="40" y2="56"></line><line x1="48" y1="26" x2="48" y2="56"></line><line x1="25" y1="34" x2="55" y2="34"></line><line x1="25" y1="44" x2="55" y2="44"></line><line x1="25" y1="51" x2="55" y2="51"></line></g>
+</svg>

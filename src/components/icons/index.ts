@@ -12,6 +12,9 @@ export type { PriorityIconProps } from './PriorityIcon';
 export { ProjectAvatar } from './ProjectAvatar';
 export type { ProjectAvatarProps, ProjectAvatarSize } from './ProjectAvatar';
 
+export { ProductAvatar } from './ProductAvatar';
+export type { ProductAvatarProps } from './ProductAvatar';
+
 export { useIconOverrides } from './useIconOverrides';
 export type { IconOverride, IconCategory } from './useIconOverrides';
 
@@ -23,11 +26,18 @@ export {
   PRIORITY_REGISTRY,
   PROJECT_AVATAR_REGISTRY,
   STOCK_AVATAR_REGISTRY,
+  STOCK_AVATAR_IDS,
+  HUB_ICON_REGISTRY,
+  STOCK_PLACE_REGISTRY,
+  STOCK_PLACE_IDS,
+  KNOWN_PRODUCT_PLACES,
   WORK_ITEM_TYPES,
   PRIORITY_LEVELS,
   PROJECT_KEYS,
   normalizeWorkItemType,
   normalizePriority,
+  pickStockAvatarForKey,
+  getProductAvatarUrl,
 } from './icons.registry';
 
 export type {
@@ -35,6 +45,8 @@ export type {
   PriorityLevel,
   ProjectKey,
   StockAvatarId,
+  HubKey,
+  PlaceId,
   WorkTypeMeta,
   PriorityMeta,
   ProjectAvatarMeta,

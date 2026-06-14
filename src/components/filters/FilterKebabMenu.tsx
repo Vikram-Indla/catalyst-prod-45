@@ -9,8 +9,8 @@ import {
   useUpdateSavedFilter,
   useDeleteSavedFilter,
 
-  useToggleFilterSubscription,
   useExistingBoardForFilter,
+  useBoardsForProject,
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
@@ -39,9 +39,11 @@ interface FilterKebabMenuProps {
   rows?: JqlResultRow[];
   /** True while JQL results are still loading — prevents "No items" false alarm. */
   isLoadingRows?: boolean;
+  /** 'project' (default) or 'product' — controls nav prefix for Create Kanban/Roadmap/Dashboard. */
+  hubType?: 'project' | 'product';
 }
 
-export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRows = false }: FilterKebabMenuProps) {
+export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRows = false, hubType = 'project' }: FilterKebabMenuProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [editOpen, setEditOpen] = useState(false);
@@ -88,13 +90,13 @@ export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRow
   const copyFilter      = useCopyFilter();
   const updateFilter    = useUpdateSavedFilter();
   const deleteFilter    = useDeleteSavedFilter();
-  const subscribeFilter = useToggleFilterSubscription();
-
   const createKanban = useCreateKanbanFromFilter();
+  const projectBoards = useBoardsForProject(ENABLE_FILTER_TO_KANBAN ? projectKey : undefined);
   const existingBoard = useExistingBoardForFilter(
     ENABLE_FILTER_TO_KANBAN ? filter.id : undefined,
     currentUserId,
   );
+  const boards = existingBoard.data ? [existingBoard.data] : [];
   const createRoadmap  = useCreateRoadmapFromFilter();
   const existingRoadmap = useExistingRoadmapForFilter(
     ENABLE_FILTER_TO_ROADMAP ? filter.id : undefined,
@@ -114,7 +116,6 @@ export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRow
   const modalLoadingRows = rows.length === 0 ? (selfFetch.isLoading || selfFetch.isFetching) : isLoadingRows;
 
 const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
-  const isSubscribed = currentUserId ? (filter.subscriber_ids ?? []).includes(currentUserId) : false;
   const isPrivate = filter.viewers_config?.type === 'private';
 
   const openMenu = useCallback((e: React.MouseEvent) => {
@@ -165,7 +166,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       const boardId = await createKanban.mutateAsync({
         filter,
         projectKey: projectKey ?? null,
-        sourceBoardId: boards[0]?.id ?? null,
+        sourceBoardId: projectBoards.data?.[0]?.id ?? null,
         name: kanbanName.trim(),
         // Filter boards have project_id=null, so 'project' visibility (which gates on
         // project_members join) would never resolve correctly. Use 'shared' instead —
@@ -174,7 +175,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       });
       setKanbanError(null);
       setCreateKanbanOpen(false);
-      if (projectKey && boardId) navigate(`/project-hub/${projectKey}/boards/${boardId}`);
+      if (projectKey && boardId) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/boards/${boardId}`);
     } catch (e: any) {
       console.error('Failed to create Kanban from filter:', e);
       setKanbanError(e?.message ?? 'Something went wrong creating the board.');
@@ -197,7 +198,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       });
       setRoadmapError(null);
       setCreateRoadmapOpen(false);
-      if (projectKey && viewId) navigate(`/project-hub/${projectKey}/roadmaps/${viewId}`);
+      if (projectKey && viewId) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/roadmaps/${viewId}`);
     } catch (e: any) {
       console.error('Failed to create roadmap from filter:', e);
       setRoadmapError(e?.message ?? 'Something went wrong creating the roadmap.');
@@ -216,7 +217,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       });
       setDashboardError(null);
       setCreateDashboardOpen(false);
-      if (projectKey && viewId) navigate(`/project-hub/${projectKey}/dashboards/${viewId}`);
+      if (projectKey && viewId) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/dashboards/${viewId}`);
     } catch (e: any) {
       console.error('Failed to create dashboard from filter:', e);
       setDashboardError(e?.message ?? 'Something went wrong creating the dashboard.');
@@ -228,6 +229,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       <button
         key={typeof label === 'string' ? label : undefined}
         type="button"
+        role="menuitem"
         disabled={disabled}
         onClick={(e) => { e.stopPropagation(); if (!disabled) { onClick(); closeMenu(); } }}
         style={{
@@ -261,6 +263,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
         type="button"
         aria-label="Filter actions"
         aria-expanded={menuOpen}
+        aria-haspopup="menu"
         onClick={openMenu}
         style={{
           display: 'inline-flex',
@@ -282,6 +285,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
       {menuOpen && createPortal(
         <div
           ref={menuRef}
+          role="menu"
           data-filter-kebab-portal="true"
           style={{
             position: 'fixed',
@@ -307,11 +311,6 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
               : `/product-hub/allwork?filterId=${filter.id}`;
             navigator.clipboard.writeText(base + path).catch(() => {});
           })}
-          {menuItem(
-            isSubscribed ? 'Unsubscribe' : 'Subscribe',
-            () => subscribeFilter.mutate({ filterId: filter.id, currentSubscriberIds: filter.subscriber_ids ?? [], userId: currentUserId ?? '' }),
-            !currentUserId,
-          )}
           {isOwner && menuItem(isPrivate ? 'Share with organisation' : 'Make private', handleToggleVisibility)}
           {menuItem('View version history', () => setHistoryOpen(true))}
           {isOwner && menuItem('Change owner', () => setTransferOpen(true))}
@@ -330,7 +329,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   linkedBoardId ? 'Open Kanban' : 'Create Kanban from filter',
                   () => {
                     if (linkedBoardId) {
-                      if (projectKey) navigate(`/project-hub/${projectKey}/boards/${linkedBoardId}`);
+                      if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/boards/${linkedBoardId}`);
                       return;
                     }
                     setKanbanName(`${filter.name} board`);
@@ -348,7 +347,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                 existingRoadmap.data ? 'Open roadmap' : 'Create roadmap from filter',
                 () => {
                   if (existingRoadmap.data) {
-                    if (projectKey) navigate(`/project-hub/${projectKey}/roadmaps/${existingRoadmap.data.id}`);
+                    if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/roadmaps/${existingRoadmap.data.id}`);
                     return;
                   }
                   setRoadmapName(`${filter.name} roadmap`);
@@ -365,7 +364,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                 existingDashboard.data ? 'Open dashboard' : 'Create dashboard from filter',
                 () => {
                   if (existingDashboard.data) {
-                    if (projectKey) navigate(`/project-hub/${projectKey}/dashboards/${existingDashboard.data.id}`);
+                    if (projectKey) navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/dashboards/${existingDashboard.data.id}`);
                     return;
                   }
                   setDashboardName(`${filter.name} dashboard`);
@@ -468,7 +467,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                 <strong>{filter.name}</strong>? This action cannot be undone.
               </p>
               {filter.used_by_board_ids.length > 0 && (
-                <p style={{ margin: '8px 0 0', fontSize: 13, color: token('color.text.warning') }}>
+                <p style={{ margin: '8px 0 0', fontSize: 13, color: token('color.text.warning', '#974F0C') }}>
                   This filter is used by {filter.used_by_board_ids.length} board{filter.used_by_board_ids.length > 1 ? 's' : ''}. Deleting it will unlink those boards.
                 </p>
               )}
@@ -546,7 +545,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   setCreatingBoard(true);
                   try {
                     const { data: { user } } = await supabase.auth.getUser();
-                    const { data: board, error } = await (supabase as any)
+                    const { data: board, error } = await supabase
                       .from('boards')
                       .insert({
                         name: boardName.trim(),
@@ -559,13 +558,13 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                       .single();
                     if (error) throw error;
                     const nextBoardIds = [...filter.used_by_board_ids, board.id];
-                    await (supabase as any)
+                    await supabase
                       .from('ph_saved_filters')
                       .update({ used_by_board_ids: nextBoardIds })
                       .eq('id', filter.id);
                     setCreateBoardOpen(false);
                     if (projectKey && board?.id) {
-                      navigate(`/project-hub/${projectKey}/boards/${board.id}`);
+                      navigate(`/${hubType === 'product' ? 'product-hub' : 'project-hub'}/${projectKey}/boards/${board.id}`);
                     }
                   } catch (e: any) {
                     console.error('Failed to create board:', e);
@@ -738,7 +737,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                 </div>
                 <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest') }}>
                   Cards come live from <strong>{filter.name}</strong>.{' '}
-                  {boards.length > 0
+                  {(projectBoards.data?.length ?? 0) > 0
                     ? "Columns are inherited from this project's board."
                     : 'No existing board found — the board will start with default columns (To Do, In Progress, Done). You can customise them after creation.'
                   }{' '}

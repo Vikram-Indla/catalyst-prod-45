@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { useDefaultProject } from '@/hooks/useProjects';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
-import { useWorkflow } from '@/lib/workflows/WorkflowProvider';
 import { JiraStatusLozenge } from '@/components/workflow/JiraStatusLozenge';
 import type { StatusCategory } from '@/lib/workflows/types';
 import { CatalystWorkflowDiagram } from './CatalystWorkflowDiagram';
@@ -43,19 +42,8 @@ export function CatalystWorkflowModal({
 
   const { data: typeWorkflow, isLoading } = useTypeWorkflow(projectKey, issueTypeName);
 
-  // Tier-1 name only
-  const tier1Workflow = useWorkflow(issueTypeName);
-  const workflowName = tier1Workflow?.name ?? '';
-
   const [zoom, setZoom] = useState(100);
-
-  // Build title — dedup guard: skip prefix when name equals type
-  const title = useMemo(() => {
-    if (!workflowName || workflowName === issueTypeName) {
-      return `${issueTypeName} Workflow`;
-    }
-    return `${workflowName} ${issueTypeName} Workflow`;
-  }, [workflowName, issueTypeName]);
+  const title = `${issueTypeName} Workflow`;
 
   // Resolve current status — prefer UUID, fall back to name match
   const resolvedCurrentStatusId = useMemo(() => {

@@ -21,8 +21,12 @@
  */
 import React from 'react';
 import * as LucideIcons from 'lucide-react';
-import { Folder } from 'lucide-react';
-import { PROJECT_AVATAR_REGISTRY, type ProjectKey } from '@/components/icons/icons.registry';
+import {
+  PROJECT_AVATAR_REGISTRY,
+  STOCK_AVATAR_REGISTRY,
+  pickStockAvatarForKey,
+  type ProjectKey,
+} from '@/components/icons/icons.registry';
 import { useIconOverrides } from '@/components/icons/useIconOverrides';
 
 export type ProjectIconSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
@@ -128,18 +132,22 @@ export function ProjectIcon({
     );
   }
 
-  // 0b. Bundled registry avatar (the 18 canonical Catalyst project keys).
-  if (projectKey && projectKey in PROJECT_AVATAR_REGISTRY) {
-    const url = PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].url;
+  // 0b. Local avatarUrl — only wins over the bundled registry when the URL is a
+  // LOCAL asset (localhost or Vite-served /src/assets path). External Jira CDN
+  // URLs are G6-banned and silently skipped; the registry handles those keys.
+  // This lets ProductHeaderChip inject a landmark SVG for product codes (INV)
+  // while ProjectDashboardPage's ph_projects.avatar_url (Jira CDN) is ignored.
+  const isLocalUrl = (url: string) =>
+    url.startsWith('/') || url.includes('localhost') || url.startsWith('blob:');
+  if (avatarUrl && isLocalUrl(avatarUrl)) {
     return (
       <img
-        src={url}
-        alt={name ?? PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].name}
+        src={avatarUrl}
+        alt={name ?? ''}
         width={px}
         height={px}
         className={className}
-        data-project-key={projectKey}
-        data-icon-source="bundled"
+        data-icon-source="avatar-url"
         style={{
           width: px,
           height: px,
@@ -152,15 +160,18 @@ export function ProjectIcon({
     );
   }
 
-  // 1. Canonical: Jira-uploaded image
-  if (avatarUrl) {
+  // 0c. Bundled registry avatar (the 18 canonical Catalyst project keys).
+  if (projectKey && projectKey in PROJECT_AVATAR_REGISTRY) {
+    const url = PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].url;
     return (
       <img
-        src={avatarUrl}
-        alt={name ?? ''}
+        src={url}
+        alt={name ?? PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].name}
         width={px}
         height={px}
         className={className}
+        data-project-key={projectKey}
+        data-icon-source="bundled"
         style={{
           width: px,
           height: px,
@@ -203,25 +214,29 @@ export function ProjectIcon({
     );
   }
 
-  // 3. Fallback: muted grey Folder. Never letters. (mem://constraints/canonical-project-icons)
+  // 3. Fallback: stock avatar from rotation pool (deterministic hash on projectKey).
+  // Unknown project keys get a real branded icon — never a grey folder.
+  const stockId = pickStockAvatarForKey(projectKey ?? 'unknown');
+  const stockUrl = STOCK_AVATAR_REGISTRY[stockId];
   return (
-    <span
-      aria-label={name ?? undefined}
+    <img
+      src={stockUrl}
+      alt={name ?? projectKey ?? 'project'}
+      width={px}
+      height={px}
       className={className}
+      data-project-key={projectKey ?? ''}
+      data-icon-source="stock"
+      data-stock-id={stockId}
       style={{
         width: px,
         height: px,
         borderRadius: radius,
-        background: '#DCDFE4', // ADS color.background.neutral
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        objectFit: 'fill',
         flexShrink: 0,
-        color: '#626F86', // ADS color.text.subtle
+        display: 'inline-block',
       }}
-    >
-      <Folder size={iconPx} strokeWidth={2} />
-    </span>
+    />
   );
 }
 

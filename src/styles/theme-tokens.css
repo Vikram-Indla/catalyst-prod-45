@@ -6,58 +6,47 @@
 
 /* ── LIGHT MODE (DEFAULT) ── */
 :root, [data-theme="light"] {
-  /* Surfaces */
-  --cp-bg:              var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  /* V3 Canonical White Canvas (Apr 27, 2026 audit, L36).
-     Was #F7F8F9 (Atlassian sunken slate) which painted the h-screen
-     wrapper with a tint visible at the page edges. Catalyst owner
-     decision: every light-mode page surface is white. The Jira-blue
-     wash and Atlassian-slate wash both retire here. */
-  --cp-bg-canvas:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  --cp-bg-sidebar-hdr:  var(--ds-surface-sunken, #F8FAFC);
-  --cp-bg-sunken:       var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
-  --cp-float:           var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  /* Bridge gap closure (2026-04-28): src/theme/ads/tokens.ts declared
-     overlay/inset/disabled values in TS but no CSS rule emitted them
-     as custom properties. Wrappers reading var(--cp-bg-overlay) etc.
-     resolved to nothing. Adding here so the bridge has a real CSS
-     counterpart. Light values mirror tokens.ts adsTokens.bg.* and
-     text.disabled. */
-  --cp-bg-overlay:      var(--ds-surface-sunken, #F8FAFC);
-  --cp-bg-inset:        var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
-  --cp-text-disabled:   var(--ds-text-disabled, #CBD5E1);
+  /* Surfaces — ADS bridge (V9 migration 2026-06-13) */
+  --cp-bg:              var(--ds-surface, #FFFFFF);
+  --cp-bg-canvas:       var(--ds-surface, #FFFFFF);
+  --cp-bg-sidebar-hdr:  var(--ds-surface-sunken, #F7F8F9);
+  --cp-bg-sunken:       var(--ds-surface-sunken, #F7F8F9);
+  --cp-float:           var(--ds-surface-raised, #FFFFFF);
+  --cp-bg-overlay:      var(--ds-surface-overlay, #FFFFFF);
+  --cp-bg-inset:        var(--ds-background-neutral-subtle, #F7F8F9);
+  --cp-text-disabled:   var(--ds-text-disabled, #8993A5);
 
-  /* Text */
-  --cp-t1:              #111827;
-  --cp-t2:              #374151;
-  --cp-t3:              #6B7280;
-  --cp-t4:              #9CA3AF;
+  /* Text — ADS bridge (V9 migration 2026-06-13) */
+  --cp-t1:              var(--ds-text, #172B4D);
+  --cp-t2:              var(--ds-text-subtle, #42526E);
+  --cp-t3:              var(--ds-text-subtlest, #6B778C);
+  --cp-t4:              var(--ds-text-disabled, #8993A5);
 
   /* Borders */
-  --cp-bd:              var(--ds-border, #E5E7EB);
-  --cp-bd-zone:         #F3F4F6;
-  --cp-bd-hover:        #D1D5DB;
-  --cp-bd-table:        #F3F4F6;
+  --cp-bd:              var(--ds-border, #DFE1E6);
+  --cp-bd-zone:         var(--ds-background-neutral-subtle, #F7F8F9);
+  --cp-bd-hover:        var(--ds-border-bold, #B3B9C4);
+  --cp-bd-table:        var(--ds-border, #DFE1E6);
 
   /* Interactive */
-  --cp-hover:           rgba(0,0,0,0.04);
-  --cp-press:           rgba(0,0,0,0.08);
-  --cp-focus-ring:      rgba(59,130,246,0.45);
+  --cp-hover:           var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
+  --cp-press:           var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14));
+  --cp-focus-ring:      var(--ds-border-focused, #388BFF);
 
   /* Brand */
-  --cp-blue:            var(--ds-text-brand, #3B82F6);
-  --cp-blue-text:       var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --cp-blue-link:       var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --cp-blue-wash:       rgba(59,130,246,0.08);
+  --cp-blue:            var(--ds-link, #0052CC);
+  --cp-blue-text:       var(--ds-link, #0052CC);
+  --cp-blue-link:       var(--ds-link, #0052CC);
+  --cp-blue-wash:       var(--ds-background-selected, #E9F2FE);
 
   /* Status */
-  --cp-ok:              var(--ds-text-success, var(--cp-success, #16A34A));
-  --cp-ok-bg:           rgba(22,163,74,0.08);
-  --cp-warn:            var(--ds-text-warning, var(--cp-warning, #D97706));
-  --cp-warn-bg:         rgba(217,119,6,0.08);
-  --cp-err:             var(--ds-text-danger, var(--cp-danger, #DC2626));
-  --cp-err-bg:          rgba(220,38,38,0.08);
-  --cp-err-text:        var(--ds-text-danger, var(--cp-danger, #DC2626));
+  --cp-ok:              var(--ds-text-success, #216E4E);
+  --cp-ok-bg:           var(--ds-background-success, #DFFCF0);
+  --cp-warn:            var(--ds-text-warning, #974F0C);
+  --cp-warn-bg:         var(--ds-background-warning, #FFF7D6);
+  --cp-err:             var(--ds-text-danger, #AE2A19);
+  --cp-err-bg:          var(--ds-background-danger, #FFEBE6);
+  --cp-err-text:        var(--ds-text-danger, #AE2A19);
 
   /* AI */
   --cp-ai-bg:           rgba(59,130,246,0.06);

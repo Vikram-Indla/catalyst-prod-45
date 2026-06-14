@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
+import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
 import { StageDrillDownDrawer } from './StageDrillDownDrawer';
 
@@ -40,7 +40,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
   const { user, loading } = useAuth();
   const [openStage, setOpenStage] = useState<{ value: string; label: string } | null>(null);
 
-  const { data: steps, isLoading: stepsLoading } = useActiveDemandProcessSteps();
+  const { data: steps, isLoading: stepsLoading } = useProcessSteps();
 
   const { data: countRows, isLoading: countsLoading } = useQuery({
     queryKey: ['stage-br-counts'],

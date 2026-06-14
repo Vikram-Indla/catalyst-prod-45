@@ -20,7 +20,7 @@ interface StatusRegistryTableProps {
 const CATEGORY_ORDER: StatusCategory[] = ['todo', 'in_progress', 'done'];
 
 const CAT_HEADER_BG: Record<StatusCategory, string> = {
-  todo:        'var(--ds-background-neutral-subtle, #F1F5F9)',
+  todo:        'var(--ds-background-neutral-subtle, #F7F8F9)',
   in_progress: 'var(--ds-background-information-subtle, #DEEBFF)',
   done:        'var(--ds-background-success-subtle, #E3FCEF)',
 };
@@ -80,7 +80,7 @@ function ConsumersCell({ consumers }: ConsumersCellProps) {
             background: 'var(--ds-surface-overlay, #FFFFFF)',
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
-            boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
             padding: '8px 12px',
             fontSize: 12,
             lineHeight: 1.6,
@@ -110,7 +110,7 @@ function TypeChips({ types }: { types: string[] }) {
   if (types.length === 0) {
     return (
       <span style={{
-        display: 'inline-block', fontSize: 11, fontWeight: 600,
+        display: 'inline-block', fontSize: 11, fontWeight: 500,
         border: '1px solid transparent', borderRadius: 3, padding: '1px 6px',
         background: 'var(--ds-background-neutral, #F1F2F4)',
         color: 'var(--ds-text-subtle, #505258)', whiteSpace: 'nowrap',
@@ -182,7 +182,7 @@ function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{
             width: 16, height: 16, borderRadius: 3, background: status.color, flexShrink: 0,
-            border: '1px solid rgba(9,30,66,0.14)', display: 'inline-block', verticalAlign: 'middle',
+            border: '1px solid var(--ds-border, #DFE1E6)', display: 'inline-block', verticalAlign: 'middle',
           }} />
           <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', fontVariantNumeric: 'tabular-nums' }}>
             {status.color}
@@ -202,7 +202,7 @@ function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
       <td style={{ fontSize: 14, padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border, #DFE1E6)', verticalAlign: 'middle' }}>
         {status.is_default && (
           <span style={{
-            fontSize: 11, fontWeight: 600,
+            fontSize: 11, fontWeight: 500,
             color: 'var(--ds-text-brand, #0C66E4)',
             background: 'var(--ds-background-selected, #E9F2FF)',
             borderRadius: 3, padding: '2px 6px', whiteSpace: 'nowrap',
@@ -268,14 +268,14 @@ function CategorySection({ category, statuses, consumersMap, onEdit, onDelete, d
   const headerColor = CAT_HEADER_COLOR[category];
 
   return (
-    <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6, marginBottom: 12, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
+    <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, marginBottom: 12, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
         aria-expanded={expanded}
         style={{
-          width: '100%', display: 'flex', alignItems: 'center', gap: 10,
-          padding: '10px 16px', background: headerBg, border: 'none',
+          width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 16px', background: headerBg, border: 'none',
           cursor: 'pointer', textAlign: 'left', borderBottom: expanded ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
         }}
       >

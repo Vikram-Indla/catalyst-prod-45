@@ -25,9 +25,9 @@ import {
   BrDescriptionSection,
   BrAttachmentsSection,
   BrLinkedItemsSection,
-  BrStatusSection,
   BrActivitySection,
 } from './sections';
+import { CatalystStatusPill } from '../shared/sections/CatalystStatusPill';
 import { CatalystSidebarDetails } from '../shared/sections/CatalystSidebarDetails';
 import { mapBrToIssueLike } from './sections/BrSidebarAdapter';
 import { CatalystQuickActions } from '../shared/sections';
@@ -144,7 +144,13 @@ export default function CatalystViewBusinessRequestV3({
         onStatusChange={(s) => updateField('status', s)}
         onClose={onClose}
         onDelete={() => {}}
-        statusPill={<BrStatusSection request={request} onUpdate={updateField} />}
+        statusPill={
+          <CatalystStatusPill
+            status={request?.process_step ?? null}
+            onStatusChange={(st) => updateField('process_step', st)}
+            issueType="Business Request"
+          />
+        }
         watchersChip={<WatchersChip issueKey={request?.request_key ?? null} />}
         improveDropdown={
           <ImproveIssueDropdown

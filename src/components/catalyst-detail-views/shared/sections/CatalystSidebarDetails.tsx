@@ -16,9 +16,7 @@
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DiscussTicketButton } from '@/components/catalyst-detail-views/shared/DiscussTicketButton';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Tooltip from '@atlaskit/tooltip';
 // AutomationIcon removed — jira-compare 2026-05-05: Automate button between
 // status pill and Improve Story is not present in Jira. Removed per Vikram directive.
@@ -26,10 +24,7 @@ import SettingsIcon from '@atlaskit/icon/core/settings';
 import { Heading } from '@/components/ads';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
-import Lozenge from '@atlaskit/lozenge';
 // jira-compare 2026-05-16 correction: FieldRow reverted to STACKED (column) layout
-import { useWorkflow } from '@/lib/workflows';
-import { StatusTransitionDropdown } from '@/components/workflow';
 import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './CatalystConfigureDrawer';
 
 /**
@@ -265,23 +260,6 @@ export function CatalystSidebarDetails({
         .filter(g => g.statuses.length > 0)
     : STATUS_OPTION_GROUPS;
 
-  const workflow = useWorkflow(issue?.issue_type);
-  const currentWorkflowState = workflow
-    ? workflow.states.find(s => s.name.toLowerCase() === statusValue.toLowerCase())
-      ?? workflow.states.find(s => s.id === statusValue.toLowerCase().replace(/[^a-z0-9]+/g, '_'))
-      ?? workflow.states.find(s => s.id === workflow.initialStateId)
-    : undefined;
-  // Phase E.2 (2026-04-18): map Catalyst status category → Atlaskit Lozenge
-  // appearance. Colours are locked to the 3-colour guardrail (CLAUDE.md §5):
-  // grey / blue / green. Atlaskit's default / inprogress / success tokens
-  // render those exact values.
-  const lozengeAppearance: 'default' | 'inprogress' | 'success' =
-    statusCategory === 'done'
-      ? 'success'
-      : statusCategory === 'in_progress'
-        ? 'inprogress'
-        : 'default';
-
   useEffect(() => { setLocalStatus(''); }, [itemId]);
 
   useEffect(() => {
@@ -327,14 +305,6 @@ export function CatalystSidebarDetails({
     invalidateIssue();
   }, [user, currentProfile, itemId, invalidateIssue]);
 
-  /* jira-compare follow-up (2026-05-02): Vikram directive — Status must
-     not appear in the right rail. Jira renders Status only as the
-     header pill under H1 (CatalystStatusPill). The rail-side Status
-     dropdown is suppressed here; the workflow + dropdown still mount
-     so legacy keyboard a11y bindings keep working, but the visible
-     trigger is hidden. To restore later, flip SHOW_RAIL_STATUS to true. */
-  const SHOW_RAIL_STATUS = false;
-
   return (
     <>
       {/* jira-compare 2026-05-05 (re-probe BAU-5609): Status pill + Improve Story
@@ -352,74 +322,6 @@ export function CatalystSidebarDetails({
           {issue?.issue_key && <DiscussTicketButton issueKey={issue.issue_key} variant="full" />}
         </div>
       )}
-      {SHOW_RAIL_STATUS && (workflow && currentWorkflowState ? (
-        <div style={{ marginBottom: 14 }}>
-          {/* jira-compare A2 (2026-04-28): label every right-rail field for
-              consistency with Sprint/Iteration / Assignee / Reporter / Labels. */}
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 4 }}>Status</div>
-          <StatusTransitionDropdown
-            issueType={issue?.issue_type ?? 'Defect'}
-            currentStateId={currentWorkflowState.id}
-            onTransition={(_targetStateId, transition) => {
-              const target = workflow.states.find(s => s.id === transition.to);
-              if (!target) return;
-              setLocalStatus(target.name);
-              onStatusChange(target.name);
-            }}
-          />
-        </div>
-      ) : (
-      <div style={{ marginBottom: 14 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 4 }}>Status</div>
-        <DropdownMenu
-          trigger={({ triggerRef, ...triggerProps }) => (
-            <button
-              ref={triggerRef as React.Ref<HTMLButtonElement>}
-              {...triggerProps}
-              type="button"
-              style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 4,
-                borderRadius: 3,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-                <Lozenge appearance={lozengeAppearance} isBold={lozengeAppearance !== 'default'}>{statusValue}</Lozenge>
-              </span>
-              <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #42526E)" />
-            </button>
-          )}
-        >
-          {sidebarDisplayGroups.map(group => (
-            <DropdownItemGroup key={group.category} title={group.groupLabel}>
-              {group.statuses.map((st: string) => (
-                <DropdownItem
-                  key={st}
-                  isSelected={statusValue === st}
-                  onClick={() => { setLocalStatus(st); onStatusChange(st); }}
-                >
-                  <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-                    <Lozenge
-                      appearance={
-                        (group.category as string) === 'done' ? 'success'
-                        : (group.category as string) === 'in_progress' ? 'inprogress'
-                        : 'default'
-                      }
-                      isBold
-                    >{st}</Lozenge>
-                  </span>
-                </DropdownItem>
-              ))}
-            </DropdownItemGroup>
-          ))}
-        </DropdownMenu>
-      </div>
-      ))}
 
       {/* ── Pinned fields section ────────────────────────────────────────
           Jira parity: when the user has pinned fields via Configure, they
@@ -427,8 +329,8 @@ export function CatalystSidebarDetails({
       {pinnedFields.length > 0 && (
         <div style={{ marginBottom: 8 }}>
           <div style={{
-            fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
-            textTransform: 'uppercase', letterSpacing: '0.06em',
+            fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+            letterSpacing: '0.06em',
             padding: '0 0 6px',
           }}>
             Pinned fields

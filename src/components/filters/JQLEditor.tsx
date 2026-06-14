@@ -1,4 +1,10 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from 'react';
 import { token } from '@atlaskit/tokens';
 import { getSuggestions, translate } from '@/lib/jql';
 import { JQLAutocompleteDropdown } from './JQLAutocompleteDropdown';
@@ -9,21 +15,126 @@ import type { Suggestion } from '@/lib/jql';
 interface Props {
   value: string;
   onChange: (jql: string) => void;
-  /** Called after debounce with the parsed filter descriptors */
   onFiltersChange?: (filters: ReturnType<typeof translate>) => void;
   placeholder?: string;
   autoFocus?: boolean;
   isInvalid?: boolean;
-  /** Show the filter count below the editor */
   showFilterCount?: boolean;
+  singleLine?: boolean;
   /**
    * Map of JQL field name → list of actual project values.
-   * When provided, value-state completions will surface these first
-   * (e.g. actual status names, assignee display names, label strings).
    * Keys must match JQL_FIELD_MAP keys: status, assignee, issuetype, etc.
    */
   valuePool?: Record<string, string[]>;
 }
+
+// ── Syntax highlighting ───────────────────────────────────────────────────────
+
+const KW_SET  = new Set(['AND','OR','NOT','ORDER BY','ORDER','BY','ASC','DESC']);
+const OP_SET  = new Set(['=','!=','<','>','<=','>=','IN','NOT IN','IS','IS NOT','WAS','CHANGED']);
+// Known JQL field names (lower-case keys from JQL_FIELD_MAP)
+const FIELD_RE = /^[a-zA-Z][a-zA-Z0-9_]*$/;
+
+type TokenKind = 'kw' | 'op' | 'field' | 'str' | 'fn' | 'punct' | 'plain';
+
+interface SynToken { start: number; end: number; kind: TokenKind }
+
+const KIND_COLOR: Record<TokenKind, string> = {
+  kw:    'var(--ds-text-information, #0052CC)',
+  field: 'var(--ds-text-success, #006644)',
+  op:    'var(--ds-text-discovery, #403294)',
+  str:   'var(--ds-text-danger, #AE2A19)',
+  fn:    'var(--ds-text-selected, #0C66E4)',
+  punct: 'var(--ds-text-subtle, #42526E)',
+  plain: 'var(--ds-text, #172B4D)',
+};
+
+function syntaxTokenize(src: string): SynToken[] {
+  const out: SynToken[] = [];
+  let i = 0;
+  const len = src.length;
+
+  while (i < len) {
+    // Whitespace
+    if (/\s/.test(src[i])) { i++; continue; }
+
+    // Quoted string
+    if (src[i] === '"') {
+      const start = i++;
+      while (i < len && src[i] !== '"') i++;
+      if (i < len) i++; // closing "
+      out.push({ start, end: i, kind: 'str' });
+      continue;
+    }
+
+    // Punctuation
+    if ('(),'.includes(src[i])) {
+      out.push({ start: i, end: i + 1, kind: 'punct' });
+      i++;
+      continue;
+    }
+
+    // Symbols (operators)
+    if ('!=<>'.includes(src[i])) {
+      const start = i;
+      while (i < len && '!=<>'.includes(src[i])) i++;
+      const word = src.slice(start, i).toUpperCase();
+      out.push({ start, end: i, kind: OP_SET.has(word) ? 'op' : 'plain' });
+      continue;
+    }
+
+    // Bare word
+    const start = i;
+    while (i < len && !/[\s=!<>(),"']/.test(src[i])) i++;
+    if (i === start) { i++; continue; }
+
+    const raw  = src.slice(start, i);
+    const up   = raw.toUpperCase();
+
+    // "ORDER BY" two-word keyword
+    if (up === 'ORDER') {
+      let j = i;
+      while (j < len && /\s/.test(src[j])) j++;
+      if (src.slice(j, j + 2).toUpperCase() === 'BY') {
+        out.push({ start, end: j + 2, kind: 'kw' });
+        i = j + 2;
+        continue;
+      }
+    }
+
+    let kind: TokenKind = 'plain';
+    if (KW_SET.has(up))                          kind = 'kw';
+    else if (OP_SET.has(up))                     kind = 'op';
+    else if (/^[a-zA-Z][a-zA-Z0-9_]*\(\)$/.test(raw)) kind = 'fn';
+    else if (FIELD_RE.test(raw))                 kind = 'field';
+
+    out.push({ start, end: i, kind });
+  }
+
+  return out;
+}
+
+function buildHighlightSpans(src: string): React.ReactNode[] {
+  const tokens = syntaxTokenize(src);
+  const nodes: React.ReactNode[] = [];
+  let cursor = 0;
+
+  for (const tok of tokens) {
+    if (tok.start > cursor) {
+      nodes.push(src.slice(cursor, tok.start));
+    }
+    nodes.push(
+      <span key={tok.start} style={{ color: KIND_COLOR[tok.kind] }}>
+        {src.slice(tok.start, tok.end)}
+      </span>
+    );
+    cursor = tok.end;
+  }
+  if (cursor < src.length) nodes.push(src.slice(cursor));
+  return nodes;
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export function JQLEditor({
   value,
@@ -33,122 +144,299 @@ export function JQLEditor({
   autoFocus,
   isInvalid,
   showFilterCount,
+  singleLine,
   valuePool,
 }: Props) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [suggestions, setSuggestions] = useState<SuggestionResult | null>(null);
-  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const validation = useJQLValidation(value);
+  const textareaRef  = useRef<HTMLTextAreaElement>(null);
+  const inputRef     = useRef<HTMLInputElement>(null);
+  const overlayRef   = useRef<HTMLDivElement>(null);
 
-  // Convert string[] valuePool into Suggestion[] format once per render
+  const [suggestions,  setSuggestions]  = useState<SuggestionResult | null>(null);
+  const [anchorRect,   setAnchorRect]   = useState<DOMRect | null>(null);
+  const [selectedIdx,  setSelectedIdx]  = useState(0);
+  const [focused,      setFocused]      = useState(false);
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const validation  = useJQLValidation(value);
+
+  // Reset selected index when suggestion list changes
+  useEffect(() => { setSelectedIdx(0); }, [suggestions]);
+
+  // Deduplicate and clean valuePool entries
   const resolvedPool: ValuePool | undefined = valuePool
     ? Object.fromEntries(
-        Object.entries(valuePool).map(([field, vals]) => [
-          field,
-          vals.map((v): Suggestion => ({ value: v })),
-        ])
+        Object.entries(valuePool).map(([field, vals]) => {
+          const seen = new Set<string>();
+          return [
+            field,
+            vals
+              .filter(v => { const k = v.trim(); return k && !seen.has(k) && seen.add(k); })
+              .map((v): Suggestion => ({ value: v.trim() })),
+          ];
+        })
       )
     : undefined;
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    onChange(newValue);
+  // Auto-quote a picked value if it contains spaces
+  function maybeQuote(v: string): string {
+    return v.includes(' ') ? `"${v}"` : v;
+  }
 
-    // Autocomplete — thread pool data for value-state completions
-    const cursor = e.target.selectionStart ?? newValue.length;
-    const result = getSuggestions(newValue, cursor, resolvedPool);
-    setSuggestions(result.items.length ? result : null);
-    setAnchorRect(e.target.getBoundingClientRect());
+  // Shared insert-suggestion logic for both textarea and input
+  const insertSuggestion = useCallback((picked: string, ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement | null>) => {
+    const el = ref.current;
+    if (!el) return;
+    const cursor    = el.selectionStart ?? value.length;
+    const before    = value.slice(0, cursor);
+    const after     = value.slice(cursor);
+    const wordStart = before.search(/[\w("]*$/);
+    const quoted    = maybeQuote(picked);
+    const newVal    = before.slice(0, wordStart) + quoted + ' ' + after;
+    onChange(newVal);
+    setSuggestions(null);
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = wordStart + quoted.length + 1;
+      el.setSelectionRange(pos, pos);
+    });
+  }, [value, onChange]);
 
-    // Debounce translation
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      onFiltersChange?.(translate(newValue));
-    }, 300);
-  }, [onChange, onFiltersChange]);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Submit on Ctrl+Enter / Cmd+Enter
+  // Shared keyDown handler for both branches
+  function sharedKeyDown(e: React.KeyboardEvent, ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement | null>) {
+    if (suggestions) {
+      const items = suggestions.items;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIdx(i => Math.min(i + 1, items.length - 1));
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIdx(i => Math.max(i - 1, 0));
+        return;
+      }
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        const item = items[selectedIdx];
+        if (item) {
+          e.preventDefault();
+          insertSuggestion(item.value, ref);
+          return;
+        }
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setSuggestions(null);
+        return;
+      }
+    }
+    // Ctrl/Cmd+Enter submits
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       setSuggestions(null);
       onFiltersChange?.(translate(value));
     }
-  }, [onFiltersChange, value]);
+  }
 
-  const handleSelect = useCallback((picked: string) => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const cursor = ta.selectionStart;
+  // Textarea handlers
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    onChange(newValue);
+    const cursor = e.target.selectionStart ?? newValue.length;
+    const result = getSuggestions(newValue, cursor, resolvedPool);
+    setSuggestions(result.items.length ? result : null);
+    setAnchorRect(e.target.getBoundingClientRect());
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => { onFiltersChange?.(translate(newValue)); }, 300);
+  }, [onChange, onFiltersChange]);
 
-    // Replace the word being typed at cursor position with the suggestion
-    const before = value.slice(0, cursor);
-    const after  = value.slice(cursor);
-    // Find start of current word
-    const wordStart = before.search(/[\w(]*$/);
-    const newVal = before.slice(0, wordStart) + picked + ' ' + after;
-    onChange(newVal);
-    setSuggestions(null);
-    // Move cursor to end of inserted text
-    requestAnimationFrame(() => {
-      ta.focus();
-      const pos = wordStart + picked.length + 1;
-      ta.setSelectionRange(pos, pos);
-    });
-  }, [value, onChange]);
+  const handleTextareaKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    sharedKeyDown(e, textareaRef);
+  }, [suggestions, selectedIdx, value, onFiltersChange, insertSuggestion]);
 
+  const handleTextareaSelect = useCallback((picked: string) => {
+    insertSuggestion(picked, textareaRef);
+  }, [insertSuggestion]);
+
+  // Scroll sync: overlay mirrors textarea scroll position
+  const syncScroll = useCallback(() => {
+    const ta  = textareaRef.current;
+    const ov  = overlayRef.current;
+    if (ta && ov) { ov.scrollTop = ta.scrollTop; ov.scrollLeft = ta.scrollLeft; }
+  }, []);
+
+  // Input (singleLine) handlers
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    onChange(newValue);
+    const cursor = e.target.selectionStart ?? newValue.length;
+    const result = getSuggestions(newValue, cursor, resolvedPool);
+    setSuggestions(result.items.length ? result : null);
+    setAnchorRect(e.target.getBoundingClientRect());
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => { onFiltersChange?.(translate(newValue)); }, 300);
+  }, [onChange, onFiltersChange]);
+
+  const handleInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    sharedKeyDown(e, inputRef);
+  }, [suggestions, selectedIdx, value, onFiltersChange, insertSuggestion]);
+
+  const handleInputSelect = useCallback((picked: string) => {
+    insertSuggestion(picked, inputRef);
+  }, [insertSuggestion]);
+
+  // Border colors
+  const hasServerErrors = !validation.valid && validation.errors.length > 0;
+  const borderBase  = (isInvalid || hasServerErrors)
+    ? token('color.border.danger')
+    : `var(--ds-border, #DFE1E6)`;
+  const borderFocus = token('color.border.focused');
+  const borderColor = focused ? borderFocus : borderBase;
+
+  // Filter count
   const filterCount = React.useMemo(() => {
     try { return translate(value).length; } catch { return 0; }
   }, [value]);
 
-  const hasServerErrors = !validation.valid && validation.errors.length > 0;
-  const borderColor = (isInvalid || hasServerErrors)
-    ? token('color.border.danger')
-    : `var(--ds-border, #DFE1E6)`;
+  // Shared inline styles for textarea/input text
+  const textStyle: React.CSSProperties = {
+    fontFamily: 'var(--ds-font-family-code, monospace)',
+    fontSize: 13,
+    lineHeight: 1.5,
+    color: singleLine ? token('color.text') : 'transparent',
+    caretColor: token('color.text'),
+  };
 
+  // ── singleLine branch ──────────────────────────────────────────────────────
+  if (singleLine) {
+    return (
+      <div style={{ position: 'relative', width: '100%' }}>
+        {/* Highlight overlay (absolute, behind input text) */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            padding: '0 12px',
+            height: 32,
+            lineHeight: '32px',
+            fontSize: 13,
+            fontFamily: 'var(--ds-font-family-code, monospace)',
+            whiteSpace: 'pre',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            borderRadius: 3,
+            color: token('color.text'),
+          }}
+        >
+          {buildHighlightSpans(value)}
+        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={handleInputChange}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          spellCheck={false}
+          style={{
+            position: 'relative',
+            width: '100%',
+            boxSizing: 'border-box',
+            height: 32,
+            padding: '0 12px',
+            ...textStyle,
+            color: 'transparent',
+            caretColor: token('color.text'),
+            background: `var(--ds-surface, #FFFFFF)`,
+            border: `2px solid ${borderColor}`,
+            borderRadius: 3,
+            outline: 'none',
+            transition: 'border-color 0.15s',
+          }}
+          onFocus={() => setFocused(true)}
+          onBlur={() => {
+            setFocused(false);
+            setTimeout(() => setSuggestions(null), 150);
+          }}
+          onKeyDown={handleInputKeyDown}
+        />
+        <JQLAutocompleteDropdown
+          result={suggestions}
+          anchorRect={anchorRect}
+          selectedIndex={selectedIdx}
+          onSelect={handleInputSelect}
+          onDismiss={() => setSuggestions(null)}
+        />
+      </div>
+    );
+  }
+
+  // ── multi-line branch ──────────────────────────────────────────────────────
   return (
     <div style={{ position: 'relative', width: '100%' }}>
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        autoFocus={autoFocus}
-        spellCheck={false}
-        rows={3}
-        style={{
-          width: '100%',
-          boxSizing: 'border-box',
-          resize: 'vertical',
-          padding: '8px 12px',
-          fontSize: 13,
-          fontFamily: 'var(--ds-font-family-monospace, monospace)',
-          lineHeight: 1.5,
-          color: token('color.text'),
-          background: `var(--ds-surface, #FFFFFF)`,
-          border: `2px solid ${borderColor}`,
-          borderRadius: 3,
-          outline: 'none',
-          transition: 'border-color 0.15s',
-        }}
-        onFocus={e => { (e.target as HTMLTextAreaElement).style.borderColor = token('color.border.focused'); }}
-        onBlur={e => {
-          (e.target as HTMLTextAreaElement).style.borderColor = borderColor;
-          // small delay so click on suggestion fires first
-          setTimeout(() => setSuggestions(null), 150);
-        }}
-      />
+      <div style={{ position: 'relative', width: '100%' }}>
+        {/* Highlight overlay */}
+        <div
+          ref={overlayRef}
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            padding: '8px 12px',
+            fontSize: 13,
+            fontFamily: 'var(--ds-font-family-code, monospace)',
+            lineHeight: 1.5,
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            borderRadius: 3,
+            color: token('color.text'),
+          }}
+        >
+          {buildHighlightSpans(value)}
+        </div>
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={handleChange}
+          onKeyDown={handleTextareaKeyDown}
+          onScroll={syncScroll}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          spellCheck={false}
+          rows={3}
+          style={{
+            position: 'relative',
+            width: '100%',
+            boxSizing: 'border-box',
+            resize: 'vertical',
+            padding: '8px 12px',
+            ...textStyle,
+            color: 'transparent',
+            caretColor: token('color.text'),
+            background: `var(--ds-surface, #FFFFFF)`,
+            border: `2px solid ${borderColor}`,
+            borderRadius: 3,
+            outline: 'none',
+            transition: 'border-color 0.15s',
+          }}
+          onFocus={() => setFocused(true)}
+          onBlur={() => {
+            setFocused(false);
+            setTimeout(() => setSuggestions(null), 150);
+          }}
+        />
+      </div>
 
       {showFilterCount && filterCount > 0 && (
-        <div style={{
-          marginTop: 4,
-          fontSize: 12,
-          color: token('color.text.subtlest'),
-        }}>
+        <div style={{ marginTop: 4, fontSize: 12, color: token('color.text.subtlest') }}>
           {filterCount} active {filterCount === 1 ? 'filter' : 'filters'}
-          {validation.isChecking && <span style={{ marginLeft: 8, color: token('color.text.subtlest') }}>Validating…</span>}
+          {validation.isChecking && (
+            <span style={{ marginLeft: 8, color: token('color.text.subtlest') }}>Validating…</span>
+          )}
         </div>
       )}
 
@@ -169,10 +457,28 @@ export function JQLEditor({
         </div>
       )}
 
+      {validation.warnings && validation.warnings.length > 0 && (
+        <div style={{ marginTop: 4 }}>
+          {validation.warnings.map((w, i) => (
+            <div key={i} style={{
+              fontSize: 12,
+              color: 'var(--ds-text-warning, #974F0C)',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 4,
+            }}>
+              <span aria-hidden>⚠</span>
+              <span>{w}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <JQLAutocompleteDropdown
         result={suggestions}
         anchorRect={anchorRect}
-        onSelect={handleSelect}
+        selectedIndex={selectedIdx}
+        onSelect={handleTextareaSelect}
         onDismiss={() => setSuggestions(null)}
       />
     </div>

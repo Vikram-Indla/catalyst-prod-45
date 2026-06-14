@@ -1,0 +1,6 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FB923C"></stop><stop offset="1" stop-color="#EA580C"></stop></linearGradient>
+  <linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.20"></stop><stop offset="0.55" stop-color="#fff" stop-opacity="0"></stop></linearGradient></defs>
+  <rect width="80" height="80" rx="18" fill="url(#bg)"></rect><rect width="80" height="80" rx="18" fill="url(#gl)"></rect>
+<g fill="#ffffff"><rect x="20" y="40" width="32" height="20"></rect><rect x="46" y="28" width="15" height="32" rx="2"></rect><rect x="20" y="36" width="4" height="5"></rect><rect x="27" y="36" width="4" height="5"></rect><rect x="34" y="36" width="4" height="5"></rect><rect x="41" y="36" width="4" height="5"></rect><rect x="46.5" y="24" width="3.5" height="5"></rect><rect x="52.5" y="24" width="3.5" height="5"></rect><rect x="58" y="24" width="3" height="5"></rect></g><path d="M28 60V50a6 6 0 0 1 12 0v10z" fill="url(#bg)"></path><rect x="50.5" y="38" width="6" height="7" rx="1" fill="url(#bg)"></rect>
+</svg>

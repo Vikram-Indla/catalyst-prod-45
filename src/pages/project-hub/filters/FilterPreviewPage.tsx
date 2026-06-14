@@ -54,6 +54,8 @@ import {
   type FacetOption,
 } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
 import { JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import { JQLEditor } from '@/components/filters/JQLEditor';
+import { useJQLValuePool } from '@/hooks/workhub/useJQLValuePool';
 import type { FilterCategory as JiraFilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { WorkItem } from '@/types/workItem.types';
 import FilterIconCore from '@atlaskit/icon/core/filter';
@@ -129,7 +131,7 @@ function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
     enabled: !!projectKey,
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const { data: rows } = await (supabase as any)
+      const { data: rows } = await supabase
         .from('ph_issues')
         .select(
           'issue_key, issue_type, status, status_category, assignee_account_id, assignee_display_name, reporter_account_id, reporter_display_name, priority, labels, sprint_release, sprint_name, resolution, severity, parent_key, parent_summary'
@@ -191,13 +193,13 @@ function useProjectMembers(projectKey: string | undefined): Member[] {
     enabled: !!projectKey,
     staleTime: 60 * 1000,
     queryFn: async () => {
-      const { data: project } = await (supabase as any)
+      const { data: project } = await supabase
         .from('projects')
         .select('id')
         .eq('key', projectKey)
         .maybeSingle();
       if (!project?.id) return [];
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from('project_members')
         .select('user_id, profiles!inner(id, full_name, avatar_url)')
         .eq('project_id', project.id)
@@ -264,6 +266,10 @@ export function FilterPreviewPage() {
   // Ask Caty inline bar — mirrors BacklogPage's setAskCatyOpen pattern
   const [askCatyOpen, setAskCatyOpen] = useState(false);
 
+  // JC-1: Basic/JQL mode toggle
+  const [filterMode, setFilterMode] = useState<'basic' | 'jql'>('basic');
+  const [jqlText, setJqlText] = useState('');
+
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -299,6 +305,7 @@ export function FilterPreviewPage() {
   const linkedEntities = useLinkedEntities(savedFilterId);
   const facetItems = useProjectFacetItems(projectKey);
   const members = useProjectMembers(projectKey);
+  const jqlValuePool = useJQLValuePool(facetItems, projectKey);
 
   // Load saved filter when navigated from FiltersListPage with ?filterId=
   const { data: loadedFilter } = useQuery({
@@ -306,7 +313,7 @@ export function FilterPreviewPage() {
     enabled: !!urlFilterId,
     staleTime: 60_000,
     queryFn: async () => {
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from('ph_saved_filters')
         .select('id, name, jql_query, filter_config, user_id, owner_id, subscriber_ids, viewers_config, editors_config, used_by_board_ids, is_shared, page, created_at, updated_at, hub_scope, health_status, description, starred_by_user_ids, last_used_at, use_count')
         .eq('id', urlFilterId)
@@ -342,11 +349,11 @@ export function FilterPreviewPage() {
   }, [facetItems]);
 
   // When a saved filter is loaded via ?filterId=, use its stored JQL directly.
-  // Otherwise derive JQL from the chip state.
-  const jql = useMemo(
-    () => savedFilterJql ?? filterStateToJql(filters, projectKey),
-    [savedFilterJql, filters, projectKey]
-  );
+  // In JQL mode, use the raw jqlText. Otherwise derive from chip state.
+  const jql = useMemo(() => {
+    if (filterMode === 'jql') return jqlText || filterStateToJql(filters, projectKey);
+    return savedFilterJql ?? filterStateToJql(filters, projectKey);
+  }, [filterMode, jqlText, savedFilterJql, filters, projectKey]);
 
   const { data, isLoading, isFetching } = useJqlResults(jql);
 
@@ -374,6 +381,23 @@ export function FilterPreviewPage() {
 
   const markDirty = useCallback(() => setIsDirty(true), []);
 
+  const switchToJql = useCallback(() => {
+    const current = savedFilterJql ?? filterStateToJql(filters, projectKey);
+    setJqlText(current);
+    setFilterMode('jql');
+  }, [savedFilterJql, filters, projectKey]);
+
+  const switchToBasic = useCallback(() => {
+    const parsed = jqlToFilterState(jqlText);
+    if (Object.keys(parsed).length > 0) {
+      setFilters({ ...EMPTY_FILTERS, ...parsed });
+      setSavedFilterJql(null);
+    } else if (jqlText.trim()) {
+      setSavedFilterJql(jqlText.trim());
+    }
+    setFilterMode('basic');
+  }, [jqlText]);
+
   const updateFacet = (facet: string, next: string[]) => {
     setFilters(prev => ({ ...prev, [facet]: next }));
     setSavedFilterJql(null); // switch to chip-driven JQL once user modifies
@@ -389,7 +413,7 @@ export function FilterPreviewPage() {
   const openDetail = (key: string) =>
     useGlobalSearchStore.getState().openDetail({ id: key });
 
-  const avatarData = members.map((m) => ({ key: m.id, name: m.name, src: m.src ?? undefined }));
+  const avatarData = members.map((m) => ({ key: m.id, name: m.name, src: resolveAvatarUrl(m.src ?? null) ?? undefined }));
 
   // ── Save handlers ──────────────────────────────────────────────────────────
 
@@ -629,10 +653,10 @@ export function FilterPreviewPage() {
         <h1
           style={{
             margin: 0,
-            fontSize: 20,
+            fontSize: 24,
             fontWeight: 653,
             color: token('color.text', '#172B4D'),
-            lineHeight: '24px',
+            lineHeight: '28px',
           }}
         >
           {savedFilterName ?? 'Create filter'}
@@ -651,175 +675,257 @@ export function FilterPreviewPage() {
         />
       )}
 
-      {/* Toolbar — hidden when Caty bar is open, same as BacklogPage pattern */}
+      {/* Toolbar — hidden when Caty bar is open — Jira two-row layout */}
       <div
         style={{
           display: askCatyOpen ? 'none' : 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '32px 24px',
+          flexDirection: 'column',
           flexShrink: 0,
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-          flexWrap: 'nowrap',
-          overflow: 'visible',
         }}
       >
-        <AIIntelligenceButton
-          label="Ask Caty"
-          onClick={() => setAskCatyOpen(true)}
-          tooltip="Ask Caty about these results"
-        />
-
-        <div style={{ flex: 1, minWidth: 240, maxWidth: 640 }}>
-          <Textfield
-            isCompact
-            placeholder="Search list"
-            value={search}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setSearch(e.target.value);
-              markDirty();
-            }}
-            elemBeforeInput={
-              <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-                <AkSearchIcon label="" size="small" />
-              </span>
-            }
-            elemAfterInput={
-              search ? (
-                <button
-                  type="button"
-                  aria-label="Clear search"
-                  onClick={() => setSearch('')}
-                  style={{ display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#6B778C'), padding: '0 8px 0 4px' }}
-                >
-                  <AkCloseIcon label="" size="small" />
-                </button>
-              ) : undefined
-            }
+        {/* ── Row 1: Ask Caty · Basic/JQL toggle · search · chips · active chips ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 24px', flexWrap: 'nowrap', overflow: 'visible' }}>
+          <AIIntelligenceButton
+            label="Ask Caty"
+            onClick={() => setAskCatyOpen(true)}
+            tooltip="Ask Caty about these results"
           />
+
+          {/* JC-1: Basic / JQL toggle — Jira-style adjacent buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            <button
+              onClick={switchToBasic}
+              style={{
+                height: 32, padding: '0 8px', fontSize: 14,
+                fontWeight: filterMode === 'basic' ? 600 : 400,
+                border: `1px solid ${filterMode === 'basic' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
+                borderRight: filterMode === 'basic' ? `1px solid ${token('color.border.focused', '#388BFF')}` : 'none',
+                borderRadius: '3px 0 0 3px',
+                background: 'transparent',
+                color: filterMode === 'basic' ? token('color.link', '#0C66E4') : token('color.text', '#172B4D'),
+                cursor: 'pointer',
+              }}
+            >
+              Basic
+            </button>
+            <button
+              onClick={switchToJql}
+              style={{
+                height: 32, padding: '0 8px', fontSize: 14,
+                fontWeight: filterMode === 'jql' ? 600 : 400,
+                border: `1px solid ${filterMode === 'jql' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
+                borderRadius: '0 3px 3px 0',
+                background: 'transparent',
+                color: filterMode === 'jql' ? token('color.link', '#0C66E4') : token('color.text', '#172B4D'),
+                cursor: 'pointer',
+              }}
+            >
+              JQL
+            </button>
+          </div>
+
+          {filterMode === 'jql' ? (
+            /* JQL mode: single-line editor takes remaining width */
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <JQLEditor
+                value={jqlText}
+                onChange={v => { setJqlText(v); markDirty(); }}
+                singleLine
+                placeholder="project = BAU AND status in (Done) ORDER BY updated DESC"
+                valuePool={jqlValuePool}
+              />
+            </div>
+          ) : (
+            <>
+              {/* JC-4: compact search — fixed 200px, no flex expansion */}
+              <div style={{ width: 200, flexShrink: 0 }}>
+                <Textfield
+                  isCompact
+                  placeholder="Search work"
+                  value={search}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setSearch(e.target.value);
+                    markDirty();
+                  }}
+                  elemBeforeInput={
+                    <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
+                      <AkSearchIcon label="" size="small" />
+                    </span>
+                  }
+                  elemAfterInput={
+                    search ? (
+                      <Button
+                        appearance="subtle"
+                        spacing="compact"
+                        iconBefore={AkCloseIcon}
+                        onClick={() => setSearch('')}
+                        label="Clear search"
+                      />
+                    ) : undefined
+                  }
+                />
+              </div>
+
+              {/* JC-5: chip order — Assignee → Type → Status (Jira order) */}
+              <FilterChip
+                label={FACET_LABELS.assignee}
+                facet="assignee"
+                options={facetOptions.assignee ?? []}
+                selected={filters.assignee}
+                onToggle={v => toggleValue('assignee', v)}
+                onClear={() => updateFacet('assignee', [])}
+                isOpen={openChipKey === 'assignee'}
+                onOpenChange={open => setOpenChipKey(open ? 'assignee' : null)}
+                headline="Assignee = (equals)"
+              />
+              <FilterChip
+                label={FACET_LABELS.workType}
+                facet="workType"
+                options={facetOptions.workType ?? []}
+                selected={filters.workType}
+                onToggle={v => toggleValue('workType', v)}
+                onClear={() => updateFacet('workType', [])}
+                isOpen={openChipKey === 'workType'}
+                onOpenChange={open => setOpenChipKey(open ? 'workType' : null)}
+                headline="Type = (equals)"
+              />
+              <FilterChip
+                label={FACET_LABELS.status}
+                facet="status"
+                options={facetOptions.status ?? []}
+                selected={filters.status}
+                onToggle={v => toggleValue('status', v)}
+                onClear={() => updateFacet('status', [])}
+                isOpen={openChipKey === 'status'}
+                onOpenChange={open => setOpenChipKey(open ? 'status' : null)}
+                headline="Status = (equals)"
+              />
+
+              {/* JC-6: active filter chips — removable inline chips for each selected value */}
+              {(['assignee', 'workType', 'status'] as FilterFacet[]).flatMap(facet =>
+                filters[facet].map(val => {
+                  const opt = (facetOptions[facet] ?? []).find(o => o.value === val);
+                  const displayLabel = opt?.label ?? val;
+                  return (
+                    <span
+                      key={`${facet}:${val}`}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        height: 28, padding: '0 8px',
+                        borderRadius: 3,
+                        border: `1px solid ${token('color.border.focused', '#388BFF')}`,
+                        background: 'transparent',
+                        fontSize: 14,
+                        color: token('color.link', '#0C66E4'),
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                      }}
+                    >
+                      {FACET_LABELS[facet]}: {displayLabel}
+                      <button
+                        onClick={() => toggleValue(facet, val)}
+                        style={{ background: 'none', border: 'none', padding: '0 0 0 2px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'inherit', fontSize: 16, lineHeight: 1 }}
+                        aria-label={`Remove ${FACET_LABELS[facet]} ${displayLabel}`}
+                      >×</button>
+                    </span>
+                  );
+                })
+              )}
+            </>
+          )}
         </div>
 
-        <FilterChip
-          label={FACET_LABELS.workType}
-          facet="workType"
-          options={facetOptions.workType ?? []}
-          selected={filters.workType}
-          onToggle={v => toggleValue('workType', v)}
-          onClear={() => updateFacet('workType', [])}
-          isOpen={openChipKey === 'workType'}
-          onOpenChange={open => setOpenChipKey(open ? 'workType' : null)}
-          headline="Type = (equals)"
-        />
-        <FilterChip
-          label={FACET_LABELS.status}
-          facet="status"
-          options={facetOptions.status ?? []}
-          selected={filters.status}
-          onToggle={v => toggleValue('status', v)}
-          onClear={() => updateFacet('status', [])}
-          isOpen={openChipKey === 'status'}
-          onOpenChange={open => setOpenChipKey(open ? 'status' : null)}
-          headline="Status = (equals)"
-        />
-        <FilterChip
-          label={FACET_LABELS.assignee}
-          facet="assignee"
-          options={facetOptions.assignee ?? []}
-          selected={filters.assignee}
-          onToggle={v => toggleValue('assignee', v)}
-          onClear={() => updateFacet('assignee', [])}
-          isOpen={openChipKey === 'assignee'}
-          onOpenChange={open => setOpenChipKey(open ? 'assignee' : null)}
-          headline="Assignee = (equals)"
-        />
-        <FilterTriggerAndPopup
-          triggerLabel={`More filters${moreCount > 0 ? ` (${moreCount})` : ''}`}
-          isOpen={openChipKey === 'more'}
-          onOpenChange={open => setOpenChipKey(open ? 'more' : null)}
-          FilterIcon={FilterIcon}
-          renderContent={() => {
-            const categories: JiraFilterCategory[] = MORE_FILTERS_FACETS.map(f => ({
-              id: f,
-              label: FACET_LABELS[f],
-              options: (facetOptions[f] ?? []).map(o => ({ id: o.value, label: o.label })),
-            }));
-            const selected: Record<string, string[]> = {};
-            for (const f of MORE_FILTERS_FACETS) selected[f] = filters[f];
-            return (
-              <JiraBasicFilter
-                categories={categories}
-                selected={selected}
-                onSelectionChange={(categoryId, optionIds) => updateFacet(categoryId, optionIds)}
-                onClearAll={() => {
-                  const next = { ...filters };
-                  for (const f of MORE_FILTERS_FACETS) next[f] = [];
-                  setFilters(next);
-                  markDirty();
-                }}
-                onClose={() => setOpenChipKey(null)}
-              />
-            );
-          }}
-        />
+        {/* ── Row 2: More filters · Clear filters · spacer · count · kebab · Save as · Save filter ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 24px 8px', flexWrap: 'nowrap' }}>
+          <FilterTriggerAndPopup
+            triggerLabel={`More filters${moreCount > 0 ? ` (${moreCount})` : ''}`}
+            isOpen={openChipKey === 'more'}
+            onOpenChange={open => setOpenChipKey(open ? 'more' : null)}
+            FilterIcon={FilterIcon}
+            renderContent={() => {
+              const categories: JiraFilterCategory[] = MORE_FILTERS_FACETS.map(f => ({
+                id: f,
+                label: FACET_LABELS[f],
+                options: (facetOptions[f] ?? []).map(o => ({ id: o.value, label: o.label })),
+              }));
+              const selected: Record<string, string[]> = {};
+              for (const f of MORE_FILTERS_FACETS) selected[f] = filters[f];
+              return (
+                <JiraBasicFilter
+                  categories={categories}
+                  selected={selected}
+                  onSelectionChange={(categoryId, optionIds) => updateFacet(categoryId, optionIds)}
+                  onClearAll={() => {
+                    const next = { ...filters };
+                    for (const f of MORE_FILTERS_FACETS) next[f] = [];
+                    setFilters(next);
+                    markDirty();
+                  }}
+                  onClose={() => setOpenChipKey(null)}
+                />
+              );
+            }}
+          />
 
-        {totalCount > 0 && (
+          {totalCount > 0 && (
+            <Button
+              appearance="subtle"
+              onClick={() => {
+                setFilters(EMPTY_FILTERS);
+                markDirty();
+              }}
+            >
+              Clear filters
+            </Button>
+          )}
+
+          {avatarData.length > 0 && (
+            <AvatarGroup
+              appearance="stack"
+              size="small"
+              maxCount={4}
+              label="Assignees"
+              data={avatarData}
+              onAvatarClick={(_, member) => {
+                const id = (member as any).key as string;
+                toggleValue('assignee', id);
+              }}
+            />
+          )}
+
+          <div style={{ flex: 1 }} />
+
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
+            {isFetching && <Spinner size="small" />}
+            {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
+          </div>
+
+          {/* Kebab menu — only shown when a saved filter is loaded (has an id) */}
+          {savedFilterId && loadedFilter && (
+            <FilterKebabMenu
+              filter={loadedFilter as any}
+              currentUserId={currentUserId}
+              rows={items}
+              isLoadingRows={isFetching}
+            />
+          )}
+
+          {/* JC-3: Save as — subtle button */}
+          {savedFilterId && (
+            <Button appearance="subtle" onClick={() => setSaveAsOpen(true)}>
+              Save as
+            </Button>
+          )}
+
+          {/* JC-3: Save filter — ADS canonical button */}
           <Button
             appearance="subtle"
-            onClick={() => {
-              setFilters(EMPTY_FILTERS);
-              markDirty();
-            }}
+            onClick={handleSaveClick}
+            isDisabled={!isDirty || updateFilter.isPending}
           >
-            Clear filters
+            {updateFilter.isPending ? 'Saving…' : 'Save filter'}
           </Button>
-        )}
-
-        {avatarData.length > 0 && (
-          <AvatarGroup
-            appearance="stack"
-            size="small"
-            maxCount={4}
-            label="Assignees"
-            data={avatarData}
-            onAvatarClick={(_, member) => {
-              const id = (member as any).key as string;
-              toggleValue('assignee', id);
-            }}
-          />
-        )}
-
-        <div style={{ flex: 1 }} />
-
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
-          {isFetching && <Spinner size="small" />}
-          {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
         </div>
-
-        {/* Kebab menu — only shown when a saved filter is loaded (has an id) */}
-        {savedFilterId && loadedFilter && (
-          <FilterKebabMenu
-            filter={loadedFilter as any}
-            currentUserId={currentUserId}
-            rows={items}
-            isLoadingRows={isFetching}
-          />
-        )}
-
-        {/* Save as — only shown when editing an existing filter (Jira parity) */}
-        {savedFilterId && (
-          <Button appearance="subtle" onClick={() => setSaveAsOpen(true)}>
-            Save as
-          </Button>
-        )}
-        {/* Save — disabled until user touches any filter or search */}
-        <Button
-          appearance="primary"
-          isDisabled={!isDirty}
-          isLoading={updateFilter.isPending}
-          onClick={handleSaveClick}
-        >
-          Save filter
-        </Button>
       </div>
 
       {/* Table — same container pattern as BacklogPage (padding:24px on wrapper) */}

@@ -13,7 +13,7 @@
  * Focus returns to trigger on close. menu items use role="menuitemradio".
  * Colors from ADS subtle-tier tokens (dark-mode safe).
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -22,7 +22,6 @@ import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
 
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
-import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { CatalystWorkflowModal } from '../workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
@@ -136,11 +135,39 @@ function groupCategoryToAppearance(cat: string): string {
  * SECTION 3: COMPONENT
  * ═══════════════════════════════════════════════════════════════════════════ */
 
+/** Converts a flat WorkflowStatusOption array → grouped format for the dropdown. */
+function buildGroupsFromOptions(
+  opts: Array<{ value: string; label: string; color_category: string }>,
+) {
+  const ORDER: Record<string, { label: string; idx: number }> = {
+    todo:        { label: 'TO DO',       idx: 0 },
+    in_progress: { label: 'IN PROGRESS', idx: 1 },
+    done:        { label: 'DONE',        idx: 2 },
+  };
+  const map = new Map<string, string[]>();
+  for (const o of opts) {
+    const cat = o.color_category ?? 'todo';
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat)!.push(o.value);
+  }
+  return [...map.entries()]
+    .sort((a, b) => (ORDER[a[0]]?.idx ?? 9) - (ORDER[b[0]]?.idx ?? 9))
+    .map(([cat, statuses]) => ({
+      category: cat,
+      groupLabel: ORDER[cat]?.label ?? cat.replace(/_/g, ' ').toUpperCase(),
+      statuses,
+    }));
+}
+
 interface CatalystStatusPillProps {
   status?: string | null;
   statusCategory?: string | null;
   onStatusChange?: (newStatus: string) => void;
   issueType?: string | null;
+  /** Injected workflow options (e.g. from CreateStoryModal). When provided,
+   *  these replace the hardcoded STATUS_OPTION_GROUPS and bypass transition
+   *  filtering so all options are selectable as a starting status. */
+  statusOptions?: Array<{ value: string; label: string; color_category: string }>;
 }
 
 export function CatalystStatusPill({
@@ -148,6 +175,7 @@ export function CatalystStatusPill({
   statusCategory,
   onStatusChange,
   issueType,
+  statusOptions,
 }: CatalystStatusPillProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
@@ -162,8 +190,15 @@ export function CatalystStatusPill({
     hasConfig,
   } = useIssueTypeWorkflow(issueType);
 
+  // Caller-injected options (e.g. from CreateStoryModal resolvedStatusOptions).
+  // When provided, these take precedence and bypass transition filtering.
+  const injectedGroups = useMemo(
+    () => (statusOptions && statusOptions.length > 0 ? buildGroupsFromOptions(statusOptions) : null),
+    [statusOptions],
+  );
+
   // Fall back to static list when no workflow is configured for this type
-  const activeGroups = hasConfig ? workflowGroups : STATUS_OPTION_GROUPS;
+  const activeGroups = injectedGroups ?? (hasConfig ? workflowGroups : STATUS_OPTION_GROUPS);
 
   const display    = status || 'Backlog';
   const appearance = statusToLozenge(display, statusCategory) as Appearance;
@@ -313,11 +348,13 @@ export function CatalystStatusPill({
             fontFamily: 'var(--cp-font-body)',
           }}
         >
-          {/* Status groups — driven by admin/workflows config, falls back to static list */}
+          {/* Status groups — injected options > workflow engine > static fallback */}
           {(() => {
-            const available = new Set(hasConfig ? getAvailableStatuses(status) : null);
+            const available = new Set(
+              !injectedGroups && hasConfig ? getAvailableStatuses(status) : null,
+            );
             return activeGroups.map((group) => {
-              const visibleStatuses = hasConfig
+              const visibleStatuses = !injectedGroups && hasConfig
                 ? group.statuses.filter((st) => available.has(st))
                 : group.statuses;
               if (visibleStatuses.length === 0) return null;
@@ -325,11 +362,10 @@ export function CatalystStatusPill({
                 <div key={group.category}>
                   <div
                     style={{
-                      padding: '8px 12px 4px',
+                      padding: '8px 8px 4px',
                       fontSize: 11,
-                      fontWeight: 700,
+                      fontWeight: 600,
                       color: token('color.text.subtlest', '#8590A2'),
-                      textTransform: 'uppercase',
                       letterSpacing: '0.06em',
                     }}
                   >
@@ -370,8 +406,8 @@ export function CatalystStatusPill({
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           width: '100%',
-                          height: 36,
-                          padding: '0 12px',
+                          height: 32,
+                          padding: '0 8px',
                           background: isSelected
                             ? token('color.background.selected', '#E9F2FF')
                             : 'transparent',
@@ -386,11 +422,10 @@ export function CatalystStatusPill({
                             display: 'inline-flex',
                             alignItems: 'center',
                             height: 20,
-                            padding: '0 7px',
+                            padding: '0 8px',
                             borderRadius: 3,
                             fontSize: 11,
-                            fontWeight: 700,
-                            textTransform: 'uppercase',
+                            fontWeight: 600,
                             letterSpacing: '0.06em',
                             background: bg,
                             color: fg,
@@ -434,8 +469,8 @@ export function CatalystStatusPill({
               alignItems: 'center',
               gap: 8,
               width: '100%',
-              height: 36,
-              padding: '0 12px',
+              height: 32,
+              padding: '0 8px',
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
@@ -468,8 +503,8 @@ export function CatalystStatusPill({
               alignItems: 'center',
               gap: 8,
               width: '100%',
-              height: 36,
-              padding: '0 12px',
+              height: 32,
+              padding: '0 8px',
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
@@ -486,21 +521,12 @@ export function CatalystStatusPill({
         document.body,
       )}
 
-      {issueType === 'Story' || !issueType ? (
-        <WorkflowViewerModal
-          isOpen={workflowViewerOpen}
+      {workflowViewerOpen && issueType && (
+        <CatalystWorkflowModal
+          issueTypeName={issueType as WorkItemType}
+          currentStatusName={status ?? undefined}
           onClose={() => setWorkflowViewerOpen(false)}
-          issueType={issueType}
-          currentStatus={status}
         />
-      ) : (
-        workflowViewerOpen && (
-          <CatalystWorkflowModal
-            issueTypeName={issueType as WorkItemType}
-            currentStatusName={status ?? undefined}
-            onClose={() => setWorkflowViewerOpen(false)}
-          />
-        )
       )}
     </>
   );

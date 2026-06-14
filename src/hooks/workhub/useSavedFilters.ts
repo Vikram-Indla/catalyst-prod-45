@@ -223,6 +223,8 @@ export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
   return useQuery({
     queryKey: FILTERS_QUERY_KEY(hubScope, projectKey),
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+
       let query = supabase
         .from('ph_saved_filters')
         .select('*, owner:profiles!ph_saved_filters_owner_id_fkey(id, full_name, avatar_url)')
@@ -232,11 +234,21 @@ export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
         query = query.in('hub_scope', [hubScope, 'both']);
       }
 
-      // Scope to the specific project when a key is provided.
-      // Includes global filters (project_key IS NULL) so shared/org-level filters
-      // remain visible within a project context.
+      // Scope to the specific project/product when a key is provided.
+      // Products scope by product_key; projects scope by project_key.
+      // Both include global (null) filters so org-level shared filters remain visible.
       if (projectKey) {
-        query = (query as any).or(`project_key.eq.${projectKey},project_key.is.null`);
+        if (hubScope === 'product') {
+          query = (query as any).or(`product_key.eq.${projectKey},product_key.is.null`);
+        } else {
+          query = (query as any).or(`project_key.eq.${projectKey},project_key.is.null`);
+        }
+      }
+
+      // Only return filters the current user owns or that are public (is_shared).
+      // Prevents filters from other hubs/owners leaking into Quick Filters dropdowns.
+      if (user) {
+        query = (query as any).or(`owner_id.eq.${user.id},is_shared.eq.true`);
       }
 
       const { data, error } = await query;

@@ -18,7 +18,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
-import { token } from '@atlaskit/tokens';
 
 import { supabase } from '@/integrations/supabase/client';
 import { BacklogPage } from '@/modules/project-work-hub/pages/BacklogPage.atlaskit';
@@ -26,6 +25,7 @@ import {
   useBusinessRequestsSource,
   type ProductInfo,
 } from '@/modules/project-work-hub/adapters/backlogDataSource';
+import { ProductHeaderChip } from '@/components/layout/ProductHeaderChip';
 
 // ─── Product resolution ──────────────────────────────────────────────────────
 
@@ -47,40 +47,6 @@ function useProductInfo(key: string | undefined) {
     })();
   }, [key]);
   return { product, loading };
-}
-
-// ─── Product chrome band ─────────────────────────────────────────────────────
-
-function ProductChromeHeader({ productCode, productName }: { productCode: string; productName: string }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0' }}>
-      <div style={{
-        width: 24, height: 24, borderRadius: 4, flexShrink: 0,
-        background: token('color.background.brand.bold', '#0052CC'),
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 11, fontWeight: 700, color: token('color.text.inverse', '#FFFFFF'),
-        fontFamily: 'var(--cp-font-body)',
-      }}>
-        {(productCode || '').slice(0, 2).toUpperCase()}
-      </div>
-      <span style={{
-        fontSize: 20, fontWeight: 500,
-        color: token('color.text', '#172B4D'),
-        lineHeight: '24px',
-        fontFamily: 'var(--cp-font-body)',
-      }}>
-        {productName}
-      </span>
-      <span style={{
-        fontSize: 12,
-        color: token('color.text.subtlest', '#626F86'),
-        fontFamily: 'var(--cp-font-mono)',
-        marginLeft: 4,
-      }}>
-        {productCode}
-      </span>
-    </div>
-  );
 }
 
 // ─── Page entry ──────────────────────────────────────────────────────────────
@@ -123,7 +89,7 @@ export default function ProductBacklogPage() {
   //   Labels      → 'labels'
   const adapterWithChrome = {
     ...adapter,
-    ChromeHeader: ProductChromeHeader,
+    ChromeHeader: ({ productCode }: { productCode: string; productName: string }) => <ProductHeaderChip productCode={productCode} />,
     allowedColumnIds: [
       'key',             // structural row identifier
       'request_type',    // modal: Work Type (rendered as "Type")

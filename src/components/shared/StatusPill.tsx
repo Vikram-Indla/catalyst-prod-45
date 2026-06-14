@@ -1,5 +1,11 @@
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 
+/**
+ * @deprecated Use `CatalystStatusPill` (interactive header pill) or the `StatusPill`
+ * from `@/components/shared/JiraTable/cells` (display-only table pill) instead.
+ * This component uses hardcoded rgb() colors and uppercase text that violate
+ * ADS token requirements. It has no callers outside this barrel export.
+ */
 interface StatusPillProps {
   value: string | null | undefined;
   label?: string;
@@ -33,7 +39,7 @@ export function StatusPill({ value, label }: StatusPillProps) {
     }}>
       <span style={{
         fontSize: '11px',
-        fontWeight: 700,
+        fontWeight: 653,
         lineHeight: '20px',
         color: 'rgb(41, 42, 46)',
         textTransform: 'uppercase',

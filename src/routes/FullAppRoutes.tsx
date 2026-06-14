@@ -6,6 +6,7 @@ function IssueRedirectToBrowse() {
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
 
+
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
@@ -53,10 +54,12 @@ const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsP
 const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 const BacklogDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogDetailPage"));
 const AllWorkDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/AllWorkDetailPage"));
+const TimelineDetailPageLazy = lazy(() => import("../pages/project-hub/timeline/TimelineDetailPage"));
 const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/FiltersListPage"));
 const RoadmapsListPageLazy = lazy(() => import("../pages/project-hub/roadmaps/RoadmapsListPage"));
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/FilterPreviewPage").then(m => ({ default: m.FilterPreviewPage })));
+const ProductFilterPreviewPageLazy = lazy(() => import("../pages/product-hub/filters/ProductFilterPreviewPage").then(m => ({ default: m.ProductFilterPreviewPage })));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
@@ -100,6 +103,7 @@ const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"
 const ProductBacklogPage = lazy(() => import("../pages/product-hub/ProductBacklogPage"));
 const ProductBacklogDetailPage = lazy(() => import("../pages/product-hub/InvestorJourneyDetailPage"));
 const ProductNativeBoardPage = lazy(() => import("../pages/product-hub/ProductNativeBoardPage"));
+const ProductBoardManagerPage = lazy(() => import("../pages/product-hub/ProductBoardManagerPage"));
 const ProductNativeAllWorkPage = lazy(() => import("../pages/product-hub/ProductNativeAllWorkPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
 const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("../pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
@@ -172,6 +176,7 @@ const FeatureBacklogPage = lazy(() => import("../modules/feature-backlog/pages/F
 const ProjectWorkspace = lazy(() => import("../pages/project/ProjectWorkspace"));
 const BoardView = lazy(() => import("../pages/project/BoardView"));
 const TimelineView = lazy(() => import("../pages/project/TimelineView"));
+const ProjectHubTimelinePage = lazy(() => import("../pages/project-hub/timeline/ProjectHubTimelinePage"));
 const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPage"));
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
@@ -443,7 +448,8 @@ export default function FullAppRoutes() {
         {/* Generic per-product routes — native product hub pages (2026-06-01) */}
         <Route path="/product-hub/:key/backlog/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductBacklogPage /></S></MG>} />
-        <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
+        <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><ProductBoardManagerPage /></S></MG>} />
+        <Route path="/product-hub/:key/boards/:boardId" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductNativeAllWorkPage /></S></MG>} />
 
@@ -452,7 +458,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
-        <Route path="/product-hub/:key/filters/create" element={<Navigate to="/product-hub/allwork?mode=create-filter" replace />} />
+        <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><ProductFilterPreviewPageLazy /></S></MG>} />
         {/* Global /product-hub/filters[/create] retired 2026-06-01 — filters are
             per-product. Anyone deep-linking to the old global path lands on the
             products listing. Per-product filters still live at /product-hub/:key/filters. */}
@@ -832,6 +838,9 @@ export default function FullAppRoutes() {
           <Route path="resources/:resourceId" element={<S><RouteRoleGuard><R360MemberDetailLazy /></RouteRoleGuard></S>} />
         </Route>
 
+        {/* /ads-validator — design governance audit viewer; aliased to canonical admin governance page */}
+        <Route path="/ads-validator" element={<Navigate to="/admin/governance" replace />} />
+
         {/* Admin v2 — deprecated 2026-05-09. Redirects to /admin/* canonical shell. */}
         <Route path="/admin/v2/*" element={<Navigate to="/admin/overview" replace />} />
 
@@ -893,7 +902,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/filters/:filterId" element={<S><FilterDetailPageLazy /></S>} />
         <Route path="/project-hub/filters" element={<S><FiltersListPageLazy /></S>} />
         <Route path="/project-hub/filters/create" element={<Navigate to="/project-hub" replace />} />
-        <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
+        <Route path="/project-hub/:key/timeline/:issueKey" element={<S><TimelineDetailPageLazy /></S>} />
+        <Route path="/project-hub/:key/timeline" element={<S><ProjectHubTimelinePage /></S>} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />

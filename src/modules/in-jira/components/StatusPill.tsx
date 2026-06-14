@@ -1,3 +1,8 @@
+/**
+ * @deprecated Uses Tailwind color utilities (bg-blue-100, bg-green-100, uppercase)
+ * which are banned by ADS-token-scanner. Callers in this module should migrate to
+ * the `StatusPill` from `@/components/shared/JiraTable/cells` for display-only use.
+ */
 import React from 'react';
 import { cn } from '@/lib/utils';
 

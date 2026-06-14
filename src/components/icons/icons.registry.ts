@@ -8,7 +8,7 @@
  * Single source of truth for resolving:
  *   • work-item-type id  → SVG asset URL (light + optional dark variant)
  *   • priority level     → SVG asset URL (light + optional dark variant)
- *   • project key        → avatar PNG asset URL
+ *   • project key        → avatar SVG asset URL
  *
  * Engineers MUST consume icons via this registry — never import from
  * src/assets/icons/** directly. The registry is the seam where:
@@ -59,7 +59,11 @@ import priorityNoneLight from '@/assets/icons/priority/none.svg?url';
 
 import priorityNoneDark from '@/assets/icons/priority/_dark/none.svg?url';
 
-// ─── PROJECT AVATARS ──────────────────────────────────────────────────
+// ─── PROJECT AVATARS — original branded PNGs (restored 2026-06-13) ───
+//
+// These are the original per-project icons as commissioned/uploaded.
+// They must NEVER be swapped for generic gradient SVGs — once a project
+// has its icon, it is permanent (no rotation, no substitution).
 
 import bauAvatar from '@/assets/icons/project-avatars/BAU.png?url';
 import dataAvatar from '@/assets/icons/project-avatars/DATA.png?url';
@@ -80,14 +84,70 @@ import simpAvatar from '@/assets/icons/project-avatars/SIMP.png?url';
 import ssAvatar from '@/assets/icons/project-avatars/SS.png?url';
 import tahAvatar from '@/assets/icons/project-avatars/TAH.png?url';
 
-import stockUfo from '@/assets/icons/project-avatars/_stock/ufo.png?url';
-import stockParrot from '@/assets/icons/project-avatars/_stock/parrot.png?url';
-import stockCoffee from '@/assets/icons/project-avatars/_stock/coffee.png?url';
-import stockHotDog from '@/assets/icons/project-avatars/_stock/hot-dog.png?url';
-import stockKoala from '@/assets/icons/project-avatars/_stock/koala.png?url';
-import stockFlask from '@/assets/icons/project-avatars/_stock/flask.png?url';
-import stockStormCloud from '@/assets/icons/project-avatars/_stock/storm-cloud.png?url';
-import stockYeti from '@/assets/icons/project-avatars/_stock/yeti.png?url';
+// ─── STOCK AVATARS — gradient SVGs for new/unknown projects only ──────
+//
+// Used ONLY when a project key is NOT in PROJECT_AVATAR_REGISTRY.
+// Never assigned to named projects — rotation is for genuinely new keys.
+
+import analyticsReporting from '@/assets/icons/project-avatars/analytics-reporting.svg?url';
+import apiIntegration from '@/assets/icons/project-avatars/api-integration.svg?url';
+import automationPipeline from '@/assets/icons/project-avatars/automation-pipeline.svg?url';
+import cloudInfrastructure from '@/assets/icons/project-avatars/cloud-infrastructure.svg?url';
+import customerPortal from '@/assets/icons/project-avatars/customer-portal.svg?url';
+import dataMigration from '@/assets/icons/project-avatars/data-migration.svg?url';
+import financeBudget from '@/assets/icons/project-avatars/finance-budget.svg?url';
+import icpProject from '@/assets/icons/project-avatars/icp-project.svg?url';
+import inspectionProject from '@/assets/icons/project-avatars/inspection-project.svg?url';
+import ipImplementation from '@/assets/icons/project-avatars/ip-implementation.svg?url';
+import irPlatform from '@/assets/icons/project-avatars/ir-platform.svg?url';
+import marketingCampaign from '@/assets/icons/project-avatars/marketing-campaign.svg?url';
+import mimWebsiteRevamp from '@/assets/icons/project-avatars/mim-website-revamp.svg?url';
+import mobileApp from '@/assets/icons/project-avatars/mobile-app.svg?url';
+import onboardingTraining from '@/assets/icons/project-avatars/onboarding-training.svg?url';
+import productRoadmap from '@/assets/icons/project-avatars/product-roadmap.svg?url';
+import researchDiscovery from '@/assets/icons/project-avatars/research-discovery.svg?url';
+import securityCompliance from '@/assets/icons/project-avatars/security-compliance.svg?url';
+import senaEiBau from '@/assets/icons/project-avatars/senaei-bau.svg?url';
+import tahommena from '@/assets/icons/project-avatars/tahommena.svg?url';
+
+// ─── PRODUCT PLACE ICONS (Saudi landmarks — 2026-06-13) ──────────────
+// 20 landmark SVGs used exclusively for product-line avatars.
+// NOT shared with project avatars (which use the project-avatars/ set).
+
+import placeKingdomCentre from '@/assets/icons/products/kingdom-centre.svg?url';
+import placeFaisaliah from '@/assets/icons/products/faisaliah.svg?url';
+import placeJeddahTower from '@/assets/icons/products/jeddah-tower.svg?url';
+import placeKafd from '@/assets/icons/products/kafd.svg?url';
+import placeMasmak from '@/assets/icons/products/masmak.svg?url';
+import placeDiriyah from '@/assets/icons/products/diriyah.svg?url';
+import placeNajdiTower from '@/assets/icons/products/najdi-tower.svg?url';
+import placeRoshan from '@/assets/icons/products/roshan.svg?url';
+import placeHegra from '@/assets/icons/products/hegra.svg?url';
+import placeElephantRock from '@/assets/icons/products/elephant-rock.svg?url';
+import placeFountain from '@/assets/icons/products/fountain.svg?url';
+import placeIthra from '@/assets/icons/products/ithra.svg?url';
+import placeNeom from '@/assets/icons/products/neom.svg?url';
+import placeWaterTower from '@/assets/icons/products/water-tower.svg?url';
+import placeTvTower from '@/assets/icons/products/tv-tower.svg?url';
+import placeFerris from '@/assets/icons/products/ferris.svg?url';
+import placeTuwaiq from '@/assets/icons/products/tuwaiq.svg?url';
+import placeOasis from '@/assets/icons/products/oasis.svg?url';
+import placeAsir from '@/assets/icons/products/asir.svg?url';
+import placeEdge from '@/assets/icons/products/edge.svg?url';
+
+// ─── HUB ICONS (SVG set — 2026-06-13) ────────────────────────────────
+
+import hubHomeUrl from '@/assets/icons/hubs/home.svg?url';
+import hubStrategyUrl from '@/assets/icons/hubs/strategy.svg?url';
+import hubIdeationUrl from '@/assets/icons/hubs/ideation.svg?url';
+import hubProductUrl from '@/assets/icons/hubs/product.svg?url';
+import hubProjectUrl from '@/assets/icons/hubs/project.svg?url';
+import hubReleaseUrl from '@/assets/icons/hubs/release.svg?url';
+import hubTestUrl from '@/assets/icons/hubs/test.svg?url';
+import hubIncidentUrl from '@/assets/icons/hubs/incident.svg?url';
+import hubTaskUrl from '@/assets/icons/hubs/tasks.svg?url';
+import hubPlanUrl from '@/assets/icons/hubs/plan.svg?url';
+import hubWikiUrl from '@/assets/icons/hubs/wiki.svg?url';
 
 // ═══════════════════════════════════════════════════════════════════════
 // PUBLIC TYPES
@@ -108,8 +168,26 @@ export type ProjectKey =
   | 'SS' | 'TAH';
 
 export type StockAvatarId =
-  | 'ufo' | 'parrot' | 'coffee' | 'hot-dog' | 'koala'
-  | 'flask' | 'storm-cloud' | 'yeti';
+  | 'analytics-reporting'
+  | 'api-integration'
+  | 'automation-pipeline'
+  | 'cloud-infrastructure'
+  | 'customer-portal'
+  | 'data-migration'
+  | 'finance-budget'
+  | 'icp-project'
+  | 'inspection-project'
+  | 'ip-implementation'
+  | 'ir-platform'
+  | 'marketing-campaign'
+  | 'mim-website-revamp'
+  | 'mobile-app'
+  | 'onboarding-training'
+  | 'product-roadmap'
+  | 'research-discovery'
+  | 'security-compliance'
+  | 'senaei-bau'
+  | 'tahommena';
 
 export interface WorkTypeMeta {
   id: WorkItemType;
@@ -181,7 +259,7 @@ export const PRIORITY_REGISTRY: Record<PriorityLevel, PriorityMeta> = {
 
 export const PROJECT_AVATAR_REGISTRY: Record<ProjectKey, ProjectAvatarMeta> = {
   BAU:  { key: 'BAU',  name: 'Senaei BAU',                  url: bauAvatar },
-  DATA: { key: 'DATA', name: 'DATA Project',                url: dataAvatar },
+  DATA: { key: 'DATA', name: 'Data Migration',              url: dataAvatar },
   DET:  { key: 'DET',  name: 'Digital Experience Team',     url: detAvatar },
   ESS:  { key: 'ESS',  name: 'Enterprise Shared Services',  url: essAvatar },
   FSM:  { key: 'FSM',  name: 'Field Service Management',    url: fsmAvatar },
@@ -200,16 +278,187 @@ export const PROJECT_AVATAR_REGISTRY: Record<ProjectKey, ProjectAvatarMeta> = {
   TAH:  { key: 'TAH',  name: 'Tahommena',                   url: tahAvatar },
 };
 
+// All 20 icons in rotation order — new projects cycle through this pool.
+// Order follows _index.json (project-named icons first, generic spares after).
+export const STOCK_AVATAR_IDS: readonly StockAvatarId[] = [
+  'senaei-bau',
+  'mim-website-revamp',
+  'ip-implementation',
+  'inspection-project',
+  'ir-platform',
+  'tahommena',
+  'icp-project',
+  'product-roadmap',
+  'data-migration',
+  'analytics-reporting',
+  'security-compliance',
+  'mobile-app',
+  'api-integration',
+  'cloud-infrastructure',
+  'customer-portal',
+  'marketing-campaign',
+  'finance-budget',
+  'automation-pipeline',
+  'onboarding-training',
+  'research-discovery',
+] as const;
+
 export const STOCK_AVATAR_REGISTRY: Record<StockAvatarId, string> = {
-  'ufo':         stockUfo,
-  'parrot':      stockParrot,
-  'coffee':      stockCoffee,
-  'hot-dog':     stockHotDog,
-  'koala':       stockKoala,
-  'flask':       stockFlask,
-  'storm-cloud': stockStormCloud,
-  'yeti':        stockYeti,
+  'analytics-reporting':  analyticsReporting,
+  'api-integration':      apiIntegration,
+  'automation-pipeline':  automationPipeline,
+  'cloud-infrastructure': cloudInfrastructure,
+  'customer-portal':      customerPortal,
+  'data-migration':       dataMigration,
+  'finance-budget':       financeBudget,
+  'icp-project':          icpProject,
+  'inspection-project':   inspectionProject,
+  'ip-implementation':    ipImplementation,
+  'ir-platform':          irPlatform,
+  'marketing-campaign':   marketingCampaign,
+  'mim-website-revamp':   mimWebsiteRevamp,
+  'mobile-app':           mobileApp,
+  'onboarding-training':  onboardingTraining,
+  'product-roadmap':      productRoadmap,
+  'research-discovery':   researchDiscovery,
+  'security-compliance':  securityCompliance,
+  'senaei-bau':           senaEiBau,
+  'tahommena':            tahommena,
 };
+
+// ═══════════════════════════════════════════════════════════════════════
+// ROTATION HELPER — deterministic stock icon for unknown project keys
+// ═══════════════════════════════════════════════════════════════════════
+
+/**
+ * Returns a stock avatar id for a project key not in PROJECT_AVATAR_REGISTRY.
+ * Uses a stable djb2-style hash so the same key always gets the same icon
+ * across renders and sessions. New projects cycle through all 20 icons.
+ */
+export function pickStockAvatarForKey(projectKey: string): StockAvatarId {
+  const hash = projectKey.split('').reduce((acc, c) => ((acc << 5) - acc) + c.charCodeAt(0), 0);
+  const index = Math.abs(hash) % STOCK_AVATAR_IDS.length;
+  return STOCK_AVATAR_IDS[index];
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// HUB ICON REGISTRY
+// ═══════════════════════════════════════════════════════════════════════
+
+export type HubKey =
+  | 'home' | 'strategy' | 'ideation' | 'product' | 'project'
+  | 'release' | 'test' | 'incident' | 'task' | 'plan' | 'wiki';
+
+export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
+  home:     hubHomeUrl,
+  strategy: hubStrategyUrl,
+  ideation: hubIdeationUrl,
+  product:  hubProductUrl,
+  project:  hubProjectUrl,
+  release:  hubReleaseUrl,
+  test:     hubTestUrl,
+  incident: hubIncidentUrl,
+  task:     hubTaskUrl,
+  plan:     hubPlanUrl,
+  wiki:     hubWikiUrl,
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// PRODUCT PLACE REGISTRY — Saudi landmark avatars for product lines
+// ═══════════════════════════════════════════════════════════════════════
+
+/** All 20 Saudi-landmark place slugs (kebab-case). */
+export type PlaceId =
+  | 'kingdom-centre'
+  | 'faisaliah'
+  | 'jeddah-tower'
+  | 'kafd'
+  | 'masmak'
+  | 'diriyah'
+  | 'najdi-tower'
+  | 'roshan'
+  | 'hegra'
+  | 'elephant-rock'
+  | 'fountain'
+  | 'ithra'
+  | 'neom'
+  | 'water-tower'
+  | 'tv-tower'
+  | 'ferris'
+  | 'tuwaiq'
+  | 'oasis'
+  | 'asir'
+  | 'edge';
+
+/** Rotation order for new products — most recognisable landmarks first. */
+export const STOCK_PLACE_IDS: readonly PlaceId[] = [
+  'kingdom-centre',
+  'kafd',
+  'jeddah-tower',
+  'faisaliah',
+  'ithra',
+  'masmak',
+  'diriyah',
+  'hegra',
+  'neom',
+  'elephant-rock',
+  'fountain',
+  'ferris',
+  'tuwaiq',
+  'oasis',
+  'asir',
+  'roshan',
+  'najdi-tower',
+  'water-tower',
+  'tv-tower',
+  'edge',
+] as const;
+
+export const STOCK_PLACE_REGISTRY: Record<PlaceId, string> = {
+  'kingdom-centre': placeKingdomCentre,
+  'faisaliah':      placeFaisaliah,
+  'jeddah-tower':   placeJeddahTower,
+  'kafd':           placeKafd,
+  'masmak':         placeMasmak,
+  'diriyah':        placeDiriyah,
+  'najdi-tower':    placeNajdiTower,
+  'roshan':         placeRoshan,
+  'hegra':          placeHegra,
+  'elephant-rock':  placeElephantRock,
+  'fountain':       placeFountain,
+  'ithra':          placeIthra,
+  'neom':           placeNeom,
+  'water-tower':    placeWaterTower,
+  'tv-tower':       placeTvTower,
+  'ferris':         placeFerris,
+  'tuwaiq':         placeTuwaiq,
+  'oasis':          placeOasis,
+  'asir':           placeAsir,
+  'edge':           placeEdge,
+};
+
+/**
+ * Maps known product codes to their assigned Saudi landmark.
+ * New products not listed here get a stable rotation via getProductAvatarUrl().
+ */
+export const KNOWN_PRODUCT_PLACES: Record<string, PlaceId> = {
+  INV: 'kingdom-centre', // Investor Journey Product → Kingdom Centre (finance landmark)
+};
+
+/**
+ * Returns the bundled SVG URL for a product code.
+ * Known products get their assigned landmark; unknown products get a stable
+ * djb2 rotation through all 20 — so the 21st product wraps back around.
+ */
+export function getProductAvatarUrl(productCode: string): string {
+  const upper = productCode.toUpperCase();
+  if (upper in KNOWN_PRODUCT_PLACES) {
+    return STOCK_PLACE_REGISTRY[KNOWN_PRODUCT_PLACES[upper]];
+  }
+  const hash = upper.split('').reduce((acc, c) => ((acc << 5) - acc) + c.charCodeAt(0), 0);
+  const index = Math.abs(hash) % STOCK_PLACE_IDS.length;
+  return STOCK_PLACE_REGISTRY[STOCK_PLACE_IDS[index]];
+}
 
 // ═══════════════════════════════════════════════════════════════════════
 // JIRA-SIDE NORMALIZATION

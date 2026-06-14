@@ -5,6 +5,7 @@ import type { SuggestionResult } from '@/lib/jql';
 interface Props {
   result: SuggestionResult | null;
   anchorRect: DOMRect | null;
+  selectedIndex?: number;
   onSelect: (value: string) => void;
   onDismiss: () => void;
 }
@@ -15,11 +16,24 @@ const TYPE_LABEL: Record<string, string> = {
   values:    'Values',
   functions: 'Functions',
   keywords:  'Keywords',
+  direction: 'Sort direction',
 };
 
-export function JQLAutocompleteDropdown({ result, anchorRect, onSelect, onDismiss }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
+// Subtle accent color per suggestion type (left border indicator)
+const TYPE_ACCENT: Record<string, string> = {
+  fields:    'var(--ds-text-success, #006644)',
+  operators: 'var(--ds-text-discovery, #403294)',
+  values:    'var(--ds-text-danger, #AE2A19)',
+  functions: 'var(--ds-text-selected, #0C66E4)',
+  keywords:  'var(--ds-text-information, #0052CC)',
+  direction: 'var(--ds-text-information, #0052CC)',
+};
 
+export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0, onSelect, onDismiss }: Props) {
+  const ref     = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Keyboard: Escape
   useEffect(() => {
     if (!result) return;
     function handleKey(e: KeyboardEvent) {
@@ -29,6 +43,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, onSelect, onDismis
     return () => document.removeEventListener('keydown', handleKey, true);
   }, [result, onDismiss]);
 
+  // Click-outside
   useEffect(() => {
     if (!result) return;
     function handleMouse(e: MouseEvent) {
@@ -38,62 +53,111 @@ export function JQLAutocompleteDropdown({ result, anchorRect, onSelect, onDismis
     return () => document.removeEventListener('mousedown', handleMouse);
   }, [result, onDismiss]);
 
+  // Scroll selected item into view
+  useEffect(() => {
+    if (!listRef.current) return;
+    const selected = listRef.current.querySelector<HTMLElement>('[data-sel="true"]');
+    selected?.scrollIntoView({ block: 'nearest' });
+  }, [selectedIndex]);
+
   if (!result || !result.items.length || !anchorRect) return null;
+
+  const accent = TYPE_ACCENT[result.type] ?? 'var(--ds-text-subtle, #42526E)';
+  const items  = result.items.slice(0, 12);
 
   const style: React.CSSProperties = {
     position: 'fixed',
-    top: anchorRect.bottom + 4,
-    left: anchorRect.left,
-    minWidth: Math.max(anchorRect.width, 200),
-    maxWidth: 360,
-    zIndex: 9000,
-    background: `var(--ds-surface-overlay, #FFFFFF)`,
-    border: `1px solid ${token('color.border')}`,
+    top:      anchorRect.bottom + 4,
+    left:     anchorRect.left,
+    minWidth: Math.max(anchorRect.width, 220),
+    maxWidth: 380,
+    zIndex:   9000,
+    background:   `var(--ds-surface-overlay, #FFFFFF)`,
+    border:       `1px solid ${token('color.border')}`,
     borderRadius: 4,
-    boxShadow: `var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15))`,
-    overflow: 'hidden',
+    boxShadow:    `var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15))`,
+    overflow:     'hidden',
+    display:      'flex',
+    flexDirection: 'column',
   };
 
   return (
     <div ref={ref} style={style} role="listbox" aria-label="JQL suggestions">
+      {/* Header */}
       <div style={{
-        padding: '4px 8px',
+        padding: '4px 10px',
         fontSize: 11,
         fontWeight: token('font.weight.semibold'),
-        color: token('color.text.subtlest'),
+        color:      accent,
         borderBottom: `1px solid ${token('color.border')}`,
         letterSpacing: '0.05em',
+        background: `var(--ds-background-neutral-subtle, #F7F8F9)`,
       }}>
         {TYPE_LABEL[result.type] ?? result.type}
       </div>
-      {result.items.slice(0, 12).map(item => (
-        <button
-          key={item.value}
-          role="option"
-          aria-selected={false}
-          onClick={() => onSelect(item.value)}
-          style={{
-            display: 'block',
-            width: '100%',
-            textAlign: 'left',
-            padding: '8px 12px',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: 13,
-            color: token('color.text'),
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))`; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
-        >
-          <span style={{ fontWeight: token('font.weight.medium') }}>{item.value}</span>
-          {item.description && (
-            <span style={{ marginLeft: 8, fontSize: 12, color: token('color.text.subtlest') }}>
-              {item.description}
-            </span>
-          )}
-        </button>
-      ))}
+
+      {/* Items */}
+      <div ref={listRef} style={{ overflowY: 'auto', maxHeight: 256 }}>
+        {items.map((item, idx) => {
+          const isSel = idx === selectedIndex;
+          return (
+            <button
+              key={item.value}
+              data-sel={isSel ? 'true' : undefined}
+              role="option"
+              aria-selected={isSel}
+              onMouseDown={e => e.preventDefault()} // prevent blur on click
+              onClick={() => onSelect(item.value)}
+              style={{
+                display:     'block',
+                width:       '100%',
+                textAlign:   'left',
+                padding:     '7px 12px',
+                background:  isSel
+                  ? `var(--ds-background-neutral, #F1F2F4)`
+                  : 'none',
+                border:        'none',
+                borderLeft:    isSel ? `3px solid ${accent}` : '3px solid transparent',
+                cursor:        'pointer',
+                fontSize:      13,
+                color:         token('color.text'),
+                transition:    'background 0.1s',
+              }}
+              onMouseEnter={e => {
+                if (!isSel) (e.currentTarget as HTMLButtonElement).style.background =
+                  `var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))`;
+              }}
+              onMouseLeave={e => {
+                if (!isSel) (e.currentTarget as HTMLButtonElement).style.background = 'none';
+              }}
+            >
+              <span style={{ fontWeight: token('font.weight.medium') }}>
+                {item.label ?? item.value}
+              </span>
+              {item.description && (
+                <span style={{ marginLeft: 8, fontSize: 12, color: token('color.text.subtlest') }}>
+                  {item.description}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Keyboard hint footer */}
+      <div style={{
+        padding:      '4px 10px',
+        borderTop:    `1px solid ${token('color.border')}`,
+        fontSize:     11,
+        color:        token('color.text.subtlest'),
+        background:   `var(--ds-background-neutral-subtle, #F7F8F9)`,
+        display:      'flex',
+        gap:          12,
+      }}>
+        <span>↑↓ navigate</span>
+        <span>↵ select</span>
+        <span>esc dismiss</span>
+      </div>
     </div>
   );
 }

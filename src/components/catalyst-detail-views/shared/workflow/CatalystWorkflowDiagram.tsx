@@ -13,7 +13,7 @@ const CAT_TEXT: Record<string, string> = {
   done:        'var(--ds-text-success, #006644)',
 };
 
-const NODE_W = 120;
+const NODE_W = 155;
 const NODE_H = 36;
 const H_GAP = 56;
 const V_GAP = 32;
@@ -304,7 +304,7 @@ export function CatalystWorkflowDiagram({
                 fill={isCurrent ? 'var(--ds-text-brand, #0052CC)' : textColor}
                 style={{ pointerEvents: 'none' }}
               >
-                {node.name.length > 16 ? `${node.name.slice(0, 15)}…` : node.name}
+                {node.name.length > 22 ? `${node.name.slice(0, 21)}…` : node.name}
               </text>
             </g>
           );
