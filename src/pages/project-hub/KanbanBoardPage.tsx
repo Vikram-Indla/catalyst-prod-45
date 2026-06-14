@@ -483,6 +483,17 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             transcript_chunks: transcriptSnapshot,
           })
           .eq('id', standupId);
+        /* Fire-and-forget the AI summary edge function. We don't await
+           it here — the user already clicked End standup and shouldn't
+           wait for Gemini. The summary lands in `standups.summary_md`
+           when ready; `summary_status` cycles pending → generating →
+           ready/failed for UI consumers. Skip when nothing was
+           captured (the function itself also short-circuits). */
+        if (transcriptSnapshot.length > 0) {
+          supabase.functions
+            .invoke('standup-summarize', { body: { standup_id: standupId } })
+            .catch((err) => console.error('[standup] summary invoke failed', err));
+        }
       } catch (err) {
         console.error('[standup] failed to close standups row', err);
       }
