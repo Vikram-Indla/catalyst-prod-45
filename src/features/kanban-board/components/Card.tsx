@@ -102,12 +102,16 @@ export const Card: React.FC<CardProps> = ({
         />
       ) : (
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 4 }}>
-          <p style={{
-            margin: 0, flex: 1, fontSize: 14, lineHeight: '20px', fontWeight: 400,
-            color: token('color.text', '#172B4D'),
-            display: '-webkit-box', WebkitLineClamp: SIZES.CARD_SUMMARY_LINES, WebkitBoxOrient: 'vertical',
-            overflow: 'hidden', wordBreak: 'break-word', paddingRight: hover ? 18 : 0,
-          }}>
+          <p
+            style={{
+              margin: 0, flex: 1, fontSize: 14, lineHeight: '20px', fontWeight: 400,
+              color: token('color.text', '#172B4D'),
+              display: '-webkit-box', WebkitLineClamp: SIZES.CARD_SUMMARY_LINES, WebkitBoxOrient: 'vertical',
+              overflow: 'hidden', wordBreak: 'break-word', paddingRight: hover ? 18 : 0,
+              cursor: onEditSummary ? 'text' : 'pointer',
+            }}
+            onDoubleClick={(e) => { if (onEditSummary) { e.stopPropagation(); setEditing(true); } }}
+          >
             {issue.summary}
           </p>
           {onEditSummary && hover && (
