@@ -645,7 +645,8 @@ function CatalystShellContent() {
   };
 
   // Determine sidebar based on workspaceType (single source of truth)
-  const renderSidebar = () => {
+  const renderSidebar = (mobileForceExpanded?: boolean) => {
+    const exp = mobileForceExpanded ?? sidebarExpanded;
     // Chat has its own self-contained sidebar (ConversationSidebar) — no shell sidebar here.
     if (location.pathname.startsWith("/chat")) {
       return null;
@@ -660,7 +661,7 @@ function CatalystShellContent() {
       // HomeSidebar now composes SidebarBase, so it shares the canonical
       // hub-rail props (expanded + onToggle) with every other panel —
       // identical density, active-state, and collapse behaviour.
-      return <HomeSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <HomeSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // Admin routes use AdminSidebarV2 — controlled by the global
@@ -668,40 +669,40 @@ function CatalystShellContent() {
     // When the sidebar is visible at all it renders at the full 240px, just
     // like every other hub sidebar. No more 64px icon-only mode.
     if (location.pathname.startsWith("/admin")) {
-      return <AdminSidebarV2 expanded={true} onToggle={cycleSidebarState} />;
+      return <AdminSidebarV2 expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // Full-screen issue view: show ProjectHub sidebar forced-collapsed
     if (isIssueFullPageRoute) {
-      return <ProjectHubSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <ProjectHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // Wiki sidebar
     if (isWikiRoute) {
-      return <WikiSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <WikiSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // ProductHub V5 sidebar (/product-hub/*) — checked before isProductRoute so
     // /product-hub/* doesn't fall through to ProductRoomSidebar (which gates on
     // isModuleEnabled('PRODUCT') and may return null).
     if (isProductHubRoute) {
-      return <ProductHubSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <ProductHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // ProjectHub V5 sidebar (/project-hub/*)
     if (isProjectHubRoute) {
-      return <ProjectHubSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <ProjectHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // ReleaseHub sidebar (new Release Management module)
     if (isReleaseHubRoute) {
-      return <ReleaseHubSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <ReleaseHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // IncidentHub sidebar
     if (isIncidentHubRoute) {
       return (
-        <IncidentHubSidebar expanded={true} onToggle={cycleSidebarState} />
+        <IncidentHubSidebar expanded={exp} onToggle={cycleSidebarState} />
       );
     }
 
@@ -709,7 +710,7 @@ function CatalystShellContent() {
     if (isReleasesRoute) {
       return (
         <ReleasesManagementSidebar
-          expanded={true}
+          expanded={exp}
           onToggle={cycleSidebarState}
         />
       );
@@ -718,43 +719,43 @@ function CatalystShellContent() {
     // Test Management sidebar (legacy)
     if (isTestsRoute) {
       return (
-        <TestManagementSidebar expanded={true} onToggle={cycleSidebarState} />
+        <TestManagementSidebar expanded={exp} onToggle={cycleSidebarState} />
       );
     }
 
     // Release route sidebar (Operations/Incidents)
     if (isReleaseRoute) {
       return (
-        <ReleaseRoomSidebar expanded={true} onToggle={cycleSidebarState} />
+        <ReleaseRoomSidebar expanded={exp} onToggle={cycleSidebarState} />
       );
     }
 
     // Ideation hub sidebar (/ideation/*) — peer hub, checked before Product
     // so the lifted Ideation surfaces don't fall through to ProductRoomSidebar.
     if (isIdeationRoute) {
-      return <IdeationSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <IdeationSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // Product route sidebar
     if (isProductRoute && isModuleEnabled("PRODUCT")) {
       return (
-        <ProductRoomSidebar expanded={true} onToggle={cycleSidebarState} />
+        <ProductRoomSidebar expanded={exp} onToggle={cycleSidebarState} />
       );
     }
 
     // PlanHub sidebar
     if (isPlanHubRoute) {
-      return <PlanHubSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <PlanHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // TaskHub sidebar
     if (isTaskHubRoute) {
-      return <TasksSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <TasksSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // TestHub sidebar
     if (isTestHubRoute) {
-      return <TestHubSidebar expanded={true} onToggle={cycleSidebarState} />;
+      return <TestHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // Use workspaceType to determine sidebar
@@ -765,7 +766,7 @@ function CatalystShellContent() {
             <UnifiedSidebar
               workspaceType="program"
               entityId={activeProgramId}
-              expanded={true}
+              expanded={exp}
               onToggle={cycleSidebarState}
               selectedQuarter={selectedQuarter}
               onQuarterChange={setSelectedQuarter}
@@ -787,7 +788,7 @@ function CatalystShellContent() {
             <ProjectSidebar
               projectId={effectiveProjectId}
               projectName={effectiveProjectName}
-              expanded={true}
+              expanded={exp}
               onToggle={cycleSidebarState}
             />
           );
@@ -804,7 +805,7 @@ function CatalystShellContent() {
       case "enterprise":
         // Always show enterprise sidebar for enterprise routes
         return (
-          <EnterpriseSidebar expanded={true} onToggle={cycleSidebarState} />
+          <EnterpriseSidebar expanded={exp} onToggle={cycleSidebarState} />
         );
 
       default:
@@ -988,7 +989,7 @@ function CatalystShellContent() {
           onClose={() => setMobileDrawerOpen(false)}
           returnFocusRef={mobileMenuTriggerRef}
         >
-          <Suspense fallback={null}>{renderSidebar()}</Suspense>
+          <Suspense fallback={null}>{renderSidebar(true)}</Suspense>
         </GlobalMobileDrawer>
       )}
 

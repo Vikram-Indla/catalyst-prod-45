@@ -79,7 +79,7 @@ export function CatyFabIcon({ size = 56, isDragging = false }: { size?: number; 
             x="350"
             y="293"
             textAnchor="middle"
-            fontFamily="'Sora', 'Atlassian Sans', system-ui, sans-serif"
+            fontFamily="var(--ds-font-family-body)"
             fontSize="84"
             fontWeight="800"
             fontStyle="italic"

@@ -19,7 +19,7 @@
 import React, {
   lazy, Suspense, useState, useCallback, useRef, useEffect, useMemo,
 } from 'react';
-import { ProductHeaderChip } from '@/components/layout/ProductHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -263,11 +263,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
       flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden',
       background: 'var(--cp-bg-elevated, #ffffff)',
     }}>
-      {/* Adopt canonical ProjectHeaderChip via product adapter — gets the
-          full action strip (Add people, meatball with Settings/Manage people/Star)
-          identical to /project-hub/:key/* surfaces. Per CLAUDE.md "Adopt
-          canonical components" rule (2026-06-01). */}
-      <ProductHeaderChip productCode={productCode} />
+      <ProjectPageHeader projectKey={productCode} hubType="product" />
 
       {/* Filter context banner */}
       {(activeFilter || isCreateMode) && (

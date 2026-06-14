@@ -1,0 +1,11 @@
+/* Kanban board — scrollbar styling. Scoped to feature classnames. */
+.kb-column-body { scrollbar-width: none; }
+.kb-column-body::-webkit-scrollbar { width: 0; display: none; }
+
+.kb-board-scroll { scrollbar-width: thin; }
+.kb-board-scroll::-webkit-scrollbar { height: 8px; }
+.kb-board-scroll::-webkit-scrollbar-thumb { background-color: var(--ds-border, #C1C7D0); border-radius: 4px; }
+.kb-board-scroll::-webkit-scrollbar-track { background: transparent; }
+
+.kb-toolbar { scrollbar-width: none; }
+.kb-toolbar::-webkit-scrollbar { display: none; }

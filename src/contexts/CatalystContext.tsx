@@ -90,12 +90,10 @@ const SIDEBAR_STORAGE_KEYS = {
 
 function loadSidebarState(): { expanded: boolean; hidden: boolean } {
   try {
+    const expanded = localStorage.getItem(SIDEBAR_STORAGE_KEYS.expanded);
     const hidden = localStorage.getItem(SIDEBAR_STORAGE_KEYS.hidden);
-    // Icon-rail (expanded=false) has been removed — always expanded=true.
-    // Clear any stale expanded=false value so old sessions don't persist icon-rail.
-    localStorage.removeItem(SIDEBAR_STORAGE_KEYS.expanded);
     return {
-      expanded: true, // always — no icon-rail state
+      expanded: expanded === null ? false : expanded !== 'false',
       hidden: hidden === 'true',
     };
   } catch {
@@ -216,27 +214,22 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   //   3) Hidden (edge-reveal) → pin + show
   const cycleSidebarState = useCallback(() => {
     setSidebarState(prev => {
-      const isPinnedVisible = sidebarPinned && !prev.hidden && prev.expanded;
-      if (isPinnedVisible) {
-        // Case 1: close
-        setSidebarPinnedState(false);
-        try { localStorage.setItem('catalyst.sidebarPinned', 'false'); } catch { /* noop */ }
-        setSidebarHoverOpenState(false);
-        return { hidden: true, expanded: true };
-      }
-      // Cases 2 + 3: pin open. Clear hoverOpen so a subsequent mouseleave
-      // from the chevron doesn't race the pin state.
       setSidebarPinnedState(true);
       try { localStorage.setItem('catalyst.sidebarPinned', 'true'); } catch { /* noop */ }
       setSidebarHoverOpenState(false);
+      if (!prev.hidden && prev.expanded) {
+        // Expanded → Icon-only rail (icons + tooltips, no labels)
+        return { hidden: false, expanded: false };
+      }
+      // Icon-only OR hidden → Expanded full
       return { hidden: false, expanded: true };
     });
-  }, [sidebarPinned]);
+  }, []);
   // Persist sidebar state on every change — fire-and-forget, swallow quota
   // errors (private browsing, Safari ITP) without breaking the app.
   useEffect(() => {
     try {
-      // expanded is always true — don't persist it (avoid re-creating stale icon-rail state)
+      localStorage.setItem(SIDEBAR_STORAGE_KEYS.expanded, String(sidebarExpanded));
       localStorage.setItem(SIDEBAR_STORAGE_KEYS.hidden, String(sidebarHidden));
     } catch {
       // ignore — ephemeral preference, not worth surfacing

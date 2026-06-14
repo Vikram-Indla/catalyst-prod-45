@@ -4,7 +4,7 @@
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { AtlaskitPageShell } from '@/components/ads';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useParams } from 'react-router-dom';
 import {
   Columns3, Kanban, GanttChart,
@@ -112,7 +112,7 @@ export default function ProjectBoardPage() {
   return (
     <AtlaskitPageShell
       flush
-      chromeBand={key ? <ProjectHeaderChip projectKey={key} /> : null}
+      chromeBand={key ? <ProjectPageHeader projectKey={key} /> : null}
     >
       <div style={{ padding: '0 24px 16px' }}>
 

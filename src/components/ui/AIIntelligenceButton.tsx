@@ -134,7 +134,7 @@ export function AIIntelligenceButton({
     <div
       style={{
         display: 'inline-flex',
-        padding: 2,
+        padding: 1.2,
         borderRadius: 20,
         background: STATIC_RAINBOW,
       }}

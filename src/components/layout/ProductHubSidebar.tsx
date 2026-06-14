@@ -12,17 +12,19 @@
  * Dual-mode added 2026-05-16 so /product-hub/INV/* shows per-product nav.
  */
 
-import { token } from '@atlaskit/tokens';
 import {
   LayoutGrid,
-  LayoutDashboard,
-  ClipboardList,
-  Columns3,
-  Network,
-  ArrowLeft,
   Settings,
-  Filter,
+  GanttChart,
 } from '@/lib/atlaskit-icons';
+import { getProductAvatarUrl } from '@/components/icons';
+import {
+  NavDashboardIcon,
+  NavKanbanIcon,
+  NavBacklogIcon,
+  NavWorkIcon,
+  NavFiltersIcon,
+} from '@/lib/nav-icons';
 import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { useQuery } from '@tanstack/react-query';
@@ -44,7 +46,7 @@ interface ProductRow {
 const RESERVED_HUB_PATHS = new Set([
   'products', 'backlog', 'kanban', 'table', 'dashboard', 'roadmap',
   'roadmaps', 'roadmaps-v1', 'reports', 'cards', 'ideation',
-  'requirement-assist', 'req-assist',
+  'requirement-assist', 'req-assist', 'timeline',
 ]);
 
 function extractProductCode(pathname: string): string | null {
@@ -58,23 +60,21 @@ function extractProductCode(pathname: string): string | null {
 function buildPerProductConfig(product: ProductRow): SidebarConfig {
   const base = `/product-hub/${product.code}`;
   return {
-    badge: product.code.slice(0, 2),
+    badge: product.code,
     label: product.name,
+    badgeProjectKey: product.code,
+    badgeProjectAvatarUrl: getProductAvatarUrl(product.code),
+    badgeProjectColor: product.color,
     sections: [
       {
         title: '',
         items: [
-          { id: 'all-products', title: 'All Products', path: '/product-hub/products', icon: ArrowLeft, exact: true },
-        ],
-      },
-      {
-        title: 'Planning',
-        items: [
-          { id: 'dashboard', title: 'Product Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: true  },
-          { id: 'backlog',   title: 'Product Backlog',   path: `${base}/backlog`,   icon: ClipboardList,   exact: true  },
-          { id: 'allwork',   title: 'Product Work',      path: `${base}/allwork`,   icon: Network,         exact: false },
-          { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: Columns3,        exact: false },
-          { id: 'filters',   title: 'Product Filters',   path: `${base}/filters`,   icon: Filter,          exact: false },
+          { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: NavDashboardIcon, exact: false },
+          { id: 'boards',    title: 'Board',     path: `${base}/boards`,    icon: NavKanbanIcon,    exact: false },
+          { id: 'backlog',   title: 'Backlog',   path: `${base}/backlog`,   icon: NavBacklogIcon,   exact: false },
+          { id: 'allwork',   title: 'Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
+          { id: 'timeline',  title: 'Timeline',  path: `${base}/timeline`,  icon: GanttChart,       exact: false },
+          { id: 'filters',   title: 'Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
         ],
       },
     ],

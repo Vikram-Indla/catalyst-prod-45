@@ -52,6 +52,11 @@
   color: var(--c-chat-accent);
 }
 
+/* One-click quick reactions render the emoji glyph at full opacity */
+.c-hover-tb__quick {
+  font-size: 16px;
+}
+
 .c-hover-tb__divider {
   width: 1px;
   height: 16px;
@@ -89,6 +94,65 @@
 .c-emoji-picker__search:focus {
   border-color: var(--c-chat-focus);
   background: var(--c-chat-surface);
+}
+
+/* Category tab strip */
+.c-emoji-picker__tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--c-chat-border);
+}
+
+.c-emoji-picker__tab {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 80ms ease;
+}
+
+.c-emoji-picker__tab:hover {
+  background: var(--c-chat-hover-bg);
+}
+
+.c-emoji-picker__tab--active {
+  background: var(--c-chat-accent-subtle);
+}
+
+/* Scroll body holding labeled sections */
+.c-emoji-picker__body {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.c-emoji-picker__section {
+  margin-bottom: 8px;
+}
+
+.c-emoji-picker__section-label {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--c-chat-text-subtle);
+  padding: 4px 4px 0;
+}
+
+.c-emoji-picker__empty {
+  grid-column: 1 / -1;
+  padding: 16px 8px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--c-chat-text-subtle);
 }
 
 .c-emoji-picker__grid {
@@ -148,12 +212,153 @@
   background: var(--c-chat-hover-bg);
 }
 
+.c-more-menu__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.c-more-menu__hint {
+  flex: none;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ds-text-subtlest, #6B6E76);
+  margin-left: 8px;
+}
+
 .c-more-menu__item--danger {
   color: var(--ds-text-danger);
 }
 
 .c-more-menu__item--danger:hover {
   background: var(--ds-background-danger);
+}
+
+.c-more-menu__divider {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--c-chat-border);
+}
+
+/* ── Forward message modal ── */
+.c-forward-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10vh;
+  background: var(--ds-blanket, rgba(9, 30, 66, 0.54));
+}
+
+.c-forward-modal {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  max-height: 480px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  border: 1px solid var(--c-chat-border);
+  background: var(--c-chat-surface-raised);
+  box-shadow: 0 8px 28px var(--ds-shadow-overlay);
+  overflow: hidden;
+}
+
+.c-forward-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--c-chat-border);
+}
+
+.c-forward-modal__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--c-chat-text);
+}
+
+.c-forward-modal__close {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--c-chat-text-subtle);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.c-forward-modal__close:hover {
+  background: var(--c-chat-hover-bg);
+  color: var(--c-chat-text);
+}
+
+.c-forward-modal__search {
+  margin: 16px 16px 8px;
+  border: 1px solid var(--c-chat-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 20px;
+  background: var(--c-chat-surface-sunken);
+  color: var(--c-chat-text);
+  outline: none;
+  font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
+}
+
+.c-forward-modal__search:focus {
+  border-color: var(--c-chat-focus);
+  background: var(--c-chat-surface);
+}
+
+.c-forward-modal__preview {
+  margin: 0 16px 8px;
+  padding: 8px;
+  border-radius: 4px;
+  background: var(--c-chat-surface-sunken);
+  border: 1px solid var(--c-chat-border);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--c-chat-text-subtle);
+  max-height: 64px;
+  overflow: hidden;
+}
+
+.c-forward-modal__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 8px 8px;
+}
+
+.c-forward-modal__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--c-chat-text);
+}
+
+.c-forward-modal__item:hover {
+  background: var(--c-chat-hover-bg);
+}
+
+.c-forward-modal__empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--c-chat-text-subtle);
 }
 
 /* ── Delete confirmation panel ── */

@@ -6,6 +6,100 @@
   background: var(--c-chat-surface);
 }
 
+/* ── Master-detail split (wide viewport) ── */
+.c-activity--split {
+  display: flex;
+  min-width: 0;
+}
+
+.c-activity--split .c-activity__list {
+  flex: none;
+  width: 360px;
+  display: grid;
+  grid-template-rows: var(--c-chat-header-h) var(--c-chat-tabs-h) minmax(0, 1fr);
+  min-height: 0;
+  border-right: 1px solid var(--c-chat-border);
+}
+
+/* When not split, the list fills the surface (it IS the grid). */
+.c-activity:not(.c-activity--split) .c-activity__list {
+  display: contents;
+}
+
+/* ── Detail pane ── */
+.c-activity__detail {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--c-chat-surface);
+}
+
+.c-activity__detail-hdr {
+  flex: none;
+  height: var(--c-chat-header-h);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--c-chat-border);
+}
+
+.c-activity__detail-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--c-chat-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c-activity__open-full {
+  margin-left: auto;
+  flex: none;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--c-chat-accent);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 80ms ease;
+}
+
+.c-activity__open-full:hover {
+  background: var(--c-chat-hover-bg);
+  color: var(--c-chat-accent-hover);
+}
+
+.c-activity__detail-feed {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.c-activity__detail-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--c-chat-text-subtle);
+}
+
+.c-activity__detail-empty p {
+  font-size: 14px;
+  margin: 0;
+  text-align: center;
+}
+
 /* ── Header ── */
 .c-activity__hdr {
   height: var(--c-chat-header-h);
@@ -21,6 +115,28 @@
   line-height: 28px;
   color: var(--c-chat-text);
   margin: 0;
+}
+
+/* ── Mark all as read ── */
+.c-activity__mark-read {
+  margin-left: auto;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--c-chat-accent);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 80ms ease;
+}
+
+.c-activity__mark-read:hover {
+  background: var(--c-chat-hover-bg);
+  color: var(--c-chat-accent-hover);
 }
 
 /* ── Tab bar ── */
@@ -84,6 +200,17 @@
 
 .c-act-item[data-unread="true"]:hover {
   background: var(--c-chat-hover-bg);
+}
+
+/* Selected row in master-detail (list stays, source loads on the right). */
+.c-act-item[data-selected="true"],
+.c-act-item[data-selected="true"][data-unread="true"] {
+  background: var(--ds-background-selected, #E9F2FE);
+  box-shadow: inset 2px 0 0 0 var(--c-chat-accent);
+}
+
+.c-act-item[data-selected="true"]:hover {
+  background: var(--ds-background-selected, #E9F2FE);
 }
 
 .c-act-item__icon {

@@ -2,8 +2,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useConversations } from '@/hooks/chat/useConversations';
+import { MessageFeed } from '@/features/chat/components/feed/MessageFeed';
+import type { ChatConversation, ChatConversationKind } from '@/types/chat';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './activity.css';
+
+const db2 = supabase as unknown as { from: (t: string) => any };
+
+/** Single-pane fallback threshold per CLAUDE.md 2026-05-11 — measure window.innerWidth, not container width. */
+const MASTER_DETAIL_MIN_WIDTH = 720;
 
 // ── localStorage mark-as-read ──────────────────────────────────────────────
 
@@ -268,6 +276,72 @@ const TABS: { id: ActivityKind; label: string }[] = [
   { id: 'reaction', label: 'Reactions' },
 ];
 
+// ── Detail-pane conversation resolver ───────────────────────────────────────
+
+/**
+ * Resolve a ChatConversation for the detail pane. Mirrors ChatFullScreen:
+ * first try useConversations() by id; if not present (the caller may not be a
+ * member of every conversation that produced an activity row), fetch a minimal
+ * row from chat_conversations and map it. titleFallback comes from the clicked
+ * activity item so the header is never blank while resolving.
+ */
+function useDetailConversation(
+  convId: string | null,
+  titleFallback: string,
+): ChatConversation | null {
+  const { conversations } = useConversations();
+
+  const { data: fetched } = useQuery({
+    queryKey: ['chat', 'activity', 'detail-conv', convId],
+    enabled: !!convId,
+    staleTime: 60_000,
+    queryFn: async (): Promise<ConversationMinRow | null> => {
+      if (!convId) return null;
+      try {
+        const { data } = await db2
+          .from('chat_conversations')
+          .select('id, kind, ticket_key, project_key, title')
+          .eq('id', convId)
+          .maybeSingle();
+        return (data as ConversationMinRow) ?? null;
+      } catch {
+        return null;
+      }
+    },
+  });
+
+  return useMemo<ChatConversation | null>(() => {
+    if (!convId) return null;
+
+    const known = conversations.find(c => c.id === convId);
+    if (known) return known;
+
+    // Build a minimal ChatConversation. Unknown fields use neutral defaults
+    // (null / 0) per zero-assumption — never a typed domain fallback.
+    return {
+      id: convId,
+      kind: (fetched?.kind ?? 'channel') as ChatConversationKind,
+      ticketKey: fetched?.ticket_key ?? null,
+      ticketType: null,
+      projectKey: fetched?.project_key ?? null,
+      projectName: null,
+      title: fetched?.title || titleFallback || 'Conversation',
+      isArchived: false,
+      lastMessageAt: null,
+      lastMessagePreview: null,
+      unreadCount: 0,
+    };
+  }, [convId, conversations, fetched, titleFallback]);
+}
+
+interface ConversationMinRow {
+  id: string;
+  kind: ChatConversationKind | null;
+  ticket_key: string | null;
+  project_key: string | null;
+  title: string | null;
+}
+
 // ── ActivitySurface ────────────────────────────────────────────────────────
 
 interface Props {
@@ -282,6 +356,20 @@ export function ActivitySurface({ onOpenConversation, onUnreadCount, isActive = 
   const { user } = useAuth();
   const [tab, setTab] = useState<ActivityKind>('all');
   const [seenAt, setSeenAt] = useState<Date | null>(null);
+  const [selected, setSelected] = useState<{ conversationId: string; messageId?: string; title: string } | null>(null);
+
+  // Single-pane fallback below MASTER_DETAIL_MIN_WIDTH (window width, not container).
+  const [isWide, setIsWide] = useState(() => window.innerWidth >= MASTER_DETAIL_MIN_WIDTH);
+  useEffect(() => {
+    const h = () => setIsWide(window.innerWidth >= MASTER_DETAIL_MIN_WIDTH);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+
+  const resolvedConv = useDetailConversation(
+    isWide && selected ? selected.conversationId : null,
+    selected?.title ?? '',
+  );
 
   // Init seenAt from localStorage once user is known
   useEffect(() => {
@@ -320,11 +408,38 @@ export function ActivitySurface({ onOpenConversation, onUnreadCount, isActive = 
 
   const filtered = tab === 'all' ? enrichedItems : enrichedItems.filter(i => i.kind === tab);
 
-  return (
-    <div className="c-chat-activity c-activity" aria-label="Activity">
+  const hasUnread = enrichedItems.some(i => !i.isRead);
+
+  const handleMarkAllRead = () => {
+    if (!user?.id) return;
+    const now = new Date();
+    saveSeenAt(user.id, now);
+    setSeenAt(now);
+  };
+
+  // Wide layout: select the row in-place (list stays). Narrow: navigate away.
+  const handleRowOpen = (item: ActivityItem) => {
+    if (isWide) {
+      setSelected({ conversationId: item.conversationId, messageId: item.messageId, title: item.conversationTitle });
+    } else {
+      onOpenConversation(item.conversationId, item.messageId);
+    }
+  };
+
+  const list = (
+    <div className="c-activity__list">
       {/* Header */}
       <header className="c-activity__hdr">
         <h2 className="c-activity__title">Activity</h2>
+        {hasUnread && (
+          <button
+            type="button"
+            className="c-activity__mark-read"
+            onClick={handleMarkAllRead}
+          >
+            Mark all as read
+          </button>
+        )}
       </header>
 
       {/* Tabs */}
@@ -372,43 +487,102 @@ export function ActivitySurface({ onOpenConversation, onUnreadCount, isActive = 
         {!isLoading && filtered.length > 0 && (
           <>
             <div className="c-act-section">Recent</div>
-            {filtered.map(item => (
-              <div
-                key={item.id}
-                className="c-act-item"
-                data-unread={String(item.isRead === false)}
-                onClick={() => onOpenConversation(item.conversationId, item.messageId)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onOpenConversation(item.conversationId, item.messageId);
-                  }
-                }}
-                aria-label={`${item.actorName} ${KIND_LABEL[item.kind]} in ${item.conversationTitle}`}
-              >
-                <div className="c-act-item__icon" aria-hidden="true">
-                  {KIND_ICON[item.kind]}
-                </div>
-                <div className="c-act-item__body">
-                  <div className="c-act-item__meta">
-                    <span className="c-act-item__who">{item.actorName}</span>
-                    <span className="c-act-item__ts">{getRelativeTime(item.createdAt)}</span>
+            {filtered.map(item => {
+              const isSelected =
+                isWide &&
+                selected?.conversationId === item.conversationId &&
+                selected?.messageId === item.messageId;
+              return (
+                <div
+                  key={item.id}
+                  className="c-act-item"
+                  data-unread={String(item.isRead === false)}
+                  data-selected={String(isSelected)}
+                  onClick={() => handleRowOpen(item)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleRowOpen(item);
+                    }
+                  }}
+                  aria-label={`${item.actorName} ${KIND_LABEL[item.kind]} in ${item.conversationTitle}`}
+                  aria-current={isSelected ? 'true' : undefined}
+                >
+                  <div className="c-act-item__icon" aria-hidden="true">
+                    {KIND_ICON[item.kind]}
                   </div>
-                  <div className="c-act-item__where">
-                    {KIND_LABEL[item.kind]} in {item.conversationTitle}
-                  </div>
-                  {item.preview && (
-                    <div className="c-act-item__preview">
-                      {item.preview.length > 120 ? `${item.preview.slice(0, 120)}…` : item.preview}
+                  <div className="c-act-item__body">
+                    <div className="c-act-item__meta">
+                      <span className="c-act-item__who">{item.actorName}</span>
+                      <span className="c-act-item__ts">{getRelativeTime(item.createdAt)}</span>
                     </div>
-                  )}
+                    <div className="c-act-item__where">
+                      {KIND_LABEL[item.kind]} in {item.conversationTitle}
+                    </div>
+                    {item.preview && (
+                      <div className="c-act-item__preview">
+                        {item.preview.length > 120 ? `${item.preview.slice(0, 120)}…` : item.preview}
+                      </div>
+                    )}
+                  </div>
+                  {!item.isRead && <div className="c-act-item__dot" aria-label="Unread" />}
                 </div>
-                {!item.isRead && <div className="c-act-item__dot" aria-label="Unread" />}
-              </div>
-            ))}
+              );
+            })}
           </>
+        )}
+      </div>
+    </div>
+  );
+
+  // Narrow viewport: single pane (list only) — row click navigates away.
+  if (!isWide) {
+    return (
+      <div className="c-chat-activity c-activity" aria-label="Activity">
+        {list}
+      </div>
+    );
+  }
+
+  // Wide viewport: master-detail split (list stays + source in right pane).
+  return (
+    <div className="c-chat-activity c-activity c-activity--split" aria-label="Activity">
+      {list}
+      <div className="c-activity__detail">
+        {selected ? (
+          resolvedConv ? (
+            <>
+              <div className="c-activity__detail-hdr">
+                <span className="c-activity__detail-title">{resolvedConv.title}</span>
+                <button
+                  type="button"
+                  className="c-activity__open-full"
+                  onClick={() => onOpenConversation(selected.conversationId, selected.messageId)}
+                >
+                  Open full ↗
+                </button>
+              </div>
+              <div className="c-activity__detail-feed">
+                <MessageFeed
+                  key={selected.conversationId}
+                  conversationId={selected.conversationId}
+                  conversation={resolvedConv}
+                  onOpenThread={() => {}}
+                  initialMessageId={selected.messageId}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="c-activity__detail-empty">
+              <p>Loading…</p>
+            </div>
+          )
+        ) : (
+          <div className="c-activity__detail-empty">
+            <p>Select a notification to view it</p>
+          </div>
         )}
       </div>
     </div>

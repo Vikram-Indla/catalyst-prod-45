@@ -90,7 +90,7 @@ export default function ReplyComposer({
             style={{
               alignSelf: 'flex-start',
               display: 'inline-flex',
-              padding: 3,
+              padding: 1.8,
               borderRadius: 6,
               background: `conic-gradient(
                 from 0deg,

@@ -57,6 +57,12 @@ if (typeof document !== 'undefined') {
         background: var(--csp-bg);
         color: var(--csp-fg);
       }
+      .${PILL_CLASS}[data-csp-compact="true"] {
+        height: 24px;
+        padding: 0 6px;
+        font-size: 12px;
+        gap: 3px;
+      }
       .${PILL_CLASS}:hover,
       .${PILL_CLASS}[aria-expanded="true"] {
         filter: brightness(0.92);
@@ -168,6 +174,11 @@ interface CatalystStatusPillProps {
    *  these replace the hardcoded STATUS_OPTION_GROUPS and bypass transition
    *  filtering so all options are selectable as a starting status. */
   statusOptions?: Array<{ value: string; label: string; color_category: string }>;
+  /** When false, renders as static non-interactive pill (for table cells).
+   *  When true or omitted, renders interactive dropdown (default). */
+  interactive?: boolean;
+  /** When true, renders compact 24px height (table cells). Omit or false for 32px (default). */
+  compact?: boolean;
 }
 
 export function CatalystStatusPill({
@@ -176,6 +187,8 @@ export function CatalystStatusPill({
   onStatusChange,
   issueType,
   statusOptions,
+  interactive = true,
+  compact = false,
 }: CatalystStatusPillProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
@@ -299,6 +312,25 @@ export function CatalystStatusPill({
 
   // ── Render ──────────────────────────────────────────────────────────────
 
+  // Non-interactive mode: static pill (used in table cells)
+  if (!interactive) {
+    return (
+      <button
+        type="button"
+        className={PILL_CLASS}
+        data-testid="catalyst-status-pill-static"
+        data-csp-compact={compact ? 'true' : 'false'}
+        disabled
+        style={
+          { '--csp-bg': pillBg, '--csp-fg': pillFg, cursor: 'default', opacity: 1 } as React.CSSProperties
+        }
+      >
+        {display}
+      </button>
+    );
+  }
+
+  // Interactive mode: dropdown (default)
   return (
     <>
       <button
@@ -306,6 +338,7 @@ export function CatalystStatusPill({
         type="button"
         className={PILL_CLASS}
         data-testid="catalyst-status-pill-trigger"
+        data-csp-compact={compact ? 'true' : 'false'}
         aria-label={`Status: ${display}. Click to change.`}
         aria-expanded={isOpen}
         aria-haspopup="menu"

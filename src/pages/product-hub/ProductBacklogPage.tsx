@@ -25,7 +25,7 @@ import {
   useBusinessRequestsSource,
   type ProductInfo,
 } from '@/modules/project-work-hub/adapters/backlogDataSource';
-import { ProductHeaderChip } from '@/components/layout/ProductHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 // ─── Product resolution ──────────────────────────────────────────────────────
 
@@ -89,7 +89,7 @@ export default function ProductBacklogPage() {
   //   Labels      → 'labels'
   const adapterWithChrome = {
     ...adapter,
-    ChromeHeader: ({ productCode }: { productCode: string; productName: string }) => <ProductHeaderChip productCode={productCode} />,
+    ChromeHeader: ({ productCode }: { productCode: string; productName: string }) => <ProjectPageHeader projectKey={productCode} hubType="product" />,
     allowedColumnIds: [
       'key',             // structural row identifier
       'request_type',    // modal: Work Type (rendered as "Type")

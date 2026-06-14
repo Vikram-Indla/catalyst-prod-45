@@ -15,8 +15,7 @@
  */
 import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
-import { ProductHeaderChip } from '@/components/layout/ProductHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import Button from '@atlaskit/button/new';
 import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
@@ -1624,7 +1623,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
   /* ═══ RENDER ═══ */
 
   // Standup fullscreen mode: hides the global sidebar/header and the board's
-  // own ProjectHeaderChip + full KanbanToolbar, replaced by a minimal header
+  // own header + full KanbanToolbar, replaced by a minimal header
   // and toolbar inside this overlay.
   const standupFullscreen = showStandup && isStandupFullscreen;
 
@@ -1638,17 +1637,17 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
           }
         : { background: tk.pageBg }}
     >
-      {/* In fullscreen standup mode the canonical chip is replaced by a
+      {/* In fullscreen standup mode the canonical header is replaced by a
           minimal header rendered further down — hide it here. In normal
           mode, when a standup is active we wrap the chip in a row so the
           Maximize + End standup buttons sit at the far right of the title
           row (above the toolbar) — the toolbar itself stays untouched.
-          The chip itself is product- or project-scoped depending on
-          `isProduct`. */}
+          Normal (non-standup) project render uses the canonical
+          ProjectPageHeader (Vikram directive 2026-06-14). */}
       {!standupFullscreen && key && (
         showStandup ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            {isProduct ? <ProductHeaderChip productCode={key} /> : <ProjectHeaderChip projectKey={key} />}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            {isProduct ? <ProjectPageHeader projectKey={key} hubType="product" /> : <ProjectPageHeader projectKey={key} />}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 24 }}>
               <button
                 type="button"
@@ -1688,7 +1687,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             </div>
           </div>
         ) : (
-          isProduct ? <ProductHeaderChip productCode={key} /> : <ProjectHeaderChip projectKey={key} />
+          isProduct ? <ProjectPageHeader projectKey={key} hubType="product" /> : <ProjectPageHeader projectKey={key} />
         )
       )}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
@@ -1873,9 +1872,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {/* Reuse the canonical ProjectHeaderChip — it renders board
-                  name + add-people + meatball already. */}
-              {key && <ProjectHeaderChip projectKey={key} />}
+              {key && <ProjectPageHeader projectKey={key} hubType={isProduct ? 'product' : 'project'} paddingX={0} />}
             </div>
             {/* Fullscreen title row only carries the minimize button.
                 End standup lives in the toolbar to the right of Group. */}

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspens
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AtlaskitPageShell } from '@/components/ads';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ChevronUpIcon from '@atlaskit/icon/glyph/chevron-up';
@@ -23,7 +23,7 @@ import Tooltip from '@atlaskit/tooltip';
 import Avatar from '@atlaskit/avatar';
 import AvatarGroup from '@atlaskit/avatar-group';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import { DatePicker } from '@atlaskit/datetime-picker';
+import AkCalendar from '@atlaskit/calendar';
 import Checkbox from '@atlaskit/checkbox';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -171,7 +171,19 @@ function flattenTree(issues: TimelineIssue[], collapsed: Set<string>, depth = 0)
 
 /* ─────────────────────────────── bar color ─────────────────────────── */
 
+const JIRA_EPIC_COLORS = [
+  { label: 'Purple',  hex: '#8869AC' },
+  { label: 'Blue',    hex: '#3C6FBB' },
+  { label: 'Teal',    hex: '#3BAF85' },
+  { label: 'Green',   hex: '#65C170' },
+  { label: 'Yellow',  hex: '#F0C43F' },
+  { label: 'Orange',  hex: '#F79231' },
+  { label: 'Red',     hex: '#F04D44' },
+  { label: 'Pink',    hex: '#E74A8E' },
+];
+
 function barColor(issue: TimelineIssue): string {
+  if (issue.epicColor) return issue.epicColor;
   const cat = (issue.statusCategory ?? '').toLowerCase();
   if (cat.includes('done')) return 'var(--ds-background-success-bold, #1F845A)';
   if (cat.includes('progress')) return 'var(--ds-background-information-bold, #0055CC)';
@@ -341,6 +353,178 @@ function MenuItemRow({
       {label}
     </div>
   );
+}
+
+/* ─────────────────────────────── modal date field ──────────────────── */
+/* Date field for the Edit-dates modal. @atlaskit DatePicker's calendar uses
+   @atlaskit/popper, which collapses to viewport-origin (0,0) inside the modal's
+   overflow:hidden scroll container (CLAUDE.md 2026-06-13). This anchors
+   @atlaskit/calendar via the Popper-free PortalMenu instead — positions off the
+   trigger's getBoundingClientRect, immune to any overflow ancestor. */
+function ModalDateField({
+  value, onChange, placeholder, ariaLabel,
+}: {
+  value: string;
+  onChange: (iso: string) => void;
+  placeholder: string;
+  ariaLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const parsed = value ? new Date(value + 'T00:00:00') : null;
+  const validMonth = parsed && !isNaN(parsed.getTime());
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={ariaLabel}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', height: 40, padding: '0 8px', boxSizing: 'border-box',
+          border: `1px solid ${open ? 'var(--ds-border-focused, #388BFF)' : 'var(--ds-border-input, #DFE1E6)'}`,
+          borderRadius: 3, background: 'var(--ds-background-input, #FFFFFF)',
+          cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', textAlign: 'left',
+        }}
+      >
+        <span style={{ fontSize: 14, color: value ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #626F86)' }}>
+          {value || placeholder}
+        </span>
+        <span style={{ lineHeight: 0, color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0 }}>
+          <Calendar size={16} />
+        </span>
+      </button>
+      <PortalMenu isOpen={open} onClose={() => setOpen(false)} triggerRef={btnRef} minWidth={0}>
+        <AkCalendar
+          selected={value ? [value] : []}
+          defaultMonth={validMonth ? parsed!.getMonth() + 1 : undefined}
+          defaultYear={validMonth ? parsed!.getFullYear() : undefined}
+          onSelect={(e) => { onChange(e.iso); setOpen(false); }}
+        />
+      </PortalMenu>
+    </>
+  );
+}
+
+/* ─────────────────────────────── edit dates modal ──────────────────── */
+/* Shared by the sidebar row chip/menu AND the empty-row grid + button.
+   Owns its own draft state seeded from the issue; persists BOTH date fields
+   to ph_issues on Confirm. Single source — no duplicate modal. */
+function EditDatesModal({
+  issue, projectKey, queryClient, onClose,
+}: {
+  issue: TimelineIssue;
+  projectKey: string;
+  queryClient: ReturnType<typeof useQueryClient>;
+  onClose: () => void;
+}) {
+  const [startDate, setStartDate] = useState(issue.startDate ?? '');
+  const [dueDate, setDueDate] = useState(issue.dueDate ?? '');
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const updated = {
+          ...row.raw_json,
+          fields: { ...(row.raw_json.fields ?? {}), customfield_10015: startDate || null, duedate: dueDate || null },
+        };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
+        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+      }
+    } catch (err) {
+      console.warn('save dates failed:', err);
+    } finally {
+      setSaving(false);
+      onClose();
+    }
+  };
+
+  return (
+    <ModalTransition>
+      <Modal onClose={onClose} width="small">
+        <ModalHeader>
+          <ModalTitle>{issue.startDate || issue.dueDate ? 'Edit dates' : 'Add dates'}</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '6px 8px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3 }}>
+            <JiraIssueTypeIcon type={issue.issueType} size={14} />
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>{issue.issueKey}</span>
+            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.summary}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>Start date</label>
+              <ModalDateField value={startDate} onChange={setStartDate} placeholder="Select start date" ariaLabel="Start date" />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>Due date</label>
+              <ModalDateField value={dueDate} onChange={setDueDate} placeholder="Select due date" ariaLabel="Due date" />
+            </div>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={onClose} isDisabled={saving}>Cancel</Button>
+          <Button appearance="primary" onClick={handleSave} isDisabled={saving}>{saving ? 'Saving…' : 'Confirm'}</Button>
+        </ModalFooter>
+      </Modal>
+    </ModalTransition>
+  );
+}
+
+/* ─────────────────────────── empty-row add-dates lane ───────────────── */
+/* A dateless work item shows nothing on the grid. On row hover a dashed +
+   appears (near the today line); clicking it opens the add-dates modal. */
+function EmptyRowAdd({ rowTop, addLeft, onAdd }: { rowTop: number; addLeft: number; onAdd: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: 'absolute', top: rowTop, left: 0, right: 0, height: ROW_H, zIndex: 1 }}
+    >
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onAdd(); }}
+        aria-label="Add dates"
+        title="Add dates"
+        style={{
+          position: 'absolute', left: addLeft, top: (ROW_H - 24) / 2, width: 24, height: 24,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          border: '1px dashed var(--ds-border-bold, #8590A2)', borderRadius: 3,
+          background: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
+          color: 'var(--ds-text-subtle, #42526E)',
+          opacity: hovered ? 1 : 0, transition: 'opacity 120ms ease',
+          pointerEvents: hovered ? 'auto' : 'none',
+        }}
+      >
+        <EditorAddIcon label="" size="small" />
+      </button>
+    </div>
+  );
+}
+
+/* small date pill shown under a bar end on hover/drag */
+function dateLabelStyle(x: number, barTop: number, side: 'start' | 'end'): React.CSSProperties {
+  return {
+    position: 'absolute',
+    top: barTop + BAR_H + 3,
+    left: x,
+    transform: side === 'end' ? 'translateX(-100%)' : undefined,
+    fontSize: 10, fontWeight: 600, lineHeight: 1,
+    color: 'var(--ds-text-subtle, #44546F)',
+    background: 'var(--ds-surface-overlay, #FFFFFF)',
+    border: '1px solid var(--ds-border, #DFE1E6)',
+    borderRadius: 3, padding: '2px 5px',
+    whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 11,
+    boxShadow: '0 1px 3px var(--ds-shadow-overflow, rgba(9,30,66,0.12))',
+    fontFamily: 'var(--ds-font-family-body)',
+  };
 }
 
 /* ─────────────────────────────── inline empty overlay ──────────────── */
@@ -521,15 +705,22 @@ export default function ProjectHubTimelinePage() {
   });
 
   const [sidebarResizing, setSidebarResizing] = useState<{ originX: number; originWidth: number } | null>(null);
+  /* live DOM ref to the sidebar panel — width is mutated directly during drag
+     (no per-frame React re-render), mirroring the today-line pattern below.
+     React state (sidebarWidth) is committed only once, on mouseup. */
+  const sidebarPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sidebarResizing) return;
+    const clamp = (w: number) => Math.max(MIN_SIDEBAR_W, Math.min(MAX_SIDEBAR_W, w));
     const onMove = (e: MouseEvent) => {
-      const next = Math.max(MIN_SIDEBAR_W, Math.min(MAX_SIDEBAR_W, sidebarResizing.originWidth + e.clientX - sidebarResizing.originX));
-      setSidebarWidth(next);
+      const next = clamp(sidebarResizing.originWidth + e.clientX - sidebarResizing.originX);
+      /* real-time: write width straight to the panel — skips reconciliation of
+         the entire timeline tree (rows + bars + headers) that setState would trigger */
+      if (sidebarPanelRef.current) sidebarPanelRef.current.style.width = next + 'px';
     };
     const onUp = (e: MouseEvent) => {
-      const final = Math.max(MIN_SIDEBAR_W, Math.min(MAX_SIDEBAR_W, sidebarResizing.originWidth + e.clientX - sidebarResizing.originX));
+      const final = clamp(sidebarResizing.originWidth + e.clientX - sidebarResizing.originX);
       setSidebarWidth(final);
       setSidebarResizing(null);
       document.body.style.cursor = '';
@@ -577,14 +768,24 @@ export default function ProjectHubTimelinePage() {
     if (creatingEpic && epicInputRef.current) epicInputRef.current.focus();
   }, [creatingEpic]);
 
-  /* drag-to-resize bars */
+  /* drag-to-resize / drag-to-move bars */
   const [dragging, setDragging] = useState<{
     issueKey: string;
-    edge: 'start' | 'end';
+    edge: 'start' | 'end' | 'move';
     originX: number;
-    originalDate: string;
+    originalStart: string | null;
+    originalEnd: string | null;
   } | null>(null);
   const [livePixelDelta, setLivePixelDelta] = useState(0);
+  /* move-arming: body mousedown records this; a global listener promotes it to
+     a 'move' drag once the pointer passes a small threshold, so a plain click
+     still opens the detail view (click-vs-drag disambiguation). */
+  const moveArmRef = useRef<{ issueKey: string; startX: number; originalStart: string | null; originalEnd: string | null } | null>(null);
+  const suppressClickRef = useRef(false);
+  /* which bar is hovered → show start/end date labels at its ends */
+  const [hoveredBarKey, setHoveredBarKey] = useState<string | null>(null);
+  /* add-dates modal opened from the empty-row grid + button */
+  const [gridDatesIssue, setGridDatesIssue] = useState<TimelineIssue | null>(null);
 
   /* scroll sync refs */
   const gridRef = useRef<HTMLDivElement>(null);
@@ -770,31 +971,57 @@ export default function ProjectHubTimelinePage() {
   /* global cursor during bar drag */
   useEffect(() => {
     if (!dragging) return;
-    document.body.style.cursor = 'ew-resize';
+    document.body.style.cursor = dragging.edge === 'move' ? 'grabbing' : 'ew-resize';
     document.body.style.userSelect = 'none';
     return () => { document.body.style.cursor = ''; document.body.style.userSelect = ''; };
   }, [dragging]);
 
-  /* bar drag tracking + supabase commit */
+  /* move-arming: promote a body mousedown to a 'move' drag past a 4px threshold.
+     Keeps a plain click free to open the detail view. */
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const arm = moveArmRef.current;
+      if (!arm || dragging) return;
+      if (Math.abs(e.clientX - arm.startX) < 4) return;
+      suppressClickRef.current = true;
+      setDragging({ issueKey: arm.issueKey, edge: 'move', originX: arm.startX, originalStart: arm.originalStart, originalEnd: arm.originalEnd });
+      setLivePixelDelta(e.clientX - arm.startX);
+      moveArmRef.current = null;
+    };
+    const onUp = () => { moveArmRef.current = null; };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+  }, [dragging]);
+
+  /* bar drag tracking + supabase commit (start-edge / end-edge / whole-bar move) */
   useEffect(() => {
     if (!dragging) return;
     const onMove = (e: MouseEvent) => setLivePixelDelta(e.clientX - dragging.originX);
     const onUp = async (e: MouseEvent) => {
-      const deltaPx = e.clientX - dragging.originX;
-      const deltaDays = Math.round(deltaPx / pxPerDay);
+      const deltaDays = Math.round((e.clientX - dragging.originX) / pxPerDay);
+      const { issueKey, edge, originalStart, originalEnd } = dragging;
       setDragging(null);
       setLivePixelDelta(0);
       if (deltaDays === 0) return;
-      const original = parseDate(dragging.originalDate);
-      if (!original) return;
-      const newDate = addDays(original, deltaDays);
-      const formatted = newDate.toISOString().slice(0, 10);
-      const field = dragging.edge === 'start' ? 'customfield_10015' : 'duedate';
+      const iso = (d: string | null) => {
+        const base = parseDate(d);
+        return base ? addDays(base, deltaDays).toISOString().slice(0, 10) : null;
+      };
+      /* build the field patch per drag mode */
+      const patch: Record<string, string | null> = {};
+      if (edge === 'start') { const v = iso(originalStart); if (v) patch.customfield_10015 = v; }
+      else if (edge === 'end') { const v = iso(originalEnd); if (v) patch.duedate = v; }
+      else { // move — shift both ends that exist
+        if (originalStart) patch.customfield_10015 = iso(originalStart);
+        if (originalEnd) patch.duedate = iso(originalEnd);
+      }
+      if (Object.keys(patch).length === 0) return;
       try {
-        const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', dragging.issueKey).single();
+        const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issueKey).single();
         if (row?.raw_json) {
-          const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), [field]: formatted } };
-          await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', dragging.issueKey);
+          const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), ...patch } };
+          await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
           queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
         }
       } catch (err) { console.warn('timeline date update failed:', err); }
@@ -834,6 +1061,19 @@ export default function ProjectHubTimelinePage() {
 
   const collapseAll = useCallback(() => setCollapsed(new Set(parentKeys)), [parentKeys]);
   const expandAll = useCallback(() => setCollapsed(new Set()), []);
+
+  /* Default-collapsed on load: the timeline always opens showing only the top
+     hierarchy (Epics for ph_issues). Applies once per mount/project — so it
+     re-collapses on a hard refresh or project switch — but does NOT fight
+     in-session expand/collapse or React Query background refetches. */
+  const initialCollapseKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!projectKey) return;
+    if (initialCollapseKeyRef.current === projectKey) return;
+    if (parentKeys.length === 0) return; // tree not loaded yet
+    initialCollapseKeyRef.current = projectKey;
+    setCollapsed(new Set(parentKeys));
+  }, [projectKey, parentKeys]);
 
   const scrollToToday = useCallback(() => {
     if (!gridRef.current) return;
@@ -914,7 +1154,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
 
   if (isLoading) {
     return (
-      <AtlaskitPageShell flush chromeBand={<ProjectHeaderChip projectKey={projectKey} />}>
+      <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey={projectKey} />}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
           <Spinner size="large" />
         </div>
@@ -924,7 +1164,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
 
   if (error) {
     return (
-      <AtlaskitPageShell flush chromeBand={<ProjectHeaderChip projectKey={projectKey} />}>
+      <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey={projectKey} />}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
           <p style={{ color: 'var(--ds-text-danger, #AE2A19)', fontSize: 14 }}>Failed to load timeline data.</p>
         </div>
@@ -935,7 +1175,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
   const quickFilterActiveCount = (quickFilter || activeSavedFilterId) ? 1 : 0;
 
   return (
-    <AtlaskitPageShell flush chromeBand={<ProjectHeaderChip projectKey={projectKey} />}>
+    <AtlaskitPageShell flush chromeBand={<ProjectPageHeader projectKey={projectKey} />}>
     <div
       ref={containerRef}
       role="application"
@@ -1326,7 +1566,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
 
         {/* ── sidebar panel ── */}
         {!isNarrow && !sidebarHidden && (
-          <div style={{
+          <div ref={sidebarPanelRef} style={{
             width: sidebarWidth, flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
             {/* sidebar header */}
@@ -1575,10 +1815,6 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
             aria-label="Resize sidebar"
             aria-orientation="vertical"
             tabIndex={0}
-            onMouseDown={e => {
-              e.preventDefault();
-              setSidebarResizing({ originX: e.clientX, originWidth: sidebarWidth });
-            }}
             onKeyDown={e => {
               if (e.key === 'ArrowLeft') {
                 e.preventDefault();
@@ -1589,17 +1825,30 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
               }
             }}
             style={{
-              width: 4, flexShrink: 0, cursor: 'col-resize', outline: 'none',
+              /* 2px visual line — footprint stays thin; the grab area is the 8px overlay below */
+              width: 2, flexShrink: 0, position: 'relative', outline: 'none',
               background: sidebarResizing
                 ? 'var(--ds-background-selected-bold, #0052CC)'
                 : 'var(--ds-border, #DFE1E6)',
               transition: sidebarResizing ? 'none' : 'background 120ms ease',
             }}
             onFocus={e => { e.currentTarget.style.background = 'var(--ds-border-selected, #388BFF)'; }}
-            onBlur={e => { e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)'; }}
-            onMouseEnter={e => { if (!sidebarResizing) e.currentTarget.style.background = 'var(--ds-border-selected, #388BFF)'; }}
-            onMouseLeave={e => { if (!sidebarResizing) e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)'; }}
-          />
+            onBlur={e => { if (!sidebarResizing) e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)'; }}
+          >
+            {/* 8px transparent grab strip (Jira parity: ew-resize handle is 8px wide,
+                visual line is only 2px). Overlays both sides of the 2px line so it's
+                easy to grab without widening the divider's visual footprint. */}
+            <div
+              aria-hidden
+              onMouseDown={e => {
+                e.preventDefault();
+                setSidebarResizing({ originX: e.clientX, originWidth: sidebarWidth });
+              }}
+              onMouseEnter={e => { const p = e.currentTarget.parentElement; if (p && !sidebarResizing) p.style.background = 'var(--ds-border-selected, #388BFF)'; }}
+              onMouseLeave={e => { const p = e.currentTarget.parentElement; if (p && !sidebarResizing) p.style.background = 'var(--ds-border, #DFE1E6)'; }}
+              style={{ position: 'absolute', top: 0, bottom: 0, left: -3, width: 8, cursor: 'col-resize', zIndex: 1 }}
+            />
+          </div>
         )}
 
         {/* ── grid panel ── */}
@@ -1727,109 +1976,117 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                 const barTop = rowTop + (ROW_H - BAR_H) / 2;
 
                 const isThisDragging = dragging?.issueKey === issue.issueKey;
-                const deltaLeft = isThisDragging && dragging!.edge === 'start' ? livePixelDelta : 0;
-                const deltaWidth = isThisDragging ? (dragging!.edge === 'start' ? -livePixelDelta : livePixelDelta) : 0;
+                const dragEdge = isThisDragging ? dragging!.edge : null;
+                const deltaLeft = dragEdge === 'start' || dragEdge === 'move' ? livePixelDelta : 0;
+                const deltaWidth = dragEdge === 'start' ? -livePixelDelta : dragEdge === 'end' ? livePixelDelta : 0;
                 const finalLeft = baseLeft + deltaLeft;
                 const finalWidth = Math.max(MIN_BAR_W, baseWidth + deltaWidth);
 
-                const isEpic = issue.issueType === 'Epic';
-                const progress = isEpic && issue.children.length > 0 ? computeEpicProgress(issue) : null;
+                const borderColor = barColor(issue);
 
-                const tooltipContent = (
-                  <div>
-                    <div style={{ fontWeight: 600, marginBottom: 4 }}>{issue.issueKey}: {issue.summary}</div>
-                    <div style={{ opacity: 0.85 }}>{issue.startDate ?? '–'} → {issue.dueDate ?? '–'}</div>
-                    {issue.assigneeDisplayName && <div style={{ opacity: 0.85 }}>{issue.assigneeDisplayName}</div>}
-                    {progress && progress.total > 0 && (
-                      <div style={{ opacity: 0.85, fontSize: 11, marginTop: 4 }}>
-                        Done: {progress.done} · In Progress: {progress.inProgress} · To Do: {progress.toDo}
-                      </div>
-                    )}
-                    <div style={{ opacity: 0.55, fontSize: 10, marginTop: 4 }}>Drag edges to adjust dates</div>
-                  </div>
-                );
+                /* live date labels reflect the in-progress drag */
+                const liveDeltaDays = isThisDragging ? Math.round(livePixelDelta / pxPerDay) : 0;
+                const startShift = dragEdge === 'start' || dragEdge === 'move' ? liveDeltaDays : 0;
+                const endShift = dragEdge === 'end' || dragEdge === 'move' ? liveDeltaDays : 0;
+                const liveStartLabel = issue.startDate ? formatDateCompact(addDays(effectiveStart, startShift).toISOString().slice(0, 10)) : '';
+                const liveEndLabel = issue.dueDate ? formatDateCompact(addDays(effectiveEnd, endShift).toISOString().slice(0, 10)) : '';
+                const showLabels = hoveredBarKey === issue.issueKey || isThisDragging;
 
                 const bar = (
                   <div
                     role="gridcell"
                     aria-label={`${issue.issueKey} ${issue.startDate ?? 'no start'} to ${issue.dueDate ?? 'no due'}`}
-                    onClick={e => { if (!dragging) { e.stopPropagation(); openDetail(issue); } }}
+                    onMouseEnter={() => setHoveredBarKey(issue.issueKey)}
+                    onMouseLeave={() => setHoveredBarKey(k => (k === issue.issueKey ? null : k))}
+                    onMouseDown={e => {
+                      if (dragging) return;
+                      // arm a whole-bar move — promoted to a drag past the 4px threshold,
+                      // so a plain click still opens the detail view
+                      moveArmRef.current = { issueKey: issue.issueKey, startX: e.clientX, originalStart: issue.startDate, originalEnd: issue.dueDate };
+                    }}
+                    onClick={e => {
+                      if (suppressClickRef.current) { suppressClickRef.current = false; e.stopPropagation(); return; }
+                      if (!dragging) { e.stopPropagation(); navigate(`/project-hub/${projectKey}/timeline/${issue.issueKey}`); }
+                    }}
                     style={{
                       position: 'absolute', top: barTop, left: finalLeft, width: finalWidth, height: BAR_H,
                       borderRadius: BAR_RADIUS,
-                      background: progress && progress.total > 0 ? 'transparent' : barColor(issue),
-                      display: 'flex', alignItems: 'center', paddingLeft: 8, paddingRight: 8,
-                      overflow: 'hidden', cursor: isThisDragging ? 'default' : 'pointer',
+                      background: 'var(--ds-surface, #FFFFFF)',
+                      border: `2px solid ${borderColor}`,
+                      display: 'flex', alignItems: 'center', paddingLeft: 6, paddingRight: 6,
+                      overflow: 'hidden',
+                      cursor: isThisDragging ? (dragEdge === 'move' ? 'grabbing' : 'ew-resize') : 'grab',
                       zIndex: isThisDragging ? 10 : 2,
                       boxShadow: isThisDragging ? 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.3))' : 'none',
-                      opacity: isThisDragging ? 0.85 : 1,
+                      opacity: isThisDragging ? 0.9 : 1,
                       userSelect: 'none',
+                      boxSizing: 'border-box',
+                      transition: isThisDragging ? 'none' : 'left 140ms ease, width 140ms ease, box-shadow 120ms ease',
                     }}
                   >
-                    {/* segmented progress bar for epics */}
-                    {progress && progress.total > 0 && (
-                      <div
-                        role="progressbar"
-                        aria-valuenow={Math.round((progress.done / progress.total) * 100)}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        style={{ position: 'absolute', inset: 0, borderRadius: BAR_RADIUS, display: 'flex', overflow: 'hidden' }}
-                      >
-                        {progress.done > 0 && <div style={{ flex: progress.done, background: 'var(--ds-chart-success-bold, #94C748)', minWidth: 2 }} />}
-                        {progress.inProgress > 0 && <div style={{ flex: progress.inProgress, background: 'var(--ds-chart-information-bold, #8FB8F6)', minWidth: 2 }} />}
-                        {progress.toDo > 0 && <div style={{ flex: progress.toDo, background: 'var(--ds-background-neutral, #DDDEE1)', minWidth: 2 }} />}
-                      </div>
-                    )}
-
-                    {/* left drag handle */}
+                    {/* left resize handle */}
                     {issue.startDate && (
                       <div
                         onMouseDown={e => {
                           e.preventDefault(); e.stopPropagation();
-                          setDragging({ issueKey: issue.issueKey, edge: 'start', originX: e.clientX, originalDate: issue.startDate! });
+                          setDragging({ issueKey: issue.issueKey, edge: 'start', originX: e.clientX, originalStart: issue.startDate, originalEnd: issue.dueDate });
                           setLivePixelDelta(0);
                         }}
-                        style={{
-                          position: 'absolute', left: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize',
-                          background: 'var(--ds-border-inverse, rgba(255,255,255,0.22))',
-                          borderRadius: '3px 0 0 3px', zIndex: 1,
-                        }}
+                        style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize', zIndex: 3 }}
                       />
                     )}
 
-                    <span style={{
-                      fontSize: 11, fontWeight: 500,
-                      color: progress && progress.toDo === progress.total ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-inverse, #FFFFFF)',
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1, flex: 1,
-                      position: 'relative', zIndex: 2,
-                    }}>
-                      {issue.summary}
-                    </span>
+                    {finalWidth >= 60 && (
+                      <span style={{
+                        fontSize: 11, fontWeight: 500,
+                        color: 'var(--ds-text, #172B4D)',
+                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1, flex: 1,
+                        position: 'relative', zIndex: 2, pointerEvents: 'none',
+                      }}>
+                        {issue.summary}
+                      </span>
+                    )}
 
-                    {/* right drag handle */}
+                    {/* right resize handle */}
                     {issue.dueDate && (
                       <div
                         onMouseDown={e => {
                           e.preventDefault(); e.stopPropagation();
-                          setDragging({ issueKey: issue.issueKey, edge: 'end', originX: e.clientX, originalDate: issue.dueDate! });
+                          setDragging({ issueKey: issue.issueKey, edge: 'end', originX: e.clientX, originalStart: issue.startDate, originalEnd: issue.dueDate });
                           setLivePixelDelta(0);
                         }}
-                        style={{
-                          position: 'absolute', right: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize',
-                          background: 'var(--ds-border-inverse, rgba(255,255,255,0.22))',
-                          borderRadius: '0 3px 3px 0', zIndex: 1,
-                        }}
+                        style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize', zIndex: 3 }}
                       />
                     )}
                   </div>
                 );
 
-                return isThisDragging ? (
-                  <React.Fragment key={issue.issueKey}>{bar}</React.Fragment>
-                ) : (
-                  <Tooltip key={issue.issueKey} content={tooltipContent} position="top">
-                    {bar}
-                  </Tooltip>
+                return (
+                  <React.Fragment key={issue.issueKey}>
+                    <TimelineBarPopover issue={issue} disabled={isThisDragging}>
+                      {bar}
+                    </TimelineBarPopover>
+                    {showLabels && liveStartLabel && (
+                      <div style={dateLabelStyle(finalLeft, barTop, 'start')}>{liveStartLabel}</div>
+                    )}
+                    {showLabels && liveEndLabel && (
+                      <div style={dateLabelStyle(finalLeft + finalWidth, barTop, 'end')}>{liveEndLabel}</div>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+
+              {/* empty-row hover + → add dates (rows with no dates yet) */}
+              {!releasesCollapsed && rows.map(({ issue }, idx) => {
+                if (issue.startDate || issue.dueDate) return null;
+                const rowTop = (showReleases ? ROW_H : 0) + idx * ROW_H;
+                return (
+                  <EmptyRowAdd
+                    key={issue.issueKey + '_add'}
+                    rowTop={rowTop}
+                    addLeft={Math.max(8, Math.min(todayLeft, gridWidth - 32))}
+                    onAdd={() => setGridDatesIssue(issue)}
+                  />
                 );
               })}
 
@@ -1841,6 +2098,16 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
           </div>
         </div>
       </div>
+
+      {/* add-dates modal opened from an empty-row grid + button */}
+      {gridDatesIssue && (
+        <EditDatesModal
+          issue={gridDatesIssue}
+          projectKey={projectKey ?? ''}
+          queryClient={queryClient}
+          onClose={() => setGridDatesIssue(null)}
+        />
+      )}
 
       <TimelineBottomBar
         zoom={zoom}
@@ -1936,6 +2203,106 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
   );
 }
 
+/* ──────────────────────── timeline bar popover ──────────────────────── */
+
+function TimelineBarPopover({ issue, disabled, children }: {
+  issue: TimelineIssue;
+  disabled: boolean;
+  children: React.ReactNode;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const enterTimer = useRef<number | undefined>(undefined);
+  const leaveTimer = useRef<number | undefined>(undefined);
+  const CARD_W = 280;
+
+  const open = useCallback(() => {
+    if (disabled) return;
+    let el: Element | null = triggerRef.current;
+    if (!el) return;
+    let r = el.getBoundingClientRect();
+    while (r.width === 0 && r.height === 0 && el?.firstElementChild) {
+      el = el.firstElementChild;
+      r = el.getBoundingClientRect();
+    }
+    if (r.width === 0 && r.height === 0) return;
+    setRect(r);
+    setIsOpen(true);
+  }, [disabled]);
+
+  const close = useCallback(() => {
+    setIsOpen(false);
+    setRect(null);
+  }, []);
+
+  useEffect(() => () => {
+    window.clearTimeout(enterTimer.current);
+    window.clearTimeout(leaveTimer.current);
+  }, []);
+
+  const cardTop = rect ? (rect.top > 144 ? rect.top - 140 : rect.bottom + 6) : 0;
+  const cardLeft = rect ? Math.max(8, Math.min(rect.left, window.innerWidth - CARD_W - 8)) : 0;
+
+  return (
+    <>
+      <span
+        ref={triggerRef}
+        onMouseEnter={() => { window.clearTimeout(leaveTimer.current); enterTimer.current = window.setTimeout(open, 300); }}
+        onMouseLeave={() => { window.clearTimeout(enterTimer.current); leaveTimer.current = window.setTimeout(close, 200); }}
+        style={{ display: 'inline-flex', alignItems: 'center', flex: '1 1 auto', minWidth: 0 }}
+      >
+        {children}
+      </span>
+      {isOpen && rect && createPortal(
+        <div
+          data-timeline-bar-popover="true"
+          onMouseEnter={() => window.clearTimeout(leaveTimer.current)}
+          onMouseLeave={() => { leaveTimer.current = window.setTimeout(close, 200); }}
+          style={{
+            position: 'fixed', top: cardTop, left: cardLeft, width: CARD_W,
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 6,
+            boxShadow: '0 8px 28px rgba(9,30,66,0.2)',
+            padding: '12px 14px',
+            zIndex: 9999,
+            fontFamily: 'var(--ds-font-family-body)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+            <JiraIssueTypeIcon type={issue.issueType} size={14} />
+            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-code, monospace)', flexShrink: 0 }}>
+              {issue.issueKey}
+            </span>
+          </div>
+          <div style={{
+            fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: 1.4, marginBottom: 10,
+            overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
+          }}>
+            {issue.summary}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: issue.assigneeDisplayName ? 8 : 0 }}>
+            {issue.status && <StatusPill value={issue.statusCategory} label={issue.status} />}
+            {(issue.startDate || issue.dueDate) && (
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #626F86)' }}>
+                {[issue.startDate, issue.dueDate].filter(Boolean).map(d => formatDateCompact(d)).join(' → ')}
+              </span>
+            )}
+          </div>
+          {issue.assigneeDisplayName && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
+              <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #626F86)' }}>{issue.assigneeDisplayName}</span>
+            </div>
+          )}
+        </div>,
+        document.body,
+      )}
+    </>
+  );
+}
+
 /* ─────────────────────────────── sidebar row ────────────────────────── */
 
 interface SidebarRowProps {
@@ -1951,15 +2318,56 @@ interface SidebarRowProps {
   onOpenDetail: (issue: TimelineIssue) => void;
 }
 
+function formatDateCompact(d: string | null): string {
+  if (!d) return '';
+  const date = new Date(d + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function DateChipButton({ startDate, dueDate, rowHovered, onClick }: {
+  startDate: string | null;
+  dueDate: string | null;
+  rowHovered: boolean;
+  onClick: (e: React.MouseEvent) => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const hasDates = !!(startDate || dueDate);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      title={hasDates ? 'Edit dates' : 'Add dates'}
+      style={{
+        flexShrink: 0,
+        background: hovered ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'none',
+        border: 'none',
+        padding: '1px 4px',
+        borderRadius: 3,
+        cursor: 'pointer',
+        fontSize: 11,
+        fontFamily: 'var(--ds-font-family-body)',
+        color: 'var(--ds-text-subtlest, #626F86)',
+        whiteSpace: 'nowrap',
+        lineHeight: 1,
+        opacity: hasDates ? 1 : (rowHovered ? 0.5 : 0),
+        transition: 'opacity 80ms ease, background 80ms ease',
+      }}
+    >
+      {hasDates
+        ? [formatDateCompact(startDate), formatDateCompact(dueDate)].filter(Boolean).join(' → ')
+        : 'Add dates'}
+    </button>
+  );
+}
+
 function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKey, queryClient, isSelected, onSelect, onOpenDetail }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
   const progress = showProgress && hasChildren ? computeEpicProgress(issue) : null;
   const [rowHovered, setRowHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editDatesOpen, setEditDatesOpen] = useState(false);
-  const [editStartDate, setEditStartDate] = useState('');
-  const [editDueDate, setEditDueDate] = useState('');
-  const [savingDates, setSavingDates] = useState(false);
   const [inlineCreateOpen, setInlineCreateOpen] = useState(false);
   const [inlineCreateType, setInlineCreateType] = useState('Story');
   const [inlineCreateSummary, setInlineCreateSummary] = useState('');
@@ -1968,36 +2376,20 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
   const inlineCreateInputRef = useRef<HTMLInputElement>(null);
   const typePickerRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [availableVersions, setAvailableVersions] = useState<string[]>([]);
+  const [parentPickerOpen, setParentPickerOpen] = useState(false);
+  const [parentSearch, setParentSearch] = useState('');
+  const [parentCandidates, setParentCandidates] = useState<TimelineIssue[]>([]);
+  const [depsOpen, setDepsOpen] = useState(false);
+  const [depsLinkType, setDepsLinkType] = useState<string>('blocks');
+  const [depsIssueKey, setDepsIssueKey] = useState('');
+  const [depsSaving, setDepsSaving] = useState(false);
+  const [existingLinks, setExistingLinks] = useState<any[]>([]);
 
   const openEditDates = () => {
-    setEditStartDate(issue.startDate ?? '');
-    setEditDueDate(issue.dueDate ?? '');
     setMenuOpen(false);
     setEditDatesOpen(true);
-  };
-
-  const handleSaveDates = async () => {
-    setSavingDates(true);
-    try {
-      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
-      if (row?.raw_json) {
-        const updated = {
-          ...row.raw_json,
-          fields: {
-            ...(row.raw_json.fields ?? {}),
-            customfield_10015: editStartDate || null,
-            duedate: editDueDate || null,
-          },
-        };
-        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
-        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
-      }
-    } catch (err) {
-      console.warn('save dates failed:', err);
-    } finally {
-      setSavingDates(false);
-      setEditDatesOpen(false);
-    }
   };
 
   const handleRemoveDates = async () => {
@@ -2041,14 +2433,18 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
           return list.map(i => {
             if (i.issueKey === issue.issueKey) {
               const newChild: TimelineIssue = {
+                id: '',
                 issueKey: localKey,
                 projectKey: projectKey.toUpperCase(),
                 issueType: inlineCreateType,
                 summary: inlineCreateSummary.trim(),
                 status: 'To Do',
                 statusCategory: 'default',
+                priority: null,
                 startDate: null,
                 dueDate: null,
+                epicColor: null,
+                fixVersions: [],
                 assigneeDisplayName: null,
                 assigneeAvatarUrl: null,
                 parentKey: issue.issueKey,
@@ -2095,6 +2491,135 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
     setInlineCreateOpen(false);
     setInlineCreateSummary('');
     setShowTypeDropdown(false);
+  };
+
+  const handleEpicColorChange = async (hex: string) => {
+    setMenuOpen(false);
+    setRowHovered(false);
+    queryClient.setQueryData(['project-hub-timeline', projectKey], (old: TimelineIssue[] | undefined) => {
+      function update(list: TimelineIssue[]): TimelineIssue[] {
+        return list.map(i => {
+          if (i.issueKey === issue.issueKey) return { ...i, epicColor: hex || null };
+          if (i.children.length) return { ...i, children: update(i.children) };
+          return i;
+        });
+      }
+      return update(old ?? []);
+    });
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const fields = { ...(row.raw_json.fields ?? {}) };
+        if (hex) fields.catalyst_color = hex; else delete fields.catalyst_color;
+        await (supabase as any).from('ph_issues').update({ raw_json: { ...row.raw_json, fields } }).eq('issue_key', issue.issueKey);
+      }
+    } catch (err) {
+      console.warn('color change failed:', err);
+      queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+    }
+  };
+
+  const openMoveModal = () => {
+    const allIssues = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
+    function flatAll(list: TimelineIssue[]): TimelineIssue[] {
+      return list.flatMap(i => [i, ...flatAll(i.children)]);
+    }
+    const versions = [...new Set(flatAll(allIssues).flatMap(i => i.fixVersions))].filter(Boolean).sort();
+    setAvailableVersions(versions);
+    setMenuOpen(false);
+    setMoveOpen(true);
+  };
+
+  const handleMoveTo = async (versionName: string) => {
+    setMoveOpen(false);
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const newFV = versionName ? [{ id: versionName, name: versionName }] : [];
+        const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), fixVersions: newFV } };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
+        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+      }
+    } catch (err) {
+      console.warn('move to release failed:', err);
+    }
+  };
+
+  const openParentPicker = () => {
+    const allIssues = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
+    function flattenAll(list: TimelineIssue[]): TimelineIssue[] {
+      return list.flatMap(i => [i, ...flattenAll(i.children)]);
+    }
+    const flat = flattenAll(allIssues);
+    let validParentTypes: string[];
+    if (issue.issueType === 'Feature') validParentTypes = ['Epic'];
+    else if (['Sub-task', 'Backend', 'Frontend', 'Integration'].includes(issue.issueType)) validParentTypes = ['Story', 'Task'];
+    else validParentTypes = ['Epic', 'Feature'];
+    setParentCandidates(flat.filter(i => validParentTypes.includes(i.issueType) && i.issueKey !== issue.issueKey));
+    setParentSearch('');
+    setParentPickerOpen(true);
+    setMenuOpen(false);
+  };
+
+  const handleChangeParent = async (newParentKey: string) => {
+    setParentPickerOpen(false);
+    try {
+      await (supabase as any).from('ph_issues').update({ parent_key: newParentKey }).eq('issue_key', issue.issueKey);
+      queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+    } catch (err) {
+      console.warn('change parent failed:', err);
+    }
+  };
+
+  const openDepsModal = async () => {
+    setDepsIssueKey('');
+    setDepsLinkType('blocks');
+    setExistingLinks([]);
+    setDepsOpen(true);
+    setMenuOpen(false);
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      setExistingLinks(row?.raw_json?.fields?.issuelinks ?? []);
+    } catch (_) {}
+  };
+
+  const handleAddDependency = async () => {
+    if (!depsIssueKey.trim()) return;
+    setDepsSaving(true);
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const existing = row.raw_json.fields?.issuelinks ?? [];
+        const newLink = (depsLinkType === 'blocks' || depsLinkType === 'duplicates')
+          ? { type: { name: depsLinkType, outward: depsLinkType }, outwardIssue: { key: depsIssueKey.trim().toUpperCase() } }
+          : { type: { name: depsLinkType, inward: depsLinkType }, inwardIssue: { key: depsIssueKey.trim().toUpperCase() } };
+        const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), issuelinks: [...existing, newLink] } };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
+        setExistingLinks([...existing, newLink]);
+        setDepsIssueKey('');
+        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+      }
+    } catch (err) {
+      console.warn('add dep failed:', err);
+    } finally {
+      setDepsSaving(false);
+    }
+  };
+
+  const handleRemoveDependency = async (index: number) => {
+    try {
+      const { data: row } = await (supabase as any).from('ph_issues').select('raw_json').eq('issue_key', issue.issueKey).single();
+      if (row?.raw_json) {
+        const links = [...(row.raw_json.fields?.issuelinks ?? [])];
+        links.splice(index, 1);
+        const updated = { ...row.raw_json, fields: { ...(row.raw_json.fields ?? {}), issuelinks: links } };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issue.issueKey);
+        setExistingLinks(links);
+        queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+      }
+    } catch (err) {
+      console.warn('remove dep failed:', err);
+    }
   };
 
   return (
@@ -2204,11 +2729,21 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         </Tooltip>
       )}
 
-      {/* status pill — non-Epic rows, always visible (80% scale = 20% smaller) */}
-      {issue.issueType !== 'Epic' && issue.status && (
-        <div style={{ flexShrink: 0, transform: 'scale(0.8)', transformOrigin: 'right center', lineHeight: 0 }} onClick={e => e.stopPropagation()}>
+      {/* status pill — all issue types */}
+      {issue.status && (
+        <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
           <StatusPill value={issue.statusCategory} label={issue.status} />
         </div>
+      )}
+
+      {/* inline date chip — hidden on depth≥2 subtasks (too cramped); for parent rows: always visible when dates set, "Add dates" fades on hover */}
+      {depth < 2 && (
+        <DateChipButton
+          startDate={issue.startDate}
+          dueDate={issue.dueDate}
+          rowHovered={rowHovered}
+          onClick={e => { e.stopPropagation(); openEditDates(); }}
+        />
       )}
 
       {/* + add child — hover only on rows that can have children */}
@@ -2287,67 +2822,252 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         )}
         <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
         {issue.issueType === 'Epic' && (
-          <MenuItemRow label="Change epic color" onClick={() => setMenuOpen(false)} />
+          <>
+            <div style={{ padding: '4px 12px 2px', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)' }}>
+              Epic color
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '4px 12px 8px' }}>
+              {JIRA_EPIC_COLORS.map(({ label, hex }) => (
+                <button
+                  key={hex}
+                  type="button"
+                  title={label}
+                  aria-label={`Set epic color to ${label}`}
+                  onClick={(e) => { e.stopPropagation(); handleEpicColorChange(hex); }}
+                  style={{
+                    width: 20, height: 20, borderRadius: '50%', padding: 0, cursor: 'pointer', flexShrink: 0,
+                    background: hex, outline: 'none',
+                    border: issue.epicColor === hex ? '2px solid var(--ds-border-selected, #0052CC)' : '2px solid transparent',
+                    boxShadow: issue.epicColor === hex ? '0 0 0 1.5px #fff inset' : 'none',
+                  }}
+                />
+              ))}
+              {issue.epicColor && (
+                <button
+                  type="button"
+                  title="Remove color"
+                  aria-label="Remove epic color"
+                  onClick={(e) => { e.stopPropagation(); handleEpicColorChange(''); }}
+                  style={{ width: 20, height: 20, borderRadius: '50%', border: '1.5px dashed var(--ds-border, #DFE1E6)', background: 'transparent', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)', fontSize: 12, fontWeight: 600, outline: 'none' }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '0 0 4px' }} />
+          </>
         )}
+        <MenuItemRow label="Move to release" onClick={openMoveModal} />
+        {issue.issueType !== 'Epic' && (
+          <MenuItemRow label="Change parent" onClick={openParentPicker} />
+        )}
+        <MenuItemRow label="Edit dependencies" onClick={openDepsModal} />
         <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
         <MenuItemRow label="Edit dates" onClick={openEditDates} />
         {(issue.startDate || issue.dueDate) && (
           <MenuItemRow label="Remove dates" onClick={handleRemoveDates} danger />
         )}
-        <div style={{ padding: '6px 12px', fontSize: 11, fontStyle: 'italic', color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)' }}>
-          Move, reparent &amp; more — coming soon
-        </div>
       </PortalMenu>
 
-      {/* Edit Dates modal */}
+      {/* Edit Dates modal (shared component) */}
+      {editDatesOpen && (
+        <EditDatesModal
+          issue={issue}
+          projectKey={projectKey}
+          queryClient={queryClient}
+          onClose={() => setEditDatesOpen(false)}
+        />
+      )}
+
+      {/* Move to release modal */}
       <ModalTransition>
-        {editDatesOpen && (
-          <Modal onClose={() => setEditDatesOpen(false)} width="small">
+        {moveOpen && (
+          <Modal onClose={() => setMoveOpen(false)} width="small">
             <ModalHeader>
-              <ModalTitle>Edit dates</ModalTitle>
+              <ModalTitle>Move to release</ModalTitle>
             </ModalHeader>
             <ModalBody>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '6px 8px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3 }}>
-                <JiraIssueTypeIcon type={issue.issueType} size={14} />
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>
-                  {issue.issueKey}
-                </span>
-                <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {issue.summary}
-                </span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>
-                    Start date
-                  </label>
-                  <DatePicker
-                    value={editStartDate}
-                    onChange={(val) => setEditStartDate(val)}
-                    placeholder="Select start date"
-                    dateFormat="YYYY-MM-DD"
-                  />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div
+                  onClick={() => handleMoveTo('')}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => { if (e.key === 'Enter') handleMoveTo(''); }}
+                  style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', borderRadius: 3 }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                >
+                  No release
                 </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>
-                    Due date
-                  </label>
-                  <DatePicker
-                    value={editDueDate}
-                    onChange={(val) => setEditDueDate(val)}
-                    placeholder="Select due date"
-                    dateFormat="YYYY-MM-DD"
-                  />
-                </div>
+                {availableVersions.length === 0 && (
+                  <div style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', fontFamily: 'var(--ds-font-family-body)' }}>
+                    No releases found for this project
+                  </div>
+                )}
+                {availableVersions.map(v => (
+                  <div
+                    key={v}
+                    onClick={() => handleMoveTo(v)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => { if (e.key === 'Enter') handleMoveTo(v); }}
+                    style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 8 }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                  >
+                    <span style={{ flex: 1 }}>{v}</span>
+                    {issue.fixVersions.includes(v) && (
+                      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)' }}>current</span>
+                    )}
+                  </div>
+                ))}
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button appearance="subtle" onClick={() => setEditDatesOpen(false)} isDisabled={savingDates}>
-                Cancel
-              </Button>
-              <Button appearance="primary" onClick={handleSaveDates} isDisabled={savingDates}>
-                {savingDates ? 'Saving…' : 'Confirm'}
-              </Button>
+              <Button appearance="subtle" onClick={() => setMoveOpen(false)}>Cancel</Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Change parent modal */}
+      <ModalTransition>
+        {parentPickerOpen && (
+          <Modal onClose={() => setParentPickerOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Change parent</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ marginBottom: 12 }}>
+                <input
+                  autoFocus
+                  value={parentSearch}
+                  onChange={e => setParentSearch(e.target.value)}
+                  placeholder="Search by key or summary…"
+                  style={{
+                    width: '100%', height: 36, padding: '0 10px', boxSizing: 'border-box',
+                    border: '1px solid var(--ds-border-input, #DFE1E6)', borderRadius: 3, fontSize: 13,
+                    outline: 'none', fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text, #172B4D)',
+                    background: 'var(--ds-background-input, #FFFFFF)',
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-focused, #388BFF)'; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border-input, #DFE1E6)'; }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 260, overflowY: 'auto' }}>
+                {parentCandidates
+                  .filter(c => !parentSearch || c.issueKey.toLowerCase().includes(parentSearch.toLowerCase()) || c.summary.toLowerCase().includes(parentSearch.toLowerCase()))
+                  .slice(0, 50)
+                  .map(c => (
+                    <div
+                      key={c.issueKey}
+                      onClick={() => handleChangeParent(c.issueKey)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={e => { if (e.key === 'Enter') handleChangeParent(c.issueKey); }}
+                      style={{ padding: '8px 10px', cursor: 'pointer', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 8 }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                    >
+                      <JiraIssueTypeIcon type={c.issueType} size={14} />
+                      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)', flexShrink: 0 }}>{c.issueKey}</span>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.summary}</span>
+                    </div>
+                  ))
+                }
+                {parentCandidates.filter(c => !parentSearch || c.issueKey.toLowerCase().includes(parentSearch.toLowerCase()) || c.summary.toLowerCase().includes(parentSearch.toLowerCase())).length === 0 && (
+                  <div style={{ padding: '12px', fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', fontFamily: 'var(--ds-font-family-body)', textAlign: 'center' }}>
+                    No matching issues found
+                  </div>
+                )}
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setParentPickerOpen(false)}>Cancel</Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Edit dependencies modal */}
+      <ModalTransition>
+        {depsOpen && (
+          <Modal onClose={() => setDepsOpen(false)} width="medium">
+            <ModalHeader>
+              <ModalTitle>Edit dependencies</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3 }}>
+                <JiraIssueTypeIcon type={issue.issueType} size={13} />
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)' }}>{issue.issueKey}</span>
+                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.summary}</span>
+              </div>
+
+              {/* existing links */}
+              {existingLinks.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', marginBottom: 6 }}>
+                    Existing dependencies
+                  </div>
+                  {existingLinks.map((link, idx) => {
+                    const linkedKey = link.outwardIssue?.key ?? link.inwardIssue?.key ?? '—';
+                    const linkLabel = link.type?.outward ?? link.type?.inward ?? link.type?.name ?? '—';
+                    return (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: idx < existingLinks.length - 1 ? '1px solid var(--ds-border, #DFE1E6)' : 'none' }}>
+                        <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', minWidth: 90 }}>{linkLabel}</span>
+                        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)', flex: 1 }}>{linkedKey}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveDependency(idx)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-danger, #AE2A19)', fontSize: 12, fontFamily: 'var(--ds-font-family-body)', padding: '2px 6px', borderRadius: 3 }}
+                          title="Remove dependency"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* add new link */}
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'var(--ds-font-family-body)', marginBottom: 8 }}>
+                Add dependency
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                <select
+                  value={depsLinkType}
+                  onChange={e => setDepsLinkType(e.target.value)}
+                  style={{
+                    height: 36, padding: '0 8px', border: '1px solid var(--ds-border-input, #DFE1E6)', borderRadius: 3, fontSize: 13,
+                    fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-input, #FFFFFF)', cursor: 'pointer', outline: 'none',
+                  }}
+                >
+                  <option value="blocks">blocks</option>
+                  <option value="is blocked by">is blocked by</option>
+                  <option value="relates to">relates to</option>
+                  <option value="duplicates">duplicates</option>
+                </select>
+                <input
+                  value={depsIssueKey}
+                  onChange={e => setDepsIssueKey(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleAddDependency(); }}
+                  placeholder="Issue key (e.g. BAU-1234)"
+                  style={{
+                    flex: 1, minWidth: 160, height: 36, padding: '0 10px', boxSizing: 'border-box',
+                    border: '1px solid var(--ds-border-input, #DFE1E6)', borderRadius: 3, fontSize: 13,
+                    fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-input, #FFFFFF)', outline: 'none',
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-focused, #388BFF)'; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border-input, #DFE1E6)'; }}
+                />
+                <Button appearance="primary" onClick={handleAddDependency} isDisabled={!depsIssueKey.trim() || depsSaving}>
+                  {depsSaving ? 'Saving…' : 'Add'}
+                </Button>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setDepsOpen(false)}>Close</Button>
             </ModalFooter>
           </Modal>
         )}

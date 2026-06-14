@@ -4,6 +4,7 @@ import type { ShellState, ShellActions } from '../hooks/useShellState';
 import { AppRail } from './AppRail';
 import { ConversationSidebar } from './sidebar/ConversationSidebar';
 import { ActivitySurface } from './activity/ActivitySurface';
+import { LaterSurface } from './later/LaterSurface';
 import { PeopleSurface } from './people/PeopleSurface';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './chat-shell.css';
@@ -87,20 +88,14 @@ export function ChatShell({
       {/* Column 3: people surface (shown when activeView === 'people') */}
       <PeopleSurface onStartDM={onStartDM} />
 
+      {/* Column 3: later surface (shown when activeView === 'later') */}
+      <LaterSurface
+        onOpenConversation={onOpenConversation}
+        isActive={activeView === 'later'}
+      />
+
       {/* Columns 3 (+ 4 when docked): feed + thread — provided by parent */}
       {children}
-
-      {/* Later placeholder */}
-      <div className="c-chat-placeholder" data-surface="later" aria-label="Later">
-        <span>📌</span>
-        <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--c-chat-text)' }}>
-          Saved for later
-        </p>
-        <p style={{ margin: 0, fontSize: 13, textAlign: 'center', maxWidth: 280, color: 'var(--c-chat-text-subtlest)' }}>
-          Hover a message and click <strong>Save</strong> to bookmark it here.
-          Coming soon.
-        </p>
-      </div>
     </div>
   );
 }

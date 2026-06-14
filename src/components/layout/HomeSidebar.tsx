@@ -29,7 +29,12 @@ import React, { useMemo } from 'react';
 import { token } from '@atlaskit/tokens';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
-import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import BacklogIcon from '@atlaskit/icon/glyph/backlog';
+import BoardIcon from '@atlaskit/icon/glyph/board';
+import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
+import FilterIcon from '@atlaskit/icon/glyph/filter';
+import ListIcon from '@atlaskit/icon/glyph/list';
+import RoadmapIcon from '@atlaskit/icon/glyph/roadmap';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 
@@ -181,52 +186,44 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
   );
 }
 
-// ─── Project icon factory ─────────────────────────────────────────────────────
-// Each Recent row uses ProjectIcon — the canonical single-source-of-truth
-// project tile (src/components/shared/ProjectIcon.tsx).
+// ─── Section-type icon map ────────────────────────────────────────────────────
+// Recent rows use a small neutral Atlaskit glyph matching the PAGE TYPE, not
+// the project avatar. Project avatars are colorful tiles that create visual
+// noise when used as a list icon — page-type icons are muted and scannable.
 //
-// Resolution order (handled inside ProjectIcon):
-//   0. Admin override (/admin/icons upload) — wins for ANY project key
-//   1. PROJECT_AVATAR_REGISTRY — 18 bundled PNGs keyed by project key
-//   2. avatarUrl — Jira-uploaded project image
-//   3. iconName + color — Lucide icon on tinted square (ph_projects fields)
-//   4. Grey Folder fallback — NEVER a letter tile
-//
-// RCA (2026-05-29): Prior implementation used a hand-rolled letter badge
-// that violated mem://constraints/canonical-project-icons rule ("NEVER
-// from a single-letter initial tile") and bypassed the admin icon override
-// system entirely. ProjectIcon is the correct primitive.
-//
-// Component cache keyed by projectKey so React reconciles correctly.
-const PROJECT_ICON_COMPONENTS = new Map<
-  string,
-  React.FC<{ className?: string; style?: React.CSSProperties }>
->();
+// Design rationale: Jira's "Recent" list uses page-type icons (backlog icon
+// for backlog, board icon for boards, etc.) not project avatar tiles.
+// This reduces color clutter while preserving the navigational signal.
 
-function getProjectIconComponent(location: RecentLocation) {
-  const cached = PROJECT_ICON_COMPONENTS.get(location.projectKey);
-  if (cached) return cached;
+type SectionIconType = React.ComponentType<{ label: string; size?: string; primaryColor?: string }>;
 
-  const { projectKey, projectName, iconName, color } = location;
-  // size="small" = 20px — matches the 20px icon slot in SidebarBase.
-  // variant="solid" = filled tile matching Jira's project-card style.
-  // Source: https://atlassian.design/components/avatar (square pattern)
-  const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
-    className,
-  }) => (
-    <ProjectIcon
-      projectKey={projectKey}
-      iconName={iconName}
-      color={color}
-      name={projectName}
+const SECTION_ICON_MAP: Record<string, SectionIconType> = {
+  dashboard: DashboardIcon as unknown as SectionIconType,
+  backlog: BacklogIcon as unknown as SectionIconType,
+  'epic-backlog': BacklogIcon as unknown as SectionIconType,
+  'feature-backlog': BacklogIcon as unknown as SectionIconType,
+  'story-backlog': BacklogIcon as unknown as SectionIconType,
+  boards: BoardIcon as unknown as SectionIconType,
+  board: BoardIcon as unknown as SectionIconType,
+  allwork: ListIcon as unknown as SectionIconType,
+  list: ListIcon as unknown as SectionIconType,
+  timeline: RoadmapIcon as unknown as SectionIconType,
+  filters: FilterIcon as unknown as SectionIconType,
+};
+
+function getSectionIcon(section: string): SectionIconType {
+  return SECTION_ICON_MAP[section] ?? (ListIcon as unknown as SectionIconType);
+}
+
+function SectionIconWrapper({ section, color }: { section: string; color?: string | null }) {
+  const Icon = getSectionIcon(section);
+  return (
+    <Icon
+      label=""
       size="small"
-      variant="solid"
-      className={className}
+      primaryColor={color ?? 'var(--ds-icon-subtle, #626F86)'}
     />
   );
-  Component.displayName = `ProjectIconWrapper(${projectKey})`;
-  PROJECT_ICON_COMPONENTS.set(projectKey, Component);
-  return Component;
 }
 
 // ─── Time-bucketing helpers ───────────────────────────────────────────────────
@@ -274,6 +271,10 @@ export default function HomeSidebar({
   const { recentLocations, loading } = useRecentProjects(RECENT_LIMIT);
 
   const config: SidebarConfig = useMemo(() => {
+    if (!expanded) {
+      return { badge: null, label: 'Home', showFavorites: false, sections: [] };
+    }
+
     if (loading) {
       return {
         badge: null,
@@ -331,12 +332,24 @@ export default function HomeSidebar({
       bucketMap.get(b)!.push(loc);
     }
 
+    // Cross-bucket dedup: Today owns any path — suppress same path from older buckets.
+    // A path in Today is removed from Yesterday/DayBefore/Older so each entry appears once.
+    const seenPaths = new Set<string>();
+    for (const b of BUCKET_ORDER) {
+      const locs = bucketMap.get(b);
+      if (!locs) continue;
+      const filtered = locs.filter((loc) => !seenPaths.has(loc.path));
+      filtered.forEach((loc) => seenPaths.add(loc.path));
+      if (filtered.length === 0) bucketMap.delete(b);
+      else bucketMap.set(b, filtered);
+    }
+
     const toItem = (loc: RecentLocation): SidebarMenuItem => ({
       id: `recent-${loc.path}`,
       title: <LocationRowTitle location={loc} />,
+      tooltip: `${loc.sectionLabel} — ${loc.projectKey}`,
       path: loc.path,
-      icon: getProjectIconComponent(loc),
-      accentColor: loc.color ?? undefined,
+      icon: () => <SectionIconWrapper section={loc.section} color={loc.color} />,
     });
 
     const sections = BUCKET_ORDER
@@ -352,7 +365,7 @@ export default function HomeSidebar({
       showFavorites: false,
       sections,
     };
-  }, [recentLocations, loading]);
+  }, [recentLocations, loading, expanded]);
 
   return (
     <SidebarBase

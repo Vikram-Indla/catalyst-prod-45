@@ -10,19 +10,18 @@
 import { useMemo } from 'react';
 import {
   LayoutGrid,
-  LayoutDashboard,
   Settings,
-  Layers,
-  LayoutList,
-  BookOpen,
-  GitBranch,
-  FolderKanban,
-  Columns3,
-  Filter,
-  Map,
-  GanttChart,
   Mic,
 } from '@/lib/atlaskit-icons';
+import {
+  NavDashboardIcon,
+  NavKanbanIcon,
+  NavBacklogIcon,
+  NavWorkIcon,
+  NavFiltersIcon,
+  NavTimelineIcon,
+} from '@/lib/nav-icons';
+
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
@@ -88,12 +87,16 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
 
   if (projectKey) {
     const base = `/project-hub/${projectKey}`;
-    const projectName = projects.find(p => p.project_key === projectKey)?.name;
+    const project = projects.find(p => p.project_key === projectKey);
+    const projectName = project?.name;
     const keyCode = padProjectKey(projectKey, projectName);
 
     const projectConfig: SidebarConfig = {
       badge: keyCode,
       label: projectName ?? keyCode,
+      badgeProjectKey: projectKey,
+      badgeProjectAvatarUrl: project?.icon_avatar_url ?? null,
+      badgeProjectColor: project?.icon_color ?? null,
       showFavorites: false,
       // Design critique (2026-04-19): flattened from 3 sections ('', Boards,
       // Planning) to a single unlabeled group. Rationale:
@@ -109,45 +112,21 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         {
           title: '',
           items: [
-            { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: false },
-            // 2026-04-19: "Board" → "Project Board", "Backlog" → "Project
-            // Backlog" per Vikram's call on the flattened layout. With no
-            // section headers, the bare nouns read too thin against the
-            // project header ("BA · BAU"); the "Project" prefix adds the
-            // scope signal that the dropped section labels used to provide
-            // and gives the sidebar visual ballast at this 4-item count.
-            { id: 'board', title: 'Project Board', path: `${base}/boards`, icon: Columns3, exact: false },
-            // Jira "List view" equivalent — unified, per-project. Combines
-            // Epics, Features, Stories, Tasks, QA Bugs, Production Incidents,
-            // Change Requests, Business Gaps, and API Requirements.
-            { id: 'backlog', title: 'Project Backlog', path: `${base}/backlog`, icon: Layers, exact: false },
-            // Jira "All work" equivalent — per-project, hierarchy view.
-            // 2026-04-19: "All Work" → "Project Work" to match the
-            // "Project Board" / "Project Backlog" naming cadence on the
-            // flattened layout. Consistent prefix gives the 4-item list a
-            // unified scope signal without needing a section header to
-            // carry it.
-            { id: 'allwork', title: 'Project Work', path: `${base}/allwork`, icon: GitBranch, exact: false },
-            { id: 'filters', title: 'Project Filters', path: `${base}/filters`, icon: Filter, exact: false },
-            { id: 'timeline', title: 'Project Timeline', path: `${base}/timeline`, icon: GanttChart, exact: false },
-            { id: 'roadmaps', title: 'Project Roadmaps', path: `${base}/roadmaps`, icon: Map, exact: false },
-            { id: 'standups', title: 'Project Standups', path: `${base}/standups`, icon: Mic, exact: false },
+            { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: NavDashboardIcon, exact: false },
+            // Backlog sits directly after Dashboard (Vikram, 2026-06-14) — it is the
+            // primary planning surface, so it leads the board/kanban views.
+            { id: 'backlog', title: 'Backlog', path: `${base}/backlog`, icon: NavBacklogIcon, exact: false },
+            { id: 'board', title: 'Board', path: `${base}/boards`, icon: NavKanbanIcon, exact: false },
+            { id: 'kanban', title: 'Kanban', path: `${base}/kanban`, icon: NavKanbanIcon, exact: false },
+            { id: 'allwork', title: 'Work', path: `${base}/allwork`, icon: NavWorkIcon, exact: false },
+            { id: 'filters', title: 'Filters', path: `${base}/filters`, icon: NavFiltersIcon, exact: false },
+            { id: 'timeline', title: 'Timeline', path: `${base}/timeline`, icon: NavTimelineIcon, exact: false },
+            // Standups feature lives at /project-hub/:key/standups — past
+            // standup sessions list (with AI summaries) and detail views.
+            { id: 'standups', title: 'Standups', path: `${base}/standups`, icon: Mic, exact: false },
             // Story / Epic / Feature Backlog pages were removed — their scope
             // is fully covered by the unified Backlog view above. Routes now
             // redirect to /backlog; source files remain on disk as-is.
-          ],
-        },
-        // TEMP: full dashboard explorer — remove once Vikram picks the canonical dashboard
-        {
-          title: 'All Dashboards',
-          items: [
-            { id: 'dash-project',   title: 'Project Dashboard',   path: `${base}/dashboard`,              icon: LayoutDashboard, exact: false },
-            { id: 'dash-product',   title: 'Product Dashboard',   path: '/product-hub/product-dashboard', icon: LayoutDashboard, exact: false },
-            { id: 'dash-testhub',   title: 'TestHub Dashboard',   path: '/testhub/dashboard',             icon: LayoutDashboard, exact: false },
-            { id: 'dash-incidents', title: 'Incidents Dashboard', path: '/release/incidents/dashboard',   icon: LayoutDashboard, exact: false },
-            { id: 'dash-strategy',  title: 'Strategy Room',       path: '/strategyhub',                   icon: LayoutDashboard, exact: false },
-            { id: 'dash-capacity',  title: 'Capacity Planner',    path: '/planhub/capacity',              icon: LayoutDashboard, exact: false },
-            { id: 'dash-tasks',     title: 'Task Overview',       path: '/tasks/overview',                icon: LayoutDashboard, exact: false },
           ],
         },
       ],

@@ -516,7 +516,7 @@ function FeedSection({
           <div
             style={{
               display: 'inline-flex',
-              padding: 3,
+              padding: 1.8,
               borderRadius: 20,
               background: ASK_CATY_RAINBOW,
             }}
@@ -1403,7 +1403,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
         onMouseLeave={() => setHover(false)}
         style={{
           display: 'inline-flex',
-          padding: 3,
+          padding: 1.8,
           borderRadius: 20,
           background: ASK_CATY_RAINBOW,
           filter: hover && phase !== 'loading' ? 'brightness(1.08)' : 'none',

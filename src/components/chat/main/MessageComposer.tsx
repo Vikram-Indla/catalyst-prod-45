@@ -24,7 +24,7 @@ export interface MessageComposerProps {
   onTyping?: () => void;
   /** Last message id created by onSend (passed back so attachments can bind). */
   lastSentMessageId?: string | null;
-  /** Min height of the editor body in px. Defaults to 80. Pass smaller value in compact contexts (e.g. chat dock). */
+  /** Min height of the editor shell in px. Defaults to 48 (2 lines). Content auto-grows under the 70vh cap. */
   minHeight?: number;
 }
 
@@ -37,7 +37,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
       onSend,
       onTyping,
       lastSentMessageId,
-      minHeight = 80,
+      minHeight = 48,
     }: MessageComposerProps,
     _ref,
   ) {
@@ -118,7 +118,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
     const sendHint = isMac ? '⌘↵ to send · ⇧↵ new line' : 'Ctrl+Enter to send · Shift+Enter new line';
 
     return (
-      <div className="cc-composer" style={{ position: 'relative' }}>
+      <div className="cc-composer" data-cc-compact style={{ position: 'relative' }}>
         <input
           ref={fileInputRef}
           type="file"

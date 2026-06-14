@@ -137,7 +137,7 @@ export function MicButton({
             aria-hidden
             style={{
               position: 'absolute',
-              inset: 3,
+              inset: 1.8,
               borderRadius: '50%',
               background: '#FFFFFF',
             }}

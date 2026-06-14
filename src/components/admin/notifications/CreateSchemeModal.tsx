@@ -90,7 +90,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold font-['Sora']">
+          <DialogTitle className="text-lg font-semibold" style={{ fontFamily: 'var(--ds-font-family-heading)' }}>
             {isEdit ? 'Edit Notification Scheme' : 'Create Notification Scheme'}
           </DialogTitle>
           <DialogDescription className="text-sm text-[var(--ds-text-subtle,#475569)]">

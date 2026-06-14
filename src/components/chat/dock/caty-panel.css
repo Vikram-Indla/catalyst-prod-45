@@ -86,10 +86,13 @@
 /* Hero icon + speech bubble overlay (mirrors Rovo's dual-logo) */
 .cp-welcome__hero {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   margin-bottom: 20px;
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cp-welcome__hero-icon {

@@ -6,9 +6,9 @@ import { ChevronRight, Bell, Layers, Tag, FileText, X, Plus } from '@/lib/atlask
 import { useTheme } from '@/hooks/useTheme';
 
 const F = {
-  sora: "'Sora', sans-serif",
-  inter: "'Inter', system-ui, sans-serif",
-  mono: "'JetBrains Mono', monospace",
+  sora: "var(--ds-font-family-heading)",
+  inter: "var(--ds-font-family-body)",
+  mono: "var(--ds-font-family-code)",
 };
 
 const DOMAINS = [

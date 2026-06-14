@@ -22,6 +22,7 @@ import DropdownMenu, {
   DropdownItemGroup,
 } from "@atlaskit/dropdown-menu";
 import { IssueHoverCard } from "@/components/shared/IssueHoverCard";
+import { CatalystStatusPill } from "@/components/catalyst-detail-views/shared/sections";
 import type { CellProps } from "./types";
 
 // ─── Checkbox Cell ─────────────────────────────────────────────────────────
@@ -410,9 +411,8 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
 }
 
 // ─── Status Lozenge ────────────────────────────────────────────────────────
-// Kept for legacy callers. The type vocabulary maps to our new StatusPill
-// below which uses Jira's actual measured colors instead of Atlaskit Lozenge's
-// all-caps bold default.
+// LozengeAppearance kept for backwards compatibility; StatusPill now delegates
+// to canonical CatalystStatusPill.tsx (2026-06-14).
 export type LozengeAppearance =
   | "default"
   | "inprogress"
@@ -422,34 +422,9 @@ export type LozengeAppearance =
   | "new";
 
 /**
- * StatusPill — manually rendered to match exact Jira list DOM measurements.
- *
- * Measured 2026-05-07 from digital-transformation.atlassian.net BAU list:
- *   success (READY FOR QA, BETA READY, CLOSED):  bg rgb(179,223,114) text rgb(41,42,46)
- *   inprogress (IMPLEMENTATION):                 bg rgb(143,184,246) text rgb(41,42,46)
- *   default (TODO):                              bg rgb(221,222,225) text rgb(41,42,46)
- *   outer: borderRadius 3px, padding 0px 4px, height 16px
- *   inner: 11px/653/uppercase/letterSpacing 0.165px — confirmed 2026-05-08 DOM probe
- *
- * Atlaskit Lozenge token resolution in Catalyst's theme differs from Jira's
- * (success resolves to rgb(239,255,214) vs Jira's rgb(179,223,114)), so we
- * render the span structure manually with measured values.
+ * DEPRECATED — StatusPill now wraps CatalystStatusPill for backwards compatibility.
+ * Callers should migrate to CatalystStatusPill directly. Maps appearance to statusCategory.
  */
-// 2026-05-10: inline measured RGB values. CSS vars from
-// jira-parity-overrides.css don't always resolve in this scope (verified
-// 2026-05-10 via DOM probe — bg returned rgba(0,0,0,0)). Same fix pattern
-// already applied to status dropdown dots.
-const LOZENGE_BG: Record<LozengeAppearance, string> = {
-  // 2026-05-16 DOM probe corrections:
-  success: "rgb(179, 223, 114)", // #B3DF72 — Jira done category (was #94C748 — wrong)
-  inprogress: "rgb(143, 184, 246)", // #8FB8F6 — Jira in-progress category (was #669DF1 — wrong)
-  default: "rgb(221, 222, 225)", // #DDDEE1 — Jira to-do category
-  moved: "rgb(243, 214, 100)",
-  removed: "rgb(221, 222, 225)", // Treat removed same as default (grey), not red
-  new: "rgb(184, 172, 246)",
-};
-const LOZENGE_FG = "rgb(41, 42, 46)";
-
 export function StatusPill({
   appearance,
   children,
@@ -457,35 +432,24 @@ export function StatusPill({
   appearance: LozengeAppearance;
   children: React.ReactNode;
 }) {
-  const bg = LOZENGE_BG[appearance] ?? LOZENGE_BG.default;
+  // Map LozengeAppearance back to a statusCategory for CatalystStatusPill
+  const appearanceToCategory: Record<LozengeAppearance, string | undefined> = {
+    success: 'done',
+    inprogress: 'in_progress',
+    moved: 'moved',
+    removed: 'removed',
+    new: 'new',
+    default: 'todo',
+  };
+  const category = appearanceToCategory[appearance];
+
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        backgroundColor: bg,
-        borderRadius: "3px",
-        padding: "0px 4px",
-        height: "16px",
-        maxWidth: "200px",
-      }}
-    >
-      <span
-        style={{
-          fontSize: "11px",
-          fontWeight: 653,
-          lineHeight: "16px",
-          color: LOZENGE_FG,
-          textTransform: "uppercase",
-          letterSpacing: "0.165px",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {children}
-      </span>
-    </span>
+    <CatalystStatusPill
+      status={String(children)}
+      statusCategory={category}
+      interactive={false}
+      compact={true}
+    />
   );
 }
 
@@ -502,10 +466,13 @@ export function makeStatusCell(
           —
         </span>
       );
+    const displayLabel = labelFor ? labelFor(status) : status;
     return (
-      <StatusPill appearance={appearanceFor(status)}>
-        {labelFor ? labelFor(status) : status}
-      </StatusPill>
+      <CatalystStatusPill
+        status={displayLabel}
+        interactive={false}
+        compact={true}
+      />
     );
   };
 }
@@ -580,9 +547,15 @@ export function makeStatusEditCell<T>(opts: {
             gap: 2,
           }}
         >
-          <StatusPill appearance={opts.appearanceFor(status)}>
-            {status ? (opts.labelFor ? opts.labelFor(status) : status) : "—"}
-          </StatusPill>
+          {status ? (
+            <CatalystStatusPill
+              status={opts.labelFor ? opts.labelFor(status) : status}
+              interactive={false}
+              compact={true}
+            />
+          ) : (
+            <span style={{ color: token("color.text.subtlest", "#7A869A") }}>—</span>
+          )}
           {editable && (
             <svg
               width="8"
@@ -623,23 +596,6 @@ export function makeStatusEditCell<T>(opts: {
               }}
             >
               {opts.options.map((s) => {
-                const ap = opts.appearanceFor(s);
-                // Jira-parity: dropdown shows a small 8px color dot + plain text
-                // (sentence case, 14px) — NOT the full uppercase StatusPill.
-                // Dot color maps to the same LOZENGE_BG token as the pill bg.
-                // Measured from Jira list status dropdown 2026-05-08.
-                // Inline hex — measured from Jira BAU list DOM 2026-05-07/08.
-                // Do NOT use CSS vars here: the portal renders to document.body
-                // outside any theme-provider scope and vars may not resolve.
-                const dotColors: Record<string, string> = {
-                  success: "rgb(179, 223, 114)",
-                  inprogress: "rgb(143, 184, 246)",
-                  default: "rgb(221, 222, 225)",
-                  moved: "rgb(243, 214, 100)",
-                  removed: "rgb(255, 143, 115)",
-                  new: "rgb(184, 172, 246)",
-                };
-                const dotBg = dotColors[ap] ?? dotColors.default;
                 const isActive = s === status;
                 return (
                   <button
@@ -655,18 +611,13 @@ export function makeStatusEditCell<T>(opts: {
                       alignItems: "center",
                       gap: 8,
                       width: "100%",
-                      padding: "6px 12px",
+                      padding: "4px 12px",
                       border: "none",
                       background: isActive
                         ? token("color.background.selected", "#E9F2FF")
                         : "transparent",
                       cursor: "pointer",
                       textAlign: "left",
-                      fontSize: 14,
-                      color: token(
-                        "color.text",
-                        "var(--cp-text-primary, var(--cp-text-inverse, #172B4D))",
-                      ),
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.background =
@@ -684,24 +635,11 @@ export function makeStatusEditCell<T>(opts: {
                           : "transparent";
                     }}
                   >
-                    {/* 8px color dot — Jira-parity status category indicator */}
-                    <span
-                      aria-hidden
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        background: dotBg,
-                        flexShrink: 0,
-                        border:
-                          ap === "default"
-                            ? "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))"
-                            : "none",
-                      }}
+                    <CatalystStatusPill
+                      status={opts.labelFor ? opts.labelFor(s) : s}
+                      interactive={false}
+                      compact={true}
                     />
-                    <span style={{ flex: 1 }}>
-                      {opts.labelFor ? opts.labelFor(s) : s}
-                    </span>
                     {/* Checkmark on selected item */}
                     {isActive && (
                       <span

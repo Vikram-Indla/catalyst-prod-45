@@ -198,7 +198,7 @@ export function GenerateStoriesButton({ issue }: GenerateStoriesButtonProps) {
             display: 'inline-flex',
             background: disabled ? token('color.background.neutral', '#F1F2F4') : RAINBOW_GRADIENT,
             borderRadius: 5,
-            padding: 2,
+            padding: 1.2,
             animation: 'none',
           }}
         >

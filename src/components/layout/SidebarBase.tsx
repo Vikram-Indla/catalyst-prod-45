@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useTheme } from '@/hooks/useTheme';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
 // Hub registry — mirrors AppSwitcher.tsx (which is being retired). Tone
 // colors come from Atlassian Design System accent palette; we render the
@@ -117,6 +118,13 @@ export interface SidebarMenuItem {
    * Added 2026-05-28: HomeSidebar Recent items identity redesign.
    */
   accentColor?: string;
+  /**
+   * Plain-string tooltip shown in collapsed rail mode instead of the
+   * ReactNode `title`. Allows Recent items to show "Dashboard — BAU"
+   * rather than rendering the full LocationRowTitle JSX in the tooltip.
+   * Added 2026-06-14: H6 collapsed-mode disambiguation fix.
+   */
+  tooltip?: string;
 }
 
 export interface SidebarSection {
@@ -131,6 +139,10 @@ export interface SidebarConfig {
   items?: SidebarMenuItem[];
   footerItem?: SidebarMenuItem;
   showFavorites?: boolean;
+  /** Collapsed-rail icon — pass projectKey so ProjectIcon resolves the bundled avatar */
+  badgeProjectKey?: string | null;
+  badgeProjectColor?: string | null;
+  badgeProjectAvatarUrl?: string | null;
 }
 
 interface SidebarBaseProps {
@@ -251,7 +263,7 @@ export function SidebarBase({
           // animation doesn't cascade a reflow into the main canvas every
           // frame. Labels crossfade via opacity+max-width transitions below
           // so they don't pop at the width midpoint.
-          transition: 'width 180ms cubic-bezier(0.2, 0, 0, 1)',
+          transition: 'width 200ms cubic-bezier(0, 0, 0.2, 1)',
           willChange: 'width',
           contain: 'layout style',
           scrollbarWidth: 'thin' as any,
@@ -269,33 +281,40 @@ export function SidebarBase({
             "flex-shrink-0 flex items-center",
             expanded ? "justify-start" : "justify-center"
           )}
-          // May 2026: Badge (H) removed. Text-only header with ADS-compliant
-          // typography. Header height reduced from 48px to 32px, reclaiming 16px
-          // for nav items. Padding adjusted to 8px per ADS 4/8dp rhythm.
           style={{
-            minHeight: '32px',
+            minHeight: expanded ? '32px' : '40px',
             padding: expanded ? '8px 12px 8px 16px' : '8px 0',
-            gap: expanded ? '8px' : '4px',
+            gap: expanded ? '8px' : '2px',
             background: 'transparent',
+            flexDirection: expanded ? 'row' : 'column',
           }}
         >
-          {onHeaderClick ? (
-            <button
-              onClick={onHeaderClick}
-              title={config.label}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-                minWidth: 0,
-                flex: 1,
-              }}
-            >
-              {expanded && (
+          {expanded ? (
+            /* Expanded: project icon (if project) + label, optionally clickable */
+            onHeaderClick ? (
+              <button
+                onClick={onHeaderClick}
+                title={config.label}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                  minWidth: 0,
+                  flex: 1,
+                }}
+              >
+                {config.badgeProjectKey && (
+                  <ProjectIcon
+                    projectKey={config.badgeProjectKey}
+                    avatarUrl={config.badgeProjectAvatarUrl}
+                    color={config.badgeProjectColor}
+                    size="small"
+                  />
+                )}
                 <span
                   className="truncate"
                   style={{
@@ -310,11 +329,17 @@ export function SidebarBase({
                 >
                   {config.label}
                 </span>
-              )}
-            </button>
-          ) : (
-            <>
-              {expanded && (
+              </button>
+            ) : (
+              <React.Fragment>
+                {config.badgeProjectKey && (
+                  <ProjectIcon
+                    projectKey={config.badgeProjectKey}
+                    avatarUrl={config.badgeProjectAvatarUrl}
+                    color={config.badgeProjectColor}
+                    size="small"
+                  />
+                )}
                 <span
                   className="truncate"
                   style={{
@@ -327,8 +352,44 @@ export function SidebarBase({
                 >
                   {config.label}
                 </span>
-              )}
-            </>
+              </React.Fragment>
+            )
+          ) : (
+            /* Icon-only rail: project icon + key stacked vertically */
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                width: '100%',
+              }}
+            >
+              {config.badgeProjectKey ? (
+                <ProjectIcon
+                  projectKey={config.badgeProjectKey}
+                  avatarUrl={config.badgeProjectAvatarUrl}
+                  color={config.badgeProjectColor}
+                  size="medium"
+                />
+              ) : null}
+              {config.badge ? (
+                <span
+                  style={{
+                    fontFamily: 'var(--ds-font-family-code, monospace)',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    color: 'var(--ds-text-subtlest, #626F86)',
+                    letterSpacing: '0.5px',
+                    textTransform: 'uppercase' as const,
+                    lineHeight: 1,
+                    userSelect: 'none',
+                  }}
+                >
+                  {config.badge}
+                </span>
+              ) : null}
+            </div>
           )}
         </div>
 
@@ -559,8 +620,8 @@ function renderMenuItem(
       <span
         className="flex items-center justify-center flex-shrink-0"
         style={{
-          width: '16px',
-          height: '16px',
+          width: '20px',
+          height: '20px',
           opacity: 1,
           flexShrink: 0,
           transition: 'color 150ms cubic-bezier(0.15,1,0.3,1)',
@@ -568,15 +629,12 @@ function renderMenuItem(
       >
         {CustomIcon && (
           <CustomIcon
-            className="h-[16px] w-[16px]"
+            className="h-[20px] w-[20px]"
             style={{
-              // ADS canonical: color.icon.brand for active, color.icon.subtle
-              // for inactive. Raw hex used as token() not available in this
-              // file — values match ADS light-mode token resolution.
               color: active
                 ? 'var(--ds-icon-brand, #0052CC)'
-                : 'var(--ds-icon-subtle, #6B778C)',
-              strokeWidth: active ? 2 : 1.5,
+                : 'var(--ds-icon, #172B4D)',
+              strokeWidth: 2,
             }}
           />
         )}
@@ -594,8 +652,8 @@ function renderMenuItem(
           opacity: expanded ? 1 : 0,
           maxWidth: expanded ? '100%' : 0,
           transition: expanded
-            ? 'opacity 120ms ease 40ms, max-width 180ms cubic-bezier(0.2, 0, 0, 1)'
-            : 'opacity 80ms ease, max-width 180ms cubic-bezier(0.2, 0, 0, 1)',
+            ? 'opacity 120ms ease 40ms, max-width 200ms cubic-bezier(0, 0, 0.2, 1)'
+            : 'opacity 80ms ease, max-width 200ms cubic-bezier(0, 0, 0.2, 1)',
           pointerEvents: expanded ? 'auto' : 'none',
           overflow: 'hidden',
         }}
@@ -704,7 +762,7 @@ function renderMenuItem(
 
   if (!expanded) {
     return (
-      <Tooltip key={item.id} content={item.title} position="right">
+      <Tooltip key={item.id} content={item.tooltip ?? item.title} position="right">
         {menuButton}
       </Tooltip>
     );

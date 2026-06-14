@@ -195,6 +195,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
     data,
     isLoading,
     isFetching,
+    isPlaceholderData,
     isError,
     error,
     refresh,
@@ -418,7 +419,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
   return (
     <div>
       {header}
-      {isFetching && !isLoading && (
+      {(isFetching || isRefreshing) && !isLoading && (
         <div
           style={{
             paddingInline: 12,
@@ -431,7 +432,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
           }}
         >
           <Spinner size="xsmall" />
-          Refreshing themes…
+          {isPlaceholderData ? 'Updating themes…' : 'Refreshing themes…'}
         </div>
       )}
       <div

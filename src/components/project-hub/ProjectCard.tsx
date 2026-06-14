@@ -29,8 +29,9 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
       {/* Icon + Name + Key */}
       <div className="flex items-center gap-3 mb-3">
         <div
-          className="flex items-center justify-center rounded flex-shrink-0 h-8 text-white font-bold font-['Sora',sans-serif]"
+          className="flex items-center justify-center rounded flex-shrink-0 h-8 text-white font-bold"
           style={{
+            fontFamily: 'var(--ds-font-family-heading)',
             width: 36,
             backgroundColor: project.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             borderRadius: 6,
@@ -41,7 +42,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
           {project.key}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold font-['Sora',sans-serif] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
+          <div className="truncate text-sm font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontFamily: 'var(--ds-font-family-heading)' }}>
             {project.name}
           </div>
           <span className="text-[11px] font-medium font-['JetBrains_Mono',monospace] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">

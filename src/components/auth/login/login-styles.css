@@ -259,8 +259,8 @@
 .clmp-ai-band { position: relative; background: var(--clmp-navy); color: var(--clmp-navy-text); padding-block: 32px; overflow: hidden; border-block-end: 2px solid var(--clmp-line-strong); }
 .clmp-ai-watermark { position: absolute; inset-inline-start: -180px; inset-block-end: -180px; width: 620px; height: 620px; opacity: .06; pointer-events: none; color: var(--clmp-cyan); }
 .clmp-ai-grid { position: relative; display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); gap: 32px; align-items: center; }
-.clmp-caty-hero { width: 88px; height: 88px; margin-block-end: 24px; }
-.clmp-ai-kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--clmp-cyan); margin-block-end: 16px; }
+.clmp-caty-hero { width: 48px; height: 48px; flex-shrink: 0; }
+.clmp-ai-kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--clmp-cyan); margin-block-end: 16px; }
 .clmp-ai-band h2 { font-size: clamp(30px, 3.6vw, 44px); letter-spacing: -1.6px; line-height: 1.06; font-weight: 700; color: var(--clmp-white); }
 .clmp-ai-band .clmp-ai-hl { color: var(--clmp-cyan); }
 .clmp-ai-sub { font-size: 16px; line-height: 1.6; color: var(--clmp-navy-sub); margin-block: 16px 24px; max-width: 50ch; }

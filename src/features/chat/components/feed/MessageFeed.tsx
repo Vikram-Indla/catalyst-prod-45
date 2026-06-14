@@ -1,14 +1,34 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import Avatar from '@atlaskit/avatar';
 import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
 import type { ChatConversation, ChatMessage } from '@/types/chat';
+import { supabase } from '@/integrations/supabase/client';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { usePresence } from '@/hooks/chat/usePresence';
+import { useConversations } from '@/hooks/chat/useConversations';
+import {
+  useConversationPins,
+  useTogglePin,
+  useMyBookmarks,
+  useToggleBookmark,
+} from '@/hooks/chat/usePinsBookmarks';
 import { MessageComposer } from '@/components/chat/main/MessageComposer';
 import { ConversationHeader } from '@/components/chat/main/ConversationHeader';
 import { HoverToolbar } from './HoverToolbar';
 import { MessageText } from './MessageText';
+import { ProfileHoverCard } from './ProfileHoverCard';
+
+interface ProfileCardState {
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+  rect: DOMRect;
+}
+
+const db = supabase as unknown as { from: (t: string) => any };
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './feed.css';
 // ads-scanner:ignore-next-line -- chat.css uses only var(--ds-*) ADS tokens; loaded here for ConversationHeader cc-* classes
@@ -216,22 +236,40 @@ function MsgGroupBlock({
   group,
   currentUserId,
   editingMessageId,
+  pinnedIds,
+  savedIds,
   onToggleReaction,
   onOpenThread,
   onEditMessage,
   onDeleteMessage,
   onSaveEdit,
   onCancelEdit,
+  onCopyLink,
+  onCopyText,
+  onMarkUnread,
+  onTogglePin,
+  onToggleSave,
+  onForward,
+  onOpenProfile,
 }: {
   group: MsgGroup;
   currentUserId: string | null;
   editingMessageId: string | null;
+  pinnedIds: Set<string>;
+  savedIds: Set<string>;
   onToggleReaction: (msgId: string, emoji: string) => void;
   onOpenThread: (msgId: string) => void;
   onEditMessage: (msgId: string) => void;
   onDeleteMessage: (msgId: string) => void;
   onSaveEdit: (msgId: string, newText: string) => void;
   onCancelEdit: () => void;
+  onCopyLink: (msgId: string) => void;
+  onCopyText: (msgId: string) => void;
+  onMarkUnread: (msgId: string) => void;
+  onTogglePin: (msgId: string, currentlyPinned: boolean) => void;
+  onToggleSave: (msgId: string, currentlySaved: boolean) => void;
+  onForward: (msgId: string) => void;
+  onOpenProfile: (state: ProfileCardState) => void;
 }) {
   return (
     <div
@@ -252,12 +290,27 @@ function MsgGroupBlock({
             {/* Avatar / compact timestamp slot */}
             <div className="c-msg__avatar">
               {isFull ? (
-                <Avatar
-                  name={msg.authorName}
-                  src={msg.authorAvatarUrl ?? undefined}
-                  size="medium"
-                  appearance="circle"
-                />
+                <button
+                  type="button"
+                  className="c-msg__avatar-btn"
+                  onClick={e => {
+                    e.stopPropagation();
+                    onOpenProfile({
+                      userId: msg.authorId,
+                      name: msg.authorName,
+                      avatarUrl: msg.authorAvatarUrl,
+                      rect: e.currentTarget.getBoundingClientRect(),
+                    });
+                  }}
+                  aria-label={`View profile of ${msg.authorName}`}
+                >
+                  <Avatar
+                    name={msg.authorName}
+                    src={msg.authorAvatarUrl ?? undefined}
+                    size="medium"
+                    appearance="circle"
+                  />
+                </button>
               ) : (
                 <span className="c-msg__compact-ts" aria-hidden="true">
                   {getTimeLabel(msg.createdAt)}
@@ -269,7 +322,34 @@ function MsgGroupBlock({
             <div className="c-msg__body">
               {isFull && (
                 <div className="c-msg__meta">
-                  <span className="c-msg__author">{msg.authorName}</span>
+                  <span
+                    className="c-msg__author"
+                    role="button"
+                    tabIndex={0}
+                    onClick={e => {
+                      e.stopPropagation();
+                      onOpenProfile({
+                        userId: msg.authorId,
+                        name: msg.authorName,
+                        avatarUrl: msg.authorAvatarUrl,
+                        rect: e.currentTarget.getBoundingClientRect(),
+                      });
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onOpenProfile({
+                          userId: msg.authorId,
+                          name: msg.authorName,
+                          avatarUrl: msg.authorAvatarUrl,
+                          rect: (e.currentTarget as HTMLElement).getBoundingClientRect(),
+                        });
+                      }
+                    }}
+                  >
+                    {msg.authorName}
+                  </span>
                   <time
                     className="c-msg__ts"
                     dateTime={msg.createdAt}
@@ -332,20 +412,124 @@ function MsgGroupBlock({
             </div>
 
             {/* Hover toolbar — hidden while editing */}
-            {!msg.deletedAt && !isEditing && (
-              <HoverToolbar
-                messageId={msg.id}
-                isOwn={isOwn}
-                onToggleReaction={emoji => onToggleReaction(msg.id, emoji)}
-                onOpenThread={() => onOpenThread(msg.id)}
-                onEditMessage={() => onEditMessage(msg.id)}
-                onDeleteMessage={() => onDeleteMessage(msg.id)}
-              />
-            )}
+            {!msg.deletedAt && !isEditing && (() => {
+              const isPinned = pinnedIds.has(msg.id);
+              const isSaved = savedIds.has(msg.id);
+              return (
+                <HoverToolbar
+                  messageId={msg.id}
+                  isOwn={isOwn}
+                  isPinned={isPinned}
+                  isSaved={isSaved}
+                  onToggleReaction={emoji => onToggleReaction(msg.id, emoji)}
+                  onOpenThread={() => onOpenThread(msg.id)}
+                  onEditMessage={() => onEditMessage(msg.id)}
+                  onDeleteMessage={() => onDeleteMessage(msg.id)}
+                  onCopyLink={() => onCopyLink(msg.id)}
+                  onCopyText={() => onCopyText(msg.id)}
+                  onMarkUnread={() => onMarkUnread(msg.id)}
+                  onTogglePin={() => onTogglePin(msg.id, isPinned)}
+                  onToggleSave={() => onToggleSave(msg.id, isSaved)}
+                  onForward={() => onForward(msg.id)}
+                />
+              );
+            })()}
           </div>
         );
       })}
     </div>
+  );
+}
+
+// ── ForwardModal ───────────────────────────────────────────────────────────
+
+function ForwardModal({
+  originalText,
+  conversations,
+  onForward,
+  onClose,
+}: {
+  originalText: string;
+  conversations: ChatConversation[];
+  onForward: (targetConversationId: string) => void;
+  onClose: () => void;
+}) {
+  const [query, setQuery] = useState('');
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    }
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => document.removeEventListener('keydown', onKeyDown, true);
+  }, [onClose]);
+
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? conversations.filter(c => (c.title ?? '').toLowerCase().includes(q))
+    : conversations;
+
+  return createPortal(
+    <div
+      className="c-forward-overlay"
+      role="presentation"
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        ref={ref}
+        className="c-forward-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Forward message"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="c-forward-modal__header">
+          <span className="c-forward-modal__title">Forward message</span>
+          <button
+            className="c-forward-modal__close"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+
+        {originalText && (
+          <div className="c-forward-modal__preview" aria-label="Message preview">
+            {originalText}
+          </div>
+        )}
+
+        <input
+          className="c-forward-modal__search"
+          placeholder="Search conversations…"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          autoFocus
+          aria-label="Search conversations"
+        />
+
+        <div className="c-forward-modal__list" role="listbox" aria-label="Conversations">
+          {filtered.length === 0 ? (
+            <p className="c-forward-modal__empty">No conversations found.</p>
+          ) : (
+            filtered.map(c => (
+              <button
+                key={c.id}
+                className="c-forward-modal__item"
+                role="option"
+                onClick={() => onForward(c.id)}
+                aria-label={`Forward to ${c.title || 'conversation'}`}
+              >
+                {c.title || 'Untitled conversation'}
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -381,6 +565,82 @@ export function MessageFeed({ conversationId, conversation, onOpenThread, initia
   const { messages, isLoading, hasMore, loadMore, sendMessage, editMessage, deleteMessage, toggleReaction, currentUserId } =
     useMessages(conversationId);
   const { setTyping, recordMessage, presenceList } = usePresence({ conversationId });
+  const queryClient = useQueryClient();
+
+  // Pins (shared) + bookmarks (per-user "save for later").
+  const { data: pinRows } = useConversationPins(conversationId);
+  const { data: bookmarkRows } = useMyBookmarks();
+  const togglePin = useTogglePin();
+  const toggleBookmark = useToggleBookmark();
+  const { conversations: allConversations } = useConversations();
+
+  const pinnedIds = useMemo(
+    () => new Set((pinRows ?? []).map(p => p.message_id)),
+    [pinRows],
+  );
+  const savedIds = useMemo(
+    () => new Set((bookmarkRows ?? []).map(b => b.message_id)),
+    [bookmarkRows],
+  );
+
+  // Forward modal state — holds the source message id, or null when closed.
+  const [forwardMsgId, setForwardMsgId] = useState<string | null>(null);
+
+  // Profile hover-card state — null when closed.
+  const [profileCard, setProfileCard] = useState<ProfileCardState | null>(null);
+
+  // ── Collaboration-bar callbacks ──────────────────────────────────────────
+
+  const handleCopyLink = useCallback((msgId: string) => {
+    void navigator.clipboard?.writeText(
+      `${window.location.origin}/chat?c=${conversationId}&m=${msgId}`,
+    );
+  }, [conversationId]);
+
+  const handleCopyText = useCallback((msgId: string) => {
+    const msg = messages.find(m => m.id === msgId);
+    if (msg?.bodyText) void navigator.clipboard?.writeText(msg.bodyText);
+  }, [messages]);
+
+  const handleMarkUnread = useCallback(async (msgId: string) => {
+    if (!currentUserId) return;
+    const target = messages.find(m => m.id === msgId);
+    if (!target) return;
+    // Previous ROOT message becomes the new last-read anchor; this message and
+    // everything after it become unread.
+    const roots = messages.filter(m => !m.parentId);
+    const idx = roots.findIndex(m => m.id === msgId);
+    const prevMsgId = idx > 0 ? roots[idx - 1].id : null;
+    const lastReadAt = new Date(new Date(target.createdAt).getTime() - 1).toISOString();
+    await db
+      .from('chat_conversation_members')
+      .update({ last_read_message_id: prevMsgId, last_read_at: lastReadAt })
+      .eq('conversation_id', conversationId)
+      .eq('user_id', currentUserId);
+    queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] });
+  }, [messages, conversationId, currentUserId, queryClient]);
+
+  const handleTogglePin = useCallback((msgId: string, currentlyPinned: boolean) => {
+    togglePin.mutate({ conversationId, messageId: msgId, currentlyPinned });
+  }, [togglePin, conversationId]);
+
+  const handleToggleSave = useCallback((msgId: string, currentlySaved: boolean) => {
+    toggleBookmark.mutate({ conversationId, messageId: msgId, currentlyBookmarked: currentlySaved });
+  }, [toggleBookmark, conversationId]);
+
+  const handleForwardSubmit = useCallback(async (targetConversationId: string) => {
+    const src = forwardMsgId ? messages.find(m => m.id === forwardMsgId) : null;
+    const text = src?.bodyText;
+    if (!text || !currentUserId) { setForwardMsgId(null); return; }
+    await db.from('chat_messages').insert({
+      conversation_id: targetConversationId,
+      body_text: text,
+      author_id: currentUserId,
+    });
+    queryClient.invalidateQueries({ queryKey: ['chat', 'messages', targetConversationId] });
+    queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] });
+    setForwardMsgId(null);
+  }, [forwardMsgId, messages, currentUserId, queryClient]);
 
   const typers = presenceList
     .filter(p => p.is_typing && p.user_id !== currentUserId)
@@ -541,12 +801,21 @@ export function MessageFeed({ conversationId, conversation, onOpenThread, initia
                       group={item.group}
                       currentUserId={currentUserId}
                       editingMessageId={editingMessageId}
+                      pinnedIds={pinnedIds}
+                      savedIds={savedIds}
                       onToggleReaction={toggleReaction}
                       onOpenThread={onOpenThread}
                       onEditMessage={setEditingMessageId}
                       onDeleteMessage={deleteMessage}
                       onSaveEdit={handleSaveEdit}
                       onCancelEdit={handleCancelEdit}
+                      onCopyLink={handleCopyLink}
+                      onCopyText={handleCopyText}
+                      onMarkUnread={handleMarkUnread}
+                      onTogglePin={handleTogglePin}
+                      onToggleSave={handleToggleSave}
+                      onForward={setForwardMsgId}
+                      onOpenProfile={setProfileCard}
                     />
                   )}
                 </div>
@@ -576,6 +845,26 @@ export function MessageFeed({ conversationId, conversation, onOpenThread, initia
           onTyping={() => setTyping(true)}
         />
       </div>
+
+      {forwardMsgId && (
+        <ForwardModal
+          originalText={messages.find(m => m.id === forwardMsgId)?.bodyText ?? ''}
+          conversations={allConversations}
+          onForward={handleForwardSubmit}
+          onClose={() => setForwardMsgId(null)}
+        />
+      )}
+
+      {profileCard && (
+        <ProfileHoverCard
+          userId={profileCard.userId}
+          name={profileCard.name}
+          avatarUrl={profileCard.avatarUrl}
+          anchorRect={profileCard.rect}
+          currentUserId={currentUserId}
+          onClose={() => setProfileCard(null)}
+        />
+      )}
     </div>
   );
 }

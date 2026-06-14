@@ -36,8 +36,8 @@ export const RH = {
   ink4: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
 
   // Fonts
-  fontDisplay: "'Sora', system-ui, sans-serif",
-  fontBody: "'Inter', system-ui, sans-serif",
+  fontDisplay: "var(--ds-font-family-heading)",
+  fontBody: "var(--ds-font-family-body)",
   fontMono: "'JetBrains Mono', monospace",
 
   // Layout
