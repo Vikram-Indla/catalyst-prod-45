@@ -110,9 +110,10 @@ interface ToolbarProps {
   onStartStandup: () => void;
   standupActive: boolean;
   onEndStandup: () => void;
+  onOpenHistory: () => void;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory }) => {
   const groupLabels: Record<GroupByMode, string> = {
     none: STRINGS.GROUP_NONE, assignee: STRINGS.GROUP_ASSIGNEE, epic: STRINGS.GROUP_EPIC,
     subtask: STRINGS.GROUP_SUBTASK, priority: STRINGS.GROUP_PRIORITY,
@@ -202,6 +203,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
         {(close) => (
           <>
             <MenuItem variant="plain" onClick={() => { onStartStandup(); close(); }}>Start standup</MenuItem>
+            <MenuItem variant="plain" onClick={() => { onOpenHistory(); close(); }}>Standup history</MenuItem>
             <MenuItem variant="plain" onClick={() => { onCopyBoardLink(); close(); }}>Copy board link</MenuItem>
             <MenuItem variant="plain" onClick={() => { window.print(); close(); }}>Print board</MenuItem>
           </>

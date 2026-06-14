@@ -2,7 +2,7 @@
  * KanbanPage — route entry for the brand-new Kanban board.
  * Mounted at /project-hub/:key/kanban. 100% Atlaskit; shares only the data source.
  */
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -16,11 +16,13 @@ import { CardContextMenu } from './components/CardContextMenu';
 import { InlineCreate } from './components/InlineCreate';
 import { AssigneePicker } from './components/AssigneePicker';
 import { StandupPanel } from './components/StandupPanel';
+import { StandupHistoryPanel } from './components/StandupHistoryPanel';
 import { PortalMenu, MenuItem } from './components/PortalMenu';
 import { useKanbanData } from './data/useKanbanData';
 import { useBoardAvatars } from './data/useBoardAvatars';
 import { useKanbanMutations } from './data/useKanbanMutations';
 import { useCurrentUser } from './data/useCurrentUser';
+import { captureStandupSession } from './data/standupCapture';
 import { useKanbanFilters } from './hooks/useKanbanFilters';
 import { DEFAULT_VISIBLE_FIELDS, SIZES, STRINGS } from './constants';
 import type { BoardIssue, CardVisibleFields, StatusCategory, KanbanColumn } from './types';
@@ -30,7 +32,10 @@ export default function KanbanPage() {
   const { key } = useParams<{ key: string }>();
   const [activeBoardId, setActiveBoardId] = useState<string | null>(null);
   const [standupActive, setStandupActive] = useState(false);
-  const [standupIndex, setStandupIndex] = useState(0);
+  const [standupPerson, setStandupPerson] = useState<string | null>(null);
+  const standupStartedAt = useRef<Date | null>(null);
+  const [standupTimerSec, setStandupTimerSec] = useState(300);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [visibleFields, setVisibleFields] = useState<CardVisibleFields>({ ...DEFAULT_VISIBLE_FIELDS });
   const toggleField = useCallback((f: keyof CardVisibleFields) =>
@@ -120,8 +125,6 @@ export default function KanbanPage() {
   const filterApi = useKanbanFilters(issues);
   const { filtered } = filterApi;
 
-  const standupRoster = useMemo(() => [...filterApi.allAssignees, STRINGS.UNASSIGNED], [filterApi.allAssignees]);
-  const standupPerson = standupRoster[standupIndex];
   const boardIssues = useMemo(() => {
     if (!standupActive || !standupPerson) return filtered;
     if (standupPerson === STRINGS.UNASSIGNED) return filtered.filter((i) => !i.assigneeName);
@@ -177,16 +180,32 @@ export default function KanbanPage() {
         visibleFields={visibleFields}
         onToggleField={toggleField}
         onCopyBoardLink={onCopyBoardLink}
-        onStartStandup={() => { setStandupIndex(0); setStandupActive(true); }}
+        onStartStandup={() => { standupStartedAt.current = new Date(); setStandupPerson(null); setStandupActive(true); }}
         standupActive={standupActive}
-        onEndStandup={() => setStandupActive(false)}
+        onEndStandup={() => {
+          const startedAt = standupStartedAt.current;
+          setStandupActive(false); setStandupPerson(null); standupStartedAt.current = null;
+          if (startedAt && currentUser && key) {
+            captureStandupSession({
+              projectKey: key.toUpperCase(),
+              driver: { id: currentUser.id, name: currentUser.displayName, avatarUrl: currentUser.avatarUrl },
+              startedAt, endedAt: new Date(), timerSetSec: standupTimerSec,
+            }).catch((e) => console.warn('[standup] capture error', e));
+          }
+        }}
+        onOpenHistory={() => setHistoryOpen(true)}
       />
 
-      <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
+      <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex' }}>
         {standupActive && (
-          <StandupPanel people={filterApi.allAssignees} avatars={avatars} index={standupIndex} setIndex={setStandupIndex} />
+          <StandupPanel
+            issues={filtered}
+            avatars={avatars}
+            onPersonChange={setStandupPerson}
+            onTimerSet={setStandupTimerSec}
+          />
         )}
-        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
           {isLoading ? (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Spinner size="large" />
@@ -226,6 +245,8 @@ export default function KanbanPage() {
           onClose={() => setAssigneeTarget(null)}
         />
       )}
+
+      <StandupHistoryPanel projectKey={key?.toUpperCase()} open={historyOpen} onClose={() => setHistoryOpen(false)} />
     </div>
   );
 }

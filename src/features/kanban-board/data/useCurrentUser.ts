@@ -5,7 +5,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface CurrentUser { id: string; displayName: string | null; jiraAccountId: string | null; }
+export interface CurrentUser { id: string; displayName: string | null; jiraAccountId: string | null; avatarUrl: string | null; }
 
 export function useCurrentUser(): CurrentUser | null {
   const { data } = useQuery({
@@ -14,11 +14,12 @@ export function useCurrentUser(): CurrentUser | null {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
       const { data: profile } = await supabase
-        .from('profiles').select('full_name, jira_account_id').eq('id', user.id).maybeSingle();
+        .from('profiles').select('full_name, jira_account_id, avatar_url').eq('id', user.id).maybeSingle();
       return {
         id: user.id,
         displayName: (profile as any)?.full_name ?? null,
         jiraAccountId: (profile as any)?.jira_account_id ?? null,
+        avatarUrl: (profile as any)?.avatar_url ?? null,
       };
     },
     staleTime: 5 * 60_000,
