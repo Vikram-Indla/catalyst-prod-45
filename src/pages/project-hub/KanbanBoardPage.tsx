@@ -17,6 +17,7 @@ import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspens
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ProductHeaderChip } from '@/components/layout/ProductHeaderChip';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import Button from '@atlaskit/button/new';
 import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
@@ -67,11 +68,15 @@ import {
   type AdvancedFilters,
   EMPTY_ADVANCED_FILTERS, hasActiveAdvancedFilters, countAdvancedFilters,
 } from '@/components/kanban/AdvancedFilterPanel';
+import { FilterTriggerButton } from '@/components/shared/JiraBasicFilter';
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
+import { GroupByPopover } from '@/components/shared/GroupByPopover';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Textfield from '@atlaskit/textfield';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import GrowDiagonalIcon from '@atlaskit/icon/core/grow-diagonal';
+import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import { useUpdateBoard } from '@/hooks/useBoardMutations';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import { useDefaultProject } from '@/hooks/useProjects';
@@ -156,6 +161,10 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const [showStandup, setShowStandup] = useState(false);
+  // Standup starts in fullscreen overlay by default (Jira parity). Click the
+  // minimize button in the overlay to switch to docked mode (board + global
+  // chrome visible, standup panel pinned to the left of the column row).
+  const [isStandupFullscreen, setIsStandupFullscreen] = useState(false);
   const [standupAssignee, setStandupAssignee] = useState<string | null>(null);
   const [activeBoardId, setActiveBoardId] = useState<string | null>(urlBoardId ?? null);
   const [showBoardSwitcher, setShowBoardSwitcher] = useState(false);
@@ -1389,11 +1398,76 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
 
   /* ═══ RENDER ═══ */
 
+  // Standup fullscreen mode: hides the global sidebar/header and the board's
+  // own header + full KanbanToolbar, replaced by a minimal header
+  // and toolbar inside this overlay.
+  const standupFullscreen = showStandup && isStandupFullscreen;
+
   return (
-    <div className="flex flex-col flex-1 min-h-0" style={{ background: tk.pageBg }}>
-      {/* jira-compare catalog item 1 cascade (2026-05-02): canonical
-          project chip mounts above the page header. */}
-      {key && !isProduct && <ProjectPageHeader projectKey={key} />}
+    <div
+      className="flex flex-col flex-1 min-h-0"
+      style={standupFullscreen
+        ? {
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'var(--ds-surface, #FFFFFF)',
+          }
+        : { background: tk.pageBg }}
+    >
+      {/* In fullscreen standup mode the canonical header is replaced by a
+          minimal header rendered further down — hide it here. In normal
+          mode, when a standup is active we wrap the chip in a row so the
+          Maximize + End standup buttons sit at the far right of the title
+          row (above the toolbar) — the toolbar itself stays untouched.
+          Normal (non-standup) project render uses the canonical
+          ProjectPageHeader (Vikram directive 2026-06-14); products use
+          ProductHeaderChip. The standup row uses the inline chip because a
+          space-between button row needs an inline chip, not the block header. */}
+      {!standupFullscreen && key && (
+        showStandup ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            {isProduct ? <ProductHeaderChip productCode={key} /> : <ProjectHeaderChip projectKey={key} />}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 24 }}>
+              <button
+                type="button"
+                onClick={() => setIsStandupFullscreen(true)}
+                title="Full screen"
+                aria-label="Full screen"
+                style={{
+                  width: 32, height: 32, display: 'inline-flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  background: 'var(--ds-surface, #FFFFFF)',
+                  borderRadius: 4,
+                  cursor: 'pointer', color: 'var(--ds-text-subtle, #44546F)',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+              >
+                <GrowDiagonalIcon label="" color="var(--ds-text-subtle, #44546F)" />
+              </button>
+              <button
+                type="button"
+                onClick={() => { setStandupAssignee(null); setShowStandup(false); }}
+                style={{
+                  height: 32, padding: '0 12px',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  background: 'var(--ds-surface, #FFFFFF)',
+                  borderRadius: 4,
+                  fontSize: 13, fontWeight: 500,
+                  color: 'var(--ds-text, #292A2E)',
+                  cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+              >
+                End standup
+              </button>
+            </div>
+          </div>
+        ) : (
+          isProduct ? <ProductHeaderChip productCode={key} /> : <ProjectPageHeader projectKey={key} />
+        )
+      )}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
       {/* Board switcher now lives inside <KanbanToolbar /> via boardSwitcherSlot. */}
 
@@ -1560,10 +1634,123 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         </div>
       )}
 
+      {/* ── FULLSCREEN STANDUP: minimal header + toolbar row ────────────────
+          Jira parity (Screenshot 2026-06-13 220818): only the project chip,
+          add-people, meatball and a minimize button on top; a single row
+          below it with Search + Filter on the left, Group + Analytics + End
+          standup on the right. The normal <KanbanToolbar/> is hidden below. */}
+      {standupFullscreen && (
+        <>
+          {/* Row 1 — minimal header */}
+          <div
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '12px 24px',
+              background: 'var(--ds-surface, #FFFFFF)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {/* Reuse the canonical ProjectHeaderChip — it renders board
+                  name + add-people + meatball already. */}
+              {key && <ProjectHeaderChip projectKey={key} />}
+            </div>
+            {/* Fullscreen title row only carries the minimize button.
+                End standup lives in the toolbar to the right of Group. */}
+            <button
+              type="button"
+              onClick={() => setIsStandupFullscreen(false)}
+              title="Exit full screen"
+              aria-label="Exit full screen"
+              style={{
+                width: 32, height: 32, display: 'inline-flex',
+                alignItems: 'center', justifyContent: 'center',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-surface, #FFFFFF)',
+                borderRadius: 4,
+                cursor: 'pointer', color: 'var(--ds-text-subtle, #44546F)',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+            >
+              <VidFullScreenOffIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+            </button>
+          </div>
+
+          {/* Row 2 — simplified toolbar */}
+          <div
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '0 24px 12px', gap: 8,
+              background: 'var(--ds-surface, #FFFFFF)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {/* Search input — reuses board search state */}
+              <div style={{ position: 'relative', width: 220 }}>
+                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: tk.textMuted, pointerEvents: 'none', display: 'inline-flex' }}>
+                  <svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden>
+                    <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M10.5 10.5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search board"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  style={{
+                    width: '100%', height: 32, paddingLeft: 30, paddingRight: 8,
+                    border: `1px solid ${tk.border}`, borderRadius: 3,
+                    fontSize: 14, fontWeight: 500,
+                    color: tk.textPrimary, background: tk.surfaceBg,
+                    outline: 'none', fontFamily: 'var(--cp-font-body)',
+                  }}
+                />
+              </div>
+              {/* Filter trigger — reuses board's basic filter state */}
+              <FilterTriggerButton
+                count={basicFilterCount}
+                onClick={() => setShowBasicFilter(p => !p)}
+                isOpen={showBasicFilter}
+              />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <GroupByPopover<GroupByMode>
+                value={groupBy}
+                onChange={setGroupBy}
+                options={BOARD_GROUP_OPTIONS}
+                noneKey={'none' as GroupByMode}
+              />
+              {/* End standup — sits to the RIGHT of the Group trigger. */}
+              <button
+                type="button"
+                onClick={() => { setStandupAssignee(null); setShowStandup(false); }}
+                style={{
+                  height: 32, padding: '0 12px',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  background: 'var(--ds-surface, #FFFFFF)',
+                  borderRadius: 4,
+                  fontSize: 13, fontWeight: 500,
+                  color: 'var(--ds-text, #292A2E)',
+                  cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+              >
+                End standup
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* CatyBoardInsight now lives inside <KanbanToolbar /> via catyInsightSlot. */}
       {/* ── Toolbar — canonical <KanbanToolbar/> (Phase 1 extraction) ── */}
-      {/* Offset matches standup panel width when open */}
-      <div style={{ marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>
+      {/* Toolbar stays unchanged when standup is active — the standup panel
+          sits below the toolbar, not above it. The legacy marginLeft offset
+          that pushed the toolbar right has been removed. */}
+      {!standupFullscreen && (
+      <div>
       <KanbanToolbar<GroupByMode>
         tk={tk}
         search={search}
@@ -1621,7 +1808,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         canArchive={canArchive}
         showArchived={showArchived}
         onShowArchivedChange={setShowArchived}
-        onStartStandup={() => setShowStandup(true)}
+        onStartStandup={() => { setShowStandup(true); setIsStandupFullscreen(true); }}
         quickFilters={quickFilters}
         onQuickFiltersChange={setQuickFilters}
         enabledQuickFilters={enabledQuickFilters}
@@ -1633,6 +1820,9 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         catyInsightSlot={
           <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />
         }
+        /* Standup controls live in the title row above the toolbar (next to
+           the chip) — the toolbar itself stays unmodified. The board switcher
+           is hidden entirely in product mode (no per-product board list). */
         boardSwitcherSlot={isProduct ? null :
           <div ref={boardSwitcherRef} style={{ position: 'relative' }}>
             {(() => {
@@ -1713,6 +1903,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         }
       />
       </div>
+      )}
 
       <ModalTransition>
         {renameBoardOpen && (
@@ -1754,8 +1945,23 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
       </ModalTransition>
 
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}
-      {/* When standup panel is open, offset content 280px to the right (Jira parity) */}
-      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px', marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>
+      {/* When a standup is active, render the StandupModal as an inline docked
+          flex item to the left of the column area. The two share a row in a
+          responsive flex container — no overlapping. Replaces the legacy
+          marginLeft offset trick (which would otherwise hide content behind
+          the fixed-positioned panel). */}
+      <div className="flex-1 min-h-0 flex" style={{ overflow: 'auto', padding: '0 16px 16px 16px', gap: 16 }}>
+        {showStandup && (
+          <StandupModal
+            docked
+            issues={standupAssignee ? rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType)) : filtered}
+            avatarsByName={avatarsByName}
+            tk={tk}
+            onPersonChange={name => setStandupAssignee(name === 'Unassigned' ? null : name)}
+            onClose={() => { setStandupAssignee(null); setShowStandup(false); }}
+          />
+        )}
+        <div className="flex-1 min-w-0" style={{ display: 'flex', flexDirection: 'column' }}>
         {/* Filter-backed board states (ENABLE_FILTER_TO_KANBAN). */}
         {isFilterBacked && filterBoard.isError && (
           <div style={{ marginBottom: 16 }}>
@@ -1913,6 +2119,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             }}
           />
         )}
+        </div> {/* /board-column wrapper (flex-1) */}
       </div>
 
       {/* ── Detail panel ── */}
@@ -1928,15 +2135,10 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
           />
         </Suspense>
       )}
-      {showStandup && (
-        <StandupModal
-          issues={standupAssignee ? rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType)) : filtered}
-          avatarsByName={avatarsByName}
-          tk={tk}
-          onPersonChange={name => setStandupAssignee(name === 'Unassigned' ? null : name)}
-          onClose={() => { setStandupAssignee(null); setShowStandup(false); }}
-        />
-      )}
+      {/* StandupModal now renders as an inline docked panel inside the board
+          content row above (Jira parity). The legacy fixed-overlay variant
+          has been removed — it would have rendered on top of the column
+          area and overlapped cards. */}
       <PriToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
