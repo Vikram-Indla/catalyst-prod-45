@@ -448,6 +448,7 @@ export function StatusPill({
       status={String(children)}
       statusCategory={category}
       interactive={false}
+      compact={true}
     />
   );
 }
@@ -470,6 +471,7 @@ export function makeStatusCell(
       <CatalystStatusPill
         status={displayLabel}
         interactive={false}
+        compact={true}
       />
     );
   };
@@ -549,6 +551,7 @@ export function makeStatusEditCell<T>(opts: {
             <CatalystStatusPill
               status={opts.labelFor ? opts.labelFor(status) : status}
               interactive={false}
+              compact={true}
             />
           ) : (
             <span style={{ color: token("color.text.subtlest", "#7A869A") }}>—</span>
