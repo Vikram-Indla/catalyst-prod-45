@@ -42,7 +42,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useCatalystContext } from '@/contexts/CatalystContext';
-import { HUB_ICON_REGISTRY, type HubKey } from '@/components/icons';
+import { HubIcon } from '@/components/navigation/HubIcon';
+import type { HubKey } from '@/components/icons';
+import type { HubTone } from '@/lib/hub-tone';
 
 type SectionKey = 'discover' | 'build_ship' | 'knowledge';
 
@@ -51,22 +53,23 @@ interface HubEntry {
   label: string;
   href: string;
   section: SectionKey;
+  tone: HubTone;
   /** Keyboard shortcut suffix bound to Cmd/Ctrl. '1'–'9', '0', '-'. */
   shortcut: string;
 }
 
 const HUBS: HubEntry[] = [
-  { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   shortcut: '1' },
-  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   shortcut: '2' },
-  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   shortcut: '3' },
-  { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', shortcut: '4' },
-  { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', shortcut: '5' },
-  { key: 'release',  label: 'Release',  href: '/release-hub/command-center', section: 'build_ship', shortcut: '6' },
-  { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', shortcut: '7' },
-  { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', shortcut: '8' },
-  { key: 'task',     label: 'Tasks',    href: '/tasks/board',                section: 'build_ship', shortcut: '9' },
-  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', shortcut: '0' },
-  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  shortcut: '-' },
+  { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1' },
+  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2' },
+  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3' },
+  { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4' },
+  { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5' },
+  { key: 'release',  label: 'Release',  href: '/release-hub/command-center', section: 'build_ship', tone: 'magenta', shortcut: '6' },
+  { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7' },
+  { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8' },
+  { key: 'task',     label: 'Tasks',    href: '/tasks/board',                section: 'build_ship', tone: 'yellow',  shortcut: '9' },
+  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0' },
+  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-' },
 ];
 
 const SECTIONS: { key: SectionKey; title: string }[] = [
@@ -262,14 +265,21 @@ export function HubSwitcher() {
                     href={hub.href}
                     isSelected={isActive(hub.href)}
                     iconBefore={
-                      <img
-                        src={HUB_ICON_REGISTRY[hub.key]}
-                        width={32}
-                        height={32}
-                        alt=""
-                        aria-hidden="true"
-                        style={{ borderRadius: 6, objectFit: 'fill', flexShrink: 0, display: 'block' }}
-                      />
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 32,
+                          height: 32,
+                          flexShrink: 0,
+                          borderRadius: 6,
+                          background: `var(--ds-background-accent-${hub.tone}-subtler, transparent)`,
+                          color: `var(--ds-text-accent-${hub.tone}, #172B4D)`,
+                        }}
+                      >
+                        <HubIcon name={hub.key as any} size={24} />
+                      </div>
                     }
                     onClick={(e) => handleNavClick(e, hub)}
                   >
