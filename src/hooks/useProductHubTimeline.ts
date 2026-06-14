@@ -25,7 +25,7 @@ const SELECT_FIELDS = `
   title,
   process_step,
   urgency,
-  delivery_manager:project_manager_user_id(full_name),
+  project_manager_user_id,
   end_date,
   created_at
 `;
@@ -39,10 +39,8 @@ function mapRow(row: any): TimelineBusinessRequest {
     title: row.title ?? '(Untitled request)',
     processStep: row.process_step ?? null,
     urgency: row.urgency ?? null,
-    deliveryManagerName: row.delivery_manager?.full_name ?? null,
-    deliveryManagerAvatarUrl: row.delivery_manager?.full_name
-      ? resolveAvatarUrl(row.delivery_manager.full_name)
-      : null,
+    deliveryManagerName: null,
+    deliveryManagerAvatarUrl: null,
     endDate: row.end_date ?? null,
     createdAt: row.created_at,
   };
