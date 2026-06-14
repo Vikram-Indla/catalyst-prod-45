@@ -15,6 +15,7 @@
 import {
   LayoutGrid,
   Settings,
+  GanttChart,
 } from '@/lib/atlaskit-icons';
 import { getProductAvatarUrl } from '@/components/icons';
 import {
@@ -45,7 +46,7 @@ interface ProductRow {
 const RESERVED_HUB_PATHS = new Set([
   'products', 'backlog', 'kanban', 'table', 'dashboard', 'roadmap',
   'roadmaps', 'roadmaps-v1', 'reports', 'cards', 'ideation',
-  'requirement-assist', 'req-assist',
+  'requirement-assist', 'req-assist', 'timeline',
 ]);
 
 function extractProductCode(pathname: string): string | null {
@@ -72,6 +73,7 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
           { id: 'boards',    title: 'Board',     path: `${base}/boards`,    icon: NavKanbanIcon,    exact: false },
           { id: 'backlog',   title: 'Backlog',   path: `${base}/backlog`,   icon: NavBacklogIcon,   exact: false },
           { id: 'allwork',   title: 'Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
+          { id: 'timeline',  title: 'Timeline',  path: `${base}/timeline`,  icon: GanttChart,       exact: false },
           { id: 'filters',   title: 'Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
         ],
       },

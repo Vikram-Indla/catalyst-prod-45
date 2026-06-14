@@ -33,7 +33,7 @@ import AkCalendar from '@atlaskit/calendar';
 import Checkbox from '@atlaskit/checkbox';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { StatusPill } from '@/components/shared/StatusPill';
+import { StatusPill } from '@/components/shared/JiraTable/cells';
 import { useDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
