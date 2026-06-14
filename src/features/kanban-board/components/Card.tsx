@@ -65,6 +65,7 @@ export const Card: React.FC<CardProps> = ({
   }
   if (isSelected) {
     base.outline = `2px solid ${token('color.border.selected', '#0C66E4')}`;
+    base.outlineOffset = '2px';
     base.background = token('color.background.selected', '#E9F2FF');
   }
   if (isDragging) { base.opacity = 0.4; base.background = token('color.background.disabled', '#091E420F'); }
