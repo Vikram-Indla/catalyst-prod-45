@@ -176,7 +176,7 @@ export function CatyWhyCard({
 
       {/* Action button */}
       <Button
-        appearance="primary"
+        appearance="default"
         onClick={() => {
           // Route to backlog with relevant filter
           window.location.hash = '#/project-hub/BAU/allwork';
@@ -190,7 +190,10 @@ export function CatyWhyCard({
       {/* "Show details" link */}
       <button
         type="button"
-        onClick={onClose}
+        onClick={() => {
+          window.location.hash = '#/caty';
+          onClose();
+        }}
         style={{
           background: 'transparent',
           border: 'none',
