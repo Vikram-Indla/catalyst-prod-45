@@ -191,7 +191,7 @@ export function useCatySignals(): CatySignalsResult {
     },
   });
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['caty-mood-signals', user?.id, jiraAccountId],
     enabled: !!user?.id && !!jiraAccountId,
     staleTime: 60_000,
@@ -216,7 +216,7 @@ export function useCatySignals(): CatySignalsResult {
     byType,
     mood: computeCatyState(signals),
     isLoading: isLoading || !jiraAccountId,
-    isError: isError || (jiraAccountId && !isLoading && !data),
+    isError: isError || !jiraAccountId,
     jiraAccountId,
   };
 }
