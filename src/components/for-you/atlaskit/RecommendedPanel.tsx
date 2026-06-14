@@ -26,9 +26,7 @@
  *   watched work that do NOT explicitly @-mention them.
  *
  * House divergences from Jira (accepted, see CLAUDE.md):
- *   • Fonts: Inter / Sora instead of Atlassian Sans.
- *   • No emoji reactions or Dismiss affordance (Catalyst doesn't track
- *     reactions, and Dismiss is a cross-surface pattern we'll land later).
+ *   • No emoji reactions (Catalyst doesn't track reactions).
  *   • Reply input is decorative for now — it jumps to the detail modal on
  *     focus rather than posting inline. Inline reply ships in a follow-up.
  *
@@ -317,6 +315,7 @@ export default function RecommendedPanel({
           <FeedSection
             label="Reply to mentions"
             intro="You were mentioned in a comment. See if you need to reply or action something."
+            sectionType="mentions"
             currentUserName={currentUserName}
             rows={visibleMentions.map(m => ({
               commentId: m.commentId,
@@ -359,6 +358,7 @@ export default function RecommendedPanel({
           <FeedSection
             label="Reply to comments"
             intro="Comments on work you care about. Follow up, reply, or acknowledge."
+            sectionType="comments"
             currentUserName={currentUserName}
             rows={visibleComments.map(c => ({
               commentId: c.commentId,
@@ -457,6 +457,7 @@ interface FeedRow {
 function FeedSection({
   label,
   intro,
+  sectionType = 'mentions',
   rows,
   onOpen,
   onDismiss,
@@ -465,6 +466,7 @@ function FeedSection({
 }: {
   label: string;
   intro: string;
+  sectionType?: 'mentions' | 'comments';
   rows: FeedRow[];
   onOpen: (issueKey: string, fallback?: { issueId: string; issueType: string; projectKey: string }) => void;
   onDismiss: (commentId: string) => void;
@@ -489,10 +491,10 @@ function FeedSection({
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Category tile — Jira parity (DOM probe 2026-04-24):
-              32×32 filled purple tile, radius 6, with a 16×16 inline
-              speech-bubble icon (Atlassian SVG path) in near-black. */}
-          <PurpleCategoryTile />
+          {/* Category tile — color variant per section type for visual differentiation.
+              Mentions: purple (Jira parity DOM probe 2026-04-24).
+              Comments: orange for visual distinction. */}
+          {sectionType === 'mentions' ? <PurpleCategoryTile /> : <OrangeCategoryTile />}
           <h4
             style={{
               // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20.
@@ -621,6 +623,30 @@ function PurpleCategoryTile() {
     >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path d="M0 3.125A2.625 2.625 0 0 1 2.625.5h10.75A2.625 2.625 0 0 1 16 3.125v8.25A2.625 2.625 0 0 1 13.375 14H4.449l-3.327 1.901A.75.75 0 0 1 0 15.25zM2.625 2C2.004 2 1.5 2.504 1.5 3.125v10.833L4.05 12.5h9.325c.621 0 1.125-.504 1.125-1.125v-8.25C14.5 2.504 13.996 2 13.375 2zM12 6.5H4V5h8zm-3 3H4V8h5z" />
+      </svg>
+    </span>
+  );
+}
+
+// Orange category tile for comments section (visual differentiation)
+function OrangeCategoryTile() {
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 32,
+        height: 32,
+        borderRadius: 6,
+        background: token('color.background.accent.orange.subtle', '#F5CD47'),
+        flexShrink: 0,
+        color: token('color.icon.accent.orange', 'rgb(41, 42, 46)'),
+      }}
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 0C3.58 0 0 3.13 0 7c0 1.85.79 3.54 2.15 4.81-.13 1.85-.57 3.69-1.15 4.84.88-.63 1.93-1.5 2.97-2.54 1.53.37 3.16.59 4.85.59 4.42 0 8-3.13 8-7s-3.58-7-8-7zm0 12c-1.34 0-2.59-.27-3.66-.77.5-1.06.97-2.33 1.19-3.54.31.05.64.08.97.08 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3v1c0 1.66-1.34 3-3 3-.58 0-1.13-.17-1.6-.45.5-1.12.94-2.35 1.12-3.65C1.5 5.08 1 6 1 7c0 3.86 3.13 7 7 7z"/>
       </svg>
     </span>
   );
