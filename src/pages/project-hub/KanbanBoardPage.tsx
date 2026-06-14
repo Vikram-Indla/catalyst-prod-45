@@ -1487,24 +1487,30 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         await supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey);
         qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
       }
-      /* Standup Phase 1 — when a standup is active, attribute this change
-         to whoever is currently speaking. Fire-and-forget; never blocks
-         the kanban UX or causes the move to look failed if logging fails. */
+      /* Standup Phase 1 — when a standup is active, log the change.
+         speaker_name records the PANEL-NOMINAL speaker (correlation
+         metadata, not authorship). changed_by_user_id captures the
+         ACTUAL click-actor via auth.uid() so the detail view can
+         show "by <real user>" instead of "by <whoever the panel
+         happened to have selected>". Fire-and-forget. */
       if (activeStandupIdRef.current) {
-        (supabase as any)
-          .from('standup_status_changes')
-          .insert({
-            standup_id: activeStandupIdRef.current,
-            event_id: activeStandupEventIdRef.current,
-            speaker_name: currentSpeakerNameRef.current ?? 'Unassigned',
-            issue_id: issueId,
-            issue_key: issue.issueKey,
-            from_status: oldStatus,
-            to_status: newStatus,
-          })
-          .then((res: any) => {
-            if (res?.error) console.error('[standup] failed to log status change', res.error);
-          });
+        supabase.auth.getUser().then(({ data: { user } }) => {
+          (supabase as any)
+            .from('standup_status_changes')
+            .insert({
+              standup_id: activeStandupIdRef.current,
+              event_id: activeStandupEventIdRef.current,
+              speaker_name: currentSpeakerNameRef.current ?? 'Unassigned',
+              changed_by_user_id: user?.id ?? null,
+              issue_id: issueId,
+              issue_key: issue.issueKey,
+              from_status: oldStatus,
+              to_status: newStatus,
+            })
+            .then((res: any) => {
+              if (res?.error) console.error('[standup] failed to log status change', res.error);
+            });
+        });
       }
     } catch {
       issue.status = oldStatus;

@@ -45,6 +45,7 @@ interface StatusChange {
   from_status: string | null;
   to_status: string;
   changed_at: string;
+  changed_by_user_id: string | null;
 }
 
 serve(async (req) => {
@@ -109,9 +110,23 @@ serve(async (req) => {
 
     const { data: statusChanges } = await supabase
       .from("standup_status_changes")
-      .select("speaker_name, issue_key, from_status, to_status, changed_at")
+      .select("speaker_name, issue_key, from_status, to_status, changed_at, changed_by_user_id")
       .eq("standup_id", standupId)
       .order("changed_at");
+
+    /* Resolve changed_by_user_id → profile.full_name so the AI gets a
+       human-readable actor name to attribute the change to. */
+    const actorIds = [...new Set(((statusChanges ?? []) as StatusChange[]).map(c => c.changed_by_user_id).filter(Boolean) as string[])];
+    const actorNameMap = new Map<string, string>();
+    if (actorIds.length > 0) {
+      const { data: actorRows } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", actorIds);
+      for (const p of (actorRows ?? []) as Array<{ id: string; full_name: string | null }>) {
+        if (p.full_name) actorNameMap.set(p.id, p.full_name);
+      }
+    }
 
     // Mark generating up-front so concurrent UI doesn't show stale 'pending'.
     await supabase.from("standups").update({ summary_status: "generating" }).eq("id", standupId);
@@ -121,20 +136,20 @@ serve(async (req) => {
 
 You will receive:
 - The standup's start and end time, plus the project key.
-- A timeline of who was the active speaker at each moment, with how long the timer counted during their turn (when available).
-- A list of work item status changes that happened during the standup (e.g. BAU-1234 moved from Todo to In Progress).
-- The raw audio transcript as a list of timestamped chunks. The transcript has NO speaker labels — chunk timestamps must be cross-referenced against the speaker timeline to attribute utterances. When in doubt, fall back to neutral phrasing rather than guessing.
+- A "panel timeline" listing the participant whose turn was selected in the standup UI at each moment, with timer reading when available. THIS IS NOT GROUND TRUTH — the panel slot is selected manually and frequently doesn't match who is actually speaking (a facilitator may run the whole standup, multiple people may speak in one slot, interjections happen). Treat the panel timeline as weak context, not authorship.
+- A list of work item status changes recorded during the standup. Each change carries the actual click-actor's name (the user who moved the card). The actor IS authoritative for status-change attribution.
+- The raw audio transcript as a list of timestamped chunks. The transcript has NO speaker labels and the audio engine has no diarization. Infer who is speaking ONLY from explicit cues IN THE TRANSCRIPT itself — first-person names ("Vikram here", "thanks Waseem"), context shifts, or salutations. Do not attribute utterances to the panel-selected name unless the transcript itself confirms that person spoke.
 
 Produce a markdown summary with EXACTLY these three top-level sections, in this order:
 
 ## Discussion
-A 3-6 sentence paragraph capturing the substance of the conversation. Mention specific topics, blockers, and decisions. Attribute statements to speakers when the timeline makes it clear. Be concrete, not vague.
+A 3-6 sentence paragraph capturing the substance of the conversation. Mention specific topics, blockers, and decisions. Prefer NEUTRAL phrasing ("the team discussed…", "one participant raised…") unless the transcript itself makes the speaker unambiguous. Be concrete, not vague.
 
 ## Status changes
-A bullet list of every status change. Format each as: \`- **<ISSUE-KEY>** — <from_status> → <to_status> (by <speaker>)\`. If from_status is null write "Unset → <to_status>". If no status changes occurred, write "_No status changes during this standup._"
+A bullet list of every status change. Format each as: \`- **<ISSUE-KEY>** — <from_status> → <to_status> (by <actor>)\`. The actor here MUST be the click-actor's name from the status-change list (this is authoritative). If from_status is null write "Unset → <to_status>". If no status changes occurred, write "_No status changes during this standup._"
 
 ## Action items & blockers
-A bullet list of action items, follow-ups, and explicit blockers raised in the transcript. If none were raised, write "_No action items or blockers raised._"
+A bullet list of action items, follow-ups, and explicit blockers raised in the transcript. Use neutral attribution unless the transcript explicitly names who is responsible. If none were raised, write "_No action items or blockers raised._"
 
 Do NOT add any other sections, headings, preamble, or trailing notes. Output ONLY the markdown described above.`;
 
@@ -146,7 +161,11 @@ Do NOT add any other sections, headings, preamble, or trailing notes. Output ONL
       .join("\n");
 
     const statusChangesList = (statusChanges ?? [])
-      .map((c: StatusChange) => `- ${c.issue_key}: ${c.from_status ?? "Unset"} → ${c.to_status} (by ${c.speaker_name} at ${c.changed_at})`)
+      .map((c: StatusChange) => {
+        const actor = c.changed_by_user_id ? actorNameMap.get(c.changed_by_user_id) : null;
+        const actorLabel = actor ?? "Unknown user";
+        return `- ${c.issue_key}: ${c.from_status ?? "Unset"} → ${c.to_status} (actor: ${actorLabel}, at ${c.changed_at})`;
+      })
       .join("\n");
 
     const transcriptText = chunks
@@ -156,13 +175,13 @@ Do NOT add any other sections, headings, preamble, or trailing notes. Output ONL
     const userPrompt = `Project: ${standup.project_key}
 Standup window: ${standup.started_at} → ${standup.ended_at ?? "still open"}
 
-Speaker timeline:
+Panel timeline (UI context only — not authorship):
 ${speakerTimeline || "(no speakers cycled)"}
 
-Status changes during the standup:
+Status changes during the standup (actor is authoritative):
 ${statusChangesList || "(none)"}
 
-Raw transcript chunks:
+Raw transcript chunks (no diarization — infer speakers only from explicit cues IN the text):
 ${transcriptText}`;
 
     // ── Call Gemini ──────────────────────────────────────────────────
