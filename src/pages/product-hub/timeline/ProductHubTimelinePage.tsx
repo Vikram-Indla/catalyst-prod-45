@@ -17,11 +17,7 @@ import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AtlaskitPageShell } from '@/components/ads';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import ChevronUpIcon from '@atlaskit/icon/glyph/chevron-up';
 import SearchIcon from '@atlaskit/icon/glyph/search';
-import MoreIcon from '@atlaskit/icon/glyph/more';
-import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import { GanttChart, Calendar } from '@/lib/atlaskit-icons';
 import { useProductHubTimeline, type TimelineBusinessRequest } from '@/hooks/useProductHubTimeline';
 import Spinner from '@atlaskit/spinner';
@@ -34,7 +30,7 @@ import Checkbox from '@atlaskit/checkbox';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatusPill } from '@/components/shared/JiraTable/cells';
-import { useDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -70,6 +66,18 @@ const STATUS_CAT_OPTIONS = [
 const REQUEST_TYPES = [
   'Feature', 'Gap', 'Integration', 'Data Request',
 ];
+
+function requestTypeToIconType(requestType: string | null): string | null {
+  if (!requestType) return null;
+  // Map request_type to JiraIssueTypeIcon type prop
+  const typeMap: Record<string, string> = {
+    'Feature': 'Feature',
+    'Gap': 'Business Gap',
+    'Integration': 'Integration',
+    'Data Request': 'Business Request',
+  };
+  return typeMap[requestType] ?? null;
+}
 
 /* ─────────────────────────────── date helpers ───────────────────────── */
 
@@ -320,6 +328,29 @@ export default function ProductHubTimelinePage() {
     setPanelItem({ id: item.requestKey, itemType: 'business_request', displayType: item.requestType ?? 'Feature' });
   }, []);
 
+  /* date edit modal */
+  const [dateEditItem, setDateEditItem] = useState<TimelineBusinessRequest | null>(null);
+  const [editDate, setEditDate] = useState<Date | null>(null);
+  const closeDateModal = useCallback(() => { setDateEditItem(null); setEditDate(null); }, []);
+  const openDateModal = useCallback((item: TimelineBusinessRequest) => {
+    setDateEditItem(item);
+    setEditDate(item.endDate ? parseDate(item.endDate) : null);
+  }, []);
+  const saveDateEdit = useCallback(async () => {
+    if (!dateEditItem || !editDate) return;
+    try {
+      const isoDate = editDate.toISOString().split('T')[0];
+      await (supabase as any)
+        .from('business_requests')
+        .update({ end_date: isoDate })
+        .eq('id', dateEditItem.id);
+      queryClient.invalidateQueries({ queryKey: ['product-hub-timeline', productId] });
+      closeDateModal();
+    } catch (e) {
+      console.error('Date edit failed:', e);
+    }
+  }, [dateEditItem, editDate, productId, queryClient, closeDateModal]);
+
   /* responsive container */
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -372,6 +403,7 @@ export default function ProductHubTimelinePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [requestTypeFilter, setRequestTypeFilter] = useState<string[]>([]);
   const [openDropdown, setOpenDropdown] = useState<OpenDropdown>(null);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   const moreButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -492,32 +524,25 @@ export default function ProductHubTimelinePage() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '8px 12px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', flexShrink: 0, gap: 8,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
-            <div style={{ position: 'relative', width: 180, flexShrink: 0 }}>
-              <div style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', lineHeight: 0, pointerEvents: 'none', color: 'var(--ds-text-subtlest, #626F86)' }}>
-                <SearchIcon label="" size="small" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search timeline"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                style={{
-                  width: '100%', height: 32, padding: '0 8px 0 32px', boxSizing: 'border-box',
-                  border: '1px solid var(--ds-border-input, #DFE1E6)', borderRadius: 3,
-                  fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                  background: 'var(--ds-background-input, #FFFFFF)',
-                  fontFamily: 'var(--ds-font-family-body)',
-                }}
-              />
+          <div style={{ position: 'relative', width: 180, flexShrink: 0 }}>
+            <div style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', lineHeight: 0, pointerEvents: 'none', color: 'var(--ds-text-subtlest, #626F86)' }}>
+              <SearchIcon label="" size="small" />
             </div>
+            <input
+              type="text"
+              placeholder="Search timeline"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%', height: 32, padding: '0 8px 0 32px', boxSizing: 'border-box',
+                border: '1px solid var(--ds-border-input, #DFE1E6)', borderRadius: 3,
+                fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                background: 'var(--ds-background-input, #FFFFFF)',
+                fontFamily: 'var(--ds-font-family-body)',
+              }}
+            />
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Button appearance="subtle" onClick={() => setZoom('week')}>Week</Button>
-            <Button appearance={zoom === 'month' ? 'primary' : 'subtle'} onClick={() => setZoom('month')}>Month</Button>
-            <Button appearance="subtle" onClick={() => setZoom('quarter')}>Quarter</Button>
-          </div>
+          <Button appearance="subtle" onClick={() => setFilterModalOpen(true)}>Filters</Button>
         </div>
 
         {/* main content */}
@@ -548,32 +573,37 @@ export default function ProductHubTimelinePage() {
                 flex: 1, overflow: 'auto', fontSize: 13,
               }}
             >
-              {rows.map((item, i) => (
-                <div
-                  key={item.id}
-                  onClick={() => openDetail(item)}
-                  style={{
-                    height: ROW_H, padding: '0 8px', display: 'flex', alignItems: 'center', gap: 6,
-                    borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-                    cursor: 'pointer',
-                    background: i % 2 === 0 ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface-sunken, #F7F8F9)',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = i % 2 === 0 ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface-sunken, #F7F8F9)'; }}
-                >
-                  {item.deliveryManagerAvatarUrl && (
-                    <Avatar size="xsmall" src={item.deliveryManagerAvatarUrl} name={item.deliveryManagerName ?? ''} />
-                  )}
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ds-text, #172B4D)' }}>
-                      {item.requestKey}
-                    </div>
-                    <div style={{ fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ds-text-subtle, #44546F)' }}>
-                      {item.title}
+              {rows.map((item, i) => {
+                const iconType = requestTypeToIconType(item.requestType);
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => openDetail(item)}
+                    style={{
+                      height: ROW_H, padding: '0 8px', display: 'flex', alignItems: 'center', gap: 6,
+                      borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+                      cursor: 'pointer',
+                      background: i % 2 === 0 ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface-sunken, #F7F8F9)',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = i % 2 === 0 ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface-sunken, #F7F8F9)'; }}
+                  >
+                    {iconType && <JiraIssueTypeIcon type={iconType} size={14} />}
+                    {item.deliveryManagerAvatarUrl && (
+                      <Avatar size="xsmall" src={item.deliveryManagerAvatarUrl} name={item.deliveryManagerName ?? ''} />
+                    )}
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        {item.requestKey}
+                        {item.processStep && <StatusPill status={item.processStep} />}
+                      </div>
+                      <div style={{ fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ds-text-subtle, #44546F)' }}>
+                        {item.title}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -662,12 +692,14 @@ export default function ProductHubTimelinePage() {
                   >
                     {endDate && endLeft !== null && (
                       <div
+                        onClick={e => { e.stopPropagation(); openDateModal(item); }}
                         style={{
                           position: 'absolute', left: endLeft, top: (ROW_H - BAR_H) / 2, width: Math.max(MIN_BAR_W, 40), height: BAR_H,
                           background: barColor(item),
                           borderRadius: BAR_RADIUS,
                           cursor: 'pointer',
                         }}
+                        title="Click to edit end date"
                       />
                     )}
                   </div>
@@ -678,7 +710,69 @@ export default function ProductHubTimelinePage() {
             </div>
           </div>
         </div>
+
+        {/* footer with zoom controls */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+          padding: '8px 12px', borderTop: '1px solid var(--ds-border, #DFE1E6)', flexShrink: 0, gap: 6, background: 'var(--ds-surface-sunken, #F7F8F9)',
+        }}>
+          <Button appearance="subtle" onClick={() => setZoom('week')}>Week</Button>
+          <Button appearance={zoom === 'month' ? 'primary' : 'subtle'} onClick={() => setZoom('month')}>Month</Button>
+          <Button appearance="subtle" onClick={() => setZoom('quarter')}>Quarter</Button>
+        </div>
       </div>
+
+      {/* filter modal */}
+      <ModalTransition>
+        {filterModalOpen && (
+          <Modal onClose={() => setFilterModalOpen(false)}>
+            <ModalHeader>
+              <ModalTitle>Filter requests</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ padding: '16px 0' }}>
+                <label style={{ display: 'block', marginBottom: 12, fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Request type</label>
+                {REQUEST_TYPES.map(type => (
+                  <div key={type} style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Checkbox
+                      isChecked={requestTypeFilter.includes(type)}
+                      onChange={() => {
+                        setRequestTypeFilter(prev =>
+                          prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+                        );
+                      }}
+                      label={type}
+                    />
+                  </div>
+                ))}
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setFilterModalOpen(false)}>Done</Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* date edit modal */}
+      <ModalTransition>
+        {dateEditItem && (
+          <Modal onClose={closeDateModal}>
+            <ModalHeader>
+              <ModalTitle>Edit end date — {dateEditItem.requestKey}</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ padding: '16px 0' }}>
+                <AkCalendar onChange={(v: any) => setEditDate(v)} defaultValue={editDate ?? undefined} />
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={closeDateModal}>Cancel</Button>
+              <Button appearance="primary" onClick={saveDateEdit}>Save</Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
 
       {/* side panel detail */}
       {panelItem && (
