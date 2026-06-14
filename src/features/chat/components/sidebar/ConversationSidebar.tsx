@@ -30,26 +30,61 @@ interface ConversationSidebarProps {
   isCollapsed: boolean;
 }
 
-// ── DM presence: single batched query for online status ───────────────────
+// ── DM presence: batched online status from user_presence ──────────────────
+//
+// Online rule (verified against prod schema lmqwtldpfacrrlvdnmld):
+//   - presence_state enum is on_set | remote | away | on_leave (NO 'online').
+//   - A user is "online" when state IN ('on_set','remote') AND last_seen_at is
+//     fresh (within ONLINE_WINDOW). away / on_leave are never online.
+//   - clean_stale_presence() flips stale rows to 'away' after 5 min; we enforce
+//     the same window client-side so a not-yet-run cron can't show a stale dot.
+//   - user_presence is keyed globally by user_id (NOT per-conversation), so we
+//     first resolve each DM's OTHER member from chat_conversation_members, then
+//     batch one query over those partner user_ids.
+// If presence can't be confirmed for a partner → NO dot (zero-assumption).
+
+const ONLINE_STATES = ['on_set', 'remote'];
+const ONLINE_WINDOW_MS = 5 * 60 * 1000;
 
 function useDMPresence(dmConvIds: string[]): Map<string, boolean> {
   const { user } = useAuth();
   const myId = user?.id ?? null;
   const key = dmConvIds.slice().sort().join(',');
   const { data } = useQuery({
-    queryKey: ['chat', 'dm-presence', key],
+    queryKey: ['chat', 'dm-presence', key, myId],
     enabled: dmConvIds.length > 0 && !!myId,
     staleTime: 30_000,
     refetchInterval: 60_000,
     queryFn: async () => {
-      const { data: rows } = await (supabase as any)
-        .from('chat_presence')
-        .select('conversation_id, user_id, status')
-        .in('conversation_id', dmConvIds)
-        .neq('user_id', myId)
-        .eq('status', 'online');
       const map = new Map<string, boolean>();
-      for (const r of rows ?? []) map.set(r.conversation_id, true);
+
+      // 1. Resolve each DM's other member (one batched query for all DMs).
+      const { data: memberRows } = await (supabase as any)
+        .from('chat_conversation_members')
+        .select('conversation_id, user_id')
+        .in('conversation_id', dmConvIds)
+        .neq('user_id', myId);
+      const partners = (memberRows ?? []) as Array<{ conversation_id: string; user_id: string }>;
+      if (partners.length === 0) return map;
+
+      const partnerIds = Array.from(new Set(partners.map(p => p.user_id)));
+
+      // 2. Batch presence for all partner user_ids.
+      const freshSince = new Date(Date.now() - ONLINE_WINDOW_MS).toISOString();
+      const { data: presenceRows } = await (supabase as any)
+        .from('user_presence')
+        .select('user_id, state, last_seen_at')
+        .in('user_id', partnerIds)
+        .in('state', ONLINE_STATES)
+        .gte('last_seen_at', freshSince);
+      const onlineUserIds = new Set(
+        ((presenceRows ?? []) as Array<{ user_id: string }>).map(r => r.user_id),
+      );
+
+      // 3. A DM is online when its resolved partner is online.
+      for (const p of partners) {
+        if (onlineUserIds.has(p.user_id)) map.set(p.conversation_id, true);
+      }
       return map;
     },
   });

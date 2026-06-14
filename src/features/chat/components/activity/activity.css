@@ -23,6 +23,28 @@
   margin: 0;
 }
 
+/* ── Mark all as read ── */
+.c-activity__mark-read {
+  margin-left: auto;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--c-chat-accent);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 80ms ease;
+}
+
+.c-activity__mark-read:hover {
+  background: var(--c-chat-hover-bg);
+  color: var(--c-chat-accent-hover);
+}
+
 /* ── Tab bar ── */
 .c-activity__tabs {
   height: var(--c-chat-tabs-h);

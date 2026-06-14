@@ -5,7 +5,8 @@
  * It is the ONLY file in the codebase that imports tokens.css.
  * Callers: src/pages/chat/ChatPage.tsx only.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -52,6 +53,20 @@ function ChatFullScreenInner() {
   const shell = useShellState();
   const { conversations, isLoading } = useConversations();
   const selfProfile = useSelfProfile();
+  const [searchParams] = useSearchParams();
+
+  // Deep-link hydration (first mount only): /chat?c=<conversationId>&m=<messageId>
+  const didHydrateParams = useRef(false);
+  useEffect(() => {
+    if (didHydrateParams.current) return;
+    const c = searchParams.get('c');
+    const m = searchParams.get('m');
+    if (!c) return;
+    didHydrateParams.current = true;
+    setActiveConversationId(c);
+    if (shell.activeView !== 'chat') shell.setActiveView('chat');
+    if (m) setPendingMessageId(m);
+  }, [searchParams, shell]);
 
   const handleSelectConversation = (id: string) => {
     setActiveConversationId(id);

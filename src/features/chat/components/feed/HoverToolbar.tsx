@@ -4,6 +4,7 @@ import { IconButton } from '@atlaskit/button/new';
 import CommentAddIcon from '@atlaskit/icon/core/comment-add';
 import EditIcon from '@atlaskit/icon/core/edit';
 import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
+import BookmarkIcon from '@atlaskit/icon/core/book-with-bookmark';
 // ads-scanner:ignore-next-line -- CSS file uses only var(--c-chat-*) tokens
 import './hover-toolbar.css';
 
@@ -25,6 +26,9 @@ const EMOJI_ENTRIES: [string, string][] = [
   ['🌍','earth world globe'],['🤝','handshake deal'],['🎁','gift present'],
 ];
 const ALL_EMOJIS = EMOJI_ENTRIES.map(([e]) => e);
+
+// Slack-parity one-click quick reactions.
+const QUICK_REACTIONS = ['👍', '✅', '😂'];
 
 // ── Emoji picker portal ─────────────────────────────────────────────────────
 
@@ -107,12 +111,28 @@ function EmojiPicker({
 function MoreMenu({
   anchorRect,
   isOwn,
+  isPinned,
+  isSaved,
+  onCopyLink,
+  onCopyText,
+  onMarkUnread,
+  onTogglePin,
+  onToggleSave,
+  onForward,
   onEdit,
   onDelete,
   onClose,
 }: {
   anchorRect: DOMRect;
   isOwn: boolean;
+  isPinned: boolean;
+  isSaved: boolean;
+  onCopyLink: () => void;
+  onCopyText: () => void;
+  onMarkUnread: () => void;
+  onTogglePin: () => void;
+  onToggleSave: () => void;
+  onForward: () => void;
   onEdit: () => void;
   onDelete: () => void;
   onClose: () => void;
@@ -120,8 +140,9 @@ function MoreMenu({
   const ref = useRef<HTMLDivElement>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  const MENU_W = 240;
   const top = anchorRect.bottom + 4;
-  const left = Math.max(8, anchorRect.right - 164);
+  const left = Math.max(8, Math.min(anchorRect.right - MENU_W, window.innerWidth - MENU_W - 8));
 
   useEffect(() => {
     function onMouseDown(e: MouseEvent) {
@@ -142,6 +163,8 @@ function MoreMenu({
     };
   }, [onClose, confirmDelete]);
 
+  const run = useCallback((fn: () => void) => () => { fn(); onClose(); }, [onClose]);
+
   return createPortal(
     <div
       ref={ref}
@@ -150,26 +173,7 @@ function MoreMenu({
       role="menu"
       aria-label="Message actions"
     >
-      {isOwn && !confirmDelete && (
-        <button
-          className="c-more-menu__item"
-          role="menuitem"
-          onClick={() => { onEdit(); onClose(); }}
-        >
-          <EditIcon label="" LEGACY_size="small" />
-          Edit message
-        </button>
-      )}
-      {isOwn && !confirmDelete && (
-        <button
-          className="c-more-menu__item c-more-menu__item--danger"
-          role="menuitem"
-          onClick={() => setConfirmDelete(true)}
-        >
-          Delete message
-        </button>
-      )}
-      {isOwn && confirmDelete && (
+      {confirmDelete ? (
         <div className="c-more-menu__confirm" role="alertdialog" aria-label="Confirm delete">
           <span className="c-more-menu__confirm-label">Delete this message?</span>
           <div className="c-more-menu__confirm-actions">
@@ -189,11 +193,48 @@ function MoreMenu({
             </button>
           </div>
         </div>
-      )}
-      {!isOwn && (
-        <button className="c-more-menu__item" role="menuitem" onClick={onClose}>
-          Copy link
-        </button>
+      ) : (
+        <>
+          <button className="c-more-menu__item" role="menuitem" onClick={run(onCopyLink)}>
+            Copy link
+          </button>
+          <button className="c-more-menu__item" role="menuitem" onClick={run(onCopyText)}>
+            Copy text
+          </button>
+          <button className="c-more-menu__item" role="menuitem" onClick={run(onMarkUnread)}>
+            Mark unread
+          </button>
+          <button className="c-more-menu__item" role="menuitem" onClick={run(onTogglePin)}>
+            {isPinned ? 'Unpin from conversation' : 'Pin to conversation'}
+          </button>
+          <button className="c-more-menu__item" role="menuitem" onClick={run(onToggleSave)}>
+            {isSaved ? 'Remove from later' : 'Save for later'}
+          </button>
+          <button className="c-more-menu__item" role="menuitem" onClick={run(onForward)}>
+            Forward message…
+          </button>
+
+          {isOwn && (
+            <>
+              <div className="c-more-menu__divider" role="separator" aria-hidden="true" />
+              <button
+                className="c-more-menu__item"
+                role="menuitem"
+                onClick={() => { onEdit(); onClose(); }}
+              >
+                <EditIcon label="" LEGACY_size="small" />
+                Edit message
+              </button>
+              <button
+                className="c-more-menu__item c-more-menu__item--danger"
+                role="menuitem"
+                onClick={() => setConfirmDelete(true)}
+              >
+                Delete message
+              </button>
+            </>
+          )}
+        </>
       )}
     </div>,
     document.body,
@@ -207,26 +248,42 @@ export interface HoverToolbarCallbacks {
   onOpenThread: () => void;
   onEditMessage: () => void;
   onDeleteMessage: () => void;
+  onCopyLink: () => void;
+  onCopyText: () => void;
+  onMarkUnread: () => void;
+  onTogglePin: () => void;
+  onToggleSave: () => void;
+  onForward: () => void;
 }
 
 interface Props extends HoverToolbarCallbacks {
   messageId: string;
   isOwn: boolean;
+  isPinned: boolean;
+  isSaved: boolean;
 }
 
 export function HoverToolbar({
   isOwn,
+  isPinned,
+  isSaved,
   onToggleReaction,
   onOpenThread,
   onEditMessage,
   onDeleteMessage,
+  onCopyLink,
+  onCopyText,
+  onMarkUnread,
+  onTogglePin,
+  onToggleSave,
+  onForward,
 }: Props) {
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const emojiTriggerRef = useRef<HTMLButtonElement>(null);
   const moreTriggerRef = useRef<HTMLDivElement>(null);
 
-  const isPinned = emojiOpen || moreOpen;
+  const toolbarPinned = emojiOpen || moreOpen;
 
   const handleEmojiTrigger = useCallback(() => {
     setMoreOpen(false);
@@ -240,11 +297,24 @@ export function HoverToolbar({
 
   return (
     <div
-      className={`c-hover-tb${isPinned ? ' c-hover-tb--pinned' : ''}`}
+      className={`c-hover-tb${toolbarPinned ? ' c-hover-tb--pinned' : ''}`}
       role="toolbar"
       aria-label="Message actions"
       onClick={e => e.stopPropagation()}
     >
+      {/* Quick reactions (Slack parity) */}
+      {QUICK_REACTIONS.map(emoji => (
+        <button
+          key={emoji}
+          className="c-hover-tb__btn c-hover-tb__quick"
+          onClick={() => onToggleReaction(emoji)}
+          aria-label={`React with ${emoji}`}
+          title={`React with ${emoji}`}
+        >
+          {emoji}
+        </button>
+      ))}
+
       {/* Emoji picker toggle */}
       <button
         ref={emojiTriggerRef}
@@ -265,6 +335,15 @@ export function HoverToolbar({
         label="Reply in thread"
         appearance="subtle"
         onClick={onOpenThread}
+      />
+
+      {/* Save for later */}
+      <IconButton
+        icon={BookmarkIcon}
+        label={isSaved ? 'Remove from later' : 'Save for later'}
+        appearance="subtle"
+        onClick={onToggleSave}
+        isSelected={isSaved}
       />
 
       {/* More actions */}
@@ -291,6 +370,14 @@ export function HoverToolbar({
         <MoreMenu
           anchorRect={moreTriggerRef.current.getBoundingClientRect()}
           isOwn={isOwn}
+          isPinned={isPinned}
+          isSaved={isSaved}
+          onCopyLink={onCopyLink}
+          onCopyText={onCopyText}
+          onMarkUnread={onMarkUnread}
+          onTogglePin={onTogglePin}
+          onToggleSave={onToggleSave}
+          onForward={onForward}
           onEdit={onEditMessage}
           onDelete={onDeleteMessage}
           onClose={() => setMoreOpen(false)}

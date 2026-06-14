@@ -320,11 +320,29 @@ export function ActivitySurface({ onOpenConversation, onUnreadCount, isActive = 
 
   const filtered = tab === 'all' ? enrichedItems : enrichedItems.filter(i => i.kind === tab);
 
+  const hasUnread = enrichedItems.some(i => !i.isRead);
+
+  const handleMarkAllRead = () => {
+    if (!user?.id) return;
+    const now = new Date();
+    saveSeenAt(user.id, now);
+    setSeenAt(now);
+  };
+
   return (
     <div className="c-chat-activity c-activity" aria-label="Activity">
       {/* Header */}
       <header className="c-activity__hdr">
         <h2 className="c-activity__title">Activity</h2>
+        {hasUnread && (
+          <button
+            type="button"
+            className="c-activity__mark-read"
+            onClick={handleMarkAllRead}
+          >
+            Mark all as read
+          </button>
+        )}
       </header>
 
       {/* Tabs */}

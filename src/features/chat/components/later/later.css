@@ -1,0 +1,162 @@
+/* ── Later surface shell ── */
+.c-later {
+  display: none;
+  grid-template-rows: var(--c-chat-header-h) minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  background: var(--c-chat-surface);
+  grid-column: 3;
+}
+.c-chat-shell[data-view="later"] .c-later { display: grid; }
+
+/* ── Header ── */
+.c-later__hdr {
+  height: var(--c-chat-header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--c-chat-border);
+}
+
+.c-later__title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  color: var(--c-chat-text);
+  margin: 0;
+}
+
+/* ── Scrollable content ── */
+.c-later__scroll {
+  overflow-y: auto;
+  padding: 8px 0 16px;
+}
+
+/* ── Section heading ── */
+.c-later__section {
+  padding: 8px 24px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--c-chat-text-subtlest);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* ── Later item ── */
+.c-later-item {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 8px;
+  padding: 8px 24px;
+  cursor: pointer;
+  align-items: start;
+  transition: background 80ms ease;
+}
+
+.c-later-item:hover {
+  background: var(--c-chat-hover-bg);
+}
+
+.c-later-item__avatar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+}
+
+.c-later-item__body {
+  min-width: 0;
+}
+
+.c-later-item__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  /* ads-scanner:ignore-next-line -- 2px sub-grid gap matches Jira activity row density */
+  margin-bottom: 2px;
+}
+
+.c-later-item__who {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--c-chat-text);
+  white-space: nowrap;
+}
+
+.c-later-item__ts {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--c-chat-text-subtlest);
+  white-space: nowrap;
+}
+
+.c-later-item__where {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--c-chat-accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c-later-item__preview {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--c-chat-text-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* ads-scanner:ignore-next-line -- 2px sub-grid gap matches Jira activity row density */
+  margin-top: 2px;
+}
+
+/* ── Remove-from-later button ── */
+.c-later-item__remove {
+  flex: none;
+  align-self: center;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--c-chat-text-subtle);
+  background: transparent;
+  border: 1px solid var(--c-chat-border);
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 80ms ease, background 80ms ease, color 80ms ease;
+}
+
+.c-later-item:hover .c-later-item__remove,
+.c-later-item:focus-within .c-later-item__remove {
+  opacity: 1;
+}
+
+.c-later-item__remove:hover {
+  background: var(--c-chat-hover-bg);
+  color: var(--c-chat-text);
+}
+
+/* ── Empty state ── */
+.c-later__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 24px;
+  color: var(--c-chat-text-subtlest);
+}
+
+.c-later__empty p {
+  font-size: 14px;
+  margin: 0;
+  text-align: center;
+}
+
+.c-later__empty__icon {
+  font-size: 32px;
+}

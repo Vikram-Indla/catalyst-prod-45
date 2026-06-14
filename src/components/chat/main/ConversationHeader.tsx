@@ -21,6 +21,7 @@ import {
 } from '@/hooks/chat/useChatActions';
 import { AddPeopleModal } from './AddPeopleModal';
 import { RosterPanel } from './RosterPanel';
+import { PinnedMessagesPanel } from './PinnedMessagesPanel';
 import ProjectIcon from '@/components/shared/ProjectIcon';
 
 export interface ConversationHeaderProps {
@@ -233,6 +234,9 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
           On empty channels the button has nothing to summarize — dead
           affordance. Now lives as a contextual menu item below, enabled
           only when there are messages to act on. */}
+
+      {/* Pinned messages — hidden when count is 0 */}
+      <PinnedMessagesPanel conversationId={conversation.id} />
 
       {/* Search — in-conversation search */}
       {onOpenSearch && (
