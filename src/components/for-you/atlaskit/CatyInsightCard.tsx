@@ -2,6 +2,7 @@ import React from 'react';
 import { token } from '@atlaskit/tokens';
 import Spinner from '@atlaskit/spinner';
 import Tooltip from '@atlaskit/tooltip';
+import { CatyHead } from './CatyButton';
 
 interface CatyInsightCardProps {
   title: string;
@@ -11,21 +12,6 @@ interface CatyInsightCardProps {
   onRefresh?: () => void;
 }
 
-const SPARKLE_SVG = (
-  <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
-    <defs>
-      <linearGradient id="caty-insight-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7">
-        <stop offset="0%" stopColor="#FF3CAC" />
-        <stop offset="20%" stopColor="#784BA0" />
-        <stop offset="40%" stopColor="#2B86C5" />
-        <stop offset="60%" stopColor="#00C9FF" />
-        <stop offset="80%" stopColor="#92FE9D" />
-        <stop offset="100%" stopColor="#FFD700" />
-      </linearGradient>
-    </defs>
-    <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#caty-insight-rainbow)" />
-  </svg>
-);
 
 export function CatyInsightCard({ title, children, isLoading, onDismiss, onRefresh }: CatyInsightCardProps) {
   return (
@@ -46,7 +32,7 @@ export function CatyInsightCard({ title, children, isLoading, onDismiss, onRefre
         marginBlockEnd: isLoading ? 0 : 8,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {SPARKLE_SVG}
+          <CatyHead size={20} />
           <span style={{
             font: `600 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
             color: token('color.text', '#172B4D'),

@@ -14,6 +14,7 @@ import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import GraphLineIcon from '@atlaskit/icon/glyph/graph-line';
 import { PortalMenu, MenuItem, TriggerChevron } from './PortalMenu';
+import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
 import { SIZES, STRINGS, QUICK_FILTERS } from '../constants';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import type { FilterApi } from '../hooks/useKanbanFilters';
@@ -112,10 +113,11 @@ interface ToolbarProps {
   standupActive: boolean;
   onEndStandup: () => void;
   onOpenHistory: () => void;
+  onMapStatuses: () => void;
   projectKey?: string;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, projectKey }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey }) => {
   const groupLabels: Record<GroupByMode, string> = {
     none: STRINGS.GROUP_NONE, assignee: STRINGS.GROUP_ASSIGNEE, epic: STRINGS.GROUP_EPIC,
     subtask: STRINGS.GROUP_SUBTASK, priority: STRINGS.GROUP_PRIORITY,
@@ -209,6 +211,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
         )}
       </PortalMenu>
 
+      {/* Ask Caty — Board health (ported from the legacy /boards/:id surface) */}
+      <span style={{ flexShrink: 0, display: 'inline-flex' }}>
+        <CatyBoardInsight projectKey={projectKey ?? null} resourceId={projectKey ?? 'project'} />
+      </span>
+
       <PortalMenu ariaLabel="More actions" align="right" minWidth={200} trigger={() => (
         <span role="button" aria-label="More actions" style={{ display: 'inline-flex' }}>
           <IconButton icon={MoreIcon} label="More actions" appearance="subtle" />
@@ -218,6 +225,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
           <>
             <MenuItem variant="plain" onClick={() => { onStartStandup(); close(); }}>Start standup</MenuItem>
             <MenuItem variant="plain" onClick={() => { onOpenHistory(); close(); }}>Standup history</MenuItem>
+            <MenuItem variant="plain" onClick={() => { onMapStatuses(); close(); }}>Map statuses</MenuItem>
             <MenuItem variant="plain" onClick={() => { onCopyBoardLink(); close(); }}>Copy board link</MenuItem>
             <MenuItem variant="plain" onClick={() => { window.print(); close(); }}>Print board</MenuItem>
           </>
