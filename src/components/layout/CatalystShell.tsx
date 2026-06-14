@@ -20,6 +20,7 @@ import { Menu } from "@/lib/atlaskit-icons";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import { useNavBreakpoint } from "@/hooks/useNavBreakpoint";
 import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
+import { HubSidebarNav } from "./HubSidebarNav";
 
 /**
  * lazyWithRetry — defends against Vite stale-chunk errors after deploys/HMR.
@@ -258,6 +259,20 @@ function useIsDarkTheme(): boolean {
 // on the table column edge. Removed. When sidebarHidden is true the
 // shell now renders the same zero-width placeholder used for the
 // intermediate state, so the layout stays stable.
+
+const HUB_ROUTES: Record<string, string> = {
+  home: '/for-you',
+  strategy: '/strategyhub',
+  ideation: '/ideation/backlog',
+  product: '/product-hub',
+  project: '/project-hub',
+  release: '/release-hub/command-center',
+  test: '/testhub/dashboard',
+  incident: '/incident-hub',
+  task: '/tasks/board',
+  plan: '/planhub',
+  wiki: '/wiki',
+};
 
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
@@ -879,6 +894,9 @@ function CatalystShellContent() {
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">
+        {/* Hub Sidebar Nav - 52px collapsed icon panel for switching between hubs */}
+        <HubSidebarNav onNavigate={(hub) => navigate(HUB_ROUTES[hub])} />
+
         {/* Sidebar - GPU layer for stability.
             When sidebarHidden is true the actual sidebar is unmounted (0 DOM
             cost) and replaced with a thin edge-reveal handle that restores
