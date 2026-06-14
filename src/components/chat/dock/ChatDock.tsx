@@ -206,11 +206,14 @@ export function ChatDock({
   );
 
   // Caty STATE layer (mood) + SIGNAL layer (events). Both glass-box, both from data.
-  const { displayState, liveMood, evidence, byType, trend, sparkline } = useCatyMood();
+  const { displayState, liveMood, evidence, byType, trend, fetchSucceeded } = useCatyMood();
   const { events, unseenCount: eventUnseen } = useCatyEvents();
   const fabRef = React.useRef<HTMLButtonElement>(null);
   const [whyOpen, setWhyOpen] = React.useState(false);
   const [gesture, setGesture] = React.useState("");
+  const [catyHidden, setCatyHidden] = React.useState(() =>
+    localStorage.getItem('caty.fab.hidden') === 'true'
+  );
   const prevUnseen = React.useRef(eventUnseen);
   const hoverTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -225,6 +228,13 @@ export function ChatDock({
     }
     prevUnseen.current = eventUnseen;
   }, [eventUnseen, events]);
+
+  // Listen for Caty visibility changes from nav icon
+  React.useEffect(() => {
+    const handler = () => setCatyHidden(localStorage.getItem('caty.fab.hidden') === 'true');
+    window.addEventListener('caty-visibility-changed', handler);
+    return () => window.removeEventListener('caty-visibility-changed', handler);
+  }, []);
 
   const eventLine = React.useMemo(() => buildEventLine(events), [events]);
   const openHover = () => {
@@ -272,7 +282,7 @@ export function ChatDock({
           )}
           <span className="cc-fab__presence" />
         </button>
-        {!isDragging && (
+        {!isDragging && !catyHidden && (
           <CatyWhyCard
             open={whyOpen}
             anchorRef={fabRef}
@@ -281,8 +291,6 @@ export function ChatDock({
             evidence={evidence}
             byType={byType}
             trend={trend}
-            sparkline={sparkline}
-            eventLine={eventLine}
             onClose={() => setWhyOpen(false)}
             onOpenTicket={openTicket}
             onHoverIn={openHover}

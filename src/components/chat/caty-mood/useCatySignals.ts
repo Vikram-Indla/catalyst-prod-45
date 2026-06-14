@@ -38,6 +38,7 @@ export interface CatySignalsResult {
   byType: CatyTypeBreakdown;
   mood: CatyMood;
   isLoading: boolean;
+  isError: boolean;
   /** Jira account id resolved for the current user, or null. */
   jiraAccountId: string | null;
 }
@@ -215,6 +216,7 @@ export function useCatySignals(): CatySignalsResult {
     byType,
     mood: computeCatyState(signals),
     isLoading: isLoading || !jiraAccountId,
+    isError: isError || (jiraAccountId && !isLoading && !data),
     jiraAccountId,
   };
 }

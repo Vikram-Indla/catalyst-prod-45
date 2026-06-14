@@ -10,6 +10,7 @@ import { HubSwitcher } from '@/components/layout/HubSwitcher';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
+import { CatyMoodFace } from '@/components/chat/caty-mood/CatyMoodFace';
 import { Link } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
 import { useCatalystContext } from '@/contexts/CatalystContext';
@@ -229,6 +230,38 @@ export function CatalystHeader() {
         flexShrink: 0,
         minWidth: 'max-content',
       }} data-theme-toggle-cluster>
+        {/* Caty toggle — always-known anchor for FAB visibility */}
+        <Tooltip content="Toggle Caty insights">
+          <button
+            type="button"
+            onClick={() => {
+              const hidden = localStorage.getItem('caty.fab.hidden') === 'true';
+              localStorage.setItem('caty.fab.hidden', String(!hidden));
+              window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '32px',
+              height: '32px',
+              borderRadius: '4px',
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              padding: 0,
+              color: 'var(--ds-text, #172B4D)',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'transparent';
+            }}
+          >
+            <CatyMoodFace state="content" size={20} />
+          </button>
+        </Tooltip>
         {!isNarrow && <ThemeToggle />}
         <NotificationsPanel />
         {!isNarrow && <SettingsMenu />}

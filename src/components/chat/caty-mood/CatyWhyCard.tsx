@@ -9,6 +9,8 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import Button from '@atlaskit/button';
+import Lozenge from '@atlaskit/lozenge';
 import { CatyMoodFace } from './CatyMoodFace';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { CatyMood, CatyState } from './catyMoodEngine';
@@ -17,43 +19,18 @@ import type { CatyTrend } from './catyMoodHistory';
 
 interface StateStyle {
   accent: string;
-  bg: string;
   label: string;
+  appearance: 'success' | 'default' | 'inprogress' | 'moved' | 'removed';
 }
 
 const STATE_STYLE: Record<CatyState, StateStyle> = {
-  zen: { accent: 'var(--ds-text-success, #22A06B)', bg: 'var(--ds-background-success, #DCFFF1)', label: 'zen' },
-  content: { accent: 'var(--ds-text-subtle, #44546F)', bg: 'var(--ds-background-neutral, #F1F2F4)', label: 'content' },
-  focused: { accent: 'var(--ds-text-information, #0C66E4)', bg: 'var(--ds-background-information, #E9F2FE)', label: 'focused' },
-  concerned: { accent: 'var(--ds-text-warning-inverse, #974F0C)', bg: 'var(--ds-background-warning, #FFF7D6)', label: 'concerned' },
-  alert: { accent: 'var(--ds-text-danger, #AE2E24)', bg: 'var(--ds-background-danger, #FFECEB)', label: 'alert' },
+  zen: { accent: 'var(--ds-text-success, #22A06B)', label: 'zen', appearance: 'success' },
+  content: { accent: 'var(--ds-text-subtle, #44546F)', label: 'content', appearance: 'default' },
+  focused: { accent: 'var(--ds-text-information, #0C66E4)', label: 'focused', appearance: 'inprogress' },
+  concerned: { accent: 'var(--ds-text-warning-inverse, #974F0C)', label: 'concerned', appearance: 'moved' },
+  alert: { accent: 'var(--ds-text-danger, #AE2E24)', label: 'alert', appearance: 'removed' },
 };
 
-function Sparkline({ scores, accent }: { scores: number[]; accent: string }) {
-  if (scores.length < 2) {
-    return (
-      <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', padding: '4px 0' }}>
-        trend builds over a few days
-      </div>
-    );
-  }
-  const max = Math.max(...scores, 1);
-  const n = scores.length;
-  const pts = scores
-    .map((v, i) => {
-      const x = (i / (n - 1)) * 196 + 2;
-      const y = 32 - (v / max) * 28;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(' ');
-  const last = pts.split(' ').pop()!.split(',');
-  return (
-    <svg width="100%" height="34" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true">
-      <polyline points={pts} fill="none" stroke={accent} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx={last[0]} cy={last[1]} r="3.5" fill={accent} />
-    </svg>
-  );
-}
 
 export interface CatyWhyCardProps {
   open: boolean;
@@ -63,44 +40,12 @@ export interface CatyWhyCardProps {
   evidence: CatyEvidence;
   byType: CatyTypeBreakdown;
   trend: CatyTrend;
-  sparkline: number[];
-  eventLine: string;
   onClose: () => void;
   onOpenTicket: (key: string) => void;
   onHoverIn?: () => void;
   onHoverOut?: () => void;
 }
 
-const TREND_ICON: Record<CatyTrend['direction'], string> = { up: '↑', down: '↓', flat: '→' };
-
-/** Compact circular score indicator. Ring fills toward SCORE_FULL; number centred. */
-const SCORE_FULL = 20;
-function ScoreRing({ score, accent }: { score: number; accent: string }) {
-  const r = 15;
-  const circ = 2 * Math.PI * r;
-  const frac = Math.min(1, score / SCORE_FULL);
-  const label = Number.isInteger(score) ? String(score) : score.toFixed(1);
-  return (
-    <svg width="40" height="40" viewBox="0 0 40 40" role="img" aria-label={`Score ${label}`} style={{ flexShrink: 0 }}>
-      <circle cx="20" cy="20" r={r} fill="none" stroke="var(--ds-border, #DFE1E6)" strokeWidth="3" />
-      <circle
-        cx="20"
-        cy="20"
-        r={r}
-        fill="none"
-        stroke={accent}
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeDasharray={circ}
-        strokeDashoffset={circ * (1 - frac)}
-        transform="rotate(-90 20 20)"
-      />
-      <text x="20" y="20" textAnchor="middle" dominantBaseline="central" fontSize="11" fontWeight="700" fill={accent}>
-        {label}
-      </text>
-    </svg>
-  );
-}
 
 export function CatyWhyCard({
   open,
@@ -110,15 +55,12 @@ export function CatyWhyCard({
   evidence,
   byType,
   trend,
-  sparkline,
-  eventLine,
   onClose,
   onOpenTicket,
   onHoverIn,
   onHoverOut,
 }: CatyWhyCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [showEvidence, setShowEvidence] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -162,7 +104,7 @@ export function CatyWhyCard({
     window.innerWidth - CARD_W - 12,
   );
 
-  const chips = mood.contributions.slice(0, 3);
+  const totalCount = mood.contributions.reduce((sum, c) => sum + c.count, 0);
 
   return createPortal(
     <div
@@ -179,7 +121,7 @@ export function CatyWhyCard({
         width: CARD_W,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
-        borderTop: `2px solid var(--ds-border-information, #0C66E4)`,
+        borderTop: `2px solid ${style.accent}`,
         borderRadius: 8,
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
         zIndex: 700,
@@ -187,157 +129,80 @@ export function CatyWhyCard({
         overflowY: 'auto',
         overflowX: 'hidden',
         fontFamily: 'var(--ds-font-family-body, inherit)',
+        padding: '12px',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 12px 8px' }}>
+      {/* Header: status icon + message */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <CatyMoodFace state={state} size={32} />
         <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: style.accent }}>{style.label}</span>
-            <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #44546F)' }}>
-              {TREND_ICON[trend.direction]} {trend.word}
-              {trend.direction !== 'flat' ? ` ${Math.abs(trend.deltaPct)}% vs last week` : ''}
-            </span>
+          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>
+            <Lozenge appearance={style.appearance}>{style.label}</Lozenge>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)', fontStyle: 'italic' }}>{mood.message}</div>
+          <div style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+            {mood.message}
+          </div>
         </div>
       </div>
 
-      <div style={{ padding: '0 12px' }}>
-        <Sparkline scores={sparkline} accent={style.accent} />
+      {/* Metrics row: 2 tiles */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        {/* Tile 1: headline item count */}
+        <div style={{
+          flex: 1,
+          padding: 8,
+          background: 'var(--ds-background-neutral, #F1F2F4)',
+          borderRadius: 6,
+          fontSize: 12,
+          color: 'var(--ds-text, #172B4D)',
+          fontWeight: 500,
+        }}>
+          {mood.contributions.length > 0 ? `${mood.contributions[0].label} (${mood.contributions[0].count})` : 'No updates'}
+        </div>
+
+        {/* Tile 2: secondary metric */}
+        <div style={{
+          flex: 1,
+          padding: 8,
+          background: 'var(--ds-background-neutral, #F1F2F4)',
+          borderRadius: 6,
+          fontSize: 12,
+          color: 'var(--ds-text, #172B4D)',
+          fontWeight: 500,
+        }}>
+          {mood.contributions.length > 1 ? `${mood.contributions[1].label} (${mood.contributions[1].count})` : '—'}
+        </div>
       </div>
 
-      {chips.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '4px 12px 8px' }}>
-          {chips.map((c) => (
-            <span
-              key={c.key}
-              style={{
-                fontSize: 11,
-                padding: '4px 8px',
-                borderRadius: 10,
-                background: 'var(--ds-background-neutral, #F1F2F4)',
-                color: 'var(--ds-text-subtle, #44546F)',
-              }}
-            >
-              {c.label} {c.count}
-            </span>
-          ))}
-        </div>
-      )}
+      {/* Action button */}
+      <Button
+        appearance="primary"
+        onClick={() => {
+          // Route to backlog with relevant filter
+          window.location.hash = '#/project-hub/BAU/allwork';
+          onClose();
+        }}
+        style={{ width: '100%', marginBottom: 8 }}
+      >
+        Triage these {totalCount}
+      </Button>
 
-      {byType.length > 0 && (
-        <div style={{ padding: '8px 12px', borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
-          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 4 }}>
-            your work · {mood.score === 0 ? 'all types' : 'every type counts'}
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {byType.map((t) => (
-              <span
-                key={t.type}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}
-                title={t.type}
-              >
-                <JiraIssueTypeIcon type={t.type} size={16} />
-                {t.count}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {eventLine !== 'nothing new' && (
-        <div
-          style={{
-            padding: '8px 12px',
-            borderTop: '1px solid var(--ds-border, #DFE1E6)',
-            fontSize: 12,
-            color: 'var(--ds-text-subtle, #44546F)',
-          }}
-        >
-          <span style={{ fontWeight: 600 }}>new:</span> {eventLine}
-        </div>
-      )}
-
-      {mood.contributions.length > 0 && (
-        <button
-          type="button"
-          onClick={() => setShowEvidence((v) => !v)}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            textAlign: 'left',
-            padding: '8px 12px',
-            border: 'none',
-            borderTop: '1px solid var(--ds-border, #DFE1E6)',
-            background: 'transparent',
-            cursor: 'pointer',
-          }}
-        >
-          <ScoreRing score={mood.score} accent={style.accent} />
-          <span style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Workload score</span>
-            <span style={{ fontSize: 12, color: 'var(--ds-text-information, #0C66E4)' }}>
-              {showEvidence ? 'Hide the math ▾' : 'Show the math ▸'}
-            </span>
-          </span>
-        </button>
-      )}
-
-      {showEvidence && (
-        <div style={{ padding: '4px 12px 8px' }}>
-          {mood.contributions.map((c) => {
-            const tickets = evidence[c.key] ?? [];
-            return (
-              <div key={c.key} style={{ padding: '8px 0', borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                  <span style={{ color: 'var(--ds-text, #172B4D)', fontWeight: 600 }}>
-                    {c.label} ×{c.weight}
-                  </span>
-                  <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>{c.points} pts</span>
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {tickets.map((t) => (
-                    <button
-                      key={t.issue_key}
-                      type="button"
-                      onClick={() => onOpenTicket(t.issue_key)}
-                      style={{
-                        fontSize: 11,
-                        padding: '4px 8px',
-                        borderRadius: 6,
-                        border: '1px solid var(--ds-border, #DFE1E6)',
-                        background: 'transparent',
-                        color: 'var(--ds-text-information, #0C66E4)',
-                        cursor: 'pointer',
-                      }}
-                      title={t.summary ?? t.issue_key}
-                    >
-                      {t.issue_key}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-          <div
-            style={{
-              display: 'flex',
-              gap: 6,
-              alignItems: 'flex-start',
-              fontSize: 11,
-              color: 'var(--ds-text-subtlest, #626F86)',
-              paddingTop: 8,
-              lineHeight: 1.5,
-            }}
-          >
-            <span aria-hidden>🔒</span>
-            <span>Deterministic — same tickets always sum to {mood.score}. No AI guess, no hidden weight.</span>
-          </div>
-        </div>
-      )}
+      {/* "Show details" link */}
+      <button
+        type="button"
+        onClick={onClose}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          color: 'var(--ds-link, #0052CC)',
+          cursor: 'pointer',
+          fontSize: 11,
+          padding: 0,
+          fontFamily: 'var(--ds-font-family-body, inherit)',
+        }}
+      >
+        Show details →
+      </button>
     </div>,
     document.body,
   );

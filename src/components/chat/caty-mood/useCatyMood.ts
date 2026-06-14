@@ -35,7 +35,7 @@ function loadHistory(key: string): CatyDailyPoint[] {
 
 export function useCatyMood() {
   const { user } = useAuth();
-  const { signals, evidence, byType, mood, isLoading, jiraAccountId } = useCatySignals();
+  const { signals, evidence, byType, mood, isLoading, isError, jiraAccountId } = useCatySignals();
   const storageKey = user?.id ? `caty.mood.history.${user.id}` : null;
 
   const [history, setHistory] = useState<CatyDailyPoint[]>([]);
@@ -76,6 +76,7 @@ export function useCatyMood() {
     trend,
     sparkline,
     isLoading,
+    fetchSucceeded: !isError && !isLoading && jiraAccountId !== null,
     jiraAccountId,
   };
 }
