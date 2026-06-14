@@ -93,7 +93,7 @@ export interface ActivityItemProps {
 }
 
 function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, className }: ActivityItemProps) {
-  const { type, actor, timestamp, fieldChange, description } = item;
+  const { type, actor, timestamp, fieldChange, description, standupContext } = item;
 
   const fieldKey = fieldChange ? fieldChange.field.toLowerCase().replace(/\s/g, '_') : '';
   const isStatus = STATUS_FIELDS.has(fieldKey);
@@ -142,9 +142,32 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
           )}
         </div>
 
-        {/* Date — absolute format */}
-        <div className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
-          {formatAbsoluteDate(timestamp)}
+        {/* Date — absolute format. When the row was emitted during a
+            standup, append a small "during standup" link back to the
+            standup detail page (Phase 7b). */}
+        <div className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5 inline-flex items-center gap-2 flex-wrap">
+          <span>{formatAbsoluteDate(timestamp)}</span>
+          {standupContext && (
+            <a
+              href={standupContext.href}
+              onClick={(e) => { e.stopPropagation(); }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--ds-background-information-bold-hovered, #0055CC)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--ds-background-information-bold, #0C66E4)';
+              }}
+              className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium no-underline hover:no-underline transition-colors"
+              style={{
+                background: 'var(--ds-background-information-bold, #0C66E4)',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
+                transition: 'background-color 120ms ease',
+              }}
+              title="Status was changed during a standup. Click to open."
+            >
+              During standup
+            </a>
+          )}
         </div>
 
         {/* Type badge — shown in "All" tab to distinguish history from

@@ -11,6 +11,7 @@ import { useMemo } from 'react';
 import {
   LayoutGrid,
   Settings,
+  Mic,
 } from '@/lib/atlaskit-icons';
 import {
   NavDashboardIcon,
@@ -120,6 +121,9 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             { id: 'allwork', title: 'Work', path: `${base}/allwork`, icon: NavWorkIcon, exact: false },
             { id: 'filters', title: 'Filters', path: `${base}/filters`, icon: NavFiltersIcon, exact: false },
             { id: 'timeline', title: 'Timeline', path: `${base}/timeline`, icon: NavTimelineIcon, exact: false },
+            // Standups feature lives at /project-hub/:key/standups — past
+            // standup sessions list (with AI summaries) and detail views.
+            { id: 'standups', title: 'Standups', path: `${base}/standups`, icon: Mic, exact: false },
             // Story / Epic / Feature Backlog pages were removed — their scope
             // is fully covered by the unified Backlog view above. Routes now
             // redirect to /backlog; source files remain on disk as-is.

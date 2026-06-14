@@ -52,6 +52,14 @@ export interface CdsActivityItem {
   fieldChange?: CdsFieldChange;
   comment?: CdsComment;
   description?: string;
+  /** When the activity row was created during a standup, the section
+   *  resolves this so ActivityItem can render a small "during standup"
+   *  pill linking back to the standup detail page. The href is built
+   *  upstream so ActivityItem stays free of routing concerns. */
+  standupContext?: {
+    standupId: string;
+    href: string;
+  };
 }
 
 export type CdsSortOrder = 'newest' | 'oldest';

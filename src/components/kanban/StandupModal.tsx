@@ -27,6 +27,7 @@ import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import FeedbackIcon from '@atlaskit/icon/glyph/feedback';
 import type { BoardIssue } from './kanban-types';
+import { useStandupSpeech, type StandupSpeechStatus, type StandupTranscriptChunk } from './useStandupSpeech';
 import type { KanbanThemeTokens } from './kanban-tokens';
 import { KanbanAvatar } from './KanbanAvatar';
 
@@ -85,11 +86,29 @@ export interface StandupPanelProps {
   tk: KanbanThemeTokens;
   onClose: () => void;
   /** Called whenever the selected person changes so the board can filter */
-  onPersonChange: (assigneeName: string | null) => void;
+  /** When the active speaker changes, the panel reports the new speaker
+   *  name and how many seconds the timer had counted during the PRIOR
+   *  speaker's turn. `priorTurnTimerSeconds` is null when the timer was
+   *  disabled (Enable timer toggle off) — consumers should fall back to
+   *  wall-clock in that case. The first emission of a standup carries
+   *  null because there's no prior turn yet. */
+  onPersonChange: (assigneeName: string | null, priorTurnTimerSeconds: number | null) => void;
   /** When true, render as an inline docked flex-item (no position:fixed). The
    *  parent is responsible for sizing + positioning. Used by the Jira-parity
    *  layout where the standup sits side-by-side with the board columns. */
   docked?: boolean;
+  /** Optional parent-owned ref the modal mirrors with the CURRENT
+   *  speaker's timer reading on every tick. Lets parent-rendered End
+   *  standup buttons (outside the modal subtree) read the final
+   *  timer_seconds before calling closeStandupSession. Null when timer
+   *  is disabled or the current turn has not ticked yet. */
+  currentTurnTimerSecondsRef?: React.MutableRefObject<number | null>;
+  /** Optional parent-owned array the modal appends every finalised
+   *  speech chunk to. Parent persists the whole array onto
+   *  `standups.transcript_chunks` when the standup ends. No speaker
+   *  attribution — Phase 3 cross-references chunk timestamps against
+   *  standup_events.started_at/ended_at to attribute utterances. */
+  standupTranscriptChunksRef?: React.MutableRefObject<StandupTranscriptChunk[]>;
 }
 
 /* ── Assignee bucket ── */
@@ -137,7 +156,7 @@ function playTick() {
 
 const DEFAULT_TIMER_SEC = 120; // 2 minutes
 
-export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange, docked }: StandupPanelProps) {
+export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange, docked, currentTurnTimerSecondsRef, standupTranscriptChunksRef }: StandupPanelProps) {
   const [order, setOrder] = useState<number[]>([]);
   const [step, setStep] = useState(0);         // index into `order`
   const [visited, setVisited] = useState<Set<string>>(new Set());
@@ -159,18 +178,40 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const settingsRef = useRef<HTMLDivElement>(null);
   const settingsTriggerRef = useRef<HTMLButtonElement>(null);
+  /* Captures how many seconds the timer counted during the speaker who
+     is about to be replaced. Set in `captureTimerThenAdvance` BEFORE the
+     step change, consumed (and cleared) in the onPersonChange effect.
+     Null = timer was disabled this turn. */
+  const priorTurnTimerSecondsRef = useRef<number | null>(null);
+  /* Accumulates elapsed timer-seconds during the current speaker's turn.
+     Incremented on every tick (in the countdown effect). Survives Stop
+     and auto-reset — only zeroed in the step-change effect when the
+     speaker actually advances. This is the SOURCE OF TRUTH for "how
+     much timer time did this speaker actually consume" — reading
+     (timerDuration - seconds) at capture time would be wrong because
+     Stop and auto-expire both reset `seconds` to timerDuration before
+     the capture runs. */
+  const elapsedThisTurnRef = useRef(0);
+  /* Standup-level transcript chunks. If the parent didn't pass a
+     ref we fall back to a local one so the speech hook still has a
+     destination — that just means End standup can't persist it
+     (Phase 2 dev path). */
+  const localTranscriptChunksRef = useRef<StandupTranscriptChunk[]>([]);
+  const transcriptChunksRef = standupTranscriptChunksRef ?? localTranscriptChunksRef;
 
-  /* Build per-assignee buckets */
+  /* Build per-assignee buckets. Unassigned issues are excluded entirely
+     — a standup is for HUMANS to talk through their work, not for the
+     null assignee to "speak". Issues without an assignee still exist in
+     the backlog; they're just not represented as a participant here. */
   const buckets: AssigneeBucket[] = useMemo(() => {
     const map = new Map<string, AssigneeBucket>();
     for (const issue of issues) {
-      const name = issue.assigneeName || 'Unassigned';
+      if (!issue.assigneeName) continue;
+      const name = issue.assigneeName;
       if (!map.has(name)) {
         map.set(name, {
           name,
-          avatarUrl: issue.assigneeName
-            ? (avatarsByName.get(issue.assigneeName.toLowerCase()) ?? null)
-            : null,
+          avatarUrl: avatarsByName.get(name.toLowerCase()) ?? null,
           total: 0, inProgress: 0, done: 0,
         });
       }
@@ -182,6 +223,15 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     }
     return Array.from(map.values()).sort((a, b2) => b2.inProgress - a.inProgress);
   }, [issues, avatarsByName]);
+
+  /* Mic recording — browser-native speech recognition. Auto-starts on
+     mount, asks for permission via the recognition API itself (no
+     separate getUserMedia call). Status drives the mic indicator in
+     the panel header. */
+  const speech = useStandupSpeech({
+    enabled: true,
+    chunksRef: transcriptChunksRef,
+  });
 
   /* Initialise order on first load — if shuffleOnOpen is enabled, randomise
      the speaker order so every standup feels different (Jira parity). */
@@ -202,9 +252,41 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
 
   const currentBucket = buckets[order[step] ?? 0];
 
-  /* Notify board whenever selected person changes */
+  /* Snapshot the prior speaker's used-timer-seconds, then mutate `step`.
+     Used at every site that ADVANCES between speakers within an active
+     standup (Prev/Next, click on another avatar, second-click on the
+     current row). NOT used for queue resets (initial mount, shuffle,
+     remove-from-standup) — those carry no prior-turn context. */
+  const captureTimerThenAdvance = useCallback((next: number | ((prev: number) => number)) => {
+    /* Reads the accumulator (NOT timerDuration - seconds) — Stop and
+       auto-reset both wipe `seconds` to timerDuration before this
+       function runs, so the subtraction would silently report 0 for
+       turns the user actually timed. Elapsed = 0 collapses to null
+       so consumers can distinguish "timer was used" from "no timer
+       reading available". */
+    if (!enableTimer || elapsedThisTurnRef.current === 0) {
+      priorTurnTimerSecondsRef.current = null;
+    } else {
+      priorTurnTimerSecondsRef.current = elapsedThisTurnRef.current;
+    }
+    setStep(next);
+  }, [enableTimer]);
+
+  /* Notify board whenever selected person changes. The prior turn's
+     timer reading (set by captureTimerThenAdvance just above) is
+     consumed here so the board can write it onto the closing
+     standup_events row. Cleared after read so the NEXT step change
+     starts from a clean ref. Dedupe by NAME — parent re-renders
+     regenerate `currentBucket`'s reference identity without the speaker
+     actually changing, and emitting on every reference flip would
+     leak null priorTurnTimerSeconds values into the parent's flow. */
+  const lastEmittedSpeakerNameRef = useRef<string | null | undefined>(undefined);
   useEffect(() => {
-    onPersonChange(currentBucket?.name ?? null);
+    const name = currentBucket?.name ?? null;
+    if (lastEmittedSpeakerNameRef.current === name) return;
+    lastEmittedSpeakerNameRef.current = name;
+    onPersonChange(name, priorTurnTimerSecondsRef.current);
+    priorTurnTimerSecondsRef.current = null;
   }, [currentBucket, onPersonChange]);
 
   /* Countdown tick. Under 10s plays a short tick every second; at 00:00
@@ -214,6 +296,17 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   useEffect(() => {
     if (!running) { clearInterval(timerRef.current); return; }
     timerRef.current = setInterval(() => {
+      /* Count this tick OUTSIDE the setSeconds updater — Strict Mode can
+         invoke state updaters twice in dev, and putting a side-effect in
+         there would either double-count or (depending on HMR closure
+         identity) write to a stale ref. Refs read from the interval
+         closure are always the latest. */
+      elapsedThisTurnRef.current += 1;
+      /* Mirror to the parent-owned ref so its End standup buttons can
+         flush the final reading without reaching into the modal. */
+      if (currentTurnTimerSecondsRef) {
+        currentTurnTimerSecondsRef.current = enableTimer ? elapsedThisTurnRef.current : null;
+      }
       setSeconds(s => {
         if (s <= 1) {
           clearInterval(timerRef.current);
@@ -234,14 +327,29 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     clearInterval(timerRef.current);
     setRunning(false);
     setSeconds(timerDuration);
-  }, [step, timerDuration]);
+    /* Zero the elapsed-this-turn accumulator now that we've moved on to
+       a new speaker. Done AFTER captureTimerThenAdvance has snapshotted
+       the prior value into priorTurnTimerSecondsRef. Transcript chunks
+       are intentionally NOT touched here — they're standup-level. */
+    elapsedThisTurnRef.current = 0;
+    if (currentTurnTimerSecondsRef) currentTurnTimerSecondsRef.current = null;
+  }, [step, timerDuration, currentTurnTimerSecondsRef]);
+
+  /* Sync the parent-owned ref to enableTimer transitions — turning it
+     off mid-turn must immediately wipe the reading so a fast End
+     standup doesn't write a stale value. */
+  useEffect(() => {
+    if (!currentTurnTimerSecondsRef) return;
+    if (!enableTimer) currentTurnTimerSecondsRef.current = null;
+    else if (elapsedThisTurnRef.current > 0) currentTurnTimerSecondsRef.current = elapsedThisTurnRef.current;
+  }, [enableTimer, currentTurnTimerSecondsRef]);
 
   /* Keyboard nav */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') advance(1);
       else if (e.key === 'ArrowLeft') advance(-1);
-      else if (e.key === 'Escape') { onPersonChange(null); onClose(); }
+      else if (e.key === 'Escape') { handleEndRef.current(); }
       else if (e.key === ' ') { e.preventDefault(); setRunning(r => !r); }
     };
     document.addEventListener('keydown', handler);
@@ -266,8 +374,8 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
 
   const advance = useCallback((delta: 1 | -1) => {
     if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
-    setStep(i => Math.max(0, Math.min((order.length || 1) - 1, i + delta)));
-  }, [currentBucket, order.length]);
+    captureTimerThenAdvance(i => Math.max(0, Math.min((order.length || 1) - 1, i + delta)));
+  }, [currentBucket, order.length, captureTimerThenAdvance]);
 
   const shuffle = useCallback(() => {
     setOrder(prev => {
@@ -301,9 +409,23 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   }, [buckets]);
 
   const handleEnd = useCallback(() => {
-    onPersonChange(null);
+    /* End-standup also closes the prior speaker's turn, so it must
+       carry the final timer reading using the same accumulator logic
+       as captureTimerThenAdvance. Also flush any in-flight interim
+       phrases into the standup-level transcript so a mid-sentence
+       End standup doesn't lose words. */
+    const finalTimerSeconds = (!enableTimer || elapsedThisTurnRef.current === 0)
+      ? null
+      : elapsedThisTurnRef.current;
+    speech.flushInterim();
+    onPersonChange(null, finalTimerSeconds);
     onClose();
-  }, [onPersonChange, onClose]);
+  }, [onPersonChange, onClose, enableTimer, speech]);
+
+  /* Keep a stable ref for handleEnd so the keyboard-Escape effect doesn't
+     have to re-bind every second when `seconds` ticks. */
+  const handleEndRef = useRef(handleEnd);
+  useEffect(() => { handleEndRef.current = handleEnd; }, [handleEnd]);
 
   /* Timer display */
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -336,11 +458,14 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
         <span style={{ fontSize: 16, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
           Standup
         </span>
-        <SettingsTrigger
-          triggerRef={settingsTriggerRef}
-          active={showSettings}
-          onClick={() => setShowSettings(s => !s)}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <MicIndicator status={speech.status} />
+          <SettingsTrigger
+            triggerRef={settingsTriggerRef}
+            active={showSettings}
+            onClick={() => setShowSettings(s => !s)}
+          />
+        </div>
         {showSettings && (
           <SettingsDropdown
             triggerRef={settingsTriggerRef}
@@ -470,10 +595,10 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                    person done and advance to the next speaker. */
                 if (isSelected) {
                   setVisited(v => new Set([...v, b.name]));
-                  if (listPos < total - 1) setStep(listPos + 1);
+                  if (listPos < total - 1) captureTimerThenAdvance(listPos + 1);
                 } else {
                   if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
-                  setStep(listPos);
+                  captureTimerThenAdvance(listPos);
                 }
               }}
               onKeyDown={(e) => {
@@ -481,10 +606,10 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                   e.preventDefault();
                   if (isSelected) {
                     setVisited(v => new Set([...v, b.name]));
-                    if (listPos < total - 1) setStep(listPos + 1);
+                    if (listPos < total - 1) captureTimerThenAdvance(listPos + 1);
                   } else {
                     if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
-                    setStep(listPos);
+                    captureTimerThenAdvance(listPos);
                   }
                 }
               }}
@@ -606,7 +731,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
 
 
 /* ── Sub-components ── */
-function PanelHeader({ tk, onEnd }: { tk: KanbanThemeTokens; onEnd: () => void }) {
+function PanelHeader({ tk, onEnd, speechStatus }: { tk: KanbanThemeTokens; onEnd: () => void; speechStatus: StandupSpeechStatus }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -615,20 +740,68 @@ function PanelHeader({ tk, onEnd }: { tk: KanbanThemeTokens; onEnd: () => void }
       <span style={{ fontSize: 14, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
         Daily Standup
       </span>
-      <button
-        onClick={onEnd}
-        style={{
-          fontSize: 12, fontWeight: 500, height: 26, padding: '0 10px',
-          borderRadius: 3, border: 'none',
-          background: 'transparent', cursor: 'pointer',
-          color: 'var(--ds-text-danger,#AE2A19)', fontFamily: 'var(--cp-font-body)',
-        }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger-hovered,#FFEBE6)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-      >
-        End standup
-      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <MicIndicator status={speechStatus} />
+        <button
+          onClick={onEnd}
+          style={{
+            fontSize: 12, fontWeight: 500, height: 26, padding: '0 10px',
+            borderRadius: 3, border: 'none',
+            background: 'transparent', cursor: 'pointer',
+            color: 'var(--ds-text-danger,#AE2A19)', fontFamily: 'var(--cp-font-body)',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger-hovered,#FFEBE6)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
+          End standup
+        </button>
+      </div>
     </div>
+  );
+}
+
+/* Mic affordance — sized to match SettingsTrigger (32x32 container,
+   medium-glyph icon, gray-black stroke). Blue pulsing dot appears
+   alongside when recognition is active. Hover-title spells out the
+   state so users understand why recording isn't happening. */
+function MicIndicator({ status }: { status: StandupSpeechStatus }) {
+  const isListening = status === 'listening';
+  const strokeColor = 'var(--ds-text-subtle, #44546F)';
+  const title =
+    status === 'listening' ? 'Recording standup audio for AI summary'
+    : status === 'denied' ? 'Microphone permission denied — no transcript will be captured'
+    : status === 'unsupported' ? 'Speech recognition not supported in this browser'
+    : status === 'error' ? 'Speech recognition error — recording is off'
+    : 'Microphone idle';
+  return (
+    <span
+      aria-label={title}
+      title={title}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        height: 32, padding: '0 4px',
+      }}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="9" y="3" width="6" height="11" rx="3"
+          stroke={strokeColor} strokeWidth="1.75" fill="none" />
+        <path d="M5 11a7 7 0 0 0 14 0" stroke={strokeColor}
+          strokeWidth="1.75" strokeLinecap="round" fill="none" />
+        <line x1="12" y1="18" x2="12" y2="21" stroke={strokeColor}
+          strokeWidth="1.75" strokeLinecap="round" />
+      </svg>
+      {isListening && (
+        <span
+          style={{
+            width: 9, height: 9, borderRadius: '50%',
+            background: 'var(--ds-icon-information, #1D7AFC)',
+            animation: 'standup-mic-pulse 1.4s ease-in-out infinite',
+            flexShrink: 0,
+          }}
+        />
+      )}
+      <style>{`@keyframes standup-mic-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }`}</style>
+    </span>
   );
 }
 
