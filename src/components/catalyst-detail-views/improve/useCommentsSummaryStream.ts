@@ -162,11 +162,78 @@ export function useCommentsSummaryStream({
           body: c.body || '',
         }));
 
+        // ── 2b. Fetch standup-driven status changes for this work item.
+        //   Pulled from ph_activity_log filtered by metadata.standup_id
+        //   IS NOT NULL. The AI uses these to mention "moved during
+        //   standup on <date>" alongside the comments narrative.
+        //   Errors are silent — a missing payload just means the AI
+        //   won't mention standup history. ───────────────────────────
+        const { data: standupActivityRaw } = await supabase
+          .from('ph_activity_log')
+          .select('field_name, old_value, new_value, user_id, metadata, created_at')
+          .eq('work_item_id', payload.workItemId)
+          .eq('field_name', 'status')
+          .not('metadata->standup_id', 'is', null)
+          .order('created_at', { ascending: true });
+        if (cancelled) return;
+
+        let standupStatusPayload: Array<{
+          actor: string;
+          old_status: string | null;
+          new_status: string | null;
+          changed_at: string;
+          standup_id: string;
+          standup_date: string | null;
+        }> = [];
+        const standupRows = (standupActivityRaw ?? []) as Array<{
+          field_name: string;
+          old_value: string | null;
+          new_value: string | null;
+          user_id: string | null;
+          metadata: { standup_id?: string } | null;
+          created_at: string;
+        }>;
+        if (standupRows.length > 0) {
+          /* Resolve actor display names + standup dates in two
+             batched lookups so the prompt has human-readable context. */
+          const actorIds = [...new Set(standupRows.map(r => r.user_id).filter(Boolean) as string[])];
+          const standupIds = [...new Set(standupRows.map(r => r.metadata?.standup_id).filter(Boolean) as string[])];
+          const actorNameMap = new Map<string, string>(profileMap);
+          const missingActorIds = actorIds.filter(id => !actorNameMap.has(id));
+          if (missingActorIds.length > 0) {
+            const { data: extraProfiles } = await supabase
+              .from('profiles')
+              .select('id, full_name, email')
+              .in('id', missingActorIds);
+            for (const p of (extraProfiles ?? []) as Array<{ id: string; full_name: string | null; email: string | null }>) {
+              actorNameMap.set(p.id, p.full_name || p.email || p.id);
+            }
+          }
+          const standupDateMap = new Map<string, string>();
+          if (standupIds.length > 0) {
+            const { data: standupsRows } = await supabase
+              .from('standups')
+              .select('id, started_at')
+              .in('id', standupIds);
+            for (const s of (standupsRows ?? []) as Array<{ id: string; started_at: string }>) {
+              standupDateMap.set(s.id, s.started_at);
+            }
+          }
+          standupStatusPayload = standupRows.map(r => ({
+            actor: r.user_id ? actorNameMap.get(r.user_id) || r.user_id : '(unknown)',
+            old_status: r.old_value,
+            new_status: r.new_value,
+            changed_at: r.created_at,
+            standup_id: r.metadata?.standup_id ?? '',
+            standup_date: r.metadata?.standup_id ? standupDateMap.get(r.metadata.standup_id) ?? null : null,
+          }));
+        }
+
         // ── 3. Open the NDJSON stream ───────────────────────────────
         const { data: sessionData } = await supabase.auth.getSession();
         const accessToken = sessionData?.session?.access_token ?? null;
 
-        const res = await fetchFunction('ai-improve-story', {
+        const res = await fetchFunction('summarize-comments', {
           method: 'POST',
           accessToken,
           headers: { 'Content-Type': 'application/json' },
@@ -177,6 +244,7 @@ export function useCommentsSummaryStream({
             issue_type: payload.issueType ?? 'Default',
             issue_summary: payload.issueSummary ?? '',
             comments: aiPayload,
+            standup_status_changes: standupStatusPayload,
           }),
         });
 

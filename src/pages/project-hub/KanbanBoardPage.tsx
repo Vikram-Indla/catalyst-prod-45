@@ -1492,16 +1492,26 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
          metadata, not authorship). changed_by_user_id captures the
          ACTUAL click-actor via auth.uid() so the detail view can
          show "by <real user>" instead of "by <whoever the panel
-         happened to have selected>". Fire-and-forget. */
+         happened to have selected>". Fire-and-forget.
+
+         Phase 7a: ALSO write to ph_activity_log so the ticket's
+         CatalystActivitySection feed picks up the move on its next
+         4-second poll. metadata.standup_id lets the renderer show
+         a "during standup" pill linking back here, and lets the
+         comments-summary AI mention the standup context. */
       if (activeStandupIdRef.current) {
         supabase.auth.getUser().then(({ data: { user } }) => {
+          const standupId = activeStandupIdRef.current;
+          const speakerName = currentSpeakerNameRef.current ?? 'Unassigned';
+          const userId = user?.id ?? null;
+
           (supabase as any)
             .from('standup_status_changes')
             .insert({
-              standup_id: activeStandupIdRef.current,
+              standup_id: standupId,
               event_id: activeStandupEventIdRef.current,
-              speaker_name: currentSpeakerNameRef.current ?? 'Unassigned',
-              changed_by_user_id: user?.id ?? null,
+              speaker_name: speakerName,
+              changed_by_user_id: userId,
               issue_id: issueId,
               issue_key: issue.issueKey,
               from_status: oldStatus,
@@ -1509,6 +1519,21 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             })
             .then((res: any) => {
               if (res?.error) console.error('[standup] failed to log status change', res.error);
+            });
+
+          (supabase as any)
+            .from('ph_activity_log')
+            .insert({
+              work_item_id: issueId,
+              user_id: userId,
+              action: 'updated',
+              field_name: 'status',
+              old_value: oldStatus,
+              new_value: newStatus,
+              metadata: { standup_id: standupId, speaker_name: speakerName },
+            })
+            .then((res: any) => {
+              if (res?.error) console.error('[standup] failed to write activity log', res.error);
             });
         });
       }
