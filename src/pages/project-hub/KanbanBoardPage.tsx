@@ -367,8 +367,9 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
 
   /** Close the currently-open speaker-turn event and open a new one for
    *  the next speaker. No-op when the name is identical or no session is
-   *  active. */
-  const advanceStandupSpeaker = useCallback(async (nextName: string | null) => {
+   *  active. `priorTurnTimerSeconds` is written onto the closing row's
+   *  optional `timer_seconds` column — null means the timer was off. */
+  const advanceStandupSpeaker = useCallback(async (nextName: string | null, priorTurnTimerSeconds: number | null) => {
     const standupId = activeStandupIdRef.current;
     if (!standupId) {
       currentSpeakerNameRef.current = nextName;
@@ -383,7 +384,10 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
       if (prevEventId) {
         await (supabase as any)
           .from('standup_events')
-          .update({ ended_at: new Date().toISOString() })
+          .update({
+            ended_at: new Date().toISOString(),
+            timer_seconds: priorTurnTimerSeconds,
+          })
           .eq('id', prevEventId);
       }
       if (nextName) {
@@ -2071,9 +2075,9 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             issues={standupAssignee ? rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType)) : filtered}
             avatarsByName={avatarsByName}
             tk={tk}
-            onPersonChange={name => {
+            onPersonChange={(name, priorTurnTimerSeconds) => {
               setStandupAssignee(name === 'Unassigned' ? null : name);
-              advanceStandupSpeaker(name);
+              advanceStandupSpeaker(name, priorTurnTimerSeconds);
             }}
             onClose={() => { setStandupAssignee(null); setShowStandup(false); }}
           />

@@ -85,7 +85,13 @@ export interface StandupPanelProps {
   tk: KanbanThemeTokens;
   onClose: () => void;
   /** Called whenever the selected person changes so the board can filter */
-  onPersonChange: (assigneeName: string | null) => void;
+  /** When the active speaker changes, the panel reports the new speaker
+   *  name and how many seconds the timer had counted during the PRIOR
+   *  speaker's turn. `priorTurnTimerSeconds` is null when the timer was
+   *  disabled (Enable timer toggle off) — consumers should fall back to
+   *  wall-clock in that case. The first emission of a standup carries
+   *  null because there's no prior turn yet. */
+  onPersonChange: (assigneeName: string | null, priorTurnTimerSeconds: number | null) => void;
   /** When true, render as an inline docked flex-item (no position:fixed). The
    *  parent is responsible for sizing + positioning. Used by the Jira-parity
    *  layout where the standup sits side-by-side with the board columns. */
@@ -159,6 +165,11 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const settingsRef = useRef<HTMLDivElement>(null);
   const settingsTriggerRef = useRef<HTMLButtonElement>(null);
+  /* Captures how many seconds the timer counted during the speaker who
+     is about to be replaced. Set in `captureTimerThenAdvance` BEFORE the
+     step change, consumed (and cleared) in the onPersonChange effect.
+     Null = timer was disabled this turn. */
+  const priorTurnTimerSecondsRef = useRef<number | null>(null);
 
   /* Build per-assignee buckets */
   const buckets: AssigneeBucket[] = useMemo(() => {
@@ -202,9 +213,24 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
 
   const currentBucket = buckets[order[step] ?? 0];
 
-  /* Notify board whenever selected person changes */
+  /* Snapshot the prior speaker's used-timer-seconds, then mutate `step`.
+     Used at every site that ADVANCES between speakers within an active
+     standup (Prev/Next, click on another avatar, second-click on the
+     current row). NOT used for queue resets (initial mount, shuffle,
+     remove-from-standup) — those carry no prior-turn context. */
+  const captureTimerThenAdvance = useCallback((next: number | ((prev: number) => number)) => {
+    priorTurnTimerSecondsRef.current = enableTimer ? Math.max(0, timerDuration - seconds) : null;
+    setStep(next);
+  }, [enableTimer, timerDuration, seconds]);
+
+  /* Notify board whenever selected person changes. The prior turn's
+     timer reading (set by captureTimerThenAdvance just above) is
+     consumed here so the board can write it onto the closing
+     standup_events row. Cleared after read so the NEXT step change
+     starts from a clean ref. */
   useEffect(() => {
-    onPersonChange(currentBucket?.name ?? null);
+    onPersonChange(currentBucket?.name ?? null, priorTurnTimerSecondsRef.current);
+    priorTurnTimerSecondsRef.current = null;
   }, [currentBucket, onPersonChange]);
 
   /* Countdown tick. Under 10s plays a short tick every second; at 00:00
@@ -241,7 +267,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') advance(1);
       else if (e.key === 'ArrowLeft') advance(-1);
-      else if (e.key === 'Escape') { onPersonChange(null); onClose(); }
+      else if (e.key === 'Escape') { handleEndRef.current(); }
       else if (e.key === ' ') { e.preventDefault(); setRunning(r => !r); }
     };
     document.addEventListener('keydown', handler);
@@ -266,8 +292,8 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
 
   const advance = useCallback((delta: 1 | -1) => {
     if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
-    setStep(i => Math.max(0, Math.min((order.length || 1) - 1, i + delta)));
-  }, [currentBucket, order.length]);
+    captureTimerThenAdvance(i => Math.max(0, Math.min((order.length || 1) - 1, i + delta)));
+  }, [currentBucket, order.length, captureTimerThenAdvance]);
 
   const shuffle = useCallback(() => {
     setOrder(prev => {
@@ -301,9 +327,18 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   }, [buckets]);
 
   const handleEnd = useCallback(() => {
-    onPersonChange(null);
+    /* End-standup also closes the prior speaker's turn, so it must
+       carry the final timer reading the same way captureTimerThenAdvance
+       does. */
+    const finalTimerSeconds = enableTimer ? Math.max(0, timerDuration - seconds) : null;
+    onPersonChange(null, finalTimerSeconds);
     onClose();
-  }, [onPersonChange, onClose]);
+  }, [onPersonChange, onClose, enableTimer, timerDuration, seconds]);
+
+  /* Keep a stable ref for handleEnd so the keyboard-Escape effect doesn't
+     have to re-bind every second when `seconds` ticks. */
+  const handleEndRef = useRef(handleEnd);
+  useEffect(() => { handleEndRef.current = handleEnd; }, [handleEnd]);
 
   /* Timer display */
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -470,10 +505,10 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                    person done and advance to the next speaker. */
                 if (isSelected) {
                   setVisited(v => new Set([...v, b.name]));
-                  if (listPos < total - 1) setStep(listPos + 1);
+                  if (listPos < total - 1) captureTimerThenAdvance(listPos + 1);
                 } else {
                   if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
-                  setStep(listPos);
+                  captureTimerThenAdvance(listPos);
                 }
               }}
               onKeyDown={(e) => {
@@ -481,10 +516,10 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                   e.preventDefault();
                   if (isSelected) {
                     setVisited(v => new Set([...v, b.name]));
-                    if (listPos < total - 1) setStep(listPos + 1);
+                    if (listPos < total - 1) captureTimerThenAdvance(listPos + 1);
                   } else {
                     if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
-                    setStep(listPos);
+                    captureTimerThenAdvance(listPos);
                   }
                 }
               }}
