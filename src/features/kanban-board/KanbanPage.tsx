@@ -3,7 +3,7 @@
  * Mounted at /project-hub/:key/kanban. 100% Atlaskit; shares only the data source.
  */
 import React, { useMemo, useState, useCallback, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import Heading from '@atlaskit/heading';
@@ -29,8 +29,11 @@ import type { BoardIssue, CardVisibleFields, StatusCategory, KanbanColumn } from
 import './styles.css';
 
 export default function KanbanPage() {
-  const { key } = useParams<{ key: string }>();
-  const [activeBoardId, setActiveBoardId] = useState<string | null>(null);
+  const { key, boardId } = useParams<{ key: string; boardId?: string }>();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // boardId from route param takes precedence; fallback to ?board=<id> query param for legacy redirects.
+  const [activeBoardId, setActiveBoardId] = useState<string | null>(() => boardId || searchParams.get('board'));
   const [standupActive, setStandupActive] = useState(false);
   const [standupPerson, setStandupPerson] = useState<string | null>(null);
   const standupStartedAt = useRef<Date | null>(null);
@@ -52,6 +55,11 @@ export default function KanbanPage() {
   const onAddColumn = useCallback((name: string) =>
     setExtraColumns((c) => [...c, { id: `local-col-${c.length}-${name}`, name, statuses: [name], category: 'in_progress', max: null }]),
     []);
+  // Map statuses → columns: reuse the existing MapStatusesPage for the active board.
+  const onMapStatuses = useCallback(() => {
+    const boardId = boardConfig.boardId;
+    if (key && boardId) navigate(`/project-hub/${key}/boards/${boardId}/map-statuses`);
+  }, [key, boardConfig.boardId, navigate]);
   const { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations();
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
@@ -194,6 +202,7 @@ export default function KanbanPage() {
           }
         }}
         onOpenHistory={() => setHistoryOpen(true)}
+        onMapStatuses={onMapStatuses}
         projectKey={key?.toUpperCase()}
       />
 

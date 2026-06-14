@@ -46,7 +46,7 @@ const PHProjectSettingsPageLazy = lazy(() => import("../pages/project-hub/Projec
 const ProjectBoardPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardPage"));
 const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardManagerPage"));
 const ProjectBoardSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardSettingsPage"));
-const KanbanBoardPageLazy = lazy(() => import("../pages/project-hub/KanbanBoardPage"));
+// KanbanBoardPage (legacy /boards/:id view) deprecated → LegacyBoardRedirect.
 const KanbanFeaturePageLazy = lazy(() => import("../features/kanban-board/KanbanPage"));
 const FilterRoadmapPageLazy = lazy(() => import("../pages/project-hub/FilterRoadmapPage"));
 const FilterDashboardPageLazy = lazy(() => import("../pages/project-hub/FilterDashboardPage"));
@@ -381,6 +381,19 @@ function NavigateAdminResourceId() {
 function LegacyBacklogRedirect() {
   const { key } = useParams<{ key: string }>();
   return <Navigate to={`/project-hub/${key}/backlog`} replace />;
+}
+
+// Deprecated: the legacy /boards/:boardId board view is superseded by the new
+// Kanban. A declarative <Navigate> is swallowed by CatalystShell's re-render
+// loop (see notes below), so do a hard browser replace — reliable for a
+// deprecated route, preserving which board via ?board=.
+function LegacyBoardRedirect() {
+  const { key, boardId } = useParams<{ key: string; boardId: string }>();
+  React.useEffect(() => {
+    if (!key) return;
+    window.location.replace(`/project-hub/${key}/kanban${boardId ? `?board=${boardId}` : ''}`);
+  }, [key, boardId]);
+  return null;
 }
 
 function QAAssistantRouteGuard() {
@@ -895,7 +908,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/boards/:boardId/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId/settings" element={<S><ProjectBoardSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId/settings/:section" element={<S><ProjectBoardSettingsPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
+        {/* Board view: /project-hub/:key/boards/:boardId renders kanban for the specified board. */}
+        <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanFeaturePageLazy /></S>} />
         <Route path="/project-hub/:key/kanban" element={<S><KanbanFeaturePageLazy /></S>} />
         <Route path="/project-hub/:key/roadmaps" element={<S><RoadmapsListPageLazy /></S>} />
         <Route path="/project-hub/:key/standups" element={<S><StandupHistoryPageLazy /></S>} />
