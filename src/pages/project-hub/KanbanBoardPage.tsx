@@ -73,7 +73,7 @@ import type { GroupByOption } from '@/components/shared/GroupByPopover';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Textfield from '@atlaskit/textfield';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
+import GrowDiagonalIcon from '@atlaskit/icon/core/grow-diagonal';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import { useUpdateBoard } from '@/hooks/useBoardMutations';
 
@@ -1305,7 +1305,7 @@ export default function KanbanBoardPage() {
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
               >
-                <VidFullScreenOnIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+                <GrowDiagonalIcon label="" color="var(--ds-text-subtle, #44546F)" />
               </button>
               <button
                 type="button"

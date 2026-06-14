@@ -23,6 +23,7 @@ import PreferencesIcon from '@atlaskit/icon/glyph/preferences';
 import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
 import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
 import CheckIcon from '@atlaskit/icon/glyph/check';
+import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import FeedbackIcon from '@atlaskit/icon/glyph/feedback';
 import type { BoardIssue } from './kanban-types';
@@ -71,8 +72,8 @@ const IcSpeaker = ({ size = 15, color = 'currentColor', muted = false }) => (
     )}
   </svg>
 );
-const IcCheck = ({ size = 13, color = '#36B37E' }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" aria-hidden>
+const IcCheck = ({ size = 13, color = '#36B37E', strokeWidth = 2 }: { size?: number; color?: string; strokeWidth?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <path d="M2 8l5 5 7-7" />
   </svg>
 );
@@ -145,6 +146,9 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   const [timerDuration, setTimerDuration] = useState(DEFAULT_TIMER_SEC);
   const [muted, setMuted] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  /* Which speaker row the cursor is currently on — drives the hover-revealed
+     "Remove from standup" cross button on the right of each row. */
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   /* New header-spec state (Jira parity):
      - density: row spacing + avatar/name size in the speaker list
      - enableTimer: when false, the entire timer row is hidden
@@ -277,6 +281,24 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     setStep(0);
     setVisited(new Set());
   }, []);
+
+  /* Remove a speaker from this standup — drops their bucket-index from
+     `order` (so they stop appearing in the list and the dots) and clamps
+     `step` so the cursor doesn't fall off the end. */
+  const removeFromStandup = useCallback((name: string) => {
+    const removeIdx = buckets.findIndex(b => b.name === name);
+    if (removeIdx === -1) return;
+    setOrder(prev => {
+      const next = prev.filter(i => i !== removeIdx);
+      setStep(s => Math.max(0, Math.min(s, next.length - 1)));
+      return next;
+    });
+    setVisited(v => {
+      const n = new Set(v);
+      n.delete(name);
+      return n;
+    });
+  }, [buckets]);
 
   const handleEnd = useCallback(() => {
     onPersonChange(null);
@@ -430,31 +452,89 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
         const nameSize = compact ? 13 : 14;
         const metaSize = compact ? 10 : 11;
         return (
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 8px' }}>
         {order.map((bucketIdx, listPos) => {
           const b = buckets[bucketIdx];
           const isSelected = listPos === step;
           const wasVisited = visited.has(b.name);
+          const isHovered = hoveredRow === b.name;
           return (
-            <button
+            <div
               key={b.name}
+              role="button"
+              tabIndex={0}
               onClick={() => {
-                if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
-                setStep(listPos);
+                /* First click on a row: jump to it (and mark whoever was
+                   active as visited).
+                   Second click on the already-selected row: mark this
+                   person done and advance to the next speaker. */
+                if (isSelected) {
+                  setVisited(v => new Set([...v, b.name]));
+                  if (listPos < total - 1) setStep(listPos + 1);
+                } else {
+                  if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
+                  setStep(listPos);
+                }
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  if (isSelected) {
+                    setVisited(v => new Set([...v, b.name]));
+                    if (listPos < total - 1) setStep(listPos + 1);
+                  } else {
+                    if (currentBucket) setVisited(v => new Set([...v, currentBucket.name]));
+                    setStep(listPos);
+                  }
+                }
+              }}
+              onMouseEnter={() => setHoveredRow(b.name)}
+              onMouseLeave={() => setHoveredRow(null)}
               style={{
-                width: '100%', textAlign: 'left', padding: rowPadding,
+                width: '100%', padding: rowPadding,
                 display: 'flex', alignItems: 'center', gap: 10,
-                border: 'none', cursor: 'pointer',
-                background: isSelected ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
-                borderLeft: isSelected ? '3px solid var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : '3px solid transparent',
+                cursor: 'pointer',
+                background: isSelected
+                  ? 'var(--ds-background-selected,#DEEBFF)'
+                  : isHovered ? tk.surfaceHover : 'transparent',
+                border: `1px solid ${isSelected ? 'var(--ds-border-selected, #0C66E4)' : 'transparent'}`,
+                borderRadius: 6,
+                marginBottom: 2,
                 fontFamily: 'var(--cp-font-body)',
-                transition: 'background 80ms',
               }}
-              onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = tk.surfaceHover; }}
-              onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
             >
-              <KanbanAvatar name={b.name} avatarUrl={b.avatarUrl} size={avatarSize} />
+              {/* Avatar + done-badge overlay (badge sits on top-right corner) */}
+              <div style={{ position: 'relative', flexShrink: 0, lineHeight: 0 }}>
+                <KanbanAvatar name={b.name} avatarUrl={b.avatarUrl} size={avatarSize} />
+                {wasVisited && (
+                  <span
+                    aria-label="Standup done"
+                    title="Done"
+                    style={{
+                      position: 'absolute', top: -4, right: -4,
+                      /* Jira-parity done badge:
+                         - 20×20 outer green circle (border-box so the white
+                           ring sits inside the 20px footprint).
+                         - 3px white ring → 14×14 inner green area.
+                         - Bold check rendered at 10×10 so it has ~2px
+                           padding all around — sits centred, doesn't fill
+                           the whole circle. */
+                      width: 20, height: 20, borderRadius: '50%',
+                      background: 'var(--ds-icon-success, #1F845A)',
+                      border: '3px solid var(--ds-surface, #FFFFFF)',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      pointerEvents: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    {/* EditorDoneIcon is the FILLED check (fill:currentcolor,
+                        not stroke), which renders as a proper bold checkmark
+                        at any size — unlike stroke-based glyphs that look
+                        chevron-y when shrunk down. */}
+                    <EditorDoneIcon label="" size="small" primaryColor="#FFFFFF" />
+                  </span>
+                )}
+              </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
                   fontSize: nameSize, fontWeight: isSelected ? 600 : 500,
@@ -468,10 +548,28 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                   {b.inProgress > 0 ? ` · ${b.inProgress} in progress` : ''}
                 </div>
               </div>
-              {wasVisited && !isSelected && (
-                <IcCheck size={13} color="#36B37E" />
+              {/* Hover-only "Remove from standup" cross at the right end. */}
+              {isHovered && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); removeFromStandup(b.name); }}
+                  title="Remove from standup"
+                  aria-label="Remove from standup"
+                  style={{
+                    width: 22, height: 22, flexShrink: 0,
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    border: 'none', borderRadius: 4,
+                    background: 'transparent',
+                    cursor: 'pointer', padding: 0,
+                    color: 'var(--ds-text-subtle, #44546F)',
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, #F1F2F4)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                >
+                  <CrossIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+                </button>
               )}
-            </button>
+            </div>
           );
         })}
       </div>
