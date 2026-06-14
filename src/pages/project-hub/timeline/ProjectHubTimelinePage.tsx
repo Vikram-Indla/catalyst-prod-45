@@ -533,15 +533,22 @@ export default function ProjectHubTimelinePage() {
   });
 
   const [sidebarResizing, setSidebarResizing] = useState<{ originX: number; originWidth: number } | null>(null);
+  /* live DOM ref to the sidebar panel — width is mutated directly during drag
+     (no per-frame React re-render), mirroring the today-line pattern below.
+     React state (sidebarWidth) is committed only once, on mouseup. */
+  const sidebarPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sidebarResizing) return;
+    const clamp = (w: number) => Math.max(MIN_SIDEBAR_W, Math.min(MAX_SIDEBAR_W, w));
     const onMove = (e: MouseEvent) => {
-      const next = Math.max(MIN_SIDEBAR_W, Math.min(MAX_SIDEBAR_W, sidebarResizing.originWidth + e.clientX - sidebarResizing.originX));
-      setSidebarWidth(next);
+      const next = clamp(sidebarResizing.originWidth + e.clientX - sidebarResizing.originX);
+      /* real-time: write width straight to the panel — skips reconciliation of
+         the entire timeline tree (rows + bars + headers) that setState would trigger */
+      if (sidebarPanelRef.current) sidebarPanelRef.current.style.width = next + 'px';
     };
     const onUp = (e: MouseEvent) => {
-      const final = Math.max(MIN_SIDEBAR_W, Math.min(MAX_SIDEBAR_W, sidebarResizing.originWidth + e.clientX - sidebarResizing.originX));
+      const final = clamp(sidebarResizing.originWidth + e.clientX - sidebarResizing.originX);
       setSidebarWidth(final);
       setSidebarResizing(null);
       document.body.style.cursor = '';
@@ -1338,7 +1345,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
 
         {/* ── sidebar panel ── */}
         {!isNarrow && !sidebarHidden && (
-          <div style={{
+          <div ref={sidebarPanelRef} style={{
             width: sidebarWidth, flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
             {/* sidebar header */}
@@ -1601,7 +1608,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
               }
             }}
             style={{
-              width: 4, flexShrink: 0, cursor: 'col-resize', outline: 'none',
+              width: 2, flexShrink: 0, cursor: 'col-resize', outline: 'none',
               background: sidebarResizing
                 ? 'var(--ds-background-selected-bold, #0052CC)'
                 : 'var(--ds-border, #DFE1E6)',
@@ -1750,7 +1757,7 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
                   <div
                     role="gridcell"
                     aria-label={`${issue.issueKey} ${issue.startDate ?? 'no start'} to ${issue.dueDate ?? 'no due'}`}
-                    onClick={e => { if (!dragging) { e.stopPropagation(); openDetail(issue); } }}
+                    onClick={e => { if (!dragging) { e.stopPropagation(); navigate(`/project-hub/${projectKey}/timeline/${issue.issueKey}`); } }}
                     style={{
                       position: 'absolute', top: barTop, left: finalLeft, width: finalWidth, height: BAR_H,
                       borderRadius: BAR_RADIUS,
