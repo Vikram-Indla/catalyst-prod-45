@@ -596,24 +596,6 @@ export function makeStatusEditCell<T>(opts: {
               }}
             >
               {opts.options.map((s) => {
-                const ap = opts.appearanceFor(s);
-                // Jira-parity: dropdown shows a small 8px color dot + plain text
-                // (sentence case, 14px) — NOT the full uppercase StatusPill.
-                // Dot color maps to the same LOZENGE_BG token as the pill bg.
-                // Measured from Jira list status dropdown 2026-05-08.
-                // Inline hex — measured from Jira BAU list DOM 2026-05-07/08.
-                // Do NOT use CSS vars here: the portal renders to document.body
-                // outside any theme-provider scope and vars may not resolve.
-                // Status colors match CatalystStatusPill.tsx (canonical source)
-                const dotColors: Record<string, string> = {
-                  success: "#94C748",
-                  inprogress: "#8FB8F6",
-                  default: "#DDDEE1",
-                  moved: "#F3D664",
-                  removed: "#FD9891",
-                  new: "#B8ACF6",
-                };
-                const dotBg = dotColors[ap] ?? dotColors.default;
                 const isActive = s === status;
                 return (
                   <button
@@ -629,18 +611,13 @@ export function makeStatusEditCell<T>(opts: {
                       alignItems: "center",
                       gap: 8,
                       width: "100%",
-                      padding: "6px 12px",
+                      padding: "4px 12px",
                       border: "none",
                       background: isActive
                         ? token("color.background.selected", "#E9F2FF")
                         : "transparent",
                       cursor: "pointer",
                       textAlign: "left",
-                      fontSize: 14,
-                      color: token(
-                        "color.text",
-                        "var(--cp-text-primary, var(--cp-text-inverse, #172B4D))",
-                      ),
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.background =
@@ -658,24 +635,11 @@ export function makeStatusEditCell<T>(opts: {
                           : "transparent";
                     }}
                   >
-                    {/* 8px color dot — Jira-parity status category indicator */}
-                    <span
-                      aria-hidden
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        background: dotBg,
-                        flexShrink: 0,
-                        border:
-                          ap === "default"
-                            ? "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))"
-                            : "none",
-                      }}
+                    <CatalystStatusPill
+                      status={opts.labelFor ? opts.labelFor(s) : s}
+                      interactive={false}
+                      compact={true}
                     />
-                    <span style={{ flex: 1 }}>
-                      {opts.labelFor ? opts.labelFor(s) : s}
-                    </span>
                     {/* Checkmark on selected item */}
                     {isActive && (
                       <span
