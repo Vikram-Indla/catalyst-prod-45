@@ -114,7 +114,7 @@ export const ColumnBody = forwardRef<HTMLDivElement, ColumnBodyProps>(
           className="kb-column-body"
           style={{
             flex: fill ? 1 : undefined, overflowY: 'auto', overflowX: 'hidden',
-            padding: '2px 8px 4px 8px',
+            padding: `${SIZES.CARD_GAP}px 8px`,
             background: isDragOver ? token('color.background.selected', '#E9F2FF') : 'transparent',
             borderRadius: 6, transition: 'background-color 150ms ease',
             minHeight: fill ? 0 : 24,
