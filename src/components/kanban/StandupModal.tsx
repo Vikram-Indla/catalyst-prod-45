@@ -27,7 +27,7 @@ import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import FeedbackIcon from '@atlaskit/icon/glyph/feedback';
 import type { BoardIssue } from './kanban-types';
-import { useStandupSpeech, type StandupSpeechStatus } from './useStandupSpeech';
+import { useStandupSpeech, type StandupSpeechStatus, type StandupTranscriptChunk } from './useStandupSpeech';
 import type { KanbanThemeTokens } from './kanban-tokens';
 import { KanbanAvatar } from './KanbanAvatar';
 
@@ -103,6 +103,12 @@ export interface StandupPanelProps {
    *  timer_seconds before calling closeStandupSession. Null when timer
    *  is disabled or the current turn has not ticked yet. */
   currentTurnTimerSecondsRef?: React.MutableRefObject<number | null>;
+  /** Optional parent-owned array the modal appends every finalised
+   *  speech chunk to. Parent persists the whole array onto
+   *  `standups.transcript_chunks` when the standup ends. No speaker
+   *  attribution — Phase 3 cross-references chunk timestamps against
+   *  standup_events.started_at/ended_at to attribute utterances. */
+  standupTranscriptChunksRef?: React.MutableRefObject<StandupTranscriptChunk[]>;
 }
 
 /* ── Assignee bucket ── */
@@ -150,7 +156,7 @@ function playTick() {
 
 const DEFAULT_TIMER_SEC = 120; // 2 minutes
 
-export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange, docked, currentTurnTimerSecondsRef }: StandupPanelProps) {
+export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChange, docked, currentTurnTimerSecondsRef, standupTranscriptChunksRef }: StandupPanelProps) {
   const [order, setOrder] = useState<number[]>([]);
   const [step, setStep] = useState(0);         // index into `order`
   const [visited, setVisited] = useState<Set<string>>(new Set());
@@ -186,12 +192,12 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
      Stop and auto-expire both reset `seconds` to timerDuration before
      the capture runs. */
   const elapsedThisTurnRef = useRef(0);
-  /* Accumulates the FINAL transcript chunks for the current speaker
-     turn. Reset in the step-change effect, snapshotted into
-     priorTurnTranscriptRef by captureTimerThenAdvance, mirrored to the
-     parent's currentTurnTranscriptRef on every finalisation by
-     useStandupSpeech. */
-  const transcriptThisTurnRef = useRef<string>('');
+  /* Standup-level transcript chunks. If the parent didn't pass a
+     ref we fall back to a local one so the speech hook still has a
+     destination — that just means End standup can't persist it
+     (Phase 2 dev path). */
+  const localTranscriptChunksRef = useRef<StandupTranscriptChunk[]>([]);
+  const transcriptChunksRef = standupTranscriptChunksRef ?? localTranscriptChunksRef;
 
   /* Build per-assignee buckets. Unassigned issues are excluded entirely
      — a standup is for HUMANS to talk through their work, not for the
@@ -224,7 +230,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
      the panel header. */
   const speech = useStandupSpeech({
     enabled: true,
-    transcriptRef: transcriptThisTurnRef,
+    chunksRef: transcriptChunksRef,
   });
 
   /* Initialise order on first load — if shuffleOnOpen is enabled, randomise
@@ -323,7 +329,8 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
     setSeconds(timerDuration);
     /* Zero the elapsed-this-turn accumulator now that we've moved on to
        a new speaker. Done AFTER captureTimerThenAdvance has snapshotted
-       the prior value into priorTurnTimerSecondsRef. */
+       the prior value into priorTurnTimerSecondsRef. Transcript chunks
+       are intentionally NOT touched here — they're standup-level. */
     elapsedThisTurnRef.current = 0;
     if (currentTurnTimerSecondsRef) currentTurnTimerSecondsRef.current = null;
   }, [step, timerDuration, currentTurnTimerSecondsRef]);
@@ -404,13 +411,16 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   const handleEnd = useCallback(() => {
     /* End-standup also closes the prior speaker's turn, so it must
        carry the final timer reading using the same accumulator logic
-       as captureTimerThenAdvance. */
+       as captureTimerThenAdvance. Also flush any in-flight interim
+       phrases into the standup-level transcript so a mid-sentence
+       End standup doesn't lose words. */
     const finalTimerSeconds = (!enableTimer || elapsedThisTurnRef.current === 0)
       ? null
       : elapsedThisTurnRef.current;
+    speech.flushInterim();
     onPersonChange(null, finalTimerSeconds);
     onClose();
-  }, [onPersonChange, onClose, enableTimer]);
+  }, [onPersonChange, onClose, enableTimer, speech]);
 
   /* Keep a stable ref for handleEnd so the keyboard-Escape effect doesn't
      have to re-bind every second when `seconds` ticks. */

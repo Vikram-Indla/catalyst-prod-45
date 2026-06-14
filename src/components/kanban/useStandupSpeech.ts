@@ -1,10 +1,16 @@
 /**
  * useStandupSpeech — browser-native speech recognition wired for the
- * standup panel. Modelled on the rich-text editor's
- * `useMicVoiceRecorder` (sections/Description/hooks/useMicVoiceRecorder.ts)
- * but decoupled from the editor — it accumulates a per-turn transcript
- * into a parent-supplied ref so the modal can snapshot it on speaker
- * advance the same way it snapshots `elapsedThisTurnRef`.
+ * standup panel. Captures continuous audio transcript at the STANDUP
+ * level (no per-speaker buffer). Each final result chunk is pushed
+ * onto a JSONB-friendly `{ts, text}` array that the modal hands to
+ * the parent for End-standup persistence into
+ * `standups.transcript_chunks`.
+ *
+ * Why no speaker attribution: browser SR has no diarization, and the
+ * panel's "current speaker" state lags real speech — tagging would
+ * lie whenever someone interjects. Phase 3 cross-references the
+ * timestamped transcript against `standup_events` turn windows to
+ * attribute utterances honestly.
  *
  * Browser support: Chrome / Edge native (`SpeechRecognition` or
  * `webkitSpeechRecognition`). Firefox / Safari return
@@ -25,20 +31,24 @@ export type StandupSpeechStatus =
   | 'listening'
   | 'error';
 
+/** Single finalised transcript chunk. ts is ISO 8601 UTC so Postgres
+ *  jsonb stores it cleanly and Phase 3 can compare against
+ *  standup_events.started_at / ended_at without parsing. */
+export interface StandupTranscriptChunk {
+  ts: string;
+  text: string;
+}
+
 interface Options {
   /** Master switch — when false, the hook is inert (no permission
    *  prompt, no recognition). Toggle this if a future setting lets
    *  the user opt out of mic recording. */
   enabled: boolean;
-  /** Buffer of finalised transcript chunks for the CURRENT turn.
-   *  Updated by the hook on every final result. Parent reads this
-   *  in captureTimerThenAdvance to snapshot. */
-  transcriptRef: React.MutableRefObject<string>;
-  /** Optional parent-owned mirror — pushed the latest accumulated
-   *  buffer on every finalisation. Same pattern as
-   *  `currentTurnTimerSecondsRef`. Lets End standup buttons outside
-   *  the modal flush the in-flight transcript without reaching in. */
-  parentMirrorRef?: React.MutableRefObject<string | null>;
+  /** Standup-level array the hook appends finalised chunks to. The
+   *  modal creates it as `useRef<StandupTranscriptChunk[]>([])` and
+   *  passes it down; the parent reads from the SAME ref via
+   *  prop-drilling so End standup can persist it. */
+  chunksRef: React.MutableRefObject<StandupTranscriptChunk[]>;
   lang?: string;
 }
 
@@ -47,14 +57,10 @@ interface Result {
   /** Live interim text — re-rendered as the speaker talks, cleared
    *  on finalisation. Display-only. */
   interimText: string;
-  /** Promotes the in-flight interim into the final buffer. Call
-   *  before reading `transcriptRef.current` for a snapshot (e.g.
-   *  on speaker advance / End standup) so half-spoken phrases
-   *  aren't lost. */
+  /** Promotes the in-flight interim into the chunks array as a final
+   *  chunk. Call before End standup so half-spoken phrases aren't
+   *  lost. */
   flushInterim: () => void;
-  /** Empties both interim + buffer + parent mirror. Call from the
-   *  step-reset effect when a new speaker takes the turn. */
-  reset: () => void;
 }
 
 function getSR(): unknown {
@@ -68,8 +74,7 @@ function getSR(): unknown {
 
 export function useStandupSpeech({
   enabled,
-  transcriptRef,
-  parentMirrorRef,
+  chunksRef,
   lang = 'en-US',
 }: Options): Result {
   const SR = getSR() as (new () => unknown) | null;
@@ -126,17 +131,13 @@ export function useStandupSpeech({
 
     recognition.onresult = (event: any) => {
       let interim = '';
-      let bufferChanged = false;
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const res = event.results[i];
         const transcript = res[0]?.transcript ?? '';
         if (res.isFinal) {
           const next = transcript.trim();
           if (next) {
-            transcriptRef.current = transcriptRef.current
-              ? `${transcriptRef.current} ${next}`
-              : next;
-            bufferChanged = true;
+            chunksRef.current.push({ ts: new Date().toISOString(), text: next });
           }
         } else {
           interim += transcript;
@@ -144,9 +145,6 @@ export function useStandupSpeech({
       }
       interimRef.current = interim;
       setInterimText(interim);
-      if (bufferChanged && parentMirrorRef) {
-        parentMirrorRef.current = transcriptRef.current || null;
-      }
     };
 
     recognition.onerror = (event: any) => {
@@ -186,7 +184,7 @@ export function useStandupSpeech({
     } catch {
       setStatus('error');
     }
-  }, [SR, isSupported, parentMirrorRef, transcriptRef]);
+  }, [SR, isSupported, chunksRef]);
 
   /* Auto-start when enabled + supported. Permission dialog is shown
      synchronously by the browser on the first `recognition.start()`
@@ -200,20 +198,10 @@ export function useStandupSpeech({
   const flushInterim = useCallback(() => {
     const pending = interimRef.current.trim();
     if (!pending) return;
-    transcriptRef.current = transcriptRef.current
-      ? `${transcriptRef.current} ${pending}`
-      : pending;
-    if (parentMirrorRef) parentMirrorRef.current = transcriptRef.current || null;
+    chunksRef.current.push({ ts: new Date().toISOString(), text: pending });
     interimRef.current = '';
     setInterimText('');
-  }, [parentMirrorRef, transcriptRef]);
+  }, [chunksRef]);
 
-  const reset = useCallback(() => {
-    transcriptRef.current = '';
-    interimRef.current = '';
-    setInterimText('');
-    if (parentMirrorRef) parentMirrorRef.current = null;
-  }, [parentMirrorRef, transcriptRef]);
-
-  return { status, interimText, flushInterim, reset };
+  return { status, interimText, flushInterim };
 }

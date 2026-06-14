@@ -183,6 +183,12 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
      row before closing the session. Null when timer disabled / no
      ticks yet. */
   const currentTurnTimerSecondsRef = useRef<number | null>(null);
+  /* Standup-level transcript chunks. The modal appends each finalised
+     speech chunk; closeStandupSession persists the entire array onto
+     `standups.transcript_chunks` and resets it. No speaker attribution
+     — Phase 3 AI cross-references chunk timestamps against
+     standup_events turn windows. */
+  const standupTranscriptChunksRef = useRef<Array<{ ts: string; text: string }>>([]);
   /* Caches the in-flight openStandupSession promise so every queued
      advance can await it. Cleared in closeStandupSession so a fresh
      Start standup creates a new session. */
@@ -366,6 +372,9 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
   const openStandupSession = useCallback((): Promise<void> => {
     if (standupSessionPromiseRef.current) return standupSessionPromiseRef.current;
     if (!key) return Promise.resolve();
+    /* Fresh standup — start with an empty transcript so leftover
+       chunks from a previous session don't bleed across. */
+    standupTranscriptChunksRef.current = [];
     const promise = (async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -443,6 +452,9 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
    *  `ended_at` — defaults to whatever the modal mirrored into
    *  `currentTurnTimerSecondsRef`. */
   const closeStandupSession = useCallback((finalTimerSeconds: number | null = currentTurnTimerSecondsRef.current): Promise<void> => {
+    /* Snapshot the chunks at call time so the reset below doesn't
+       race with the queued task. */
+    const transcriptSnapshot = standupTranscriptChunksRef.current.slice();
     const task = standupQueueRef.current.then(async () => {
       if (standupSessionPromiseRef.current) await standupSessionPromiseRef.current;
       const standupId = activeStandupIdRef.current;
@@ -452,6 +464,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
       currentSpeakerNameRef.current = null;
       standupSessionPromiseRef.current = null;
       currentTurnTimerSecondsRef.current = null;
+      standupTranscriptChunksRef.current = [];
       if (!standupId) return;
       try {
         if (eventId) {
@@ -465,7 +478,10 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         }
         await (supabase as any)
           .from('standups')
-          .update({ ended_at: new Date().toISOString() })
+          .update({
+            ended_at: new Date().toISOString(),
+            transcript_chunks: transcriptSnapshot,
+          })
           .eq('id', standupId);
       } catch (err) {
         console.error('[standup] failed to close standups row', err);
@@ -2123,6 +2139,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             avatarsByName={avatarsByName}
             tk={tk}
             currentTurnTimerSecondsRef={currentTurnTimerSecondsRef}
+            standupTranscriptChunksRef={standupTranscriptChunksRef}
             onPersonChange={(name, priorTurnTimerSeconds) => {
               setStandupAssignee(name === 'Unassigned' ? null : name);
               advanceStandupSpeaker(name, priorTurnTimerSeconds);
