@@ -164,6 +164,45 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
   // chrome visible, standup panel pinned to the left of the column row).
   const [isStandupFullscreen, setIsStandupFullscreen] = useState(false);
   const [standupAssignee, setStandupAssignee] = useState<string | null>(null);
+
+  /* ── Standup Phase 1 — session + speaker-turn capture ───────────────────
+     - activeStandupIdRef holds the id of the currently-open standups row.
+     - activeStandupEventIdRef holds the id of the currently-open
+       standup_events (speaker-turn) row.
+     - currentSpeakerNameRef mirrors the active speaker so persistStatusChange
+       can attribute changes without becoming dependent on render state.
+     All three are refs because persistStatusChange is memoised and we don't
+     want the kanban to re-render every time one of these flips. */
+  const activeStandupIdRef = useRef<string | null>(null);
+  const activeStandupEventIdRef = useRef<string | null>(null);
+  const currentSpeakerNameRef = useRef<string | null>(null);
+  /* Mirror of the modal's elapsed-this-turn timer — populated by the
+     modal on every tick + speaker change so the parent-rendered End
+     standup buttons can flush the final reading onto the open event
+     row before closing the session. Null when timer disabled / no
+     ticks yet. */
+  const currentTurnTimerSecondsRef = useRef<number | null>(null);
+  /* Standup-level transcript chunks. The modal appends each finalised
+     speech chunk; closeStandupSession persists the entire array onto
+     `standups.transcript_chunks` and resets it. No speaker attribution
+     — Phase 3 AI cross-references chunk timestamps against
+     standup_events turn windows. */
+  const standupTranscriptChunksRef = useRef<Array<{ ts: string; text: string }>>([]);
+  /* Caches the in-flight openStandupSession promise so every queued
+     advance can await it. Cleared in closeStandupSession so a fresh
+     Start standup creates a new session. */
+  const standupSessionPromiseRef = useRef<Promise<void> | null>(null);
+  /* Serialises advanceStandupSpeaker + closeStandupSession calls so
+     they execute in-order regardless of when the user clicks. Every
+     enqueued task implicitly waits for openStandupSession to resolve,
+     fixing the race where the modal's initial onPersonChange emits
+     fired before the standups row existed. */
+  const standupQueueRef = useRef<Promise<void>>(Promise.resolve());
+  /* The 3 callbacks that read `resolvedBoardId` live further down,
+     immediately AFTER `resolvedBoardId` is declared — keeping them up
+     here would hit a TDZ (`Cannot access 'resolvedBoardId' before
+     initialization`) on first render. */
+
   const [activeBoardId, setActiveBoardId] = useState<string | null>(urlBoardId ?? null);
   const [showBoardSwitcher, setShowBoardSwitcher] = useState(false);
   const [isBoardSwitcherFocused, setIsBoardSwitcherFocused] = useState(false);
@@ -324,6 +363,143 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
   /* ═══ DYNAMIC BOARD COLUMNS FROM DB ═══ */
 
   const resolvedBoardId = isProduct ? null : (activeBoardId ?? projectBoards[0]?.id ?? null);
+
+  /** Open a standups row for the active project+board. Cached in
+   *  `standupSessionPromiseRef` so concurrent advances can await the
+   *  same promise instead of racing past `activeStandupIdRef` while
+   *  it's still null. Returns a no-op promise if already in flight. */
+  const openStandupSession = useCallback((): Promise<void> => {
+    if (standupSessionPromiseRef.current) return standupSessionPromiseRef.current;
+    if (!key) return Promise.resolve();
+    /* Fresh standup — start with an empty transcript so leftover
+       chunks from a previous session don't bleed across. */
+    standupTranscriptChunksRef.current = [];
+    const promise = (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data, error } = await (supabase as any)
+          .from('standups')
+          .insert({
+            project_key: key,
+            board_id: resolvedBoardId,
+            started_by: user?.id ?? null,
+          })
+          .select('id')
+          .single();
+        if (error) throw error;
+        activeStandupIdRef.current = (data as any)?.id ?? null;
+      } catch (err) {
+        console.error('[standup] failed to open standups row', err);
+      }
+    })();
+    standupSessionPromiseRef.current = promise;
+    return promise;
+  }, [key, resolvedBoardId]);
+
+  /** Close the currently-open speaker-turn event and open a new one for
+   *  the next speaker. Queued behind any pending standup work so calls
+   *  fire in-order even when openStandupSession is still in flight.
+   *  `priorTurnTimerSeconds` is written onto the closing row's optional
+   *  `timer_seconds` column — null means the timer was off. */
+  const advanceStandupSpeaker = useCallback((nextName: string | null, priorTurnTimerSeconds: number | null): Promise<void> => {
+    const task = standupQueueRef.current.then(async () => {
+      /* Block on the open promise so the very first emits don't slip
+         past while the standups row is still being inserted. */
+      if (standupSessionPromiseRef.current) await standupSessionPromiseRef.current;
+
+      const standupId = activeStandupIdRef.current;
+      if (!standupId) {
+        currentSpeakerNameRef.current = nextName;
+        return;
+      }
+      if (currentSpeakerNameRef.current === nextName) return;
+      const prevEventId = activeStandupEventIdRef.current;
+      activeStandupEventIdRef.current = null;
+      currentSpeakerNameRef.current = nextName;
+
+      try {
+        if (prevEventId) {
+          await (supabase as any)
+            .from('standup_events')
+            .update({
+              ended_at: new Date().toISOString(),
+              timer_seconds: priorTurnTimerSeconds,
+            })
+            .eq('id', prevEventId);
+        }
+        if (nextName) {
+          const { data, error } = await (supabase as any)
+            .from('standup_events')
+            .insert({ standup_id: standupId, speaker_name: nextName })
+            .select('id')
+            .single();
+          if (error) throw error;
+          activeStandupEventIdRef.current = (data as any)?.id ?? null;
+        }
+      } catch (err) {
+        console.error('[standup] failed to rotate speaker-turn', err);
+      }
+    });
+    standupQueueRef.current = task;
+    return task;
+  }, []);
+
+  /** Close the active speaker-turn (if any) and the standups row.
+   *  Queued behind advances so a fast End-standup click cannot run
+   *  before the prior speaker's row was written. `finalTimerSeconds`
+   *  is written onto the still-open active event row alongside
+   *  `ended_at` — defaults to whatever the modal mirrored into
+   *  `currentTurnTimerSecondsRef`. */
+  const closeStandupSession = useCallback((finalTimerSeconds: number | null = currentTurnTimerSecondsRef.current): Promise<void> => {
+    /* Snapshot the chunks at call time so the reset below doesn't
+       race with the queued task. */
+    const transcriptSnapshot = standupTranscriptChunksRef.current.slice();
+    const task = standupQueueRef.current.then(async () => {
+      if (standupSessionPromiseRef.current) await standupSessionPromiseRef.current;
+      const standupId = activeStandupIdRef.current;
+      const eventId = activeStandupEventIdRef.current;
+      activeStandupIdRef.current = null;
+      activeStandupEventIdRef.current = null;
+      currentSpeakerNameRef.current = null;
+      standupSessionPromiseRef.current = null;
+      currentTurnTimerSecondsRef.current = null;
+      standupTranscriptChunksRef.current = [];
+      if (!standupId) return;
+      try {
+        if (eventId) {
+          await (supabase as any)
+            .from('standup_events')
+            .update({
+              ended_at: new Date().toISOString(),
+              timer_seconds: finalTimerSeconds,
+            })
+            .eq('id', eventId);
+        }
+        await (supabase as any)
+          .from('standups')
+          .update({
+            ended_at: new Date().toISOString(),
+            transcript_chunks: transcriptSnapshot,
+          })
+          .eq('id', standupId);
+        /* Fire-and-forget the AI summary edge function. We don't await
+           it here — the user already clicked End standup and shouldn't
+           wait for Gemini. The summary lands in `standups.summary_md`
+           when ready; `summary_status` cycles pending → generating →
+           ready/failed for UI consumers. Skip when nothing was
+           captured (the function itself also short-circuits). */
+        if (transcriptSnapshot.length > 0) {
+          supabase.functions
+            .invoke('standup-summarize', { body: { standup_id: standupId } })
+            .catch((err) => console.error('[standup] summary invoke failed', err));
+        }
+      } catch (err) {
+        console.error('[standup] failed to close standups row', err);
+      }
+    });
+    standupQueueRef.current = task;
+    return task;
+  }, []);
 
   const { data: dynamicBoardData } = useQuery({
     queryKey: ['kanban-board-columns', resolvedBoardId],
@@ -1310,6 +1486,56 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         await supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey);
         qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
       }
+      /* Standup Phase 1 — when a standup is active, log the change.
+         speaker_name records the PANEL-NOMINAL speaker (correlation
+         metadata, not authorship). changed_by_user_id captures the
+         ACTUAL click-actor via auth.uid() so the detail view can
+         show "by <real user>" instead of "by <whoever the panel
+         happened to have selected>". Fire-and-forget.
+
+         Phase 7a: ALSO write to ph_activity_log so the ticket's
+         CatalystActivitySection feed picks up the move on its next
+         4-second poll. metadata.standup_id lets the renderer show
+         a "during standup" pill linking back here, and lets the
+         comments-summary AI mention the standup context. */
+      if (activeStandupIdRef.current) {
+        supabase.auth.getUser().then(({ data: { user } }) => {
+          const standupId = activeStandupIdRef.current;
+          const speakerName = currentSpeakerNameRef.current ?? 'Unassigned';
+          const userId = user?.id ?? null;
+
+          (supabase as any)
+            .from('standup_status_changes')
+            .insert({
+              standup_id: standupId,
+              event_id: activeStandupEventIdRef.current,
+              speaker_name: speakerName,
+              changed_by_user_id: userId,
+              issue_id: issueId,
+              issue_key: issue.issueKey,
+              from_status: oldStatus,
+              to_status: newStatus,
+            })
+            .then((res: any) => {
+              if (res?.error) console.error('[standup] failed to log status change', res.error);
+            });
+
+          (supabase as any)
+            .from('ph_activity_log')
+            .insert({
+              work_item_id: issueId,
+              user_id: userId,
+              action: 'updated',
+              field_name: 'status',
+              old_value: oldStatus,
+              new_value: newStatus,
+              metadata: { standup_id: standupId, speaker_name: speakerName },
+            })
+            .then((res: any) => {
+              if (res?.error) console.error('[standup] failed to write activity log', res.error);
+            });
+        });
+      }
     } catch {
       issue.status = oldStatus;
       toastError(`Failed to move ${issue.issueKey}`);
@@ -1443,7 +1669,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
               </button>
               <button
                 type="button"
-                onClick={() => { setStandupAssignee(null); setShowStandup(false); }}
+                onClick={() => { setStandupAssignee(null); setShowStandup(false); closeStandupSession(); }}
                 style={{
                   height: 32, padding: '0 12px',
                   border: '1px solid var(--ds-border, #DFE1E6)',
@@ -1718,7 +1944,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
               {/* End standup — sits to the RIGHT of the Group trigger. */}
               <button
                 type="button"
-                onClick={() => { setStandupAssignee(null); setShowStandup(false); }}
+                onClick={() => { setStandupAssignee(null); setShowStandup(false); closeStandupSession(); }}
                 style={{
                   height: 32, padding: '0 12px',
                   border: '1px solid var(--ds-border, #DFE1E6)',
@@ -1802,7 +2028,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         canArchive={canArchive}
         showArchived={showArchived}
         onShowArchivedChange={setShowArchived}
-        onStartStandup={() => { setShowStandup(true); setIsStandupFullscreen(true); }}
+        onStartStandup={() => { setShowStandup(true); setIsStandupFullscreen(true); openStandupSession(); }}
         quickFilters={quickFilters}
         onQuickFiltersChange={setQuickFilters}
         enabledQuickFilters={enabledQuickFilters}
@@ -1951,7 +2177,12 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             issues={standupAssignee ? rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType)) : filtered}
             avatarsByName={avatarsByName}
             tk={tk}
-            onPersonChange={name => setStandupAssignee(name === 'Unassigned' ? null : name)}
+            currentTurnTimerSecondsRef={currentTurnTimerSecondsRef}
+            standupTranscriptChunksRef={standupTranscriptChunksRef}
+            onPersonChange={(name, priorTurnTimerSeconds) => {
+              setStandupAssignee(name === 'Unassigned' ? null : name);
+              advanceStandupSpeaker(name, priorTurnTimerSeconds);
+            }}
             onClose={() => { setStandupAssignee(null); setShowStandup(false); }}
           />
         )}

@@ -53,13 +53,21 @@ function mapComment(raw: any): CdsComment {
   };
 }
 
-function mapActivity(raw: any): CdsActivityItem {
+function mapActivity(raw: any, projectKey?: string): CdsActivityItem {
   const isJira = raw.source === 'jira';
   const profile = raw.actor;
   const action = raw.action;
   let type: CdsActivityItem['type'] = 'update';
   if (action === 'created' || action === 'create') type = 'create';
   else if (action === 'deleted' || action === 'delete') type = 'delete';
+
+  /* Phase 7b: surface a "during standup" pill when the activity row was
+     emitted during a standup. metadata.standup_id is the standup pk;
+     href is built upstream so ActivityItem stays free of routing. */
+  const standupId = raw.metadata?.standup_id as string | undefined;
+  const standupContext = standupId && projectKey
+    ? { standupId, href: `/project-hub/${projectKey}/standups/${standupId}` }
+    : undefined;
 
   return {
     id: raw.id,
@@ -76,6 +84,7 @@ function mapActivity(raw: any): CdsActivityItem {
     fieldChange: raw.field_name
       ? { field: raw.field_name, oldValue: raw.old_value, newValue: raw.new_value }
       : undefined,
+    standupContext,
   };
 }
 
@@ -369,7 +378,8 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     const reactions = reactionsByCommentId.get(c.id);
     return reactions ? { ...base, reactions } : base;
   });
-  const mappedHistory: CdsActivityItem[] = historyItems.map(mapActivity);
+  const projectKeyForRouting = resolvedRef?.issue_key?.split('-')[0] ?? undefined;
+  const mappedHistory: CdsActivityItem[] = historyItems.map(h => mapActivity(h, projectKeyForRouting));
 
   // Mutations — Catalyst-native comments only (source='catalyst')
   const addMutation = useMutation({
