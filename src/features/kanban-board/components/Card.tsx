@@ -146,7 +146,14 @@ export const Card: React.FC<CardProps> = ({
           <Tooltip content={issue.issueType || 'Work item'} delay={SIZES.TOOLTIP_DELAY}>
             <span style={{ display: 'inline-flex' }}><IssueTypeIcon issueType={issue.issueType} size={SIZES.ICON_CARD} /></span>
           </Tooltip>
-          <span style={{ fontSize: 12, lineHeight: '16px', color: token('color.text.subtlest', '#626F86'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <span
+            style={{
+              fontSize: 12, lineHeight: '16px', color: token('color.text.subtlest', '#626F86'),
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              borderBottom: '1px solid transparent', transition: 'border-color 100ms ease',
+              ...(hover ? { borderBottom: `1px solid ${token('color.border.subtle', '#626F86')}` } : {}),
+            }}
+          >
             {issue.issueKey}
           </span>
         </div>
@@ -159,7 +166,7 @@ export const Card: React.FC<CardProps> = ({
           )}
           {visibleFields.estimate && issue.storyPoints != null && (
             <Tooltip content={`Story point estimate: ${issue.storyPoints}`} delay={SIZES.TOOLTIP_DELAY}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: SIZES.POINTS_HEIGHT, height: SIZES.POINTS_HEIGHT, padding: '0 6px', borderRadius: SIZES.POINTS_RADIUS, background: token('color.background.neutral', '#091E420F'), color: token('color.text.subtle', '#44546F'), fontSize: 12, fontWeight: 700 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: SIZES.POINTS_HEIGHT, height: SIZES.POINTS_HEIGHT, padding: '0 6px', borderRadius: SIZES.POINTS_RADIUS, background: token('color.background.neutral', '#F1F2F4'), color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 600 }}>
                 {issue.storyPoints}
               </span>
             </Tooltip>
@@ -168,7 +175,11 @@ export const Card: React.FC<CardProps> = ({
             <Tooltip content={issue.assigneeName || STRINGS.UNASSIGNED} delay={SIZES.TOOLTIP_DELAY}>
               <span
                 onClick={(e) => { if (onAvatarClick) { e.stopPropagation(); onAvatarClick(issue, e.currentTarget as HTMLElement); } }}
-                style={{ display: 'inline-flex', cursor: onAvatarClick ? 'pointer' : 'default' }}
+                style={{
+                  display: 'inline-flex', cursor: onAvatarClick ? 'pointer' : 'default',
+                  borderRadius: 3, padding: 2, transition: 'background-color 100ms ease',
+                  ...(hover ? { background: token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') } : {}),
+                }}
               >
                 <Avatar size="small" src={avatarUrl ?? undefined} name={issue.assigneeName || STRINGS.UNASSIGNED} />
               </span>
