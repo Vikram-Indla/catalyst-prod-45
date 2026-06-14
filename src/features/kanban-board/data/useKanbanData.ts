@@ -5,13 +5,28 @@
  *   ph_issues, ph_projects, boards, board_columns, board_status_mappings.
  * No Catalyst hooks/components are imported.
  */
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { BoardConfig, BoardIssue, BoardOption, KanbanColumn, StatusCategory } from '../types';
 import { DEFAULT_COLUMNS, indexColumns } from './columnConfig';
 
 const PAGE = 1000;
+const ISSUE_SELECT = 'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, jira_updated_at, jira_created_at, due_date';
+
+/** Fetch one page of project issues (raw rows). */
+async function fetchIssuePage(key: string, from: number, to: number): Promise<any[]> {
+  const { data, error } = await supabase
+    .from('ph_issues')
+    .select(ISSUE_SELECT)
+    .eq('project_key', key)
+    .is('deleted_at', null)
+    .is('archived_at', null)
+    .order('jira_updated_at', { ascending: false })
+    .range(from, to);
+  if (error) throw error;
+  return data ?? [];
+}
 
 function mapRow(r: any): BoardIssue {
   let fv: string | null = null;
@@ -136,33 +151,43 @@ export function useKanbanData(projectKey: string | undefined, activeBoardId: str
     };
   }, [columns, resolvedBoardId, boards]);
 
-  const { data: issues = [], isLoading, refetch } = useQuery({
-    queryKey: ['kb-issues', key],
+  // Progressive load: first page gates isLoading so the board paints fast;
+  // remaining pages stream in the background and append (no data loss).
+  const { data: firstPage = [], isLoading, refetch: refetchFirst } = useQuery({
+    queryKey: ['kb-issues-p1', key],
+    queryFn: () => (key ? fetchIssuePage(key, 0, PAGE - 1) : Promise.resolve([] as any[])),
+    enabled: !!key,
+    staleTime: 5 * 60_000,
+  });
+
+  const hasMore = firstPage.length >= PAGE;
+
+  const { data: restPages = [], refetch: refetchRest } = useQuery({
+    queryKey: ['kb-issues-rest', key],
     queryFn: async () => {
-      if (!key) return [] as BoardIssue[];
+      if (!key) return [] as any[];
       let all: any[] = [];
-      let from = 0;
+      let from = PAGE;
       // eslint-disable-next-line no-constant-condition
       while (true) {
-        const { data, error } = await supabase
-          .from('ph_issues')
-          .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, jira_updated_at, jira_created_at, due_date')
-          .eq('project_key', key)
-          .is('deleted_at', null)
-          .is('archived_at', null)
-          .order('jira_updated_at', { ascending: false })
-          .range(from, from + PAGE - 1);
-        if (error) throw error;
-        if (!data?.length) break;
+        const data = await fetchIssuePage(key, from, from + PAGE - 1);
+        if (!data.length) break;
         all = all.concat(data);
         if (data.length < PAGE) break;
         from += PAGE;
       }
-      return all.map(mapRow);
+      return all;
     },
-    enabled: !!key,
-    staleTime: 30_000,
+    enabled: !!key && hasMore,
+    staleTime: 5 * 60_000,
   });
+
+  const issues = useMemo(
+    () => [...firstPage, ...restPages].map(mapRow),
+    [firstPage, restPages],
+  );
+
+  const refetch = useCallback(() => { refetchFirst(); refetchRest(); }, [refetchFirst, refetchRest]);
 
   return {
     projectId: projMeta?.id ?? null,

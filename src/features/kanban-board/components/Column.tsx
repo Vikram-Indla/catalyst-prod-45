@@ -3,10 +3,11 @@
  * ColumnBody (scrollable droppable card list). Split so swimlane mode can
  * render headers once at the top and bodies per lane (Jira-accurate).
  */
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { token } from '@atlaskit/tokens';
 import { SIZES } from '../constants';
-import type { KanbanColumn, WipState } from '../types';
+import type { BoardIssue, KanbanColumn, WipState } from '../types';
 
 function wipState(count: number, max: number | null): WipState {
   if (max == null) return 'normal';
@@ -51,33 +52,95 @@ export const ColumnHeader: React.FC<{ column: KanbanColumn; count: number }> = (
 interface ColumnBodyProps {
   ariaLabel: string;
   isDragOver?: boolean;
-  children: React.ReactNode;
+  items: BoardIssue[];
+  renderItem: (issue: BoardIssue, index: number) => React.ReactNode;
   footer?: React.ReactNode;
   /** lane bodies size to content; flat single-lane fills height */
   fill?: boolean;
 }
 
-/** ref attaches to the scrollable list for pragmatic-dnd drop targeting. */
+/** Below this count, render the plain flex list (virtualization overhead not worth it). */
+const VIRTUALIZE_THRESHOLD = 20;
+/** Initial per-card height estimate (card body + gap); measureElement corrects it live. */
+const ESTIMATED_CARD_HEIGHT = 104;
+
+/**
+ * ColumnBody — the scrollable, droppable card list.
+ *
+ * The outer scroll <div> is BOTH the pragmatic-dnd drop target (forwarded ref)
+ * AND the virtualizer scroll element. Virtualization kicks in only for flat-mode
+ * columns (`fill`) with many cards — grouped lanes are content-sized (no internal
+ * scroll) and small, so they render the plain list. Only visible cards mount, so
+ * drag/click/menu behaviour on them is identical; drop is column-level (the body),
+ * so off-screen cards never need to be mounted to receive a drop.
+ */
 export const ColumnBody = forwardRef<HTMLDivElement, ColumnBodyProps>(
-  ({ ariaLabel, isDragOver, children, footer, fill }, ref) => (
-    <div style={{ width: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column', maxHeight: '100%', minHeight: fill ? 0 : 40 }}>
-      <div
-        ref={ref}
-        role="list"
-        aria-label={ariaLabel}
-        className="kb-column-body"
-        style={{
-          flex: fill ? 1 : undefined, overflowY: 'auto', overflowX: 'hidden',
-          padding: '2px 8px 4px 8px', display: 'flex', flexDirection: 'column', gap: SIZES.CARD_GAP,
-          background: isDragOver ? token('color.background.selected', '#E9F2FF') : 'transparent',
-          borderRadius: 6, transition: 'background-color 150ms ease',
-          minHeight: fill ? 0 : 24,
-        }}
-      >
-        {children}
+  ({ ariaLabel, isDragOver, items, renderItem, footer, fill }, forwardedRef) => {
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+    const setRef = (el: HTMLDivElement | null) => {
+      scrollRef.current = el;
+      if (typeof forwardedRef === 'function') forwardedRef(el);
+      else if (forwardedRef) (forwardedRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+    };
+
+    const virtualize = !!fill && items.length >= VIRTUALIZE_THRESHOLD;
+    const virtualizer = useVirtualizer({
+      count: items.length,
+      getScrollElement: () => scrollRef.current,
+      estimateSize: () => ESTIMATED_CARD_HEIGHT,
+      measureElement: typeof window !== 'undefined' ? (el) => el.getBoundingClientRect().height : undefined,
+      overscan: 6,
+      enabled: virtualize,
+    });
+
+    // Re-measure when the scroll element resizes. Critical on first paint: the
+    // body starts unbounded (parent height not yet applied) so the virtualizer's
+    // first viewport read is the full content; once it bounds to the real height
+    // this recomputes the visible range. Also handles window resize.
+    useEffect(() => {
+      const el = scrollRef.current;
+      if (!el || !virtualize) return;
+      const ro = new ResizeObserver(() => virtualizer.measure());
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [virtualize, virtualizer]);
+
+    return (
+      <div style={{ width: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column', maxHeight: '100%', minHeight: fill ? 0 : 40 }}>
+        <div
+          ref={setRef}
+          role="list"
+          aria-label={ariaLabel}
+          className="kb-column-body"
+          style={{
+            flex: fill ? 1 : undefined, overflowY: 'auto', overflowX: 'hidden',
+            padding: '2px 8px 4px 8px',
+            background: isDragOver ? token('color.background.selected', '#E9F2FF') : 'transparent',
+            borderRadius: 6, transition: 'background-color 150ms ease',
+            minHeight: fill ? 0 : 24,
+            ...(virtualize ? {} : { display: 'flex', flexDirection: 'column', gap: SIZES.CARD_GAP }),
+          }}
+        >
+          {virtualize ? (
+            <div style={{ position: 'relative', width: '100%', height: virtualizer.getTotalSize() }}>
+              {virtualizer.getVirtualItems().map((vi) => (
+                <div
+                  key={vi.key}
+                  data-index={vi.index}
+                  ref={virtualizer.measureElement}
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', transform: `translateY(${vi.start}px)`, paddingBottom: SIZES.CARD_GAP }}
+                >
+                  {renderItem(items[vi.index], vi.index)}
+                </div>
+              ))}
+            </div>
+          ) : (
+            items.map((it, i) => renderItem(it, i))
+          )}
+        </div>
+        {footer}
       </div>
-      {footer}
-    </div>
-  ),
+    );
+  },
 );
 ColumnBody.displayName = 'ColumnBody';

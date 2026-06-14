@@ -5,7 +5,7 @@
  *    bodies + per-column counts), repeated per lane (matches Jira group-by).
  * Pragmatic DnD: cross-column drop = status change (optimistic + revert).
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { ColumnHeader, ColumnBody } from './Column';
@@ -36,16 +36,31 @@ const AddColumnSlot: React.FC<{ onAdd: (name: string) => void }> = ({ onAdd }) =
   const [name, setName] = useState('');
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => { if (adding) ref.current?.focus(); }, [adding]);
-  const submit = () => { const n = name.trim(); if (n) { onAdd(n); setName(''); setAdding(false); } };
+  const cancel = () => { setName(''); setAdding(false); };
+  const submit = () => { const n = name.trim(); if (n) { onAdd(n); setName(''); setAdding(false); } else { cancel(); } };
   return (
     <div style={{ width: adding ? SIZES.COLUMN_WIDTH : 40, minWidth: adding ? SIZES.COLUMN_WIDTH : 40, margin: '0 4px', flexShrink: 0 }}>
       {adding ? (
-        <input
-          ref={ref} value={name} onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') { setName(''); setAdding(false); } }}
-          onBlur={submit} placeholder="Column name"
-          style={{ width: '100%', height: 36, padding: '0 8px', borderRadius: 6, border: `2px solid ${token('color.border.focused', '#4C9AFF')}`, outline: 'none', fontSize: 13, fontFamily: 'inherit' }}
-        />
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <input
+              ref={ref} value={name} onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') { e.stopPropagation(); cancel(); } }}
+              // Blur commits when there's text (Jira inline-create), cancels when empty
+              // so clicking away always dismisses an empty input — no mode trap.
+              onBlur={() => { name.trim() ? submit() : cancel(); }}
+              placeholder="Column name"
+              style={{ flex: 1, minWidth: 0, height: 36, padding: '0 8px', borderRadius: 6, border: `2px solid ${token('color.border.focused', '#4C9AFF')}`, outline: 'none', fontSize: 13, fontFamily: 'inherit' }}
+            />
+            {/* onMouseDown fires before the input's blur, so cancel wins even with text typed */}
+            <button
+              type="button" aria-label="Cancel" title="Cancel"
+              onMouseDown={(e) => { e.preventDefault(); cancel(); }}
+              style={{ width: 28, height: 28, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer', color: token('color.icon.subtle', '#626F86'), fontSize: 16, lineHeight: 1 }}
+            >✕</button>
+          </div>
+          <div style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86'), padding: '4px 2px 0' }}>Enter to add · Esc to cancel</div>
+        </div>
       ) : (
         <button
           aria-label="Create column" onClick={() => setAdding(true)}
@@ -63,8 +78,9 @@ interface Group { key: string; label: string; avatarName?: string | null; issues
 const DroppableBody: React.FC<{
   colId: string; groupKey: string; ariaLabel: string; fill: boolean;
   overKey: string | null; setOver: (k: string | null) => void;
-  footer?: React.ReactNode; children: React.ReactNode;
-}> = ({ colId, groupKey, ariaLabel, fill, overKey, setOver, footer, children }) => {
+  footer?: React.ReactNode;
+  items: BoardIssue[]; renderItem: (issue: BoardIssue, index: number) => React.ReactNode;
+}> = ({ colId, groupKey, ariaLabel, fill, overKey, setOver, footer, items, renderItem }) => {
   const ref = useRef<HTMLDivElement>(null);
   const myKey = `${groupKey}:${colId}`;
   useEffect(() => {
@@ -79,7 +95,7 @@ const DroppableBody: React.FC<{
       onDrop: () => setOver(null),
     });
   }, [colId, groupKey, myKey, setOver]);
-  return <ColumnBody ref={ref} ariaLabel={ariaLabel} fill={fill} isDragOver={overKey === myKey} footer={footer}>{children}</ColumnBody>;
+  return <ColumnBody ref={ref} ariaLabel={ariaLabel} fill={fill} isDragOver={overKey === myKey} footer={footer} items={items} renderItem={renderItem} />;
 };
 
 function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
@@ -108,6 +124,24 @@ export const Board: React.FC<BoardProps> = ({
 
   useEffect(() => { setOverrides(new Map()); }, [issues]);
 
+  // Bound the scroll area to a definite height (viewport − top). The project-hub
+  // shell wrapper grows to content (min-height: calc(100%-2px)), so the flex
+  // chain alone never caps the board — without this the columns can't scroll
+  // internally and the card virtualizer's viewport is the entire content height.
+  const scrollWrapRef = useRef<HTMLDivElement>(null);
+  const [boardHeight, setBoardHeight] = useState<number | undefined>(undefined);
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = scrollWrapRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top;
+      setBoardHeight(Math.max(240, Math.floor(window.innerHeight - top - 8)));
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
   const idx = useMemo(() => indexColumns(boardConfig.columns), [boardConfig.columns]);
   const colOf = (issue: BoardIssue) => overrides.get(issue.id) ?? resolveColumnId(issue, idx);
 
@@ -132,7 +166,7 @@ export const Board: React.FC<BoardProps> = ({
 
   const grouped = groupBy !== 'none';
 
-  const renderCards = (colIssues: BoardIssue[]) => colIssues.map((issue) => (
+  const renderCard = (issue: BoardIssue) => (
     <DraggableCard
       key={issue.id}
       issue={issue}
@@ -145,7 +179,7 @@ export const Board: React.FC<BoardProps> = ({
       onEditSummary={onEditSummary}
       menuSlot={renderMenu?.(issue)}
     />
-  ));
+  );
 
   const bucketize = (groupIssues: BoardIssue[]) => {
     const bucket = new Map<string, BoardIssue[]>();
@@ -155,11 +189,16 @@ export const Board: React.FC<BoardProps> = ({
   };
 
   return (
-    <div className="kb-board-scroll" style={{
-      flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'auto',
+    <div ref={scrollWrapRef} className="kb-board-scroll" style={{
+      flex: 1, minHeight: 0, minWidth: 0, overflowX: 'auto', overflowY: 'auto',
+      height: boardHeight, maxHeight: boardHeight,
       background: token('elevation.surface', '#FFFFFF'), display: 'flex', flexDirection: 'column',
     }}>
-      {groups.map((g, gi) => {
+      {/* Defer columns until the board height is measured, so each ColumnBody's
+          card virtualizer mounts into an already-bounded scroll container (its
+          first viewport read is the real height, not the full content). The
+          measure runs in useLayoutEffect — before paint — so there's no flash. */}
+      {boardHeight !== undefined && groups.map((g, gi) => {
         const isCollapsed = grouped && collapsed.has(g.key);
         const bucket = bucketize(g.issues);
         return (
@@ -198,9 +237,9 @@ export const Board: React.FC<BoardProps> = ({
                         overKey={overKey}
                         setOver={setOverKey}
                         footer={columnFooter?.(column.id)}
-                      >
-                        {renderCards(colIssues)}
-                      </DroppableBody>
+                        items={colIssues}
+                        renderItem={renderCard}
+                      />
                     </div>
                   );
                 })}
