@@ -16,8 +16,6 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
-import { ProductHeaderChip } from '@/components/layout/ProductHeaderChip';
-import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import Button from '@atlaskit/button/new';
 import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
@@ -1419,13 +1417,11 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
           Maximize + End standup buttons sit at the far right of the title
           row (above the toolbar) — the toolbar itself stays untouched.
           Normal (non-standup) project render uses the canonical
-          ProjectPageHeader (Vikram directive 2026-06-14); products use
-          ProductHeaderChip. The standup row uses the inline chip because a
-          space-between button row needs an inline chip, not the block header. */}
+          ProjectPageHeader (Vikram directive 2026-06-14). */}
       {!standupFullscreen && key && (
         showStandup ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            {isProduct ? <ProductHeaderChip productCode={key} /> : <ProjectHeaderChip projectKey={key} />}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            {isProduct ? <ProjectPageHeader projectKey={key} hubType="product" /> : <ProjectPageHeader projectKey={key} />}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 24 }}>
               <button
                 type="button"
@@ -1465,7 +1461,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             </div>
           </div>
         ) : (
-          isProduct ? <ProductHeaderChip productCode={key} /> : <ProjectPageHeader projectKey={key} />
+          isProduct ? <ProjectPageHeader projectKey={key} hubType="product" /> : <ProjectPageHeader projectKey={key} />
         )
       )}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
@@ -1650,9 +1646,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {/* Reuse the canonical ProjectHeaderChip — it renders board
-                  name + add-people + meatball already. */}
-              {key && <ProjectHeaderChip projectKey={key} />}
+              {key && <ProjectPageHeader projectKey={key} hubType={isProduct ? 'product' : 'project'} paddingX={0} />}
             </div>
             {/* Fullscreen title row only carries the minimize button.
                 End standup lives in the toolbar to the right of Group. */}

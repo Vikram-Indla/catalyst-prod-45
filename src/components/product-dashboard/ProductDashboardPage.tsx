@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import { ProductHeaderChip } from '@/components/layout/ProductHeaderChip';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { DashboardWorkflowPath } from './DashboardWorkflowPath';
 import { AtAGlanceWidget } from './widgets/AtAGlanceWidget';
 import { StageOverviewWidget } from './widgets/StageOverviewWidget';
@@ -67,8 +67,7 @@ export function ProductDashboardPage() {
         background: token('elevation.surface.sunken', '#F7F8F9'),
       }}
     >
-      {/* ── Canonical product chip — matches ProjectHeaderChip pattern on project pages */}
-      {key && <ProductHeaderChip productCode={key} />}
+      {key && <ProjectPageHeader projectKey={key} hubType="product" />}
 
       {/* ── Sub-header: time range filter + actions ────────────────────── */}
       <div
