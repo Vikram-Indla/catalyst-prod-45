@@ -396,6 +396,16 @@ function LegacyBoardRedirect() {
   return null;
 }
 
+// Deprecated: /kanban route is superseded by /boards (board manager) → individual board.
+function LegacyKanbanRedirect() {
+  const { key } = useParams<{ key: string }>();
+  React.useEffect(() => {
+    if (!key) return;
+    window.location.replace(`/project-hub/${key}/boards`);
+  }, [key]);
+  return null;
+}
+
 function QAAssistantRouteGuard() {
   const location = useLocation();
   if (!location.pathname.startsWith('/testhub')) return null;
@@ -910,7 +920,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/boards/:boardId/settings/:section" element={<S><ProjectBoardSettingsPageLazy /></S>} />
         {/* Board view: /project-hub/:key/boards/:boardId renders kanban for the specified board. */}
         <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanFeaturePageLazy /></S>} />
-        <Route path="/project-hub/:key/kanban" element={<S><KanbanFeaturePageLazy /></S>} />
+        {/* Deprecated: legacy /kanban route → board manager. */}
+        <Route path="/project-hub/:key/kanban" element={<LegacyKanbanRedirect />} />
         <Route path="/project-hub/:key/roadmaps" element={<S><RoadmapsListPageLazy /></S>} />
         <Route path="/project-hub/:key/standups" element={<S><StandupHistoryPageLazy /></S>} />
         <Route path="/project-hub/:key/standups/:standupId" element={<S><StandupDetailPageLazy /></S>} />

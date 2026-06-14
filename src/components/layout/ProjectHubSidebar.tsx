@@ -117,7 +117,6 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             // primary planning surface, so it leads the board/kanban views.
             { id: 'backlog', title: 'Backlog', path: `${base}/backlog`, icon: NavBacklogIcon, exact: false },
             { id: 'board', title: 'Board', path: `${base}/boards`, icon: NavKanbanIcon, exact: false },
-            { id: 'kanban', title: 'Kanban', path: `${base}/kanban`, icon: NavKanbanIcon, exact: false },
             { id: 'allwork', title: 'Work', path: `${base}/allwork`, icon: NavWorkIcon, exact: false },
             { id: 'filters', title: 'Filters', path: `${base}/filters`, icon: NavFiltersIcon, exact: false },
             { id: 'timeline', title: 'Timeline', path: `${base}/timeline`, icon: NavTimelineIcon, exact: false },
