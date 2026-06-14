@@ -10,7 +10,7 @@ import Tooltip from '@atlaskit/tooltip';
 import EditIcon from '@atlaskit/icon/glyph/edit';
 import { IssueTypeIcon } from './IssueTypeIcon';
 import { PriorityIcon } from './PriorityIcon';
-import { SIZES, STRINGS } from '../constants';
+import { SIZES, STRINGS, LABEL_COLORS } from '../constants';
 import type { BoardIssue, CardVisibleFields } from '../types';
 
 interface CardProps {
@@ -137,6 +137,32 @@ export const Card: React.FC<CardProps> = ({
           }}>
             {due.overdue ? '⚠ ' : ''}{due.label}
           </span>
+        </div>
+      )}
+
+      {/* Labels */}
+      {visibleFields.labels && issue.labels.length > 0 && (
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {issue.labels.slice(0, SIZES.MAX_LABELS).map((label, i) => (
+            <span key={label} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4, height: SIZES.LABEL_HEIGHT,
+              padding: '0 4px', borderRadius: 2,
+              background: LABEL_COLORS[i % LABEL_COLORS.length],
+              color: '#FFFFFF', fontSize: 10, fontWeight: 500,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%',
+            }} title={label}>
+              <span style={{ display: 'inline-block', width: SIZES.LABEL_WIDTH, height: 2, background: 'rgba(255,255,255,0.5)' }} />
+              {label}
+            </span>
+          ))}
+          {issue.labels.length > SIZES.MAX_LABELS && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', height: SIZES.LABEL_HEIGHT,
+              padding: '0 4px', color: token('color.text.subtlest', '#626F86'), fontSize: 10,
+            }}>
+              +{issue.labels.length - SIZES.MAX_LABELS}
+            </span>
+          )}
         </div>
       )}
 

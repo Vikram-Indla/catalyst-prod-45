@@ -72,6 +72,26 @@ function buildCopyText(s: StandupSession, whatsapp: boolean): string {
   return lines.join('\n');
 }
 
+/** Robust clipboard copy — Clipboard API with an execCommand fallback. */
+async function copyText(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(text); return true; }
+  } catch { /* fall through to legacy path */ }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch { return false; }
+}
+
 /** Group a session's changes by ticket so each ticket renders once. */
 function groupByTicket(changes: StandupChange[]) {
   const map = new Map<string, { key: string; type: string; items: StandupChange[] }>();
@@ -83,7 +103,7 @@ function groupByTicket(changes: StandupChange[]) {
 }
 
 const SessionCard: React.FC<{ s: StandupSession; onOpenTicket: (key: string) => void }> = ({ s, onOpenTicket }) => {
-  const [copied, setCopied] = useState<'plain' | 'whatsapp' | null>(null);
+  const [copied, setCopied] = useState(false);
   const [summary, setSummary] = useState<string | null>(s.summary_text);
   const [genLoading, setGenLoading] = useState(false);
   const tickets = useMemo(() => groupByTicket(s.changes_json ?? []), [s.changes_json]);
@@ -100,10 +120,16 @@ const SessionCard: React.FC<{ s: StandupSession; onOpenTicket: (key: string) => 
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.id]);
-  const copy = (whatsapp: boolean) => {
-    navigator.clipboard?.writeText(buildCopyText({ ...s, summary_text: summary }, whatsapp));
-    setCopied(whatsapp ? 'whatsapp' : 'plain');
-    setTimeout(() => setCopied(null), 1500);
+  const flashCopied = () => { setCopied(true); window.setTimeout(() => setCopied(false), 1600); };
+  const onCopy = async () => {
+    const ok = await copyText(buildCopyText({ ...s, summary_text: summary }, false));
+    if (ok) flashCopied();
+  };
+  const onWhatsApp = () => {
+    const text = buildCopyText({ ...s, summary_text: summary }, true);
+    // Copy as a fallback, then open WhatsApp with the summary pre-filled to send.
+    copyText(text).then((ok) => { if (ok) flashCopied(); });
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   };
   return (
     <div style={{ border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 8, padding: 12, marginBottom: 10, background: token('elevation.surface', '#FFFFFF') }}>
@@ -117,13 +143,18 @@ const SessionCard: React.FC<{ s: StandupSession; onOpenTicket: (key: string) => 
           </div>
         </div>
         {s.is_valid && (
-          <div style={{ display: 'flex', gap: 2 }}>
-            <button type="button" aria-label="Copy summary" title={copied === 'plain' ? 'Copied' : 'Copy summary'} onClick={() => copy(false)}
-              style={{ width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {copied && <span style={{ fontSize: 11, fontWeight: 600, color: token('color.text.success', '#216E4E') }}>Copied</span>}
+            <button type="button" aria-label="Copy summary" title="Copy summary" onClick={onCopy}
+              style={{ width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}>
               <CopyIcon label="" size="small" primaryColor={token('color.icon.subtle', '#44546F')} />
             </button>
-            <button type="button" aria-label="Copy WhatsApp summary" title={copied === 'whatsapp' ? 'Copied' : 'WhatsApp summary'} onClick={() => copy(true)}
-              style={{ width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer' }}>
+            <button type="button" aria-label="Share to WhatsApp" title="Share to WhatsApp" onClick={onWhatsApp}
+              style={{ width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}>
               <WhatsAppGlyph color={token('color.icon.success', '#22A06B')} />
             </button>
           </div>

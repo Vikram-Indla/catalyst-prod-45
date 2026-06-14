@@ -7,7 +7,8 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { CatyInsightCard } from './CatyInsightCard';
-import { CatyRainbowCTA } from './CatyRainbowCTA';
+import { CatyButton } from './CatyButton';
+import './caty-button.css';
 
 interface RiskItem {
   issueKey: string;
@@ -146,7 +147,7 @@ export function CatyBoardInsight({ resourceId, projectKey }: CatyBoardInsightPro
   if (!resourceId && !projectKey) return null;
 
   if (!insight) {
-    return <CatyRainbowCTA label="Ask Caty - Board health" onClick={generateInsight} isLoading={isLoading} />;
+    return <CatyButton label="Board health" onClick={generateInsight} loading={isLoading} />;
   }
 
   if (insight.totalItems === 0) {

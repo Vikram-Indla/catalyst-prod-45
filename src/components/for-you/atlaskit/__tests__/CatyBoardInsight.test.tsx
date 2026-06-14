@@ -9,9 +9,9 @@ vi.mock('@/lib/auth', () => ({ useAuth: () => ({ user: { id: 'u1' }, loading: fa
 import { CatyBoardInsight } from '../CatyBoardInsight';
 
 describe('CatyBoardInsight', () => {
-  it('renders rainbow CTA with correct label', () => {
+  it('renders Caty button with correct label', () => {
     render(<CatyBoardInsight resourceId="res-123" />);
-    expect(screen.getByText('Ask Caty - Board health')).toBeInTheDocument();
+    expect(screen.getByText('Board health')).toBeInTheDocument();
   });
 
   it('renders nothing when no resourceId', () => {

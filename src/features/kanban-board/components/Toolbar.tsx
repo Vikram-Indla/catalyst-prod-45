@@ -213,7 +213,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
 
       {/* Ask Caty — Board health (ported from the legacy /boards/:id surface) */}
       <span style={{ flexShrink: 0, display: 'inline-flex' }}>
-        <CatyBoardInsight projectKey={projectKey ?? null} resourceId={projectKey ?? 'project'} />
+        {projectKey ? (
+          <CatyBoardInsight projectKey={projectKey} resourceId={projectKey} />
+        ) : (
+          <button type="button" style={{ padding: '4px 8px' }} onClick={() => console.log('DEBUG: no projectKey')}>
+            (no projectKey)
+          </button>
+        )}
       </span>
 
       <PortalMenu ariaLabel="More actions" align="right" minWidth={200} trigger={() => (
