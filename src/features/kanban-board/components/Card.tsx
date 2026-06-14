@@ -89,6 +89,17 @@ export const Card: React.FC<CardProps> = ({
         </div>
       )}
 
+      {/* Drag handle (left side, hover-only) */}
+      {hover && !isDragging && (
+        <div style={{ position: 'absolute', left: 2, top: '50%', transform: 'translateY(-50%)', opacity: 0.3, transition: 'opacity 100ms ease' }}>
+          <span style={{ display: 'inline-flex', flexDirection: 'column', gap: 1 }}>
+            {[0, 1, 2].map((i) => (
+              <span key={i} style={{ width: 12, height: 1.5, background: token('color.icon.subtle', '#626F86'), borderRadius: 1 }} />
+            ))}
+          </span>
+        </div>
+      )}
+
       {/* Summary (+ edit pencil on hover) */}
       {editing ? (
         <textarea
