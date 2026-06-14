@@ -165,6 +165,23 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
   // chrome visible, standup panel pinned to the left of the column row).
   const [isStandupFullscreen, setIsStandupFullscreen] = useState(false);
   const [standupAssignee, setStandupAssignee] = useState<string | null>(null);
+
+  /* ── Standup Phase 1 — session + speaker-turn capture ───────────────────
+     - activeStandupIdRef holds the id of the currently-open standups row.
+     - activeStandupEventIdRef holds the id of the currently-open
+       standup_events (speaker-turn) row.
+     - currentSpeakerNameRef mirrors the active speaker so persistStatusChange
+       can attribute changes without becoming dependent on render state.
+     All three are refs because persistStatusChange is memoised and we don't
+     want the kanban to re-render every time one of these flips. */
+  const activeStandupIdRef = useRef<string | null>(null);
+  const activeStandupEventIdRef = useRef<string | null>(null);
+  const currentSpeakerNameRef = useRef<string | null>(null);
+  /* The 3 callbacks that read `resolvedBoardId` live further down,
+     immediately AFTER `resolvedBoardId` is declared — keeping them up
+     here would hit a TDZ (`Cannot access 'resolvedBoardId' before
+     initialization`) on first render. */
+
   const [activeBoardId, setActiveBoardId] = useState<string | null>(urlBoardId ?? null);
   const [showBoardSwitcher, setShowBoardSwitcher] = useState(false);
   const [isBoardSwitcherFocused, setIsBoardSwitcherFocused] = useState(false);
@@ -325,6 +342,87 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
   /* ═══ DYNAMIC BOARD COLUMNS FROM DB ═══ */
 
   const resolvedBoardId = isProduct ? null : (activeBoardId ?? projectBoards[0]?.id ?? null);
+
+  /** Open a standups row for the active project+board. */
+  const openStandupSession = useCallback(async () => {
+    if (activeStandupIdRef.current) return;
+    if (!key) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await (supabase as any)
+        .from('standups')
+        .insert({
+          project_key: key,
+          board_id: resolvedBoardId,
+          started_by: user?.id ?? null,
+        })
+        .select('id')
+        .single();
+      if (error) throw error;
+      activeStandupIdRef.current = (data as any)?.id ?? null;
+    } catch (err) {
+      console.error('[standup] failed to open standups row', err);
+    }
+  }, [key, resolvedBoardId]);
+
+  /** Close the currently-open speaker-turn event and open a new one for
+   *  the next speaker. No-op when the name is identical or no session is
+   *  active. */
+  const advanceStandupSpeaker = useCallback(async (nextName: string | null) => {
+    const standupId = activeStandupIdRef.current;
+    if (!standupId) {
+      currentSpeakerNameRef.current = nextName;
+      return;
+    }
+    if (currentSpeakerNameRef.current === nextName) return;
+    const prevEventId = activeStandupEventIdRef.current;
+    activeStandupEventIdRef.current = null;
+    currentSpeakerNameRef.current = nextName;
+
+    try {
+      if (prevEventId) {
+        await (supabase as any)
+          .from('standup_events')
+          .update({ ended_at: new Date().toISOString() })
+          .eq('id', prevEventId);
+      }
+      if (nextName) {
+        const { data, error } = await (supabase as any)
+          .from('standup_events')
+          .insert({ standup_id: standupId, speaker_name: nextName })
+          .select('id')
+          .single();
+        if (error) throw error;
+        activeStandupEventIdRef.current = (data as any)?.id ?? null;
+      }
+    } catch (err) {
+      console.error('[standup] failed to rotate speaker-turn', err);
+    }
+  }, []);
+
+  /** Close the active speaker-turn (if any) and the standups row. */
+  const closeStandupSession = useCallback(async () => {
+    const standupId = activeStandupIdRef.current;
+    const eventId = activeStandupEventIdRef.current;
+    activeStandupIdRef.current = null;
+    activeStandupEventIdRef.current = null;
+    currentSpeakerNameRef.current = null;
+    if (!standupId) return;
+    try {
+      if (eventId) {
+        await (supabase as any)
+          .from('standup_events')
+          .update({ ended_at: new Date().toISOString() })
+          .eq('id', eventId);
+      }
+      await (supabase as any)
+        .from('standups')
+        .update({ ended_at: new Date().toISOString() })
+        .eq('id', standupId);
+    } catch (err) {
+      console.error('[standup] failed to close standups row', err);
+    }
+  }, []);
 
   const { data: dynamicBoardData } = useQuery({
     queryKey: ['kanban-board-columns', resolvedBoardId],
@@ -1311,6 +1409,25 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         await supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey);
         qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
       }
+      /* Standup Phase 1 — when a standup is active, attribute this change
+         to whoever is currently speaking. Fire-and-forget; never blocks
+         the kanban UX or causes the move to look failed if logging fails. */
+      if (activeStandupIdRef.current) {
+        (supabase as any)
+          .from('standup_status_changes')
+          .insert({
+            standup_id: activeStandupIdRef.current,
+            event_id: activeStandupEventIdRef.current,
+            speaker_name: currentSpeakerNameRef.current ?? 'Unassigned',
+            issue_id: issueId,
+            issue_key: issue.issueKey,
+            from_status: oldStatus,
+            to_status: newStatus,
+          })
+          .then((res: any) => {
+            if (res?.error) console.error('[standup] failed to log status change', res.error);
+          });
+      }
     } catch {
       issue.status = oldStatus;
       toastError(`Failed to move ${issue.issueKey}`);
@@ -1402,6 +1519,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
   // and toolbar inside this overlay.
   const standupFullscreen = showStandup && isStandupFullscreen;
 
+  return (
     <div
       className="flex flex-col flex-1 min-h-0"
       style={standupFullscreen
@@ -1443,7 +1561,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
               </button>
               <button
                 type="button"
-                onClick={() => { setStandupAssignee(null); setShowStandup(false); }}
+                onClick={() => { setStandupAssignee(null); setShowStandup(false); closeStandupSession(); }}
                 style={{
                   height: 32, padding: '0 12px',
                   border: '1px solid var(--ds-border, #DFE1E6)',
@@ -1720,7 +1838,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
               {/* End standup — sits to the RIGHT of the Group trigger. */}
               <button
                 type="button"
-                onClick={() => { setStandupAssignee(null); setShowStandup(false); }}
+                onClick={() => { setStandupAssignee(null); setShowStandup(false); closeStandupSession(); }}
                 style={{
                   height: 32, padding: '0 12px',
                   border: '1px solid var(--ds-border, #DFE1E6)',
@@ -1804,7 +1922,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
         canArchive={canArchive}
         showArchived={showArchived}
         onShowArchivedChange={setShowArchived}
-        onStartStandup={() => { setShowStandup(true); setIsStandupFullscreen(true); }}
+        onStartStandup={() => { setShowStandup(true); setIsStandupFullscreen(true); openStandupSession(); }}
         quickFilters={quickFilters}
         onQuickFiltersChange={setQuickFilters}
         enabledQuickFilters={enabledQuickFilters}
@@ -1953,7 +2071,10 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             issues={standupAssignee ? rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType)) : filtered}
             avatarsByName={avatarsByName}
             tk={tk}
-            onPersonChange={name => setStandupAssignee(name === 'Unassigned' ? null : name)}
+            onPersonChange={name => {
+              setStandupAssignee(name === 'Unassigned' ? null : name);
+              advanceStandupSpeaker(name);
+            }}
             onClose={() => { setStandupAssignee(null); setShowStandup(false); }}
           />
         )}
