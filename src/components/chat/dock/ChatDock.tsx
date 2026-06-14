@@ -15,13 +15,18 @@
 import React, { useState } from "react";
 import { IconButton } from "@atlaskit/button/new";
 import Tooltip from "@atlaskit/tooltip";
-import AddIcon from "@atlaskit/icon/glyph/add";
-import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
-import CrossIcon from "@atlaskit/icon/glyph/cross";
-import VidFullScreenOnIcon from "@atlaskit/icon/glyph/vid-full-screen-on";
+import AddIcon from "@atlaskit/icon/core/add";
+import GrowDiagonalIcon from "@atlaskit/icon/core/grow-diagonal";
+import CloseIcon from "@atlaskit/icon/core/close";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
-import { CatyFabIcon } from "./CatyFabIcon";
+import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
+import { CatyMarkFlat } from "../caty-mood/CatyMarkFlat";
+import { CatyWhyCard } from "../caty-mood/CatyWhyCard";
+import { useCatyMood } from "../caty-mood/useCatyMood";
+import { useCatyEvents } from "../caty-mood/useCatyEvents";
+import { buildEventLine, gestureFor } from "../caty-mood/catyEvents";
+import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
@@ -200,30 +205,91 @@ export function ChatDock({
     [conversations],
   );
 
+  // Caty STATE layer (mood) + SIGNAL layer (events). Both glass-box, both from data.
+  const { displayState, liveMood, evidence, byType, trend, sparkline } = useCatyMood();
+  const { events, unseenCount: eventUnseen } = useCatyEvents();
+  const fabRef = React.useRef<HTMLButtonElement>(null);
+  const [whyOpen, setWhyOpen] = React.useState(false);
+  const [gesture, setGesture] = React.useState("");
+  const prevUnseen = React.useRef(eventUnseen);
+  const hoverTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // One-time gesture when a NEW unseen event arrives, then silent (calm tech, no nag).
+  React.useEffect(() => {
+    if (eventUnseen > prevUnseen.current) {
+      const newest = events.find((e) => !e.seen);
+      setGesture(newest ? gestureFor(newest.kind) : "");
+      const t = setTimeout(() => setGesture(""), 1600);
+      prevUnseen.current = eventUnseen;
+      return () => clearTimeout(t);
+    }
+    prevUnseen.current = eventUnseen;
+  }, [eventUnseen, events]);
+
+  const eventLine = React.useMemo(() => buildEventLine(events), [events]);
+  const openHover = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    setWhyOpen(true);
+  };
+  const closeHoverSoon = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setWhyOpen(false), 220);
+  };
+  const openTicket = (key: string) => {
+    setWhyOpen(false);
+    useGlobalSearchStore.getState().openDetail({ id: key });
+  };
+
   if (collapsed) {
     return (
-      <button
-        type="button"
-        className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}`}
-        style={{ top: pos.y, left: pos.x }}
-        aria-label="Open messages"
-        onClick={onToggleCollapsed}
-        onClickCapture={dragHandlers.onClickCapture}
-        onPointerDown={dragHandlers.onPointerDown}
-        onPointerMove={dragHandlers.onPointerMove}
-        onPointerUp={dragHandlers.onPointerUp}
-      >
-        <CatyFabIcon size={FAB_SIZE} isDragging={isDragging} />
-        {totalUnread > 0 && (
-          <span
-            className="cc-fab__badge"
-            aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
-          >
-            {totalUnread > 99 ? "99+" : totalUnread}
-          </span>
+      <>
+        <button
+          ref={fabRef}
+          type="button"
+          className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${gesture ? ' ' + gesture : ''}`}
+          style={{ top: pos.y, left: pos.x }}
+          aria-label={`Caty — ${displayState}. ${liveMood.message} Open messages.`}
+          onClick={onToggleCollapsed}
+          onMouseEnter={openHover}
+          onMouseLeave={closeHoverSoon}
+          onFocus={openHover}
+          onBlur={closeHoverSoon}
+          onClickCapture={dragHandlers.onClickCapture}
+          onPointerDown={dragHandlers.onPointerDown}
+          onPointerMove={dragHandlers.onPointerMove}
+          onPointerUp={dragHandlers.onPointerUp}
+        >
+          {/* One stable component across the whole gesture — never swap on isDragging,
+              or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
+          <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
+          {totalUnread > 0 && (
+            <span
+              className="cc-fab__badge"
+              aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
+            >
+              {totalUnread > 99 ? "99+" : totalUnread}
+            </span>
+          )}
+          <span className="cc-fab__presence" />
+        </button>
+        {!isDragging && (
+          <CatyWhyCard
+            open={whyOpen}
+            anchorRef={fabRef}
+            mood={liveMood}
+            state={displayState}
+            evidence={evidence}
+            byType={byType}
+            trend={trend}
+            sparkline={sparkline}
+            eventLine={eventLine}
+            onClose={() => setWhyOpen(false)}
+            onOpenTicket={openTicket}
+            onHoverIn={openHover}
+            onHoverOut={closeHoverSoon}
+          />
         )}
-        <span className="cc-fab__presence" />
-      </button>
+      </>
     );
   }
 
@@ -245,23 +311,8 @@ export function ChatDock({
         {/* Row 1 — brand identity + live status + action icons */}
         <div className="cc-dock__titlebar">
           <span className="cc-dock__badge" aria-hidden>
-            {/* caty-ai.svg — gradient C mark */}
-            <svg width="34" height="34" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-              <defs>
-                {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
-                <linearGradient id="cai-hdr" x1="256.269" y1="93.9727" x2="256.269" y2="417.5" gradientUnits="userSpaceOnUse">
-                  {/* ads-scanner:ignore-next-line */}
-                  <stop stopColor="#F79357"/>
-                  {/* ads-scanner:ignore-next-line */}
-                  <stop offset="0.5" stopColor="#F53F68"/>
-                  {/* ads-scanner:ignore-next-line */}
-                  <stop offset="0.75" stopColor="#B41572"/>
-                  {/* ads-scanner:ignore-next-line */}
-                  <stop offset="1" stopColor="#CC1E9A"/>
-                </linearGradient>
-              </defs>
-              <path d="M421.802 200.296V93.9727H259.279L233.457 127.389L210.674 93.9727H154.474C39.037 223.991 106.375 363.832 154.474 417.5H421.802V309.658H279.025L236.495 374.971C170.878 271.685 209.155 173.969 236.495 138.021L279.025 200.296H421.802Z" fill="url(#cai-hdr)"/>
-            </svg>
+            {/* Gradient Caty cat — matches the FAB / AI avatar / header accent */}
+            <CatyMarkFlat size={26} tone="gradient" />
           </span>
           <div className="cc-dock__title">
             <span className="cc-dock__wordmark">CATY</span>
@@ -269,7 +320,7 @@ export function ChatDock({
           <div className="cc-dock__actions">
             <Tooltip content="New conversation" position="bottom">
               <IconButton
-                icon={AddIcon}
+                icon={(p) => <AddIcon {...p} LEGACY_size="small" />}
                 label="New conversation"
                 appearance="subtle"
                 spacing="compact"
@@ -283,25 +334,16 @@ export function ChatDock({
             </Tooltip>
             <Tooltip content="Open full screen" position="bottom">
               <IconButton
-                icon={VidFullScreenOnIcon}
+                icon={(p) => <GrowDiagonalIcon {...p} LEGACY_size="small" />}
                 label="Open full screen"
                 appearance="subtle"
                 spacing="compact"
                 onClick={onPopOut}
               />
             </Tooltip>
-            <Tooltip content="Minimize" position="bottom">
-              <IconButton
-                icon={ChevronDownIcon}
-                label="Minimize"
-                appearance="subtle"
-                spacing="compact"
-                onClick={onToggleCollapsed}
-              />
-            </Tooltip>
             <Tooltip content="Close" position="bottom">
               <IconButton
-                icon={CrossIcon}
+                icon={(p) => <CloseIcon {...p} LEGACY_size="small" />}
                 label="Close"
                 appearance="subtle"
                 spacing="compact"

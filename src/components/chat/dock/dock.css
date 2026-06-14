@@ -35,31 +35,29 @@
 
 /* Static gradient hairline — Caty AI signifier, NO motion (CLAUDE.md AI-CTA carve-out) */
 .cc-dock__accent {
-  height: 3px;
+  height: 2px;
   flex: 0 0 auto;
-  /* ads-scanner:ignore-next-line — Caty brand AI gradient (no ADS token equivalent) */
+  /* ads-scanner:ignore-next-line — Caty brand AI gradient (static, no ADS token equivalent) */
   background: linear-gradient(90deg, #F79357 0%, #F53F68 45%, #B41572 75%, #CC1E9A 100%);
 }
 
 .cc-dock__titlebar {
-  height: 52px;
+  height: 48px;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 8px;
   padding: 0 8px 0 12px;
 }
 
 /* Badge holding caty-ai-bg.svg (self-contained dark-bg icon — no extra bg needed) */
 .cc-dock__badge {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9px;
-  overflow: hidden;
   background: transparent;
   border: none;
 }
@@ -114,11 +112,6 @@
 
 .cc-dock__logo-img {
   display: block;
-}
-
-/* Cross/close button 20% smaller than sibling icons */
-.cc-dock__actions button[aria-label="Close"] {
-  transform: scale(0.8);
 }
 
 /* Action icon group — right edge of the title bar */
@@ -370,9 +363,14 @@
 /* collapsed launcher FAB — 56px */
 .cc-fab {
   position: fixed;
-  /* top/left set via inline style by useDraggableFab */
-  width: 56px;
-  height: 56px;
+  /* top/left set via inline style by useDraggableFab.
+     MUST match FAB_SIZE (77) so the cat icon fills its own hit target —
+     a smaller button left the icon overflowing and clicks on the cat missed. */
+  width: 77px;
+  height: 77px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: none;
   padding: 0;
@@ -404,8 +402,8 @@
 
 .cc-fab__badge {
   position: absolute;
-  bottom: -6px;
-  right: -6px;
+  top: -6px;
+  left: -6px;
   min-width: 20px;
   height: 20px;
   padding: 0 5px;
@@ -419,10 +417,26 @@
   border: 2px solid var(--ds-surface, #FFFFFF);
 }
 
+/* Caty SIGNAL gestures — single-shot, calm-tech (fire once on a new unseen event). */
+.cc-fab.cmf-perk .cmf-body { animation: cmfPerk 0.5s ease 1; }
+.cc-fab.cmf-glance .cmf-body { animation: cmfGlance 0.5s ease 1; }
+.cc-fab.cmf-flick .cmf-body { animation: cmfFlick 0.6s ease 1; }
+.cc-fab.cmf-earsback .cmf-body { animation: cmfEarsback 0.5s ease 1; }
+.cc-fab.cmf-snap .cmf-body { animation: cmfSnap 0.5s ease 1; }
+@keyframes cmfPerk { 0%,100% { transform: scale(0.94) } 40% { transform: scale(1.04) translateY(-2px) } }
+@keyframes cmfGlance { 0%,100% { transform: scale(0.94) } 50% { transform: scale(1.02) } }
+@keyframes cmfFlick { 0%,100% { transform: rotate(0deg) scale(0.94) } 30% { transform: rotate(-4deg) scale(0.96) } 60% { transform: rotate(4deg) scale(0.96) } }
+@keyframes cmfEarsback { 0%,100% { transform: scale(0.94) } 50% { transform: scaleY(0.9) } }
+@keyframes cmfSnap { 0%,100% { transform: translateX(0) scale(0.96) } 25% { transform: translateX(-3px) } 75% { transform: translateX(3px) } }
+@media (prefers-reduced-motion: reduce) {
+  .cc-fab.cmf-perk .cmf-body, .cc-fab.cmf-glance .cmf-body, .cc-fab.cmf-flick .cmf-body,
+  .cc-fab.cmf-earsback .cmf-body, .cc-fab.cmf-snap .cmf-body { animation: none; }
+}
+
 .cc-fab__presence {
   position: absolute;
   bottom: -2px;
-  left: -2px;
+  right: -2px;
   width: 11px;
   height: 11px;
   border-radius: 50%;
