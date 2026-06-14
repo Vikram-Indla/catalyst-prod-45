@@ -161,7 +161,7 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
   const avatarSize = compact ? 'small' : 'medium';
 
   return (
-    <aside style={{ width: 280, minWidth: 280, flexShrink: 0, border: `1px solid ${token('color.border', '#091E4224')}`, borderRadius: 8, display: 'flex', flexDirection: 'column', background: token('elevation.surface', '#FFFFFF'), overflowY: 'auto' }}>
+    <aside style={{ width: 280, minWidth: 280, flexShrink: 0, border: `1px solid ${token('color.border', '#091E4224')}`, borderRadius: 8, position: 'sticky', top: 0, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 180px)', display: 'flex', flexDirection: 'column', background: token('elevation.surface', '#FFFFFF'), overflowY: 'auto' }}>
       {/* Header: title + settings */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px 10px' }}>
         <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', '#172B4D') }}>Standup</span>
