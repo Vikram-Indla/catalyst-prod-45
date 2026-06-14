@@ -108,6 +108,10 @@ export function HubSidebarNav({ onNavigate }: HubSidebarNavProps) {
                     display: 'block',
                     flexShrink: 0,
                     borderRadius: 4,
+                    filter: active
+                      ? 'brightness(1.1) drop-shadow(0 0 2px rgba(0,82,204,0.3))'
+                      : 'brightness(0.65) opacity(0.75)',
+                    transition: 'filter 120ms ease-out',
                   }}
                 />
               </button>
