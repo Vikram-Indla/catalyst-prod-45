@@ -112,15 +112,11 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
           title: '',
           items: [
             { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: NavDashboardIcon, exact: false },
-            // 2026-04-19: "Board" → "Project Board", "Backlog" → "Project
-            // Backlog" per Vikram's call on the flattened layout. With no
-            // section headers, the bare nouns read too thin against the
-            // project header ("BA · BAU"); the "Project" prefix adds the
-            // scope signal that the dropped section labels used to provide
-            // and gives the sidebar visual ballast at this 4-item count.
+            // Backlog sits directly after Dashboard (Vikram, 2026-06-14) — it is the
+            // primary planning surface, so it leads the board/kanban views.
+            { id: 'backlog', title: 'Backlog', path: `${base}/backlog`, icon: NavBacklogIcon, exact: false },
             { id: 'board', title: 'Board', path: `${base}/boards`, icon: NavKanbanIcon, exact: false },
             { id: 'kanban', title: 'Kanban', path: `${base}/kanban`, icon: NavKanbanIcon, exact: false },
-            { id: 'backlog', title: 'Backlog', path: `${base}/backlog`, icon: NavBacklogIcon, exact: false },
             { id: 'allwork', title: 'Work', path: `${base}/allwork`, icon: NavWorkIcon, exact: false },
             { id: 'filters', title: 'Filters', path: `${base}/filters`, icon: NavFiltersIcon, exact: false },
             { id: 'timeline', title: 'Timeline', path: `${base}/timeline`, icon: NavTimelineIcon, exact: false },
