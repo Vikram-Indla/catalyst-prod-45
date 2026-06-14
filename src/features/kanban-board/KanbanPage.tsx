@@ -194,6 +194,7 @@ export default function KanbanPage() {
           }
         }}
         onOpenHistory={() => setHistoryOpen(true)}
+        projectKey={key?.toUpperCase()}
       />
 
       <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex' }}>

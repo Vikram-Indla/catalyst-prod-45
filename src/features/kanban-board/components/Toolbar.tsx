@@ -15,6 +15,7 @@ import MoreIcon from '@atlaskit/icon/glyph/more';
 import GraphLineIcon from '@atlaskit/icon/glyph/graph-line';
 import { PortalMenu, MenuItem, TriggerChevron } from './PortalMenu';
 import { SIZES, STRINGS, QUICK_FILTERS } from '../constants';
+import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import type { FilterApi } from '../hooks/useKanbanFilters';
 import type { GroupByMode, CardVisibleFields, BoardIssue } from '../types';
 
@@ -111,13 +112,16 @@ interface ToolbarProps {
   standupActive: boolean;
   onEndStandup: () => void;
   onOpenHistory: () => void;
+  projectKey?: string;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, projectKey }) => {
   const groupLabels: Record<GroupByMode, string> = {
     none: STRINGS.GROUP_NONE, assignee: STRINGS.GROUP_ASSIGNEE, epic: STRINGS.GROUP_EPIC,
     subtask: STRINGS.GROUP_SUBTASK, priority: STRINGS.GROUP_PRIORITY,
   };
+
+  const { data: savedFilters = [] } = useFiltersForProject(projectKey, 'project');
 
   return (
     <div className="kb-toolbar" style={{ height: SIZES.TOOLBAR_HEIGHT, padding: `8px ${SIZES.PAGE_PADDING_X}px`, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, overflowX: 'auto' }}>
@@ -152,7 +156,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
       <PortalMenu ariaLabel="Quick filters" minWidth={200} trigger={({ open }) => (
         <button style={triggerStyle(api.quickFilters.size > 0 || open)}>Quick filters{api.quickFilters.size > 0 ? ` (${api.quickFilters.size})` : ''}<TriggerChevron /></button>
       )}>
-        {() => QUICK_FILTERS.map((qf) => <MenuItem key={qf.id} selected={api.quickFilters.has(qf.id)} onClick={() => api.toggleQuickFilter(qf.id)}>{qf.label}</MenuItem>)}
+        {() => (
+          <>
+            {QUICK_FILTERS.map((qf) => <MenuItem key={qf.id} selected={api.quickFilters.has(qf.id)} onClick={() => api.toggleQuickFilter(qf.id)}>{qf.label}</MenuItem>)}
+            {savedFilters.length > 0 && (
+              <>
+                <div style={{ padding: '6px 12px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', '#626F86'), marginTop: 6 }}>My filters</div>
+                {savedFilters.slice(0, 5).map((f) => <MenuItem key={f.id} selected={api.quickFilters.has(f.id)} onClick={() => api.toggleQuickFilter(f.id)}>{f.name}</MenuItem>)}
+              </>
+            )}
+          </>
+        )}
       </PortalMenu>
 
       <div style={{ flex: 1 }} />
