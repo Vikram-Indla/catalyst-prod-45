@@ -87,7 +87,7 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
             return (
               <div
                 key={section}
-                style={{ background: '#fff', border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}
+                style={{ background: 'var(--ds-surface, #fff)', border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}
               >
                 <div style={{ padding: '8px 12px', background: 'var(--ds-surface-sunken,#F8FAFC)', borderBottom: '1px solid var(--divider)' }}>
                   <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)' }}>

@@ -41,7 +41,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
         border: '1px solid var(--divider)',
         borderRadius: 8,
         overflow: 'hidden',
-        background: '#fff',
+        background: 'var(--ds-surface, #fff)',
       }}
     >
       {/* Config header */}
@@ -60,7 +60,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
           <span
             style={{
               fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
-              background: '#DCFCE7', color: '#15803D',
+              background: 'var(--ds-background-success, #DCFCE7)', color: 'var(--ds-text-success, #15803D)',
               textTransform: 'uppercase', letterSpacing: '0.05em',
             }}
           >
@@ -75,7 +75,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
           padding: '8px 16px',
           borderBottom: '1px solid var(--divider)',
           display: 'flex', gap: 20,
-          background: '#fff',
+          background: 'var(--ds-surface, #fff)',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

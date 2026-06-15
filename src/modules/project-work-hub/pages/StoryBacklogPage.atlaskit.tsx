@@ -1194,7 +1194,7 @@ function AssigneeStackFilter({
             borderRadius: 13,
             border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-            color: '#42526E',
+            color: 'var(--ds-text-subtle, #42526E)',
             fontSize: 11,
             fontWeight: 600,
             display: 'inline-flex',
