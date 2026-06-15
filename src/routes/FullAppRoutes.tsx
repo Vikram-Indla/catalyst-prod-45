@@ -6,12 +6,6 @@ function IssueRedirectToBrowse() {
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
 
-function ProductTimelineRedirect() {
-  const { key } = useParams();
-  return <Navigate to={`/product-hub/${key ?? ''}/dashboard`} replace />;
-}
-
-
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
@@ -183,6 +177,8 @@ const ProjectWorkspace = lazy(() => import("../pages/project/ProjectWorkspace"))
 const BoardView = lazy(() => import("../pages/project/BoardView"));
 const TimelineView = lazy(() => import("../pages/project/TimelineView"));
 const ProjectHubTimelinePage = lazy(() => import("../pages/project-hub/timeline/ProjectHubTimelinePage"));
+const ProductHubTimelinePage = lazy(() => import("../pages/product-hub/timeline/ProductHubTimelinePage"));
+const ProductTimelineDetailPage = lazy(() => import("../pages/product-hub/timeline/ProductTimelineDetailPage"));
 const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPage"));
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
@@ -484,7 +480,8 @@ export default function FullAppRoutes() {
 
         <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/product-hub/:key/timeline" element={<ProductTimelineRedirect />} />
+        <Route path="/product-hub/:key/timeline/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductTimelineDetailPage /></S></MG>} />
+        <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePage /></S></MG>} />
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
