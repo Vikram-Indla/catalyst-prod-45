@@ -1,5 +1,4 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useCallback, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
@@ -43,7 +42,6 @@ export function CatyBoardInsight({ resourceId, projectKey }: CatyBoardInsightPro
   const { user } = useAuth();
   const [insight, setInsight] = useState<BoardInsightData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const generateInsight = useCallback(async () => {
     if (!user?.id) return;
@@ -148,46 +146,25 @@ export function CatyBoardInsight({ resourceId, projectKey }: CatyBoardInsightPro
 
   if (!resourceId && !projectKey) return null;
 
-  /* Click-outside to close panel */
-  useEffect(() => {
-    if (!insight) return;
-    function handler(e: MouseEvent) {
-      if (buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
-        const panelEl = document.getElementById('board-health-portal');
-        if (panelEl && !panelEl.contains(e.target as Node)) {
-          setInsight(null);
-        }
-      }
-    }
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [insight]);
+  /* Inline button + panel wrapper */
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <button
+        onClick={() => {
+          if (!insight) generateInsight();
+          else setInsight(null);
+        }}
+      >
+        <CatyButton label="Board health" onClick={() => {}} loading={isLoading} />
+      </button>
 
-  /* Fixed button + portal panel */
-  const button = (
-    <button
-      ref={buttonRef}
-      onClick={() => {
-        if (!insight) generateInsight();
-        else setInsight(null);
-      }}
-    >
-      <CatyButton label="Board health" onClick={() => {}} loading={isLoading} />
-    </button>
-  );
-
-  /* Portal panel positioned below the button via fixed positioning from portal */
-  const panelContent = insight && (
+      {/* Inline panel — appears below button */}
+      {insight && (
     <div
-      id="board-health-portal"
       style={{
-        position: 'fixed',
-        top: 72,
-        right: 16,
         width: 320,
         maxHeight: '60vh',
         overflowY: 'auto',
-        zIndex: 999,
       }}
     >
       {insight.totalItems === 0 ? (
@@ -279,10 +256,7 @@ export function CatyBoardInsight({ resourceId, projectKey }: CatyBoardInsightPro
         </CatyInsightCard>
       )}
     </div>
+      )}
+    </div>
   );
-
-  return <>
-    {button}
-    {insight && createPortal(panelContent, document.body)}
-  </>;
 }

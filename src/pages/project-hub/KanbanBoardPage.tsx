@@ -2119,7 +2119,6 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
             )}
           </div>
         }
-        catyInsightSlot={!isProduct && <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />}
       />
       </div>
       )}
@@ -2364,7 +2363,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
           has been removed — it would have rendered on top of the column
           area and overlapped cards. */}
       <PriToastContainer toasts={toasts} onDismiss={dismissToast} />
-      {/* Board health button (fixed top-right) + insight panel (portal below) */}
+      {/* Board health inline panel — renders below toolbar when opened */}
       {!isProduct && <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />}
     </div>
   );
