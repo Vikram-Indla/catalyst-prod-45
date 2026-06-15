@@ -1,17 +1,23 @@
 /**
- * ProductJiraLayout — Thin wrapper for /product-hub/:key/allwork.
+ * ProductJiraLayout — /product-hub/:key/allwork
  *
- * Structural clone of ProjectJiraLayout (src/pages/project-hub/jira-list/ProjectJiraLayout.tsx).
- * Differences from the original:
- *  1. Resolves product (id, name, code) from `products` table by URL :key (code),
- *     not `projects` table by key.
- *  2. Delegates to ProductAllWorkView, not ProjectAllWorkView.
+ * 2026-06-15: switched from the parallel ProductAllWorkView (413 LOC clone)
+ * to the canonical ProjectAllWorkView with mode='product'. Per CLAUDE.md
+ * "ADOPT CANONICAL COMPONENTS — DO NOT REIMPLEMENT", future fixes to the
+ * canonical view automatically apply here.
+ *
+ * Layout shell still owns:
+ *   1. product resolution (products by code → id, name)
+ *   2. height cap so the inner regions own their own scroll
+ *
+ * Everything else (toolbar, navigator, detail router, filter modal,
+ * pagination footer) is inherited from the canonical view via mode='product'.
  */
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import ProductAllWorkView from './ProductAllWorkView';
+import ProjectAllWorkView from '../../project-hub/jira-list/ProjectAllWorkView';
 
 interface ProductRow { id: string; name: string; code: string; }
 
@@ -50,10 +56,11 @@ export default function ProductJiraLayout() {
         background: 'transparent',
       }}
     >
-      <ProductAllWorkView
-        productCode={key!.toUpperCase()}
-        productId={product?.id}
+      <ProjectAllWorkView
+        projectKey={key!.toUpperCase()}
+        projectId={product?.id}
         productName={product?.name}
+        mode="product"
       />
     </div>
   );

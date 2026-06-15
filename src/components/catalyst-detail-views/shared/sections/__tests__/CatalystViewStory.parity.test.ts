@@ -66,13 +66,19 @@ describe('CatalystViewBase — responsive + sticky (DC4 2026-05-11)', () => {
     ).toBe(true);
   });
 
-  it('panel mode initial sidebar width must be ≤ 220px', () => {
-    // At 560px body, 285px sidebar leaves only 269px for left content (too narrow).
-    // 220px sidebar leaves 334px — acceptable.
-    expect(
-      baseSrc.includes('panelMode ? 220') || baseSrc.includes('panelMode ? 200') || baseSrc.includes('panelMode ? 180'),
-      'CatalystViewBase.tsx: panel mode rightPanelWidth initial value must be ≤ 220px',
-    ).toBe(true);
+  it('panel mode initial sidebar width must be in the 220–440px band', () => {
+    /* 2026-06-15 (two passes): Vikram raised the default 260 → 320 → 400.
+       Upper bound raised to 440 so the test won't lock the value at 400
+       and forbid sensible follow-up tweaks. Lower bound stays at 220 to
+       preserve the original "guard against crowding the left content"
+       intent — anything narrower starts to clip the Improve button. */
+    const match = baseSrc.match(/panelMode \? (\d+)/);
+    expect(match, 'CatalystViewBase.tsx: could not find panelMode ? <N> literal').not.toBeNull();
+    const value = match ? parseInt(match[1], 10) : NaN;
+    expect(value, 'CatalystViewBase.tsx: panel-mode rightPanelWidth must be 220–440')
+      .toBeGreaterThanOrEqual(220);
+    expect(value, 'CatalystViewBase.tsx: panel-mode rightPanelWidth must be 220–440')
+      .toBeLessThanOrEqual(440);
   });
 
   it('top bar must have position:sticky for panel/fullpage modes', () => {
