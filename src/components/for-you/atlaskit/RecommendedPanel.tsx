@@ -517,9 +517,10 @@ function FeedSection({
             Cat icon carries the AI semantic; label is action-only. */}
         {onOpenDigest && (
           <CatyButton
-            label={`Summarize ${rows.length}`}
+            label="Summarize"
             onClick={onOpenDigest}
             size="default"
+            badge={rows.length}
           />
         )}
       </div>
