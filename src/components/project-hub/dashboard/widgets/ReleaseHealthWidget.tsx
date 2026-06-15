@@ -28,6 +28,8 @@ import { token } from '@atlaskit/tokens';
 import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardReleaseHealth } from '@/hooks/useDashboardWidgets';
+import { useProductDashboardData } from '@/hooks/useProductDashboardData';
+import { useMemo } from 'react';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, StatusLozenge } from '@/components/ads';
 import { useDashboardFilter } from '@/contexts/DashboardFilterContext';
@@ -63,12 +65,17 @@ export default function ReleaseHealthWidget({
   projectKey,
   collapsed,
   onToggleCollapse,
+  mode = 'project',
 }: WidgetProps) {
+  const isProduct = mode === 'product';
   const { filter } = useDashboardFilter();
   const { settings } = useGadgetSettings('release', projectKey);
   const maxRows = (settings.gadgetSpecific?.maxRows as number | undefined) ?? 6;
 
-  const { data: releases, isLoading } = useDashboardReleaseHealth(projectId, {
+  /* Project: ph_issues grouped by fixVersion. Product: BRs grouped by
+     planned_quarter[0]. atRisk = release contains any overdue or blocked
+     BR. Mirrors the project hook's release row shape. */
+  const projectQuery = useDashboardReleaseHealth(isProduct ? '' : projectId, {
     dateFrom: filter.dateFrom,
     dateTo: filter.dateTo,
     releaseFilter: settings.releaseFilter,
@@ -78,6 +85,39 @@ export default function ReleaseHealthWidget({
     priorityFilter: settings.priorityFilter,
     maxRows,
   });
+  const productQuery = useProductDashboardData(isProduct ? projectId : null);
+  const productReleases = useMemo(() => {
+    if (!isProduct) return [];
+    const rows = productQuery.data?.rows ?? [];
+    const DONE = new Set(['done', 'approved', 'completed', 'closed']);
+    const HOLD = new Set(['on hold', 'on_hold', 'paused', 'blocked', 'awaiting info', 'awaiting_info']);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayTs = today.getTime();
+    const byRel = new Map<string, { items: typeof rows; done: number; atRisk: boolean }>();
+    for (const r of rows) {
+      const release = Array.isArray(r.plannedQuarter) && r.plannedQuarter.length > 0
+        ? r.plannedQuarter[0] : null;
+      if (!release) continue;
+      const entry = byRel.get(release) ?? { items: [], done: 0, atRisk: false };
+      entry.items.push(r);
+      const step = (r.processStep ?? '').toLowerCase().trim();
+      if (DONE.has(step)) entry.done++;
+      const overdue = r.endDate && new Date(r.endDate).getTime() < todayTs && !DONE.has(step);
+      if (overdue || HOLD.has(step)) entry.atRisk = true;
+      byRel.set(release, entry);
+    }
+    return Array.from(byRel.entries()).map(([name, e]) => ({
+      name,
+      total: e.items.length,
+      done: e.done,
+      atRisk: e.atRisk,
+      progress: e.items.length > 0 ? Math.round((e.done / e.items.length) * 100) : 0,
+    })).slice(0, maxRows);
+  }, [isProduct, productQuery.data, maxRows]);
+
+  const releases = isProduct ? productReleases : projectQuery.data;
+  const isLoading = isProduct ? productQuery.isLoading : projectQuery.isLoading;
   const { openUWV } = useUWV();
 
   const all = releases ?? [];

@@ -168,7 +168,12 @@ export function CatalystViewBase({
   // (raised from 220 → 260 on 2026-05-19: "Improve Production Incident" button is 236px
   // and was visually clipping at 220px; 260 gives it breathing room without crowding the
   // left content area at typical 1140px AllWork panel widths).
-  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 260 : 480);
+  // 2026-06-15: 260 → 320 → 400 (Vikram, two passes). Right-rail elements
+  // (Status pill + Improve dropdown + Discuss CTA + field rows) need real
+  // headroom; 320 still felt cramped. 400 gives every field its full
+  // affordance without overflow at typical 1140–1440px AllWork panel widths.
+  // User can drag-resize narrower via the splitter handle if needed.
+  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 400 : 480);
   const [showCopyFlag, setShowCopyFlag] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreAnchor, setMoreAnchor] = useState<DOMRect | null>(null);

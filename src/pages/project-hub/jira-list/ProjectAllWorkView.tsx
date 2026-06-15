@@ -33,6 +33,7 @@ import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import {
   AllWorkToolbar,
   EMPTY_FILTERS,
+  itemPassesFilters,
   type AllWorkView,
   type FilterState,
 } from './components/AllWorkToolbar';
@@ -41,15 +42,86 @@ import { applyCatyFilter } from '@/components/caty/applyCatyFilter';
 import type { WorkItem } from '@/types/workItem.types';
 import { filterStateToJql } from '@/lib/filters/filterStateToJql';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
+/* 2026-06-15: product-mode adapter. The same canonical view now serves both
+   project hub and product hub. Product branch reads business_requests, maps
+   them to WorkItem shape via mapBrToWorkItem below, and pipes through the
+   same toolbar / navigator / detail router as project. Replaces the parallel
+   ProductAllWorkView (per CLAUDE.md "ADOPT CANONICAL COMPONENTS" rule). */
+import { useBusinessRequestsByProduct } from '@/hooks/useBusinessRequests';
+import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
+import { jqlToFilterState } from '@/lib/jql/jqlToFilterState';
+import type { BusinessRequest } from '@/types/business-request';
+
+interface ProductProfileRow { id: string; full_name: string | null; avatar_url: string | null; }
+
+function initialsFromName(name: string | null | undefined): string {
+  if (!name) return '??';
+  return name.split(' ').slice(0, 2).map(w => w[0] ?? '').join('').toUpperCase();
+}
+
+/* business_requests row → WorkItem.
+   Mirrors the function previously in ProductAllWorkView.tsx so the navigator
+   panel, toolbar facets, and detail router all see a uniform shape. */
+function mapBrToWorkItem(
+  r: BusinessRequest,
+  profileMap: Map<string, ProductProfileRow>,
+  statusCategoryMap: Map<string, 'todo' | 'in_progress' | 'done'>,
+): WorkItem {
+  const dm = (r as any).project_manager_user_id ? profileMap.get((r as any).project_manager_user_id) : null;
+  const po = (r as any).po_user_id ? profileMap.get((r as any).po_user_id) : null;
+  const rKey = (r as any).request_key as string;
+  const quarter = (r as any).planned_quarter;
+  const processStep = (r as any).process_step as string | null | undefined;
+  return {
+    id: rKey,
+    dbId: (r as any).id ?? null,
+    projectId: (r as any).product_id ?? '',
+    parentId: null,
+    parentKey: null,
+    jiraKey: rKey,
+    type: 'task' as any,
+    rawType: 'Business Request',
+    summary: r.title ?? '(Untitled)',
+    status: 'in_progress' as any,
+    statusName: processStep ?? '',
+    statusCategory: statusCategoryMap.get(processStep ?? '') ?? 'todo',
+    assigneeId: (r as any).project_manager_user_id ?? null,
+    assignee: dm ? {
+      id: (r as any).project_manager_user_id,
+      name: dm.full_name ?? 'Unknown',
+      avatarUrl: dm.avatar_url ?? null,
+      initials: initialsFromName(dm.full_name),
+      color: 'var(--ds-background-accent-purple-subtle, #6554C0)',
+    } : undefined,
+    reporterId: (r as any).po_user_id ?? null,
+    reporter: po ? { id: (r as any).po_user_id, name: po.full_name ?? 'Unknown' } : undefined,
+    priority: ((r as any).urgency ?? 'medium') as any,
+    sprintRelease: Array.isArray(quarter) ? (quarter[0] ?? null) : (quarter ?? null),
+    fixVersion: Array.isArray(quarter) ? (quarter[0] ?? null) : (quarter ?? null),
+    commentsCount: 0,
+    childCount: 0,
+    createdAt: (r as any).created_at ?? '',
+    updatedAt: (r as any).updated_at ?? '',
+    createdBy: null,
+    severity: null,
+    labels: (r as any).request_type ? [(r as any).request_type] : [],
+  };
+}
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
 );
 
 interface Props {
+  /** project mode: ph_projects.key (e.g. 'BAU'). product mode: products.code (e.g. 'INV'). */
   projectKey: string;
-  /** Optional — enables inline-edit mutations that need the project UUID. */
+  /** Optional — enables inline-edit mutations that need the project/product UUID. */
   projectId?: string;
+  /** 2026-06-15: mode switch — project = ph_issues (default). product =
+   *  business_requests filtered by productId, mapped via mapBrToWorkItem. */
+  mode?: 'project' | 'product';
+  /** Product mode only — used in the header and detail empty-state copy. */
+  productName?: string;
 }
 
 /** Split container widths for 3-state responsive layout:
@@ -60,7 +132,9 @@ interface Props {
 const WIDE_BP = 1120;
 const NARROW_BP = 480;
 
-export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
+export default function ProjectAllWorkView({ projectKey, projectId, mode = 'project', productName }: Props) {
+  const isProduct = mode === 'product';
+
   // PERF: useProjectAllWorkItems now returns paginated results with keyset cursor.
   // toolbarFilters is forwarded so server-side predicates are applied before LIMIT,
   // ensuring page 1 = first 25 of ALL matching rows, not 25 random rows filtered client-side.
@@ -70,17 +144,67 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   // Raw JQL from a saved filter — bypasses the lossy filterState conversion
   const [activeFilterJql, setActiveFilterJql] = useState<string | undefined>(undefined);
 
-  // Hook call moved here so toolbarFilters is in scope.
-  // When a saved filter's JQL is active, pass it directly to the engine.
-  const {
-    items = [],
-    rowsPerPage,
-    setRowsPerPage,
-    totalCount,
-    page,
-    setPage,
-    pageCount,
-  } = useProjectAllWorkItems(projectKey, activeFilterJql ? EMPTY_FILTERS : toolbarFilters, activeFilterJql);
+  /* ── Project items (mode='project') ─────────────────────────────────────────
+     useProjectAllWorkItems is still invoked unconditionally to satisfy the
+     Rules of Hooks, but its results are only used when mode='project'. In
+     product mode the productKey would yield an empty page from ph_issues
+     quickly, which is fine — we ignore that result and use the product
+     branch below. */
+  const projectQuery = useProjectAllWorkItems(
+    isProduct ? undefined : projectKey,
+    activeFilterJql ? EMPTY_FILTERS : toolbarFilters,
+    activeFilterJql,
+  );
+
+  /* ── Product items (mode='product') ─────────────────────────────────────────
+     Same chain as the now-retired ProductAllWorkView: BR fetch → profile
+     map → workflow → mapBrToWorkItem. Client-side filter via itemPassesFilters
+     because business_requests doesn't have the server-side filter helper. */
+  const productBrsQuery = useBusinessRequestsByProduct(isProduct ? (projectId ?? null) : null);
+  const productWorkflow = useTypeWorkflow('BAU', 'Business Request');
+
+  const productBrs = (isProduct ? productBrsQuery.data ?? [] : []) as BusinessRequest[];
+
+  const { data: productProfileMap = new Map<string, ProductProfileRow>() } = useQuery({
+    queryKey: ['allwork-product-profiles', projectId, productBrs.length],
+    enabled: isProduct && productBrs.length > 0,
+    queryFn: async () => {
+      const ids = new Set<string>();
+      productBrs.forEach((r: any) => {
+        if (r.project_manager_user_id) ids.add(r.project_manager_user_id);
+        if (r.po_user_id) ids.add(r.po_user_id);
+      });
+      if (!ids.size) return new Map<string, ProductProfileRow>();
+      const { data } = await supabase
+        .from('profiles').select('id, full_name, avatar_url').in('id', Array.from(ids));
+      const map = new Map<string, ProductProfileRow>();
+      ((data ?? []) as ProductProfileRow[]).forEach((p) => map.set(p.id, p));
+      return map;
+    },
+    staleTime: 60_000,
+  });
+
+  const productStatusCategoryMap = useMemo(
+    () => new Map<string, 'todo' | 'in_progress' | 'done'>(
+      (productWorkflow?.data?.statuses ?? []).map((s: any) => [s.name, s.category as 'todo' | 'in_progress' | 'done']),
+    ),
+    [productWorkflow?.data?.statuses],
+  );
+
+  const productItems: WorkItem[] = useMemo(
+    () => productBrs.map((r) => mapBrToWorkItem(r, productProfileMap, productStatusCategoryMap)),
+    [productBrs, productProfileMap, productStatusCategoryMap],
+  );
+
+  /* Uniform shape consumed by the rest of the component. Product mode keeps
+     a single "page" with all items — no server-side pagination on BRs. */
+  const items: WorkItem[] = isProduct ? productItems : (projectQuery.items ?? []);
+  const rowsPerPage = isProduct ? Math.max(1, productItems.length) : projectQuery.rowsPerPage;
+  const setRowsPerPage = isProduct ? (() => { /* no-op in product mode */ }) : projectQuery.setRowsPerPage;
+  const totalCount = isProduct ? productItems.length : projectQuery.totalCount;
+  const page = isProduct ? 1 : projectQuery.page;
+  const setPage = isProduct ? (() => { /* no-op */ }) : projectQuery.setPage;
+  const pageCount = isProduct ? 1 : projectQuery.pageCount;
 
   /* ── Filter URL params ────────────────────────────────────────────────────
      ?filterId=<uuid>    — navigated here by clicking a saved filter name
@@ -126,21 +250,26 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   // Open the filter panel by default when entering create-filter mode
   const [filterOpen, setFilterOpen] = useState(isCreateMode);
 
-  // When a saved filter loads, pass its JQL directly to the engine.
-  // We use a ref so this only fires once per filterId change, not on every re-render.
+  /* When a saved filter loads, apply it.
+     Project mode uses server-side JQL via setActiveFilterJql.
+     Product mode parses JQL into a FilterState (client-side filter pass). */
   const appliedFilterIdRef = useRef<string | null>(null);
   useEffect(() => {
     if (activeFilter && activeFilter.id !== appliedFilterIdRef.current) {
       appliedFilterIdRef.current = activeFilter.id;
       if (activeFilter.jql_query) {
-        setActiveFilterJql(activeFilter.jql_query);
+        if (isProduct) {
+          setToolbarFilters(jqlToFilterState(activeFilter.jql_query));
+        } else {
+          setActiveFilterJql(activeFilter.jql_query);
+        }
       }
     }
     if (!activeFilter && appliedFilterIdRef.current) {
       appliedFilterIdRef.current = null;
       setActiveFilterJql(undefined);
     }
-  }, [activeFilter]);
+  }, [activeFilter, isProduct]);
 
   /* Shift+F toggles the filter popup, mirroring Jira's "Press Shift + F
      to open and close" hint at the bottom of the popup. Skipped while
@@ -193,9 +322,14 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
       }
       return next;
     }
-    // Server-side filter already applied; return items as-is.
+    /* Project mode: server-side filter already applied; items as-is.
+       Product mode: business_requests aren't filtered server-side, so
+       apply the toolbar filter client-side via itemPassesFilters here. */
+    if (isProduct) {
+      return items.filter((i) => itemPassesFilters(i, toolbarFilters));
+    }
     return items;
-  }, [items, catyActive, catyFilter, catySecondaryQuery]);
+  }, [items, catyActive, catyFilter, catySecondaryQuery, isProduct, toolbarFilters]);
 
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
@@ -317,7 +451,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           name + Add people / meatball / share / automation / feedback /
           fullscreen actions. The previous solo h2 was a Catalyst-only
           divergence with no parity reference on the Jira side. */}
-      <ProjectPageHeader projectKey={projectKey} />
+      <ProjectPageHeader projectKey={projectKey} hubType={isProduct ? 'product' : undefined} />
       {/* Filter context banner — shown when viewing a saved filter or in create-filter mode.
           Matches Jira's "Filter by: [name]" breadcrumb strip above the issue list. */}
       {(activeFilter || isCreateMode) && (
@@ -393,7 +527,8 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             jql_query: filterStateToJql(toolbarFilters, projectKey),
           } as any : undefined}
           initialJql={!urlFilterId ? filterStateToJql(toolbarFilters, projectKey) : undefined}
-          hubScope="project"
+          hubScope={isProduct ? 'product' : 'project'}
+          {...(isProduct ? { productKey: projectKey } : {})}
           onClose={() => setSaveModalOpen(false)}
           onSaved={() => {
             setSaveModalOpen(false);
@@ -606,7 +741,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                     color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                     lineHeight: '20px',
                   }}>
-                    Select a work item
+                    {isProduct ? 'Select a business request' : 'Select a work item'}
                   </p>
                   <p
                     data-testid="allwork-empty-state-subtitle"
@@ -617,7 +752,9 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                       lineHeight: '20px', maxWidth: 280,
                     }}
                   >
-                    Choose an item from the list to view its details, comments, and related work.
+                    {isProduct
+                      ? 'Choose a request from the list to view its details, comments, and related work.'
+                      : 'Choose an item from the list to view its details, comments, and related work.'}
                   </p>
                 </div>
               </div>
@@ -642,6 +779,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             isOpen={true}
             onClose={() => setOverlayItemId(null)}
             itemId={overlayItemId}
+            {...(isProduct ? { itemType: 'business_request' as any } : {})}
             projectId={projectId ?? ''}
             projectKey={projectKey}
             onOpenItem={handleOpenItem}

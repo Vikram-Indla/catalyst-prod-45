@@ -18,7 +18,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import { typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { WIDGET_REGISTRY, type WidgetSpan } from './widget-registry';
+import { WIDGET_REGISTRY, getWidgetRegistry, type WidgetSpan } from './widget-registry';
 import { WidgetIdContext, GridEditContext } from './widget-edit-context';
 
 // Re-export for backward compatibility
@@ -34,6 +34,8 @@ interface DashboardWidgetGridProps {
   onResize?: (widgetId: string, direction: 'wider' | 'narrower') => void;
   onToggleCollapse?: (widgetId: string) => void;
   onRemoveWidget?: (widgetId: string) => void;
+  /** 2026-06-15: filters the widget registry — see getWidgetRegistry. */
+  mode?: 'project' | 'product';
 }
 
 export interface DashboardWidgetConfig {
@@ -68,9 +70,12 @@ export function effectiveSpan(w: ResolvedWidget): number {
   return 12;
 }
 
-export function resolveWidgets(configs: DashboardWidgetConfig[]): ResolvedWidget[] {
+export function resolveWidgets(
+  configs: DashboardWidgetConfig[],
+  mode: 'project' | 'product' = 'project',
+): ResolvedWidget[] {
   const map = new Map(configs.map((c) => [c.widget_id, c]));
-  return WIDGET_REGISTRY.map((def) => {
+  return getWidgetRegistry(mode).map((def) => {
     const cfg = map.get(def.id);
     return {
       ...def,
@@ -87,7 +92,7 @@ export function resolveWidgets(configs: DashboardWidgetConfig[]): ResolvedWidget
 // Persistence hook — query, init, upsert, bulk upsert, reset.
 // ────────────────────────────────────────────────────────────────────
 
-export function useDashboardWidgetConfig(projectId: string) {
+export function useDashboardWidgetConfig(projectId: string, mode: 'project' | 'product' = 'project') {
   const { user } = useAuth();
   const userId = user?.id;
   const queryClient = useQueryClient();
@@ -111,7 +116,10 @@ export function useDashboardWidgetConfig(projectId: string) {
   const initMutation = useMutation({
     mutationFn: async () => {
       if (!userId) return;
-      const rows = WIDGET_REGISTRY.map((def) => ({
+      /* 2026-06-15: mode-aware. In product mode the 4 BR-incompatible
+         widgets (scope-change, prod-incidents, qa-defects, time-in-status)
+         never get seeded — the gallery never shows them either. */
+      const rows = getWidgetRegistry(mode).map((def) => ({
         project_id: projectId,
         user_id: userId,
         widget_id: def.id,
@@ -211,7 +219,7 @@ export function useDashboardWidgetConfig(projectId: string) {
     },
   });
 
-  const widgets = useMemo(() => resolveWidgets(configs ?? []), [configs]);
+  const widgets = useMemo(() => resolveWidgets(configs ?? [], mode), [configs, mode]);
   const visibleCount = widgets.filter((w) => w.visible).length;
 
   return {
@@ -244,7 +252,7 @@ export function useDashboardWidgetConfig(projectId: string) {
     },
     resetToDefaults: () => {
       bulkUpsertMutation.mutate(
-        WIDGET_REGISTRY.map((def) => ({
+        getWidgetRegistry(mode).map((def) => ({
           widget_id: def.id,
           visible: true,
           position: def.defaultPosition,
@@ -293,9 +301,10 @@ export default function DashboardWidgetGrid({
   onResize,
   onToggleCollapse,
   onRemoveWidget,
+  mode = 'project',
 }: DashboardWidgetGridProps) {
   const { widgets: persistedWidgets, toggleCollapse: persistedToggleCollapse } =
-    useDashboardWidgetConfig(projectId);
+    useDashboardWidgetConfig(projectId, mode);
 
   const widgetsToRender = isEditing && draftWidgets ? draftWidgets : persistedWidgets;
   const visibleWidgets = widgetsToRender.filter((w) => w.visible);
@@ -415,6 +424,7 @@ export default function DashboardWidgetGrid({
                   projectKey={projectKey}
                   collapsed={isCollapsed}
                   onToggleCollapse={() => collapseHandler?.(w.id)}
+                  mode={mode}
                 />
               </WidgetIdContext.Provider>
             </div>

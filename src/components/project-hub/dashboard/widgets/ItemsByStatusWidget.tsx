@@ -29,6 +29,7 @@ import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import { useDashboardStatusCounts } from '@/hooks/useDashboardWidgets';
+import { useProductDashboardData } from '@/hooks/useProductDashboardData';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { Lozenge, EmptyState } from '@/components/ads';
@@ -70,14 +71,19 @@ type Bucket = {
 };
 
 export default function ItemsByStatusWidget({
-  projectId, projectKey, collapsed, onToggleCollapse,
+  projectId, projectKey, collapsed, onToggleCollapse, mode = 'project',
 }: WidgetProps) {
+  const isProduct = mode === 'product';
   const { settings } = useGadgetSettings('items', projectKey);
   const blockedStatuses: string[] =
     settings.gadgetSpecific?.blockedStatuses ??
     ['on hold', 'blocked', 'awaiting info', 'impediment'];
 
-  const { data: counts, isLoading } = useDashboardStatusCounts(projectId, {
+  /* Project mode: status counts derived from ph_issues.
+     Product mode: same shape, derived from business_requests via the
+     shared useProductDashboardData hook. Both branches feed the same
+     destructure below — UI is mode-agnostic from there. */
+  const projectQuery = useDashboardStatusCounts(isProduct ? '' : projectId, {
     dateFrom:       settings.dateFrom,
     dateTo:         settings.dateTo,
     releaseFilter:  settings.releaseFilter,
@@ -86,6 +92,9 @@ export default function ItemsByStatusWidget({
     priorityFilter: settings.priorityFilter,
     blockedStatuses,
   });
+  const productQuery = useProductDashboardData(isProduct ? projectId : null);
+  const counts = isProduct ? productQuery.data?.counts : projectQuery.data;
+  const isLoading = isProduct ? productQuery.isLoading : projectQuery.isLoading;
   const {
     todo = 0, inProgress = 0, done = 0, blocked = 0, total = 0,
     blockedDetail = { onHold: 0, awaitingInfo: 0, blocked: 0 },

@@ -63,6 +63,184 @@ import FilterIconCore from '@atlaskit/icon/core/filter';
 const SUBTLE = token('color.text.subtle', '#505258');
 const FilterIcon = () => <FilterIconCore label="" color={SUBTLE} />;
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   2026-06-15 — Product-mode helpers
+   ───────────────────────────────────────────────────────────────────────────
+   Lifted from the previously parallel ProductFilterPreviewPage so this file
+   can serve both /project-hub/:key/filters/create (mode='project') and
+   /product-hub/:key/filters/create (mode='product') per CLAUDE.md "ADOPT
+   CANONICAL COMPONENTS" rule. Only invoked when `mode === 'product'`; in
+   project mode these helpers stay idle.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const PRODUCT_FILTER_STATUSES = [
+  'New', 'In Review', 'Approved', 'In Progress', 'On Hold',
+  'Done', 'Rejected', 'Cancelled', 'Backlog', 'Ready for Development',
+];
+
+function productFilterStatusAppearance(status: string | null | undefined): LozengeAppearance {
+  if (!status) return 'default';
+  const s = status.toLowerCase();
+  if (s === 'done' || s === 'approved' || s === 'closed') return 'success';
+  if (s.includes('progress') || s.includes('review') || s.includes('development')) return 'inprogress';
+  if (s === 'rejected' || s === 'cancelled') return 'removed';
+  if (s === 'on hold') return 'moved';
+  return 'default';
+}
+
+function useProductByCode(code: string | undefined): { id: string | null; name: string } {
+  const { data } = useQuery({
+    queryKey: ['product-by-code', code],
+    enabled: !!code,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('products')
+        .select('id, name')
+        .eq('code', code!.toUpperCase())
+        .maybeSingle();
+      return data as { id: string; name: string } | null;
+    },
+  });
+  return { id: data?.id ?? null, name: data?.name ?? code ?? '' };
+}
+
+function mapBrToJqlRow(r: any, profileMap: Record<string, string>): JqlResultRow {
+  return {
+    id: r.id,
+    key: r.request_key ?? r.id,
+    summary: r.title ?? '',
+    issueType: 'Business Request',
+    status: r.process_step ?? 'New',
+    statusCategory: r.process_step === 'Done' || r.process_step === 'Approved' ? 'done' : 'in_progress',
+    projectKey: '',
+    assigneeName: r.po_user_id ? (profileMap[r.po_user_id] ?? null) : null,
+    priority: r.urgency ?? null,
+    created: r.created_at ?? null,
+    updated: r.updated_at ?? null,
+    dueDate: r.end_date ?? null,
+    parentKey: null,
+    parentSummary: null,
+    sprintName: null,
+    isFlagged: null,
+    flagReason: null,
+    ...({
+      sprintRelease: Array.isArray(r.planned_quarter) ? r.planned_quarter : [],
+      labels: r.request_type ? [r.request_type] : [],
+      commentCount: 0,
+      reporterName: r.created_by ? (profileMap[r.created_by] ?? null) : null,
+    } as any),
+  };
+}
+
+function useProductBrFacetItems(productId: string | null): WorkItem[] {
+  const { data = [] } = useQuery<WorkItem[]>({
+    queryKey: ['product-filter-facet-items', productId],
+    enabled: !!productId,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data: rows } = await (supabase as any)
+        .from('business_requests')
+        .select('id, request_key, title, process_step, urgency, po_user_id, created_by, request_type, planned_quarter, created_at, updated_at')
+        .eq('product_id', productId)
+        .is('deleted_at', null)
+        .limit(2000);
+      if (!rows) return [];
+      const userIds = [...new Set((rows as any[]).flatMap((r: any) => [r.po_user_id, r.created_by].filter(Boolean)))];
+      const profileMap: Record<string, string> = {};
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles').select('id, full_name').in('id', userIds as string[]);
+        (profiles ?? []).forEach((p: any) => { profileMap[p.id] = p.full_name; });
+      }
+      return (rows as any[]).map((r: any): WorkItem => ({
+        id: r.id, projectId: '', parentId: null, parentKey: null, parentSummary: null,
+        jiraKey: r.request_key ?? r.id,
+        type: 'task' as any, rawType: 'Business Request',
+        summary: r.title ?? '',
+        status: 'todo' as any, statusName: r.process_step ?? '', statusCategory: 'todo' as any,
+        assigneeId: r.po_user_id ?? null,
+        assignee: r.po_user_id && profileMap[r.po_user_id]
+          ? { id: r.po_user_id, name: profileMap[r.po_user_id], avatarUrl: null, initials: '', color: '' }
+          : undefined,
+        reporterId: r.created_by ?? null,
+        reporter: r.created_by && profileMap[r.created_by]
+          ? { id: r.created_by, name: profileMap[r.created_by], avatarUrl: null, initials: '', color: '' }
+          : undefined,
+        priority: (r.urgency ?? 'medium') as any,
+        fixVersion: null,
+        sprintRelease: Array.isArray(r.planned_quarter) && r.planned_quarter.length > 0
+          ? r.planned_quarter[0] : null,
+        sprintName: null,
+        labels: r.request_type ? [r.request_type] : [],
+        resolution: null, severity: null,
+        commentsCount: 0, childCount: 0,
+        createdAt: r.created_at ?? '', updatedAt: r.updated_at ?? '',
+        createdBy: null,
+      } as any));
+    },
+  });
+  return data;
+}
+
+function useProductBrResults(productId: string | null, filters: FilterState, search: string) {
+  return useQuery({
+    queryKey: ['product-br-results', productId, JSON.stringify(filters), search],
+    enabled: !!productId,
+    staleTime: 30 * 1000,
+    queryFn: async () => {
+      const { data: rows } = await (supabase as any)
+        .from('business_requests')
+        .select('id, request_key, title, process_step, urgency, po_user_id, created_by, request_type, planned_quarter, end_date, created_at, updated_at')
+        .eq('product_id', productId)
+        .is('deleted_at', null)
+        .order('updated_at', { ascending: false })
+        .limit(500);
+      if (!rows) return { items: [], totalCount: 0 };
+      const userIds = [...new Set(
+        (rows as any[]).flatMap((r: any) => [r.po_user_id, r.created_by].filter(Boolean))
+      )];
+      const profileMap: Record<string, string> = {};
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles').select('id, full_name').in('id', userIds as string[]);
+        (profiles ?? []).forEach((p: any) => { profileMap[p.id] = p.full_name; });
+      }
+      let items: JqlResultRow[] = (rows as any[]).map((r) => mapBrToJqlRow(r, profileMap));
+      if (filters.assignee.length > 0) {
+        items = items.filter(r => r.assigneeName && filters.assignee.includes(r.assigneeName));
+      }
+      if (filters.status.length > 0) {
+        items = items.filter(r => filters.status.includes(r.status));
+      }
+      if (filters.workType.length > 0) {
+        const labels = (r: any) => (r as any).labels as string[];
+        items = items.filter(r => filters.workType.some(t => labels(r).includes(t)));
+      }
+      if (filters.priority.length > 0) {
+        items = items.filter(r => r.priority && filters.priority.includes(r.priority));
+      }
+      if (filters.labels.length > 0) {
+        items = items.filter(r => {
+          const rLabels = (r as any).labels as string[];
+          return filters.labels.some(l => rLabels.includes(l));
+        });
+      }
+      if (filters.sprintReleases.length > 0) {
+        items = items.filter(r => {
+          const sr = (r as any).sprintRelease as string[];
+          return Array.isArray(sr) && filters.sprintReleases.some(v => sr.includes(v));
+        });
+      }
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        items = items.filter(r => r.summary.toLowerCase().includes(q) || r.key.toLowerCase().includes(q));
+      }
+      return { items, totalCount: items.length };
+    },
+  });
+}
+
 const ALL_FILTER_STATUSES = [
   'To Do', 'In Requirements', 'In Design', 'Ready for Development',
   'In Development', 'Ready for QA', 'In QA', 'Ready for UAT', 'In UAT',
@@ -232,8 +410,24 @@ function useLinkedEntities(_filterId: string | null): LinkedFilterEntity[] {
 
 // ---------------------------------------------------------------------------
 
-export function FilterPreviewPage() {
-  const { key: projectKey } = useParams<{ key: string }>();
+interface FilterPreviewPageProps {
+  /** 2026-06-15: mode switch. project (default) hits ph_issues via the JQL
+   *  engine. product hits business_requests via a client-side filter pass.
+   *  The same view chrome (toolbar, table, save modal, density, columns)
+   *  serves both routes per CLAUDE.md "ADOPT CANONICAL COMPONENTS" rule. */
+  mode?: 'project' | 'product';
+}
+
+export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps = {}) {
+  const isProduct = mode === 'product';
+  const { key: routeKey } = useParams<{ key: string }>();
+  /* `projectKey` keeps its original name through the file so we don't have to
+     touch hundreds of references. In project mode it's the project key (e.g.
+     'BAU'); in product mode it's the product code (e.g. 'INV'). */
+  const projectKey = routeKey;
+  /* Product info — only fetched when mode='product'. id is the products.id
+     UUID used to filter business_requests. Name shows in the header. */
+  const productInfo = useProductByCode(isProduct ? routeKey : undefined);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const urlFilterId = searchParams.get('filterId');
@@ -303,8 +497,12 @@ export function FilterPreviewPage() {
   );
 
   const linkedEntities = useLinkedEntities(savedFilterId);
-  const facetItems = useProjectFacetItems(projectKey);
-  const members = useProjectMembers(projectKey);
+  /* Facet items: project pulls from ph_issues; product pulls from business_requests.
+     Both hooks return the same WorkItem shape so the facet chip logic doesn't branch. */
+  const projectFacetItems = useProjectFacetItems(isProduct ? undefined : projectKey);
+  const productFacetItems = useProductBrFacetItems(isProduct ? productInfo.id : null);
+  const facetItems = isProduct ? productFacetItems : projectFacetItems;
+  const members = useProjectMembers(isProduct ? undefined : projectKey);
   const jqlValuePool = useJQLValuePool(facetItems, projectKey);
 
   // Load saved filter when navigated from FiltersListPage with ?filterId=
@@ -355,7 +553,14 @@ export function FilterPreviewPage() {
     return savedFilterJql ?? filterStateToJql(filters, projectKey);
   }, [filterMode, jqlText, savedFilterJql, filters, projectKey]);
 
-  const { data, isLoading, isFetching } = useJqlResults(jql);
+  /* Data fetch: project uses the JQL engine over ph_issues; product runs a
+     client-side filter pass over business_requests. Both return the same
+     { items, totalCount } shape so the downstream sort/search uses one path. */
+  const projectResults = useJqlResults(isProduct ? '' : jql);
+  const productResults = useProductBrResults(isProduct ? productInfo.id : null, filters, search);
+  const data = isProduct ? productResults.data : projectResults.data;
+  const isLoading = isProduct ? productResults.isLoading : projectResults.isLoading;
+  const isFetching = isProduct ? productResults.isFetching : projectResults.isFetching;
 
   const items = useMemo(() => {
     const rows = [...(data?.items ?? [])];
@@ -445,7 +650,7 @@ export function FilterPreviewPage() {
       setSavedFilterId(id);
       setIsDirty(false);
       if (linkedEntities.length > 0) addFlag('impact-entities');
-      navigate(`/project-hub/${projectKey}/filters`);
+      navigate(`/${isProduct ? 'product-hub' : 'project-hub'}/${projectKey}/filters`);
     },
     [linkedEntities, addFlag, navigate, projectKey]
   );
@@ -975,6 +1180,8 @@ export function FilterPreviewPage() {
         <FilterSaveModal
           initialJql={jql}
           initialName="Untitled filter"
+          hubScope={isProduct ? 'product' : 'project'}
+          {...(isProduct ? { productKey: projectKey } : {})}
           onClose={() => setSaveOpen(false)}
           onSaved={handleSaved}
         />
@@ -985,6 +1192,8 @@ export function FilterPreviewPage() {
         <FilterSaveModal
           initialJql={jql}
           initialName={savedFilterName ? `${savedFilterName} (copy)` : 'Untitled filter'}
+          hubScope={isProduct ? 'product' : 'project'}
+          {...(isProduct ? { productKey: projectKey } : {})}
           onClose={() => setSaveAsOpen(false)}
           onSaved={handleSaved}
         />
