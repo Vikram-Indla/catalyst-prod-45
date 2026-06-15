@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { CatyButton } from '@/components/for-you/atlaskit/CatyButton';
 
 interface ReplyComposerProps {
   avatarName?: string;
@@ -86,62 +87,10 @@ export default function ReplyComposer({
         {onAiSuggest && (
           /* Static rainbow border wrapper — AI affordance signifier.
              CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). */
-          <div
-            style={{
-              alignSelf: 'flex-start',
-              display: 'inline-flex',
-              padding: 1.8,
-              borderRadius: 6,
-              background: `conic-gradient(
-                from 0deg,
-                #FF3CAC 0deg,
-                #784BA0 60deg,
-                #2B86C5 120deg,
-                #00C9FF 180deg,
-                #92FE9D 240deg,
-                #FFD700 300deg,
-                #FF3CAC 360deg
-              )`,
-            }}
-          >
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); onAiSuggest(); }}
-              aria-label="Ask Caty to draft a reply"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '4px 12px',
-                border: 'none',
-                borderRadius: 4,
-                background: '#FFFFFF',
-                fontFamily: 'var(--cp-font-body, inherit)',
-                fontSize: 13,
-                fontWeight: 500,
-                color: btnText,
-                cursor: 'pointer',
-                transition: 'background 120ms ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#F1F2F4';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#FFFFFF';
-              }}
-            >
-              {/* sparkle icon — mirrors @atlaskit/icon-lab/core/ai-sparkle */}
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M8 1.5L9.25 6.75L14.5 8L9.25 9.25L8 14.5L6.75 9.25L1.5 8L6.75 6.75L8 1.5Z"
-                  fill="currentColor"
-                  opacity="0.85"
-                />
-                <path d="M13 1L13.6 3.4L16 4L13.6 4.6L13 7L12.4 4.6L10 4L12.4 3.4L13 1Z" fill="currentColor" opacity="0.6"/>
-              </svg>
-              Ask Caty - Suggest?
-            </button>
-          </div>
+          <CatyButton
+            label="Ask Caty - Suggest?"
+            onClick={onAiSuggest}
+          />
         )}
       </div>
     </div>
