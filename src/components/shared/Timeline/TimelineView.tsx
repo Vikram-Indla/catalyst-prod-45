@@ -110,6 +110,7 @@ export default function TimelineView(props: TimelineViewProps) {
     createTopLevelConfig = { label: 'Create epic', iconType: 'Epic' },
     childTypesOverride,
     childrenOnlyOnGroupRows = false,
+    childrenOnlyOnTopLevel = false,
   } = props;
 
   const navigate = useNavigate();
@@ -1140,6 +1141,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   mutations={mutations}
                   childTypesOverride={childTypesOverride}
                   childrenOnlyOnGroupRows={childrenOnlyOnGroupRows}
+                  childrenOnlyOnTopLevel={childrenOnlyOnTopLevel}
                 />
               ))}
 

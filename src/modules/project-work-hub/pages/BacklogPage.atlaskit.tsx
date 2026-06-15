@@ -19,6 +19,7 @@ import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo
 // the product-flavored columns. Keeps the column registry colocated with the
 // canonical edit factories from JiraTable.
 import { URGENCY_OPTIONS, REQUEST_TYPE_OPTIONS, THEME_OPTIONS, STAKEHOLDER_OPTIONS, CATEGORY_OPTIONS, PLANNED_QUARTER_OPTIONS } from '@/types/business-request';
+import { BUSINESS_REQUEST_SUBTASK_TYPES } from '@/components/catalyst-detail-views/shared/parent-rules';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import InlineEdit from '@atlaskit/inline-edit';
 import { BizArabicTranslateLink } from '@/components/shared/title-translate/BizArabicTranslateLink';
@@ -3812,7 +3813,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     members={assigneePickerMembers}
                     onSubmit={submitFooter}
                     onCancel={() => setFooterCreateActive(false)}
-                    creatableTypes={dataSource ? ['Business Request'] : undefined}
+                    /* Product backlog (dataSource present) — picker shows
+                       Business Request + the 5 BR subtask types
+                       (BRD Task / Business Gap / Change Request /
+                       UAT Finding / Figma). Mirrors the BR detail page's
+                       Subtasks panel + the product timeline picker so the
+                       three create surfaces are consistent. */
+                    creatableTypes={dataSource ? (['Business Request', ...BUSINESS_REQUEST_SUBTASK_TYPES] as CreatableIssueType[]) : undefined}
                     defaultIssueType={dataSource ? 'Business Request' : 'Story'}
                   />
                 );
@@ -5742,7 +5749,13 @@ type CreatableIssueType =
   | 'Business Gap'
   | 'API Requirement'
   | 'Change Request'
-  | 'Business Request';
+  | 'Business Request'
+  /* BR subtask family (2026-06-15) — selectable when the page runs against
+     a product `dataSource`. Lets the inline create picker mirror the BR
+     detail page's Subtasks panel options. */
+  | 'BRD Task'
+  | 'UAT Finding'
+  | 'Figma';
 
 /**
  * 2026-05-10 Per-column filter popup body — minimal multi-select.

@@ -26,7 +26,7 @@ import {
   ROW_H,
   JIRA_EPIC_COLORS,
 } from './types';
-import { computeEpicProgress, iconBtnStyle, flattenAll } from './utils';
+import { computeEpicProgress, iconBtnStyle, flattenAll, formatDateCompact } from './utils';
 import { PortalMenu, MenuItemRow } from './primitives';
 import { EditDatesModal } from './EditDatesModal';
 
@@ -55,6 +55,10 @@ export interface SidebarRowProps {
   /** When true, only group rows can have children. Used by product hub so
    *  BR rows inside a group don't show a "+" button. */
   childrenOnlyOnGroupRows?: boolean;
+  /** When true, only top-level (depth 0) rows can have children — nested
+   *  rows lose their "+". Product hub uses this so BR subtasks don't spawn
+   *  their own grandchildren via the timeline. */
+  childrenOnlyOnTopLevel?: boolean;
 }
 
 export function SidebarRow({
@@ -74,6 +78,7 @@ export function SidebarRow({
   mutations,
   childTypesOverride,
   childrenOnlyOnGroupRows = false,
+  childrenOnlyOnTopLevel = false,
 }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
   const progress = enableProgress && hasChildren ? computeEpicProgress(issue) : null;
@@ -113,14 +118,19 @@ export function SidebarRow({
           : ['Sub-task']
       );
 
-  /* `childrenOnlyOnGroupRows` (product hub) restricts "+" to group rows.
-     Otherwise: a `childTypesOverride` from the hub is the authoritative
-     "yes, I want creation enabled on this row" signal — bypasses the
-     type-based exclusion list (which is Jira-specific). */
-  const canHaveChildren = childrenOnlyOnGroupRows
-    ? !!issue.isGroup
-    : (!!childTypesOverride
-        || !['Sub-task', 'Backend', 'Frontend', 'Integration', 'Idea'].includes(issue.issueType ?? ''));
+  /* Layered rules for showing "+" on a row:
+     - `childrenOnlyOnTopLevel` (product hub timeline) — only depth 0 rows
+       can have children. Nested subtasks lose their "+".
+     - `childrenOnlyOnGroupRows` (legacy group-bucket mode) — only
+       `issue.isGroup` rows are allowed.
+     - Default — a `childTypesOverride` from the hub is the authoritative
+       "yes" signal; otherwise the Jira-specific exclusion list applies. */
+  const canHaveChildren = childrenOnlyOnTopLevel
+    ? depth === 0
+    : childrenOnlyOnGroupRows
+      ? !!issue.isGroup
+      : (!!childTypesOverride
+          || !['Sub-task', 'Backend', 'Frontend', 'Integration', 'Idea'].includes(issue.issueType ?? ''));
 
   useEffect(() => {
     if (inlineCreateOpen && inlineCreateInputRef.current) inlineCreateInputRef.current.focus();
@@ -362,11 +372,12 @@ export function SidebarRow({
           </div>
         ) : (
           <>
-            {issue.issueKey.includes('-LOCAL-') ? (
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', whiteSpace: 'nowrap', lineHeight: 1.3, flexShrink: 0, fontFamily: 'var(--ds-font-family-body)' }}>
-                Saving…
-              </span>
-            ) : (
+            {/* Temp keys are the client-generated placeholder used by every
+                Catalyst-created row (SubtasksPanelV2 + this timeline). They
+                never get replaced by a webhook because there's no Jira
+                sync. We hide them so the row reads cleanly as icon +
+                summary until a real key arrives. */}
+            {issue.issueKey.includes('-LOCAL-') || issue.issueKey.includes('-NEW-') ? null : (
               <button
                 type="button"
                 onClick={e => { e.stopPropagation(); navigate(buildIssueDetailRoute(issue.issueKey)); }}
@@ -408,6 +419,22 @@ export function SidebarRow({
             <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
           </span>
         </Tooltip>
+      )}
+
+      {/* date range "Jan 4 → May 26" — shows on every row (Epic / parent
+          included) whenever start or due is set */}
+      {(issue.startDate || issue.dueDate) && (
+        <span
+          style={{
+            fontSize: 11,
+            color: 'var(--ds-text-subtle, #626F86)',
+            fontFamily: 'var(--ds-font-family-body)',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          {[issue.startDate, issue.dueDate].filter(Boolean).map(d => formatDateCompact(d)).join(' → ')}
+        </span>
       )}
 
       {/* progress bar */}

@@ -32,8 +32,24 @@ import {
   type TimelineMutations,
 } from '@/components/shared/Timeline';
 import { useProductHubTimeline } from '@/hooks/useProductHubTimeline';
+import { useAuth } from '@/lib/auth';
+import { BUSINESS_REQUEST_SUBTASK_TYPES } from '@/components/catalyst-detail-views/shared/parent-rules';
+import { nextPos } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
+import { useActiveDemandProcessSteps, stepToLozengeAppearance } from '@/hooks/useDemandProcessSteps';
 
-const PRODUCT_WORK_ITEM_TYPES = ['Feature', 'Business Gap', 'Integration', 'Business Request', 'Sub-task'];
+/* Map a DemandProcessStep's lozenge appearance to a ph_issues
+   `status_category` value so the existing children-rendering path
+   (mapPhChildRow → StatusPill) colours the pill correctly. */
+function lozengeToStatusCategory(appearance: ReturnType<typeof stepToLozengeAppearance>): string {
+  if (appearance === 'success') return 'done';
+  if (appearance === 'inprogress') return 'in_progress';
+  return 'todo';
+}
+
+const PRODUCT_WORK_ITEM_TYPES = [
+  'Feature', 'Business Gap', 'Integration', 'Business Request',
+  ...BUSINESS_REQUEST_SUBTASK_TYPES,
+];
 
 function resolveItemType(issue: TimelineIssue): string {
   /* ph_issues children carry their own Jira-style type; only BR rows map to
@@ -72,7 +88,15 @@ async function generateRequestKey(): Promise<string> {
 export default function ProductHubTimelinePage() {
   const { key: productCode } = useParams<{ key: string }>();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const { data: items = [], isLoading, error } = useProductHubTimeline(productCode);
+
+  /* Product status catalogue — `demand_process_steps` rows ordered by
+     sort_order. New BR subtasks pick up the first step as their initial
+     status so child items in products use product statuses, not the
+     project-style 'To Do' / 'todo' fallback. */
+  const { data: productSteps = [] } = useActiveDemandProcessSteps();
+  const initialStep = productSteps[0] ?? null;
 
   /* Resolve product CODE → UUID once so mutations can target product_id. */
   const { data: productId } = useQuery<string | null>({
@@ -192,25 +216,44 @@ export default function ProductHubTimelinePage() {
     },
 
     /* Per-row "+" on a BR — inserts a sub-task into ph_issues with the BR
-       as its parent. */
+       as its parent. Mirrors the canonical SubtasksPanelV2 write so the
+       timeline path produces a row identical to one created from the BR
+       detail's Subtasks section. Specifically:
+         - project_key is derived from the BR's request_key prefix (e.g.
+           "MDT" for MDT-744), NOT the URL's product code. This is the
+           shared MDT-### sequence (CLAUDE.md / brSubtaskWiring.test.ts Q3).
+         - issue_key uses the '-NEW-' token (matches SubtasksPanelV2:310)
+           which doesn't trigger SidebarRow's "Saving…" placeholder.
+         - status_category/priority/position/reporter_account_id/source
+           match the SubtasksPanel insert. */
     onCreateChild: async (parentKey, _parentType, type, summary) => {
-      const upperProduct = (productCode ?? '').toUpperCase();
-      /* Permanent timestamp-based key (no '-LOCAL-' token). Catalyst-created
-         rows never get a webhook-assigned real Jira key, so SidebarRow's
-         "Saving…" placeholder (which keys off the '-LOCAL-' substring)
-         would stick forever. Format mirrors Jira keys (PROJECT-NUM) but with
-         a timestamp number, so collisions with real Jira IDs are vanishingly
-         unlikely. */
-      const localKey = `${upperProduct || 'PH'}-${Date.now()}`;
+      const prefix = (parentKey.split('-')[0] || 'MDT').toUpperCase();
+      const tempKey = `${prefix}-NEW-${Date.now()}`;
+
+      /* nextPos needs the current children's positions — peek the cache
+         tree we already built. Falls back to 1024 when the BR has none. */
+      const tree = queryClient.getQueryData<TimelineIssue[]>(['product-hub-timeline', productCode]) ?? [];
+      const parentBr = tree.find(b => b.issueKey === parentKey);
+      const existingPositions = (parentBr?.children ?? []).map((_, idx) => ({ position: 1024 * (idx + 1) }));
+      const position = nextPos(existingPositions);
+
+      /* Use the product's first active process step as the initial status —
+         falls back to 'To Do' / 'todo' when demand_process_steps is empty
+         (fresh install or RLS hiccup). */
+      const status = initialStep?.value ?? 'To Do';
+      const statusCategory = initialStep
+        ? lozengeToStatusCategory(stepToLozengeAppearance(initialStep))
+        : 'todo';
+
       const optimistic: TimelineIssue = {
         id: '',
-        issueKey: localKey,
-        projectKey: upperProduct,
+        issueKey: tempKey,
+        projectKey: prefix,
         issueType: type,
         summary,
-        status: 'To Do',
-        statusCategory: 'default',
-        priority: null,
+        status,
+        statusCategory,
+        priority: 'Medium',
         startDate: null,
         dueDate: null,
         epicColor: null,
@@ -223,20 +266,23 @@ export default function ProductHubTimelinePage() {
       insertChildInCache(parentKey, optimistic);
       try {
         const { error: insertErr } = await (supabase as any).from('ph_issues').insert({
-          issue_key: localKey,
-          project_key: upperProduct,
+          issue_key: tempKey,
+          summary: summary.trim(),
           issue_type: type,
-          summary,
-          status: 'To Do',
-          source: 'catalyst',
           parent_key: parentKey,
-          jira_created_at: new Date().toISOString(),
+          project_key: prefix,
+          status,
+          status_category: statusCategory,
+          priority: 'Medium',
+          position,
+          reporter_account_id: user?.id,
+          source: 'catalyst',
         });
         if (insertErr) throw insertErr;
         invalidate();
         return optimistic;
       } catch (err) {
-        removeChildFromCache(parentKey, localKey);
+        removeChildFromCache(parentKey, tempKey);
         throw err;
       }
     },
@@ -288,7 +334,7 @@ export default function ProductHubTimelinePage() {
       invalidate();
     },
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [productCode, productId, queryClient]);
+  }), [productCode, productId, queryClient, initialStep, user?.id]);
 
   return (
     <TimelineView
@@ -308,7 +354,8 @@ export default function ProductHubTimelinePage() {
       mutations={mutations}
       enableBarDrag={false}
       createTopLevelConfig={{ label: 'Create business request', iconType: 'Business Request' }}
-      childTypesOverride={['Sub-task']}
+      childTypesOverride={[...BUSINESS_REQUEST_SUBTASK_TYPES]}
+      childrenOnlyOnTopLevel
     />
   );
 }

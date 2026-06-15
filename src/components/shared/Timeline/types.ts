@@ -176,6 +176,12 @@ export interface TimelineViewProps {
    *  inside a group lose their "+" button. Default false. */
   childrenOnlyOnGroupRows?: boolean;
 
+  /** When true, only top-level rows (depth === 0) can have children — the
+   *  inline-create "+" hides on every nested row. Product hub uses this so
+   *  BRs can spawn subtasks but those subtasks can't spawn their own
+   *  grandchildren via the timeline. Default false. */
+  childrenOnlyOnTopLevel?: boolean;
+
   /* the query client used for cache invalidations after mutations.
      Pages keep ownership of the cache key so the view never hardcodes it. */
   queryClient?: ReturnType<typeof useQueryClient>;
