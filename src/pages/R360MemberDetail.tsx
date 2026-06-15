@@ -338,7 +338,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
         html.dark [data-r360-fullscreen] > div,
         html.dark #r360-root,
         html.dark #r360-root > .r3-page {
-          background-color: var(--ds-surface, #1F1F21) !important;
+          background-color: var(--cp-bg, #1D2125) !important;
         }
       `;
       document.head.appendChild(style);
