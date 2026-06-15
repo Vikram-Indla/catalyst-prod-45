@@ -485,7 +485,13 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
-        <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><ProductFilterPreviewPageLazy /></S></MG>} />
+        {/* 2026-06-15: filter create + detail now route to the canonical
+            project-hub pages with mode='product' (per CLAUDE.md "ADOPT
+            CANONICAL COMPONENTS"). The parallel ProductFilterPreviewPage is
+            no longer mounted by any route; kept on disk pending PO sign-off
+            before deletion. */}
+        <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><FilterPreviewPageLazy mode="product" /></S></MG>} />
+        <Route path="/product-hub/:key/filters/:filterId" element={<MG k="producthub" t="ProductHub"><S><FilterDetailPageLazy mode="product" /></S></MG>} />
         {/* Global /product-hub/filters[/create] retired 2026-06-01 — filters are
             per-product. Anyone deep-linking to the old global path lands on the
             products listing. Per-product filters still live at /product-hub/:key/filters. */}
