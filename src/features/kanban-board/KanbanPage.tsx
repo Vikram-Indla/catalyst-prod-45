@@ -12,6 +12,7 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import { Board } from './components/Board';
 import { Toolbar } from './components/Toolbar';
+import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
 import { CardContextMenu } from './components/CardContextMenu';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import { InlineCreateCard } from '@/components/kanban/InlineCreateCard';
@@ -248,6 +249,27 @@ export default function KanbanPage() {
         onMapStatuses={onMapStatuses}
         projectKey={key?.toUpperCase()}
       />
+
+      {/* 2026-06-15: Board Health (CatyBoardInsight) lives in its own row
+          between the toolbar and the board so the result panel can expand
+          downward and push the columns. Inside the toolbar the panel was
+          clipped by the toolbar's fixed 52px height + overflowX:auto.
+
+          `textAlign: right` keeps the trigger button (inline-block <button>)
+          aligned to the right edge — matching its old top-right position —
+          while the expanded result panel (CatyInsightCard renders a block
+          <div> with maxWidth:100%) naturally fills the full row width. */}
+      {key && (
+        <div
+          style={{
+            padding: `0 ${SIZES.PAGE_PADDING_X}px 8px`,
+            textAlign: 'right',
+            flexShrink: 0,
+          }}
+        >
+          <CatyBoardInsight projectKey={key.toUpperCase()} resourceId={key.toUpperCase()} />
+        </div>
+      )}
 
       <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex' }}>
         {standupActive && (
