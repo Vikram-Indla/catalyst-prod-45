@@ -12,7 +12,6 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import { Board } from './components/Board';
 import { Toolbar } from './components/Toolbar';
-import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
 import { CardContextMenu } from './components/CardContextMenu';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import { InlineCreateCard } from '@/components/kanban/InlineCreateCard';
@@ -30,7 +29,14 @@ import { DEFAULT_VISIBLE_FIELDS, SIZES, STRINGS } from './constants';
 import type { BoardIssue, CardVisibleFields, StatusCategory, KanbanColumn } from './types';
 import './styles.css';
 
-export default function KanbanPage() {
+/* 2026-06-15: mode prop lets the same KanbanPage power both /project-hub/:key/boards/:boardId
+   (mode='project', default) and /product-hub/:key/boards/:boardId (mode='product').
+   useKanbanData + useKanbanMutations branch internally on the same mode value. */
+interface KanbanPageProps {
+  mode?: 'project' | 'product';
+}
+
+export default function KanbanPage({ mode = 'project' }: KanbanPageProps = {}) {
   const { key, boardId } = useParams<{ key: string; boardId?: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -45,6 +51,10 @@ export default function KanbanPage() {
   /* Tracks which column currently has the inline create form expanded. Only
      one form is open at a time across the whole board. */
   const [openCreateCol, setOpenCreateCol] = useState<string | null>(null);
+  /* Portal target element for the Board Health result panel. Lives in a
+     full-width slot below the toolbar so the panel never clips. The
+     CatyBoardInsight trigger button stays in the toolbar (right cluster). */
+  const [boardInsightPanelEl, setBoardInsightPanelEl] = useState<HTMLDivElement | null>(null);
   const [visibleFields, setVisibleFields] = useState<CardVisibleFields>(() => {
     try {
       const saved = localStorage.getItem('kanban-visible-fields');
@@ -64,7 +74,7 @@ export default function KanbanPage() {
     navigator.clipboard?.writeText(window.location.href);
   }, []);
 
-  const { projectName, boardConfig: baseBoardConfig, boards, issues, isLoading, refetch } = useKanbanData(key, activeBoardId);
+  const { projectName, boardConfig: baseBoardConfig, boards, issues, isLoading, refetch } = useKanbanData(key, activeBoardId, mode);
   const [extraColumns, setExtraColumns] = useState<KanbanColumn[]>([]);
   const boardConfig = useMemo(() =>
     extraColumns.length ? { ...baseBoardConfig, columns: [...baseBoardConfig.columns, ...extraColumns] } : baseBoardConfig,
@@ -77,7 +87,7 @@ export default function KanbanPage() {
     const boardId = boardConfig.boardId;
     if (key && boardId) navigate(`/project-hub/${key}/boards/${boardId}/map-statuses`);
   }, [key, boardConfig.boardId, navigate]);
-  const { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations();
+  const { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
   const onAssign = useCallback(async (issue: BoardIssue, name: string | null) => {
@@ -148,6 +158,11 @@ export default function KanbanPage() {
             projectKey={key.toUpperCase()}
             columnId={colId}
             status={status}
+            mode={mode}
+            /* Product board: lock the type to Business Request — that is the
+               only entity on a product board. Project board: leave undefined
+               so the canonical Catalyst type list applies. */
+            creatableTypes={mode === 'product' ? ['Business Request'] : undefined}
             onCreateCard={() => { setOpenCreateCol(null); refetch(); }}
             onCancel={() => setOpenCreateCol(null)}
           />
@@ -204,8 +219,15 @@ export default function KanbanPage() {
       {/* Header */}
       <div style={{ height: SIZES.HEADER_HEIGHT, padding: `0 ${SIZES.PAGE_PADDING_X}px`, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2, flexShrink: 0 }}>
         <Breadcrumbs>
-          <BreadcrumbsItem text={STRINGS.PROJECTS} href="/project-hub/projects" />
-          <BreadcrumbsItem text={projectName} href={`/project-hub/${key}`} />
+          {mode === 'product' ? (
+            <BreadcrumbsItem text="Products" href="/product-hub/products" />
+          ) : (
+            <BreadcrumbsItem text={STRINGS.PROJECTS} href="/project-hub/projects" />
+          )}
+          <BreadcrumbsItem
+            text={projectName}
+            href={mode === 'product' ? `/product-hub/${key}` : `/project-hub/${key}`}
+          />
           <BreadcrumbsItem text="Kanban" />
         </Breadcrumbs>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -248,28 +270,22 @@ export default function KanbanPage() {
         onOpenHistory={() => setHistoryOpen(true)}
         onMapStatuses={onMapStatuses}
         projectKey={key?.toUpperCase()}
+        boardInsightPanelTarget={boardInsightPanelEl}
       />
 
-      {/* 2026-06-15: Board Health (CatyBoardInsight) lives in its own row
-          between the toolbar and the board so the result panel can expand
-          downward and push the columns. Inside the toolbar the panel was
-          clipped by the toolbar's fixed 52px height + overflowX:auto.
-
-          `textAlign: right` keeps the trigger button (inline-block <button>)
-          aligned to the right edge — matching its old top-right position —
-          while the expanded result panel (CatyInsightCard renders a block
-          <div> with maxWidth:100%) naturally fills the full row width. */}
-      {key && (
-        <div
-          style={{
-            padding: `0 ${SIZES.PAGE_PADDING_X}px 8px`,
-            textAlign: 'right',
-            flexShrink: 0,
-          }}
-        >
-          <CatyBoardInsight projectKey={key.toUpperCase()} resourceId={key.toUpperCase()} />
-        </div>
-      )}
+      {/* 2026-06-15: Portal target for the Board Health result panel.
+          The trigger button lives in the toolbar (right cluster); when
+          clicked, CatyBoardInsight portals its CatyInsightCard into this
+          full-width slot. Padding is constant so a small gap sits below
+          the toolbar at all times (8px), and the panel inherits the page's
+          horizontal padding when it expands. */}
+      <div
+        ref={setBoardInsightPanelEl}
+        style={{
+          padding: `0 ${SIZES.PAGE_PADDING_X}px`,
+          flexShrink: 0,
+        }}
+      />
 
       <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex' }}>
         {standupActive && (

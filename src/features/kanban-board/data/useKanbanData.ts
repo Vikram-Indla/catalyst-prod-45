@@ -1,18 +1,33 @@
 /**
- * useKanbanData — fresh data layer for the Kanban board.
+ * useKanbanData — data layer for the kanban board (project + product modes).
  *
- * Shares ONLY the Supabase data source with the rest of Catalyst:
- *   ph_issues, ph_projects, boards, board_columns, board_status_mappings.
- * No Catalyst hooks/components are imported.
+ * Mode switch (2026-06-15) lets the same KanbanPage power both:
+ *   - mode='project' (default) → ph_issues / ph_projects / boards / board_columns
+ *   - mode='product'           → business_requests / products + Business Request
+ *                                workflow statuses for columns
+ *
+ * Per CLAUDE.md "ADOPT CANONICAL COMPONENTS" rule, the product branch is
+ * a data adapter — it queries different tables and maps rows to BoardIssue
+ * shape so the rest of the board (UI, mutations, drag, ⋯ menu) is identical.
+ *
+ * Shares ONLY the Supabase data source with the rest of Catalyst.
  */
 import { useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import type { BoardConfig, BoardIssue, BoardOption, KanbanColumn, StatusCategory } from '../types';
 import { DEFAULT_COLUMNS, indexColumns } from './columnConfig';
 
+export type KanbanMode = 'project' | 'product';
+
 const PAGE = 1000;
 const ISSUE_SELECT = 'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, jira_updated_at, jira_created_at, due_date';
+
+/* SELECT list for product mode. Mirrors the OLD KanbanBoardPage product
+   branch and adds the columns landed by 20260615120000_product_board_parity:
+     is_flagged, parent_request_id, tags. */
+const BR_SELECT = 'id, request_key, title, process_step, urgency, project_manager_user_id, is_flagged, parent_request_id, tags, created_at, updated_at';
 
 /** Fetch one page of project issues (raw rows). */
 async function fetchIssuePage(key: string, from: number, to: number): Promise<any[]> {
@@ -57,6 +72,40 @@ function mapRow(r: any): BoardIssue {
   };
 }
 
+/* business_requests row → BoardIssue.
+   issueType is fixed to 'Business Request' (only type on a product board).
+   labels comes from `tags` (the canonical product-side label column).
+   assigneeName is resolved via a name-map lookup below (project_manager_user_id → profiles.full_name).
+   parentKey resolves to the parent's request_key via a map (parent_request_id → request_key). */
+function mapProductRow(
+  r: any,
+  assigneeNames: Map<string, string>,
+  parentKeyById: Map<string, { key: string | null; summary: string | null }>,
+): BoardIssue {
+  const parent = r.parent_request_id ? parentKeyById.get(r.parent_request_id) : null;
+  return {
+    id: r.id,
+    issueKey: r.request_key ?? r.id,
+    summary: r.title ?? '',
+    issueType: 'Business Request',
+    priority: r.urgency ?? '',
+    status: r.process_step ?? '',
+    statusCategory: '',
+    assigneeName: r.project_manager_user_id ? (assigneeNames.get(r.project_manager_user_id) ?? null) : null,
+    labels: Array.isArray(r.tags) ? r.tags : [],
+    sprintName: null,
+    storyPoints: null,
+    parentKey: parent?.key ?? null,
+    parentSummary: parent?.summary ?? null,
+    sprintRelease: null,
+    isFlagged: !!r.is_flagged,
+    updatedAt: r.updated_at ?? null,
+    createdAt: r.created_at ?? null,
+    statusChangedAt: null,
+    dueDate: null,
+  };
+}
+
 export interface KanbanData {
   projectId: string | null;
   projectName: string;
@@ -67,9 +116,15 @@ export interface KanbanData {
   refetch: () => void;
 }
 
-export function useKanbanData(projectKey: string | undefined, activeBoardId: string | null): KanbanData {
+export function useKanbanData(
+  projectKey: string | undefined,
+  activeBoardId: string | null,
+  mode: KanbanMode = 'project',
+): KanbanData {
   const key = projectKey?.toUpperCase();
+  const isProduct = mode === 'product';
 
+  /* ── PROJECT meta ─────────────────────────────────────────────────────── */
   const { data: projMeta } = useQuery({
     queryKey: ['kb-project-meta', key],
     queryFn: async () => {
@@ -78,10 +133,26 @@ export function useKanbanData(projectKey: string | undefined, activeBoardId: str
         .from('ph_projects').select('id, key, name').eq('key', key).maybeSingle();
       return data ?? null;
     },
-    enabled: !!key,
+    enabled: !!key && !isProduct,
     staleTime: 60_000,
   });
 
+  /* ── PRODUCT meta ─────────────────────────────────────────────────────── */
+  const { data: productMeta } = useQuery({
+    queryKey: ['kb-product-meta', key],
+    queryFn: async () => {
+      if (!key) return null;
+      const { data } = await (supabase as any)
+        .from('products').select('id, name, code')
+        .eq('code', key).eq('is_active', true).maybeSingle();
+      return (data as { id: string; name: string; code: string } | null) ?? null;
+    },
+    enabled: !!key && isProduct,
+    staleTime: 60_000,
+  });
+  const productId = productMeta?.id ?? null;
+
+  /* ── BOARDS list (project mode only) ──────────────────────────────────── */
   const { data: boards = [] } = useQuery({
     queryKey: ['kb-boards', key],
     queryFn: async () => {
@@ -94,12 +165,13 @@ export function useKanbanData(projectKey: string | undefined, activeBoardId: str
         .order('sort_order');
       return (data ?? []).map((b: any) => ({ id: b.id, name: b.name })) as BoardOption[];
     },
-    enabled: !!key,
+    enabled: !!key && !isProduct,
     staleTime: 60_000,
   });
 
-  const resolvedBoardId = activeBoardId ?? boards[0]?.id ?? null;
+  const resolvedBoardId = isProduct ? null : (activeBoardId ?? boards[0]?.id ?? null);
 
+  /* ── COLUMNS source 1 (project): board_columns + board_status_mappings ── */
   const { data: dynamicCols } = useQuery({
     queryKey: ['kb-board-columns', resolvedBoardId],
     queryFn: async () => {
@@ -117,11 +189,29 @@ export function useKanbanData(projectKey: string | undefined, activeBoardId: str
       if (!cols?.length) return null;
       return { cols, mappings: mappings ?? [] };
     },
-    enabled: !!resolvedBoardId,
+    enabled: !!resolvedBoardId && !isProduct,
     staleTime: 60_000,
   });
 
+  /* ── COLUMNS source 2 (product): Business Request workflow statuses ──
+     The OLD board hardcodes 'BAU' as the project to read the canonical
+     Business Request workflow from. We mirror that here — there is no
+     per-product workflow yet, so all product boards share the BR workflow
+     defined under the BAU project. */
+  const brWorkflow = useTypeWorkflow('BAU', 'Business Request');
+
   const columns: KanbanColumn[] = useMemo(() => {
+    if (isProduct) {
+      const statuses = (brWorkflow?.data as any)?.statuses ?? [];
+      if (statuses.length === 0) return DEFAULT_COLUMNS;
+      return statuses.map((s: any, i: number): KanbanColumn => ({
+        id: s.id ?? String(i),
+        name: (s.name ?? s.status ?? '').toUpperCase(),
+        statuses: [s.name ?? s.status ?? ''],
+        category: (s.category === 'done' ? 'done' : s.category === 'todo' ? 'todo' : 'in_progress') as StatusCategory,
+        max: null,
+      }));
+    }
     if (dynamicCols?.cols?.length) {
       return dynamicCols.cols.map((c: any): KanbanColumn => {
         let statuses: string[] = dynamicCols.mappings
@@ -137,31 +227,30 @@ export function useKanbanData(projectKey: string | undefined, activeBoardId: str
       });
     }
     return DEFAULT_COLUMNS;
-  }, [dynamicCols]);
+  }, [isProduct, brWorkflow, dynamicCols]);
 
   const boardConfig: BoardConfig = useMemo(() => {
     const idx = indexColumns(columns);
     return {
       boardId: resolvedBoardId,
-      boardName: boards.find((b) => b.id === resolvedBoardId)?.name ?? 'Board',
+      boardName: isProduct
+        ? (productMeta?.name ?? 'Product board')
+        : (boards.find((b) => b.id === resolvedBoardId)?.name ?? 'Board'),
       columns: idx.columns,
       statusToColId: idx.statusToColId,
       colPrimaryStatus: idx.colPrimaryStatus,
       columnIdSet: idx.columnIdSet,
     };
-  }, [columns, resolvedBoardId, boards]);
+  }, [columns, resolvedBoardId, boards, isProduct, productMeta]);
 
-  // Progressive load: first page gates isLoading so the board paints fast;
-  // remaining pages stream in the background and append (no data loss).
-  const { data: firstPage = [], isLoading, refetch: refetchFirst } = useQuery({
+  /* ── PROJECT issues (paginated, progressive) ─────────────────────────── */
+  const { data: firstPage = [], isLoading: projectLoading, refetch: refetchFirst } = useQuery({
     queryKey: ['kb-issues-p1', key],
     queryFn: () => (key ? fetchIssuePage(key, 0, PAGE - 1) : Promise.resolve([] as any[])),
-    enabled: !!key,
+    enabled: !!key && !isProduct,
     staleTime: 5 * 60_000,
   });
-
   const hasMore = firstPage.length >= PAGE;
-
   const { data: restPages = [], refetch: refetchRest } = useQuery({
     queryKey: ['kb-issues-rest', key],
     queryFn: async () => {
@@ -178,24 +267,91 @@ export function useKanbanData(projectKey: string | undefined, activeBoardId: str
       }
       return all;
     },
-    enabled: !!key && hasMore,
+    enabled: !!key && !isProduct && hasMore,
     staleTime: 5 * 60_000,
   });
 
-  const issues = useMemo(
-    () => [...firstPage, ...restPages].map(mapRow),
-    [firstPage, restPages],
-  );
+  /* ── PRODUCT issues (business_requests filtered by product_id) ──────── */
+  const { data: productRows = [], isLoading: productLoading, refetch: refetchProduct } = useQuery({
+    queryKey: ['kb-product-issues', productId],
+    queryFn: async () => {
+      if (!productId) return [] as any[];
+      const { data } = await (supabase as any)
+        .from('business_requests')
+        .select(BR_SELECT)
+        .eq('product_id', productId)
+        .is('deleted_at', null)
+        .order('updated_at', { ascending: false });
+      return (data ?? []) as any[];
+    },
+    enabled: !!productId && isProduct,
+    staleTime: 30_000,
+  });
 
-  const refetch = useCallback(() => { refetchFirst(); refetchRest(); }, [refetchFirst, refetchRest]);
+  /* ── Assignee name map for product mode (project_manager_user_id → name). */
+  const { data: assigneeNames = new Map<string, string>() } = useQuery({
+    queryKey: ['kb-product-assignees', productId, productRows.length],
+    queryFn: async () => {
+      const ids = Array.from(new Set(productRows.map((r: any) => r.project_manager_user_id).filter(Boolean)));
+      if (!ids.length) return new Map<string, string>();
+      const { data } = await supabase
+        .from('profiles').select('id, full_name').in('id', ids as string[]);
+      const m = new Map<string, string>();
+      ((data ?? []) as Array<{ id: string; full_name: string | null }>).forEach((p) => {
+        if (p.full_name) m.set(p.id, p.full_name);
+      });
+      return m;
+    },
+    enabled: isProduct && productRows.length > 0,
+    staleTime: 60_000,
+  });
+
+  /* ── Parent key+summary map for product mode (parent_request_id → request_key). */
+  const { data: parentKeyById = new Map<string, { key: string | null; summary: string | null }>() } = useQuery({
+    queryKey: ['kb-product-parents', productId, productRows.length],
+    queryFn: async () => {
+      const ids = Array.from(new Set(productRows.map((r: any) => r.parent_request_id).filter(Boolean)));
+      if (!ids.length) return new Map<string, { key: string | null; summary: string | null }>();
+      const { data } = await (supabase as any)
+        .from('business_requests')
+        .select('id, request_key, title')
+        .in('id', ids as string[]);
+      const m = new Map<string, { key: string | null; summary: string | null }>();
+      ((data ?? []) as Array<{ id: string; request_key: string | null; title: string | null }>).forEach((p) => {
+        m.set(p.id, { key: p.request_key, summary: p.title });
+      });
+      return m;
+    },
+    enabled: isProduct && productRows.length > 0,
+    staleTime: 60_000,
+  });
+
+  /* ── Mapped issues ──────────────────────────────────────────────────── */
+  const issues = useMemo(() => {
+    if (isProduct) {
+      return productRows.map((r: any) => mapProductRow(r, assigneeNames, parentKeyById));
+    }
+    return [...firstPage, ...restPages].map(mapRow);
+  }, [isProduct, productRows, assigneeNames, parentKeyById, firstPage, restPages]);
+
+  const refetch = useCallback(() => {
+    if (isProduct) {
+      refetchProduct();
+    } else {
+      refetchFirst();
+      refetchRest();
+    }
+  }, [isProduct, refetchProduct, refetchFirst, refetchRest]);
 
   return {
-    projectId: projMeta?.id ?? null,
-    projectName: projMeta?.name ?? key ?? '',
+    projectId: isProduct ? productId : (projMeta?.id ?? null),
+    projectName: isProduct
+      ? (productMeta?.name ?? key ?? '')
+      : (projMeta?.name ?? key ?? ''),
     boardConfig,
-    boards,
+    boards: isProduct ? [] : boards,
     issues,
-    isLoading,
+    isLoading: isProduct ? productLoading : projectLoading,
     refetch,
   };
 }

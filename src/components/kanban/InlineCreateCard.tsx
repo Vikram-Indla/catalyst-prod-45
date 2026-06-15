@@ -150,6 +150,12 @@ interface InlineCreateCardProps {
   assigneeOptions?: AssigneeOption[];
   /** Lower-case-name → avatar URL map used to render avatars in the picker. */
   avatarsByName?: Map<string, string>;
+  /** 2026-06-15: insert target.
+   *    'project' (default) → ph_issues, generated issue_key
+   *    'product'           → business_requests, generated MIM-N request_key
+   *  When 'product', `projectKey` holds the product CODE (e.g. 'INV') and
+   *  is used to resolve `products.id` for the insert. */
+  mode?: 'project' | 'product';
   onCreateCard: (issue: CreatedIssue) => void;
   onCancel: () => void;
 }
@@ -171,11 +177,18 @@ function InlineCreateCardComponent({
   creatableTypes,
   assigneeOptions = [],
   avatarsByName,
+  mode = 'project',
   onCreateCard,
   onCancel,
 }: InlineCreateCardProps) {
   const [summary, setSummary] = useState('');
-  const [issueName, setIssueName] = useState('Story');
+  /* 2026-06-15: initial issueName is the first entry of the active type
+     list, so product mode (creatableTypes=['Business Request']) opens with
+     the correct selected type instead of the project default 'Story'. */
+  const [issueName, setIssueName] = useState<string>(() => {
+    const list = (creatableTypes && creatableTypes.length > 0) ? creatableTypes : null;
+    return list?.[0] ?? 'Story';
+  });
   const [dueDate, setDueDate] = useState('');           // ISO yyyy-mm-dd
   const [assigneeName, setAssigneeName] = useState<string>('');
   const [assigneeSearch, setAssigneeSearch] = useState('');
@@ -335,49 +348,107 @@ function InlineCreateCardComponent({
     setIsSubmitting(true);
     setError('');
     try {
-      // Mirror useCreateStoryMutation's pattern: generate a real issue_key
-      // and insert directly into ph_issues with source='catalyst'. The host's
-      // onCreateCard then invalidates ['kanban-issues', key]; the refetch
-      // picks up the new row, rawIssues updates → the colMap useEffect
-      // rebuilds → the card appears in its destination column with no
-      // manual page refresh.
-      const issueKey = await generateIssueKey(projectKey);
       const nowIso = new Date().toISOString();
-      const insertRow: Record<string, any> = {
-        project_key: projectKey,
-        issue_key: issueKey,
-        summary: summary.trim(),
-        issue_type: issueName,
-        status: status || 'To Do',
-        priority: 'Medium',
-        labels: [],
-        source: 'catalyst',
-        jira_created_at: nowIso,
-        jira_updated_at: nowIso,
-        description_text: null,
-        description_adf: null,
-        parent_key: null,
-        assignee_display_name: assigneeName || null,
-        due_date: dueDate || null,
-      };
 
-      const { data, error: insErr } = await supabase
-        .from('ph_issues')
-        .insert(insertRow as any)
-        .select('id, issue_key')
-        .single();
-      if (insErr) throw insErr;
+      if (mode === 'product') {
+        /* 2026-06-15: PRODUCT branch — insert into business_requests.
+           projectKey holds the product CODE; we resolve products.id. */
+        const { data: prodRow, error: prodErr } = await (supabase as any)
+          .from('products').select('id').eq('code', projectKey).eq('is_active', true).maybeSingle();
+        if (prodErr) throw prodErr;
+        const productId = (prodRow as { id: string } | null)?.id ?? null;
+        if (!productId) throw new Error(`No active product found for code ${projectKey}`);
 
-      const createdIssue: CreatedIssue = {
-        issueId: (data as any)?.id ?? issueKey,
-        issueKey: (data as any)?.issue_key ?? issueKey,
-        issueType: issueName,
-        summary: summary.trim(),
-        status: status || 'To Do',
-        dueDate: dueDate || undefined,
-        assigneeId: assigneeName || undefined,
-      };
-      onCreateCard(createdIssue);
+        /* Resolve assignee display name → profile.id for project_manager_user_id. */
+        let projectManagerUserId: string | null = null;
+        if (assigneeName) {
+          const { data: prof } = await supabase
+            .from('profiles').select('id').eq('full_name', assigneeName).maybeSingle();
+          projectManagerUserId = (prof as { id: string } | null)?.id ?? null;
+        }
+
+        /* Generate MIM-N request_key (same pattern as useKanbanMutations). */
+        const { data: keyRows } = await (supabase as any)
+          .from('business_requests').select('request_key').not('request_key', 'is', null).limit(2000);
+        let maxNum = 0;
+        ((keyRows ?? []) as Array<{ request_key: string | null }>).forEach((r) => {
+          const m = r.request_key?.match(/MIM-(\d+)/);
+          if (m) {
+            const n = parseInt(m[1], 10);
+            if (!Number.isNaN(n) && n > maxNum) maxNum = n;
+          }
+        });
+        const requestKey = maxNum === 0
+          ? `MIM-${Date.now().toString().slice(-6)}`
+          : `MIM-${maxNum + 1}`;
+
+        const insertRow: Record<string, any> = {
+          request_key: requestKey,
+          product_id: productId,
+          title: summary.trim(),
+          process_step: status || 'new_request',
+          urgency: 'Medium',
+          is_flagged: false,
+          tags: [],
+          project_manager_user_id: projectManagerUserId,
+          created_at: nowIso,
+          updated_at: nowIso,
+        };
+        const { data, error: insErr } = await (supabase as any)
+          .from('business_requests')
+          .insert(insertRow)
+          .select('id, request_key')
+          .single();
+        if (insErr) throw insErr;
+
+        const createdIssue: CreatedIssue = {
+          issueId: (data as any)?.id ?? requestKey,
+          issueKey: (data as any)?.request_key ?? requestKey,
+          issueType: issueName,
+          summary: summary.trim(),
+          status: status || 'new_request',
+          assigneeId: assigneeName || undefined,
+        };
+        onCreateCard(createdIssue);
+      } else {
+        // PROJECT branch — insert into ph_issues with source='catalyst'.
+        const issueKey = await generateIssueKey(projectKey);
+        const insertRow: Record<string, any> = {
+          project_key: projectKey,
+          issue_key: issueKey,
+          summary: summary.trim(),
+          issue_type: issueName,
+          status: status || 'To Do',
+          priority: 'Medium',
+          labels: [],
+          source: 'catalyst',
+          jira_created_at: nowIso,
+          jira_updated_at: nowIso,
+          description_text: null,
+          description_adf: null,
+          parent_key: null,
+          assignee_display_name: assigneeName || null,
+          due_date: dueDate || null,
+        };
+
+        const { data, error: insErr } = await supabase
+          .from('ph_issues')
+          .insert(insertRow as any)
+          .select('id, issue_key')
+          .single();
+        if (insErr) throw insErr;
+
+        const createdIssue: CreatedIssue = {
+          issueId: (data as any)?.id ?? issueKey,
+          issueKey: (data as any)?.issue_key ?? issueKey,
+          issueType: issueName,
+          summary: summary.trim(),
+          status: status || 'To Do',
+          dueDate: dueDate || undefined,
+          assigneeId: assigneeName || undefined,
+        };
+        onCreateCard(createdIssue);
+      }
 
       // Clear form (the form is also unmounted by the host after this returns)
       setSummary('');

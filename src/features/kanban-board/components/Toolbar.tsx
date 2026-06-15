@@ -14,6 +14,7 @@ import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import GraphLineIcon from '@atlaskit/icon/glyph/graph-line';
 import { PortalMenu, MenuItem, TriggerChevron } from './PortalMenu';
+import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
 import { SIZES, STRINGS, QUICK_FILTERS } from '../constants';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import type { FilterApi } from '../hooks/useKanbanFilters';
@@ -114,9 +115,14 @@ interface ToolbarProps {
   onOpenHistory: () => void;
   onMapStatuses: () => void;
   projectKey?: string;
+  /* 2026-06-15: DOM element that the Board Health result panel portals
+     to when expanded. Allows the trigger button to live in this toolbar
+     (right cluster) while the result panel renders in a full-width slot
+     below the toolbar without being clipped by the toolbar's fixed height. */
+  boardInsightPanelTarget?: HTMLElement | null;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleFields, onToggleField, onCopyBoardLink, onStartStandup, standupActive, onEndStandup, onOpenHistory, onMapStatuses, projectKey, boardInsightPanelTarget }) => {
   const groupLabels: Record<GroupByMode, string> = {
     none: STRINGS.GROUP_NONE, assignee: STRINGS.GROUP_ASSIGNEE, epic: STRINGS.GROUP_EPIC,
     subtask: STRINGS.GROUP_SUBTASK, priority: STRINGS.GROUP_PRIORITY,
@@ -210,11 +216,20 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
         )}
       </PortalMenu>
 
-      {/* 2026-06-15: Ask Caty Board Health moved out of the toolbar.
-          The toolbar has fixed height + overflowX:auto, which clips the
-          expanded insight result panel. CatyBoardInsight now lives in its
-          own row in KanbanPage between this toolbar and the board, so the
-          result pushes the columns down naturally. */}
+      {/* 2026-06-15 (revised): Board Health trigger restored to the toolbar
+          right cluster. The result panel portals out to
+          `boardInsightPanelTarget` (a full-width slot in KanbanPage below
+          the toolbar) so the panel is never clipped by the toolbar's
+          fixed 52px height + overflowX:auto. */}
+      {projectKey && (
+        <span style={{ flexShrink: 0, display: 'inline-flex' }}>
+          <CatyBoardInsight
+            projectKey={projectKey}
+            resourceId={projectKey}
+            panelPortalTarget={boardInsightPanelTarget}
+          />
+        </span>
+      )}
 
       <PortalMenu ariaLabel="More actions" align="right" minWidth={200} trigger={() => (
         <span role="button" aria-label="More actions" style={{ display: 'inline-flex' }}>

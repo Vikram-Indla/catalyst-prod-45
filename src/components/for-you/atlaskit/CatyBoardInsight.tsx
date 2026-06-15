@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
@@ -36,9 +37,16 @@ interface BoardInsightData {
 interface CatyBoardInsightProps {
   resourceId?: string | null;
   projectKey?: string | null;
+  /* 2026-06-15: when provided, the result panel is portaled to this DOM
+     element instead of replacing the trigger button inline. Use this when
+     the trigger needs to stay in a constrained slot (e.g. a fixed-height
+     toolbar) but the expanded result needs full-width room elsewhere on
+     the page. The trigger button always renders at the component's own
+     mount point. */
+  panelPortalTarget?: HTMLElement | null;
 }
 
-export function CatyBoardInsight({ resourceId, projectKey }: CatyBoardInsightProps) {
+export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: CatyBoardInsightProps) {
   const { user } = useAuth();
   const [insight, setInsight] = useState<BoardInsightData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -146,33 +154,21 @@ export function CatyBoardInsight({ resourceId, projectKey }: CatyBoardInsightPro
 
   if (!resourceId && !projectKey) return null;
 
-  /* Inline button + panel wrapper */
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <button
-        onClick={() => {
-          if (!insight) generateInsight();
-          else setInsight(null);
-        }}
-      >
-        <CatyButton label="Board health" onClick={() => {}} loading={isLoading} />
-      </button>
+  /* 2026-06-15: split render. The trigger button always renders at the
+     component's mount point. The result panel either replaces the button
+     inline (legacy callers) or portals to `panelPortalTarget` when
+     provided (kanban board: button in toolbar, panel below toolbar at
+     full width). */
+  const button = (
+    <CatyButton label="Board health" onClick={generateInsight} loading={isLoading} />
+  );
 
-      {/* Inline panel — appears below button */}
-      {insight && (
-    <div
-      style={{
-        width: 320,
-        maxHeight: '60vh',
-        overflowY: 'auto',
-      }}
-    >
-      {insight.totalItems === 0 ? (
-        <CatyInsightCard title="Board health" onDismiss={() => setInsight(null)}>
-          <span style={{ color: token('color.text.subtlest', '#6B778C') }}>{insight.summary}</span>
-        </CatyInsightCard>
-      ) : (
-        <CatyInsightCard title="Board health" onRefresh={generateInsight} onDismiss={() => setInsight(null)}>
+  const panel = !insight ? null : insight.totalItems === 0 ? (
+    <CatyInsightCard title="Board health" onDismiss={() => setInsight(null)}>
+      <span style={{ color: token('color.text.subtlest', '#6B778C') }}>{insight.summary}</span>
+    </CatyInsightCard>
+  ) : (
+    <CatyInsightCard title="Board health" onRefresh={generateInsight} onDismiss={() => setInsight(null)}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <p style={{ margin: 0, font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>
               {insight.summary}
@@ -254,9 +250,18 @@ export function CatyBoardInsight({ resourceId, projectKey }: CatyBoardInsightPro
             ))}
           </div>
         </CatyInsightCard>
-      )}
-    </div>
-      )}
-    </div>
   );
+
+  /* Portal mode: button at mount point, panel portaled to target. */
+  if (panelPortalTarget) {
+    return (
+      <>
+        {button}
+        {panel && createPortal(panel, panelPortalTarget)}
+      </>
+    );
+  }
+
+  /* Legacy mode: panel replaces button inline (button OR panel, not both). */
+  return insight ? panel : button;
 }
