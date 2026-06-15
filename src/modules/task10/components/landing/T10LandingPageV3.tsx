@@ -471,7 +471,7 @@ export function T10LandingPageV3() {
     archivedLoading;
 
   return (
-    <div className="min-h-screen" style={{ background: '#fafafa' }}>
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[var(--ds-surface,var(--cp-bg,#0A0A0A))]">
       {/* ═══════════════════════════════════════════════════════════════════════
           HEADER
           ═══════════════════════════════════════════════════════════════════════ */}
