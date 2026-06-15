@@ -88,7 +88,7 @@ export default function ReplyComposer({
           /* Static rainbow border wrapper — AI affordance signifier.
              CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). */
           <CatyButton
-            label="Ask Caty - Suggest?"
+            label="Suggest?"
             onClick={onAiSuggest}
           />
         )}

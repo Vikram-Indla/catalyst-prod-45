@@ -1426,7 +1426,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
           See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31).
           Hover affordance: `filter: brightness(1.08)` only — no motion. */}
       <CatyButton
-        label="Ask Caty - Suggest?"
+        label="Suggest?"
         onClick={onSuggest}
         loading={phase === 'loading'}
         disabled={phase === 'loading'}
