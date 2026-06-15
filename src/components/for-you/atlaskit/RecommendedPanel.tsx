@@ -108,6 +108,10 @@ interface RecommendedPanelProps {
    * RecommendedPanel directly don't need to pass it.
    */
   onSwitchTab?: (tab: TabType) => void;
+  /** Digest state for Summarize button (hoisted from component to parent) */
+  digestOpen?: 'mentions' | 'comments' | null;
+  /** Digest state setter (hoisted from component to parent) */
+  setDigestOpen?: (type: 'mentions' | 'comments' | null) => void;
 }
 
 // ─── Dismiss persistence ────────────────────────────────────────────────────
@@ -207,6 +211,8 @@ export default function RecommendedPanel({
   onToggleStar,
   currentUserName,
   onSwitchTab,
+  digestOpen,
+  setDigestOpen,
 }: RecommendedPanelProps) {
   // Index items by issueKey so a mention / comment card can hand back the
   // same WorkItem object when opening the detail panel.
@@ -269,7 +275,7 @@ export default function RecommendedPanel({
   // Council decision 2026-05-31: per-card sparkle = "this one". Panel-header
   // digest = "all of these, triaged with inline actions". Two complementary
   // entry points to the same AI affordance.
-  const [digestOpen, setDigestOpen] = useState<'mentions' | 'comments' | null>(null);
+
   const digestRows = useMemo((): DigestMention[] => {
     const src = digestOpen === 'mentions' ? visibleMentions
               : digestOpen === 'comments' ? visibleComments
@@ -352,7 +358,7 @@ export default function RecommendedPanel({
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
-            onOpenDigest={visibleMentions.length >= 2 ? () => setDigestOpen('mentions') : undefined}
+            onOpenDigest={visibleMentions.length >= 2 && setDigestOpen ? () => setDigestOpen('mentions') : undefined}
           />
         )}
         {hasComments && (
@@ -390,7 +396,7 @@ export default function RecommendedPanel({
             }))}
             onOpen={resolveSelect}
             onDismiss={handleDismiss}
-            onOpenDigest={visibleComments.length >= 2 ? () => setDigestOpen('comments') : undefined}
+            onOpenDigest={visibleComments.length >= 2 && setDigestOpen ? () => setDigestOpen('comments') : undefined}
           />
         )}
         <SummarizeDigestModal
@@ -474,6 +480,8 @@ function FeedSection({
   currentUserName?: string;
   /** When provided, renders the rainbow "Ask Caty" digest CTA in the section header. */
   onOpenDigest?: () => void;
+  digestOpen?: 'mentions' | 'comments' | null;
+  setDigestOpen?: (type: 'mentions' | 'comments' | null) => void;
 }) {
   return (
     <section
@@ -512,16 +520,7 @@ function FeedSection({
             {label}
           </h4>
         </div>
-        {/* Summarize digest CTA — cat icon + label + count badge.
-            Opens SummarizeDigestModal for interactive triage of mentions/comments. */}
-        {onOpenDigest && (
-          <CatyButton
-            label="Summarize"
-            onClick={onOpenDigest}
-            size="default"
-            badge={rows.length}
-          />
-        )}
+
       </div>
       <p
         style={{

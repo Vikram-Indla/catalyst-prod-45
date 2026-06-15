@@ -53,6 +53,7 @@ import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import R360Panel from '@/components/for-you/atlaskit/R360Panel';
 import BoardPanel from '@/components/for-you/atlaskit/BoardPanel';
+import { CatyButton } from '@/components/for-you/atlaskit/CatyButton';
 
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -290,10 +291,10 @@ export default function ForYouPageAtlaskit() {
       case 'ageing':      return <AgeingPanel />;
       case 'r360':        return <R360Panel />;
       case 'board':       return <BoardPanel />;
-      case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
+      case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} digestOpen={digestOpen} setDigestOpen={setDigestOpen} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} onAskCatyThemify={() => handleTabChange('ai-theme')} />;
       case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
-      default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
+      default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} digestOpen={digestOpen} setDigestOpen={setDigestOpen} />;
     }
   }, [activeTab, visibleItems, isLoading, isRefreshing, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange]);
 
@@ -348,6 +349,10 @@ export default function ForYouPageAtlaskit() {
           background: token('elevation.surface', '#FFFFFF'),
           paddingBlock: 8,
           marginBlockEnd: 16,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
         }}
       >
         <ForYouTabs
@@ -356,6 +361,18 @@ export default function ForYouPageAtlaskit() {
           onChange={handleTabChange}
           tabs={visibleTabs}
         />
+        {/* Summarize button — only visible on Recommended tab */}
+        {activeTab === 'recommended' && (recommendedMentions.length > 0 || recommendedComments.length > 0) && (
+          <CatyButton
+            label="Summarize"
+            onClick={() => {
+              // Open mentions if available, otherwise comments
+              setDigestOpen(recommendedMentions.length > 0 ? 'mentions' : 'comments');
+            }}
+            size="default"
+            badge={(recommendedMentions.length > 0 ? recommendedMentions.length : 0) + (recommendedComments.length > 0 ? recommendedComments.length : 0)}
+          />
+        )}
       </div>
 
       {/* Active panel — fills remaining viewport height, scrolls independently */}
