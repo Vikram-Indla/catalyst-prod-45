@@ -149,6 +149,18 @@ import hubTaskUrl from '@/assets/icons/hubs/tasks.svg?url';
 import hubPlanUrl from '@/assets/icons/hubs/plan.svg?url';
 import hubWikiUrl from '@/assets/icons/hubs/wiki.svg?url';
 
+import hubHomeOutlineUrl from '@/assets/icons/hubs/home-outline.svg?url';
+import hubStrategyOutlineUrl from '@/assets/icons/hubs/strategy-outline.svg?url';
+import hubIdeationOutlineUrl from '@/assets/icons/hubs/ideation-outline.svg?url';
+import hubProductOutlineUrl from '@/assets/icons/hubs/product-outline.svg?url';
+import hubProjectOutlineUrl from '@/assets/icons/hubs/project-outline.svg?url';
+import hubReleaseOutlineUrl from '@/assets/icons/hubs/release-outline.svg?url';
+import hubTestOutlineUrl from '@/assets/icons/hubs/test-outline.svg?url';
+import hubIncidentOutlineUrl from '@/assets/icons/hubs/incident-outline.svg?url';
+import hubTasksOutlineUrl from '@/assets/icons/hubs/tasks-outline.svg?url';
+import hubPlanOutlineUrl from '@/assets/icons/hubs/plan-outline.svg?url';
+import hubWikiOutlineUrl from '@/assets/icons/hubs/wiki-outline.svg?url';
+
 // ═══════════════════════════════════════════════════════════════════════
 // PUBLIC TYPES
 // ═══════════════════════════════════════════════════════════════════════
@@ -361,6 +373,20 @@ export const HUB_ICON_REGISTRY: Record<HubKey, string> = {
   task:     hubTaskUrl,
   plan:     hubPlanUrl,
   wiki:     hubWikiUrl,
+};
+
+export const HUB_ICON_OUTLINE_REGISTRY: Record<HubKey, string> = {
+  home:     hubHomeOutlineUrl,
+  strategy: hubStrategyOutlineUrl,
+  ideation: hubIdeationOutlineUrl,
+  product:  hubProductOutlineUrl,
+  project:  hubProjectOutlineUrl,
+  release:  hubReleaseOutlineUrl,
+  test:     hubTestOutlineUrl,
+  incident: hubIncidentOutlineUrl,
+  task:     hubTasksOutlineUrl,
+  plan:     hubPlanOutlineUrl,
+  wiki:     hubWikiOutlineUrl,
 };
 
 // ═══════════════════════════════════════════════════════════════════════

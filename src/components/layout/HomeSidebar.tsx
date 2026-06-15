@@ -26,6 +26,7 @@
  *     not a project, surfacing it was misleading).
  */
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
@@ -37,6 +38,7 @@ import ListIcon from '@atlaskit/icon/glyph/list';
 import RoadmapIcon from '@atlaskit/icon/glyph/roadmap';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
+import { HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
 
 const RECENT_LIMIT = 16;
 
@@ -45,6 +47,21 @@ interface HomeSidebarProps {
   onToggle?: () => void;
   className?: string;
 }
+
+// Hub navigation items for collapsed sidebar (HOME route only)
+const HUB_NAV_ITEMS = [
+  { key: 'home', label: 'Home', href: '/for-you' },
+  { key: 'strategy', label: 'Strategy Hub', href: '/strategyhub' },
+  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog' },
+  { key: 'product', label: 'Product Hub', href: '/product-hub' },
+  { key: 'project', label: 'Project Hub', href: '/project-hub' },
+  { key: 'release', label: 'Release Hub', href: '/release-hub/command-center' },
+  { key: 'test', label: 'Test Hub', href: '/testhub/dashboard' },
+  { key: 'incident', label: 'Incident Hub', href: '/incident-hub' },
+  { key: 'task', label: 'Tasks', href: '/tasks/board' },
+  { key: 'plan', label: 'Plan Hub', href: '/planhub' },
+  { key: 'wiki', label: 'Wiki', href: '/wiki' },
+] as const;
 
 /** Skeleton row — keeps row height stable while data lands. */
 function SkeletonRowTitle() {
@@ -268,11 +285,36 @@ export default function HomeSidebar({
   onToggle = () => {},
   className,
 }: HomeSidebarProps) {
+  const navigate = useNavigate();
   const { recentLocations, loading } = useRecentProjects(RECENT_LIMIT);
 
   const config: SidebarConfig = useMemo(() => {
     if (!expanded) {
-      return { badge: null, label: 'Home', showFavorites: false, sections: [] };
+      // Collapsed HOME route: render hub icons with outline styling
+      const hubItems: SidebarMenuItem[] = HUB_NAV_ITEMS.map((hub) => ({
+        id: `hub-${hub.key}`,
+        title: hub.label,
+        tooltip: hub.label,
+        path: hub.href,
+        icon: () => (
+          <img
+            src={HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]}
+            alt={hub.label}
+            style={{
+              width: '24px',
+              height: '24px',
+              display: 'block',
+            }}
+          />
+        ),
+      }));
+
+      return {
+        badge: null,
+        label: 'Home',
+        showFavorites: false,
+        items: hubItems,
+      };
     }
 
     if (loading) {
