@@ -36,27 +36,70 @@ function maxFrom(rows: Array<{ issue_key: string | null }>, re: RegExp): number 
 }
 
 /**
- * Generate the next sequential issue key for `projectKey` (e.g. "BAU").
- * Queries both source tables in parallel and returns `${projectKey}-${maxN+1}`.
+ * Pure max-across-sources resolver. Returns `${projectKey}-${maxN+1}` where
+ * maxN is the highest numeric suffix matching `${projectKey}-N` across ALL
+ * supplied row sets. Each row set is `{ issue_key }[]` — callers map other
+ * key columns (e.g. business_requests.request_key) into this shape.
  *
- * NB: This is a soft-uniqueness guard — under concurrent creates two callers
- * may both compute the same key. The DB unique-index on issue_key is the hard
+ * Extracted for testability (2026-06-15) — generateIssueKey composes the DB
+ * queries; nextKey owns the arithmetic.
+ */
+export function nextKey(
+  projectKey: string,
+  ...rowSets: Array<Array<{ issue_key: string | null }>>
+): string {
+  const re = keyRegex(projectKey);
+  let max = 0;
+  for (const rows of rowSets) {
+    const m = maxFrom(rows, re);
+    if (m > max) max = m;
+  }
+  return `${projectKey}-${max + 1}`;
+}
+
+/**
+ * Generate the next sequential issue key for `projectKey` (e.g. "BAU", "MDT").
+ * Scans THREE sources in parallel and returns `${projectKey}-${maxN+1}`:
+ *   - ph_issues.issue_key          (Jira-synced + legacy native)
+ *   - catalyst_issues.issue_key    (Catalyst-native items incl. BR subtasks)
+ *   - business_requests.request_key (MDT/MIM Business Requests)
+ *
+ * The business_requests scan is essential for the MDT shared sequence
+ * (2026-06-15, Q3): MDT BRs live there, so a new MDT subtask must clear
+ * their numbers to avoid collision.
+ *
+ * NB: Soft-uniqueness guard — under concurrent creates two callers may both
+ * compute the same key. The DB unique-index on issue_key is the hard
  * guarantee. Callers should retry once on a 23505 conflict.
  */
 export async function generateIssueKey(projectKey: string): Promise<string> {
   if (!projectKey) throw new Error('generateIssueKey: projectKey is required');
-  const re = keyRegex(projectKey);
 
-  // F-iter9 unification: ph_issues holds BOTH Jira-synced and Catalyst-native
-  // rows now. Single query replaces the previous two-table parallel fetch.
-  const phRes = await supabase
-    .from('ph_issues')
-    .select('issue_key')
-    .like('issue_key', `${projectKey}-%`)
-    .order('issue_key', { ascending: false })
-    .limit(500);
+  const [phRes, catRes, brRes] = await Promise.all([
+    supabase
+      .from('ph_issues')
+      .select('issue_key')
+      .like('issue_key', `${projectKey}-%`)
+      .order('issue_key', { ascending: false })
+      .limit(500),
+    supabase
+      .from('catalyst_issues')
+      .select('issue_key')
+      .like('issue_key', `${projectKey}-%`)
+      .order('issue_key', { ascending: false })
+      .limit(500),
+    supabase
+      .from('business_requests')
+      .select('request_key')
+      .like('request_key', `${projectKey}-%`)
+      .order('request_key', { ascending: false })
+      .limit(500),
+  ]);
 
-  const phMax = maxFrom((phRes.data ?? []) as any[], re);
-  const next = phMax + 1;
-  return `${projectKey}-${next}`;
+  const phRows = (phRes.data ?? []) as Array<{ issue_key: string | null }>;
+  const catRows = (catRes.data ?? []) as Array<{ issue_key: string | null }>;
+  const brRows = ((brRes.data ?? []) as Array<{ request_key: string | null }>)
+    .map((r) => ({ issue_key: r.request_key }));
+
+  return nextKey(projectKey, phRows, catRows, brRows);
 }
