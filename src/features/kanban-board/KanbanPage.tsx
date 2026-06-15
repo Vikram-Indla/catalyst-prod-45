@@ -17,7 +17,8 @@ import AddIcon from '@atlaskit/icon/glyph/add';
 import { InlineCreateCard } from '@/components/kanban/InlineCreateCard';
 import { AssigneePicker } from './components/AssigneePicker';
 import { StandupPanel } from './components/StandupPanel';
-import { StandupHistoryPanel } from './components/StandupHistoryPanel';
+/* StandupHistoryPanel import removed 2026-06-15 — the panel is now mounted
+   by the standalone /:hub/:key/standups page, not in-board. */
 import { PortalMenu, MenuItem } from './components/PortalMenu';
 import { useKanbanData } from './data/useKanbanData';
 import { useBoardAvatars } from './data/useBoardAvatars';
@@ -46,7 +47,9 @@ export default function KanbanPage({ mode = 'project' }: KanbanPageProps = {}) {
   const [standupPerson, setStandupPerson] = useState<string | null>(null);
   const standupStartedAt = useRef<Date | null>(null);
   const [standupTimerSec, setStandupTimerSec] = useState(300);
-  const [historyOpen, setHistoryOpen] = useState(false);
+  /* 2026-06-15: historyOpen retired. The kebab "Standup history" item now
+     navigates to /:hub/:key/standups (mode-aware) instead of opening an
+     in-board panel. */
   const [selectedId, setSelectedId] = useState<string | null>(null);
   /* Tracks which column currently has the inline create form expanded. Only
      one form is open at a time across the whole board. */
@@ -267,7 +270,7 @@ export default function KanbanPage({ mode = 'project' }: KanbanPageProps = {}) {
             }).catch((e) => console.warn('[standup] capture error', e));
           }
         }}
-        onOpenHistory={() => setHistoryOpen(true)}
+        onOpenHistory={() => navigate(`/${mode === 'product' ? 'product-hub' : 'project-hub'}/${key}/standups`)}
         onMapStatuses={onMapStatuses}
         projectKey={key?.toUpperCase()}
         boardInsightPanelTarget={boardInsightPanelEl}
@@ -337,7 +340,7 @@ export default function KanbanPage({ mode = 'project' }: KanbanPageProps = {}) {
         />
       )}
 
-      <StandupHistoryPanel projectKey={key?.toUpperCase()} open={historyOpen} onClose={() => setHistoryOpen(false)} />
+      {/* StandupHistoryPanel mount removed 2026-06-15 — see /:hub/:key/standups route. */}
     </div>
   );
 }

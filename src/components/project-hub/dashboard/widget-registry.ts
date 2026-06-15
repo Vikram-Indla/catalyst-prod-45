@@ -82,6 +82,9 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 0,
     component: DemandFulfilmentGadget,
+    /* Epics are a Jira-hierarchy concept; business_requests has no epic
+       linking. Hidden on product per PO + Vikram judgment (2026-06-15). */
+    hideOnProduct: true,
   },
   {
     id: 'release-health',
@@ -115,6 +118,9 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 3,
     component: ScopeChangeWidget,
+    /* No BR equivalent — business_requests has no scope_change tracking.
+       Hidden on product-hub dashboards per PO directive (2026-06-15). */
+    hideOnProduct: true,
   },
 
   // ─── §3 EXCEPTIONS ──────────────────────────────────────────────────
@@ -151,6 +157,8 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 6,
     component: ProductionIncidentsWidget,
+    /* No BR equivalent. Hidden on product per PO (2026-06-15). */
+    hideOnProduct: true,
   },
   {
     id: 'qa-defects',
@@ -161,6 +169,8 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 7,
     component: QADefectsWidget,
+    /* No BR equivalent. Hidden on product per PO (2026-06-15). */
+    hideOnProduct: true,
   },
 
   // ─── §5 CAPACITY & FLOW ─────────────────────────────────────────────
@@ -184,8 +194,24 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 9,
     component: TimeInStatusWidget,
+    /* business_requests has no status_changed_at column — no time-in-status
+       computation possible. Hidden on product per PO (2026-06-15). */
+    hideOnProduct: true,
   },
 ];
+
+/**
+ * 2026-06-15: mode-aware registry lookup. Consumers should call this
+ * instead of WIDGET_REGISTRY directly so the four product-incompatible
+ * widgets (scope-change, prod-incidents, qa-defects, time-in-status) are
+ * automatically dropped from product-hub dashboards.
+ */
+export function getWidgetRegistry(mode: 'project' | 'product' = 'project'): WidgetDefinition[] {
+  if (mode === 'product') {
+    return WIDGET_REGISTRY.filter((w) => !w.hideOnProduct);
+  }
+  return WIDGET_REGISTRY;
+}
 
 export const WIDGET_GROUPS = [
   { key: 'delivery' as const, label: 'Delivery' },

@@ -29,6 +29,8 @@
 import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOnHoldItems } from '@/hooks/useDashboardWidgets';
+import { useProductDashboardData } from '@/hooks/useProductDashboardData';
+import { useMemo } from 'react';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { resolveColumns } from '../gadgetColumns';
 import { token } from '@atlaskit/tokens';
@@ -65,10 +67,15 @@ function reasonAppearance(r: Reason): LozengeAppearance {
   }
 }
 
-export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
+export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse, mode = 'project' }: WidgetProps) {
+  const isProduct = mode === 'product';
   const { settings } = useGadgetSettings('onhold', projectKey);
   const activeColumns = resolveColumns('onhold', settings.columns ?? null);
-  const { data: items, isLoading } = useDashboardOnHoldItems(projectId, {
+
+  /* Project: useDashboardOnHoldItems(ph_issues). Product: filter BR rows
+     where processStep matches on-hold/blocked/awaiting-info, then map to
+     the same row shape the widget renders. */
+  const projectQuery = useDashboardOnHoldItems(isProduct ? '' : projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
     statusFilter: settings.statusFilter,
@@ -77,6 +84,28 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
   });
+  const productQuery = useProductDashboardData(isProduct ? projectId : null);
+  const productItems = useMemo(() => {
+    if (!isProduct) return [];
+    const rows = productQuery.data?.rows ?? [];
+    const HOLD = new Set(['on hold', 'on_hold', 'paused', 'blocked', 'awaiting info', 'awaiting_info', 'in review']);
+    return rows
+      .filter((r) => HOLD.has((r.processStep ?? '').toLowerCase().trim()))
+      .map((r) => ({
+        id: r.id,
+        issue_key: r.requestKey,
+        summary: r.title,
+        status: r.processStep ?? '',
+        priority: r.urgency ?? '',
+        assignee_name: r.projectManagerName ?? null,
+        issue_type: 'Business Request',
+        updated: r.updatedAt,
+        created: r.createdAt,
+      }));
+  }, [isProduct, productQuery.data]);
+
+  const items = isProduct ? productItems : projectQuery.data;
+  const isLoading = isProduct ? productQuery.isLoading : projectQuery.isLoading;
   const { openUWV } = useUWV();
 
   const all = items ?? [];

@@ -41,6 +41,7 @@ const MyTeamPageLazy = lazy(() => import("../pages/MyTeamPage"));
 // ProjectHub V5
 const ProjectListPageLazy = lazy(() => import("../pages/project-hub/ProjectListPage"));
 const ProjectDashboardPageLazy = lazy(() => import("../pages/project-hub/ProjectDashboardPage"));
+const StandupHistoryPageLazy = lazy(() => import("../pages/standups/StandupHistoryPage"));
 const PHProjectSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectSettingsPage"));
 const ProjectBoardPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardPage"));
 const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardManagerPage"));
@@ -478,7 +479,17 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductNativeAllWorkPage /></S></MG>} />
 
-        <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
+        {/* 2026-06-15: product dashboard now mounts the canonical
+            ProjectDashboardPage with mode='product' (per PO directive +
+            CLAUDE.md "ADOPT CANONICAL COMPONENTS"). The 4 BR-incompatible
+            widgets (scope-change, prod-incidents, qa-defects, time-in-status)
+            are filtered from the gallery via getWidgetRegistry('product').
+            ProductDashboardPageV2 left on disk pending Phase B sign-off. */}
+        <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProjectDashboardPageLazy mode="product" /></S></MG>} />
+        {/* 2026-06-15: standup history reachable from the board kebab menu
+            ("Standup history"). Same page on both hubs — projectKey is the
+            standups.project_key text column, which accepts product codes too. */}
+        <Route path="/product-hub/:key/standups" element={<MG k="producthub" t="ProductHub"><S><StandupHistoryPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
         <Route path="/product-hub/:key/timeline/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductTimelineDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePage /></S></MG>} />
@@ -905,6 +916,8 @@ export default function FullAppRoutes() {
         <Route path="/resources" element={<S><R360ProfilePageLazy /></S>} />
         <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
         <Route path="/project-hub/:key/dashboard" element={<S><ProjectDashboardPageLazy /></S>} />
+        {/* 2026-06-15: standup history (sidebar tab retired). */}
+        <Route path="/project-hub/:key/standups" element={<S><StandupHistoryPageLazy /></S>} />
         <Route path="/project-hub/:key/settings" element={<S><PHProjectSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/backlog" element={<S><UnifiedBacklogPageLazy /></S>} />
         <Route path="/project-hub/:key/backlog/:issueKey" element={<S><BacklogDetailPageLazy /></S>} />

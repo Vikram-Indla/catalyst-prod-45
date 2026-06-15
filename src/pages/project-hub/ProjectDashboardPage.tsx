@@ -111,15 +111,26 @@ function EditKebabMenu({
   );
 }
 
-export default function ProjectDashboardPage() {
+/* 2026-06-15: mode prop lets the same dashboard shell serve both
+   /project-hub/:key/dashboard (default) and /product-hub/:key/dashboard. In
+   product mode: resolves products by code (not ph_projects/projects by key),
+   header chip flips to product, the 4 BR-incompatible widgets are filtered
+   out of the gallery + never seeded. Per CLAUDE.md "ADOPT CANONICAL
+   COMPONENTS — DO NOT REIMPLEMENT". */
+interface ProjectDashboardPageProps {
+  mode?: 'project' | 'product';
+}
+
+export default function ProjectDashboardPage({ mode = 'project' }: ProjectDashboardPageProps = {}) {
   return (
     <DashboardFilterProvider>
-      <ProjectDashboardPageInner />
+      <ProjectDashboardPageInner mode={mode} />
     </DashboardFilterProvider>
   );
 }
 
-function ProjectDashboardPageInner() {
+function ProjectDashboardPageInner({ mode }: { mode: 'project' | 'product' }) {
+  const isProduct = mode === 'product';
   const { key } = useParams<{ key: string }>();
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -147,10 +158,26 @@ useEffect(() => {
   }, [isEditing, isFullScreen]);
 
   const { data: project, isLoading } = useQuery({
-    queryKey: ['ph-project-dashboard-v5', key],
+    queryKey: ['ph-project-dashboard-v5', key, mode],
     queryFn: async () => {
       if (!key) return null;
       const upper = key.toUpperCase();
+      /* 2026-06-15: in product mode, resolve products.code → row. The
+         dashboard_widget_config.project_id FK targets projects(id), but
+         dashboard_widget_config has no FK to products(id); the per-user
+         config is keyed by whatever uuid we pass, so products.id works
+         too. (RLS on dashboard_widget_config is user-scoped, not project-
+         scoped.) */
+      if (isProduct) {
+        const { data: prod } = await (supabase as any)
+          .from('products')
+          .select('id, code, name')
+          .eq('code', upper)
+          .eq('is_active', true)
+          .maybeSingle();
+        if (prod) return { ...(prod as any), key: prod.code };
+        return null;
+      }
       // Resolve to canonical `public.projects` row first — the
       // dashboard_widget_config.project_id FK targets projects(id), so
       // returning a ph_projects.id (different uuid) would silently fail
@@ -183,14 +210,17 @@ useEffect(() => {
   // Realtime invalidation — collapses the 15-min staleTime window to ~zero
   // for ph_issues / tm_defects / catalyst_status_history changes scoped to
   // this project. One channel total, mounted at the page level.
-  useDashboardRealtime({ projectId, projectKey: pKey, enabled: !!pKey });
+  // 2026-06-15: disabled in product mode for now — the realtime hook
+  // subscribes to ph_issues tables, which aren't relevant for business_requests.
+  // Phase B will rewire realtime to business_requests for product mode.
+  useDashboardRealtime({ projectId, projectKey: pKey, enabled: !!pKey && !isProduct });
 
   const {
     widgets: persistedWidgets,
     toggleVisibility: persistedToggleVisibility,
     resetToDefaults,
     persistDraft,
-  } = useDashboardWidgetConfig(projectId ?? 'none');
+  } = useDashboardWidgetConfig(projectId ?? 'none', mode);
 
   // ---- Edit-mode helpers ----
   const enterEditMode = () => {
@@ -480,6 +510,7 @@ useEffect(() => {
             isEditing={false}
             onToggleCollapse={toggleCollapse}
             onRemoveWidget={toggleVisibility}
+            mode={mode}
           />
         </div>
       </div>
@@ -491,7 +522,7 @@ useEffect(() => {
       flush
       chromeBand={pKey ? (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <ProjectPageHeader projectKey={pKey} />
+          <ProjectPageHeader projectKey={pKey} hubType={isProduct ? 'product' : undefined} />
           {actions && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, paddingInline: 20, paddingBottom: 8 }}>
               {actions}
@@ -554,6 +585,7 @@ useEffect(() => {
                 onResize={resize}
                 onToggleCollapse={toggleCollapse}
                 onRemoveWidget={toggleVisibility}
+                mode={mode}
               />
             </div>
           )}
@@ -566,6 +598,7 @@ useEffect(() => {
           widgets={widgetsForModal}
           onToggleVisibility={toggleVisibility}
           onReset={resetLayout}
+          mode={mode}
         />
       </div>
 
