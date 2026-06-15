@@ -48,7 +48,7 @@ import Avatar from '@atlaskit/avatar';
 import { StatusPill } from '@/components/shared/JiraTable/cells';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import Spinner from '@atlaskit/spinner';
-import { CatyHead } from './CatyButton';
+import { CatyHead, CatyButton } from './CatyButton';
 
 import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
@@ -512,35 +512,15 @@ function FeedSection({
             {label}
           </h4>
         </div>
-        {/* Summarize digest CTA — icon-only ghost cat in header.
-            Matches ReplyComposer pattern: minimal visual noise,
-            solidifies on hover. Title reveals "Summarize {N} items". */}
+        {/* Summarize digest CTA — cat icon + label + count badge.
+            Opens SummarizeDigestModal for interactive triage of mentions/comments. */}
         {onOpenDigest && (
-          <button
-            type="button"
+          <CatyButton
+            label="Summarize"
             onClick={onOpenDigest}
-            title={`Summarize ${rows.length} item${rows.length !== 1 ? 's' : ''}`}
-            aria-label={`Summarize ${rows.length} item${rows.length !== 1 ? 's' : ''}`}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: '4px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: 0.15,
-              transition: 'opacity 150ms',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = '1';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '0.15';
-            }}
-          >
-            <CatyHead size={16} />
-          </button>
+            size="default"
+            badge={rows.length}
+          />
         )}
       </div>
       <p
