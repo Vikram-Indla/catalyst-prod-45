@@ -130,6 +130,7 @@ import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 // that didn't persist.
 import { useStarredItems } from '@/hooks/useStarredItems';
 import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
+import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 import type { RequestRow } from '../hooks/useBacklogData';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { STORY_STATUS_LOZENGE, getPriorityLabel, shouldSynthesizeEpicRow, keyCellIconType, flattenTree } from '../utils/backlog.utils';
@@ -1928,6 +1929,31 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; key: string | null } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
 
+  // Detail panel width (Jira-parity: panel is drag-resizable, value persisted per project).
+  // Drag handle + chrome lives in <CatalystDetailPanel>; this surface only owns the width
+  // so it can set the table's paddingRight to keep columns from being covered.
+  const PANEL_MIN_W = 360;
+  const PANEL_MAX_W = 520;
+  const [panelWidth, setPanelWidth] = useState<number>(() => {
+    if (typeof window === 'undefined') return 480;
+    try {
+      const stored = localStorage.getItem(`backlog-panel-width-${projectKey ?? ''}`);
+      if (stored) {
+        const n = parseInt(stored, 10);
+        if (!isNaN(n)) return Math.max(PANEL_MIN_W, Math.min(PANEL_MAX_W, n));
+      }
+    } catch {}
+    return 480;
+  });
+  const persistPanelWidth = useCallback(
+    (w: number) => {
+      try {
+        localStorage.setItem(`backlog-panel-width-${projectKey ?? ''}`, String(w));
+      } catch {}
+    },
+    [projectKey]
+  );
+
   // ── Row click → in-page right side panel ──
   const openDetail = useCallback((it: BacklogItem) => {
     // Save scroll position before opening detail view
@@ -3424,7 +3450,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         // toolbar and (via marginBottom + the JiraTable wrapper below)
         // bleeds the same inset to the table head + body — see the
         // sibling wrapper directly after this div.
-        padding: panelItem ? '32px 504px 32px 24px' : '32px 24px 32px',
+        padding: panelItem ? `32px ${panelWidth + 24}px 32px 24px` : '32px 24px 32px',
+        overflow: 'hidden',
         marginBottom: 4,
         display: askCatyOpen ? 'none' : 'flex',
         gap: 12,
@@ -3641,7 +3668,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             // panel is open keeps the table's right edge visible.
             flex: 1,
             minWidth: 0,
-            paddingRight: panelItem ? 480 : 0,
+            paddingRight: panelItem ? panelWidth : 0,
             transition: 'padding-right 180ms ease',
             // Apr 27, 2026: page-level overflow was eating the table's own
             // .jira-table-viewport scroll. Switching to overflow:hidden +
@@ -3940,14 +3967,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           />
           </div>
         </div>
-        {/* Right-side detail panel — mounted when a row's Key cell is clicked
-            (key link or hover-sidebar trigger). Same CatalystDetailRouter used
-            by /allwork and the global router, just constrained to this column
-            and rendered with panelMode={true}. Closes via the X in the panel
-            chrome (CatalystViewBase handles onClose). */}
+        {/* Right-side detail panel — shared CatalystDetailPanel (drag-resizable). */}
         {panelItem && (() => {
-          // Map the router-format itemType ('story'/'epic'/.../'business_request')
-          // to the icon-registry label used by JiraIssueTypeIcon.
           const typeIconLabel = (() => {
             const t = panelItem.itemType;
             if (t === 'story') return 'Story';
@@ -3961,156 +3982,25 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             if (t === 'idea') return 'Idea';
             return 'Story';
           })();
-          const goToFullPage = () => {
-            navigate(`${resolvedBaseUrl}/backlog/${panelItem.id}`);
-            closePanel();
-          };
           return (
-          <div
-            data-cv-stacked-panel="true"
-            style={{
-              // Out of every container — anchored to the viewport, so it
-              // sits BELOW the Catalyst global topbar (56px tall, see
-              // CatalystHeader.tsx:83) and runs all the way to the page
-              // bottom. The table container's paddingRight (set to the
-              // panel width when open) squeezes columns so they share the
-              // page side-by-side with no overlap.
-              position: 'fixed',
-              top: 56,
-              right: 0,
-              bottom: 0,
-              width: 480,
-              zIndex: 50,
-              borderLeft: '1px solid var(--ds-border, #DFE1E6)',
-              background: 'var(--ds-surface, #FFFFFF)',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-            }}
-          >
-            {/* Phase C — Catalyst work-item panel header.
-                Sits above CatalystDetailRouter; left side carries the
-                ☑ + "Catalyst work item" label, right side has the dynamic
-                type-icon (click → navigate to full-page detail) + close X. */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '8px 12px',
-                minHeight: 44,
-                flexShrink: 0,
-                borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-                background: 'var(--ds-surface, #FFFFFF)',
+            <CatalystDetailPanel
+              isOpen
+              onClose={closePanel}
+              itemId={panelItem.id}
+              itemType={panelItem.itemType}
+              typeIconLabel={typeIconLabel}
+              projectKey={projectKey ?? ''}
+              projectId={projectId}
+              onOpenFullPage={() => {
+                navigate(`${resolvedBaseUrl}/backlog/${panelItem.id}`);
+                closePanel();
               }}
-            >
-              {/* Left: dynamic type icon + "Catalyst work item" label */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
-                  <JiraIssueTypeIcon type={typeIconLabel} size={16} />
-                </span>
-                <span
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: 'var(--ds-text-subtle, #505258)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  Catalyst work item
-                </span>
-              </div>
-
-              {/* Right: external-link redirect button → navigate to full-page
-                  detail view and close the panel. NOTE: aria-label intentionally
-                  differs from CatalystViewBase's built-in "Open in full page"
-                  button so the global hide rule in editors.tsx doesn't catch
-                  this one. */}
-              <button
-                type="button"
-                aria-label="Open detail in full page"
-                onClick={goToFullPage}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 28,
-                  height: 28,
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 3,
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  padding: 0,
-                  flexShrink: 0,
-                  color: 'var(--ds-text-subtle, #505258)',
-                  transition: 'background-color 100ms ease',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </button>
-
-              {/* Right: close X */}
-              <button
-                type="button"
-                aria-label="Close panel"
-                onClick={closePanel}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 28,
-                  height: 28,
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 3,
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  padding: 0,
-                  flexShrink: 0,
-                  color: 'var(--ds-text-subtle, #505258)',
-                  transition: 'background-color 100ms ease',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" aria-hidden="true">
-                  <path d="M3 3l10 10M13 3L3 13" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Detail content */}
-            <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtle, #505258)', fontSize: 14 }}>Loading…</div>}>
-                <CatalystDetailRouter
-                  isOpen={true}
-                  onClose={closePanel}
-                  itemId={panelItem.id}
-                  itemType={panelItem.itemType}
-                  projectId={projectId}
-                  projectKey={projectKey}
-                  panelMode={true}
-                />
-              </Suspense>
-            </div>
-          </div>
+              width={panelWidth}
+              onResize={setPanelWidth}
+              onResizeCommit={persistPanelWidth}
+              minWidth={PANEL_MIN_W}
+              maxWidth={PANEL_MAX_W}
+            />
           );
         })()}
       </div>
