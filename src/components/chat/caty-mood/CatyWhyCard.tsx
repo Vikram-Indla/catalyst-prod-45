@@ -9,12 +9,14 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import Button from '@atlaskit/button';
 import { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import CloseIcon from '@atlaskit/icon/core/close';
 import { CatyMoodFace } from './CatyMoodFace';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { catalystToast } from '@/lib/catalystToast';
 import type { CatyMood, CatyState } from './catyMoodEngine';
 import type { CatyEvidence, CatyTypeBreakdown } from './useCatySignals';
 import type { CatyTrend } from './catyMoodHistory';
@@ -63,6 +65,9 @@ export function CatyWhyCard({
   onHoverOut,
 }: CatyWhyCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [isTriaging, setIsTriaging] = useState(false);
+  const [triageError, setTriageError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -189,37 +194,67 @@ export function CatyWhyCard({
         </div>
       </div>
 
-      {/* Action button */}
+      {/* Error state message */}
+      {triageError && (
+        <div style={{
+          marginBottom: 12,
+          padding: 8,
+          background: 'var(--ds-background-danger-subtle, #FFECEB)',
+          border: '1px solid var(--ds-border-danger, #F87462)',
+          borderRadius: 4,
+          fontSize: 12,
+          color: 'var(--ds-text-danger, #AE2A19)',
+          fontFamily: 'var(--ds-font-family-body, inherit)',
+        }}>
+          {triageError}
+        </div>
+      )}
+
+      {/* Primary action: Triage button */}
+      <Button
+        appearance="primary"
+        isLoading={isTriaging}
+        onClick={async () => {
+          setIsTriaging(true);
+          setTriageError(null);
+          try {
+            await new Promise(resolve => setTimeout(resolve, 300)); // simulate nav delay
+            navigate('/project-hub/BAU/allwork');
+            catalystToast.success('Opening triage view...');
+            onClose();
+          } catch (err) {
+            setTriageError('Failed to navigate. Please try again.');
+            setIsTriaging(false);
+          }
+        }}
+        isDisabled={isTriaging}
+        style={{ width: '100%', marginBottom: 8 }}
+      >
+        {isTriaging ? 'Opening...' : `Review and Triage (${totalCount})`}
+      </Button>
+
+      {/* Secondary action: Dismiss for 24h */}
       <Button
         appearance="subtle"
         onClick={() => {
-          // Route to backlog with relevant filter
-          window.location.hash = '#/project-hub/BAU/allwork';
+          localStorage.setItem('caty.alert.muted-until', new Date(Date.now() + 24*60*60*1000).toISOString());
+          catalystToast.info('Alert muted until tomorrow');
           onClose();
         }}
-        style={{ width: '100%', marginBottom: 8 }}
+        style={{ width: '100%', marginBottom: 12, fontSize: 12 }}
       >
-        Triage these {totalCount}
+        Dismiss for 24 hours
       </Button>
 
-      {/* "Show details" link */}
-      <button
-        type="button"
-        onClick={() => {
-          window.location.hash = '#/caty';
-        }}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          color: 'var(--ds-link, #0052CC)',
-          cursor: 'pointer',
-          fontSize: 11,
-          padding: 0,
-          fontFamily: 'var(--ds-font-family-body, inherit)',
-        }}
-      >
-        Show details →
-      </button>
+      {/* Help text */}
+      <div style={{
+        fontSize: 11,
+        color: 'var(--ds-text-subtlest, #6B778C)',
+        fontFamily: 'var(--ds-font-family-body, inherit)',
+        lineHeight: '1.4',
+      }}>
+        These items are blocking progress and need to be assigned, resolved, or deprioritized.
+      </div>
     </div>,
     document.body,
   );

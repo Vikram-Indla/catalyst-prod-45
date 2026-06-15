@@ -35,6 +35,7 @@ import {
   useTeamRoleMap,
   YEAR_2026_START,
 } from '@/hooks/useDashboardWidgets';
+import { useProductDashboardData } from '@/hooks/useProductDashboardData';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { useQuery } from '@tanstack/react-query';
 import { typedQuery } from '@/integrations/supabase/client';
@@ -62,9 +63,15 @@ const FILL_HEALTHY = 'var(--ds-background-brand-bold, #0C66E4)';
 const FILL_HIGH = 'var(--ds-background-warning-bold, #946F00)';
 const FILL_OVER = 'var(--ds-background-danger-bold, #C9372C)';
 
-export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
+export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, onToggleCollapse, mode = 'project' }: WidgetProps) {
+  const isProduct = mode === 'product';
   const { settings } = useGadgetSettings('workload', projectKey);
-  const { data: workload, isLoading } = useDashboardTeamWorkload(projectId, {
+
+  /* Project: useDashboardTeamWorkload(ph_issues assigned per user).
+     Product: group BR rows by project_manager_user_id, then count by
+     todo/inprogress/done buckets so the existing UI math (sort by total
+     desc + maxCount + kpiTotals) still works. */
+  const projectQuery = useDashboardTeamWorkload(isProduct ? '' : projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
     statusFilter: settings.statusFilter,
@@ -73,6 +80,36 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
   });
+  const productQuery = useProductDashboardData(isProduct ? projectId : null);
+  const productWorkload = useMemo(() => {
+    if (!isProduct) return [];
+    const rows = productQuery.data?.rows ?? [];
+    const DONE = new Set(['done', 'approved', 'completed', 'closed']);
+    const TODO = new Set(['new', 'new_request', 'backlog', 'planned', 'ready', 'ready for development']);
+    const buckets = new Map<string, { id: string; name: string; todo: number; inprogress: number; done: number; total: number }>();
+    for (const r of rows) {
+      const userId = r.projectManagerUserId ?? '__unassigned__';
+      const name = r.projectManagerName ?? 'Unassigned';
+      const entry = buckets.get(userId) ?? { id: userId, name, todo: 0, inprogress: 0, done: 0, total: 0 };
+      const step = (r.processStep ?? '').toLowerCase().trim();
+      if (DONE.has(step)) entry.done++;
+      else if (TODO.has(step)) entry.todo++;
+      else entry.inprogress++;
+      entry.total++;
+      buckets.set(userId, entry);
+    }
+    return Array.from(buckets.values()).map((e) => ({
+      assignee_account_id: e.id,
+      assignee_name: e.name,
+      todo: e.todo,
+      inprogress: e.inprogress,
+      done: e.done,
+      total: e.total,
+    }));
+  }, [isProduct, productQuery.data]);
+
+  const workload = isProduct ? productWorkload : projectQuery.data;
+  const isLoading = isProduct ? productQuery.isLoading : projectQuery.isLoading;
   const { openUWV } = useUWV();
   // Detect native fullscreen of this widget's card. When fullscreen, drop the
   // 10-row cap so all teammates are visible in the maximised view.
