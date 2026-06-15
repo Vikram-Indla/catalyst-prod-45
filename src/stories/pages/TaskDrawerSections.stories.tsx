@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { ActivitySection } from '@/modules/tasks/components/TaskDetailDrawer/ActivitySection';
 import { AttachmentsSection } from '@/modules/tasks/components/TaskDetailDrawer/AttachmentsSection';
@@ -22,34 +21,34 @@ import { TaskDescription } from '@/modules/tasks/components/TaskDetailDrawer/Tas
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Pages/Tasks/Drawer Sections' };
 
 export const ActivitySectionDefault: StoryObj = {
   name: 'ActivitySection / Default',
-  render: () => <Wrap><ActivitySection taskId="item-1" comments=[] activity=[] /></Wrap>,
+  render: () => <Wrap><ActivitySection taskId="item-1" comments={[]} activity={[]} /></Wrap>,
 }
 
 export const AttachmentsSectionDefault: StoryObj = {
   name: 'AttachmentsSection / Default',
-  render: () => <Wrap><AttachmentsSection taskId="item-1" attachments=[] /></Wrap>,
+  render: () => <Wrap><AttachmentsSection taskId="item-1" attachments={[]} /></Wrap>,
 }
 
 export const ChecklistSectionDefault: StoryObj = {
   name: 'ChecklistSection / Default',
-  render: () => <Wrap><ChecklistSection taskId="item-1" items=[] /></Wrap>,
+  render: () => <Wrap><ChecklistSection taskId="item-1" items={[]} /></Wrap>,
 }
 
 export const CollapsibleSectionDefault: StoryObj = {
   name: 'CollapsibleSection / Default',
-  render: () => <Wrap><CollapsibleSection title="Sample item title" count=5 icon={{<span>Content</span>}} /></Wrap>,
+  render: () => <Wrap><CollapsibleSection title="Sample item title" count={5} icon={<span>Content</span>} /></Wrap>,
 }
 
 export const DrawerFooterDefault: StoryObj = {
   name: 'DrawerFooter / Default',
-  render: () => <Wrap><DrawerFooter task={{{}}} onDelete={fn()} onDuplicate={fn()} /></Wrap>,
+  render: () => <Wrap><DrawerFooter task={{} as any} onDelete={fn()} onDuplicate={fn()} /></Wrap>,
 }
 
 export const InlineEditableDefault: StoryObj = {
@@ -69,17 +68,17 @@ export const QuickActionsDefault: StoryObj = {
 
 export const SavingIndicatorDefault: StoryObj = {
   name: 'SavingIndicator / Default',
-  render: () => <Wrap><SavingIndicator status={{{}}} /></Wrap>,
+  render: () => <Wrap><SavingIndicator status={{} as any} /></Wrap>,
 }
 
 export const SectionHeaderDefault: StoryObj = {
   name: 'SectionHeader / Default',
-  render: () => <Wrap><SectionHeader icon={{{}}} title="Sample item title" /></Wrap>,
+  render: () => <Wrap><SectionHeader icon={{} as any} title="Sample item title" /></Wrap>,
 }
 
 export const StatusDropdownDefault: StoryObj = {
   name: 'StatusDropdown / Default',
-  render: () => <Wrap><StatusDropdown currentStatusId="item-1" currentStatus={{{}}} onChange={fn()} /></Wrap>,
+  render: () => <Wrap><StatusDropdown currentStatusId="item-1" currentStatus={{} as any} onChange={fn()} /></Wrap>,
 }
 
 export const TaskDescriptionDefault: StoryObj = {

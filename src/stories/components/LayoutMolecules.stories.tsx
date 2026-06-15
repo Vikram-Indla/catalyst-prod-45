@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { AvailabilityPanel } from '@/components/layout/AvailabilityPanel';
 import { HubSwitcher } from '@/components/layout/HubSwitcher';
@@ -19,7 +18,7 @@ import { SettingsMenu } from '@/components/layout/SettingsMenu';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Components/Layout/Molecules' };
@@ -31,7 +30,7 @@ export const AvailabilityPanelDefault: StoryObj = {
 
 export const HubSwitcherDefault: StoryObj = {
   name: 'HubSwitcher / Default',
-  render: () => <Wrap><HubSwitcher hub={{{}}} /></Wrap>,
+  render: () => <Wrap><HubSwitcher hub={{} as any} /></Wrap>,
 }
 
 export const ItemsDropdownDefault: StoryObj = {
@@ -56,12 +55,12 @@ export const ProfileMenuDefault: StoryObj = {
 
 export const ScheduleLeaveModalDefault: StoryObj = {
   name: 'ScheduleLeaveModal / Default',
-  render: () => <Wrap><ScheduleLeaveModal isOpen=true onClose={fn()} /></Wrap>,
+  render: () => <Wrap><ScheduleLeaveModal isOpen={true} onClose={fn()} /></Wrap>,
 }
 
 export const ScheduleLeaveModalOpen: StoryObj = {
   name: 'ScheduleLeaveModal / Open',
-  render: () => <Wrap><ScheduleLeaveModal isOpen=true onClose={fn()} /></Wrap>,
+  render: () => <Wrap><ScheduleLeaveModal isOpen={true} onClose={fn()} /></Wrap>,
 }
 
 export const SettingsMenuDefault: StoryObj = {

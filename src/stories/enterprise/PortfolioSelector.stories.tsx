@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import { ReleaseSelector } from '@/features/release-compare/components/ReleaseSelector';
 
 const meta: Meta<typeof ReleaseSelector> = {

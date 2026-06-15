@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import ForYouTabs from '@/components/for-you/atlaskit/ForYouTabs';
 import RecommendedProjectsStrip from '@/components/for-you/atlaskit/RecommendedProjectsStrip';
@@ -21,7 +20,7 @@ import { helpers } from '@/components/for-you/atlaskit/helpers';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Pages/For You/Missing Coverage' };
@@ -33,7 +32,7 @@ export const ForYouHeaderDefault: StoryObj = {
 
 export const ForYouLightBulkBarDefault: StoryObj = {
   name: 'ForYouLightBulkBar / Default',
-  render: () => <Wrap><ForYouLightBulkBar selectedCount=5 onClear={fn()} /></Wrap>,
+  render: () => <Wrap><ForYouLightBulkBar selectedCount={5} onClear={fn()} /></Wrap>,
 }
 
 export const ForYouTableSkeletonDefault: StoryObj = {
@@ -43,7 +42,7 @@ export const ForYouTableSkeletonDefault: StoryObj = {
 
 export const CatyAgeingTriageDefault: StoryObj = {
   name: 'CatyAgeingTriage / Default',
-  render: () => <Wrap><CatyAgeingTriage items=[] /></Wrap>,
+  render: () => <Wrap><CatyAgeingTriage items={[]} /></Wrap>,
 }
 
 export const CatyBoardInsightDefault: StoryObj = {
@@ -53,27 +52,27 @@ export const CatyBoardInsightDefault: StoryObj = {
 
 export const CatyStarredDigestDefault: StoryObj = {
   name: 'CatyStarredDigest / Default',
-  render: () => <Wrap><CatyStarredDigest starredKeys=[] /></Wrap>,
+  render: () => <Wrap><CatyStarredDigest starredKeys={[]} /></Wrap>,
 }
 
 export const CatyWorkloadRiskDefault: StoryObj = {
   name: 'CatyWorkloadRisk / Default',
-  render: () => <Wrap><CatyWorkloadRisk teamMembers={{{}}} /></Wrap>,
+  render: () => <Wrap><CatyWorkloadRisk teamMembers={{} as any} /></Wrap>,
 }
 
 export const ForYouTabsDefault: StoryObj = {
   name: 'ForYouTabs / Default',
-  render: () => <Wrap><ForYouTabs activeTab={{{}}} tabCounts={{{}}} onChange={fn()} /></Wrap>,
+  render: () => <Wrap><ForYouTabs activeTab={{} as any} tabCounts={{} as any} onChange={fn()} /></Wrap>,
 }
 
 export const RecommendedProjectsStripDefault: StoryObj = {
   name: 'RecommendedProjectsStrip / Default',
-  render: () => <Wrap><RecommendedProjectsStrip projects=[] /></Wrap>,
+  render: () => <Wrap><RecommendedProjectsStrip projects={[]} /></Wrap>,
 }
 
 export const ThemeIssueListDefault: StoryObj = {
   name: 'ThemeIssueList / Default',
-  render: () => <Wrap><ThemeIssueList issueKeys=[] /></Wrap>,
+  render: () => <Wrap><ThemeIssueList issueKeys={[]} /></Wrap>,
 }
 
 export const helpersDefault: StoryObj = {

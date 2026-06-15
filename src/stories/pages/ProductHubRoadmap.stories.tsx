@@ -2,9 +2,8 @@
  * Stories for Product Hub roadmap sub-components and BR form elements.
  */
 import type { StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React, { useState } from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RoadmapKPIStrip } from '@/components/product-hub/roadmap/RoadmapKPIStrip';
 import { RoadmapFilters } from '@/components/product-hub/roadmap/RoadmapFilters';
@@ -16,7 +15,7 @@ import type { RoadmapStats, RoadmapGroup, RoadmapRequest } from '@/components/pr
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children, width = 900 }: { children: React.ReactNode; width?: number }) {
-  return <QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: width, padding: 16 }}>{children}</div></MemoryRouter></QueryClientProvider>;
+  return <QueryClientProvider client={qc}><div style={{ maxWidth: width, padding: 16 }}>{children}</div></QueryClientProvider>;
 }
 
 export default { title: 'Pages/Product Hub/Roadmap' };

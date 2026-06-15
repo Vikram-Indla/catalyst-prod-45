@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
 import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 import type { WorkItem } from '@/hooks/useForYouData';

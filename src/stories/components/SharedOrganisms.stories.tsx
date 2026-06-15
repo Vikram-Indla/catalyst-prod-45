@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { AttachmentsSection } from '@/components/shared/AttachmentsSection';
 import { BulkSelectionBar } from '@/components/shared/BulkSelectionBar';
@@ -22,7 +21,7 @@ import { TicketLinkCard } from '@/components/shared/TicketLinkCard';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Components/Shared/Organisms' };
@@ -49,42 +48,42 @@ export const MentionTextareaDefault: StoryObj = {
 
 export const ImportDialogDefault: StoryObj = {
   name: 'ImportDialog / Default',
-  render: () => <Wrap><ImportDialog open=true onOpenChange={fn()} onImport={fn()} title="Sample item title" /></Wrap>,
+  render: () => <Wrap><ImportDialog open={true} onOpenChange={fn()} onImport={fn()} title="Sample item title" /></Wrap>,
 }
 
 export const ImportDialogOpen: StoryObj = {
   name: 'ImportDialog / Open',
-  render: () => <Wrap><ImportDialog open=true onOpenChange={fn()} onImport={fn()} title="Sample item title" open={true} /></Wrap>,
+  render: () => <Wrap><ImportDialog open={true} onOpenChange={fn()} onImport={fn()} title="Sample item title" open={true} /></Wrap>,
 }
 
 export const ResourceModalDefault: StoryObj = {
   name: 'ResourceModal / Default',
-  render: () => <Wrap><ResourceModal isOpen=true onClose={fn()} mode={{{}}} context={{{}}} /></Wrap>,
+  render: () => <Wrap><ResourceModal isOpen={true} onClose={fn()} mode={{} as any} context={{} as any} /></Wrap>,
 }
 
 export const ResourceModalOpen: StoryObj = {
   name: 'ResourceModal / Open',
-  render: () => <Wrap><ResourceModal isOpen=true onClose={fn()} mode={{{}}} context={{{}}} /></Wrap>,
+  render: () => <Wrap><ResourceModal isOpen={true} onClose={fn()} mode={{} as any} context={{} as any} /></Wrap>,
 }
 
 export const BulkSelectionBarDefault: StoryObj = {
   name: 'BulkSelectionBar / Default',
-  render: () => <Wrap><BulkSelectionBar selectedCount=5 onClear={fn()} /></Wrap>,
+  render: () => <Wrap><BulkSelectionBar selectedCount={5} onClear={fn()} /></Wrap>,
 }
 
 export const JiraBasicFilterDefault: StoryObj = {
   name: 'JiraBasicFilter / Default',
-  render: () => <Wrap><JiraBasicFilter categories=[] selected=[] onSelectionChange={fn()} onClearAll={fn()} onClose={fn()} /></Wrap>,
+  render: () => <Wrap><JiraBasicFilter categories={[]} selected={[]} onSelectionChange={fn()} onClearAll={fn()} onClose={fn()} /></Wrap>,
 }
 
 export const JiraBulkActionBarDefault: StoryObj = {
   name: 'JiraBulkActionBar / Default',
-  render: () => <Wrap><JiraBulkActionBar selectedIds=[] /></Wrap>,
+  render: () => <Wrap><JiraBulkActionBar selectedIds={[]} /></Wrap>,
 }
 
 export const JiraFilterAtlaskitDefault: StoryObj = {
   name: 'JiraFilterAtlaskit / Default',
-  render: () => <Wrap><JiraFilterAtlaskit value={{{}}} onChange={fn()} /></Wrap>,
+  render: () => <Wrap><JiraFilterAtlaskit value={{} as any} onChange={fn()} /></Wrap>,
 }
 
 export const JiraSyncChipDefault: StoryObj = {

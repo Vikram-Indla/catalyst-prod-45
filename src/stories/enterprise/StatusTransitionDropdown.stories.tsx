@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import { StatusTransitionDropdown } from '@/components/workflow/StatusTransitionDropdown';
 
 const meta: Meta<typeof StatusTransitionDropdown> = {

@@ -3,8 +3,7 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import HomeSidebar from '@/components/layout/HomeSidebar';
 import { IdeationSidebar } from '@/components/layout/IdeationSidebar';
@@ -22,14 +21,14 @@ import { TestHubSidebar } from '@/components/layout/TestHubSidebar';
 import { WikiSidebar } from '@/components/layout/WikiSidebar';
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter>);
+  return (<div style={{ maxWidth: 900, padding: 16 }}>{children}</div>);
 }
 
 export default { title: 'Components/Layout/Sidebars' };
 
 export const SidebarBaseDefault: StoryObj = {
   name: 'SidebarBase / Default',
-  render: () => <Wrap><SidebarBase config={{{}}} expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><SidebarBase config={{} as any} expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const HomeSidebarDefault: StoryObj = {
@@ -39,60 +38,60 @@ export const HomeSidebarDefault: StoryObj = {
 
 export const ProjectHubSidebarDefault: StoryObj = {
   name: 'ProjectHubSidebar / Default',
-  render: () => <Wrap><ProjectHubSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><ProjectHubSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const ProductHubSidebarDefault: StoryObj = {
   name: 'ProductHubSidebar / Default',
-  render: () => <Wrap><ProductHubSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><ProductHubSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const IncidentHubSidebarDefault: StoryObj = {
   name: 'IncidentHubSidebar / Default',
-  render: () => <Wrap><IncidentHubSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><IncidentHubSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const ReleaseHubSidebarDefault: StoryObj = {
   name: 'ReleaseHubSidebar / Default',
-  render: () => <Wrap><ReleaseHubSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><ReleaseHubSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const TestHubSidebarDefault: StoryObj = {
   name: 'TestHubSidebar / Default',
-  render: () => <Wrap><TestHubSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><TestHubSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const TaskHubSidebarDefault: StoryObj = {
   name: 'TaskHubSidebar / Default',
-  render: () => <Wrap><TaskHubSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><TaskHubSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const PlanHubSidebarDefault: StoryObj = {
   name: 'PlanHubSidebar / Default',
-  render: () => <Wrap><PlanHubSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><PlanHubSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const WikiSidebarDefault: StoryObj = {
   name: 'WikiSidebar / Default',
-  render: () => <Wrap><WikiSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><WikiSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const IdeationSidebarDefault: StoryObj = {
   name: 'IdeationSidebar / Default',
-  render: () => <Wrap><IdeationSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><IdeationSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const OperationsSidebarDefault: StoryObj = {
   name: 'OperationsSidebar / Default',
-  render: () => <Wrap><OperationsSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><OperationsSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const TeamRoomSidebarDefault: StoryObj = {
   name: 'TeamRoomSidebar / Default',
-  render: () => <Wrap><TeamRoomSidebar teamId="item-1" expanded=false onToggle={fn()} selectedSprint="test-value" onSprintChange={fn()} /></Wrap>,
+  render: () => <Wrap><TeamRoomSidebar teamId="item-1" expanded={false} onToggle={fn()} selectedSprint="test-value" onSprintChange={fn()} /></Wrap>,
 }
 
 export const ProductRoomSidebarDefault: StoryObj = {
   name: 'ProductRoomSidebar / Default',
-  render: () => <Wrap><ProductRoomSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><ProductRoomSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }

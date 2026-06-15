@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { AssigneeSelect } from '@/modules/tasks/components/CreateTaskModal/fields/AssigneeSelect';
 import { CreateTaskModal } from '@/modules/tasks/components/CreateTaskModal/CreateTaskModal';
@@ -16,19 +15,19 @@ import { WorkstreamSelect } from '@/modules/tasks/components/CreateTaskModal/fie
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Pages/Tasks/Create Modal' };
 
 export const CreateTaskModalDefault: StoryObj = {
   name: 'CreateTaskModal / Default',
-  render: () => <Wrap><CreateTaskModal open=true onOpenChange={fn()} /></Wrap>,
+  render: () => <Wrap><CreateTaskModal open={true} onOpenChange={fn()} /></Wrap>,
 }
 
 export const CreateTaskModalOpen: StoryObj = {
   name: 'CreateTaskModal / Open',
-  render: () => <Wrap><CreateTaskModal open=true onOpenChange={fn()} open={true} /></Wrap>,
+  render: () => <Wrap><CreateTaskModal open={true} onOpenChange={fn()} open={true} /></Wrap>,
 }
 
 export const AssigneeSelectDefault: StoryObj = {
@@ -38,7 +37,7 @@ export const AssigneeSelectDefault: StoryObj = {
 
 export const PrioritySelectDefault: StoryObj = {
   name: 'PrioritySelect / Default',
-  render: () => <Wrap><PrioritySelect value={{{}}} onChange={fn()} /></Wrap>,
+  render: () => <Wrap><PrioritySelect value={{} as any} onChange={fn()} /></Wrap>,
 }
 
 export const WorkstreamSelectDefault: StoryObj = {
@@ -48,7 +47,7 @@ export const WorkstreamSelectDefault: StoryObj = {
 
 export const PlannerTaskListDefault: StoryObj = {
   name: 'PlannerTaskList / Default',
-  render: () => <Wrap><PlannerTaskList tasks=[] onTaskClick={fn()} onTaskUpdate={fn()} selectedTaskIds={{{}}} onSelectionChange={fn()} visibleColumns={{{}}} /></Wrap>,
+  render: () => <Wrap><PlannerTaskList tasks={[]} onTaskClick={fn()} onTaskUpdate={fn()} selectedTaskIds={{} as any} onSelectionChange={fn()} visibleColumns={{} as any} /></Wrap>,
 }
 
 export const PlannerTimelineDefault: StoryObj = {

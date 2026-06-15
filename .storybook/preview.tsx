@@ -6,9 +6,45 @@ import { AuthProvider } from '@/lib/auth';
 import { WorkflowProvider } from '@/lib/workflows';
 import { storyQueryClient } from '@/stories/fixtures/storyQueryClient';
 
-// Use the shared storyQueryClient so stories can pre-seed cache data
-// by importing the same instance. See storyQueryClient.ts for details.
+// App CSS — required for Tailwind utilities (.flex, .grid, etc.) used by
+// real components like PragmaticBoard. Without these, components render
+// without their Tailwind-driven layout (columns stack vertically, gaps
+// disappear, etc.).
+import '@/index.css';
+import '@/styles/catalyst-typography.css';
+import '@/styles/catalyst-theme.css';
+import '@/tokens/jira-parity-overrides.css';
+
 const queryClient = storyQueryClient;
+
+class StoryErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null as Error | null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  componentDidCatch(error: Error) { console.error('[Storybook story crashed]', error); }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{
+          padding: 16, margin: 16, border: '1px solid var(--ds-border-danger, #CA3521)',
+          borderRadius: 4, background: 'var(--ds-background-danger, #FFEBE6)',
+          fontFamily: 'var(--ds-font-family-body, ui-sans-serif)', color: 'var(--ds-text, #172B4D)'
+        }}>
+          <div style={{ fontWeight: 600, marginBottom: 6 }}>Story render failed</div>
+          <div style={{ fontSize: 13, fontFamily: 'var(--ds-font-family-code, ui-monospace)' }}>
+            {this.state.error.message}
+          </div>
+          <div style={{ fontSize: 12, marginTop: 8, color: 'var(--ds-text-subtle, #505258)' }}>
+            Story is using placeholder props ({'{{} as any}'}). Pass real mock data via render().
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const preview: Preview = {
   decorators: [
@@ -17,7 +53,9 @@ const preview: Preview = {
         <AuthProvider>
           <WorkflowProvider>
             <MemoryRouter>
-            <Story />
+              <StoryErrorBoundary>
+                <Story />
+              </StoryErrorBoundary>
             </MemoryRouter>
           </WorkflowProvider>
         </AuthProvider>

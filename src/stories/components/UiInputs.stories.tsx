@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { checkbox } from '@/components/ui/checkbox';
 import { input } from '@/components/ui/input';
