@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { CatyButton } from '@/components/for-you/atlaskit/CatyButton';
+import { CatyHead } from '@/components/for-you/atlaskit/CatyButton';
 
 interface ReplyComposerProps {
   avatarName?: string;
@@ -20,6 +20,8 @@ export default function ReplyComposer({
   isDark = false,
 }: ReplyComposerProps) {
   const [value, setValue] = useState('');
+  const [inputFocused, setInputFocused] = useState(false);
+  const [catHovered, setCatHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = useCallback(
@@ -54,46 +56,69 @@ export default function ReplyComposer({
       <CatalystAvatar name={avatarName} src={avatarSrc} size="small" appearance="circle" />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <input
-          ref={inputRef}
-          type="text"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          aria-label={placeholder}
-          style={{
-            width: '100%',
-            height: 32,
-            padding: '8px 0',
-            border: 'none',
-            borderBottom: `2px solid ${inputBorderBottom}`,
-            background: 'transparent',
-            fontFamily: 'var(--cp-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif)',
-            fontSize: 14,
-            lineHeight: '20px',
-            color: textColor,
-            outline: 'none',
-            boxSizing: 'border-box',
-          }}
-          onFocus={(e) => {
-            e.currentTarget.style.borderBottomColor = 'var(--ds-border-focused, #4C9AFF)';
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderBottomColor = inputBorderBottom;
-          }}
-        />
-
-        {onAiSuggest && (
-          /* AI suggestion button — compact size for tight reply context.
-             In message composer, space is premium. 28px height matches input
-             proportions. Cat icon carries AI semantic; label is action-only. */
-          <CatyButton
-            label="Suggest?"
-            onClick={onAiSuggest}
-            size="compact"
+        <div style={{ position: 'relative' }}>
+          <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            aria-label={placeholder}
+            style={{
+              width: '100%',
+              height: 32,
+              padding: '8px 0 8px 0',
+              paddingRight: onAiSuggest ? '28px' : '0px',
+              border: 'none',
+              borderBottom: `2px solid ${inputBorderBottom}`,
+              background: 'transparent',
+              fontFamily: 'var(--cp-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif)',
+              fontSize: 14,
+              lineHeight: '20px',
+              color: textColor,
+              outline: 'none',
+              boxSizing: 'border-box',
+              transition: 'border-color 150ms',
+            }}
+            onFocus={(e) => {
+              setInputFocused(true);
+              e.currentTarget.style.borderBottomColor = 'var(--ds-border-focused, #4C9AFF)';
+            }}
+            onBlur={(e) => {
+              setInputFocused(false);
+              e.currentTarget.style.borderBottomColor = inputBorderBottom;
+            }}
           />
-        )}
+
+          {onAiSuggest && (
+            <button
+              type="button"
+              onClick={onAiSuggest}
+              title="Suggest a reply"
+              aria-label="Suggest a reply"
+              style={{
+                position: 'absolute',
+                right: '4px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                padding: '4px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: catHovered || inputFocused ? 1 : 0.15,
+                transition: 'opacity 150ms',
+              }}
+              onMouseEnter={() => setCatHovered(true)}
+              onMouseLeave={() => setCatHovered(false)}
+            >
+              <CatyHead size={16} title="Suggest a reply" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
