@@ -111,6 +111,7 @@ export default function TimelineView(props: TimelineViewProps) {
     childTypesOverride,
     childrenOnlyOnGroupRows = false,
     childrenOnlyOnTopLevel = false,
+    menuVariant = 'default',
   } = props;
 
   const navigate = useNavigate();
@@ -1122,28 +1123,45 @@ export default function TimelineView(props: TimelineViewProps) {
                 </div>
               )}
 
-              {!releasesCollapsed && rows.map(({ issue, depth }) => (
-                <SidebarRow
-                  key={issue.issueKey}
-                  issue={issue}
-                  depth={depth}
-                  collapsed={collapsed.has(issue.issueKey)}
-                  onToggle={toggleCollapse}
-                  isSelected={selectedRows.has(issue.issueKey)}
-                  onSelect={toggleRowSelection}
-                  onOpenDetail={openDetail}
-                  buildIssueDetailRoute={buildIssueDetailRoute}
-                  allItems={tree}
-                  enableCheckbox={enableRowCheckbox}
-                  enableProgress={enableRowProgress}
-                  enableInlineCreate={enableInlineCreate}
-                  enableMenu={enableRowMenu}
-                  mutations={mutations}
-                  childTypesOverride={childTypesOverride}
-                  childrenOnlyOnGroupRows={childrenOnlyOnGroupRows}
-                  childrenOnlyOnTopLevel={childrenOnlyOnTopLevel}
-                />
-              ))}
+              {!releasesCollapsed && rows.map(({ issue, depth }) => {
+                /* Siblings = same-parent peers in render order. Top-level
+                   rows share the `tree` array; nested rows share their
+                   parent's children. Only consumed by the product-jira
+                   menu variant's Move submenu. */
+                let siblings: TimelineIssue[] = [];
+                if (menuVariant === 'product-jira') {
+                  if (depth === 0) {
+                    siblings = tree;
+                  } else {
+                    const parent = tree.find(t => t.children.some(c => c.issueKey === issue.issueKey));
+                    siblings = parent ? parent.children : [];
+                  }
+                }
+                return (
+                  <SidebarRow
+                    key={issue.issueKey}
+                    issue={issue}
+                    depth={depth}
+                    collapsed={collapsed.has(issue.issueKey)}
+                    onToggle={toggleCollapse}
+                    isSelected={selectedRows.has(issue.issueKey)}
+                    onSelect={toggleRowSelection}
+                    onOpenDetail={openDetail}
+                    buildIssueDetailRoute={buildIssueDetailRoute}
+                    allItems={tree}
+                    enableCheckbox={enableRowCheckbox}
+                    enableProgress={enableRowProgress}
+                    enableInlineCreate={enableInlineCreate}
+                    enableMenu={enableRowMenu}
+                    mutations={mutations}
+                    childTypesOverride={childTypesOverride}
+                    childrenOnlyOnGroupRows={childrenOnlyOnGroupRows}
+                    childrenOnlyOnTopLevel={childrenOnlyOnTopLevel}
+                    menuVariant={menuVariant}
+                    siblings={siblings}
+                  />
+                );
+              })}
 
               {rows.length === 0 && (
                 <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>

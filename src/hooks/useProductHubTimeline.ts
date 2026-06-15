@@ -21,7 +21,28 @@ import { useAuth } from '@/lib/auth';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { TimelineIssue } from '@/components/shared/Timeline';
 
-const BR_SELECT = `
+/* Two BR SELECT variants — the "new" one reads the columns added by the
+ * 2026-06-16 migration (display_order, color_hex). The legacy one is the
+ * pre-migration column set. The hook attempts the new SELECT first and
+ * falls back to legacy on PostgREST 42703 (column does not exist) so the
+ * page keeps rendering even before the migration has been applied. */
+const BR_SELECT_NEW = `
+  id,
+  request_key,
+  product_id,
+  request_type,
+  title,
+  process_step,
+  urgency,
+  project_manager_user_id,
+  end_date,
+  display_order,
+  color_hex,
+  created_at,
+  updated_at
+`;
+
+const BR_SELECT_LEGACY = `
   id,
   request_key,
   product_id,
@@ -35,7 +56,15 @@ const BR_SELECT = `
   updated_at
 `;
 
-const PH_CHILD_SELECT = `
+/* Same defensive pattern for ph_issues — position has been on the table
+ * for a long time, but children sort relies on it; if a row predates the
+ * column we fall back to nulls. */
+const PH_CHILD_SELECT_NEW = `
+  id, issue_key, project_key, issue_type, summary, status, status_category,
+  priority, assignee_display_name, parent_key, position, raw_json
+`;
+
+const PH_CHILD_SELECT_LEGACY = `
   id, issue_key, project_key, issue_type, summary, status, status_category,
   priority, assignee_display_name, parent_key, raw_json
 `;
@@ -89,6 +118,7 @@ function mapPhChildRow(row: any): TimelineIssue {
     epicColor: fields.catalyst_color ?? null,
     fixVersions: Array.isArray(fields.fixVersions) ? fields.fixVersions.map((v: any) => v?.name ?? '').filter(Boolean) : [],
     children: [],
+    displayOrder: typeof row.position === 'number' ? row.position : null,
   };
 }
 
@@ -109,16 +139,39 @@ export function useProductHubTimeline(productCode: string | undefined) {
         .maybeSingle();
       if (!product?.id) return [];
 
-      /* Step 2 — fetch business_requests for this product */
-      const { data: brs, error: brErr } = await (supabase as any)
-        .from('business_requests')
-        .select(BR_SELECT)
-        .eq('product_id', product.id)
-        .is('deleted_at', null)
-        .order('end_date', { ascending: true, nullsFirst: false });
-      if (brErr) throw brErr;
+      /* Step 2 — fetch business_requests for this product. Try the new
+         column set first; fall back to legacy when the migration that
+         adds display_order + color_hex hasn't been applied yet (PostgREST
+         42703 = undefined column). */
+      let brs: any[] = [];
+      {
+        const attempt = await (supabase as any)
+          .from('business_requests')
+          .select(BR_SELECT_NEW)
+          .eq('product_id', product.id)
+          .is('deleted_at', null)
+          .order('display_order', { ascending: true, nullsFirst: false })
+          .order('end_date', { ascending: true, nullsFirst: false });
+        if (attempt.error) {
+          const code = (attempt.error as { code?: string } | null)?.code ?? '';
+          const msg = (attempt.error as { message?: string } | null)?.message ?? '';
+          const isMissingCol = code === '42703'
+            || /display_order|color_hex/i.test(msg);
+          if (!isMissingCol) throw attempt.error;
+          const legacy = await (supabase as any)
+            .from('business_requests')
+            .select(BR_SELECT_LEGACY)
+            .eq('product_id', product.id)
+            .is('deleted_at', null)
+            .order('end_date', { ascending: true, nullsFirst: false });
+          if (legacy.error) throw legacy.error;
+          brs = legacy.data ?? [];
+        } else {
+          brs = attempt.data ?? [];
+        }
+      }
 
-      const rows = brs ?? [];
+      const rows = brs;
       const userIds = Array.from(new Set(rows.map((r: any) => r.project_manager_user_id).filter(Boolean)));
 
       /* Step 3 — resolve assignee names + avatars in one batch */
@@ -153,9 +206,10 @@ export function useProductHubTimeline(productCode: string | undefined) {
           parentKey: null,
           startDate: null,
           dueDate: r.end_date ?? null,
-          epicColor: null,
+          epicColor: r.color_hex ?? null,
           fixVersions: [],
           children: [],
+          displayOrder: typeof r.display_order === 'number' ? r.display_order : null,
         };
       });
 
@@ -165,14 +219,31 @@ export function useProductHubTimeline(productCode: string | undefined) {
          2026 guard here (it's the BR's children, not a fresh Jira pull). */
       const brKeys = brIssues.map(b => b.issueKey).filter(Boolean);
       if (brKeys.length > 0) {
-        const { data: childRows, error: childErr } = await (supabase as any)
+        let childRows: any[] = [];
+        const childAttempt = await (supabase as any)
           .from('ph_issues')
-          .select(PH_CHILD_SELECT)
+          .select(PH_CHILD_SELECT_NEW)
           .in('parent_key', brKeys)
           .is('jira_removed_at', null)
           .is('archived_at', null)
           .is('deleted_at', null);
-        if (childErr) throw childErr;
+        if (childAttempt.error) {
+          const code = (childAttempt.error as { code?: string } | null)?.code ?? '';
+          const msg = (childAttempt.error as { message?: string } | null)?.message ?? '';
+          const isMissingCol = code === '42703' || /position/i.test(msg);
+          if (!isMissingCol) throw childAttempt.error;
+          const legacy = await (supabase as any)
+            .from('ph_issues')
+            .select(PH_CHILD_SELECT_LEGACY)
+            .in('parent_key', brKeys)
+            .is('jira_removed_at', null)
+            .is('archived_at', null)
+            .is('deleted_at', null);
+          if (legacy.error) throw legacy.error;
+          childRows = legacy.data ?? [];
+        } else {
+          childRows = childAttempt.data ?? [];
+        }
 
         const byParent = new Map<string, TimelineIssue[]>();
         for (const row of childRows ?? []) {
@@ -184,7 +255,12 @@ export function useProductHubTimeline(productCode: string | undefined) {
         for (const br of brIssues) {
           const kids = byParent.get(br.issueKey);
           if (kids && kids.length) {
-            kids.sort((a, b) => a.issueKey.localeCompare(b.issueKey));
+            kids.sort((a, b) => {
+              const ao = a.displayOrder ?? Number.POSITIVE_INFINITY;
+              const bo = b.displayOrder ?? Number.POSITIVE_INFINITY;
+              if (ao !== bo) return ao - bo;
+              return a.issueKey.localeCompare(b.issueKey);
+            });
             br.children = kids;
           }
         }

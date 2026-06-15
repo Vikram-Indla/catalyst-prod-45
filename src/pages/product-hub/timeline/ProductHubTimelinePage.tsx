@@ -192,6 +192,7 @@ export default function ProductHubTimelinePage() {
         assigneeAvatarUrl: null,
         parentKey: null,
         children: [],
+        displayOrder: null,
       };
       insertTopLevelInCache(optimistic);
       try {
@@ -262,6 +263,7 @@ export default function ProductHubTimelinePage() {
         assigneeAvatarUrl: null,
         parentKey,
         children: [],
+        displayOrder: position,
       };
       insertChildInCache(parentKey, optimistic);
       try {
@@ -333,6 +335,181 @@ export default function ProductHubTimelinePage() {
       }
       invalidate();
     },
+
+    /* Remove only the start date (keep the due). Mirrors onRemoveDates but
+       writes only the start field. */
+    onRemoveStartDate: async (issueKey) => {
+      const loc = findIssueLocation(issueKey);
+      const due = loc?.issue.dueDate ?? null;
+      patchDatesInCache(issueKey, null, due);
+      if (!loc) { invalidate(); return; }
+      if (loc.isTopLevel) {
+        /* BRs store only end_date — there's no start_date column. Removing
+           the start has no DB effect at the top level (the UI startDate is
+           always null for BRs). */
+        invalidate();
+        return;
+      }
+      const { data: row } = await (supabase as any)
+        .from('ph_issues').select('raw_json').eq('issue_key', issueKey).maybeSingle();
+      const raw = row?.raw_json ?? {};
+      const updated = { ...raw, fields: { ...(raw.fields ?? {}), customfield_10015: null } };
+      await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+      invalidate();
+    },
+
+    onRemoveDueDate: async (issueKey) => {
+      const loc = findIssueLocation(issueKey);
+      const start = loc?.issue.startDate ?? null;
+      patchDatesInCache(issueKey, start, null);
+      if (!loc) { invalidate(); return; }
+      if (loc.isTopLevel) {
+        await (supabase as any)
+          .from('business_requests')
+          .update({ end_date: null, updated_at: new Date().toISOString() })
+          .eq('request_key', issueKey);
+      } else {
+        const { data: row } = await (supabase as any)
+          .from('ph_issues').select('raw_json').eq('issue_key', issueKey).maybeSingle();
+        const raw = row?.raw_json ?? {};
+        const updated = { ...raw, fields: { ...(raw.fields ?? {}), duedate: null } };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+      }
+      invalidate();
+    },
+
+    /* Change colour for a top-level BR — writes business_requests.color_hex.
+       For nested ph_issues children we don't expose this from the menu
+       (Change colour gate is parent-only), but route there too if called. */
+    onChangeEpicColor: async (issueKey, hex) => {
+      const loc = findIssueLocation(issueKey);
+      const value = hex ? hex : null;
+      patchTopLevel((tree) => tree.map(br => {
+        if (br.issueKey === issueKey) return { ...br, epicColor: value };
+        if (br.children.some(c => c.issueKey === issueKey)) {
+          return {
+            ...br,
+            children: br.children.map(c => c.issueKey === issueKey ? { ...c, epicColor: value } : c),
+          };
+        }
+        return br;
+      }));
+      if (!loc) { invalidate(); return; }
+      if (loc.isTopLevel) {
+        await (supabase as any)
+          .from('business_requests')
+          .update({ color_hex: value, updated_at: new Date().toISOString() })
+          .eq('request_key', issueKey);
+      } else {
+        const { data: row } = await (supabase as any)
+          .from('ph_issues').select('raw_json').eq('issue_key', issueKey).maybeSingle();
+        const raw = row?.raw_json ?? {};
+        const updated = { ...raw, fields: { ...(raw.fields ?? {}), catalyst_color: value } };
+        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+      }
+      invalidate();
+    },
+
+    /* Re-parent a child BR-subtask to a different top-level BR. The new
+       parent's key prefix is propagated to project_key so the row keeps
+       its expected key namespace. */
+    onChangeParent: async (issueKey, newParentKey) => {
+      const newPrefix = (newParentKey.split('-')[0] || 'MDT').toUpperCase();
+      /* optimistic patch — move the child between BR.children arrays */
+      patchTopLevel((tree) => {
+        let moved: TimelineIssue | null = null;
+        const stripped = tree.map(br => {
+          const kept = br.children.filter(c => {
+            if (c.issueKey === issueKey) { moved = { ...c, parentKey: newParentKey, projectKey: newPrefix }; return false; }
+            return true;
+          });
+          return kept.length === br.children.length ? br : { ...br, children: kept };
+        });
+        if (!moved) return tree;
+        return stripped.map(br => br.issueKey === newParentKey
+          ? { ...br, children: [...br.children, moved!] }
+          : br);
+      });
+      await (supabase as any)
+        .from('ph_issues')
+        .update({ parent_key: newParentKey, project_key: newPrefix })
+        .eq('issue_key', issueKey);
+      invalidate();
+    },
+
+    /* Reorder a row among its siblings. Top-level rows write
+       business_requests.display_order; nested children write ph_issues.position.
+       Sparse 1024-step ranking — we compute a new value either at one of the
+       ends or at the midpoint between two neighbours. */
+    onReorderSibling: async (issueKey, direction) => {
+      const tree = queryClient.getQueryData<TimelineIssue[]>(['product-hub-timeline', productCode]) ?? [];
+      let siblings: TimelineIssue[] = [];
+      let isTopLevel = false;
+      const topMatch = tree.find(t => t.issueKey === issueKey);
+      if (topMatch) {
+        siblings = tree;
+        isTopLevel = true;
+      } else {
+        const parent = tree.find(t => t.children.some(c => c.issueKey === issueKey));
+        if (!parent) return;
+        siblings = parent.children;
+      }
+      const idx = siblings.findIndex(s => s.issueKey === issueKey);
+      if (idx === -1 || siblings.length <= 1) return;
+
+      const order = (i: TimelineIssue, fallback: number) =>
+        typeof i.displayOrder === 'number' ? i.displayOrder : fallback;
+      /* Build a sparse sequence so even null-rank rows participate. */
+      const ranks = siblings.map((s, i) => order(s, (i + 1) * 1024));
+
+      let newRank: number;
+      if (direction === 'first') {
+        newRank = ranks[0] - 1024;
+      } else if (direction === 'last') {
+        newRank = ranks[ranks.length - 1] + 1024;
+      } else if (direction === 'up') {
+        if (idx === 0) return;
+        const above = ranks[idx - 1];
+        const aboveAbove = idx - 2 >= 0 ? ranks[idx - 2] : above - 2048;
+        newRank = Math.floor((above + aboveAbove) / 2);
+      } else {
+        if (idx === siblings.length - 1) return;
+        const below = ranks[idx + 1];
+        const belowBelow = idx + 2 < siblings.length ? ranks[idx + 2] : below + 2048;
+        newRank = Math.floor((below + belowBelow) / 2);
+      }
+
+      /* optimistic cache patch — re-sort siblings using the new rank. */
+      patchTopLevel((tree) => {
+        const updateRanked = (list: TimelineIssue[]) => {
+          const next = list.map(it => it.issueKey === issueKey ? { ...it, displayOrder: newRank } : it);
+          next.sort((a, b) => {
+            const ao = a.displayOrder ?? Number.POSITIVE_INFINITY;
+            const bo = b.displayOrder ?? Number.POSITIVE_INFINITY;
+            return ao - bo;
+          });
+          return next;
+        };
+        if (isTopLevel) return updateRanked(tree);
+        return tree.map(br =>
+          br.children.some(c => c.issueKey === issueKey)
+            ? { ...br, children: updateRanked(br.children) }
+            : br);
+      });
+
+      if (isTopLevel) {
+        await (supabase as any)
+          .from('business_requests')
+          .update({ display_order: newRank, updated_at: new Date().toISOString() })
+          .eq('request_key', issueKey);
+      } else {
+        await (supabase as any)
+          .from('ph_issues')
+          .update({ position: newRank })
+          .eq('issue_key', issueKey);
+      }
+      invalidate();
+    },
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [productCode, productId, queryClient, initialStep, user?.id]);
 
@@ -356,6 +533,7 @@ export default function ProductHubTimelinePage() {
       createTopLevelConfig={{ label: 'Create business request', iconType: 'Business Request' }}
       childTypesOverride={[...BUSINESS_REQUEST_SUBTASK_TYPES]}
       childrenOnlyOnTopLevel
+      menuVariant="product-jira"
     />
   );
 }

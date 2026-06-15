@@ -35,6 +35,11 @@ export interface TimelineIssue {
    *  a detail view. The row's `issueType` is the group's type — clicking
    *  "+" creates a new BR inheriting that type. */
   isGroup?: boolean;
+  /** Sparse rank for user-controlled ordering on the product hub timeline.
+   *  Top-level rows read from `business_requests.display_order`; nested
+   *  rows read from `ph_issues.position`. Used by the product-jira menu
+   *  variant's "Move work item" submenu. */
+  displayOrder?: number | null;
 }
 
 /* ─────────────────────────────── ui state types ───────────────────────── */
@@ -124,6 +129,15 @@ export interface TimelineMutations {
   onMoveToRelease?: (issueKey: string, versionName: string) => Promise<void>;
   onChangeEpicColor?: (issueKey: string, hex: string) => Promise<void>;
   fetchIssueRawJson?: (issueKey: string) => Promise<any>;
+  /** Reorder a row among its siblings. `direction` matches the Jira
+   *  three-dots "Move work item" submenu (first / up / down / last).
+   *  Top-level rows reorder within their product; nested rows reorder
+   *  within their parent BR. */
+  onReorderSibling?: (issueKey: string, direction: 'first' | 'up' | 'down' | 'last') => Promise<void>;
+  /** Remove only one half of the date range. Used by the product-jira
+   *  menu's "Remove dates" submenu. */
+  onRemoveStartDate?: (issueKey: string) => Promise<void>;
+  onRemoveDueDate?: (issueKey: string) => Promise<void>;
 }
 
 export interface TimelineFilterOptions {
@@ -181,6 +195,15 @@ export interface TimelineViewProps {
    *  BRs can spawn subtasks but those subtasks can't spawn their own
    *  grandchildren via the timeline. Default false. */
   childrenOnlyOnTopLevel?: boolean;
+
+  /** Selects which three-dots menu component renders on each row.
+   *  - `default` (project hub): inline menu inside SidebarRow with
+   *    Create child / Epic color / Move to release / Change parent /
+   *    Edit deps / Edit dates / Remove dates (flat list).
+   *  - `product-jira` (product hub): mounts ProductTimelineRowMenu, the
+   *    Jira-parity menu with submenus for Create / Move / Change parent /
+   *    Change color / Remove dates. */
+  menuVariant?: 'default' | 'product-jira';
 
   /* the query client used for cache invalidations after mutations.
      Pages keep ownership of the cache key so the view never hardcodes it. */

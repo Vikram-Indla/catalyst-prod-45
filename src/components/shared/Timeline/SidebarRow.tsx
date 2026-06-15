@@ -29,6 +29,8 @@ import {
 import { computeEpicProgress, iconBtnStyle, flattenAll, formatDateCompact } from './utils';
 import { PortalMenu, MenuItemRow } from './primitives';
 import { EditDatesModal } from './EditDatesModal';
+import { ProductEditDatesModal } from './ProductEditDatesModal';
+import { ProductTimelineRowMenu } from './ProductTimelineRowMenu';
 
 export interface SidebarRowProps {
   issue: TimelineIssue;
@@ -59,6 +61,14 @@ export interface SidebarRowProps {
    *  rows lose their "+". Product hub uses this so BR subtasks don't spawn
    *  their own grandchildren via the timeline. */
   childrenOnlyOnTopLevel?: boolean;
+  /** Picks which menu component renders. `default` (project hub) uses the
+   *  inline flat menu; `product-jira` mounts ProductTimelineRowMenu and
+   *  swaps in the ProductEditDatesModal. */
+  menuVariant?: 'default' | 'product-jira';
+  /** Siblings of this row (same parent) in render order. Only used when
+   *  menuVariant === 'product-jira' so the Move submenu can compute first
+   *  / last boundaries. */
+  siblings?: TimelineIssue[];
 }
 
 export function SidebarRow({
@@ -79,6 +89,8 @@ export function SidebarRow({
   childTypesOverride,
   childrenOnlyOnGroupRows = false,
   childrenOnlyOnTopLevel = false,
+  menuVariant = 'default',
+  siblings = [],
 }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
   const progress = enableProgress && hasChildren ? computeEpicProgress(issue) : null;
@@ -200,12 +212,21 @@ export function SidebarRow({
   };
 
   const openParentPicker = () => {
-    const flat = flattenAll(allItems);
-    let validParentTypes: string[];
-    if (issue.issueType === 'Feature') validParentTypes = ['Epic'];
-    else if (['Sub-task', 'Backend', 'Frontend', 'Integration'].includes(issue.issueType)) validParentTypes = ['Story', 'Task'];
-    else validParentTypes = ['Epic', 'Feature'];
-    setParentCandidates(flat.filter(i => validParentTypes.includes(i.issueType) && i.issueKey !== issue.issueKey));
+    /* Product-jira variant: valid parents are the top-level BR rows of
+       the same product (depth 0 in the tree). Default variant: classic
+       Epic/Feature/Story hierarchy. */
+    let candidates: TimelineIssue[];
+    if (menuVariant === 'product-jira') {
+      candidates = allItems.filter(i => i.issueKey !== issue.issueKey && !i.isGroup);
+    } else {
+      const flat = flattenAll(allItems);
+      let validParentTypes: string[];
+      if (issue.issueType === 'Feature') validParentTypes = ['Epic'];
+      else if (['Sub-task', 'Backend', 'Frontend', 'Integration'].includes(issue.issueType)) validParentTypes = ['Story', 'Task'];
+      else validParentTypes = ['Epic', 'Feature'];
+      candidates = flat.filter(i => validParentTypes.includes(i.issueType) && i.issueKey !== issue.issueKey);
+    }
+    setParentCandidates(candidates);
     setParentSearch('');
     setParentPickerOpen(true);
     setMenuOpen(false);
@@ -274,9 +295,30 @@ export function SidebarRow({
   const showChangeParentInMenu = !!mutations?.onChangeParent && issue.issueType !== 'Epic';
   const showDepsInMenu = !!mutations?.onAddDependency;
   const showEpicColorInMenu = !!mutations?.onChangeEpicColor && issue.issueType === 'Epic';
-  const anyMenuActionAvailable =
-    showCreateChildInMenu || showEditDatesInMenu || showRemoveDatesInMenu ||
-    showMoveToReleaseInMenu || showChangeParentInMenu || showDepsInMenu || showEpicColorInMenu;
+
+  /* product-jira variant gates — "parent" = top-level row (depth 0) which
+     in product hub maps to a Business Request. Children inherit Change
+     parent + Move; parents inherit Create child + Change colour. */
+  const isProductVariant = menuVariant === 'product-jira';
+  const isProductParent = isProductVariant && depth === 0;
+  const isProductChild = isProductVariant && depth > 0;
+  const productShowCreateChild = isProductParent && !!mutations?.onCreateChild;
+  const productShowMove = isProductVariant && !!mutations?.onReorderSibling && siblings.length > 1;
+  const productShowChangeParent = isProductChild && !!mutations?.onChangeParent;
+  const productShowChangeColor = isProductParent && !!mutations?.onChangeEpicColor;
+  const productShowEditDates = isProductVariant && !!mutations?.onUpdateDates;
+  const productShowRemoveDates = isProductVariant
+    && !!(mutations?.onRemoveDates || mutations?.onRemoveStartDate || mutations?.onRemoveDueDate)
+    && (!!issue.startDate || !!issue.dueDate);
+  const productShowDeps = isProductVariant && !!mutations?.onAddDependency;
+
+  /* Product-jira variant always shows the ⋯ menu — the menu itself renders
+     every Jira-parity row and disables non-applicable ones. Default variant
+     hides the button when nothing inside would be available. */
+  const anyMenuActionAvailable = isProductVariant
+    ? true
+    : (showCreateChildInMenu || showEditDatesInMenu || showRemoveDatesInMenu ||
+       showMoveToReleaseInMenu || showChangeParentInMenu || showDepsInMenu || showEpicColorInMenu);
   const renderMenu = enableMenu && anyMenuActionAvailable;
 
   return (
@@ -296,7 +338,15 @@ export function SidebarRow({
         transition: 'background 80ms ease',
         position: 'relative',
       }}
-      onClick={() => {
+      onClick={(e) => {
+        /* React portals propagate events through the React tree, NOT the
+           DOM tree. The three-dots menu portal, the Edit Dates modal
+           (and its backdrop), the parent-picker modal, the deps modal
+           and any nested calendar portal all live in document.body but
+           bubble up here as React children. The reliable check is
+           whether the actual DOM target sits inside this row — if not,
+           it came from a portal and should not trigger navigation. */
+        if (!e.currentTarget.contains(e.target as Node)) return;
         /* Group header rows aren't routable; clicking the row toggles
            collapse instead of opening a non-existent detail view. */
         if (issue.isGroup) {
@@ -524,7 +574,53 @@ export function SidebarRow({
         </button>
       )}
 
-      {renderMenu && (
+      {renderMenu && isProductVariant && (
+        <ProductTimelineRowMenu
+          isOpen={menuOpen}
+          onClose={() => { setMenuOpen(false); setRowHovered(false); }}
+          triggerRef={menuBtnRef}
+          issue={issue}
+          siblings={siblings}
+          isParent={isProductParent}
+          hasStartDate={!!issue.startDate}
+          hasDueDate={!!issue.dueDate}
+          parentCandidates={allItems.filter(i => i.issueKey !== issue.issueKey && !i.isGroup)}
+          onOpenCreateChild={() => { setInlineCreateType(childTypes[0]); setInlineCreateOpen(true); }}
+          onOpenEditDates={openEditDates}
+          onOpenEditDependencies={openDepsModal}
+          onReorderSibling={mutations?.onReorderSibling
+            ? (direction) => mutations.onReorderSibling!(issue.issueKey, direction)
+            : undefined}
+          onChangeColor={mutations?.onChangeEpicColor
+            ? (hex) => mutations.onChangeEpicColor!(issue.issueKey, hex)
+            : undefined}
+          onChangeParent={mutations?.onChangeParent
+            ? (newKey) => mutations.onChangeParent!(issue.issueKey, newKey)
+            : undefined}
+          onRemoveStartDate={mutations?.onRemoveStartDate
+            ? () => mutations.onRemoveStartDate!(issue.issueKey)
+            : (mutations?.onUpdateDates
+              ? () => mutations.onUpdateDates!(issue.issueKey, null, issue.dueDate)
+              : undefined)}
+          onRemoveDueDate={mutations?.onRemoveDueDate
+            ? () => mutations.onRemoveDueDate!(issue.issueKey)
+            : (mutations?.onUpdateDates
+              ? () => mutations.onUpdateDates!(issue.issueKey, issue.startDate, null)
+              : undefined)}
+          onRemoveAllDates={mutations?.onRemoveDates
+            ? () => mutations.onRemoveDates!(issue.issueKey)
+            : undefined}
+          showCreateChild={productShowCreateChild}
+          showChangeParent={productShowChangeParent}
+          showChangeColor={productShowChangeColor}
+          showMove={productShowMove}
+          showEditDates={productShowEditDates}
+          showRemoveDates={productShowRemoveDates}
+          showEditDependencies={productShowDeps}
+        />
+      )}
+
+      {renderMenu && !isProductVariant && (
         <PortalMenu
           isOpen={menuOpen}
           onClose={() => { setMenuOpen(false); setRowHovered(false); }}
@@ -588,8 +684,15 @@ export function SidebarRow({
         </PortalMenu>
       )}
 
-      {editDatesOpen && mutations?.onUpdateDates && (
+      {editDatesOpen && mutations?.onUpdateDates && !isProductVariant && (
         <EditDatesModal
+          issue={issue}
+          onClose={() => setEditDatesOpen(false)}
+          onSave={(start, due) => mutations.onUpdateDates!(issue.issueKey, start, due)}
+        />
+      )}
+      {editDatesOpen && mutations?.onUpdateDates && isProductVariant && (
+        <ProductEditDatesModal
           issue={issue}
           onClose={() => setEditDatesOpen(false)}
           onSave={(start, due) => mutations.onUpdateDates!(issue.issueKey, start, due)}

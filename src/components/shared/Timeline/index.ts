@@ -2,6 +2,8 @@ export { default as TimelineView } from './TimelineView';
 export { TimelineBottomBar } from './TimelineBottomBar';
 export { SidebarRow } from './SidebarRow';
 export { EditDatesModal } from './EditDatesModal';
+export { ProductEditDatesModal } from './ProductEditDatesModal';
+export { ProductTimelineRowMenu } from './ProductTimelineRowMenu';
 export {
   PortalMenu,
   MenuItemRow,
