@@ -85,12 +85,12 @@ export default function ReplyComposer({
         />
 
         {onAiSuggest && (
-          /* Static rainbow border wrapper — AI affordance signifier.
-             CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). */
+          /* AI suggestion button — separate from input, full affordance.
+             Catalyst-only pattern (Jira doesn't inline AI in reply contexts).
+             Default size 40px ensures discoverability as secondary action. */
           <CatyButton
             label="Suggest?"
             onClick={onAiSuggest}
-            size="compact"
           />
         )}
       </div>
