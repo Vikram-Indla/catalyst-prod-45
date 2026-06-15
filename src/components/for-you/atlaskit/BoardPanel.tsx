@@ -41,7 +41,9 @@ export function BoardPanelView({ resourceId, isLoading }: BoardPanelViewProps) {
 
   return (
     <div style={{ minHeight: 600 }}>
-      <CatyBoardInsight resourceId={resourceId} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBlockEnd: 16 }}>
+        <CatyBoardInsight resourceId={resourceId} />
+      </div>
       <R360MemberDetail resourceId={resourceId} embedded forceView="board" />
     </div>
   );
