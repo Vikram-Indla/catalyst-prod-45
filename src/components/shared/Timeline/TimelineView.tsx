@@ -107,6 +107,11 @@ export default function TimelineView(props: TimelineViewProps) {
     enableCreateEpicRow = true,
     enableEmptyRowAdd = true,
     enableDetailPanel = true,
+    createTopLevelConfig = { label: 'Create epic', iconType: 'Epic' },
+    childTypesOverride,
+    childrenOnlyOnGroupRows = false,
+    childrenOnlyOnTopLevel = false,
+    menuVariant = 'default',
   } = props;
 
   const navigate = useNavigate();
@@ -261,6 +266,19 @@ export default function TimelineView(props: TimelineViewProps) {
   const suppressClickRef = useRef(false);
   const [hoveredBarKey, setHoveredBarKey] = useState<string | null>(null);
   const [gridDatesIssue, setGridDatesIssue] = useState<TimelineIssue | null>(null);
+
+  /* Local visual override map. On drag release we drop the new dates here
+     synchronously — the bar renders from this map until the page-side cache
+     update + refetch catch up, then we clear the entry. The API call is
+     fire-and-forget from the render's point of view: the bar never waits on
+     the network, so the position stays put across the entire commit. */
+  type DateOverride = { startDate: string | null; dueDate: string | null };
+  const [pendingDateOverrides, setPendingDateOverrides] = useState<Map<string, DateOverride>>(new Map());
+  const getEffectiveDates = useCallback((issue: TimelineIssue): DateOverride => {
+    const override = pendingDateOverrides.get(issue.issueKey);
+    if (override) return override;
+    return { startDate: issue.startDate, dueDate: issue.dueDate };
+  }, [pendingDateOverrides]);
 
   /* scroll sync refs */
   const gridRef = useRef<HTMLDivElement>(null);
@@ -454,17 +472,27 @@ export default function TimelineView(props: TimelineViewProps) {
     return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
   }, [dragging, enableBarDrag, mutations]);
 
-  /* bar drag tracking + commit via mutation */
+  /* Bar drag tracking + commit. Commit is fully synchronous from the render's
+     POV: we compute the new dates, drop them into `pendingDateOverrides`, and
+     clear the drag state in one batch. The DB call runs in the background and
+     never gates the visual — the bar renders from the override map until the
+     network catches up. */
   useEffect(() => {
     if (!dragging) return;
     const onMove = (e: MouseEvent) => setLivePixelDelta(e.clientX - dragging.originX);
-    const onUp = async (e: MouseEvent) => {
+    const onUp = (e: MouseEvent) => {
       const deltaDays = Math.round((e.clientX - dragging.originX) / pxPerDay);
       const { issueKey, edge, originalStart, originalEnd } = dragging;
-      setDragging(null);
-      setLivePixelDelta(0);
-      if (deltaDays === 0) return;
-      if (!mutations?.onUpdateDates) return;
+
+      /* Suppress the click event that follows a drag mouseup so the bar's
+         onClick doesn't open the detail view. */
+      suppressClickRef.current = true;
+
+      if (deltaDays === 0 || !mutations?.onUpdateDates) {
+        setDragging(null);
+        setLivePixelDelta(0);
+        return;
+      }
       const iso = (d: string | null) => {
         const base = parseDate(d);
         return base ? addDays(base, deltaDays).toISOString().slice(0, 10) : null;
@@ -477,9 +505,36 @@ export default function TimelineView(props: TimelineViewProps) {
         if (originalStart) newStart = iso(originalStart);
         if (originalEnd) newEnd = iso(originalEnd);
       }
-      try {
-        await mutations.onUpdateDates(issueKey, newStart, newEnd);
-      } catch (err) { console.warn('timeline date update failed:', err); }
+
+      /* 1. Drop the new dates into the visual override map FIRST. The bar's
+            next render reads from this map → it stays exactly where the
+            user dropped it. */
+      setPendingDateOverrides(prev => {
+        const next = new Map(prev);
+        next.set(issueKey, { startDate: newStart, dueDate: newEnd });
+        return next;
+      });
+
+      /* 2. Reset drag state in the same React batch — single render, no
+            intermediate frame where livePixelDelta=0 + override=missing. */
+      setDragging(null);
+      setLivePixelDelta(0);
+
+      /* 3. Fire the persistence call in the background. The view never
+            awaits it; the bar is already at the new position. When the
+            mutation resolves (success or failure) we clear the override
+            and let the freshly-cached / refetched data drive the render. */
+      const persist = mutations.onUpdateDates(issueKey, newStart, newEnd);
+      Promise.resolve(persist)
+        .catch((err) => { console.warn('timeline date update failed:', err); })
+        .finally(() => {
+          setPendingDateOverrides(prev => {
+            if (!prev.has(issueKey)) return prev;
+            const next = new Map(prev);
+            next.delete(issueKey);
+            return next;
+          });
+        });
     };
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
@@ -1068,25 +1123,45 @@ export default function TimelineView(props: TimelineViewProps) {
                 </div>
               )}
 
-              {!releasesCollapsed && rows.map(({ issue, depth }) => (
-                <SidebarRow
-                  key={issue.issueKey}
-                  issue={issue}
-                  depth={depth}
-                  collapsed={collapsed.has(issue.issueKey)}
-                  onToggle={toggleCollapse}
-                  isSelected={selectedRows.has(issue.issueKey)}
-                  onSelect={toggleRowSelection}
-                  onOpenDetail={openDetail}
-                  buildIssueDetailRoute={buildIssueDetailRoute}
-                  allItems={tree}
-                  enableCheckbox={enableRowCheckbox}
-                  enableProgress={enableRowProgress}
-                  enableInlineCreate={enableInlineCreate}
-                  enableMenu={enableRowMenu}
-                  mutations={mutations}
-                />
-              ))}
+              {!releasesCollapsed && rows.map(({ issue, depth }) => {
+                /* Siblings = same-parent peers in render order. Top-level
+                   rows share the `tree` array; nested rows share their
+                   parent's children. Only consumed by the product-jira
+                   menu variant's Move submenu. */
+                let siblings: TimelineIssue[] = [];
+                if (menuVariant === 'product-jira') {
+                  if (depth === 0) {
+                    siblings = tree;
+                  } else {
+                    const parent = tree.find(t => t.children.some(c => c.issueKey === issue.issueKey));
+                    siblings = parent ? parent.children : [];
+                  }
+                }
+                return (
+                  <SidebarRow
+                    key={issue.issueKey}
+                    issue={issue}
+                    depth={depth}
+                    collapsed={collapsed.has(issue.issueKey)}
+                    onToggle={toggleCollapse}
+                    isSelected={selectedRows.has(issue.issueKey)}
+                    onSelect={toggleRowSelection}
+                    onOpenDetail={openDetail}
+                    buildIssueDetailRoute={buildIssueDetailRoute}
+                    allItems={tree}
+                    enableCheckbox={enableRowCheckbox}
+                    enableProgress={enableRowProgress}
+                    enableInlineCreate={enableInlineCreate}
+                    enableMenu={enableRowMenu}
+                    mutations={mutations}
+                    childTypesOverride={childTypesOverride}
+                    childrenOnlyOnGroupRows={childrenOnlyOnGroupRows}
+                    childrenOnlyOnTopLevel={childrenOnlyOnTopLevel}
+                    menuVariant={menuVariant}
+                    siblings={siblings}
+                  />
+                );
+              })}
 
               {rows.length === 0 && (
                 <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>
@@ -1108,7 +1183,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   {creatingEpic ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
                       <div style={{ flexShrink: 0 }}>
-                        <JiraIssueTypeIcon type="Epic" size={14} />
+                        <JiraIssueTypeIcon type={createTopLevelConfig.iconType} size={14} />
                       </div>
                       <input
                         ref={epicInputRef}
@@ -1178,7 +1253,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       }}
                     >
                       <EditorAddIcon label="" size="small" />
-                      Create epic
+                      {createTopLevelConfig.label}
                     </button>
                   )}
                 </div>
@@ -1329,9 +1404,15 @@ export default function TimelineView(props: TimelineViewProps) {
 
               {/* gantt bars + diamond markers */}
               {!releasesCollapsed && rows.map(({ issue }, idx) => {
+                /* Group rows are sidebar-only — no bar/diamond on the grid. */
+                if (issue.isGroup) return null;
                 const rowTop = (showReleases ? ROW_H : 0) + idx * ROW_H;
-                const start = parseDate(issue.startDate);
-                const end = parseDate(issue.dueDate);
+                /* Effective dates read from the override map first — if the
+                   user just dropped this bar, the override drives position
+                   until the data layer catches up. */
+                const effectiveDates = getEffectiveDates(issue);
+                const start = parseDate(effectiveDates.startDate);
+                const end = parseDate(effectiveDates.dueDate);
                 if (!start && !end) return null;
 
                 /* Diamond marker — only dueDate present (typical for Business Requests). */
@@ -1350,7 +1431,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           onMouseEnter={() => setHoveredBarKey(issue.issueKey)}
                           onMouseLeave={() => setHoveredBarKey(k => (k === issue.issueKey ? null : k))}
                           onClick={e => { e.stopPropagation(); navigate(buildIssueDetailRoute(issue.issueKey)); }}
-                          aria-label={`${issue.issueKey} due ${issue.dueDate}`}
+                          aria-label={`${issue.issueKey} due ${effectiveDates.dueDate}`}
                           role="gridcell"
                           style={{
                             position: 'absolute', top, left, width: diamondSize, height: diamondSize,
@@ -1365,7 +1446,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       </TimelineBarPopover>
                       {showLabels && (
                         <div style={dateLabelStyle(left + diamondSize, top, 'start')}>
-                          {formatDateCompact(issue.dueDate)}
+                          {formatDateCompact(effectiveDates.dueDate)}
                         </div>
                       )}
                     </React.Fragment>
@@ -1390,20 +1471,20 @@ export default function TimelineView(props: TimelineViewProps) {
                 const liveDeltaDays = isThisDragging ? Math.round(livePixelDelta / pxPerDay) : 0;
                 const startShift = dragEdge === 'start' || dragEdge === 'move' ? liveDeltaDays : 0;
                 const endShift = dragEdge === 'end' || dragEdge === 'move' ? liveDeltaDays : 0;
-                const liveStartLabel = issue.startDate ? formatDateCompact(addDays(effectiveStart, startShift).toISOString().slice(0, 10)) : '';
-                const liveEndLabel = issue.dueDate ? formatDateCompact(addDays(effectiveEnd, endShift).toISOString().slice(0, 10)) : '';
+                const liveStartLabel = effectiveDates.startDate ? formatDateCompact(addDays(effectiveStart, startShift).toISOString().slice(0, 10)) : '';
+                const liveEndLabel = effectiveDates.dueDate ? formatDateCompact(addDays(effectiveEnd, endShift).toISOString().slice(0, 10)) : '';
                 const showLabels = hoveredBarKey === issue.issueKey || isThisDragging;
                 const dragEnabled = enableBarDrag && !!mutations?.onUpdateDates;
 
                 const bar = (
                   <div
                     role="gridcell"
-                    aria-label={`${issue.issueKey} ${issue.startDate ?? 'no start'} to ${issue.dueDate ?? 'no due'}`}
+                    aria-label={`${issue.issueKey} ${effectiveDates.startDate ?? 'no start'} to ${effectiveDates.dueDate ?? 'no due'}`}
                     onMouseEnter={() => setHoveredBarKey(issue.issueKey)}
                     onMouseLeave={() => setHoveredBarKey(k => (k === issue.issueKey ? null : k))}
                     onMouseDown={e => {
                       if (!dragEnabled || dragging) return;
-                      moveArmRef.current = { issueKey: issue.issueKey, startX: e.clientX, originalStart: issue.startDate, originalEnd: issue.dueDate };
+                      moveArmRef.current = { issueKey: issue.issueKey, startX: e.clientX, originalStart: effectiveDates.startDate, originalEnd: effectiveDates.dueDate };
                     }}
                     onClick={e => {
                       if (suppressClickRef.current) { suppressClickRef.current = false; e.stopPropagation(); return; }
@@ -1422,14 +1503,18 @@ export default function TimelineView(props: TimelineViewProps) {
                       opacity: isThisDragging ? 0.9 : 1,
                       userSelect: 'none',
                       boxSizing: 'border-box',
-                      transition: isThisDragging ? 'none' : 'left 140ms ease, width 140ms ease, box-shadow 120ms ease',
+                      /* No CSS transition on left/width — during drag the bar follows
+                         livePixelDelta directly, and on commit the override map already
+                         holds the final dates, so any transition would actively animate
+                         a snap-back-then-forward and re-introduce the flicker. */
+                      transition: 'box-shadow 120ms ease',
                     }}
                   >
-                    {dragEnabled && issue.startDate && (
+                    {dragEnabled && effectiveDates.startDate && (
                       <div
                         onMouseDown={e => {
                           e.preventDefault(); e.stopPropagation();
-                          setDragging({ issueKey: issue.issueKey, edge: 'start', originX: e.clientX, originalStart: issue.startDate, originalEnd: issue.dueDate });
+                          setDragging({ issueKey: issue.issueKey, edge: 'start', originX: e.clientX, originalStart: effectiveDates.startDate, originalEnd: effectiveDates.dueDate });
                           setLivePixelDelta(0);
                         }}
                         style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize', zIndex: 3 }}
@@ -1447,11 +1532,11 @@ export default function TimelineView(props: TimelineViewProps) {
                       </span>
                     )}
 
-                    {dragEnabled && issue.dueDate && (
+                    {dragEnabled && effectiveDates.dueDate && (
                       <div
                         onMouseDown={e => {
                           e.preventDefault(); e.stopPropagation();
-                          setDragging({ issueKey: issue.issueKey, edge: 'end', originX: e.clientX, originalStart: issue.startDate, originalEnd: issue.dueDate });
+                          setDragging({ issueKey: issue.issueKey, edge: 'end', originX: e.clientX, originalStart: effectiveDates.startDate, originalEnd: effectiveDates.dueDate });
                           setLivePixelDelta(0);
                         }}
                         style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 8, cursor: 'ew-resize', zIndex: 3 }}
@@ -1476,6 +1561,7 @@ export default function TimelineView(props: TimelineViewProps) {
               })}
 
               {showEmptyRowAddButton && !releasesCollapsed && rows.map(({ issue }, idx) => {
+                if (issue.isGroup) return null;
                 if (issue.startDate || issue.dueDate) return null;
                 const rowTop = (showReleases ? ROW_H : 0) + idx * ROW_H;
                 return (

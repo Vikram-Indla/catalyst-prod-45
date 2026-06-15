@@ -26,9 +26,11 @@ import {
   ROW_H,
   JIRA_EPIC_COLORS,
 } from './types';
-import { computeEpicProgress, iconBtnStyle, flattenAll } from './utils';
+import { computeEpicProgress, iconBtnStyle, flattenAll, formatDateCompact } from './utils';
 import { PortalMenu, MenuItemRow } from './primitives';
 import { EditDatesModal } from './EditDatesModal';
+import { ProductEditDatesModal } from './ProductEditDatesModal';
+import { ProductTimelineRowMenu } from './ProductTimelineRowMenu';
 
 export interface SidebarRowProps {
   issue: TimelineIssue;
@@ -48,6 +50,25 @@ export interface SidebarRowProps {
   enableMenu?: boolean;
   /* mutations (used by menu / inline create / edit dates) */
   mutations?: TimelineMutations;
+  /** Override the inline-create type picker options. Default is derived from
+   *  the parent issue type (Epic → Story/Feature/Task, etc.). Product hub
+   *  passes ['Business Request'] so the picker collapses to a single option. */
+  childTypesOverride?: string[];
+  /** When true, only group rows can have children. Used by product hub so
+   *  BR rows inside a group don't show a "+" button. */
+  childrenOnlyOnGroupRows?: boolean;
+  /** When true, only top-level (depth 0) rows can have children — nested
+   *  rows lose their "+". Product hub uses this so BR subtasks don't spawn
+   *  their own grandchildren via the timeline. */
+  childrenOnlyOnTopLevel?: boolean;
+  /** Picks which menu component renders. `default` (project hub) uses the
+   *  inline flat menu; `product-jira` mounts ProductTimelineRowMenu and
+   *  swaps in the ProductEditDatesModal. */
+  menuVariant?: 'default' | 'product-jira';
+  /** Siblings of this row (same parent) in render order. Only used when
+   *  menuVariant === 'product-jira' so the Move submenu can compute first
+   *  / last boundaries. */
+  siblings?: TimelineIssue[];
 }
 
 export function SidebarRow({
@@ -65,6 +86,11 @@ export function SidebarRow({
   enableInlineCreate = true,
   enableMenu = true,
   mutations,
+  childTypesOverride,
+  childrenOnlyOnGroupRows = false,
+  childrenOnlyOnTopLevel = false,
+  menuVariant = 'default',
+  siblings = [],
 }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
   const progress = enableProgress && hasChildren ? computeEpicProgress(issue) : null;
@@ -90,15 +116,33 @@ export function SidebarRow({
   const [depsSaving, setDepsSaving] = useState(false);
   const [existingLinks, setExistingLinks] = useState<any[]>([]);
 
-  const childTypes = issue.issueType === 'Epic'
-    ? ['Story', 'Feature', 'Task']
-    : issue.issueType === 'Feature'
-    ? ['Story', 'Task']
-    : issue.issueType === 'Story'
-    ? ['Sub-task', 'Task']
-    : ['Sub-task'];
+  /* Group rows lock the inline-create type picker to the group's own type so
+     a new BR inherits its bucket. */
+  const childTypes = issue.isGroup
+    ? [issue.issueType]
+    : childTypesOverride ?? (
+        issue.issueType === 'Epic'
+          ? ['Story', 'Feature', 'Task']
+          : issue.issueType === 'Feature'
+          ? ['Story', 'Task']
+          : issue.issueType === 'Story'
+          ? ['Sub-task', 'Task']
+          : ['Sub-task']
+      );
 
-  const canHaveChildren = !['Sub-task', 'Backend', 'Frontend', 'Integration', 'Idea', 'Business Request', 'Business Gap'].includes(issue.issueType ?? '');
+  /* Layered rules for showing "+" on a row:
+     - `childrenOnlyOnTopLevel` (product hub timeline) — only depth 0 rows
+       can have children. Nested subtasks lose their "+".
+     - `childrenOnlyOnGroupRows` (legacy group-bucket mode) — only
+       `issue.isGroup` rows are allowed.
+     - Default — a `childTypesOverride` from the hub is the authoritative
+       "yes" signal; otherwise the Jira-specific exclusion list applies. */
+  const canHaveChildren = childrenOnlyOnTopLevel
+    ? depth === 0
+    : childrenOnlyOnGroupRows
+      ? !!issue.isGroup
+      : (!!childTypesOverride
+          || !['Sub-task', 'Backend', 'Frontend', 'Integration', 'Idea'].includes(issue.issueType ?? ''));
 
   useEffect(() => {
     if (inlineCreateOpen && inlineCreateInputRef.current) inlineCreateInputRef.current.focus();
@@ -168,12 +212,21 @@ export function SidebarRow({
   };
 
   const openParentPicker = () => {
-    const flat = flattenAll(allItems);
-    let validParentTypes: string[];
-    if (issue.issueType === 'Feature') validParentTypes = ['Epic'];
-    else if (['Sub-task', 'Backend', 'Frontend', 'Integration'].includes(issue.issueType)) validParentTypes = ['Story', 'Task'];
-    else validParentTypes = ['Epic', 'Feature'];
-    setParentCandidates(flat.filter(i => validParentTypes.includes(i.issueType) && i.issueKey !== issue.issueKey));
+    /* Product-jira variant: valid parents are the top-level BR rows of
+       the same product (depth 0 in the tree). Default variant: classic
+       Epic/Feature/Story hierarchy. */
+    let candidates: TimelineIssue[];
+    if (menuVariant === 'product-jira') {
+      candidates = allItems.filter(i => i.issueKey !== issue.issueKey && !i.isGroup);
+    } else {
+      const flat = flattenAll(allItems);
+      let validParentTypes: string[];
+      if (issue.issueType === 'Feature') validParentTypes = ['Epic'];
+      else if (['Sub-task', 'Backend', 'Frontend', 'Integration'].includes(issue.issueType)) validParentTypes = ['Story', 'Task'];
+      else validParentTypes = ['Epic', 'Feature'];
+      candidates = flat.filter(i => validParentTypes.includes(i.issueType) && i.issueKey !== issue.issueKey);
+    }
+    setParentCandidates(candidates);
     setParentSearch('');
     setParentPickerOpen(true);
     setMenuOpen(false);
@@ -242,9 +295,30 @@ export function SidebarRow({
   const showChangeParentInMenu = !!mutations?.onChangeParent && issue.issueType !== 'Epic';
   const showDepsInMenu = !!mutations?.onAddDependency;
   const showEpicColorInMenu = !!mutations?.onChangeEpicColor && issue.issueType === 'Epic';
-  const anyMenuActionAvailable =
-    showCreateChildInMenu || showEditDatesInMenu || showRemoveDatesInMenu ||
-    showMoveToReleaseInMenu || showChangeParentInMenu || showDepsInMenu || showEpicColorInMenu;
+
+  /* product-jira variant gates — "parent" = top-level row (depth 0) which
+     in product hub maps to a Business Request. Children inherit Change
+     parent + Move; parents inherit Create child + Change colour. */
+  const isProductVariant = menuVariant === 'product-jira';
+  const isProductParent = isProductVariant && depth === 0;
+  const isProductChild = isProductVariant && depth > 0;
+  const productShowCreateChild = isProductParent && !!mutations?.onCreateChild;
+  const productShowMove = isProductVariant && !!mutations?.onReorderSibling && siblings.length > 1;
+  const productShowChangeParent = isProductChild && !!mutations?.onChangeParent;
+  const productShowChangeColor = isProductParent && !!mutations?.onChangeEpicColor;
+  const productShowEditDates = isProductVariant && !!mutations?.onUpdateDates;
+  const productShowRemoveDates = isProductVariant
+    && !!(mutations?.onRemoveDates || mutations?.onRemoveStartDate || mutations?.onRemoveDueDate)
+    && (!!issue.startDate || !!issue.dueDate);
+  const productShowDeps = isProductVariant && !!mutations?.onAddDependency;
+
+  /* Product-jira variant always shows the ⋯ menu — the menu itself renders
+     every Jira-parity row and disables non-applicable ones. Default variant
+     hides the button when nothing inside would be available. */
+  const anyMenuActionAvailable = isProductVariant
+    ? true
+    : (showCreateChildInMenu || showEditDatesInMenu || showRemoveDatesInMenu ||
+       showMoveToReleaseInMenu || showChangeParentInMenu || showDepsInMenu || showEpicColorInMenu);
   const renderMenu = enableMenu && anyMenuActionAvailable;
 
   return (
@@ -264,13 +338,29 @@ export function SidebarRow({
         transition: 'background 80ms ease',
         position: 'relative',
       }}
-      onClick={() => navigate(buildIssueDetailRoute(issue.issueKey))}
+      onClick={(e) => {
+        /* React portals propagate events through the React tree, NOT the
+           DOM tree. The three-dots menu portal, the Edit Dates modal
+           (and its backdrop), the parent-picker modal, the deps modal
+           and any nested calendar portal all live in document.body but
+           bubble up here as React children. The reliable check is
+           whether the actual DOM target sits inside this row — if not,
+           it came from a portal and should not trigger navigation. */
+        if (!e.currentTarget.contains(e.target as Node)) return;
+        /* Group header rows aren't routable; clicking the row toggles
+           collapse instead of opening a non-existent detail view. */
+        if (issue.isGroup) {
+          if (hasChildren) onToggle(issue.issueKey);
+          return;
+        }
+        navigate(buildIssueDetailRoute(issue.issueKey));
+      }}
       aria-expanded={hasChildren ? !collapsed : undefined}
       onMouseEnter={() => setRowHovered(true)}
       onMouseLeave={() => { if (!menuOpen) setRowHovered(false); }}
     >
-      {/* row checkbox */}
-      {enableCheckbox && (
+      {/* row checkbox — group rows aren't selectable */}
+      {enableCheckbox && !issue.isGroup && (
         <div
           style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           onClick={e => e.stopPropagation()}
@@ -283,6 +373,11 @@ export function SidebarRow({
             style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-background-selected-bold, #0052CC)', margin: 0 }}
           />
         </div>
+      )}
+      {/* Spacer to keep BR rows aligned when the group row above takes the
+          checkbox slot back. Mirrors the 16px width + flex layout. */}
+      {enableCheckbox && issue.isGroup && (
+        <div style={{ width: 16, flexShrink: 0 }} aria-hidden />
       )}
 
       {/* collapse toggle */}
@@ -308,34 +403,56 @@ export function SidebarRow({
 
       {/* text block */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-        {issue.issueKey.includes('-LOCAL-') ? (
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', whiteSpace: 'nowrap', lineHeight: 1.3, flexShrink: 0, fontFamily: 'var(--ds-font-family-body)' }}>
-            Saving…
-          </span>
-        ) : (
-          <button
-            type="button"
-            onClick={e => { e.stopPropagation(); navigate(buildIssueDetailRoute(issue.issueKey)); }}
-            style={{
-              fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
-              whiteSpace: 'nowrap', lineHeight: 1.3,
-              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+        {issue.isGroup ? (
+          /* Group rows show a bold label + child count, no key. */
+          <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <span style={{
+              fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
+              fontFamily: 'var(--ds-font-family-body)',
+            }}>
+              {issue.summary}
+            </span>
+            <span style={{
+              fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)',
               fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
-            }}
-            aria-label={`Open ${issue.issueKey} in full page`}
-          >
-            {issue.issueKey}
-          </button>
+            }}>
+              {issue.children.length}
+            </span>
+          </div>
+        ) : (
+          <>
+            {/* Temp keys are the client-generated placeholder used by every
+                Catalyst-created row (SubtasksPanelV2 + this timeline). They
+                never get replaced by a webhook because there's no Jira
+                sync. We hide them so the row reads cleanly as icon +
+                summary until a real key arrives. */}
+            {issue.issueKey.includes('-LOCAL-') || issue.issueKey.includes('-NEW-') ? null : (
+              <button
+                type="button"
+                onClick={e => { e.stopPropagation(); navigate(buildIssueDetailRoute(issue.issueKey)); }}
+                style={{
+                  fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+                  whiteSpace: 'nowrap', lineHeight: 1.3,
+                  background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                  fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+                }}
+                aria-label={`Open ${issue.issueKey} in full page`}
+              >
+                {issue.issueKey}
+              </button>
+            )}
+            <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+              <span style={{
+                fontSize: 13, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
+                display: 'block', fontFamily: 'var(--ds-font-family-body)',
+              }}>
+                {issue.summary}
+              </span>
+            </div>
+          </>
         )}
-        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-          <span style={{
-            fontSize: 13, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
-            display: 'block', fontFamily: 'var(--ds-font-family-body)',
-          }}>
-            {issue.summary}
-          </span>
-        </div>
       </div>
 
       {/* status pill — child rows only */}
@@ -352,6 +469,22 @@ export function SidebarRow({
             <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
           </span>
         </Tooltip>
+      )}
+
+      {/* date range "Jan 4 → May 26" — shows on every row (Epic / parent
+          included) whenever start or due is set */}
+      {(issue.startDate || issue.dueDate) && (
+        <span
+          style={{
+            fontSize: 11,
+            color: 'var(--ds-text-subtle, #626F86)',
+            fontFamily: 'var(--ds-font-family-body)',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          {[issue.startDate, issue.dueDate].filter(Boolean).map(d => formatDateCompact(d)).join(' → ')}
+        </span>
       )}
 
       {/* progress bar */}
@@ -395,28 +528,30 @@ export function SidebarRow({
         </button>
       )}
 
-      {/* open-in-side-panel button */}
-      <button
-        type="button"
-        aria-label={`Open ${issue.issueKey} in side panel`}
-        onClick={e => { e.stopPropagation(); onOpenDetail(issue); }}
-        style={{
-          ...iconBtnStyle,
-          width: rowHovered ? 24 : 0,
-          overflow: 'hidden',
-          opacity: rowHovered ? 1 : 0,
-          padding: 0,
-          transition: 'width 80ms ease, opacity 80ms ease',
-        }}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <line x1="15" y1="3" x2="15" y2="21" />
-          <line x1="17.5" y1="8" x2="19" y2="8" />
-          <line x1="17.5" y1="12" x2="19" y2="12" />
-          <line x1="17.5" y1="16" x2="19" y2="16" />
-        </svg>
-      </button>
+      {/* open-in-side-panel button — group rows have no detail view */}
+      {!issue.isGroup && (
+        <button
+          type="button"
+          aria-label={`Open ${issue.issueKey} in side panel`}
+          onClick={e => { e.stopPropagation(); onOpenDetail(issue); }}
+          style={{
+            ...iconBtnStyle,
+            width: rowHovered ? 24 : 0,
+            overflow: 'hidden',
+            opacity: rowHovered ? 1 : 0,
+            padding: 0,
+            transition: 'width 80ms ease, opacity 80ms ease',
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <line x1="15" y1="3" x2="15" y2="21" />
+            <line x1="17.5" y1="8" x2="19" y2="8" />
+            <line x1="17.5" y1="12" x2="19" y2="12" />
+            <line x1="17.5" y1="16" x2="19" y2="16" />
+          </svg>
+        </button>
+      )}
 
       {/* ⋯ more actions */}
       {renderMenu && (
@@ -439,7 +574,53 @@ export function SidebarRow({
         </button>
       )}
 
-      {renderMenu && (
+      {renderMenu && isProductVariant && (
+        <ProductTimelineRowMenu
+          isOpen={menuOpen}
+          onClose={() => { setMenuOpen(false); setRowHovered(false); }}
+          triggerRef={menuBtnRef}
+          issue={issue}
+          siblings={siblings}
+          isParent={isProductParent}
+          hasStartDate={!!issue.startDate}
+          hasDueDate={!!issue.dueDate}
+          parentCandidates={allItems.filter(i => i.issueKey !== issue.issueKey && !i.isGroup)}
+          onOpenCreateChild={() => { setInlineCreateType(childTypes[0]); setInlineCreateOpen(true); }}
+          onOpenEditDates={openEditDates}
+          onOpenEditDependencies={openDepsModal}
+          onReorderSibling={mutations?.onReorderSibling
+            ? (direction) => mutations.onReorderSibling!(issue.issueKey, direction)
+            : undefined}
+          onChangeColor={mutations?.onChangeEpicColor
+            ? (hex) => mutations.onChangeEpicColor!(issue.issueKey, hex)
+            : undefined}
+          onChangeParent={mutations?.onChangeParent
+            ? (newKey) => mutations.onChangeParent!(issue.issueKey, newKey)
+            : undefined}
+          onRemoveStartDate={mutations?.onRemoveStartDate
+            ? () => mutations.onRemoveStartDate!(issue.issueKey)
+            : (mutations?.onUpdateDates
+              ? () => mutations.onUpdateDates!(issue.issueKey, null, issue.dueDate)
+              : undefined)}
+          onRemoveDueDate={mutations?.onRemoveDueDate
+            ? () => mutations.onRemoveDueDate!(issue.issueKey)
+            : (mutations?.onUpdateDates
+              ? () => mutations.onUpdateDates!(issue.issueKey, issue.startDate, null)
+              : undefined)}
+          onRemoveAllDates={mutations?.onRemoveDates
+            ? () => mutations.onRemoveDates!(issue.issueKey)
+            : undefined}
+          showCreateChild={productShowCreateChild}
+          showChangeParent={productShowChangeParent}
+          showChangeColor={productShowChangeColor}
+          showMove={productShowMove}
+          showEditDates={productShowEditDates}
+          showRemoveDates={productShowRemoveDates}
+          showEditDependencies={productShowDeps}
+        />
+      )}
+
+      {renderMenu && !isProductVariant && (
         <PortalMenu
           isOpen={menuOpen}
           onClose={() => { setMenuOpen(false); setRowHovered(false); }}
@@ -503,8 +684,15 @@ export function SidebarRow({
         </PortalMenu>
       )}
 
-      {editDatesOpen && mutations?.onUpdateDates && (
+      {editDatesOpen && mutations?.onUpdateDates && !isProductVariant && (
         <EditDatesModal
+          issue={issue}
+          onClose={() => setEditDatesOpen(false)}
+          onSave={(start, due) => mutations.onUpdateDates!(issue.issueKey, start, due)}
+        />
+      )}
+      {editDatesOpen && mutations?.onUpdateDates && isProductVariant && (
+        <ProductEditDatesModal
           issue={issue}
           onClose={() => setEditDatesOpen(false)}
           onSave={(start, due) => mutations.onUpdateDates!(issue.issueKey, start, due)}

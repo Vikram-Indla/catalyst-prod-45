@@ -56,9 +56,30 @@ export default function ProjectHubTimelinePage() {
     return row?.raw_json ?? null;
   };
 
+  /* Optimistically patch dates on a single issue inside the React Query cache.
+     Runs BEFORE the Supabase round-trip so the bar holds its dragged position
+     across the entire write — no flicker back to original between
+     setDragging(null) and refetch completion. */
+  const patchDatesInCache = (issueKey: string, startDate: string | null, dueDate: string | null) => {
+    queryClient.setQueryData(
+      ['project-hub-timeline', projectKey],
+      (old: TimelineIssue[] | undefined) => {
+        function patch(list: TimelineIssue[]): TimelineIssue[] {
+          return list.map(i => {
+            if (i.issueKey === issueKey) return { ...i, startDate, dueDate };
+            if (i.children.length) return { ...i, children: patch(i.children) };
+            return i;
+          });
+        }
+        return patch(old ?? []);
+      },
+    );
+  };
+
   const mutations: TimelineMutations = useMemo(() => ({
     fetchIssueRawJson,
     onUpdateDates: async (issueKey, startDate, dueDate) => {
+      patchDatesInCache(issueKey, startDate, dueDate);
       const raw = await fetchIssueRawJson(issueKey);
       if (!raw) return;
       const updated = {
@@ -69,6 +90,7 @@ export default function ProjectHubTimelinePage() {
       invalidate();
     },
     onRemoveDates: async (issueKey) => {
+      patchDatesInCache(issueKey, null, null);
       const raw = await fetchIssueRawJson(issueKey);
       if (!raw) return;
       const updated = {
@@ -80,7 +102,10 @@ export default function ProjectHubTimelinePage() {
     },
     onCreateEpic: async (summary) => {
       if (!projectKey) return null;
-      const localKey = `${projectKey.toUpperCase()}-LOCAL-${Date.now()}`;
+      /* No '-LOCAL-' token — Catalyst-created rows have no Jira webhook to
+       rename them, so SidebarRow's "Saving…" placeholder would persist
+       forever if the key contained '-LOCAL-'. */
+    const localKey = `${projectKey.toUpperCase()}-${Date.now()}`;
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,
@@ -125,7 +150,10 @@ export default function ProjectHubTimelinePage() {
     },
     onCreateChild: async (parentKey, _parentType, type, summary) => {
       if (!projectKey) return null;
-      const localKey = `${projectKey.toUpperCase()}-LOCAL-${Date.now()}`;
+      /* No '-LOCAL-' token — Catalyst-created rows have no Jira webhook to
+       rename them, so SidebarRow's "Saving…" placeholder would persist
+       forever if the key contained '-LOCAL-'. */
+    const localKey = `${projectKey.toUpperCase()}-${Date.now()}`;
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,
