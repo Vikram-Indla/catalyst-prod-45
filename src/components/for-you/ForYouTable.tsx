@@ -212,7 +212,7 @@ export function CatalystTable({
                 onClick={() => toggleGroup(group.key)}
                 style={{
                   height: 36, padding: '0 12px', cursor: 'pointer', userSelect: 'none',
-                  background: '#F7F8F9',
+                  background: 'var(--ds-surface-sunken, #F7F8F9)',
                   borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                   borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                   fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
@@ -252,7 +252,7 @@ export function CatalystTable({
                       padding: '12px',
                       borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                       cursor: 'pointer',
-                      background: isSelected ? 'rgba(37,99,235,0.08)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                      background: isSelected ? 'var(--ds-background-selected, rgba(37,99,235,0.08))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                       display: 'flex', flexDirection: 'column', gap: 8,
                     }}
                   >
@@ -446,10 +446,10 @@ export function CatalystTable({
             background: inherit;
           }
           .fy-table .pb-table thead th:nth-child(5) {
-            background: #F7F8F9;
+            background: var(--ds-surface-sunken, #F7F8F9);
           }
           .fy-table .pb-table tbody tr { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); }
-          .fy-table .pb-table tbody tr.pb-row-selected { background: rgba(37,99,235,0.08); }
+          .fy-table .pb-table tbody tr.pb-row-selected { background: var(--ds-background-selected, rgba(37,99,235,0.08)); }
         }
       `}</style>
       <div style={{ overflowX: 'auto' }}>
@@ -509,7 +509,7 @@ export function CatalystTable({
                     onClick={() => toggleGroup(group.key)}
                     style={{
                       height: 36, padding: '0 12px', cursor: 'pointer', userSelect: 'none',
-                      background: '#F7F8F9',
+                      background: 'var(--ds-surface-sunken, #F7F8F9)',
                       borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                       borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                       fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
@@ -562,7 +562,7 @@ export function CatalystTable({
                       onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
                       style={{
                         cursor: 'pointer',
-                        background: isSelected ? 'rgba(37,99,235,0.08)' : isFocused ? 'rgba(0,0,0,0.04)' : undefined,
+                        background: isSelected ? 'var(--ds-background-selected, rgba(37,99,235,0.08))' : isFocused ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : undefined,
                       }}
                     >
                       {orderedColumns.map(c => renderCell(c.key, item, isSelected, isFocused))}
