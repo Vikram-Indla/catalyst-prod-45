@@ -21,7 +21,6 @@ import CloseIcon from "@atlaskit/icon/core/close";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
-import { CatyMarkFlat } from "../caty-mood/CatyMarkFlat";
 import { CatyWhyCard } from "../caty-mood/CatyWhyCard";
 import { useCatyMood } from "../caty-mood/useCatyMood";
 import { useCatyEvents } from "../caty-mood/useCatyEvents";
@@ -353,7 +352,7 @@ export function ChatDock({
         <div className="cc-dock__titlebar">
           <span className="cc-dock__badge" aria-hidden>
             {/* Gradient Caty cat — matches the FAB / AI avatar / header accent */}
-            <CatyMarkFlat size={26} tone="gradient" />
+            <CatyMoodFace state="content" size={26} />
           </span>
           <div className="cc-dock__title">
             <span className="cc-dock__wordmark">CATY</span>
