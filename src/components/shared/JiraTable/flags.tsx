@@ -86,12 +86,13 @@ export function showFlag(input: ShowFlagInput) {
 
 /** Convenience helpers — drop-in for sonner's `toast.success / error / info`. */
 export const flag = {
-  success: (title: string, description?: string, actions?: FlagAction[]) =>
-    showFlag({ title, description, appearance: 'success', actions }),
+  // DEPRECATED 2026-06-16 (Vikram): success + info confirmation badges are
+  // suppressed platform-wide. No-op — call sites left intact for reversibility.
+  success: (_title: string, _description?: string, _actions?: FlagAction[]) => { /* suppressed */ },
   error: (title: string, description?: string, actions?: FlagAction[]) =>
     showFlag({ title, description, appearance: 'error', actions }),
-  info: (title: string, description?: string, actions?: FlagAction[]) =>
-    showFlag({ title, description, appearance: 'info', actions }),
+  // DEPRECATED 2026-06-16 (Vikram): info confirmation badges suppressed.
+  info: (_title: string, _description?: string, _actions?: FlagAction[]) => { /* suppressed */ },
   warning: (title: string, description?: string, actions?: FlagAction[]) =>
     showFlag({ title, description, appearance: 'warning', actions }),
 };

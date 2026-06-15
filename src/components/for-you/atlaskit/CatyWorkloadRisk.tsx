@@ -56,7 +56,7 @@ export function CatyWorkloadRisk({ teamMembers }: CatyWorkloadRiskProps) {
   };
 
   if (!data) {
-    return <CatyRainbowCTA label="Ask Caty - Workload risk" onClick={analyzeWorkload} isLoading={isLoading} />;
+    return <CatyRainbowCTA label="Workload risk" onClick={analyzeWorkload} isLoading={isLoading} />;
   }
 
   return (

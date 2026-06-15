@@ -35,46 +35,6 @@ interface LoginFormPanelProps {
   lang: Lang;
 }
 
-function CardMark() {
-  return (
-    <svg width="40" height="40" viewBox="0 0 80 80" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
-        <linearGradient id="cg-login" x1="40" y1="4" x2="40" y2="76" gradientUnits="userSpaceOnUse">
-          {/* ads-scanner:ignore-next-line */}
-          <stop stopColor="#F79357" />
-          {/* ads-scanner:ignore-next-line */}
-          <stop offset=".5" stopColor="#F53F68" />
-          {/* ads-scanner:ignore-next-line */}
-          <stop offset=".78" stopColor="#B41572" />
-          {/* ads-scanner:ignore-next-line */}
-          <stop offset="1" stopColor="#CC1E9A" />
-        </linearGradient>
-      </defs>
-      {/* Ears */}
-      <path d="M20 30 L25 5 L42 22 Z" fill="url(#cg-login)" />
-      <path d="M60 30 L55 5 L38 22 Z" fill="url(#cg-login)" />
-      <path d="M25.5 11 L28 23 L35.5 19 Z" fill="#23222B" opacity="0.30" />
-      <path d="M54.5 11 L52 23 L44.5 19 Z" fill="#23222B" opacity="0.30" />
-      {/* Head circle */}
-      <circle cx="40" cy="44" r="30" fill="url(#cg-login)" />
-      {/* Whiskers + nose */}
-      <g transform="translate(40 43) scale(0.235) translate(-348 -150)">
-        <g stroke="#fff" strokeWidth="10" strokeLinecap="round" fill="none">
-          <path d="M300 172 Q244 168 226 178" />
-          <path d="M300 182 Q240 185 222 198" />
-          <path d="M398 172 Q454 168 472 178" />
-          <path d="M398 182 Q458 185 476 198" />
-        </g>
-        <path d="M340 178 L356 178 Q348 190 340 178 Z" fill="#fff" />
-        <g fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="round">
-          <path d="M303 150 Q322 171 341 150" />
-          <path d="M355 150 Q374 171 393 150" />
-        </g>
-      </g>
-    </svg>
-  );
-}
 
 const EyeIcon = ({ off }: { off?: boolean }) => off ? (
   <svg width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
@@ -220,7 +180,11 @@ export function LoginFormPanel({
   return (
     <div className="clmp-login-card" id="main-form">
       <div className="clmp-card-mark">
-        <CardMark />
+        {/* ads-scanner:ignore-next-line */}
+        <svg width="40" height="40" viewBox="0 0 512 512" aria-hidden="true" focusable="false" style={{ flexShrink: 0, borderRadius: 10 }}>
+          <rect width="512" height="512" rx="129.62" fill="#1868DB"/>
+          <path d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z" fill="white"/>
+        </svg>
         <div>
           <h2 className="clmp-card-title">{title}</h2>
           <p className="clmp-card-sub">{sub}</p>

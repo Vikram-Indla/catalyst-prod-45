@@ -2422,6 +2422,36 @@ export type Database = {
         }
         Relationships: []
       }
+      board_insight_cache: {
+        Row: {
+          created_at: string
+          data_hash: string
+          id: string
+          insight: Json
+          project_scope: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_hash: string
+          id?: string
+          insight: Json
+          project_scope: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_hash?: string
+          id?: string
+          insight?: Json
+          project_scope?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       board_issue_rank: {
         Row: {
           board_id: string

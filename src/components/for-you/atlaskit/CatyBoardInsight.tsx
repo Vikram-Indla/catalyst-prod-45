@@ -34,6 +34,29 @@ interface BoardInsightData {
   columns: ColumnRisk[];
 }
 
+/** Cached AI output shape (stored in board_insight_cache.insight). */
+interface CachedInsight {
+  summary?: string;
+  columns?: Array<{ column: string; action?: string }>;
+}
+
+/**
+ * Structural fingerprint of the analyzed open items. Hashes only
+ * (issue_key, status, jira_updated_at) — NOT time-derived "days since update"
+ * — so the hash stays stable across days and only changes when the board
+ * actually changes (item added/removed/moved column/updated).
+ */
+async function hashBoardState(
+  openItems: Array<{ issue_key: string; status: string | null; jira_updated_at: string | null }>,
+): Promise<string> {
+  const sig = openItems
+    .map((r) => `${r.issue_key}|${r.status ?? ''}|${r.jira_updated_at ?? ''}`)
+    .sort()
+    .join('\n');
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(sig));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 interface CatyBoardInsightProps {
   resourceId?: string | null;
   projectKey?: string | null;
@@ -51,7 +74,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
   const [insight, setInsight] = useState<BoardInsightData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const generateInsight = useCallback(async () => {
+  const generateInsight = useCallback(async (opts?: { force?: boolean }) => {
     if (!user?.id) return;
     setIsLoading(true);
     try {
@@ -119,6 +142,33 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
         .sort((a, b) => (b.count * b.avgDaysSinceUpdate) - (a.count * a.avgDaysSinceUpdate))
         .slice(0, 5);
 
+      // Per-user cache keyed on the structural board state. On a hit we serve
+      // the AI text instantly and skip the ai-digest call entirely. The counts/
+      // days/blockers above are always recomputed fresh, so only the AI-generated
+      // summary + per-column actions come from cache.
+      const projectScope = projectKey || 'all';
+      const dataHash = await hashBoardState(openItems);
+      const fallbackSummary = `${openItems.length} open items across ${columnStats.length} active columns.`;
+
+      if (!opts?.force) {
+        const { data: cachedRow } = await supabase
+          .from('board_insight_cache')
+          .select('insight')
+          .eq('user_id', user.id)
+          .eq('project_scope', projectScope)
+          .eq('data_hash', dataHash)
+          .maybeSingle();
+        const cached = (cachedRow as { insight?: CachedInsight } | null)?.insight;
+        if (cached) {
+          for (const ac of cached.columns ?? []) {
+            const match = columnStats.find(c => c.column === ac.column);
+            if (match && ac.action) match.action = ac.action;
+          }
+          setInsight({ summary: cached.summary || fallbackSummary, totalItems: openItems.length, columns: columnStats });
+          return;
+        }
+      }
+
       const context = JSON.stringify({
         totalItems: openItems.length,
         projectScope: projectKey || 'all assigned',
@@ -140,8 +190,25 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
         }
       }
 
+      const summary = data?.insight?.summary || fallbackSummary;
+
+      // Store only the AI output, keyed by the structural hash. Bypass on AI
+      // error so a failed call never poisons the cache.
+      if (!error) {
+        await supabase.from('board_insight_cache').upsert(
+          {
+            user_id: user.id,
+            project_scope: projectScope,
+            data_hash: dataHash,
+            insight: { summary, columns: columnStats.map(c => ({ column: c.column, action: c.action })) },
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id,project_scope,data_hash' },
+        );
+      }
+
       setInsight({
-        summary: data?.insight?.summary || `${openItems.length} open items across ${columnStats.length} active columns.`,
+        summary,
         totalItems: openItems.length,
         columns: columnStats,
       });
@@ -160,7 +227,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
      provided (kanban board: button in toolbar, panel below toolbar at
      full width). */
   const button = (
-    <CatyButton label="Board health" onClick={generateInsight} loading={isLoading} />
+    <CatyButton label="Board health" onClick={() => generateInsight()} loading={isLoading} />
   );
 
   const panel = !insight ? null : insight.totalItems === 0 ? (
@@ -168,7 +235,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
       <span style={{ color: token('color.text.subtlest', '#6B778C') }}>{insight.summary}</span>
     </CatyInsightCard>
   ) : (
-    <CatyInsightCard title="Board health" onRefresh={generateInsight} onDismiss={() => setInsight(null)}>
+    <CatyInsightCard title="Board health" onRefresh={() => generateInsight({ force: true })} onDismiss={() => setInsight(null)}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <p style={{ margin: 0, font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>
               {insight.summary}

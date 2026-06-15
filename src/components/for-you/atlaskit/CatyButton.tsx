@@ -57,6 +57,7 @@ export function CatyButton({
   size = 'default',
   className = '',
   badge,
+  'aria-label': ariaLabelProp,
   ...rest
 }: {
   label: string;
@@ -65,12 +66,20 @@ export function CatyButton({
   size?: 'compact' | 'default' | 'large';
   className?: string;
   badge?: number | string;
+  'aria-label'?: string;
   [key: string]: any;
 }) {
   const iconSize = size === 'compact' ? 16 : size === 'large' ? 28 : 24;
   const heightPx = size === 'compact' ? 28 : size === 'large' ? 48 : 40;
   const paddingPx = size === 'compact' ? '4px 8px' : size === 'large' ? '8px 12px' : '6px 12px';
   const fontSizePx = size === 'compact' ? 12 : size === 'large' ? 16 : 14;
+
+  // The cat mascot IS the "Ask Caty" signifier — never render those words as
+  // visible button text. Strip any leading "Ask Caty" prefix a caller passed,
+  // but preserve it in the accessible name so screen-reader users still hear it.
+  const action = (label || '').replace(/^\s*ask\s*caty\s*[-–—:]?\s*/i, '').trim();
+  const ariaLabel = ariaLabelProp || (action ? `Ask Caty — ${action}` : 'Ask Caty');
+  const visibleLabel = loading ? 'Thinking' : action;
 
   return (
     <div style={{ position: 'relative', display: 'inline-flex' }}>
@@ -101,10 +110,11 @@ export function CatyButton({
         }}
         data-loading={loading || undefined}
         aria-busy={loading || undefined}
+        aria-label={ariaLabel}
         {...rest}
       >
         <CatyHead size={iconSize} />
-        <span className="caty-btn__label">{loading ? 'Thinking' : label}</span>
+        {visibleLabel && <span className="caty-btn__label">{visibleLabel}</span>}
         {loading && (
           <span className="caty-btn__dots" style={{ display: 'inline-flex', gap: 2 }} aria-hidden="true">
             <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'currentColor' }} />

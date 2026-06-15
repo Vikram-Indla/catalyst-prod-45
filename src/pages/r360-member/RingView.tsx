@@ -25,7 +25,7 @@ import {
   getCardPixelPosDynH, getSpokeEndpoints,
   getFromTagClass, getFromTagPrefix,
 } from './helpers';
-import { Lozenge, toStatusCategory } from '@/components/ads';
+import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
 import { MiniAvatar } from './SmallComponents';
 import { PresenceRing } from '@/components/shared/PresenceRing';
 import type { PresenceState } from '@/lib/presence';
@@ -57,6 +57,7 @@ const T = {
   iconInverse:       () => token('color.icon.inverse', '#FFFFFF'),
   iconDisabled:      () => token('color.icon.disabled', '#8590A2'),
   border:            () => token('color.border', '#091E4224'),
+  borderBold:        () => token('color.border.bold', '#8590A2'),
   borderSuccess:     () => token('color.border.success', '#4BCE97'),
 } as const;
 
@@ -224,7 +225,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
                       <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
-                      <StatusLozenge status="Done" />
+                      <CatalystStatusPill status="Done" statusCategory="done" interactive={false} compact />
                     </div>
                     <div style={{ fontSize: 12, fontWeight: 400, color: T.text(), lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
                     <div style={{ fontSize: 11, color: T.textSubtle(), marginTop: 2, fontStyle: 'italic' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
@@ -324,7 +325,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     <div style={{ fontSize: 12, fontWeight: 500, color: T.text(), lineHeight: '1.35', marginBottom: 6 }}>{item.title}</div>
                     {/* Status + from-tag */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                      <StatusLozenge status={item.status} />
+                      <CatalystStatusPill status={item.status} statusCategory={item.status_category} interactive={false} compact />
                       {item.carried_from_label && (
                         <span className={`r3-from-tag ${fromClass}`}>{getFromTagPrefix(item.age_days)}{item.carried_from_label}</span>
                       )}
@@ -353,7 +354,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                         <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
                         <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
-                        <StatusLozenge status="Done" />
+                        <CatalystStatusPill status="Done" statusCategory="done" interactive={false} compact />
                       </div>
                       <div style={{ fontSize: 12, color: T.text(), marginTop: 2 }}>{item.title}</div>
                       <div style={{ fontSize: 11, color: T.textSubtlest(), marginTop: 2 }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
@@ -388,7 +389,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
       <svg width={W} height={ringH} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none', overflow: 'visible' }}>
         {spokes.map((s, i) => (
           <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-            stroke={T.border()} strokeWidth={1.5} strokeDasharray="5 4" opacity={1} />
+            stroke={T.borderBold()} strokeWidth={1.5} strokeDasharray="5 4" opacity={1} />
         ))}
       </svg>
 
@@ -437,16 +438,9 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
 
               {/* Row 3 (status bar): lozenge + from-tag + contributor ── 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, minHeight: 24 }}>
-                {item.status && (() => {
-                  const cat = toStatusCategory(item.status);
-                  const bgMap = { todo: 'rgb(221,222,225)', inProgress: 'rgb(143,184,246)', done: 'rgb(186,240,199)' };
-                  const bg = bgMap[cat as keyof typeof bgMap] || 'rgb(221,222,225)';
-                  return (
-                    <span style={{ backgroundColor: bg, padding: '2px 8px', borderRadius: 3, display: 'inline-flex', alignItems: 'center', height: 20, fontSize: 11, fontWeight: 600, color: T.text() }}>
-                      {item.status}
-                    </span>
-                  );
-                })()}
+                {item.status && (
+                  <CatalystStatusPill status={item.status} statusCategory={item.status_category} interactive={false} compact />
+                )}
                 {item.carried_from_label && (
                   <span className={`r3-from-tag ${fromClass}`} title="Carried over from an earlier period">
                     {getFromTagPrefix(item.age_days)}{item.carried_from_label}

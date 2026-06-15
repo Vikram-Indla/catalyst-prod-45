@@ -289,6 +289,10 @@ function filterForBoard(items: R360WorkItem[]): R360WorkItem[] {
 // ── Main Component ──────────────────────────────────────────────────
 export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; resourceId?: string | null }) {
   const [quickSearch, setQuickSearch] = useState('');
+  // Board health panel renders into this slot (below the toolbar, above the
+  // swimlanes) so the button stays inline on the toolbar row and the expanded
+  // result pushes the board down instead of replacing the button.
+  const [insightSlot, setInsightSlot] = useState<HTMLDivElement | null>(null);
 
   const boardItems = useMemo(() => filterForBoard(items), [items]);
 
@@ -333,8 +337,11 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
         }}>
           {filteredItems.length} items across {projectGroups.length} projects
         </span>
-        <CatyBoardInsight resourceId={resourceId} />
+        <CatyBoardInsight resourceId={resourceId} panelPortalTarget={insightSlot} />
       </div>
+
+      {/* Board health result lands here — below the toolbar, pushing the board down */}
+      <div ref={setInsightSlot} />
 
       {/* Swimlanes — default collapsed */}
       {projectGroups.map(([key, group]) => (

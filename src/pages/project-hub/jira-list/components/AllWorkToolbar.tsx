@@ -1174,6 +1174,9 @@ export function AllWorkToolbar({
   >([]);
   const showFlag = React.useCallback(
     (title: string, appearance: "success" | "error") => {
+      // DEPRECATED 2026-06-16 (Vikram): success confirmation badges suppressed
+      // platform-wide. Only error flags render here.
+      if (appearance === "success") return;
       const id = `flag-${Date.now()}`;
       setFlags((f) => [...f, { id, title, appearance }]);
       // Auto-dismiss after 4 s

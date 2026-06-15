@@ -3,7 +3,7 @@
  * Extracted from R360MemberDetail.tsx
  */
 import React, { useState, useMemo } from 'react';
-import { ChevronDown } from '@/lib/atlaskit-icons';
+import { ChevronDown, Calendar } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import type { R360WorkItem } from '@/types/r360';
 import { getSaudiWorkDays, getWeekCells } from './helpers';
@@ -55,7 +55,7 @@ export function WeekStripCollapsible({
         </div>
 
         <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
-        <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{'\u{1F4C5}'} {period.label}</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '13px', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}><Calendar size={16} color="currentColor" /> {period.label}</span>
         <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{period.range}</span>
 
         {/* Mode Badge */}

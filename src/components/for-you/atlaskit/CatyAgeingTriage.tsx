@@ -92,7 +92,7 @@ export function CatyAgeingTriage({ items, onOpenDetail }: CatyAgeingTriageProps)
   };
 
   if (results.length === 0) {
-    return <CatyRainbowCTA label="Ask Caty - Triage stale" onClick={runTriage} isLoading={isLoading} />;
+    return <CatyRainbowCTA label="Triage stale" onClick={runTriage} isLoading={isLoading} />;
   }
 
   return (

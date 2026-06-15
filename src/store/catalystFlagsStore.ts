@@ -50,6 +50,14 @@ export const useCatalystFlagsStore = create<CatalystFlagsStore>((set, get) => ({
   flags: [],
   addFlag: ({ appearance, title, description, sticky }) => {
     const id = nextId();
+
+    // DEPRECATED 2026-06-16 (Vikram): success + info confirmation badges are
+    // suppressed platform-wide. Only error / warning flags render. Call sites
+    // left intact so feedback can be restored by deleting this guard.
+    if (appearance === 'success' || appearance === 'info') {
+      return id;
+    }
+
     const resolvedSticky =
       sticky ?? (appearance === 'error' || appearance === 'warning');
     set((s) => ({

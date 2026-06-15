@@ -29,6 +29,13 @@ type ToastReturn = { id: string; dismiss: () => void; update: (props: ToastOptio
 
 function toast(opts: ToastOptions): ToastReturn {
   const appearance = opts.variant === 'destructive' ? 'error' : 'info';
+
+  // DEPRECATED 2026-06-16 (Vikram): non-destructive confirmation badges are
+  // suppressed platform-wide. Only destructive (error) toasts render.
+  if (appearance !== 'error') {
+    return { id: '', dismiss: () => {}, update: () => {} };
+  }
+
   showFlag({
     title: typeof opts.title === 'string' ? opts.title : String(opts.title ?? ''),
     description: typeof opts.description === 'string' ? opts.description : undefined,

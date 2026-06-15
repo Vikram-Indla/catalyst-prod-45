@@ -1,6 +1,6 @@
 ---
 name: mirror-component
-version: 1.0.0
+version: 1.1.0
 description: >-
   Extracts a canonical Catalyst table/component into a shared factory, then
   mounts an exact mirror at a destination route with only stated exceptions.
@@ -14,7 +14,7 @@ metadata:
   maturity: stable
 ---
 
-# mirror-component v1.0 — Canonical Component Mirror
+# mirror-component v1.1 — Canonical Component Mirror
 
 ---
 
@@ -59,6 +59,9 @@ These are known failure modes in previous mirror attempts. Guard against all of 
 | Forgetting to update the canonical source to import from shared factory | Both pages must import from shared — no local copies |
 | Treating `canEdit:()=>false` as the only difference | Run the full drift checklist (Phase 3) even when exceptions seem obvious |
 | Creating a new data type for destination ("JqlResultRow" trap) | If canonical uses `BacklogItem`, destination uses `BacklogItem` — same type, new fetch |
+| **[2026-06-13] Writing data hook column names from memory or session context** | **Run `information_schema.columns` on EVERY destination table before writing any SELECT. Session summaries and context documents are not authoritative for column names. Violation = CLAUDE.md Assumption Class 2.** |
+| **[2026-06-13] Removing source UI elements because "destination has no backend for it"** | **Mirror every source UI element. If the backing engine doesn't exist in destination, mirror in degraded mode (e.g. display JQL text in a read-only Textfield instead of executing it). Never silently drop an element without explicit Vikram-approved exception.** |
+| **[2026-06-13] Adding a new Supabase query for auxiliary data (avatars, member lists) without schema check** | **First check if the data can be derived from already-fetched data pools (e.g. unique assignees from facetItems). Only add a new query if derivation is impossible — and then run `information_schema.columns` before writing the SELECT.** |
 
 ---
 
@@ -144,6 +147,38 @@ Do not proceed to Phase 1 until all 4 are answered.
 
 ---
 
+### Phase 1.5 — Data Source Schema Audit (MANDATORY when destination uses a different table)
+
+**Run this before writing any data hook, SELECT string, mapper function, or client filter.**
+
+```sql
+-- Run via Supabase MCP execute_sql:
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = 'your_destination_table'
+ORDER BY ordinal_position;
+```
+
+Build a column allowlist from this output. Every field accessed in:
+- The SELECT string (`.select('id, title, ...')`)
+- The mapper function (`r.field_name`)
+- Any client-side filter (`r.field_name === value`)
+
+...MUST appear in the allowlist. If a field is absent:
+1. **STOP.** Do not write code that accesses it.
+2. Find the correct column name (it may exist under a different name, e.g. `po_user_id` instead of `assignee`).
+3. Only proceed once the correct column is confirmed.
+
+**Why:** PostgREST returns HTTP 400 when a SELECT references a non-existent column. The response body is `null`. If the hook has `if (!rows) return { items: [], totalCount: 0 }`, it silently returns 0 items — no error, no console warning. The page shows "0 items" and looks like an RLS problem. It's a column name typo.
+
+**Diagnostic when "0 items" but DB has data:**
+1. Check the network tab for a 400 on the PostgREST query
+2. Log the raw `{ data, error }` from supabase — `error` will say "column X does not exist"
+3. If error is null but data is null → the hook has a silent null-guard swallowing the 400
+4. Verify column name via `information_schema.columns` and fix the SELECT
+
+---
+
 ### Phase 1 — Locate canonical source
 
 ```bash
@@ -175,14 +210,27 @@ Canonical source located:
 
 ### Phase 2 — Drift audit (before any code)
 
-Read the destination file if it already exists. Produce the full drift table:
+Read the destination file if it already exists. Produce the full drift table covering ALL of these categories — missing any category is itself a defect:
 
-| Drift item | Source (canonical) | Destination (current) | Action |
-|---|---|---|---|
-| Column `comments` | makeCommentsCell | absent | ADD |
-| JiraTable `enableVirtualization` | true | absent | ADD |
-| Row type | BacklogItem | JqlResultRow | REPLACE |
-| ... | ... | ... | ... |
+**Category A — Table columns**
+**Category B — JiraTable props** (every prop, not just visible ones)
+**Category C — Toolbar row 1** (filter chips, mode toggles, search, column picker, etc.)
+**Category D — Toolbar row 2** (AvatarGroup, GroupBy, density controls, etc.)
+**Category E — Row type** (canonical type vs destination type)
+**Category F — Empty state** (JSX, copy, icon)
+**Category G — Data hooks** (what's fetched, what columns are SELECTed)
+
+| Category | Drift item | Source (canonical) | Destination (current) | Action |
+|---|---|---|---|---|
+| A | Column `comments` | makeCommentsCell | absent | ADD |
+| B | JiraTable `enableVirtualization` | true | absent | ADD |
+| C | Basic/JQL toggle | present | absent | MIRROR (degraded if no JQL engine) |
+| D | AvatarGroup | present, from useProjectMembers | absent | MIRROR (derive from facetItems pool) |
+| E | Row type | BacklogItem | JqlResultRow | REPLACE |
+| G | SELECT columns | includes `assignee` | uses non-existent `assignee` | FIX (verify via information_schema) |
+| ... | ... | ... | ... | ... |
+
+Every source element must have a row. Action must be one of: **ADD** (missing, add it), **MIRROR** (add in degraded mode — same UI, no-op or display-only), **EXCEPTION** (Vikram explicitly approved omission — quote the approval), **SAME** (already identical).
 
 Get explicit confirmation before Phase 3.
 
@@ -347,3 +395,6 @@ TypeScript: PASS | Drift items remaining: 0
 - Leaving any local column definition in the source page after extraction
 - Hand-writing empty state JSX instead of copying from source
 - Declaring done without the Phase 6 prop verification table
+- **[2026-06-13] Accessing a DB column without first verifying it in `information_schema.columns`** — zero exceptions, even for "obvious" column names like `assignee`, `status`, `type`
+- **[2026-06-13] Dropping any source toolbar element (AvatarGroup, mode toggles, search, column picker) without an explicit exception in the exception list** — every element must appear in the Phase 2 drift table with Action = ADD, MIRROR, or EXCEPTION
+- **[2026-06-13] Adding a new Supabase query for auxiliary data before checking if it can be derived from existing fetched data**

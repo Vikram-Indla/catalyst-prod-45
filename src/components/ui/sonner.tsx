@@ -30,25 +30,17 @@ interface SonnerOptions {
  * Exported as `toast` so all existing callsites require zero edits.
  */
 export const toast = Object.assign(
-  // Default call: toast("message") or toast("title", { description })
-  (title: string, opts?: SonnerOptions) => {
-    const actions: FlagAction[] | undefined = opts?.action
-      ? [{ content: opts.action.label, onClick: opts.action.onClick }]
-      : undefined;
-    showFlag({ title, description: opts?.description, appearance: 'info', actions });
-  },
+  // Default call: toast("message") → info badge.
+  // DEPRECATED 2026-06-16 (Vikram): info confirmation badges suppressed platform-wide.
+  (_title: string, _opts?: SonnerOptions) => { /* suppressed */ },
   {
-    success: (title: string, opts?: SonnerOptions) => {
-      const actions: FlagAction[] | undefined = opts?.action
-        ? [{ content: opts.action.label, onClick: opts.action.onClick }]
-        : undefined;
-      showFlag({ title, description: opts?.description, appearance: 'success', actions });
-    },
+    // DEPRECATED 2026-06-16 (Vikram): success badges suppressed platform-wide.
+    success: (_title: string, _opts?: SonnerOptions) => { /* suppressed */ },
     error: (title: string, opts?: SonnerOptions) =>
       showFlag({ title, description: opts?.description, appearance: 'error' }),
 
-    info: (title: string, opts?: SonnerOptions) =>
-      showFlag({ title, description: opts?.description, appearance: 'info' }),
+    // DEPRECATED 2026-06-16 (Vikram): info confirmation badges suppressed.
+    info: (_title: string, _opts?: SonnerOptions) => { /* suppressed */ },
 
     warning: (title: string, opts?: SonnerOptions) =>
       showFlag({ title, description: opts?.description, appearance: 'warning' }),
