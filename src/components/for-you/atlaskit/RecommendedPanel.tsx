@@ -512,51 +512,15 @@ function FeedSection({
             {label}
           </h4>
         </div>
-        {/* "Ask Caty — summarize N" CTA — opens the SummarizeDigestModal
-            with interactive triage for every mention/comment in this
-            section. Static rainbow border per the AI affordance carve-out. */}
+        {/* Summarize digest CTA — opens the SummarizeDigestModal
+            with interactive triage for every mention/comment in this section.
+            Cat icon carries the AI semantic; label is action-only. */}
         {onOpenDigest && (
-          <div
-            style={{
-              display: 'inline-flex',
-              padding: 1.8,
-              borderRadius: 20,
-              background: ASK_CATY_RAINBOW,
-            }}
-          >
-            <button
-              type="button"
-              onClick={onOpenDigest}
-              aria-label={`Ask Caty to summarize ${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                height: 28,
-                padding: '0 12px',
-                border: 'none',
-                borderRadius: 17,
-                background: '#FFFFFF',
-                cursor: 'pointer',
-                color: token('color.text', '#172B4D'),
-                fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
-                fontSize: 12,
-                fontWeight: 600,
-                lineHeight: 1,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#F1F2F4';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#FFFFFF';
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
-              </svg>
-              Ask Caty — summarize {rows.length}
-            </button>
-          </div>
+          <CatyButton
+            label={`Summarize ${rows.length}`}
+            onClick={onOpenDigest}
+            size="default"
+          />
         )}
       </div>
       <p

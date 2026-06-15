@@ -85,12 +85,13 @@ export default function ReplyComposer({
         />
 
         {onAiSuggest && (
-          /* AI suggestion button — separate from input, full affordance.
-             Catalyst-only pattern (Jira doesn't inline AI in reply contexts).
-             Default size 40px ensures discoverability as secondary action. */
+          /* AI suggestion button — compact size for tight reply context.
+             In message composer, space is premium. 28px height matches input
+             proportions. Cat icon carries AI semantic; label is action-only. */
           <CatyButton
             label="Suggest?"
             onClick={onAiSuggest}
+            size="compact"
           />
         )}
       </div>
