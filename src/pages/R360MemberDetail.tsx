@@ -317,9 +317,11 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
         [data-catalyst-main] > div {
           width: 100% !important;
         }
-        /* NUCLEAR: kill grey on every ancestor when R360 is mounted.
-           var(--ds-surface) resolves to #F8F8F8 in some theme configs,
-           not #FFFFFF. Force literal white on every layer. */
+        /* Force a clean surface on every ancestor when R360 is mounted.
+           Light mode keeps literal white (original intent). Dark mode MUST
+           flip to the themed surface — a literal-white !important here was
+           whiting-out the entire app shell in dark mode (it overrides
+           var(--cp-bg)/var(--ds-surface) globally and persists after nav). */
         [data-catalyst-main],
         [data-catalyst-main] > div,
         [data-catalyst-main] > div > div,
@@ -328,6 +330,15 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
         #r360-root,
         #r360-root > .r3-page {
           background-color: #FFFFFF !important;
+        }
+        html.dark [data-catalyst-main],
+        html.dark [data-catalyst-main] > div,
+        html.dark [data-catalyst-main] > div > div,
+        html.dark [data-r360-fullscreen],
+        html.dark [data-r360-fullscreen] > div,
+        html.dark #r360-root,
+        html.dark #r360-root > .r3-page {
+          background-color: var(--ds-surface, #1F1F21) !important;
         }
       `;
       document.head.appendChild(style);
