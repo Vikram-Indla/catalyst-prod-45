@@ -77,8 +77,11 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     background: tk.cardBg,
     borderRadius: 4,                                    /* Jira parity: 4px */
     border: 'none',
-    /* Jira parity: flat tile + single gray border-bottom (no rest shadow). */
-    borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+    /* 2026-06-15: lifted each card with a soft rest shadow instead of an
+       inside-the-card hairline borderBottom. The shadow gives every card a
+       consistent visual envelope so the 8px gap reads as rhythm rather than
+       "stripes of varying height". Mirrors PragmaticCard. */
+    borderBottom: 'none',
     borderLeft: isSelected
       ? `3px solid ${tk.selectedAccent}`
       : (() => {
@@ -103,7 +106,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
       ? tk.cardDragShadow
       : isFocused
         ? focusShadow
-        : 'none',
+        : tk.cardShadowRest,
     position: 'relative' as const,
     outline: 'none',
     overflow: 'visible',

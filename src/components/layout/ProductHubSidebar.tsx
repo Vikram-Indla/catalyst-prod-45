@@ -15,6 +15,7 @@
 import {
   LayoutGrid,
   Settings,
+  Mic,
 } from '@/lib/atlaskit-icons';
 import { getProductAvatarUrl } from '@/components/icons';
 import {
@@ -73,6 +74,9 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
           { id: 'backlog',   title: 'Backlog',   path: `${base}/backlog`,   icon: NavBacklogIcon,   exact: false },
           { id: 'allwork',   title: 'Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
           { id: 'filters',   title: 'Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
+          /* Standups — past standup sessions for this product. Added
+             alongside the project-hub equivalent (2026-06-15). */
+          { id: 'standups',  title: 'Standups',  path: `${base}/standups`,  icon: Mic,              exact: false },
         ],
       },
     ],
