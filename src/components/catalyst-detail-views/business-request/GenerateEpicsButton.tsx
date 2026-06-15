@@ -1,5 +1,5 @@
 /**
- * GenerateEpicsButton — rainbow CTA for Business Request detail views.
+ * GenerateEpicsButton — AI CTA for Business Request detail views.
  *
  * Flow:
  *  1. Click → ProjectPickerModal (pick target Jira project)
@@ -9,21 +9,16 @@
  *     epics in picked project, auto-linked to BR via parent.
  *
  * Self-gates: returns null if issue_type !== 'Business Request'.
- * Rainbow CTA per CLAUDE.md (static gradient, animation: none).
+ * Uses CatyButton (cat icon + label, no rainbow).
  */
 import React, { useCallback, useEffect } from 'react';
-import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
 import Spinner from '@atlaskit/spinner';
-import Tooltip from '@atlaskit/tooltip';
-import { token } from '@atlaskit/tokens';
 import { useEpicGeneration } from './useEpicGeneration';
 import { ProjectPickerModal } from './ProjectPickerModal';
 import { EpicProposalModal } from './EpicProposalModal';
 import { catalystToast } from '@/lib/catalystToast';
 import { adfToMarkdown } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToMarkdown';
-
-const RAINBOW_GRADIENT =
-  'conic-gradient(#FF3CAC, #784BA0, #2B86C5, #00C9FF, #92FE9D, #FFD700, #FF3CAC)';
+import { CatyButton } from '@/components/for-you/atlaskit/CatyButton';
 
 interface GenerateEpicsButtonProps {
   issue: {
@@ -116,22 +111,6 @@ export function GenerateEpicsButton({ issue }: GenerateEpicsButtonProps) {
   const isCreating = store.state === 'creating';
   const disabled = store.isDisabled || store.maxGenerationsReached || isGenerating || isCreating;
 
-  const tooltipContent = store.isDisabled
-    ? 'Maximum 10 epics reached'
-    : store.maxGenerationsReached
-    ? 'Maximum 2 generations reached for this business request'
-    : isGenerating
-    ? 'Generating epics…'
-    : `Generate epics from business request (${store.generationCount}/${store.maxGenerations} used)`;
-
-  const buttonLabel = isGenerating
-    ? 'Generating…'
-    : isCreating
-    ? 'Creating…'
-    : store.maxGenerationsReached
-    ? 'Generation limit reached'
-    : 'Generate Epics';
-
   if (issue?.issue_type !== 'Business Request') return null;
 
   return (
@@ -139,66 +118,12 @@ export function GenerateEpicsButton({ issue }: GenerateEpicsButtonProps) {
       {isGenerating && <GeneratingOverlay message="Generating epics…" />}
       {isCreating && <GeneratingOverlay message="Creating epics…" />}
 
-      <Tooltip content={tooltipContent}>
-        <div
-          style={{
-            display: 'inline-flex',
-            background: disabled ? token('color.background.neutral', '#F1F2F4') : RAINBOW_GRADIENT,
-            borderRadius: 5,
-            padding: 1.2,
-            animation: 'none',
-          }}
-        >
-          <button
-            onClick={handleClick}
-            disabled={disabled}
-            aria-busy={isGenerating || isCreating}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '4px 12px',
-              borderRadius: 3,
-              border: 'none',
-              background: '#FFFFFF',
-              color: disabled
-                ? token('color.text.disabled', '#A5ADBA')
-                : token('color.text', '#172B4D'),
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: disabled ? 'not-allowed' : 'pointer',
-              opacity: disabled ? 0.7 : 1,
-              transition: 'filter 0.1s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!disabled) (e.currentTarget.style.filter = 'brightness(1.08)');
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.filter = 'none';
-            }}
-          >
-            {isGenerating || isCreating ? (
-              <Spinner size="small" />
-            ) : (
-              <SparklesIcon label="" color={
-                disabled
-                  ? token('color.icon.disabled', '#A5ADBA')
-                  : token('color.icon.brand', '#0052CC')
-              } />
-            )}
-            <span>{buttonLabel}</span>
-            {!isGenerating && !isCreating && !store.maxGenerationsReached && store.generationCount > 0 && (
-              <span style={{
-                fontSize: 11,
-                color: token('color.text.subtlest', '#6B778C'),
-                marginLeft: 4,
-              }}>
-                ({store.generationCount}/{store.maxGenerations})
-              </span>
-            )}
-          </button>
-        </div>
-      </Tooltip>
+      <CatyButton
+        label="Generate Epics"
+        onClick={handleClick}
+        loading={isGenerating || isCreating}
+        disabled={disabled}
+      />
 
       <ProjectPickerModal
         isOpen={store.state === 'projectPicking'}
