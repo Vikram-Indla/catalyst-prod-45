@@ -10,7 +10,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button';
+import { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
+import CloseIcon from '@atlaskit/icon/core/close';
 import { CatyMoodFace } from './CatyMoodFace';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { CatyMood, CatyState } from './catyMoodEngine';
@@ -132,17 +134,30 @@ export function CatyWhyCard({
         padding: '12px',
       }}
     >
-      {/* Header: status icon + message */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <CatyMoodFace state={state} size={32} />
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>
-            <Lozenge appearance={style.appearance}>{style.label}</Lozenge>
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
-            {mood.message}
+      {/* Header: status icon + message + minimize button */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+          <CatyMoodFace state={state} size={32} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>
+              <Lozenge appearance={style.appearance}>{style.label}</Lozenge>
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+              {mood.message}
+            </div>
           </div>
         </div>
+        <IconButton
+          icon={CloseIcon}
+          label="Hide Caty insights"
+          appearance="subtle"
+          onClick={() => {
+            localStorage.setItem('caty.fab.hidden', 'true');
+            window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
+            onClose();
+          }}
+          style={{ flexShrink: 0 }}
+        />
       </div>
 
       {/* Metrics row: 2 tiles */}
@@ -176,7 +191,7 @@ export function CatyWhyCard({
 
       {/* Action button */}
       <Button
-        appearance="default"
+        appearance="subtle"
         onClick={() => {
           // Route to backlog with relevant filter
           window.location.hash = '#/project-hub/BAU/allwork';
@@ -192,7 +207,6 @@ export function CatyWhyCard({
         type="button"
         onClick={() => {
           window.location.hash = '#/caty';
-          onClose();
         }}
         style={{
           background: 'transparent',
