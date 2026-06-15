@@ -185,8 +185,8 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                     onClick={() => handleAdd(item.id, item.title)}
                     disabled={addMutation.isPending}
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-                    style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '1px solid #BFDBFE', background: 'var(--ds-background-selected, #EFF6FF)', transition: 'background-color 0.15s ease' }}
-                    onMouseEnter={e => { if (!addMutation.isPending) e.currentTarget.style.backgroundColor = '#DBEAFE'; }}
+                    style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '1px solid var(--ds-border-selected, #BFDBFE)', background: 'var(--ds-background-selected, #EFF6FF)', transition: 'background-color 0.15s ease' }}
+                    onMouseEnter={e => { if (!addMutation.isPending) e.currentTarget.style.backgroundColor = 'var(--ds-background-selected-hovered, #DBEAFE)'; }}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--ds-background-selected, #EFF6FF)')}
                   >
                     {addMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Add

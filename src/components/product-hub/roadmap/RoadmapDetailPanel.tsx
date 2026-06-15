@@ -48,19 +48,19 @@ const STATUS_OPTIONS = [
 ];
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  on_track: { label: 'On Track', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4' },
-  at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
+  on_track: { label: 'On Track', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #F0FDF4)' },
+  at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFFBEB)' },
   off_track: { label: 'Off Track', color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
 
 const STATUS_PILL: Record<string, { color: string; bg: string }> = {
-  Planned: { color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', bg: '#DBEAFE' },
-  Active: { color: '#0F766E', bg: '#F0FDFA' },
-  Completed: { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4' },
+  Planned: { color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', bg: 'var(--ds-background-information, #DBEAFE)' },
+  Active: { color: 'var(--ds-text-success, #0F766E)', bg: 'var(--ds-background-success, #F0FDFA)' },
+  Completed: { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #F0FDF4)' },
   Cancelled: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
-  'On Hold': { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
-  'Under Review': { color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF' },
-  Approved: { color: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA' },
+  'On Hold': { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFFBEB)' },
+  'Under Review': { color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-background-discovery, #F5F3FF)' },
+  Approved: { color: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-background-success, #F0FDFA)' },
   New: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)' },
 };
 
@@ -258,7 +258,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-md flex items-center justify-center"
-                      style={{ background: '#DBEAFE' }}>
+                      style={{ background: 'var(--ds-background-information, #DBEAFE)' }}>
                       <Map className="w-4 h-4" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
                     </div>
                     <div>
