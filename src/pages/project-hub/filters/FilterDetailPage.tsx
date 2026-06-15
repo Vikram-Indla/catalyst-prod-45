@@ -15,7 +15,17 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 
 interface BoardInfo { id: string; name: string; }
 
-export default function FilterDetailPage() {
+interface FilterDetailPageProps {
+  /** 2026-06-15: mode switch. project (default) = /project-hub/:key/filters/...
+   *  links go to ph_issues-backed work + backlog surfaces. product builds the
+   *  same chrome with /product-hub/:key/... links + product hub_scope when
+   *  saving. Per CLAUDE.md "ADOPT CANONICAL COMPONENTS". */
+  mode?: 'project' | 'product';
+}
+
+export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageProps = {}) {
+  const isProduct = mode === 'product';
+  const hubBase = isProduct ? 'product-hub' : 'project-hub';
   const { key: projectKey, filterId } = useParams<{ key: string; filterId: string }>();
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
@@ -54,7 +64,7 @@ export default function FilterDetailPage() {
   });
 
   const backHref = projectKey
-    ? `/project-hub/${projectKey}/filters`
+    ? `/${hubBase}/${projectKey}/filters`
     : '/product-hub/filters';
 
   if (isLoading) {
@@ -180,13 +190,13 @@ export default function FilterDetailPage() {
               <>
                 <Button
                   appearance="subtle"
-                  onClick={() => navigate(`/project-hub/${projectKey}/allwork?filterId=${filter.id}`)}
+                  onClick={() => navigate(`/${hubBase}/${projectKey}/allwork?filterId=${filter.id}`)}
                 >
                   Open in all work
                 </Button>
                 <Button
                   appearance="primary"
-                  onClick={() => navigate(`/project-hub/${projectKey}/backlog?filterId=${filter.id}`)}
+                  onClick={() => navigate(`/${hubBase}/${projectKey}/backlog?filterId=${filter.id}`)}
                 >
                   Apply to backlog
                 </Button>
@@ -257,7 +267,7 @@ export default function FilterDetailPage() {
                 {linkedBoards.map(board => (
                   <a
                     key={board.id}
-                    href={projectKey ? `/project-hub/${projectKey}/board` : '#'}
+                    href={projectKey ? `/${hubBase}/${projectKey}/board` : '#'}
                     style={{
                       fontSize: 13,
                       color: token('color.link'),
@@ -345,6 +355,8 @@ export default function FilterDetailPage() {
       {editOpen && (
         <FilterSaveModal
           filter={filter}
+          hubScope={isProduct ? 'product' : 'project'}
+          {...(isProduct ? { productKey: projectKey } : {})}
           onClose={() => setEditOpen(false)}
           onSaved={() => setEditOpen(false)}
         />

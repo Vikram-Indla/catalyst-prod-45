@@ -11,6 +11,12 @@ export interface WidgetProps {
   projectKey: string;
   collapsed: boolean;
   onToggleCollapse: () => void;
+  /**
+   * 2026-06-15: when 'product', the widget queries business_requests
+   * instead of ph_issues. projectId is products.id, projectKey is
+   * products.code in that mode.
+   */
+  mode?: 'project' | 'product';
 }
 
 export interface WidgetDefinition {
@@ -32,4 +38,12 @@ export interface WidgetDefinition {
   minSpan?: WidgetSpan;
   defaultPosition: number;
   component: ComponentType<WidgetProps>;
+  /**
+   * 2026-06-15: when true, this widget is HIDDEN on product-hub dashboards
+   * (no entry in the gallery, never seeded into the layout). Used for
+   * widgets that have no business_requests equivalent — e.g. QA Defects,
+   * Production Incidents, Scope Change, Time in Status. Project mode
+   * unaffected.
+   */
+  hideOnProduct?: boolean;
 }

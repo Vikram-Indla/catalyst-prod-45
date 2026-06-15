@@ -14,7 +14,7 @@ import Textfield from '@atlaskit/textfield';
 import { Search, X } from '@/lib/atlaskit-icons';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
 import { Button } from '@/components/ads';
-import { WIDGET_REGISTRY, WIDGET_GROUPS } from './widget-registry';
+import { WIDGET_REGISTRY, WIDGET_GROUPS, getWidgetRegistry } from './widget-registry';
 
 interface WidgetGalleryModalProps {
   open: boolean;
@@ -22,6 +22,8 @@ interface WidgetGalleryModalProps {
   widgets: { id: string; visible: boolean }[];
   onToggleVisibility: (widgetId: string) => void;
   onReset: () => void;
+  /** 2026-06-15: mode-aware. Product hides BR-incompatible widgets. */
+  mode?: 'project' | 'product';
 }
 
 export default function WidgetGalleryModal({
@@ -30,13 +32,14 @@ export default function WidgetGalleryModal({
   widgets,
   onToggleVisibility,
   onReset,
+  mode = 'project',
 }: WidgetGalleryModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const visibilityMap = new Map(widgets.map((w) => [w.id, w.visible]));
 
   const filteredWidgets = useMemo(() => {
-    let list = WIDGET_REGISTRY;
+    let list = getWidgetRegistry(mode);
     if (activeCategory) {
       list = list.filter((w) => w.group === activeCategory);
     }
@@ -49,7 +52,7 @@ export default function WidgetGalleryModal({
       );
     }
     return list;
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, mode]);
 
   const categories = [
     { key: null, label: 'All', count: WIDGET_REGISTRY.length },

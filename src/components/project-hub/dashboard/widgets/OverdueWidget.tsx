@@ -31,6 +31,8 @@
 import type { WidgetProps } from '../widget-types';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOverdueItems } from '@/hooks/useDashboardWidgets';
+import { useProductDashboardData } from '@/hooks/useProductDashboardData';
+import { useMemo } from 'react';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { resolveColumns } from '../gadgetColumns';
 import { token } from '@atlaskit/tokens';
@@ -58,10 +60,15 @@ function severityAppearance(days: number): LozengeAppearance {
   return 'default';
 }
 
-export default function OverdueWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
+export default function OverdueWidget({ projectId, projectKey, collapsed, onToggleCollapse, mode = 'project' }: WidgetProps) {
+  const isProduct = mode === 'product';
   const { settings } = useGadgetSettings('overdue', projectKey);
   const activeColumns = resolveColumns('overdue', settings.columns ?? null);
-  const { data: items, isLoading } = useDashboardOverdueItems(projectId, {
+
+  /* Project: useDashboardOverdueItems(ph_issues). Product: filter BR rows
+     where end_date is in the past AND processStep isn't terminal, then
+     map to the same row shape. */
+  const projectQuery = useDashboardOverdueItems(isProduct ? '' : projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
     statusFilter: settings.statusFilter,
@@ -70,6 +77,38 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
   });
+  const productQuery = useProductDashboardData(isProduct ? projectId : null);
+  const productItems = useMemo(() => {
+    if (!isProduct) return [];
+    const rows = productQuery.data?.rows ?? [];
+    const TERMINAL = new Set(['done', 'approved', 'completed', 'closed', 'cancelled', 'rejected']);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayTs = today.getTime();
+    return rows
+      .filter((r) => {
+        if (!r.endDate) return false;
+        if (TERMINAL.has((r.processStep ?? '').toLowerCase().trim())) return false;
+        const t = new Date(r.endDate).getTime();
+        return Number.isFinite(t) && t < todayTs;
+      })
+      .map((r) => ({
+        id: r.id,
+        issue_key: r.requestKey,
+        summary: r.title,
+        status: r.processStep ?? '',
+        priority: r.urgency ?? '',
+        assignee_name: r.projectManagerName ?? null,
+        issue_type: 'Business Request',
+        due_date: r.endDate,
+        effective_due_date: r.endDate,
+        updated: r.updatedAt,
+        created: r.createdAt,
+      }));
+  }, [isProduct, productQuery.data]);
+
+  const items = isProduct ? productItems : projectQuery.data;
+  const isLoading = isProduct ? productQuery.isLoading : projectQuery.isLoading;
   const { openUWV } = useUWV();
 
   const all = items ?? [];

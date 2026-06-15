@@ -6,12 +6,6 @@ function IssueRedirectToBrowse() {
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
 
-function ProductTimelineRedirect() {
-  const { key } = useParams();
-  return <Navigate to={`/product-hub/${key ?? ''}/dashboard`} replace />;
-}
-
-
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
@@ -47,6 +41,7 @@ const MyTeamPageLazy = lazy(() => import("../pages/MyTeamPage"));
 // ProjectHub V5
 const ProjectListPageLazy = lazy(() => import("../pages/project-hub/ProjectListPage"));
 const ProjectDashboardPageLazy = lazy(() => import("../pages/project-hub/ProjectDashboardPage"));
+const StandupHistoryPageLazy = lazy(() => import("../pages/standups/StandupHistoryPage"));
 const PHProjectSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectSettingsPage"));
 const ProjectBoardPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardPage"));
 const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardManagerPage"));
@@ -183,6 +178,8 @@ const ProjectWorkspace = lazy(() => import("../pages/project/ProjectWorkspace"))
 const BoardView = lazy(() => import("../pages/project/BoardView"));
 const TimelineView = lazy(() => import("../pages/project/TimelineView"));
 const ProjectHubTimelinePage = lazy(() => import("../pages/project-hub/timeline/ProjectHubTimelinePage"));
+const ProductHubTimelinePage = lazy(() => import("../pages/product-hub/timeline/ProductHubTimelinePage"));
+const ProductTimelineDetailPage = lazy(() => import("../pages/product-hub/timeline/ProductTimelineDetailPage"));
 const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPage"));
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
@@ -482,13 +479,30 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductNativeBoardPage /></S></MG>} />
         <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductNativeAllWorkPage /></S></MG>} />
 
-        <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
+        {/* 2026-06-15: product dashboard now mounts the canonical
+            ProjectDashboardPage with mode='product' (per PO directive +
+            CLAUDE.md "ADOPT CANONICAL COMPONENTS"). The 4 BR-incompatible
+            widgets (scope-change, prod-incidents, qa-defects, time-in-status)
+            are filtered from the gallery via getWidgetRegistry('product').
+            ProductDashboardPageV2 left on disk pending Phase B sign-off. */}
+        <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProjectDashboardPageLazy mode="product" /></S></MG>} />
+        {/* 2026-06-15: standup history reachable from the board kebab menu
+            ("Standup history"). Same page on both hubs — projectKey is the
+            standups.project_key text column, which accepts product codes too. */}
+        <Route path="/product-hub/:key/standups" element={<MG k="producthub" t="ProductHub"><S><StandupHistoryPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/product-hub/:key/timeline" element={<ProductTimelineRedirect />} />
+        <Route path="/product-hub/:key/timeline/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductTimelineDetailPage /></S></MG>} />
+        <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePage /></S></MG>} />
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
-        <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><ProductFilterPreviewPageLazy /></S></MG>} />
+        {/* 2026-06-15: filter create + detail now route to the canonical
+            project-hub pages with mode='product' (per CLAUDE.md "ADOPT
+            CANONICAL COMPONENTS"). The parallel ProductFilterPreviewPage is
+            no longer mounted by any route; kept on disk pending PO sign-off
+            before deletion. */}
+        <Route path="/product-hub/:key/filters/create" element={<MG k="producthub" t="ProductHub"><S><FilterPreviewPageLazy mode="product" /></S></MG>} />
+        <Route path="/product-hub/:key/filters/:filterId" element={<MG k="producthub" t="ProductHub"><S><FilterDetailPageLazy mode="product" /></S></MG>} />
         {/* Global /product-hub/filters[/create] retired 2026-06-01 — filters are
             per-product. Anyone deep-linking to the old global path lands on the
             products listing. Per-product filters still live at /product-hub/:key/filters. */}
@@ -902,6 +916,8 @@ export default function FullAppRoutes() {
         <Route path="/resources" element={<S><R360ProfilePageLazy /></S>} />
         <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
         <Route path="/project-hub/:key/dashboard" element={<S><ProjectDashboardPageLazy /></S>} />
+        {/* 2026-06-15: standup history (sidebar tab retired). */}
+        <Route path="/project-hub/:key/standups" element={<S><StandupHistoryPageLazy /></S>} />
         <Route path="/project-hub/:key/settings" element={<S><PHProjectSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/backlog" element={<S><UnifiedBacklogPageLazy /></S>} />
         <Route path="/project-hub/:key/backlog/:issueKey" element={<S><BacklogDetailPageLazy /></S>} />

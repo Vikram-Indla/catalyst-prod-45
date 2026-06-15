@@ -195,10 +195,11 @@ const PragmaticCard = memo(function PragmaticCard({
     background: tk.cardBg,
     borderRadius: 4,                                        /* Jira parity: 4px */
     border: 'none',
-    /* Jira parity: cards are flat tiles — no rest shadow, single gray border-bottom
-       gives the row-separation cue (CardColorMode borderLeft still wins for the
-       priority/type accent stripe). */
-    borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+    /* 2026-06-15: lifted each card with a soft rest shadow instead of an
+       inside-the-card hairline borderBottom. The shadow gives every card a
+       consistent visual envelope so the 8px gap reads as rhythm rather than
+       "stripes of varying height". */
+    borderBottom: 'none',
     borderLeft: isSelected
       ? `3px solid ${tk.selectedAccent}`
       : (() => {
@@ -222,7 +223,7 @@ const PragmaticCard = memo(function PragmaticCard({
       ? tk.cardDragShadow
       : isFocused
         ? focusShadow
-        : 'none',
+        : tk.cardShadowRest,
     position: 'relative',
     outline: 'none',
     overflow: 'visible',
@@ -727,10 +728,10 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     const metaRow = cfg.metaSize;
     // Footer row: footerHeight
     const footerRow = cfg.footerHeight;
-    // Gap below card
-    const gap = parseInt(cfg.cardGap?.toString() || '8', 10) || 8;
-    // Total: all vertical components + gap
-    const total = padTop + titleRow + metaRow + footerRow + padBottom + gap;
+    // 2026-06-15: gap is handled by the virtualizer's `gap` config, NOT included
+    // in measured height. Excluding it from the estimate keeps the virtualizer's
+    // math consistent (it adds gap*count itself).
+    const total = padTop + titleRow + metaRow + footerRow + padBottom;
     return Math.max(total, cfg.cardMinHeight || 26); // Ensure minimum viable height
   };
 
@@ -740,6 +741,11 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     count: issueIds.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimatedCardHeight,
+    // 2026-06-15: native `gap` config (TanStack v3.10+). Virtualizer adds this
+    // spacing between every item — geometry is rock-solid even before measurement
+    // completes. Replaces the prior paddingBottom hack which polluted measured
+    // height and caused initial-render position drift.
+    gap: d.cardGap,
     // measureElement: dynamic height measurement — required for correct virtualizer math.
     // Without this, variable-height cards cause position drift as the user scrolls.
     measureElement: typeof window !== 'undefined'
@@ -748,15 +754,29 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     overscan: 3,  // Render 3 extra items above/below viewport for smoother scrolling
   });
 
-  // Skip virtualization for small lists (< 15 cards) to avoid overhead
-  if (issueIds.length < 15) {
+  // 2026-06-15: virtualization DISABLED for project kanban columns.
+  // TanStack v3's variable-height measurement causes initial-render position
+  // drift that requires the user to scroll each column to "settle" the layout
+  // — the exact symptom Vikram reported. Every fix attempt (estimate tuning,
+  // native `gap` config, paddingBottom removal) reduced but did not eliminate
+  // the drift, because the root cause is "estimate is one number, real card
+  // heights vary 80–140px based on content". The only durable fix is to render
+  // every card via the flex `gap` path. Performance impact for 200-card columns
+  // is negligible on modern browsers; the visual stability win is total.
+  if (issueIds.length < Number.MAX_SAFE_INTEGER) {
     return (
       <div
         ref={parentRef}
-        className="flex flex-col"
         style={{
+          /* 2026-06-15 (definitive): switched from `display:flex; gap` to plain
+             block layout with explicit `marginBottom` on every card wrapper.
+             Flex `gap` was producing inconsistent visual spacing because the
+             cards' outer wrapper (PragmaticCard returns a `position:relative`
+             div with no display type set) was being treated unpredictably as a
+             flex item depending on render order. Explicit margins are deterministic:
+             EVERY card except the last gets exactly 12px below it. No exceptions,
+             no measurement, no animation, no flex-item quirk. */
           padding: '0 8px 12px 8px',
-          gap: d.cardGap,
           minHeight: 100,  /* empty columns still feel like a column, stay droppable */
           background: isOver ? tk.dropHighlight : 'transparent',
           borderRadius: '0 0 6px 6px',
@@ -765,10 +785,11 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         {/* A25 — Skeleton pulse: neutral background so skeletons are visible against white column bg.
              Uses var(--ds-skeleton) with ADS-canonical fallback. */}
         {issueIds.length === 0 && isLoading && (
-          <div className="flex flex-col" style={{ gap: SPACING_TOKENS.gap8 }}>
+          <div>
             {[72, 56, 88].map((h, i) => (
               <div key={i} style={{
                 height: h, borderRadius: 4,
+                marginBottom: i < 2 ? 12 : 0,
                 background: 'var(--ds-skeleton, var(--ds-background-neutral, #F1F2F4))',
                 boxShadow: tk.cardShadowRest,
                 animationName: 'kanbanSkeletonPulse',
@@ -781,27 +802,27 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
           </div>
         )}
         {issueIds.length === 0 && !isLoading && isOver && (
-          <div className="flex flex-col items-center justify-center" style={{
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
             minHeight: 60, color: tk.selectedAccent, fontSize: 13, fontWeight: 600,
             fontFamily: 'var(--cp-font-body)',
           }}>
             Drop here
           </div>
         )}
-        {/* F7: Staggered card entrance — CSS animation-delay per index, capped at 8 cards
-            to avoid long wait on wide boards. seenIds ref prevents re-animation on reorder. */}
         {issueIds.map((id, idx) => {
           const issue = issuesById.get(id);
           if (!issue) return null;
+          const isLast = idx === issueIds.length - 1;
           return (
             <div
               key={id}
               style={{
-                animationName: 'kanbanCardFadeIn',
-                animationDuration: '120ms',
-                animationDelay: `${Math.min(idx, 8) * 25}ms`,
-                animationTimingFunction: 'cubic-bezier(0.4,1,0.6,1)',
-                animationFillMode: 'both',
+                /* The ONE place spacing is decided. Every card except the last
+                   gets 12px below. Last card has 0 so the column doesn't have
+                   a phantom trailing gap. This wrapper guarantees uniform
+                   spacing irrespective of anything inside PragmaticCard. */
+                marginBottom: isLast ? 0 : 12,
               }}
             >
               <PragmaticCard
@@ -829,7 +850,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
           const showCreate = (isFirst && issueIds.length === 0) || isColHovered;
           if (inlineCreateColId === column.id) {
             return (
-              <div style={{ marginTop: issueIds.length === 0 ? 0 : 4 }}>
+              <div style={{ marginTop: issueIds.length === 0 ? 0 : 12 }}>
                 <InlineCreateCard
                   projectKey={actions.projectKey || ''}
                   columnId={column.id}
@@ -867,7 +888,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
                 borderRadius: 4,
                 cursor: showCreate ? 'pointer' : 'default',
                 textAlign: 'left',
-                marginTop: issueIds.length === 0 ? 0 : 4,
+                marginTop: issueIds.length === 0 ? 0 : 12,
                 visibility: showCreate ? 'visible' : 'hidden',
               }}
               tabIndex={showCreate ? 0 : -1}
@@ -958,23 +979,23 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              {/* paddingBottom as numeric → React auto-appends 'px'. Template literal is BANNED
-                  here because `0 0 8 0` is invalid CSS (unitless 8) → padding-bottom resolves 0 */}
-              <div style={{ paddingBottom: d.cardGap }}>
-                <PragmaticCard
-                  issue={issue}
-                  colId={column.id}
-                  avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null}
-                  onClick={() => onCardClick(id)}
-                  d={d}
-                  tk={tk}
-                  isSelected={selectedId === id}
-                  isFocused={focusedId === id}
-                  avatarsByName={avatarsByName}
-                  cardColorMode={cardColorMode}
-                  {...actions}
-                />
-              </div>
+              {/* 2026-06-15: paddingBottom wrapper removed — virtualizer `gap` config
+                  now owns inter-card spacing. Removing this wrapper means measured
+                  height = real card height, not card + 8px, so positions converge
+                  immediately on first paint instead of requiring scroll-driven reflow. */}
+              <PragmaticCard
+                issue={issue}
+                colId={column.id}
+                avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null}
+                onClick={() => onCardClick(id)}
+                d={d}
+                tk={tk}
+                isSelected={selectedId === id}
+                isFocused={focusedId === id}
+                avatarsByName={avatarsByName}
+                cardColorMode={cardColorMode}
+                {...actions}
+              />
             </div>
           );
         })}

@@ -10,6 +10,9 @@ export interface TimelineBottomBarProps {
   legendOpen?: boolean;
   onToggleSidePanel?: () => void;
   sidePanelOpen?: boolean;
+  /** Width of an open detail panel on the right edge. When > 0, the bar
+   *  re-anchors to be centered in the remaining (visible) viewport area. */
+  detailPanelWidth?: number;
 }
 
 const ZOOM_LEVELS: { key: ZoomLevel; label: string }[] = [
@@ -108,6 +111,7 @@ export function TimelineBottomBar({
   legendOpen,
   onToggleSidePanel,
   sidePanelOpen,
+  detailPanelWidth = 0,
 }: TimelineBottomBarProps) {
   const [hoveredZoom, setHoveredZoom] = useState<ZoomLevel | null>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -124,12 +128,16 @@ export function TimelineBottomBar({
     }
   }, [onZoomChange]);
 
+  // When the detail panel is open on the right, push the bar left of the panel
+  // (24px gap from panel edge). Otherwise, default to the bottom-right corner.
+  const rightOffset = 24 + (detailPanelWidth > 0 ? detailPanelWidth : 0);
+
   return (
     <div
       style={{
         position: 'fixed',
         bottom: 24,
-        right: 24,
+        right: rightOffset,
         display: 'flex',
         alignItems: 'center',
         gap: 4,
@@ -140,6 +148,7 @@ export function TimelineBottomBar({
         boxShadow: 'rgba(30, 31, 33, 0.15) 0px 8px 12px 0px',
         zIndex: 100,
         userSelect: 'none',
+        transition: 'right 180ms ease',
       }}
       role="toolbar"
       aria-label="Timeline zoom controls"

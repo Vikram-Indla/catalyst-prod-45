@@ -20,13 +20,108 @@
  *   { issueId, issueKey, issueType, summary, status, dueDate?, assigneeId? }
  */
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useLayoutEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import Calendar from '@atlaskit/calendar';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import type { AssigneeOption } from './AssigneePickerPopover';
+
+/* 2026-06-15: SmartPopover — portal-based popover that auto-positions itself
+   in the direction with the most available viewport space. Flips above/below
+   the trigger based on space, shifts horizontally to stay inside the viewport.
+   Replaces the prior `position: absolute; top: calc(100% + 4px)` pattern that
+   clipped when the inline-create form sat near the bottom of the screen. */
+function SmartPopover({
+  isOpen,
+  triggerRef,
+  align = 'left',
+  minWidth,
+  children,
+}: {
+  isOpen: boolean;
+  triggerRef: React.RefObject<HTMLElement | null>;
+  align?: 'left' | 'right';
+  minWidth?: number;
+  children: React.ReactNode;
+}) {
+  const popRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  const recompute = useCallback(() => {
+    const t = triggerRef.current;
+    const p = popRef.current;
+    if (!t || !p) return;
+    const tr = t.getBoundingClientRect();
+    const pr = p.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const GAP = 4;
+    const MARGIN = 8;
+
+    const spaceBelow = vh - tr.bottom - MARGIN;
+    const spaceAbove = tr.top - MARGIN;
+    let top: number;
+    if (pr.height <= spaceBelow) top = tr.bottom + GAP;
+    else if (pr.height <= spaceAbove) top = tr.top - GAP - pr.height;
+    else if (spaceBelow >= spaceAbove) top = tr.bottom + GAP;
+    else top = Math.max(MARGIN, tr.top - GAP - pr.height);
+
+    let left: number;
+    if (align === 'right') left = tr.right - pr.width;
+    else left = tr.left;
+    if (left + pr.width > vw - MARGIN) left = vw - pr.width - MARGIN;
+    if (left < MARGIN) left = MARGIN;
+
+    setPos({ top, left });
+  }, [align, triggerRef]);
+
+  useLayoutEffect(() => {
+    if (isOpen) recompute();
+    else setPos(null);
+  }, [isOpen, recompute]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const ro = new ResizeObserver(() => recompute());
+    if (popRef.current) ro.observe(popRef.current);
+    const onResize = () => recompute();
+    window.addEventListener('resize', onResize);
+    window.addEventListener('scroll', onResize, true);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('scroll', onResize, true);
+    };
+  }, [isOpen, recompute]);
+
+  if (!isOpen) return null;
+  return createPortal(
+    <div
+      ref={popRef}
+      data-inline-create-portal="true"
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        position: 'fixed',
+        top: pos?.top ?? -9999,
+        left: pos?.left ?? -9999,
+        visibility: pos ? 'visible' : 'hidden',
+        zIndex: 10000,
+        minWidth,
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 6,
+        boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+      }}
+    >
+      {children}
+    </div>,
+    document.body,
+  );
+}
 
 export interface CreatedIssue {
   issueId: string;
@@ -55,6 +150,12 @@ interface InlineCreateCardProps {
   assigneeOptions?: AssigneeOption[];
   /** Lower-case-name → avatar URL map used to render avatars in the picker. */
   avatarsByName?: Map<string, string>;
+  /** 2026-06-15: insert target.
+   *    'project' (default) → ph_issues, generated issue_key
+   *    'product'           → business_requests, generated MIM-N request_key
+   *  When 'product', `projectKey` holds the product CODE (e.g. 'INV') and
+   *  is used to resolve `products.id` for the insert. */
+  mode?: 'project' | 'product';
   onCreateCard: (issue: CreatedIssue) => void;
   onCancel: () => void;
 }
@@ -76,11 +177,18 @@ function InlineCreateCardComponent({
   creatableTypes,
   assigneeOptions = [],
   avatarsByName,
+  mode = 'project',
   onCreateCard,
   onCancel,
 }: InlineCreateCardProps) {
   const [summary, setSummary] = useState('');
-  const [issueName, setIssueName] = useState('Story');
+  /* 2026-06-15: initial issueName is the first entry of the active type
+     list, so product mode (creatableTypes=['Business Request']) opens with
+     the correct selected type instead of the project default 'Story'. */
+  const [issueName, setIssueName] = useState<string>(() => {
+    const list = (creatableTypes && creatableTypes.length > 0) ? creatableTypes : null;
+    return list?.[0] ?? 'Story';
+  });
   const [dueDate, setDueDate] = useState('');           // ISO yyyy-mm-dd
   const [assigneeName, setAssigneeName] = useState<string>('');
   const [assigneeSearch, setAssigneeSearch] = useState('');
@@ -98,6 +206,12 @@ function InlineCreateCardComponent({
   const summaryRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const typeDropdownRef = useRef<HTMLDivElement>(null);
+  /* 2026-06-15: button refs for SmartPopover anchor points. The popovers now
+     portal to document.body and position relative to these trigger rects, so
+     they always render in the viewport region with the most available space. */
+  const typeTriggerRef = useRef<HTMLButtonElement>(null);
+  const dateTriggerRef = useRef<HTMLButtonElement>(null);
+  const assigneeTriggerRef = useRef<HTMLButtonElement>(null);
 
   // The creatable type list (string names — icon comes from JiraIssueTypeIcon)
   const issueTypes = creatableTypes && creatableTypes.length > 0
@@ -152,19 +266,22 @@ function InlineCreateCardComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Close child popovers (type + assignee + date) on click outside their panels.
+  /* Close child popovers (type + assignee + date) on click outside.
+     A click counts as INSIDE when it lands on the trigger button itself or
+     anywhere within a portaled popover (data-inline-create-portal="true"). */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node | null;
+      const target = e.target as Element | null;
       if (!target) return;
-      if (datePickerRef.current && !datePickerRef.current.contains(target)) {
+      const inPortal = target.closest && target.closest('[data-inline-create-portal="true"]');
+      if (!inPortal && !typeTriggerRef.current?.contains(target)) {
+        setShowTypeDropdown(false);
+      }
+      if (!inPortal && !dateTriggerRef.current?.contains(target)) {
         setShowDatePicker(false);
       }
-      if (assigneePickerRef.current && !assigneePickerRef.current.contains(target)) {
+      if (!inPortal && !assigneeTriggerRef.current?.contains(target)) {
         setShowAssigneeDropdown(false);
-      }
-      if (typeDropdownRef.current && !typeDropdownRef.current.contains(target)) {
-        setShowTypeDropdown(false);
       }
     };
     document.addEventListener('click', handleClickOutside, { capture: true });
@@ -231,49 +348,107 @@ function InlineCreateCardComponent({
     setIsSubmitting(true);
     setError('');
     try {
-      // Mirror useCreateStoryMutation's pattern: generate a real issue_key
-      // and insert directly into ph_issues with source='catalyst'. The host's
-      // onCreateCard then invalidates ['kanban-issues', key]; the refetch
-      // picks up the new row, rawIssues updates → the colMap useEffect
-      // rebuilds → the card appears in its destination column with no
-      // manual page refresh.
-      const issueKey = await generateIssueKey(projectKey);
       const nowIso = new Date().toISOString();
-      const insertRow: Record<string, any> = {
-        project_key: projectKey,
-        issue_key: issueKey,
-        summary: summary.trim(),
-        issue_type: issueName,
-        status: status || 'To Do',
-        priority: 'Medium',
-        labels: [],
-        source: 'catalyst',
-        jira_created_at: nowIso,
-        jira_updated_at: nowIso,
-        description_text: null,
-        description_adf: null,
-        parent_key: null,
-        assignee_display_name: assigneeName || null,
-        due_date: dueDate || null,
-      };
 
-      const { data, error: insErr } = await supabase
-        .from('ph_issues')
-        .insert(insertRow as any)
-        .select('id, issue_key')
-        .single();
-      if (insErr) throw insErr;
+      if (mode === 'product') {
+        /* 2026-06-15: PRODUCT branch — insert into business_requests.
+           projectKey holds the product CODE; we resolve products.id. */
+        const { data: prodRow, error: prodErr } = await (supabase as any)
+          .from('products').select('id').eq('code', projectKey).eq('is_active', true).maybeSingle();
+        if (prodErr) throw prodErr;
+        const productId = (prodRow as { id: string } | null)?.id ?? null;
+        if (!productId) throw new Error(`No active product found for code ${projectKey}`);
 
-      const createdIssue: CreatedIssue = {
-        issueId: (data as any)?.id ?? issueKey,
-        issueKey: (data as any)?.issue_key ?? issueKey,
-        issueType: issueName,
-        summary: summary.trim(),
-        status: status || 'To Do',
-        dueDate: dueDate || undefined,
-        assigneeId: assigneeName || undefined,
-      };
-      onCreateCard(createdIssue);
+        /* Resolve assignee display name → profile.id for project_manager_user_id. */
+        let projectManagerUserId: string | null = null;
+        if (assigneeName) {
+          const { data: prof } = await supabase
+            .from('profiles').select('id').eq('full_name', assigneeName).maybeSingle();
+          projectManagerUserId = (prof as { id: string } | null)?.id ?? null;
+        }
+
+        /* Generate MIM-N request_key (same pattern as useKanbanMutations). */
+        const { data: keyRows } = await (supabase as any)
+          .from('business_requests').select('request_key').not('request_key', 'is', null).limit(2000);
+        let maxNum = 0;
+        ((keyRows ?? []) as Array<{ request_key: string | null }>).forEach((r) => {
+          const m = r.request_key?.match(/MIM-(\d+)/);
+          if (m) {
+            const n = parseInt(m[1], 10);
+            if (!Number.isNaN(n) && n > maxNum) maxNum = n;
+          }
+        });
+        const requestKey = maxNum === 0
+          ? `MIM-${Date.now().toString().slice(-6)}`
+          : `MIM-${maxNum + 1}`;
+
+        const insertRow: Record<string, any> = {
+          request_key: requestKey,
+          product_id: productId,
+          title: summary.trim(),
+          process_step: status || 'new_request',
+          urgency: 'Medium',
+          is_flagged: false,
+          tags: [],
+          project_manager_user_id: projectManagerUserId,
+          created_at: nowIso,
+          updated_at: nowIso,
+        };
+        const { data, error: insErr } = await (supabase as any)
+          .from('business_requests')
+          .insert(insertRow)
+          .select('id, request_key')
+          .single();
+        if (insErr) throw insErr;
+
+        const createdIssue: CreatedIssue = {
+          issueId: (data as any)?.id ?? requestKey,
+          issueKey: (data as any)?.request_key ?? requestKey,
+          issueType: issueName,
+          summary: summary.trim(),
+          status: status || 'new_request',
+          assigneeId: assigneeName || undefined,
+        };
+        onCreateCard(createdIssue);
+      } else {
+        // PROJECT branch — insert into ph_issues with source='catalyst'.
+        const issueKey = await generateIssueKey(projectKey);
+        const insertRow: Record<string, any> = {
+          project_key: projectKey,
+          issue_key: issueKey,
+          summary: summary.trim(),
+          issue_type: issueName,
+          status: status || 'To Do',
+          priority: 'Medium',
+          labels: [],
+          source: 'catalyst',
+          jira_created_at: nowIso,
+          jira_updated_at: nowIso,
+          description_text: null,
+          description_adf: null,
+          parent_key: null,
+          assignee_display_name: assigneeName || null,
+          due_date: dueDate || null,
+        };
+
+        const { data, error: insErr } = await supabase
+          .from('ph_issues')
+          .insert(insertRow as any)
+          .select('id, issue_key')
+          .single();
+        if (insErr) throw insErr;
+
+        const createdIssue: CreatedIssue = {
+          issueId: (data as any)?.id ?? issueKey,
+          issueKey: (data as any)?.issue_key ?? issueKey,
+          issueType: issueName,
+          summary: summary.trim(),
+          status: status || 'To Do',
+          dueDate: dueDate || undefined,
+          assigneeId: assigneeName || undefined,
+        };
+        onCreateCard(createdIssue);
+      }
 
       // Clear form (the form is also unmounted by the host after this returns)
       setSummary('');
@@ -388,9 +563,10 @@ function InlineCreateCardComponent({
 
       {/* Bottom toolbar: type · date · assignee · (spacer) · enter */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-        {/* Type icon dropdown */}
+        {/* Type icon dropdown — portaled, smart-positioned. */}
         <div ref={typeDropdownRef} style={{ position: 'relative' }}>
           <button
+            ref={typeTriggerRef}
             type="button"
             disabled={isSubmitting}
             onClick={() => setShowTypeDropdown(v => !v)}
@@ -402,8 +578,8 @@ function InlineCreateCardComponent({
           >
             <JiraIssueTypeIcon type={issueName.toLowerCase()} size={16} />
           </button>
-          {showTypeDropdown && (
-            <div data-inline-create-portal="true" style={{ ...popoverStyle, minWidth: 200, padding: '4px 0' }}>
+          <SmartPopover isOpen={showTypeDropdown} triggerRef={typeTriggerRef} minWidth={200}>
+            <div style={{ padding: '4px 0' }}>
               {issueTypes.map((name) => (
                 <button
                   key={name}
@@ -428,7 +604,7 @@ function InlineCreateCardComponent({
                 </button>
               ))}
             </div>
-          )}
+          </SmartPopover>
         </div>
 
         {/* Calendar / due date — icon trigger opens an Atlaskit Calendar
@@ -436,6 +612,7 @@ function InlineCreateCardComponent({
             Clear/Today chrome. */}
         <div ref={datePickerRef} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
           <button
+            ref={dateTriggerRef}
             type="button"
             disabled={isSubmitting}
             onClick={toggleDatePicker}
@@ -461,12 +638,8 @@ function InlineCreateCardComponent({
               <span style={{ fontSize: 12, fontWeight: 500 }}>{formatDueDate(dueDate)}</span>
             )}
           </button>
-          {showDatePicker && (
-            <div
-              data-inline-create-portal="true"
-              style={{ ...popoverStyle, padding: 6 }}
-              onMouseDown={e => e.stopPropagation()}
-            >
+          <SmartPopover isOpen={showDatePicker} triggerRef={dateTriggerRef}>
+            <div style={{ padding: 6 }}>
               <Calendar
                 selected={dueDate ? [dueDate] : []}
                 defaultSelected={dueDate ? [dueDate] : []}
@@ -476,12 +649,13 @@ function InlineCreateCardComponent({
                 }}
               />
             </div>
-          )}
+          </SmartPopover>
         </div>
 
         {/* Assignee avatar */}
         <div style={{ position: 'relative' }}>
           <button
+            ref={assigneeTriggerRef}
             type="button"
             disabled={isSubmitting}
             onClick={() => setShowAssigneeDropdown(v => !v)}
@@ -534,12 +708,8 @@ function InlineCreateCardComponent({
               </span>
             )}
           </button>
-          {showAssigneeDropdown && (
-            <div
-              ref={assigneePickerRef}
-              data-inline-create-portal="true"
-              style={{ ...popoverStyle, minWidth: 240, maxHeight: 280, overflowY: 'auto' }}
-            >
+          <SmartPopover isOpen={showAssigneeDropdown} triggerRef={assigneeTriggerRef} minWidth={240}>
+            <div ref={assigneePickerRef} style={{ maxHeight: 280, overflowY: 'auto' }}>
               <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
                 <input
                   type="text"
@@ -632,7 +802,7 @@ function InlineCreateCardComponent({
                 )}
               </div>
             </div>
-          )}
+          </SmartPopover>
         </div>
 
         <span style={{ flex: 1 }} />

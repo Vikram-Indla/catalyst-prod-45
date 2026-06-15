@@ -23,6 +23,7 @@ import {
   NavBacklogIcon,
   NavWorkIcon,
   NavFiltersIcon,
+  NavTimelineIcon,
 } from '@/lib/nav-icons';
 import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -73,6 +74,9 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
           { id: 'backlog',   title: 'Backlog',   path: `${base}/backlog`,   icon: NavBacklogIcon,   exact: false },
           { id: 'allwork',   title: 'Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
           { id: 'filters',   title: 'Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
+          { id: 'timeline',  title: 'Timeline',  path: `${base}/timeline`,  icon: NavTimelineIcon,  exact: false },
+          /* 2026-06-15: Standups sidebar item retired. Reachable from the
+             board's kebab menu → "Standup history". */
         ],
       },
     ],
