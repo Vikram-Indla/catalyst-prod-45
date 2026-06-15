@@ -44,7 +44,7 @@ import { sortRows, cycleSort, type SortField, type SortState } from './sort';
 import { computeNewPosition, rebalancePositions } from './reorder';
 import { WorkCell } from './cells/WorkCell';
 import { useAtlaskitThemeSync } from './atlaskitTheme';
-import { allowedChildTypes, panelTitleFor } from './hierarchy';
+import { resolveAllowedChildTypes, panelTitleFor } from './hierarchy';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
 import { AiSuggestChildrenPanel } from './AiSuggestChildrenPanel';
 import { DescriptionPopover } from './DescriptionPopover';
@@ -101,6 +101,14 @@ interface SubtasksPanelProps {
    */
   parentSource?: 'jira' | 'catalyst';
   parentProjectId?: string | null;
+  /**
+   * Per-surface override for the inline-create type picker. When supplied
+   * (non-empty), these exact types are offered instead of the canonical
+   * parent→child rules — used by the Business Request detail view to scope
+   * creation to its 5 subtask categories without mutating the shared
+   * hierarchy map (2026-06-15). Absent/empty → canonical rules apply.
+   */
+  childTypeOverride?: string[];
 }
 
 // ─── Type selector for inline create ────────────────────
@@ -229,14 +237,17 @@ function InlineSummaryEditor({
 // ─── Main component ─────────────────────────────────────
 export function SubtasksPanel({
   storyKey, storyId, projectKey, onSubtaskClick, parentIssueType, parentSummary, title,
-  parentSource = 'jira', parentProjectId = null,
+  parentSource = 'jira', parentProjectId = null, childTypeOverride,
 }: SubtasksPanelProps) {
   useAtlaskitThemeSync();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
   // ─── Hierarchy-driven config ─────────────────────────
-  const allowedTypes = useMemo(() => allowedChildTypes(parentIssueType), [parentIssueType]);
+  const allowedTypes = useMemo(
+    () => resolveAllowedChildTypes(parentIssueType, childTypeOverride),
+    [parentIssueType, childTypeOverride],
+  );
   const canCreate = allowedTypes.length > 0;
   const effectiveTitle = title ?? panelTitleFor(parentIssueType);
   const defaultDraftType = allowedTypes[0] ?? 'Sub-task';

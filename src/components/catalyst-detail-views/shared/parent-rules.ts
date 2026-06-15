@@ -184,6 +184,24 @@ export const BUSINESS_GAP_PARENT_RULE: ParentLinkRule = {
   useBusinessRequests: true,
 };
 
+/**
+ * BUSINESS REQUEST SUBTASK CATEGORIES (2026-06-15, Vikram).
+ *
+ * The 5 subtask categories a Business Request can contain. These are
+ * Catalyst-native (NOT in Jira) and persist to catalyst_issues with
+ * parent_key = the BR request_key. Scoped to the Product-Hub BR detail
+ * view via SubtasksPanel.childTypeOverride — they do NOT alter the
+ * canonical ALLOWED_CHILD_TYPES['Business Request'] = ['Epic'] mapping
+ * used by the ph_issues hierarchy (Q1, scoped to MDT BRs only).
+ */
+export const BUSINESS_REQUEST_SUBTASK_TYPES = [
+  'BRD Task',
+  'Business Gap',
+  'Change Request',
+  'UAT Finding',
+  'Figma',
+] as const;
+
 /** Returns true if the given type string is in the subtask family. */
 export function isSubtaskFamily(issueType: string): boolean {
   const t = (issueType || '').toLowerCase().trim();
