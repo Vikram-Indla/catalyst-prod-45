@@ -48,6 +48,13 @@ export interface SidebarRowProps {
   enableMenu?: boolean;
   /* mutations (used by menu / inline create / edit dates) */
   mutations?: TimelineMutations;
+  /** Override the inline-create type picker options. Default is derived from
+   *  the parent issue type (Epic → Story/Feature/Task, etc.). Product hub
+   *  passes ['Business Request'] so the picker collapses to a single option. */
+  childTypesOverride?: string[];
+  /** When true, only group rows can have children. Used by product hub so
+   *  BR rows inside a group don't show a "+" button. */
+  childrenOnlyOnGroupRows?: boolean;
 }
 
 export function SidebarRow({
@@ -65,6 +72,8 @@ export function SidebarRow({
   enableInlineCreate = true,
   enableMenu = true,
   mutations,
+  childTypesOverride,
+  childrenOnlyOnGroupRows = false,
 }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
   const progress = enableProgress && hasChildren ? computeEpicProgress(issue) : null;
@@ -90,15 +99,28 @@ export function SidebarRow({
   const [depsSaving, setDepsSaving] = useState(false);
   const [existingLinks, setExistingLinks] = useState<any[]>([]);
 
-  const childTypes = issue.issueType === 'Epic'
-    ? ['Story', 'Feature', 'Task']
-    : issue.issueType === 'Feature'
-    ? ['Story', 'Task']
-    : issue.issueType === 'Story'
-    ? ['Sub-task', 'Task']
-    : ['Sub-task'];
+  /* Group rows lock the inline-create type picker to the group's own type so
+     a new BR inherits its bucket. */
+  const childTypes = issue.isGroup
+    ? [issue.issueType]
+    : childTypesOverride ?? (
+        issue.issueType === 'Epic'
+          ? ['Story', 'Feature', 'Task']
+          : issue.issueType === 'Feature'
+          ? ['Story', 'Task']
+          : issue.issueType === 'Story'
+          ? ['Sub-task', 'Task']
+          : ['Sub-task']
+      );
 
-  const canHaveChildren = !['Sub-task', 'Backend', 'Frontend', 'Integration', 'Idea', 'Business Request', 'Business Gap'].includes(issue.issueType ?? '');
+  /* `childrenOnlyOnGroupRows` (product hub) restricts "+" to group rows.
+     Otherwise: a `childTypesOverride` from the hub is the authoritative
+     "yes, I want creation enabled on this row" signal — bypasses the
+     type-based exclusion list (which is Jira-specific). */
+  const canHaveChildren = childrenOnlyOnGroupRows
+    ? !!issue.isGroup
+    : (!!childTypesOverride
+        || !['Sub-task', 'Backend', 'Frontend', 'Integration', 'Idea'].includes(issue.issueType ?? ''));
 
   useEffect(() => {
     if (inlineCreateOpen && inlineCreateInputRef.current) inlineCreateInputRef.current.focus();
@@ -264,13 +286,21 @@ export function SidebarRow({
         transition: 'background 80ms ease',
         position: 'relative',
       }}
-      onClick={() => navigate(buildIssueDetailRoute(issue.issueKey))}
+      onClick={() => {
+        /* Group header rows aren't routable; clicking the row toggles
+           collapse instead of opening a non-existent detail view. */
+        if (issue.isGroup) {
+          if (hasChildren) onToggle(issue.issueKey);
+          return;
+        }
+        navigate(buildIssueDetailRoute(issue.issueKey));
+      }}
       aria-expanded={hasChildren ? !collapsed : undefined}
       onMouseEnter={() => setRowHovered(true)}
       onMouseLeave={() => { if (!menuOpen) setRowHovered(false); }}
     >
-      {/* row checkbox */}
-      {enableCheckbox && (
+      {/* row checkbox — group rows aren't selectable */}
+      {enableCheckbox && !issue.isGroup && (
         <div
           style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           onClick={e => e.stopPropagation()}
@@ -283,6 +313,11 @@ export function SidebarRow({
             style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-background-selected-bold, #0052CC)', margin: 0 }}
           />
         </div>
+      )}
+      {/* Spacer to keep BR rows aligned when the group row above takes the
+          checkbox slot back. Mirrors the 16px width + flex layout. */}
+      {enableCheckbox && issue.isGroup && (
+        <div style={{ width: 16, flexShrink: 0 }} aria-hidden />
       )}
 
       {/* collapse toggle */}
@@ -308,34 +343,55 @@ export function SidebarRow({
 
       {/* text block */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-        {issue.issueKey.includes('-LOCAL-') ? (
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', whiteSpace: 'nowrap', lineHeight: 1.3, flexShrink: 0, fontFamily: 'var(--ds-font-family-body)' }}>
-            Saving…
-          </span>
-        ) : (
-          <button
-            type="button"
-            onClick={e => { e.stopPropagation(); navigate(buildIssueDetailRoute(issue.issueKey)); }}
-            style={{
-              fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
-              whiteSpace: 'nowrap', lineHeight: 1.3,
-              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+        {issue.isGroup ? (
+          /* Group rows show a bold label + child count, no key. */
+          <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <span style={{
+              fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
+              fontFamily: 'var(--ds-font-family-body)',
+            }}>
+              {issue.summary}
+            </span>
+            <span style={{
+              fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)',
               fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
-            }}
-            aria-label={`Open ${issue.issueKey} in full page`}
-          >
-            {issue.issueKey}
-          </button>
+            }}>
+              {issue.children.length}
+            </span>
+          </div>
+        ) : (
+          <>
+            {issue.issueKey.includes('-LOCAL-') ? (
+              <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', whiteSpace: 'nowrap', lineHeight: 1.3, flexShrink: 0, fontFamily: 'var(--ds-font-family-body)' }}>
+                Saving…
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={e => { e.stopPropagation(); navigate(buildIssueDetailRoute(issue.issueKey)); }}
+                style={{
+                  fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+                  whiteSpace: 'nowrap', lineHeight: 1.3,
+                  background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                  fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+                }}
+                aria-label={`Open ${issue.issueKey} in full page`}
+              >
+                {issue.issueKey}
+              </button>
+            )}
+            <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+              <span style={{
+                fontSize: 13, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
+                display: 'block', fontFamily: 'var(--ds-font-family-body)',
+              }}>
+                {issue.summary}
+              </span>
+            </div>
+          </>
         )}
-        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-          <span style={{
-            fontSize: 13, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
-            display: 'block', fontFamily: 'var(--ds-font-family-body)',
-          }}>
-            {issue.summary}
-          </span>
-        </div>
       </div>
 
       {/* status pill — child rows only */}
@@ -395,28 +451,30 @@ export function SidebarRow({
         </button>
       )}
 
-      {/* open-in-side-panel button */}
-      <button
-        type="button"
-        aria-label={`Open ${issue.issueKey} in side panel`}
-        onClick={e => { e.stopPropagation(); onOpenDetail(issue); }}
-        style={{
-          ...iconBtnStyle,
-          width: rowHovered ? 24 : 0,
-          overflow: 'hidden',
-          opacity: rowHovered ? 1 : 0,
-          padding: 0,
-          transition: 'width 80ms ease, opacity 80ms ease',
-        }}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <line x1="15" y1="3" x2="15" y2="21" />
-          <line x1="17.5" y1="8" x2="19" y2="8" />
-          <line x1="17.5" y1="12" x2="19" y2="12" />
-          <line x1="17.5" y1="16" x2="19" y2="16" />
-        </svg>
-      </button>
+      {/* open-in-side-panel button — group rows have no detail view */}
+      {!issue.isGroup && (
+        <button
+          type="button"
+          aria-label={`Open ${issue.issueKey} in side panel`}
+          onClick={e => { e.stopPropagation(); onOpenDetail(issue); }}
+          style={{
+            ...iconBtnStyle,
+            width: rowHovered ? 24 : 0,
+            overflow: 'hidden',
+            opacity: rowHovered ? 1 : 0,
+            padding: 0,
+            transition: 'width 80ms ease, opacity 80ms ease',
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <line x1="15" y1="3" x2="15" y2="21" />
+            <line x1="17.5" y1="8" x2="19" y2="8" />
+            <line x1="17.5" y1="12" x2="19" y2="12" />
+            <line x1="17.5" y1="16" x2="19" y2="16" />
+          </svg>
+        </button>
+      )}
 
       {/* ⋯ more actions */}
       {renderMenu && (

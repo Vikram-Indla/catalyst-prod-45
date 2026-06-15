@@ -29,6 +29,12 @@ export interface TimelineIssue {
   epicColor: string | null;
   fixVersions: string[];
   children: TimelineIssue[];
+  /** Synthetic group header row (e.g. product hub's "Feature" bucket).
+   *  Group rows render in the sidebar with collapse + per-group "+" but
+   *  produce no bar/diamond/empty-row-add on the grid. Click does not open
+   *  a detail view. The row's `issueType` is the group's type — clicking
+   *  "+" creates a new BR inheriting that type. */
+  isGroup?: boolean;
 }
 
 /* ─────────────────────────────── ui state types ───────────────────────── */
@@ -157,6 +163,18 @@ export interface TimelineViewProps {
   enableCreateEpicRow?: boolean;
   enableEmptyRowAdd?: boolean;
   enableDetailPanel?: boolean;
+
+  /** Configures the bottom "Create" row in the sidebar. Defaults to the
+   *  project-hub epic. Product hub overrides with a Business Request label. */
+  createTopLevelConfig?: { label: string; iconType: string };
+
+  /** Override the inline-create type picker options on every row. Product
+   *  hub passes ['Business Request'] for the flat product timeline. */
+  childTypesOverride?: string[];
+
+  /** When true, only `isGroup` rows are allowed to have children. BR rows
+   *  inside a group lose their "+" button. Default false. */
+  childrenOnlyOnGroupRows?: boolean;
 
   /* the query client used for cache invalidations after mutations.
      Pages keep ownership of the cache key so the view never hardcodes it. */

@@ -3,9 +3,16 @@
  * code, e.g. "INV") and normalises them to the shared TimelineIssue shape
  * consumed by the canonical TimelineView.
  *
- * BR rows are flat (no parent_key chain), have only end_date (no startDate),
- * and render as diamond markers in the grid. Assignee display name + avatar
- * are resolved from profiles via the project_manager_user_id FK.
+ * BR rows have only end_date (no startDate) and render as diamond markers
+ * on the grid. Assignee display name + avatar are resolved from profiles via
+ * the project_manager_user_id FK.
+ *
+ * 2026-06-15 — BRs are parents. Each BR is rendered as a top-level row in
+ * a flat list (no synthetic group buckets). Any `ph_issues` row whose
+ * `parent_key` matches a BR's `request_key` is fetched + nested under that
+ * BR as a child. The view renders BR rows as the canonical "Epic-like"
+ * parent — collapsible, with a "+" that creates a sub-task child via the
+ * page's mutations.
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -26,6 +33,11 @@ const BR_SELECT = `
   end_date,
   created_at,
   updated_at
+`;
+
+const PH_CHILD_SELECT = `
+  id, issue_key, project_key, issue_type, summary, status, status_category,
+  priority, assignee_display_name, parent_key, raw_json
 `;
 
 /* Map request_type (the BR subtype) to a JiraIssueTypeIcon `type` value so
@@ -55,6 +67,29 @@ function statusCategoryFromStep(step: string | null): string {
   if (s.includes('done') || s.includes('completed') || s.includes('shipped') || s.includes('closed')) return 'done';
   if (s.includes('progress') || s.includes('in dev') || s.includes('build') || s.includes('design') || s.includes('discovery')) return 'progress';
   return 'default';
+}
+
+function mapPhChildRow(row: any): TimelineIssue {
+  const raw = row.raw_json ?? {};
+  const fields = raw.fields ?? {};
+  return {
+    id: row.id,
+    issueKey: row.issue_key,
+    projectKey: row.project_key,
+    issueType: row.issue_type ?? 'Sub-task',
+    summary: row.summary ?? '(No title)',
+    status: row.status ?? 'To Do',
+    statusCategory: row.status_category ?? null,
+    priority: row.priority ?? null,
+    assigneeDisplayName: row.assignee_display_name ?? null,
+    assigneeAvatarUrl: resolveAvatarUrl(row.assignee_display_name ?? ''),
+    parentKey: row.parent_key,
+    startDate: typeof fields.customfield_10015 === 'string' ? fields.customfield_10015 : null,
+    dueDate: typeof fields.duedate === 'string' ? fields.duedate : null,
+    epicColor: fields.catalyst_color ?? null,
+    fixVersions: Array.isArray(fields.fixVersions) ? fields.fixVersions.map((v: any) => v?.name ?? '').filter(Boolean) : [],
+    children: [],
+  };
 }
 
 export function useProductHubTimeline(productCode: string | undefined) {
@@ -101,8 +136,8 @@ export function useProductHubTimeline(productCode: string | undefined) {
         }
       }
 
-      /* Step 4 — map to TimelineIssue */
-      return rows.map((r: any): TimelineIssue => {
+      /* Step 4 — map each BR to a TimelineIssue */
+      const brIssues: TimelineIssue[] = rows.map((r: any): TimelineIssue => {
         const assignee = r.project_manager_user_id ? nameById.get(r.project_manager_user_id) ?? null : null;
         return {
           id: r.id,
@@ -123,6 +158,39 @@ export function useProductHubTimeline(productCode: string | undefined) {
           children: [],
         };
       });
+
+      /* Step 5 — fetch ph_issues children whose parent_key references a BR
+         in this product, then nest them under their BR parent. Catalyst-
+         created children carry source='catalyst', so we don't apply the
+         2026 guard here (it's the BR's children, not a fresh Jira pull). */
+      const brKeys = brIssues.map(b => b.issueKey).filter(Boolean);
+      if (brKeys.length > 0) {
+        const { data: childRows, error: childErr } = await (supabase as any)
+          .from('ph_issues')
+          .select(PH_CHILD_SELECT)
+          .in('parent_key', brKeys)
+          .is('jira_removed_at', null)
+          .is('archived_at', null)
+          .is('deleted_at', null);
+        if (childErr) throw childErr;
+
+        const byParent = new Map<string, TimelineIssue[]>();
+        for (const row of childRows ?? []) {
+          const child = mapPhChildRow(row);
+          const arr = byParent.get(row.parent_key) ?? [];
+          arr.push(child);
+          byParent.set(row.parent_key, arr);
+        }
+        for (const br of brIssues) {
+          const kids = byParent.get(br.issueKey);
+          if (kids && kids.length) {
+            kids.sort((a, b) => a.issueKey.localeCompare(b.issueKey));
+            br.children = kids;
+          }
+        }
+      }
+
+      return brIssues;
     },
     enabled: !!productCode && !!user,
     staleTime: 30_000,
