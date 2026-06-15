@@ -189,10 +189,17 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
     iconFile: 'task',
   },
 
-  // ── BRD Task: uses subtask ──
+  // ── BRD Task: BR subtask category (purple document) ──
   'brd task': {
     label: 'BRD Task',
-    color: 'var(--ds-link, #2684FF)',
+    color: 'var(--ds-text-discovery, #6554C0)',
+    iconFile: 'subtask',
+  },
+
+  // ── UAT Finding: BR subtask category (purple document + check) ──
+  'uat finding': {
+    label: 'UAT Finding',
+    color: 'var(--ds-text-discovery, #6554C0)',
     iconFile: 'subtask',
   },
 
@@ -214,6 +221,7 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
 export const PROTECTED_ISSUE_TYPE_OPTIONS = [
   'API Requirement',
   'Backend',
+  'BRD Task',
   'Bug',
   'Business Gap',
   'Change Request',
@@ -232,6 +240,7 @@ export const PROTECTED_ISSUE_TYPE_OPTIONS = [
   'Story',
   'Sub-task',
   'Task',
+  'UAT Finding',
 ] as const;
 
 const warnedUnknownTypes = new Set<string>();

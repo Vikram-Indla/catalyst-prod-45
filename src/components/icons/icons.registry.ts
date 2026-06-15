@@ -45,8 +45,12 @@ import frontendLight from '@/assets/icons/work-type/frontend.svg?url';
 import backendLight from '@/assets/icons/work-type/backend.svg?url';
 import integrationLight from '@/assets/icons/work-type/integration.svg?url';
 import figmaLight from '@/assets/icons/work-type/figma.svg?url';
+import brdTaskLight from '@/assets/icons/work-type/brd-task.svg?url';
+import uatFindingLight from '@/assets/icons/work-type/uat-finding.svg?url';
 
 import figmaDark from '@/assets/icons/work-type/_dark/figma.svg?url';
+import brdTaskDark from '@/assets/icons/work-type/_dark/brd-task.svg?url';
+import uatFindingDark from '@/assets/icons/work-type/_dark/uat-finding.svg?url';
 
 // ─── PRIORITY ICONS ───────────────────────────────────────────────────
 
@@ -169,7 +173,8 @@ export type WorkItemType =
   | 'story' | 'task' | 'epic' | 'sub-task' | 'qa-bug'
   | 'feature' | 'change-request' | 'production-incident'
   | 'business-request' | 'business-gap' | 'api-requirement'
-  | 'frontend' | 'backend' | 'integration' | 'figma';
+  | 'frontend' | 'backend' | 'integration' | 'figma'
+  | 'brd-task' | 'uat-finding';
 
 export type PriorityLevel =
   | 'highest' | 'high' | 'medium' | 'low' | 'lowest' | 'none';
@@ -227,6 +232,7 @@ export const WORK_ITEM_TYPES: readonly WorkItemType[] = [
   'story', 'task', 'epic', 'sub-task', 'qa-bug', 'feature', 'change-request',
   'production-incident', 'business-request', 'business-gap', 'api-requirement',
   'frontend', 'backend', 'integration', 'figma',
+  'brd-task', 'uat-finding',
 ] as const;
 
 export const PRIORITY_LEVELS: readonly PriorityLevel[] = [
@@ -243,30 +249,32 @@ export const PROJECT_KEYS: readonly ProjectKey[] = [
 // ═══════════════════════════════════════════════════════════════════════
 
 export const WORK_TYPE_REGISTRY: Record<WorkItemType, WorkTypeMeta> = {
-  'business-request':    { id: 'business-request',    label: 'Business Request',    color: '#E2B203', light: businessRequestLight,    dark: businessRequestLight },
-  'story':               { id: 'story',               label: 'Story',               color: '#6A9A23', light: storyLight,               dark: storyLight },
-  'task':                { id: 'task',                label: 'Task',                color: '#1868DB', light: taskLight,                dark: taskLight },
-  'epic':                { id: 'epic',                label: 'Epic',                color: '#AF59E1', light: epicLight,                dark: epicLight },
-  'sub-task':            { id: 'sub-task',            label: 'Sub-task',            color: '#1868DB', light: subTaskLight,             dark: subTaskLight },
-  'qa-bug':              { id: 'qa-bug',              label: 'QA Bug',              color: '#AE2E24', light: qaBugLight,               dark: qaBugLight },
-  'feature':             { id: 'feature',             label: 'Feature',             color: '#1868DB', light: featureLight,             dark: featureLight },
-  'change-request':      { id: 'change-request',      label: 'Change Request',      color: '#1868DB', light: changeRequestLight,       dark: changeRequestLight },
-  'production-incident': { id: 'production-incident', label: 'Production Incident', color: '#E06C00', light: productionIncidentLight,  dark: productionIncidentLight },
-  'business-gap':        { id: 'business-gap',        label: 'Business Gap',        color: '#C9372C', light: businessGapLight,         dark: businessGapLight },
-  'api-requirement':     { id: 'api-requirement',     label: 'API Requirement',     color: '#6A9A23', light: apiRequirementLight,      dark: apiRequirementLight },
-  'frontend':            { id: 'frontend',            label: 'Frontend',            color: '#1868DB', light: frontendLight,            dark: frontendLight },
-  'backend':             { id: 'backend',             label: 'Backend',             color: '#1868DB', light: backendLight,             dark: backendLight },
-  'integration':         { id: 'integration',         label: 'Integration',         color: '#1868DB', light: integrationLight,         dark: integrationLight },
-  'figma':               { id: 'figma',               label: 'Figma',               color: '#292A2E', light: figmaLight,               dark: figmaDark },
+  'business-request':    { id: 'business-request',    label: 'Business Request',    color: 'var(--ds-text-warning, #E2B203)',   light: businessRequestLight,    dark: businessRequestLight },
+  'story':               { id: 'story',               label: 'Story',               color: 'var(--ds-text-success, #6A9A23)',   light: storyLight,               dark: storyLight },
+  'task':                { id: 'task',                label: 'Task',                color: 'var(--ds-link, #1868DB)',           light: taskLight,                dark: taskLight },
+  'epic':                { id: 'epic',                label: 'Epic',                color: 'var(--ds-text-discovery, #AF59E1)', light: epicLight,                dark: epicLight },
+  'sub-task':            { id: 'sub-task',            label: 'Sub-task',            color: 'var(--ds-link, #1868DB)',           light: subTaskLight,             dark: subTaskLight },
+  'qa-bug':              { id: 'qa-bug',              label: 'QA Bug',              color: 'var(--ds-text-danger, #AE2E24)',    light: qaBugLight,               dark: qaBugLight },
+  'feature':             { id: 'feature',             label: 'Feature',             color: 'var(--ds-link, #1868DB)',           light: featureLight,             dark: featureLight },
+  'change-request':      { id: 'change-request',      label: 'Change Request',      color: 'var(--ds-link, #1868DB)',           light: changeRequestLight,       dark: changeRequestLight },
+  'production-incident': { id: 'production-incident', label: 'Production Incident', color: 'var(--ds-text-warning, #E06C00)',   light: productionIncidentLight,  dark: productionIncidentLight },
+  'business-gap':        { id: 'business-gap',        label: 'Business Gap',        color: 'var(--ds-text-danger, #C9372C)',    light: businessGapLight,         dark: businessGapLight },
+  'api-requirement':     { id: 'api-requirement',     label: 'API Requirement',     color: 'var(--ds-text-success, #6A9A23)',   light: apiRequirementLight,      dark: apiRequirementLight },
+  'frontend':            { id: 'frontend',            label: 'Frontend',            color: 'var(--ds-link, #1868DB)',           light: frontendLight,            dark: frontendLight },
+  'backend':             { id: 'backend',             label: 'Backend',             color: 'var(--ds-link, #1868DB)',           light: backendLight,             dark: backendLight },
+  'integration':         { id: 'integration',         label: 'Integration',         color: 'var(--ds-link, #1868DB)',           light: integrationLight,         dark: integrationLight },
+  'figma':               { id: 'figma',               label: 'Figma',               color: 'var(--ds-text, #292A2E)',           light: figmaLight,               dark: figmaDark },
+  'brd-task':            { id: 'brd-task',            label: 'BRD Task',            color: 'var(--ds-text-discovery, #6554C0)', light: brdTaskLight,             dark: brdTaskDark },
+  'uat-finding':         { id: 'uat-finding',         label: 'UAT Finding',         color: 'var(--ds-text-discovery, #6554C0)', light: uatFindingLight,          dark: uatFindingDark },
 };
 
 export const PRIORITY_REGISTRY: Record<PriorityLevel, PriorityMeta> = {
-  highest: { id: 'highest', label: 'Highest', color: '#C9372C', light: priorityHighestLight, dark: priorityHighestLight },
-  high:    { id: 'high',    label: 'High',    color: '#C9372C', light: priorityHighLight,    dark: priorityHighLight },
-  medium:  { id: 'medium',  label: 'Medium',  color: '#E06C00', light: priorityMediumLight,  dark: priorityMediumLight },
-  low:     { id: 'low',     label: 'Low',     color: '#1868DB', light: priorityLowLight,     dark: priorityLowLight },
-  lowest:  { id: 'lowest',  label: 'Lowest',  color: '#1868DB', light: priorityLowestLight,  dark: priorityLowestLight },
-  none:    { id: 'none',    label: 'None',    color: '#080F21', light: priorityNoneLight,    dark: priorityNoneDark },
+  highest: { id: 'highest', label: 'Highest', color: 'var(--ds-text-danger, #C9372C)',  light: priorityHighestLight, dark: priorityHighestLight },
+  high:    { id: 'high',    label: 'High',    color: 'var(--ds-text-danger, #C9372C)',  light: priorityHighLight,    dark: priorityHighLight },
+  medium:  { id: 'medium',  label: 'Medium',  color: 'var(--ds-text-warning, #E06C00)', light: priorityMediumLight,  dark: priorityMediumLight },
+  low:     { id: 'low',     label: 'Low',     color: 'var(--ds-link, #1868DB)',         light: priorityLowLight,     dark: priorityLowLight },
+  lowest:  { id: 'lowest',  label: 'Lowest',  color: 'var(--ds-link, #1868DB)',         light: priorityLowestLight,  dark: priorityLowestLight },
+  none:    { id: 'none',    label: 'None',    color: 'var(--ds-text, #080F21)',         light: priorityNoneLight,    dark: priorityNoneDark },
 };
 
 export const PROJECT_AVATAR_REGISTRY: Record<ProjectKey, ProjectAvatarMeta> = {
@@ -514,6 +522,8 @@ export function normalizeWorkItemType(raw: string | null | undefined): WorkItemT
   if (t === 'backend') return 'backend';
   if (t === 'integration') return 'integration';
   if (t === 'figma' || t === 'entity figma') return 'figma';
+  if (t.includes('brd')) return 'brd-task';
+  if (t.includes('uat')) return 'uat-finding';
 
   return null;
 }

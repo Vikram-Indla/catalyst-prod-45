@@ -3,7 +3,8 @@
  * Theme-aware: uses INK/SURFACE dark tokens
  */
 import React from 'react';
-import { ArrowUpDown, ChevronDown, ChevronRight, Plus, Lightbulb, Star } from '@/lib/atlaskit-icons';
+import { ArrowUpDown, ChevronDown, ChevronRight, Plus, Star } from '@/lib/atlaskit-icons';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapRequest, RoadmapGroup } from './types/roadmap.types';
 import { TYPE_COLORS, INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH, AVATAR_BG } from './constants/roadmap.constants';
@@ -175,8 +176,6 @@ function RequestRow({
   selectedBg: string;
   hoverBg: string;
 }) {
-  const typeColor = TYPE_COLORS[item.type]?.solid || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
-
   return (
     <div
       role="row"
@@ -216,8 +215,10 @@ function RequestRow({
         <Star className="w-3.5 h-3.5" fill={item.starred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'none'} />
       </button>
 
+      {/* Canonical Business Request icon — all roadmap rows are BRs; request_type
+          is a field, NOT a work-item type (CLAUDE.md 2026-06-01). */}
       <div className="flex-shrink-0" style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Lightbulb className="w-3.5 h-3.5" style={{ color: typeColor }} />
+        <JiraIssueTypeIcon type="Business Request" size={14} />
       </div>
 
       <div className="flex-1 min-w-0">

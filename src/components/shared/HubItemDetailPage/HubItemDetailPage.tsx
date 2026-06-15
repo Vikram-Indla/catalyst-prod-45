@@ -160,17 +160,8 @@ export default function HubItemDetailPage({
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flexShrink: 0, padding: '8px 24px', background: 'var(--ds-elevation-surface, #FFFFFF)' }}>
-        <button
-          onClick={handleClose}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', padding: 0, fontSize: 14, color: 'var(--ds-text-subtle, #505258)', cursor: 'pointer', fontFamily: 'inherit' }}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          {backLabel}
-        </button>
-      </div>
+      {/* 2026-06-15: persistent "Back to …" row removed — the full-page
+          CatalystViewBase breadcrumb is the single back affordance (Vikram). */}
       <div style={{ flex: 1, minHeight: 0 }}>
         <Suspense fallback={null}>
           <CatalystDetailRouter

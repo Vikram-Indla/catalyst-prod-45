@@ -38,6 +38,7 @@ import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { BrMoveProductDialog } from './BrMoveProductDialog';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { BUSINESS_REQUEST_SUBTASK_TYPES } from '../shared/parent-rules';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewBusinessRequestV3({
@@ -122,10 +123,18 @@ export default function CatalystViewBusinessRequestV3({
           <SubtasksPanel
             storyKey={request.request_key}
             storyId={resolvedId}
-            projectKey={request.project_key || 'MIM'}
+            /* Subtask keys follow the BR's own prefix (MDT-### shared
+               sequence, Q3) — derive from request_key, not a hardcoded
+               fallback. */
+            projectKey={request.request_key?.split('-')[0] || 'MDT'}
             onSubtaskClick={(key) => openDetail({ id: key })}
             parentIssueType="Business Request"
             parentSummary={request.title ?? ''}
+            /* Catalyst-native: BR subtasks persist to catalyst_issues, never
+               ph_issues — they are not Jira-synced (2026-06-15). */
+            parentSource="catalyst"
+            /* Picker scoped to the 5 BR subtask categories only (Q1). */
+            childTypeOverride={[...BUSINESS_REQUEST_SUBTASK_TYPES]}
           />
         )}
         <BrActivitySection requestId={resolvedId ?? ''} isOpen={isOpen} />

@@ -18,6 +18,23 @@ export function allowedChildTypes(parentType: string | null | undefined): WorkIt
 }
 
 /**
+ * Resolve the allowed child types for a panel, honouring an optional
+ * per-surface override. A non-empty `override` array wins verbatim and
+ * bypasses the shared ALLOWED_CHILD_TYPES map — used by the Business
+ * Request detail view to scope its picker to the 5 subtask categories
+ * (BRD Task, Business Gap, Change Request, UAT Finding, Figma) WITHOUT
+ * changing the canonical hierarchy for any other surface (Q1, 2026-06-15).
+ * An empty/absent override falls back to the canonical parent→child rules.
+ */
+export function resolveAllowedChildTypes(
+  parentType: string | null | undefined,
+  override?: string[] | null,
+): WorkItemType[] {
+  if (override && override.length > 0) return override;
+  return getAllowedChildTypes(parentType);
+}
+
+/**
  * Panel title — Jira uses "Child work items" under Epics and "Subtasks"
  * under story-level items.
  */

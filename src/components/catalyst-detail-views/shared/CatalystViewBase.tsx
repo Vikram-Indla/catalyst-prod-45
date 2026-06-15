@@ -362,11 +362,17 @@ export function CatalystViewBase({
   /* ── Navigation (full-page back) ─────────── */
   const navigate = useNavigate();
   const location = useLocation();
+  // Hub-aware back/list target. The breadcrumb (chevron + first crumb) is the
+  // only back affordance in full-page mode, so it must resolve to the hub the
+  // item actually lives in — product items must not jump to /project-hub.
+  const hubBase = location.pathname.startsWith('/product-hub/')
+    ? `/product-hub/${projectKey}`
+    : `/project-hub/${projectKey}`;
   const projectListHref = location.pathname.includes('/backlog/')
-    ? `/project-hub/${projectKey}/backlog`
+    ? `${hubBase}/backlog`
     : location.pathname.includes('/timeline/')
-    ? `/project-hub/${projectKey}/timeline`
-    : `/project-hub/${projectKey}/list`;
+    ? `${hubBase}/timeline`
+    : `${hubBase}/list`;
   const handleBack = useCallback(() => {
     if (fullPageMode) {
       if (projectKey) {
