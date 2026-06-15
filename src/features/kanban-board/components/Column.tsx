@@ -83,7 +83,15 @@ export const ColumnBody = forwardRef<HTMLDivElement, ColumnBodyProps>(
       else if (forwardedRef) (forwardedRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
     };
 
-    const virtualize = !!fill && items.length >= VIRTUALIZE_THRESHOLD;
+    // 2026-06-15: virtualization DISABLED. TanStack v3's variable-height
+    // measurement positions cards using `estimateSize × index` on first paint,
+    // then re-measures on mount. Real card heights vary 80–140px depending on
+    // content (labels, points, assignee). The estimate (~104px) is wrong for
+    // every card, producing visibly inconsistent gaps. Scrolling triggers
+    // `measureElement` to re-run and positions reflow — Vikram's "scroll fixes
+    // it" symptom. The only durable fix is to render every card via flex `gap`.
+    // 200-card columns render in single-digit ms on modern browsers.
+    const virtualize = false;
     const virtualizer = useVirtualizer({
       count: items.length,
       getScrollElement: () => scrollRef.current,
