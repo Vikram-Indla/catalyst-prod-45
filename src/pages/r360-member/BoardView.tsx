@@ -18,6 +18,7 @@ import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { R360WorkItem } from '@/types/r360';
 import { QuickSearchInput } from './QuickSearchInput';
+import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
 
 // ── Subtask types that should surface their parent instead ──────────
 const SUBTASK_TYPES = new Set(['sub-task', 'backend', 'frontend']);
@@ -286,7 +287,7 @@ function filterForBoard(items: R360WorkItem[]): R360WorkItem[] {
 }
 
 // ── Main Component ──────────────────────────────────────────────────
-export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void }) {
+export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; resourceId?: string | null }) {
   const [quickSearch, setQuickSearch] = useState('');
 
   const boardItems = useMemo(() => filterForBoard(items), [items]);
@@ -332,6 +333,7 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
         }}>
           {filteredItems.length} items across {projectGroups.length} projects
         </span>
+        <CatyBoardInsight resourceId={resourceId} />
       </div>
 
       {/* Swimlanes — default collapsed */}

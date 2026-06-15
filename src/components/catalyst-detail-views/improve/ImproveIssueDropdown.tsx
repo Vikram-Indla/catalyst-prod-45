@@ -28,8 +28,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from '@/integrations/supabase/client';
-import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
-// ChevronDownIcon removed 2026-05-05 — Jira Improve button has no chevron (jira-compare parity)
+import { CatyHead } from '@/components/for-you/atlaskit/CatyButton';
 import WandIcon from '@atlaskit/icon/core/magic-wand';
 import CommentIcon from '@atlaskit/icon/core/comment';
 import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
@@ -392,44 +391,38 @@ export function ImproveIssueDropdown({
               icon: 16×16  fill=black  color=rgb(41,42,46)
             No purple anywhere — appearance="subtle" with dark text +
             dark icon. The earlier "subtle discovery" was fabricated. */}
-        <div style={{ display: 'inline-flex', padding: 0.9, borderRadius: 20, background: 'conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)' }}>
-          <button
-            ref={triggerRef}
-            type="button"
-            onClick={catyIsImproving ? () => stopCatyImprove() : () => setOpen((o) => !o)}
-            aria-haspopup="menu"
-            aria-expanded={open}
-            aria-label={catyIsImproving ? 'Stop Caty' : triggerLabel}
-            aria-busy={catyIsImproving || undefined}
-
-            data-testid="catalyst-improve-issue-dropdown--trigger"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              height: 32, padding: '0 14px', borderRadius: 17,
-              border: 'none', outline: 'none', appearance: 'none',
-              background: '#FFFFFF',
-              color: 'var(--ds-text, #172B4D)',
-              cursor: 'pointer',
-              fontSize: 12, fontWeight: 600,
-              fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
-              whiteSpace: 'nowrap',
-              lineHeight: 1,
-              transition: 'background 0.15s',
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F1F2F4'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#FFFFFF'; }}
-          >
-            {catyIsImproving ? (
-              <Spinner size="small" />
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
-                <defs><linearGradient id="iid-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7"><stop offset="0%" stopColor="#FF3CAC" /><stop offset="20%" stopColor="#784BA0" /><stop offset="40%" stopColor="#2B86C5" /><stop offset="60%" stopColor="#00C9FF" /><stop offset="80%" stopColor="#92FE9D" /><stop offset="100%" stopColor="#FFD700" /></linearGradient></defs>
-                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#iid-rainbow)" />
-              </svg>
-            )}
-            {catyIsImproving ? 'Stop' : triggerLabel}
-          </button>
-        </div>
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={catyIsImproving ? () => stopCatyImprove() : () => setOpen((o) => !o)}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          aria-label={catyIsImproving ? 'Stop Caty' : triggerLabel}
+          aria-busy={catyIsImproving || undefined}
+          data-testid="catalyst-improve-issue-dropdown--trigger"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            height: 32, padding: '0 12px', borderRadius: 6,
+            border: 'none', outline: 'none', appearance: 'none',
+            background: 'transparent',
+            color: 'var(--ds-text, #172B4D)',
+            cursor: 'pointer',
+            fontSize: 12, fontWeight: 600,
+            fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
+            whiteSpace: 'nowrap',
+            lineHeight: 1,
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+        >
+          {catyIsImproving ? (
+            <Spinner size="small" />
+          ) : (
+            <CatyHead size={20} />
+          )}
+          <span>{catyIsImproving ? 'Stop' : triggerLabel}</span>
+        </button>
 
         {open && menuPos && createPortal(
           <div

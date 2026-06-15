@@ -21,6 +21,7 @@ import { token } from '@atlaskit/tokens';
 import ForYouRow from './ForYouRow';
 import { ForYouEmptyState } from './helpers';
 import { text } from '@/lib/typography';
+import { CatyButton } from './CatyButton';
 import type { WorkItem } from '@/hooks/useForYouData';
 
 interface AssignedPanelProps {
@@ -103,7 +104,7 @@ export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect
         </div>
       )}
       {onAskCatyThemify && (
-        <AskCatyThemifyButton onClick={onAskCatyThemify} count={items.length} />
+        <AskCatyThemifyButton onClick={onAskCatyThemify} />
       )}
       {groups.map(group => (
         <div key={group.bucket}>
@@ -169,15 +170,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
   );
 }
 
-// ─── "Ask Caty - Themify" rainbow CTA ───────────────────────────────────────
-const THEMIFY_RAINBOW = `conic-gradient(
-  from 0deg,
-  #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg,
-  #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg
-)`;
-
-function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: number }) {
-  const [hover, setHover] = useState(false);
+function AskCatyThemifyButton({ onClick }: { onClick: () => void }) {
   return (
     <div style={{
       display: 'flex',
@@ -185,54 +178,7 @@ function AskCatyThemifyButton({ onClick, count }: { onClick: () => void; count: 
       paddingBlockStart: 8,
       paddingBlockEnd: 16,
     }}>
-      <div style={{
-        display: 'inline-flex',
-        padding: 1.8,
-        borderRadius: 20,
-        background: THEMIFY_RAINBOW,
-      }}>
-        <button
-          type="button"
-          onClick={onClick}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-          aria-label={`Ask Caty to themify your ${count} assigned items`}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            height: 32,
-            padding: '0 16px',
-            border: 'none',
-            borderRadius: 18,
-            background: hover
-              ? '#F1F2F4'
-              : '#FFFFFF',
-            color: token('color.text', '#172B4D'),
-            cursor: 'pointer',
-            fontFamily: 'var(--cp-font-body)',
-            fontSize: 12,
-            fontWeight: 600,
-            lineHeight: 1,
-            transition: 'background 150ms ease',
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
-            <defs>
-              <linearGradient id="themify-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7">
-                <stop offset="0%"   stopColor="#FF3CAC" />
-                <stop offset="20%"  stopColor="#784BA0" />
-                <stop offset="40%"  stopColor="#2B86C5" />
-                <stop offset="60%"  stopColor="#00C9FF" />
-                <stop offset="80%"  stopColor="#92FE9D" />
-                <stop offset="100%" stopColor="#FFD700" />
-              </linearGradient>
-            </defs>
-            <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#themify-rainbow)" />
-          </svg>
-          Ask Caty - Themify
-        </button>
-      </div>
+      <CatyButton label="Themify" onClick={onClick} />
     </div>
   );
 }

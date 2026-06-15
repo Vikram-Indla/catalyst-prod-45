@@ -12,8 +12,6 @@ import { useMyR360ResourceId, useTeamResourceIds } from '@/hooks/useR360PanelDat
 import { useAuth } from '@/lib/auth';
 import R360MemberDetail from '@/pages/R360MemberDetail';
 import Spinner from '@atlaskit/spinner';
-
-import { CatyBoardInsight } from './CatyBoardInsight';
 export interface BoardPanelViewProps {
   resourceId: string | null;
   isLoading: boolean;
@@ -41,7 +39,6 @@ export function BoardPanelView({ resourceId, isLoading }: BoardPanelViewProps) {
 
   return (
     <div style={{ minHeight: 600 }}>
-      <CatyBoardInsight resourceId={resourceId} />
       <R360MemberDetail resourceId={resourceId} embedded forceView="board" />
     </div>
   );

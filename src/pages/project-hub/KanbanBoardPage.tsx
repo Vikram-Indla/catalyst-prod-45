@@ -2037,12 +2037,10 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
           setRenameBoardValue(currentName);
           setRenameBoardOpen(true);
         } : undefined}
-        catyInsightSlot={
-          <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />
-        }
         /* Standup controls live in the title row above the toolbar (next to
            the chip) — the toolbar itself stays unmodified. The board switcher
-           is hidden entirely in product mode (no per-product board list). */
+           is hidden entirely in product mode (no per-product board list).
+           CatyBoardInsight now renders as fixed-positioned button + portal. */
         boardSwitcherSlot={isProduct ? null :
           <div ref={boardSwitcherRef} style={{ position: 'relative' }}>
             {(() => {
@@ -2365,6 +2363,8 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
           has been removed — it would have rendered on top of the column
           area and overlapped cards. */}
       <PriToastContainer toasts={toasts} onDismiss={dismissToast} />
+      {/* Board health inline panel — renders below toolbar when opened */}
+      {!isProduct && <CatyBoardInsight projectKey={key ?? null} resourceId={key ?? 'project'} />}
     </div>
   );
 }

@@ -48,6 +48,7 @@ import Avatar from '@atlaskit/avatar';
 import { StatusPill } from '@/components/shared/JiraTable/cells';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import Spinner from '@atlaskit/spinner';
+import { CatyButton } from './CatyButton';
 
 import Tooltip from '@atlaskit/tooltip';
 import TextArea from '@atlaskit/textarea';
@@ -511,51 +512,16 @@ function FeedSection({
             {label}
           </h4>
         </div>
-        {/* "Ask Caty — summarize N" CTA — opens the SummarizeDigestModal
-            with interactive triage for every mention/comment in this
-            section. Static rainbow border per the AI affordance carve-out. */}
+        {/* Summarize digest CTA — opens the SummarizeDigestModal
+            with interactive triage for every mention/comment in this section.
+            Cat icon carries the AI semantic; label is action-only. */}
         {onOpenDigest && (
-          <div
-            style={{
-              display: 'inline-flex',
-              padding: 1.8,
-              borderRadius: 20,
-              background: ASK_CATY_RAINBOW,
-            }}
-          >
-            <button
-              type="button"
-              onClick={onOpenDigest}
-              aria-label={`Ask Caty to summarize ${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                height: 28,
-                padding: '0 12px',
-                border: 'none',
-                borderRadius: 17,
-                background: '#FFFFFF',
-                cursor: 'pointer',
-                color: token('color.text', '#172B4D'),
-                fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
-                fontSize: 12,
-                fontWeight: 600,
-                lineHeight: 1,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#F1F2F4';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#FFFFFF';
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-                <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" />
-              </svg>
-              Ask Caty — summarize {rows.length}
-            </button>
-          </div>
+          <CatyButton
+            label="Summarize"
+            onClick={onOpenDigest}
+            size="default"
+            badge={rows.length}
+          />
         )}
       </div>
       <p
@@ -1424,50 +1390,12 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
       {/* Static rainbow border wrapper — AI affordance signifier.
           See CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out (2026-05-31).
           Hover affordance: `filter: brightness(1.08)` only — no motion. */}
-      <div
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        style={{
-          display: 'inline-flex',
-          padding: 1.8,
-          borderRadius: 20,
-          background: ASK_CATY_RAINBOW,
-          filter: hover && phase !== 'loading' ? 'brightness(1.08)' : 'none',
-          transition: 'filter 120ms ease',
-        }}
-      >
-        <button
-          type="button"
-          onClick={phase === 'loading' ? undefined : onSuggest}
-          disabled={phase === 'loading'}
-          aria-label={phase === 'loading' ? 'Caty is thinking...' : 'Ask Caty to draft a reply'}
-          aria-busy={phase === 'loading' || undefined}
-          style={{
-            all: 'unset',
-            cursor: phase === 'loading' ? 'not-allowed' : 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            padding: '4px 10px',
-            borderRadius: 17,
-            font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text', '#172B4D'),
-            background: phase === 'loading'
-              ? '#FFFFFF'
-              : '#FFFFFF',
-          }}
-        >
-          {phase === 'loading' ? (
-            <Spinner size="small" />
-          ) : (
-            <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true" style={{ flexShrink: 0 }}>
-              <defs><linearGradient id="srt-rainbow" gradientUnits="userSpaceOnUse" x1="1" y1="7" x2="13" y2="7"><stop offset="0%" stopColor="#FF3CAC" /><stop offset="20%" stopColor="#784BA0" /><stop offset="40%" stopColor="#2B86C5" /><stop offset="60%" stopColor="#00C9FF" /><stop offset="80%" stopColor="#92FE9D" /><stop offset="100%" stopColor="#FFD700" /></linearGradient></defs>
-              <path d="M7 0.5L8.5 5.2L13 7L8.5 8.8L7 13.5L5.5 8.8L1 7L5.5 5.2Z" fill="url(#srt-rainbow)" />
-            </svg>
-          )}
-          {phase === 'loading' ? 'Thinking...' : 'Ask Caty - Suggest?'}
-        </button>
-      </div>
+      <CatyButton
+        label="Suggest?"
+        onClick={onSuggest}
+        loading={phase === 'loading'}
+        disabled={phase === 'loading'}
+      />
     </div>
   );
 }

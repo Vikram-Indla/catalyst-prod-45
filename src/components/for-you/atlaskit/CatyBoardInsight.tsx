@@ -146,100 +146,117 @@ export function CatyBoardInsight({ resourceId, projectKey }: CatyBoardInsightPro
 
   if (!resourceId && !projectKey) return null;
 
-  if (!insight) {
-    return <CatyButton label="Board health" onClick={generateInsight} loading={isLoading} />;
-  }
-
-  if (insight.totalItems === 0) {
-    return (
-      <CatyInsightCard title="Board health" onDismiss={() => setInsight(null)}>
-        <span style={{ color: token('color.text.subtlest', '#6B778C') }}>{insight.summary}</span>
-      </CatyInsightCard>
-    );
-  }
-
+  /* Inline button + panel wrapper */
   return (
-    <CatyInsightCard title="Board health" onRefresh={generateInsight} onDismiss={() => setInsight(null)}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <p style={{ margin: 0, font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>
-          {insight.summary}
-        </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <button
+        onClick={() => {
+          if (!insight) generateInsight();
+          else setInsight(null);
+        }}
+      >
+        <CatyButton label="Board health" onClick={() => {}} loading={isLoading} />
+      </button>
 
-        {insight.columns.map((col) => (
-          <div key={col.column} style={{
-            padding: '8px 12px', borderRadius: 4,
-            background: token('color.background.neutral.subtle', '#F7F8F9'),
-          }}>
-            {/* Column header row */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: col.topBlocker ? 4 : 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ font: `600 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>
-                  {col.column}
-                </span>
-                <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', '#6B778C') }}>
-                  {col.count} {col.count === 1 ? 'item' : 'items'}
-                </span>
-              </div>
-              <span style={{
-                font: `600 12px/16px var(--ds-font-family-body, "Atlassian Sans")`,
-                color: col.avgDaysSinceUpdate > 30
-                  ? token('color.text.danger', '#AE2A19')
-                  : col.avgDaysSinceUpdate > 14
-                    ? token('color.text.warning', '#974F0C')
-                    : token('color.text.subtle', '#44546F'),
+      {/* Inline panel — appears below button */}
+      {insight && (
+    <div
+      style={{
+        width: 320,
+        maxHeight: '60vh',
+        overflowY: 'auto',
+      }}
+    >
+      {insight.totalItems === 0 ? (
+        <CatyInsightCard title="Board health" onDismiss={() => setInsight(null)}>
+          <span style={{ color: token('color.text.subtlest', '#6B778C') }}>{insight.summary}</span>
+        </CatyInsightCard>
+      ) : (
+        <CatyInsightCard title="Board health" onRefresh={generateInsight} onDismiss={() => setInsight(null)}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <p style={{ margin: 0, font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>
+              {insight.summary}
+            </p>
+
+            {insight.columns.map((col) => (
+              <div key={col.column} style={{
+                padding: '8px 12px', borderRadius: 4,
+                background: token('color.background.neutral.subtle', '#F7F8F9'),
               }}>
-                avg {col.avgDaysSinceUpdate} days since update
-              </span>
-            </div>
-
-            {/* Top blocker row */}
-            {col.topBlocker && (
-              <div style={{ paddingBlockStart: 4 }}>
-                {/* Line 1: type icon + key + summary (clickable) */}
-                <div
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
-                  onClick={() => useGlobalSearchStore.getState().openDetail({ id: col.topBlocker!.issueKey })}
-                >
-                  <JiraIssueTypeIcon type={col.topBlocker.issueType} size={14} />
-                  <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', '#0052CC'), flexShrink: 0 }}>
-                    {col.topBlocker.issueKey}
-                  </span>
-                  <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {col.topBlocker.summary}
-                  </span>
-                </div>
-                {/* Line 2: project + reporter avatar + days */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingInlineStart: 22, paddingBlockStart: 2 }}>
-                  <span style={{ font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', '#6B778C') }}>
-                    {col.topBlocker.project}
-                  </span>
-                  <CatalystAvatar size="xsmall" src={resolveAvatarUrl(col.topBlocker.reporter) || undefined} name={col.topBlocker.reporter} />
-                  <span style={{ font: `400 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', '#6B778C') }}>
-                    {col.topBlocker.reporter}
-                  </span>
+                {/* Column header row */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: col.topBlocker ? 4 : 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ font: `600 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>
+                      {col.column}
+                    </span>
+                    <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', '#6B778C') }}>
+                      {col.count} {col.count === 1 ? 'item' : 'items'}
+                    </span>
+                  </div>
                   <span style={{
-                    font: `600 11px/14px var(--ds-font-family-body, "Atlassian Sans")`,
-                    color: col.topBlocker.daysSinceUpdate > 60
+                    font: `600 12px/16px var(--ds-font-family-body, "Atlassian Sans")`,
+                    color: col.avgDaysSinceUpdate > 30
                       ? token('color.text.danger', '#AE2A19')
-                      : col.topBlocker.daysSinceUpdate > 21
+                      : col.avgDaysSinceUpdate > 14
                         ? token('color.text.warning', '#974F0C')
                         : token('color.text.subtle', '#44546F'),
                   }}>
-                    {col.topBlocker.daysSinceUpdate} days
+                    avg {col.avgDaysSinceUpdate} days since update
                   </span>
                 </div>
-              </div>
-            )}
 
-            {/* AI action */}
-            {col.action && (
-              <p style={{ margin: '4px 0 0', font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtle', '#44546F') }}>
-                {col.action}
-              </p>
-            )}
+                {/* Top blocker row */}
+                {col.topBlocker && (
+                  <div style={{ paddingBlockStart: 4 }}>
+                    {/* Line 1: type icon + key + summary (clickable) */}
+                    <div
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+                      onClick={() => useGlobalSearchStore.getState().openDetail({ id: col.topBlocker!.issueKey })}
+                    >
+                      <JiraIssueTypeIcon type={col.topBlocker.issueType} size={14} />
+                      <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', '#0052CC'), flexShrink: 0 }}>
+                        {col.topBlocker.issueKey}
+                      </span>
+                      <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {col.topBlocker.summary}
+                      </span>
+                    </div>
+                    {/* Line 2: project + reporter avatar + days */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingInlineStart: 22, paddingBlockStart: 2 }}>
+                      <span style={{ font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', '#6B778C') }}>
+                        {col.topBlocker.project}
+                      </span>
+                      <CatalystAvatar size="xsmall" src={resolveAvatarUrl(col.topBlocker.reporter) || undefined} name={col.topBlocker.reporter} />
+                      <span style={{ font: `400 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', '#6B778C') }}>
+                        {col.topBlocker.reporter}
+                      </span>
+                      <span style={{
+                        font: `600 11px/14px var(--ds-font-family-body, "Atlassian Sans")`,
+                        color: col.topBlocker.daysSinceUpdate > 60
+                          ? token('color.text.danger', '#AE2A19')
+                          : col.topBlocker.daysSinceUpdate > 21
+                            ? token('color.text.warning', '#974F0C')
+                            : token('color.text.subtle', '#44546F'),
+                      }}>
+                        {col.topBlocker.daysSinceUpdate} days
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* AI action */}
+                {col.action && (
+                  <p style={{ margin: '4px 0 0', font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtle', '#44546F') }}>
+                    {col.action}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </CatyInsightCard>
+        </CatyInsightCard>
+      )}
+    </div>
+      )}
+    </div>
   );
 }

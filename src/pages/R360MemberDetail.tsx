@@ -692,7 +692,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                 </div>
               )}
               {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
-              {view === 'board' && <BoardView items={workItems} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} />}
+              {view === 'board' && <BoardView items={workItems} resourceId={resourceId} onSelect={embedded ? (item) => useGlobalSearchStore.getState().openDetail({ id: item.item_key }) : setSelectedItem} />}
             </>
           )}
 
