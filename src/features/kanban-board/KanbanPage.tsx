@@ -13,7 +13,8 @@ import EmptyState from '@atlaskit/empty-state';
 import { Board } from './components/Board';
 import { Toolbar } from './components/Toolbar';
 import { CardContextMenu } from './components/CardContextMenu';
-import { InlineCreate } from './components/InlineCreate';
+import AddIcon from '@atlaskit/icon/glyph/add';
+import { InlineCreateCard } from '@/components/kanban/InlineCreateCard';
 import { AssigneePicker } from './components/AssigneePicker';
 import { StandupPanel } from './components/StandupPanel';
 import { StandupHistoryPanel } from './components/StandupHistoryPanel';
@@ -40,6 +41,9 @@ export default function KanbanPage() {
   const [standupTimerSec, setStandupTimerSec] = useState(300);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  /* Tracks which column currently has the inline create form expanded. Only
+     one form is open at a time across the whole board. */
+  const [openCreateCol, setOpenCreateCol] = useState<string | null>(null);
   const [visibleFields, setVisibleFields] = useState<CardVisibleFields>(() => {
     try {
       const saved = localStorage.getItem('kanban-visible-fields');
@@ -124,23 +128,50 @@ export default function KanbanPage() {
     />
   ), [issues, boardConfig.columns, boardConfig.colPrimaryStatus, onMove, onCopyLink, onCopyKey, onFlag, onAddLabel, onSetParent, onLink, onArchive, onDelete]);
 
+  /* 2026-06-15: swapped the project-board's bespoke InlineCreate (broken type
+     dropdown + native showPicker date input) for the canonical InlineCreateCard
+     used by PragmaticBoard / product board. State for which column is in
+     "create mode" lives at the page level so only one form is open at a time.
+     The canonical component writes directly to ph_issues; we just refetch on
+     success. */
   const columnFooter = useCallback((colId: string) => {
     const col = boardConfig.columns.find((c) => c.id === colId);
     if (!col || !key) return null;
     const status = boardConfig.colPrimaryStatus[colId] ?? col.statuses[0];
     if (!status) return null;
+
+    if (openCreateCol === colId) {
+      return (
+        <div style={{ margin: '2px 8px 4px' }}>
+          <InlineCreateCard
+            projectKey={key.toUpperCase()}
+            columnId={colId}
+            status={status}
+            onCreateCard={() => { setOpenCreateCol(null); refetch(); }}
+            onCancel={() => setOpenCreateCol(null)}
+          />
+        </div>
+      );
+    }
+
     return (
-      <InlineCreate
-        projectKey={key.toUpperCase()}
-        status={status}
-        category={col.category}
-        onCreate={async (summary, issueType, dueDate) => {
-          await createIssue({ projectKey: key.toUpperCase(), summary, issueType, status, category: col.category, dueDate });
-          refetch();
+      <button
+        type="button"
+        onClick={() => setOpenCreateCol(colId)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6, width: 'calc(100% - 16px)',
+          padding: '6px 8px', margin: '2px 8px 4px', border: 'none', borderRadius: SIZES.CARD_RADIUS,
+          background: 'transparent', color: token('color.text.subtle', '#44546F'),
+          fontSize: 14, fontFamily: 'inherit', cursor: 'pointer',
         }}
-      />
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+      >
+        <AddIcon label="" size="small" primaryColor={token('color.icon.subtle', '#626F86')} />
+        {STRINGS.CREATE_ISSUE}
+      </button>
     );
-  }, [boardConfig, key, createIssue, refetch]);
+  }, [boardConfig, key, openCreateCol, refetch]);
 
   const filterApi = useKanbanFilters(issues);
   const { filtered } = filterApi;

@@ -7,7 +7,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
 import Tooltip from '@atlaskit/tooltip';
-import EditIcon from '@atlaskit/icon/glyph/edit';
+import EditIcon from '@atlaskit/icon/core/edit';
 import { IssueTypeIcon } from './IssueTypeIcon';
 import { PriorityIcon } from './PriorityIcon';
 import { SIZES, STRINGS, LABEL_COLORS } from '../constants';
@@ -114,29 +114,33 @@ export const Card: React.FC<CardProps> = ({
           style={{ width: '100%', resize: 'none', border: `2px solid ${token('color.border.focused', '#4C9AFF')}`, borderRadius: 4, padding: 4, fontSize: 14, lineHeight: '20px', fontFamily: 'inherit', color: token('color.text', '#172B4D'), outline: 'none' }}
         />
       ) : (
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 4 }}>
-          <p
-            style={{
-              margin: 0, flex: 1, fontSize: 14, lineHeight: '20px', fontWeight: 400,
-              color: token('color.text', '#172B4D'),
-              display: '-webkit-box', WebkitLineClamp: SIZES.CARD_SUMMARY_LINES, WebkitBoxOrient: 'vertical',
-              overflow: 'hidden', wordBreak: 'break-word', paddingRight: hover ? 18 : 0,
-              cursor: onEditSummary ? 'text' : 'pointer',
-            }}
-            onDoubleClick={(e) => { if (onEditSummary) { e.stopPropagation(); setEditing(true); } }}
-          >
-            {issue.summary}
-          </p>
+        <p
+          style={{
+            margin: 0, fontSize: 14, lineHeight: '20px', fontWeight: 400,
+            color: token('color.text', '#172B4D'),
+            wordBreak: 'break-word', paddingRight: hover ? 18 : 0,
+            cursor: onEditSummary ? 'text' : 'pointer',
+          }}
+          onDoubleClick={(e) => { if (onEditSummary) { e.stopPropagation(); setEditing(true); } }}
+        >
+          {issue.summary}
           {onEditSummary && hover && (
             <button
               aria-label="Edit summary"
               onClick={(e) => { e.stopPropagation(); setEditing(true); }}
-              style={{ flexShrink: 0, border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, display: 'inline-flex', marginTop: 1 }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                verticalAlign: 'middle',
+                marginLeft: 4,
+                width: 18, height: 18,
+                border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
+                borderRadius: 3,
+              }}
             >
               <EditIcon label="" size="small" primaryColor={token('color.icon.subtle', '#626F86')} />
             </button>
           )}
-        </div>
+        </p>
       )}
 
       {/* Due date chip */}
