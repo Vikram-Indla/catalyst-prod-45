@@ -42,8 +42,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useCatalystContext } from '@/contexts/CatalystContext';
-import { HubIcon } from '@/components/navigation/HubIcon';
 import type { HubKey } from '@/components/icons';
+import { HUB_ICON_REGISTRY } from '@/components/icons';
 import type { HubTone } from '@/lib/hub-tone';
 
 type SectionKey = 'discover' | 'build_ship' | 'knowledge';
@@ -265,21 +265,15 @@ export function HubSwitcher() {
                     href={hub.href}
                     isSelected={isActive(hub.href)}
                     iconBefore={
-                      <div
+                      <img
+                        src={HUB_ICON_REGISTRY[hub.key]}
+                        alt={hub.label}
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
                           width: 32,
                           height: 32,
-                          flexShrink: 0,
-                          borderRadius: 6,
-                          background: `var(--ds-background-accent-${hub.tone}-subtler, transparent)`,
-                          color: `var(--ds-text-accent-${hub.tone}, #172B4D)`,
+                          display: 'block',
                         }}
-                      >
-                        <HubIcon name={hub.key as any} size={24} />
-                      </div>
+                      />
                     }
                     onClick={(e) => handleNavClick(e, hub)}
                   >

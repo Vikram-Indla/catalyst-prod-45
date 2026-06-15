@@ -6,6 +6,11 @@ function IssueRedirectToBrowse() {
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
 
+function ProductTimelineRedirect() {
+  const { key } = useParams();
+  return <Navigate to={`/product-hub/${key ?? ''}/dashboard`} replace />;
+}
+
 
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
@@ -61,7 +66,6 @@ const RoadmapsListPageLazy = lazy(() => import("../pages/project-hub/roadmaps/Ro
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/FilterPreviewPage").then(m => ({ default: m.FilterPreviewPage })));
 const ProductFilterPreviewPageLazy = lazy(() => import("../pages/product-hub/filters/ProductFilterPreviewPage").then(m => ({ default: m.ProductFilterPreviewPage })));
-const ProductHubTimelinePageLazy = lazy(() => import("../pages/product-hub/timeline/ProductHubTimelinePage"));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
@@ -480,7 +484,7 @@ export default function FullAppRoutes() {
 
         <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePageLazy /></S></MG>} />
+        <Route path="/product-hub/:key/timeline" element={<ProductTimelineRedirect />} />
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />

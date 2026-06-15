@@ -1,3 +1,10 @@
+/**
+ * useProductHubTimeline — DEPRECATED 2026-06-15
+ * Hook used by deprecated ProductHubTimelinePage.
+ * Route /product-hub/:key/timeline now redirects to /product-hub/:key/dashboard.
+ * This hook and ProductHubTimelinePage are kept for git history only.
+ */
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';

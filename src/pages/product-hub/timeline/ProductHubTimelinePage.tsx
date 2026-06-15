@@ -1,15 +1,19 @@
 /**
  * ProductHubTimelinePage — /product-hub/:key/timeline
+ * ⚠️ DEPRECATED 2026-06-15 — Route redirects to /product-hub/:key/dashboard
  *
+ * This file is kept for git history. The route was deprecated because:
+ * - Timeline feature was not actively used for product timelines
+ * - Product Hub focus shifted to Dashboard as the canonical product overview
+ * - Redirect: /product-hub/:key/timeline → /product-hub/:key/dashboard (ProductTimelineRedirect)
+ *
+ * Original functionality (kept for reference):
  * Renders a timeline view for business requests in a product.
  * Mirrors ProjectHubTimelinePage structure and interactions, but:
  *   - Data source: business_requests (filtered by product_id)
  *   - Flat structure: no parent-child hierarchy (all items are top-level)
  *   - Date field: end_date only (no start date in business_requests schema)
  *   - Types: request_type (feature/gap/integration/data_request)
- *
- * All other features (zoom, filters, date editing, side panel detail) are
- * inherited from the project hub timeline pattern.
  */
 
 import React, { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense } from 'react';

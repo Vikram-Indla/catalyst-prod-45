@@ -253,35 +253,68 @@ export function ChatDock({
   if (collapsed) {
     return (
       <>
-        <button
-          ref={fabRef}
-          type="button"
-          className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${gesture ? ' ' + gesture : ''}`}
-          style={{ top: pos.y, left: pos.x }}
-          aria-label={`Caty — ${displayState}. ${liveMood.message} Open messages.`}
-          onClick={onToggleCollapsed}
-          onMouseEnter={openHover}
-          onMouseLeave={closeHoverSoon}
-          onFocus={openHover}
-          onBlur={closeHoverSoon}
-          onClickCapture={dragHandlers.onClickCapture}
-          onPointerDown={dragHandlers.onPointerDown}
-          onPointerMove={dragHandlers.onPointerMove}
-          onPointerUp={dragHandlers.onPointerUp}
-        >
-          {/* One stable component across the whole gesture — never swap on isDragging,
-              or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
-          <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
-          {totalUnread > 0 && (
-            <span
-              className="cc-fab__badge"
-              aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
-            >
-              {totalUnread > 99 ? "99+" : totalUnread}
-            </span>
-          )}
-          <span className="cc-fab__presence" />
-        </button>
+        {!catyHidden ? (
+          <button
+            ref={fabRef}
+            type="button"
+            className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${gesture ? ' ' + gesture : ''}`}
+            style={{ top: pos.y, left: pos.x }}
+            aria-label={`Caty — ${displayState}. ${liveMood.message} Open messages.`}
+            onClick={onToggleCollapsed}
+            onMouseEnter={openHover}
+            onMouseLeave={closeHoverSoon}
+            onFocus={openHover}
+            onBlur={closeHoverSoon}
+            onClickCapture={dragHandlers.onClickCapture}
+            onPointerDown={dragHandlers.onPointerDown}
+            onPointerMove={dragHandlers.onPointerMove}
+            onPointerUp={dragHandlers.onPointerUp}
+          >
+            {/* One stable component across the whole gesture — never swap on isDragging,
+                or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
+            <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
+            {totalUnread > 0 && (
+              <span
+                className="cc-fab__badge"
+                aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
+              >
+                {totalUnread > 99 ? "99+" : totalUnread}
+              </span>
+            )}
+            <span className="cc-fab__presence" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              localStorage.setItem('caty.fab.hidden', 'false');
+              window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
+            }}
+            style={{
+              position: 'fixed',
+              bottom: '16px',
+              right: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              borderRadius: '20px',
+              border: 'none',
+              background: 'var(--ds-background-information, #0C66E4)',
+              color: '#FFFFFF',
+              fontSize: '12px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              fontFamily: 'var(--ds-font-family-body, inherit)',
+              zIndex: 50,
+            }}
+            aria-label="Show Caty insights"
+          >
+            <span>Caty insights hidden</span>
+            <span style={{ fontSize: '10px', opacity: 0.8 }}>Tap to show</span>
+          </button>
+        )}
         {!isDragging && !catyHidden && (
           <CatyWhyCard
             open={whyOpen}

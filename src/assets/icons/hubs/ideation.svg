@@ -1,3 +1,6 @@
-<svg width="28" height="28" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBBF24"></stop><stop offset="1" stop-color="#D97706"></stop></linearGradient>
+  <linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.20"></stop><stop offset="0.55" stop-color="#fff" stop-opacity="0"></stop></linearGradient></defs>
+  <rect width="80" height="80" rx="18" fill="url(#bg)"></rect><rect width="80" height="80" rx="18" fill="url(#gl)"></rect>
 <path d="M40 18a14 14 0 0 0-9 25c2 1.6 3.2 3.6 3.4 6.2h11.2c.2-2.6 1.4-4.6 3.4-6.2a14 14 0 0 0-9-25z" fill="#ffffff"></path><rect x="34.5" y="52" width="11" height="5" rx="2.5" fill="#ffffff"></rect><line x1="36.5" y1="60" x2="43.5" y2="60" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"></line><g stroke="#ffffff" stroke-width="3" stroke-linecap="round"><line x1="59" y1="26" x2="63" y2="24"></line><line x1="58" y1="34" x2="62" y2="35"></line></g>
 </svg>
