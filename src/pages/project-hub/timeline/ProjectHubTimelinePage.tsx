@@ -28,6 +28,7 @@ import Checkbox from '@atlaskit/checkbox';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatusPill } from '@/components/shared/StatusPill';
+import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 import { translate } from '@/lib/jql';
 import { TimelineBottomBar } from './components/TimelineBottomBar';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -55,7 +56,7 @@ interface EpicProgress {
 
 const ROW_H = 40;
 const DEFAULT_SIDEBAR_W = 384;
-const MIN_SIDEBAR_W = 160;
+const MIN_SIDEBAR_W = 350;
 const MAX_SIDEBAR_W = 560;
 const HEADER_H = 40;
 const BAR_H = 24;
@@ -668,6 +669,30 @@ export default function ProjectHubTimelinePage() {
     navigate(`/project-hub/${projectKey}/timeline/${panelItem.id}`);
     closePanel();
   }, [panelItem, projectKey, navigate, closePanel]);
+
+  // Detail panel width (Jira-parity: shared CatalystDetailPanel owns the drag handle + chrome;
+  // this surface owns the width so it persists per project across sessions).
+  const PANEL_MIN_W = 360;
+  const PANEL_MAX_W = 520;
+  const [panelWidth, setPanelWidth] = useState<number>(() => {
+    if (typeof window === 'undefined') return 480;
+    try {
+      const stored = localStorage.getItem(`timeline-panel-width-${projectKey ?? ''}`);
+      if (stored) {
+        const n = parseInt(stored, 10);
+        if (!isNaN(n)) return Math.max(PANEL_MIN_W, Math.min(PANEL_MAX_W, n));
+      }
+    } catch {}
+    return 480;
+  });
+  const persistPanelWidth = useCallback(
+    (w: number) => {
+      try {
+        localStorage.setItem(`timeline-panel-width-${projectKey ?? ''}`, String(w));
+      } catch {}
+    },
+    [projectKey]
+  );
 
   /* empty overlay dismiss */
   const [emptyOverlayDismissed, setEmptyOverlayDismissed] = useState(false);
@@ -2117,87 +2142,25 @@ const closeDropdown = useCallback(() => setOpenDropdown(null), []);
         legendOpen={legendOpen}
         onToggleSidePanel={() => setSidebarHidden(v => !v)}
         sidePanelOpen={!sidebarHidden && !isNarrow}
+        detailPanelWidth={panelItem ? panelWidth : 0}
       />
     </div>
-    {/* ── detail side panel — canonical BacklogPage pattern ── */}
+    {/* ── detail side panel — shared CatalystDetailPanel (drag-resizable; overlays the calendar) ── */}
     {panelItem && (
-      <div
-        data-cv-stacked-panel="true"
-        style={{
-          position: 'fixed', top: 56, right: 0, bottom: 0, width: 480,
-          zIndex: 50, borderLeft: '1px solid var(--ds-border, #DFE1E6)',
-          background: 'var(--ds-surface, #FFFFFF)',
-          display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        }}
-      >
-        {/* panel header */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          padding: '8px 12px', minHeight: 44, flexShrink: 0,
-          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-          background: 'var(--ds-surface, #FFFFFF)',
-        }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
-            <JiraIssueTypeIcon type={panelItem.displayType} size={16} />
-            <span style={{
-              fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-            }}>
-              Catalyst work item
-            </span>
-          </div>
-          {/* open in full page */}
-          <button
-            type="button"
-            aria-label="Open detail in full page"
-            onClick={goToFullPage}
-            style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer',
-              background: 'transparent', color: 'var(--ds-text-subtle, #505258)', flexShrink: 0,
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" />
-              <line x1="10" y1="14" x2="21" y2="3" />
-            </svg>
-          </button>
-          {/* close */}
-          <button
-            type="button"
-            aria-label="Close panel"
-            onClick={closePanel}
-            style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer',
-              background: 'transparent', color: 'var(--ds-text-subtle, #505258)', flexShrink: 0,
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-        {/* content */}
-        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}><Spinner size="medium" /></div>}>
-            <CatalystDetailRouter
-              isOpen={true}
-              itemId={panelItem.id}
-              itemType={panelItem.itemType}
-              onClose={closePanel}
-              panelMode={true}
-              projectKey={projectKey ?? ''}
-            />
-          </Suspense>
-        </div>
-      </div>
+      <CatalystDetailPanel
+        isOpen
+        onClose={closePanel}
+        itemId={panelItem.id}
+        itemType={panelItem.itemType}
+        typeIconLabel={panelItem.displayType}
+        projectKey={projectKey ?? ''}
+        onOpenFullPage={goToFullPage}
+        width={panelWidth}
+        onResize={setPanelWidth}
+        onResizeCommit={persistPanelWidth}
+        minWidth={PANEL_MIN_W}
+        maxWidth={PANEL_MAX_W}
+      />
     )}
     </AtlaskitPageShell>
   );
@@ -2322,44 +2285,6 @@ function formatDateCompact(d: string | null): string {
   if (!d) return '';
   const date = new Date(d + 'T00:00:00');
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-function DateChipButton({ startDate, dueDate, rowHovered, onClick }: {
-  startDate: string | null;
-  dueDate: string | null;
-  rowHovered: boolean;
-  onClick: (e: React.MouseEvent) => void;
-}) {
-  const [hovered, setHovered] = useState(false);
-  const hasDates = !!(startDate || dueDate);
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      title={hasDates ? 'Edit dates' : 'Add dates'}
-      style={{
-        flexShrink: 0,
-        background: hovered ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'none',
-        border: 'none',
-        padding: '1px 4px',
-        borderRadius: 3,
-        cursor: 'pointer',
-        fontSize: 11,
-        fontFamily: 'var(--ds-font-family-body)',
-        color: 'var(--ds-text-subtlest, #626F86)',
-        whiteSpace: 'nowrap',
-        lineHeight: 1,
-        opacity: hasDates ? 1 : (rowHovered ? 0.5 : 0),
-        transition: 'opacity 80ms ease, background 80ms ease',
-      }}
-    >
-      {hasDates
-        ? [formatDateCompact(startDate), formatDateCompact(dueDate)].filter(Boolean).join(' → ')
-        : 'Add dates'}
-    </button>
-  );
 }
 
 function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKey, queryClient, isSelected, onSelect, onOpenDetail }: SidebarRowProps) {
@@ -2628,7 +2553,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
       role="rowheader"
       style={{
         height: ROW_H, display: 'flex', alignItems: 'center',
-        paddingLeft: 8 + depth * 12, paddingRight: 4, gap: 6,
+        paddingLeft: 8, paddingRight: 4, gap: 6,
         borderBottom: '1px solid rgba(9,30,66,0.06)',
         overflow: 'hidden', cursor: 'pointer',
         background: isSelected
@@ -2644,9 +2569,9 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
       onMouseEnter={() => setRowHovered(true)}
       onMouseLeave={() => { if (!menuOpen) setRowHovered(false); }}
     >
-      {/* row checkbox — always visible when selected, hover-only otherwise */}
+      {/* row checkbox — always visible (Jira-parity) */}
       <div
-        style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: rowHovered || isSelected ? 1 : 0, transition: 'opacity 80ms ease' }}
+        style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         onClick={e => e.stopPropagation()}
       >
         <input
@@ -2658,15 +2583,19 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         />
       </div>
 
-      {/* collapse toggle — stopPropagation so row onClick (open detail) doesn't fire */}
+      {/* collapse toggle — thin stroke chevron at 20px (Jira-parity, regular weight); marginLeft carries depth indent so checkbox column stays aligned */}
       <div
-        style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)' }}
+        style={{ width: 20, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtle, #44546F)', marginLeft: depth * 28 }}
         onClick={hasChildren ? e => { e.stopPropagation(); onToggle(issue.issueKey); } : undefined}
+        aria-label={hasChildren ? (collapsed ? `Expand ${issue.issueKey}` : `Collapse ${issue.issueKey}`) : undefined}
       >
         {hasChildren && (
-          collapsed
-            ? <ChevronRightIcon label={`Expand ${issue.issueKey}`} size="small" />
-            : <ChevronDownIcon label={`Collapse ${issue.issueKey}`} size="small" />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            {collapsed
+              ? <path d="M9 6l6 6-6 6" />
+              : <path d="M6 9l6 6 6-6" />
+            }
+          </svg>
         )}
       </div>
 
@@ -2675,53 +2604,47 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         <JiraIssueTypeIcon type={issue.issueType} size={14} />
       </div>
 
-      {/* text block */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 1 }}>
-        <Tooltip content={issue.summary} position="right">
+      {/* text block — Jira-parity: KEY + summary inline on one line */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+        {issue.issueKey.includes('-LOCAL-') ? (
+          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', whiteSpace: 'nowrap', lineHeight: 1.3, flexShrink: 0, fontFamily: 'var(--ds-font-family-body)' }}>
+            Saving…
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={e => { e.stopPropagation(); navigate(`/project-hub/${projectKey}/timeline/${issue.issueKey}`); }}
+            style={{
+              fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+              whiteSpace: 'nowrap', lineHeight: 1.3,
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+              fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+            }}
+            aria-label={`Open ${issue.issueKey} in full page`}
+          >
+            {issue.issueKey}
+          </button>
+        )}
+        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
           <span style={{
             fontSize: 13, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
-            display: 'block',
+            display: 'block', fontFamily: 'var(--ds-font-family-body)',
           }}>
             {issue.summary}
           </span>
-        </Tooltip>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          {issue.issueKey.includes('-LOCAL-') ? (
-            <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic', whiteSpace: 'nowrap', lineHeight: 1.2 }}>
-              Saving…
-            </span>
-          ) : (
-            <button
-              type="button"
-              onClick={e => { e.stopPropagation(); navigate(`/project-hub/${projectKey}/timeline/${issue.issueKey}`); }}
-              style={{
-                fontSize: 11, fontWeight: 400, color: 'var(--ds-text-subtlest, #626F86)',
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2,
-                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                textDecoration: 'none', fontFamily: 'var(--ds-font-family-body)',
-              }}
-              aria-label={`Open ${issue.issueKey} in full page`}
-            >
-              {issue.issueKey}
-            </button>
-          )}
-          {/* mini progress bar */}
-          {progress && progress.total > 0 && (
-            <div
-              aria-hidden="true"
-              style={{ flex: 1, height: 4, borderRadius: 2, overflow: 'hidden', display: 'flex', minWidth: 20, maxWidth: 60 }}
-            >
-              {progress.done > 0 && <div style={{ flex: progress.done, background: 'var(--ds-chart-success-bold, #94C748)' }} />}
-              {progress.inProgress > 0 && <div style={{ flex: progress.inProgress, background: 'var(--ds-chart-information-bold, #8FB8F6)' }} />}
-              {progress.toDo > 0 && <div style={{ flex: progress.toDo, background: 'var(--ds-background-neutral, #DDDEE1)' }} />}
-            </div>
-          )}
         </div>
       </div>
 
-      {/* assignee avatar — always visible when assigned */}
-      {issue.assigneeDisplayName && (
+      {/* status pill — Jira-parity: visible on child rows only (depth > 0) */}
+      {depth > 0 && issue.status && (
+        <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+          <StatusPill value={issue.statusCategory} label={issue.status} />
+        </div>
+      )}
+
+      {/* assignee avatar — Jira-parity: visible on child rows only (depth > 0) */}
+      {depth > 0 && issue.assigneeDisplayName && (
         <Tooltip content={issue.assigneeDisplayName} position="left">
           <span style={{ flexShrink: 0, lineHeight: 0 }}>
             <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
@@ -2729,21 +2652,27 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         </Tooltip>
       )}
 
-      {/* status pill — all issue types */}
-      {issue.status && (
-        <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-          <StatusPill value={issue.statusCategory} label={issue.status} />
+      {/* progress bar — Jira-parity: thin bar absolute-positioned at bottom; capped width so it doesn't grow with panel drag */}
+      {progress && progress.total > 0 && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: 8 + 16 + 6 + depth * 28 + 20 + 6 + 14 + 6,
+            right: 8,
+            maxWidth: 200,
+            bottom: 4,
+            height: 3,
+            display: 'flex',
+            overflow: 'hidden',
+            borderRadius: 2,
+            pointerEvents: 'none',
+          }}
+        >
+          {progress.done > 0 && <div style={{ flex: progress.done, background: 'var(--ds-chart-success-bold, #94C748)' }} />}
+          {progress.inProgress > 0 && <div style={{ flex: progress.inProgress, background: 'var(--ds-chart-information-bold, #8FB8F6)' }} />}
+          {progress.toDo > 0 && <div style={{ flex: progress.toDo, background: 'var(--ds-background-neutral, #DDDEE1)' }} />}
         </div>
-      )}
-
-      {/* inline date chip — hidden on depth≥2 subtasks (too cramped); for parent rows: always visible when dates set, "Add dates" fades on hover */}
-      {depth < 2 && (
-        <DateChipButton
-          startDate={issue.startDate}
-          dueDate={issue.dueDate}
-          rowHovered={rowHovered}
-          onClick={e => { e.stopPropagation(); openEditDates(); }}
-        />
       )}
 
       {/* + add child — hover only on rows that can have children */}
@@ -3080,7 +3009,7 @@ function SidebarRow({ issue, depth, collapsed, onToggle, showProgress, projectKe
         style={{
           height: ROW_H, display: 'flex', alignItems: 'center', gap: 8,
           paddingTop: 0, paddingBottom: 0, paddingRight: 8,
-          paddingLeft: 8 + (depth + 1) * 12,
+          paddingLeft: 8 + 16 + 6 + (depth + 1) * 28,
           borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
         }}
