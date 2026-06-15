@@ -257,6 +257,9 @@ export default function ForYouPageAtlaskit() {
     setVisibleCount(c => Math.min(c + PAGE_SIZE, workItems.length));
   }, [workItems.length]);
 
+  // ─── Digest modal state (Summarize button on tab strip) ──────────────────
+  const [digestOpen, setDigestOpen] = useState<'mentions' | 'comments' | null>(null);
+
   // ─── Panel selection ─────────────────────────────────────────────────────
   // Compose a display-name for the reply composer avatar in the Recommended
   // panel. `user` is sourced from useForYouData (firstName + lastName is
