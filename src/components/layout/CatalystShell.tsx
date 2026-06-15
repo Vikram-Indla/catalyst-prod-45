@@ -20,7 +20,6 @@ import { Menu } from "@/lib/atlaskit-icons";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import { useNavBreakpoint } from "@/hooks/useNavBreakpoint";
 import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
-import { HubSidebarNav } from "./HubSidebarNav";
 
 /**
  * lazyWithRetry — defends against Vite stale-chunk errors after deploys/HMR.
