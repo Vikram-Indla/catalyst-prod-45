@@ -62,12 +62,12 @@ function mapActivity(raw: any, projectKey?: string): CdsActivityItem {
   else if (action === 'deleted' || action === 'delete') type = 'delete';
 
   /* Phase 7b: surface a "during standup" pill when the activity row was
-     emitted during a standup. metadata.standup_id is the standup pk;
-     href is built upstream so ActivityItem stays free of routing. */
+     emitted during a standup. metadata.standup_id is the standup pk.
+     Standups consolidated into Kanban board (2026-06-15); removed dedicated
+     standup detail page. Standup context is still rendered as a pill but
+     is no longer clickable. */
   const standupId = raw.metadata?.standup_id as string | undefined;
-  const standupContext = standupId && projectKey
-    ? { standupId, href: `/project-hub/${projectKey}/standups/${standupId}` }
-    : undefined;
+  const standupContext = standupId ? { standupId, href: undefined } : undefined;
 
   return {
     id: raw.id,
