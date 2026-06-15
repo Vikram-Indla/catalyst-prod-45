@@ -90,6 +90,7 @@ export default function ReplyComposer({
           <CatyButton
             label="Suggest?"
             onClick={onAiSuggest}
+            size="compact"
           />
         )}
       </div>
