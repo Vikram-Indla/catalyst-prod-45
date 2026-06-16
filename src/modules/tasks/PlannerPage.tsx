@@ -13,6 +13,7 @@ import { PlannerTaskList } from './components/PlannerTaskList';
 import TasksTaskListView from './views/TasksTaskListView';
 import TasksBoardView from './views/TasksBoardView';
 import TasksTimelineView from './views/TasksTimelineView';
+import TasksOverviewView from './views/TasksOverviewView';
 // Legacy PlannerTimeline kept in the tree but no longer mounted from this route.
 import { PlannerCalendar } from './components/PlannerCalendar';
 import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './components/insights';
@@ -426,7 +427,10 @@ export function PlannerPage() {
     
     switch (activeView) {
       case 'dashboard':
-        return <PlannerDashboard />;
+        // Phase 4 (2026-06-16): canonical DashboardWidgetGrid mounted via
+        // TasksOverviewView. Legacy PlannerDashboard is kept in the tree
+        // but unmounted from this route.
+        return <TasksOverviewView />;
       case 'boards':
         // Phase 2 (2026-06-16): canonical PragmaticBoard + KanbanToolbar.
         // The legacy PlannerBoardsPage (custom BoardKanban) is kept in the
