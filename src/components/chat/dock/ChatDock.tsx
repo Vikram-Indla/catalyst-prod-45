@@ -232,7 +232,11 @@ export function ChatDock({
 
   // Listen for Caty visibility changes from nav icon
   React.useEffect(() => {
-    const handler = () => setCatyHidden(localStorage.getItem('caty.fab.hidden') === 'true');
+    const handler = () => {
+      const isHidden = localStorage.getItem('caty.fab.hidden') === 'true';
+      console.log('[ChatDock] caty-visibility-changed event fired, isHidden:', isHidden);
+      setCatyHidden(isHidden);
+    };
     window.addEventListener('caty-visibility-changed', handler);
     return () => window.removeEventListener('caty-visibility-changed', handler);
   }, []);
@@ -279,8 +283,10 @@ export function ChatDock({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
+                  console.log('[ChatDock] Cross clicked, hiding Caty');
                   localStorage.setItem('caty.fab.hidden', 'true');
                   window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
+                  console.log('[ChatDock] Event dispatched');
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.opacity = '1';
