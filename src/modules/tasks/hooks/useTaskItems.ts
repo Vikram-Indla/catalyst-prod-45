@@ -59,6 +59,7 @@ const transformPlannerTask = (row: any): PlannerTask => ({
   teamColor: row.workstream?.color || '#6366f1',
   startDate: row.start_date,
   dueDate: row.due_date,
+  parentTaskId: row.parent_task_id ?? null,
   blocked: row.blocked || false,
   blockedReason: row.blocked_reason,
   progress: row.progress || 0,

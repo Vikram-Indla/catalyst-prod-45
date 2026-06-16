@@ -12,7 +12,8 @@ import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
 import TasksTaskListView from './views/TasksTaskListView';
 import TasksBoardView from './views/TasksBoardView';
-import { PlannerTimeline } from './components/PlannerTimeline';
+import TasksTimelineView from './views/TasksTimelineView';
+// Legacy PlannerTimeline kept in the tree but no longer mounted from this route.
 import { PlannerCalendar } from './components/PlannerCalendar';
 import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './components/insights';
 import { PlannerSettings } from './components/PlannerSettings';
@@ -435,7 +436,9 @@ export function PlannerPage() {
       case 'task-list':
         return <TasksTaskListView />;
       case 'timeline':
-        return <PlannerTimeline tasks={viewTasks} onTaskClick={handleTaskClick} />;
+        // Phase 3 (2026-06-16): canonical TimelineView. Legacy
+        // PlannerTimeline kept in the tree but unmounted from this route.
+        return <TasksTimelineView />;
       case 'calendar':
         return <PlannerCalendar tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'weekly-report':
