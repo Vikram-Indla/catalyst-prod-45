@@ -59,6 +59,8 @@ export interface PlannerTask {
   blocksCount?: number;
   createdAt: string;
   updatedAt: string;
+  /** Drag-and-drop ordering (kanban + list within column). NULL → unranked. */
+  position?: number | null;
 }
 
 export interface PlannerUser {

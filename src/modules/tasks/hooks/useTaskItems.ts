@@ -66,6 +66,10 @@ const transformPlannerTask = (row: any): PlannerTask => ({
   comments: 0,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
+  // Bug 2 fix (2026-06-16): expose `position` so kanban-board reorder writes
+  // can compute fractional positions from neighbor values. NULL means
+  // unranked — falls through to the `created_at` tiebreaker in the query.
+  position: row.position ?? null,
 });
 
 export function useTaskItems(teamId?: string | null) {
@@ -81,6 +85,11 @@ export function useTaskItems(teamId?: string | null) {
           assignee:profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .is('deleted_at', null)
+        // Bug 2 fix (2026-06-16): order by `position` ASC first so kanban
+        // drag-reorder writes are reflected in the visible order. NULLS LAST
+        // keeps unranked rows below ranked ones, then `created_at DESC` is the
+        // tiebreaker (preserves prior behaviour for unranked tasks).
+        .order('position', { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(200);
 

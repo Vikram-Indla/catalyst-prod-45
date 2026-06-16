@@ -290,18 +290,101 @@ export function useTasksKanbanMutations(statuses: PlannerStatus[]): TasksKanbanM
       destColId: string;
       insertIndex: number;
     }) => {
+      // Bug 2 fix (2026-06-16): compute a fractional `position` value from
+      // the neighbors at `insertIndex` in the destination column. Without
+      // this, every drop wrote `position = insertIndex` (0, 1, 2…) and
+      // collided with existing positions — same-column reorder appeared to
+      // do nothing because the rank values overlapped and the secondary
+      // `created_at` sort dominated.
+      //
+      // Algorithm:
+      //   • Pull all PlannerTasks from the cache.
+      //   • Filter to rows whose `status_id` (resolved via the statuses list)
+      //     matches `destColId`, excluding the dragged card itself.
+      //   • Sort by current `position` (NULL last, then `created_at` desc) —
+      //     mirrors the query order.
+      //   • Pick neighbors at `insertIndex` and compute a midpoint position.
+      //   • Falls back to monotonic spacing (1000-step) when neighbors are
+      //     missing positions.
+      const destStatus = statuses.find((s) => s.id === destColId);
+      const allTasksQueries = qc.getQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] });
+      // Flatten + dedupe by id across all cached planner-tasks queries.
+      const seen = new Set<string>();
+      const allTasks: PlannerTask[] = [];
+      for (const [, data] of allTasksQueries) {
+        if (!data) continue;
+        for (const t of data) {
+          if (!seen.has(t.id)) { seen.add(t.id); allTasks.push(t); }
+        }
+      }
+      // Determine the destination slug so we can match `task.status` (slug
+      // unioned in PlannerTask) against `destStatus.slug`. The PlannerTask
+      // status field stores the slug, not the UUID.
+      const destSlug = destStatus?.slug;
+      const colTasks = destSlug
+        ? allTasks
+            .filter((t) => t.id !== cardId && t.status === destSlug)
+            .sort((a, b) => {
+              const pa = a.position ?? Number.POSITIVE_INFINITY;
+              const pb = b.position ?? Number.POSITIVE_INFINITY;
+              if (pa !== pb) return pa - pb;
+              // Tiebreaker: created_at DESC matches useTaskItems query.
+              return (b.createdAt ?? '').localeCompare(a.createdAt ?? '');
+            })
+        : [];
+
+      // `position` is an INTEGER column (planner_tasks/tasks bootstrap schema).
+      // Use a wide STEP (1,000,000) so the integer midpoint between neighbors
+      // has many bisections of headroom. When the gap collapses to 1 we round
+      // toward `prevPos + 1` — the dropped card still sorts before `next` due
+      // to the `created_at` tiebreaker. A future compaction pass can re-spread
+      // positions to restore headroom if needed.
+      const STEP = 1_000_000;
+      let targetPosition: number;
+      if (colTasks.length === 0) {
+        targetPosition = STEP;
+      } else if (insertIndex <= 0) {
+        const firstPos = colTasks[0].position ?? (STEP * (colTasks.length + 1));
+        targetPosition = firstPos - STEP;
+      } else if (insertIndex >= colTasks.length) {
+        const lastPos = colTasks[colTasks.length - 1].position ?? (STEP * colTasks.length);
+        targetPosition = lastPos + STEP;
+      } else {
+        const prev = colTasks[insertIndex - 1];
+        const next = colTasks[insertIndex];
+        const prevPos = prev.position ?? (insertIndex * STEP);
+        const nextPos = next.position ?? ((insertIndex + 1) * STEP);
+        const gap = nextPos - prevPos;
+        targetPosition = gap > 1 ? prevPos + Math.floor(gap / 2) : prevPos + 1;
+      }
+
+      // Optimistic patch on the planner-tasks cache — the board reads from
+      // useTaskItems (['planner-tasks', …]), so we must update THAT cache,
+      // not just the legacy ['tasks', 'board', 'tasks'] cache the
+      // useMoveBoardTask hook patches. Without this the dropped card snaps
+      // back to its old slot until the invalidation round-trip completes.
+      qc.setQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] }, (old) => {
+        if (!old) return old;
+        return old.map((t) => {
+          if (t.id !== cardId) return t;
+          const next: PlannerTask = { ...t, position: targetPosition };
+          if (destSlug) next.status = destSlug as PlannerTask['status'];
+          return next;
+        });
+      });
+
       // useMoveBoardTask writes status_id + position in a single supabase
       // update + optimistic cache patch. destColId IS the status_id
       // (mapStatusesToColumns sets column.id = status.id).
       moveTask.mutate({
         task_id: cardId,
         target_status_id: destColId,
-        target_position: insertIndex,
+        target_position: targetPosition,
       });
       // Invalidate planner-tasks so the list view / other surfaces refresh.
       qc.invalidateQueries({ queryKey: ['planner-tasks'] });
     },
-    [moveTask, qc],
+    [moveTask, qc, statuses],
   );
 
   const persistStatusChange = useCallback(

@@ -553,6 +553,14 @@ export function makeSummaryInlineEditCell<T>({
             // span's max-width: 100% resolves against a shrunk wrapper and
             // "Test, 25 April." renders as "Test, 25 A...".
             readViewFitContainerWidth
+            // Bug 3 fix (2026-06-16): Atlaskit InlineEdit's `defaultValue` is
+            // uncontrolled — it pins the initial value on first mount and
+            // never re-syncs even when the prop changes. This caused stale
+            // values to appear in editView after the parent updated. Keying
+            // the InlineEdit on the current summary remounts it whenever the
+            // underlying value actually changes (i.e. after a successful
+            // save), restoring the correct edit baseline.
+            key={summary}
             defaultValue={summary}
             editView={({ errorMessage, ...fieldProps }) => (
               <Textfield {...fieldProps} autoFocus />
