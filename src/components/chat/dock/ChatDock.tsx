@@ -259,79 +259,78 @@ export function ChatDock({
     return (
       <>
         {!catyHidden ? (
-          <button
-            ref={fabRef}
-            type="button"
-            className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${gesture ? ' ' + gesture : ''}`}
-            style={{ top: pos.y, left: pos.x }}
-            aria-label={`Caty — ${displayState}. ${liveMood.message} Open messages.`}
-            onClick={onToggleCollapsed}
-            onMouseEnter={openHover}
-            onMouseLeave={closeHoverSoon}
-            onFocus={openHover}
-            onBlur={closeHoverSoon}
-            onClickCapture={dragHandlers.onClickCapture}
-            onPointerDown={dragHandlers.onPointerDown}
-            onPointerMove={dragHandlers.onPointerMove}
-            onPointerUp={dragHandlers.onPointerUp}
-          >
-            {/* One stable component across the whole gesture — never swap on isDragging,
-                or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
-            <div style={{ position: 'relative', display: 'inline-block' }}>
+          <>
+            <button
+              ref={fabRef}
+              type="button"
+              className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${gesture ? ' ' + gesture : ''}`}
+              style={{ top: pos.y, left: pos.x }}
+              aria-label={`Caty — ${displayState}. ${liveMood.message} Open messages.`}
+              onClick={onToggleCollapsed}
+              onMouseEnter={openHover}
+              onMouseLeave={closeHoverSoon}
+              onFocus={openHover}
+              onBlur={closeHoverSoon}
+              onClickCapture={dragHandlers.onClickCapture}
+              onPointerDown={dragHandlers.onPointerDown}
+              onPointerMove={dragHandlers.onPointerMove}
+              onPointerUp={dragHandlers.onPointerUp}
+            >
+              {/* One stable component across the whole gesture — never swap on isDragging,
+                  or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
               <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log('[ChatDock] Cross clicked, hiding Caty');
-                  localStorage.setItem('caty.fab.hidden', 'true');
-                  window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
-                  console.log('[ChatDock] Event dispatched');
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '1';
-                  e.currentTarget.style.transform = 'scale(1.15)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '0.7';
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-                style={{
-                  position: 'absolute',
-                  top: '-6px',
-                  right: '-6px',
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  background: 'var(--ds-background-neutral, #F1F2F4)',
-                  border: '2px solid var(--ds-surface-overlay, #FFFFFF)',
-                  color: 'var(--ds-text, #172B4D)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 0,
-                  zIndex: 10,
-                  opacity: 0.7,
-                  transition: 'opacity 120ms ease, transform 120ms ease',
-                }}
-                aria-label="Hide Caty"
-                title="Hide Caty"
-                role="button"
-                tabIndex={0}
-              >
-                <CloseIcon label="" size="small" />
-              </div>
+              {totalUnread > 0 && (
+                <span
+                  className="cc-fab__badge"
+                  aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
+                >
+                  {totalUnread > 99 ? "99+" : totalUnread}
+                </span>
+              )}
+              <span className="cc-fab__presence" />
+            </button>
+            <div
+              onClick={() => {
+                console.log('[ChatDock] Cross clicked, hiding Caty');
+                localStorage.setItem('caty.fab.hidden', 'true');
+                window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
+                console.log('[ChatDock] Event dispatched');
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.transform = 'scale(1.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '0.7';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              style={{
+                position: 'fixed',
+                top: pos.y - 6,
+                left: pos.x + FAB_SIZE + 6,
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                background: 'var(--ds-background-neutral, #F1F2F4)',
+                border: '2px solid var(--ds-surface-overlay, #FFFFFF)',
+                color: 'var(--ds-text, #172B4D)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0,
+                zIndex: 501,
+                opacity: 0.7,
+                transition: 'opacity 120ms ease, transform 120ms ease',
+              }}
+              aria-label="Hide Caty"
+              title="Hide Caty"
+              role="button"
+              tabIndex={0}
+            >
+              <CloseIcon label="" size="small" />
             </div>
-            {totalUnread > 0 && (
-              <span
-                className="cc-fab__badge"
-                aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
-              >
-                {totalUnread > 99 ? "99+" : totalUnread}
-              </span>
-            )}
-            <span className="cc-fab__presence" />
-          </button>
+          </>
         ) : (
           <button
             ref={fabRef}
