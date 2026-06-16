@@ -55,7 +55,7 @@ describe('makeWorkstreamEditCell (Task 1.1)', () => {
 
   it('renders an empty placeholder when no workstream is set', () => {
     renderCell({ rowOverride: { id: 't1', workstream_id: null } });
-    expect(screen.getByText(/none|—|no workstream/i)).toBeInTheDocument();
+    expect(screen.getByText('None')).toBeInTheDocument();
   });
 
   it('mirrors makeParentEditCell: returns dash (—) when non-editable and empty', () => {
@@ -80,5 +80,19 @@ describe('makeWorkstreamEditCell (Task 1.1)', () => {
     // Once open, every option from `options` must be reachable as a menuitem.
     // (mirrors makeParentEditCell: filtered list + a "No workstream" reset row.)
     expect(screen.getByText('Mobile')).toBeInTheDocument();
+  });
+
+  it('calls onChange when an option is picked', () => {
+    const { onChange } = renderCell();
+    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByText('Mobile'));
+    expect(onChange).toHaveBeenCalledWith(row, options[1]);
+  });
+
+  it('calls onChange with null when the "No workstream" reset row is clicked', () => {
+    const { onChange } = renderCell();
+    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByText(/no workstream/i));
+    expect(onChange).toHaveBeenCalledWith(row, null);
   });
 });
