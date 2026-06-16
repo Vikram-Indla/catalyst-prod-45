@@ -97,7 +97,6 @@ function useSwitcherProducts(enabled: boolean) {
       const { data } = await supabase
         .from('products')
         .select('id, code, name, color')
-        .eq('is_active', true)
         .order('name');
       return (data ?? []) as Array<{ id: string; code: string; name: string; color: string | null }>;
     },
