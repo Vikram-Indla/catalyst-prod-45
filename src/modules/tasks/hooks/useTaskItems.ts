@@ -7,6 +7,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
+import type { PlannerStatus } from './useTaskStatuses';
 
 // Map task_statuses to Planner TaskStatus
 const mapStatusFromPlannerStatuses = (statusName: string | null): TaskStatus => {
@@ -142,6 +143,38 @@ export function useUpdatePlannerTask() {
 
       if (updates.description !== undefined) {
         dbUpdates.description = updates.description;
+      }
+
+      // Status: resolve TaskStatus slug → task_statuses.id (UUID) via cached
+      // useTaskStatuses query. Falls back to a direct fetch on cache miss.
+      // Throws on unknown slug — zero-assumption (no silent default).
+      if ('status' in updates && updates.status) {
+        let statuses = queryClient.getQueryData<PlannerStatus[]>(['planner-statuses']);
+        if (!statuses || statuses.length === 0) {
+          const { data, error: statusErr } = await supabase
+            .from('task_statuses')
+            .select('id, slug, name, color, sort_order');
+          if (statusErr) throw statusErr;
+          statuses = (data || []).map((s: any) => ({
+            id: s.id,
+            slug: s.slug,
+            name: s.name,
+            color: s.color || '',
+            order: s.sort_order || 0,
+          }));
+        }
+        const match = statuses.find((s) => s.slug === updates.status);
+        if (!match) {
+          throw new Error(`Unknown status slug: ${updates.status}`);
+        }
+        dbUpdates.status_id = match.id;
+      }
+
+      // Workstream: direct teamId → workstream_id passthrough. null is valid
+      // (clears the workstream). teamName/teamColor are JOIN-derived on read
+      // and are NOT separately persisted.
+      if (updates.teamId !== undefined) {
+        dbUpdates.workstream_id = updates.teamId || null;
       }
 
       const { error } = await supabase
