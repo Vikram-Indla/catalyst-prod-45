@@ -1,4 +1,7 @@
 import { useState } from 'react';
+// eslint-disable-next-line no-restricted-imports
+import MicrophoneIcon from '@atlaskit/icon/core/microphone';
+import { ToolbarIconButton } from '../ToolbarIconButton';
 
 interface Props {
   active?: boolean;
@@ -25,9 +28,7 @@ export function MicButton({
 
   return (
     <>
-      {/* Keyframe injected once */}
       <style>{`
-
         .caty-mic-lang-picker {
           position: absolute;
           bottom: calc(100% + 6px);
@@ -87,105 +88,15 @@ export function MicButton({
           </div>
         )}
 
-        <button
-          type="button"
-          aria-label={active ? 'Stop voice recording' : 'Record voice'}
-          title={active ? 'Stop voice recording' : 'Record voice'}
-          aria-pressed={active}
+        <ToolbarIconButton
+          label={active ? 'Stop voice recording' : 'Record voice'}
+          active={active}
           disabled={disabled}
           onClick={onClick}
-          onMouseDown={(e) => e.preventDefault()}
-          data-testid="catalyst-desc-toolbar-mic"
-          style={{
-            position: 'relative',
-            width: 28,
-            height: 28,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: 'none',
-            borderRadius: '50%',
-            background: 'transparent',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            padding: 0,
-            opacity: disabled ? 0.4 : 1,
-          }}
+          testId="catalyst-desc-toolbar-mic"
         >
-          {/* AI rainbow ring */}
-          <span
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: '50%',
-              background: `conic-gradient(
-                #FF3CAC 0deg,
-                #784BA0 60deg,
-                #2B86C5 120deg,
-                #00C9FF 180deg,
-                #92FE9D 240deg,
-                #FFD700 300deg,
-                #FF3CAC 360deg
-              )`,
-              animation: 'none',
-              opacity: active ? 1 : hovered ? 0.85 : 0.65,
-              transition: 'opacity 200ms ease',
-            }}
-          />
-          {/* White inset disc */}
-          <span
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 1.8,
-              borderRadius: '50%',
-              background: '#FFFFFF',
-            }}
-          />
-          {/* Icon or stop square */}
-          {active ? (
-            <span
-              aria-hidden
-              style={{
-                position: 'relative',
-                width: 10,
-                height: 10,
-                borderRadius: 2,
-                background:
-                  'conic-gradient(#FF3CAC 0deg, #784BA0 90deg, #2B86C5 180deg, #00C9FF 270deg, #FF3CAC 360deg)',
-                animation: 'none',
-                flexShrink: 0,
-              }}
-            />
-          ) : (
-            <svg
-              aria-hidden
-              width="12"
-              height="14"
-              viewBox="0 0 12 14"
-              fill="none"
-              style={{ position: 'relative' }}
-            >
-              <rect x="3.5" y="0.5" width="5" height="8" rx="2.5"
-                fill="url(#micGrad)" />
-              <path d="M1 6.5C1 9.538 3.238 12 6 12s5-2.462 5-5.5"
-                stroke="url(#micGrad2)" strokeWidth="1.5" strokeLinecap="round" />
-              <line x1="6" y1="12" x2="6" y2="13.5"
-                stroke="url(#micGrad2)" strokeWidth="1.5" strokeLinecap="round" />
-              <defs>
-                <linearGradient id="micGrad" x1="6" y1="0" x2="6" y2="9" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#FF3CAC" />
-                  <stop offset="0.5" stopColor="#2B86C5" />
-                  <stop offset="1" stopColor="#92FE9D" />
-                </linearGradient>
-                <linearGradient id="micGrad2" x1="1" y1="6" x2="11" y2="14" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#2B86C5" />
-                  <stop offset="1" stopColor="#FF3CAC" />
-                </linearGradient>
-              </defs>
-            </svg>
-          )}
-        </button>
+          <MicrophoneIcon label="" />
+        </ToolbarIconButton>
       </div>
     </>
   );

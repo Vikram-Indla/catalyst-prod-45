@@ -8,6 +8,9 @@ import { StepIndicator } from './wizard/StepIndicator';
 import { StepDetails, StepDetailsData } from './wizard/StepDetails';
 import { StepWorkflow, StepWorkflowData } from './wizard/StepWorkflow';
 import { StepMembers, MemberEntry } from './wizard/StepMembers';
+import { PROJECT_ICONS } from '@/components/shared/IconPickerGrid';
+
+const DEFAULT_PROJECT_ICON_KEY = PROJECT_ICONS[0]?.key ?? '';
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -22,7 +25,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const [step1Valid, setStep1Valid] = useState(false);
 
   const [details, setDetails] = useState<StepDetailsData>({
-    name: '', key: '', department: '', description: '', icon: 'rocket', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+    name: '', key: '', department: '', description: '', icon: DEFAULT_PROJECT_ICON_KEY, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     lead_id: '', linkJira: false, jiraKey: '', priority: '',
   });
   const [workflow, setWorkflow] = useState<StepWorkflowData>({
@@ -33,7 +36,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   useEffect(() => {
     if (open) {
       setStep(0);
-      setDetails({ name: '', key: '', department: '', description: '', icon: 'rocket', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', lead_id: '', linkJira: false, jiraKey: '', priority: '' });
+      setDetails({ name: '', key: '', department: '', description: '', icon: DEFAULT_PROJECT_ICON_KEY, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', lead_id: '', linkJira: false, jiraKey: '', priority: '' });
       setWorkflow({ useDefault: true, copyFromProject: null, featureLayer: false });
       setMembers([]);
       setStep1Valid(false);

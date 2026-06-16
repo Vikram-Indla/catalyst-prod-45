@@ -8,6 +8,7 @@
  */
 
 import { useMemo } from 'react';
+import { ContextSwitcher } from './ContextSwitcher';
 import {
   LayoutGrid,
   Settings,
@@ -136,7 +137,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         exact: true,
       },
     };
-    return <SidebarBase config={projectConfig} expanded={expanded} onToggle={onToggle} className={className} />;
+    return <SidebarBase config={projectConfig} expanded={expanded} onToggle={onToggle} className={className} renderHeaderSwitcher={(exp) => <ContextSwitcher variant="sidebar" expanded={exp} />} />;
   }
 
   return <ModuleLevelSidebar expanded={expanded} onToggle={onToggle} className={className} favouritesSection={favouritesSection} />;
