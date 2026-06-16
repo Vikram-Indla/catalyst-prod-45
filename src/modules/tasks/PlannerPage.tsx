@@ -11,6 +11,7 @@ import type { KanbanTask } from './types/kanban';
 import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
 import TasksTaskListView from './views/TasksTaskListView';
+import TasksBoardView from './views/TasksBoardView';
 import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
 import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './components/insights';
@@ -426,17 +427,11 @@ export function PlannerPage() {
       case 'dashboard':
         return <PlannerDashboard />;
       case 'boards':
-        return (
-          <PlannerBoardsPage
-            externalSearch={filters.search}
-            externalWorkstreamId={selectedTeamId}
-            externalStatusSlug={filters.status}
-            externalPriority={filters.priority}
-            externalAssigneeId={filters.assigneeId}
-            externalBlocked={filters.blocked}
-            externalOverdue={filters.overdue}
-          />
-        );
+        // Phase 2 (2026-06-16): canonical PragmaticBoard + KanbanToolbar.
+        // The legacy PlannerBoardsPage (custom BoardKanban) is kept in the
+        // tree but unmounted from this route — see TasksBoardView for the
+        // canonical mount.
+        return <TasksBoardView />;
       case 'task-list':
         return <TasksTaskListView />;
       case 'timeline':
