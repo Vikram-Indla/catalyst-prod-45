@@ -171,7 +171,7 @@ design-critique:
 - Use for: heuristic UX/UI scoring (10 heuristics, P0/P1/P2), ADS token compliance spot-check, Catalyst Storybook MCP queries, screenshot closure evidence. Triggers on: "design critique", "UX review", "audit the design", "heuristic review", "design score", "does this look right", "rate the UI".
 
 systematic-debugging:
-- Path: `~/.claude/skills/systematic-debugging/SKILL.md` (global)
+- Path: `.claude/skills/systematic-debugging/SKILL.md` (repo-local, distributed via git)
 - Availability: Native local skill
 - Use for: ambiguous failures, regressions spanning multiple layers, noisy logs, cases where fix must be proved not guessed. Runs multi-phase loop: symptom collection → root-cause isolation → patch → verification.
 
