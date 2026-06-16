@@ -20,8 +20,8 @@ export function useTaskStatuses() {
     queryFn: async (): Promise<PlannerStatus[]> => {
       const { data, error } = await supabase
         .from('task_statuses')
-        .select('id, slug, name, color, sort_order')
-        .order('sort_order', { ascending: true });
+        .select('id, slug, name, color, position')
+        .order('position', { ascending: true });
 
       if (error) {
         console.error('Error fetching statuses:', error);
@@ -33,7 +33,7 @@ export function useTaskStatuses() {
         slug: s.slug,
         name: s.name,
         color: s.color || 'var(--ds-text-subtlest, #64748b)',
-        order: s.sort_order || 0,
+        order: s.position || 0,
       }));
     },
     staleTime: 10 * 60 * 1000, // 10 min cache
