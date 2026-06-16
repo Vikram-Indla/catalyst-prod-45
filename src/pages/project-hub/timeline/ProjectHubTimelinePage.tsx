@@ -26,6 +26,7 @@ import {
 import { useProjectHubTimeline } from '@/hooks/useProjectHubTimeline';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
+import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 
 function resolveItemType(issue: TimelineIssue): string {
   const rawType = (issue.issueType ?? 'Story').toLowerCase();
@@ -102,10 +103,7 @@ export default function ProjectHubTimelinePage() {
     },
     onCreateEpic: async (summary) => {
       if (!projectKey) return null;
-      /* No '-LOCAL-' token — Catalyst-created rows have no Jira webhook to
-       rename them, so SidebarRow's "Saving…" placeholder would persist
-       forever if the key contained '-LOCAL-'. */
-    const localKey = `${projectKey.toUpperCase()}-${Date.now()}`;
+    const localKey = await generateIssueKey(projectKey.toUpperCase());
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,
@@ -150,10 +148,7 @@ export default function ProjectHubTimelinePage() {
     },
     onCreateChild: async (parentKey, _parentType, type, summary) => {
       if (!projectKey) return null;
-      /* No '-LOCAL-' token — Catalyst-created rows have no Jira webhook to
-       rename them, so SidebarRow's "Saving…" placeholder would persist
-       forever if the key contained '-LOCAL-'. */
-    const localKey = `${projectKey.toUpperCase()}-${Date.now()}`;
+    const localKey = await generateIssueKey(projectKey.toUpperCase());
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,

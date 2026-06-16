@@ -11,6 +11,7 @@
  */
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import type { StatusCategory } from '../types';
 import type { KanbanMode } from './useKanbanData';
 
@@ -149,9 +150,10 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       if (error) throw error;
       return;
     }
+    const issueKey = await generateIssueKey(input.projectKey);
     const { error } = await supabase.from('ph_issues').insert({
       project_key: input.projectKey,
-      issue_key: `${input.projectKey}-LOCAL-${Date.now()}`,
+      issue_key: issueKey,
       summary: input.summary,
       issue_type: input.issueType,
       status: input.status,
