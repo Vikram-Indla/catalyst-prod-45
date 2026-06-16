@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, FolderKanban, FolderOpen, Star } from '@/lib/atlaskit-icons';
 import type { ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
@@ -49,6 +50,18 @@ export default function AllProjectsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
+  // Deep-link: /project-hub/projects?create=1 opens the create modal directly
+  // (switcher "+ New project" footer, 2026-06-16). Consume + clear the param.
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get('create') === '1') {
+      setShowCreateModal(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete('create');
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Get current user for "My Projects" tab
   useEffect(() => {

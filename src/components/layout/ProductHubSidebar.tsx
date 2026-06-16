@@ -7,6 +7,7 @@ import {
   Settings,
 } from '@/lib/atlaskit-icons';
 import { getProductAvatarUrl } from '@/components/icons';
+import { ContextSwitcher } from './ContextSwitcher';
 import {
   NavDashboardIcon,
   NavKanbanIcon,
@@ -114,6 +115,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       expanded={expanded}
       onToggle={onToggle}
       className={className}
+      renderHeaderSwitcher={isScoped ? (exp) => <ContextSwitcher variant="sidebar" expanded={exp} /> : undefined}
     />
   );
 }

@@ -22,7 +22,7 @@
 
 import { useMemo, useState, useCallback, useEffect, lazy, Suspense, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import { Plus, Star, MoreHorizontal, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
@@ -403,6 +403,17 @@ function LeadOwnerPopover({ product }: { product: Product }) {
 
 export default function AllProductsPage() {
   const [createOpen, setCreateOpen] = useState(false);
+  // Deep-link: /product-hub/products?create=1 opens the create modal directly
+  // (switcher "+ New product" footer, 2026-06-16). Consume + clear the param.
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get('create') === '1') {
+      setCreateOpen(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete('create');
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
   const [searchQuery, setSearchQuery] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(() => loadFavorites());
   const [filterType, setFilterType] = useState<string | null>(null);

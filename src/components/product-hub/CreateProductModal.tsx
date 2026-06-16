@@ -33,22 +33,14 @@ import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sectio
 import { tiptapToAdf } from '@/components/catalyst-detail-views/shared/sections/Description/utils/tiptapToAdf';
 import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
+import { IconPickerGrid, PRODUCT_ICONS } from '@/components/shared/IconPickerGrid';
 
 interface CreateProductModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const PRESET_COLORS = [
-  '#6554C0', // purple
-  '#00875A', // green
-  'var(--cp-primary-60, #0052CC)', // blue
-  '#FF8B00', // orange
-  '#DE350B', // red
-  '#5243AA', // indigo
-  '#42526E', // slate
-  '#c69c6d', // tan (default products migration color)
-];
+const DEFAULT_ICON_KEY = PRODUCT_ICONS[0]?.key ?? '';
 
 /**
  * Generate a sensible default code from a free-text name.
@@ -75,7 +67,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
   const [code, setCode] = useState('');
   const [codeManuallyEdited, setCodeManuallyEdited] = useState(false);
   const [descriptionAdf, setDescriptionAdf] = useState<AdfDoc | null>(null);
-  const [color, setColor] = useState(PRESET_COLORS[0]);
+  const [iconKey, setIconKey] = useState(DEFAULT_ICON_KEY);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -86,7 +78,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
       setCode('');
       setCodeManuallyEdited(false);
       setDescriptionAdf(null);
-      setColor(PRESET_COLORS[0]);
+      setIconKey(DEFAULT_ICON_KEY);
       setSubmitting(false);
       setErrorMsg(null);
     }
@@ -137,7 +129,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
           name: name.trim(),
           code: code.trim().toUpperCase(),
           description: descriptionPayload,
-          color,
+          icon_key: iconKey,
           is_active: true,
         })
         .select('id, code, name')
@@ -162,7 +154,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
       setErrorMsg(e?.message || 'Failed to create product line');
       setSubmitting(false);
     }
-  }, [name, code, descriptionAdf, color, isValid, navigate, onClose, queryClient]);
+  }, [name, code, descriptionAdf, iconKey, isValid, navigate, onClose, queryClient]);
 
   if (!open) return null;
 
@@ -274,7 +266,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
               }}
             >
               <RichTextEditor
-                initialAdf={descriptionAdf}
+                initialAdf={null}
                 hideActionButtons
                 placeholder="What this product line covers"
                 minHeight={100}
@@ -291,36 +283,17 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
             </div>
           </div>
 
-          {/* Color */}
+          {/* Icon */}
           <div style={{ marginBottom: 4 }}>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
-              Color
+              Icon
             </label>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {PRESET_COLORS.map((c) => {
-                const selected = color === c;
-                return (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setColor(c)}
-                    disabled={submitting}
-                    aria-label={`Color ${c}`}
-                    aria-pressed={selected}
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 6,
-                      background: c,
-                      border: selected ? `2px solid ${token('color.border.selected')}` : '2px solid transparent',
-                      boxShadow: selected ? `0 0 0 2px ${token('color.background.selected.bold')}` : 'none',
-                      cursor: submitting ? 'default' : 'pointer',
-                      padding: 0,
-                    }}
-                  />
-                );
-              })}
-            </div>
+            <IconPickerGrid
+              icons={PRODUCT_ICONS}
+              value={iconKey}
+              onChange={setIconKey}
+              testIdPrefix="product-icon"
+            />
           </div>
 
           {errorMsg && (

@@ -17,6 +17,7 @@ import {
   LucideProps,
 } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
+import { ContextSwitcher } from './ContextSwitcher';
 
 interface TasksSidebarProps {
   expanded: boolean;
@@ -105,6 +106,7 @@ export function TasksSidebar({ expanded, onToggle, className }: TasksSidebarProp
       expanded={expanded}
       onToggle={onToggle}
       className={className}
+      renderHeaderSwitcher={(exp) => <ContextSwitcher variant="sidebar" expanded={exp} />}
     />
   );
 }

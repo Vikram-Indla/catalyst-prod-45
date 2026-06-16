@@ -154,6 +154,14 @@ interface SidebarBaseProps {
   children?: React.ReactNode;
   /** When provided, the header badge+label area becomes a clickable switcher trigger */
   onHeaderClick?: () => void;
+  /**
+   * When provided, REPLACES the static badge+label header with a custom
+   * switcher trigger (e.g. <ContextSwitcher variant="sidebar" />). Receives
+   * the current expanded state so the trigger can render icon-only on the
+   * collapsed rail. 2026-06-16: product/project/tasks hubs pass this to host
+   * the context switcher in the sidebar header instead of the top nav.
+   */
+  renderHeaderSwitcher?: (expanded: boolean) => React.ReactNode;
 }
 
 /** Dark mode token set — passed to renderMenuItem */
@@ -176,6 +184,7 @@ export function SidebarBase({
   iconResolver,
   children,
   onHeaderClick,
+  renderHeaderSwitcher,
 }: SidebarBaseProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -289,7 +298,10 @@ export function SidebarBase({
             flexDirection: expanded ? 'row' : 'column',
           }}
         >
-          {expanded ? (
+          {renderHeaderSwitcher ? (
+            /* Switcher hosts the badge+label itself (icon-only when collapsed). */
+            renderHeaderSwitcher(expanded)
+          ) : expanded ? (
             /* Expanded: project icon (if project) + label, optionally clickable */
             onHeaderClick ? (
               <button
