@@ -18,7 +18,7 @@ import Tooltip from "@atlaskit/tooltip";
 import AddIcon from "@atlaskit/icon/core/add";
 import GrowDiagonalIcon from "@atlaskit/icon/core/grow-diagonal";
 import CloseIcon from "@atlaskit/icon/core/close";
-import EyeOffIcon from "@atlaskit/icon/core/eye-off";
+import VisibilityOffIcon from "@atlaskit/icon/core/visibility-off";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
@@ -359,7 +359,7 @@ export function ChatDock({
             aria-label="Wake Caty"
             title="Wake Caty"
           >
-            <EyeOffIcon LEGACY_size="large" />
+            <VisibilityOffIcon LEGACY_size="large" />
           </button>
         )}
         {!isDragging && !catyHidden && (
