@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { detectAndCacheGeoPresence, clearGeoPresenceCache } from '@/lib/geo-presence';
 
 interface AuthContextType {
   user: User | null;
@@ -44,9 +45,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
       if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !nextSession)) {
+        clearGeoPresenceCache();
         safeFinalize(null, null);
       } else {
         safeFinalize(nextSession, nextSession?.user ?? null);
+        if (event === 'SIGNED_IN') {
+          detectAndCacheGeoPresence(); // fire-and-forget; non-fatal
+        }
       }
     });
 

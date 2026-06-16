@@ -30,7 +30,7 @@ import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
-import { CatyHiddenEye } from "../caty-mood/CatyHiddenEye";
+import { CatyClosedEye } from "../caty-mood/CatyClosedEye";
 import { catalystToast } from "@/lib/catalystToast";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
@@ -359,7 +359,7 @@ export function ChatDock({
             aria-label="Wake Caty"
             title="Wake Caty"
           >
-            <CatyHiddenEye size={40} />
+            <CatyClosedEye size={32} />
           </button>
         )}
         {!isDragging && !catyHidden && (

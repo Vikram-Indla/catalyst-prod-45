@@ -17,7 +17,7 @@ import type { ChatPeopleGroup, ChatPerson, ChatPresence } from '@/types/chat';
 
 const db = supabase as unknown as { from: (table: string) => any };
 
-const PRESENCE_ORDER: ChatPresence[] = ['on_set', 'remote', 'away', 'on_leave'];
+const PRESENCE_ORDER: ChatPresence[] = ['onsite', 'remote', 'away', 'on_leave'];
 const VALID_PRESENCE = new Set<ChatPresence>(PRESENCE_ORDER);
 
 interface ResourceRow {

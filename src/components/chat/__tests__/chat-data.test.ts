@@ -133,14 +133,14 @@ describe('groupPeopleByPresence', () => {
     const people: ChatPerson[] = [
       { id: 'p1', name: 'Away One', role: null, avatarUrl: null, presence: 'away', presenceNote: null },
       { id: 'p2', name: 'On Leave', role: null, avatarUrl: null, presence: 'on_leave', presenceNote: null },
-      { id: 'p3', name: 'In Office One', role: null, avatarUrl: null, presence: 'on_set', presenceNote: null },
+      { id: 'p3', name: 'In Office One', role: null, avatarUrl: null, presence: 'onsite', presenceNote: null },
       { id: 'p4', name: 'Remote One', role: null, avatarUrl: null, presence: 'remote', presenceNote: null },
     ];
 
     const groups = groupPeopleByPresence(people);
 
     expect(groups.map((g) => g.presence)).toEqual([
-      'on_set',
+      'onsite',
       'remote',
       'away',
       'on_leave',

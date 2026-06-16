@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 // IDLE_MS = 10 * 60 * 1000 (10 minutes) — defined in @/lib/presence
 import { HEARTBEAT_MS, IDLE_MS, type PresenceState } from '@/lib/presence';
+import { getGeoActiveState, isManualAwayActive } from '@/lib/geo-presence';
 
 /**
  * Mount once in the app shell.
@@ -39,7 +40,8 @@ export function usePresenceHeartbeat() {
     if (!uid) return;
 
     const idle = Date.now() - lastActivityRef.current > IDLE_MS;
-    const autoState: PresenceState = idle ? 'away' : 'on_set';
+    const activeGeoState = isManualAwayActive() ? 'away' : getGeoActiveState();
+    const autoState: PresenceState = idle ? 'away' : activeGeoState;
     const state = override ?? autoState;
 
     await supabase.from('user_presence').upsert(
