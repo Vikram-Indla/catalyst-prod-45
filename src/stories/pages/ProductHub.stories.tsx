@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React, { useState } from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ViewToggle, type ViewMode } from '@/components/business-requests/ViewToggle';
 
@@ -10,7 +9,7 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false 
 function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>{children}</MemoryRouter>
+      {children}
     </QueryClientProvider>
   );
 }

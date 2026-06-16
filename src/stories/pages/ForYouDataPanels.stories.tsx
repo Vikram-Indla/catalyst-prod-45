@@ -3,9 +3,8 @@
  * These use mock wrappers since the real components call hooks directly.
  */
 import type { StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ForYouToolbar } from '@/components/for-you/ForYouToolbar';
 import { ForYouStatsBar } from '@/components/for-you/ForYouStatsBar';
@@ -16,7 +15,7 @@ import type { WorkItem } from '@/hooks/useForYouData';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children, width = 900 }: { children: React.ReactNode; width?: number }) {
-  return <QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: width, padding: 16 }}>{children}</div></MemoryRouter></QueryClientProvider>;
+  return <QueryClientProvider client={qc}><div style={{ maxWidth: width, padding: 16 }}>{children}</div></QueryClientProvider>;
 }
 
 function makeItem(id: string, key: string, summary: string, extras?: Partial<WorkItem>): WorkItem {

@@ -3,7 +3,7 @@
  * Cache seeded SYNCHRONOUSLY before component mounts.
  */
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React from 'react';
 import CatalystViewStory from '@/components/catalyst-detail-views/story/CatalystViewStory';
 import { seedForIssue } from '../fixtures/storyQueryClient';

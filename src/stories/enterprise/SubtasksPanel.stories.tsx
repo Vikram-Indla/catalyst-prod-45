@@ -3,7 +3,7 @@
  * Renders the actual SubtasksPanel with JiraTable, inline create, AI suggest.
  */
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 
 const meta: Meta<typeof SubtasksPanel> = {

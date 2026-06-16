@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import RecommendedPanel from '@/components/for-you/atlaskit/RecommendedPanel';
 import { SummarizeDigestModal, type DigestMention } from '@/components/for-you/atlaskit/SummarizeDigestModal';
@@ -9,7 +8,7 @@ import type { WorkItem, RecommendedMention, RecommendedComment } from '@/hooks/u
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return <QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter></QueryClientProvider>;
+  return <QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>;
 }
 
 const mockMentions: RecommendedMention[] = [

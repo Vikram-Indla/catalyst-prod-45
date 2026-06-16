@@ -3,8 +3,7 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import RelativeTime from '@/components/shared/RelativeTime';
 import { AutoSyncCard } from '@/components/shared/AutoSyncCard';
@@ -18,7 +17,7 @@ import { TechnicalScoreBadge } from '@/components/shared/TechnicalScoreBadge';
 import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter>);
+  return (<div style={{ maxWidth: 900, padding: 16 }}>{children}</div>);
 }
 
 export default { title: 'Components/Shared/Atoms' };
@@ -40,7 +39,7 @@ export const PageContainerDefault: StoryObj = {
 
 export const RelativeTimeDefault: StoryObj = {
   name: 'RelativeTime / Default',
-  render: () => <Wrap><RelativeTime iso=null /></Wrap>,
+  render: () => <Wrap><RelativeTime iso={null} /></Wrap>,
 }
 
 export const ProjectIconDefault: StoryObj = {
@@ -50,12 +49,12 @@ export const ProjectIconDefault: StoryObj = {
 
 export const WorkItemStarButtonDefault: StoryObj = {
   name: 'WorkItemStarButton / Default',
-  render: () => <Wrap><WorkItemStarButton itemId="item-1" itemType={{{}}} /></Wrap>,
+  render: () => <Wrap><WorkItemStarButton itemId="item-1" itemType={{} as any} /></Wrap>,
 }
 
 export const AutoSyncCardDefault: StoryObj = {
   name: 'AutoSyncCard / Default',
-  render: () => <Wrap><AutoSyncCard scheduleKeys=[] /></Wrap>,
+  render: () => <Wrap><AutoSyncCard scheduleKeys={[]} /></Wrap>,
 }
 
 export const ComingSoonPageDefault: StoryObj = {
@@ -65,10 +64,10 @@ export const ComingSoonPageDefault: StoryObj = {
 
 export const TechnicalScoreBadgeDefault: StoryObj = {
   name: 'TechnicalScoreBadge / Default',
-  render: () => <Wrap><TechnicalScoreBadge score=null /></Wrap>,
+  render: () => <Wrap><TechnicalScoreBadge score={null} /></Wrap>,
 }
 
 export const KPIWidgetCardDefault: StoryObj = {
   name: 'KPIWidgetCard / Default',
-  render: () => <Wrap><KPIWidgetCard title="Sample item title" value={{{}}} /></Wrap>,
+  render: () => <Wrap><KPIWidgetCard title="Sample item title" value={{} as any} /></Wrap>,
 }

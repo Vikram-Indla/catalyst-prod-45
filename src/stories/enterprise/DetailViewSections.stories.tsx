@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import { CatalystKeyDetails, CatalystTitleEditor, CatalystQuickActions, CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections';
 import { Description } from '@/components/catalyst-detail-views/shared/sections/Description';
 import { ISSUES } from '../fixtures/production-data';

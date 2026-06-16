@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { ArchivedWorkstreamsView } from '@/modules/tasks/components/workstreams/ArchivedWorkstreamsView';
 import { CreateWorkstreamModal } from '@/modules/tasks/components/workstreams/CreateWorkstreamModal';
@@ -21,44 +20,44 @@ import { WorkstreamViewToggle } from '@/modules/tasks/components/workstreams/Wor
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Pages/Tasks/Workstreams' };
 
 export const ArchivedWorkstreamsViewDefault: StoryObj = {
   name: 'ArchivedWorkstreamsView / Default',
-  render: () => <Wrap><ArchivedWorkstreamsView workstreams=[] isLoading=false onBack={fn()} /></Wrap>,
+  render: () => <Wrap><ArchivedWorkstreamsView workstreams={[]} isLoading={false} onBack={fn()} /></Wrap>,
 }
 
 export const ArchivedWorkstreamsViewLoading: StoryObj = {
   name: 'ArchivedWorkstreamsView / Loading',
-  render: () => <Wrap><ArchivedWorkstreamsView workstreams=[] isLoading=false onBack={fn()} /></Wrap>,
+  render: () => <Wrap><ArchivedWorkstreamsView workstreams={[]} isLoading={false} onBack={fn()} /></Wrap>,
 }
 
 export const CreateWorkstreamModalDefault: StoryObj = {
   name: 'CreateWorkstreamModal / Default',
-  render: () => <Wrap><CreateWorkstreamModal isOpen=true onClose={fn()} /></Wrap>,
+  render: () => <Wrap><CreateWorkstreamModal isOpen={true} onClose={fn()} /></Wrap>,
 }
 
 export const CreateWorkstreamModalOpen: StoryObj = {
   name: 'CreateWorkstreamModal / Open',
-  render: () => <Wrap><CreateWorkstreamModal isOpen=true onClose={fn()} /></Wrap>,
+  render: () => <Wrap><CreateWorkstreamModal isOpen={true} onClose={fn()} /></Wrap>,
 }
 
 export const LeadPickerDefault: StoryObj = {
   name: 'LeadPicker / Default',
-  render: () => <Wrap><LeadPicker value=null /></Wrap>,
+  render: () => <Wrap><LeadPicker value={null} /></Wrap>,
 }
 
 export const WorkstreamDrawerDefault: StoryObj = {
   name: 'WorkstreamDrawer / Default',
-  render: () => <Wrap><WorkstreamDrawer workstream=null isOpen=true onClose={fn()} /></Wrap>,
+  render: () => <Wrap><WorkstreamDrawer workstream={null} isOpen={true} onClose={fn()} /></Wrap>,
 }
 
 export const WorkstreamDrawerOpen: StoryObj = {
   name: 'WorkstreamDrawer / Open',
-  render: () => <Wrap><WorkstreamDrawer workstream=null isOpen=true onClose={fn()} /></Wrap>,
+  render: () => <Wrap><WorkstreamDrawer workstream={null} isOpen={true} onClose={fn()} /></Wrap>,
 }
 
 export const WorkstreamLeadPickerDropdownDefault: StoryObj = {
@@ -68,12 +67,12 @@ export const WorkstreamLeadPickerDropdownDefault: StoryObj = {
 
 export const WorkstreamMembersDialogDefault: StoryObj = {
   name: 'WorkstreamMembersDialog / Default',
-  render: () => <Wrap><WorkstreamMembersDialog open=true onOpenChange={fn()} workstream=null /></Wrap>,
+  render: () => <Wrap><WorkstreamMembersDialog open={true} onOpenChange={fn()} workstream={null} /></Wrap>,
 }
 
 export const WorkstreamMembersDialogOpen: StoryObj = {
   name: 'WorkstreamMembersDialog / Open',
-  render: () => <Wrap><WorkstreamMembersDialog open=true onOpenChange={fn()} workstream=null open={true} /></Wrap>,
+  render: () => <Wrap><WorkstreamMembersDialog open={true} onOpenChange={fn()} workstream={null} open={true} /></Wrap>,
 }
 
 export const WorkstreamQuickEditDialogDefault: StoryObj = {

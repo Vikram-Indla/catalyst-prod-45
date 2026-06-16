@@ -3,8 +3,7 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { ActiveHubLabel } from '@/components/layout/ActiveHubLabel';
 import { ChangeNumberSelect } from '@/components/common/ChangeNumberSelect';
@@ -16,7 +15,7 @@ import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import { ProjectHeaderChipIcons } from '@/components/layout/ProjectHeaderChipIcons';
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter>);
+  return (<div style={{ maxWidth: 900, padding: 16 }}>{children}</div>);
 }
 
 export default { title: 'Components/Layout/Atoms' };
@@ -28,7 +27,7 @@ export const ActiveHubLabelDefault: StoryObj = {
 
 export const HubTileDefault: StoryObj = {
   name: 'HubTile / Default',
-  render: () => <Wrap><HubTile label="Sample item title" color={{{}}} /></Wrap>,
+  render: () => <Wrap><HubTile label="Sample item title" color={{} as any} /></Wrap>,
 }
 
 export const NotificationItemDefault: StoryObj = {

@@ -3,8 +3,7 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
@@ -17,7 +16,7 @@ import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter>);
+  return (<div style={{ maxWidth: 900, padding: 16 }}>{children}</div>);
 }
 
 export default { title: 'Components/Shared/Molecules' };
@@ -29,12 +28,12 @@ export const DrawerPanelDefault: StoryObj = {
 
 export const RightDetailsPanelDefault: StoryObj = {
   name: 'RightDetailsPanel / Default',
-  render: () => <Wrap><RightDetailsPanel open=true onClose={fn()} title="Sample item title" tabs=[] /></Wrap>,
+  render: () => <Wrap><RightDetailsPanel open={true} onClose={fn()} title="Sample item title" tabs={[]} /></Wrap>,
 }
 
 export const RightDetailsPanelOpen: StoryObj = {
   name: 'RightDetailsPanel / Open',
-  render: () => <Wrap><RightDetailsPanel open=true onClose={fn()} title="Sample item title" tabs=[] open={true} /></Wrap>,
+  render: () => <Wrap><RightDetailsPanel open={true} onClose={fn()} title="Sample item title" tabs={[]} open={true} /></Wrap>,
 }
 
 export const ListScreenToolbarDefault: StoryObj = {
@@ -59,12 +58,12 @@ export const IssueNavChevronsDefault: StoryObj = {
 
 export const QuickAddRowDefault: StoryObj = {
   name: 'QuickAddRow / Default',
-  render: () => <Wrap><QuickAddRow columnsCount=5 label="Sample item title" placeholder="test-value" createType={{{}}} /></Wrap>,
+  render: () => <Wrap><QuickAddRow columnsCount={5} label="Sample item title" placeholder="test-value" createType={{} as any} /></Wrap>,
 }
 
 export const ResizableTableHeaderDefault: StoryObj = {
   name: 'ResizableTableHeader / Default',
-  render: () => <Wrap><ResizableTableHeader colKey="BAU-5972" label="Sample item title" width=42 onResizeStart={fn()} onDragStart={fn()} onDragOver={fn()} onDragEnd={fn()} /></Wrap>,
+  render: () => <Wrap><ResizableTableHeader colKey="BAU-5972" label="Sample item title" width={42} onResizeStart={fn()} onDragStart={fn()} onDragOver={fn()} onDragEnd={fn()} /></Wrap>,
 }
 
 export const PageShellDefault: StoryObj = {
