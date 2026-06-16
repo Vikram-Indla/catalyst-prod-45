@@ -53,9 +53,9 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     /* Jira-parity card surface — VERY light Atlassian info blue idle,
        one step more saturated on hover (still subtle, never dark blue).
        Border-bottom drawn inline by the card components. */
-    cardBg: 'var(--ds-background-information-subtle, #F1F7FF)',
+    cardBg: 'var(--ds-surface-raised, #FFFFFF)',
     cardBorder: 'transparent',
-    cardHoverBg: 'var(--ds-background-information, #E9F2FE)',
+    cardHoverBg: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
     /* jira-compare 2026-05-08 — Jira card shadow: very subtle elevation 1
        (0 1px 2px rgba(9,30,66,0.25) rest, 0 2px 4px on hover). The prior
        8px/12px value was 4× too heavy and made cards look like floating modals.
