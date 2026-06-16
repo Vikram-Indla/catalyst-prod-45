@@ -32,7 +32,7 @@ Output:
 [One sentence.]
 
 ## Work type
-[Investigation / Audit / Feature replication / Debugging / Implementation planning / Implementation / UI-DOM analysis / Validation / Guardrail update / Tooling setup.]
+[Investigation / Audit / Feature replication / Debugging / Implementation planning / Implementation / UI-DOM analysis / Design audit / Validation / Guardrail update / Tooling setup.]
 
 ## I would use these skills
 - [Skill / capability]&#58; [Why it is needed.] It will [what it will do after proceed].
@@ -87,6 +87,7 @@ Use:
 
 ### Debugging
 Use:
+- systematic-debugging (primary): multi-phase loop — symptom collection → root-cause isolation → fix → verification. Use when cause is unknown, prior fix failed, bug spans layers, or fix must be defensible.
 - repo-context-agent
 - token-efficiency-agent
 - tool-output-agent
@@ -120,12 +121,22 @@ Use:
 - token-efficiency-agent
 - tool-output-agent if browser/DOM output is large
 - Context Mode capability if available
+- design-critique if visual quality scoring is needed alongside DOM analysis
+
+### Design audit / UX scoring
+Use:
+- design-critique (primary): scores surface against 10 Nielsen + ADS heuristics. Produces findings table, P0/P1/P2 severity ratings, closure evidence with screenshots. Consults catalyst-storybook MCP before scoring. Mandatory before any UI surface is declared done.
+- ui-dom-probe-agent: provides DOM/computed-style data for design-critique to score against
+- repo-context-agent: maps which components are in scope
+- token-efficiency-agent
+- tool-output-agent if screenshot or MCP output is large
 
 ### Validation
 Use:
 - tool-output-agent
 - safety-change-control-agent
 - RTK capability if terminal output may be large
+- design-critique if validation includes visual/design correctness (not just functional)
 
 ### Guardrail / memory update
 Use:
@@ -151,6 +162,18 @@ Label every capability as one of:
 
 If missing, say:
 "Capability not installed/cloned. I will use the native fallback."
+
+## Known local skills
+
+design-critique:
+- Path: `.claude/skills/design-critique/SKILL.md` (both repo-local and global `~/.claude/skills/`)
+- Availability: Native local skill
+- Use for: heuristic UX/UI scoring (10 heuristics, P0/P1/P2), ADS token compliance spot-check, Catalyst Storybook MCP queries, screenshot closure evidence. Triggers on: "design critique", "UX review", "audit the design", "heuristic review", "design score", "does this look right", "rate the UI".
+
+systematic-debugging:
+- Path: `~/.claude/skills/systematic-debugging/SKILL.md` (global)
+- Availability: Native local skill
+- Use for: ambiguous failures, regressions spanning multiple layers, noisy logs, cases where fix must be proved not guessed. Runs multi-phase loop: symptom collection → root-cause isolation → patch → verification.
 
 ## Known external repo capabilities
 
