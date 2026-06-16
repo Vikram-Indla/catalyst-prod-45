@@ -1141,9 +1141,12 @@ function WorkstreamChip({ choice }: { choice: WorkstreamChoice }) {
         <span
           aria-hidden="true"
           style={{
+            // 2026-06-16 Fix #8: dot 8→6px so the leading element visually
+            // rhymes with ParentChip's small leading icon. Keeps the chip
+            // feeling "lighter" rather than a saturated lozenge.
             display: 'inline-block',
-            width: 8,
-            height: 8,
+            width: 6,
+            height: 6,
             borderRadius: '50%',
             background: choice.color,
             flexShrink: 0,

@@ -28,7 +28,8 @@
  *     JiraTable editors module
  *   - `flag` toast helper from JiraTable index (catalystToast under the hood)
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import Button, { IconButton } from '@atlaskit/button/new';
@@ -38,6 +39,7 @@ import AkSearchIcon from '@atlaskit/icon/core/search';
 import AkCloseIcon from '@atlaskit/icon/core/close';
 import AkMoreIcon from '@atlaskit/icon/glyph/more';
 import AkFilterIcon from '@atlaskit/icon/core/filter';
+import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import AkEditIcon from '@atlaskit/icon/core/edit';
 import AkCommentIcon from '@atlaskit/icon/core/comment';
 import AkClockIcon from '@atlaskit/icon/core/clock';
@@ -67,13 +69,192 @@ const TASK_PANEL_DEFAULT_W = 600;
 const TASK_PANEL_LS_KEY = 'tasks-hub-detail-panel-width';
 
 // Placeholder Group-by options — wiring deferred. Visual only.
-const GROUP_BY_OPTIONS = [
-  { value: 'none', label: 'No grouping' },
-  { value: 'status', label: 'Status' },
-  { value: 'workstream', label: 'Workstream' },
-  { value: 'assignee', label: 'Assignee' },
-  { value: 'priority', label: 'Priority' },
-] as const;
+// 2026-06-16 Fix #5: collapsed to a single "Group" trigger button (mirrors
+// BacklogPage's GroupByControl portal pattern, BacklogPage.atlaskit.tsx:5285).
+type TasksGroupBy = 'none' | 'status' | 'workstream' | 'assignee' | 'priority';
+const GROUP_BY_LABELS: Record<TasksGroupBy, string> = {
+  none: 'No grouping',
+  status: 'Status',
+  workstream: 'Workstream',
+  assignee: 'Assignee',
+  priority: 'Priority',
+};
+const TASKS_GROUP_BY_ORDER: TasksGroupBy[] = ['none', 'status', 'workstream', 'assignee', 'priority'];
+
+/**
+ * TasksGroupByControl — single "Group" button + chevron + portal dropdown.
+ *
+ * 2026-06-16 Fix #5: collapses the previous "Group by [No grouping]" inline
+ * pair into one trigger button matching Project Hub backlog's GroupByControl
+ * (BacklogPage.atlaskit.tsx:5285). Native button + ReactDOM.createPortal menu
+ * mounted on <body> — same pattern used because @atlaskit/dropdown-menu
+ * renders an empty portal on this surface (documented bug). Keeps the popover
+ * wiring identical to backlog: setIsOpen on click, click-outside / Escape to
+ * close, ArrowUp/Down + Home/End for keyboard nav, Enter/Space to select.
+ */
+function TasksGroupByControl({
+  value,
+  onChange,
+}: {
+  value: TasksGroupBy;
+  onChange: (next: TasksGroupBy) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
+  const [focusedIdx, setFocusedIdx] = useState<number>(0);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const itemsRef = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const triggerText = value === 'none' ? 'Group' : `Group: ${GROUP_BY_LABELS[value]}`;
+
+  useLayoutEffect(() => {
+    if (!isOpen || !triggerRef.current) return;
+    const r = triggerRef.current.getBoundingClientRect();
+    setAnchor({ top: r.bottom + 4, left: r.left });
+    const activeIdx = TASKS_GROUP_BY_ORDER.indexOf(value);
+    setFocusedIdx(activeIdx >= 0 ? activeIdx : 0);
+  }, [isOpen, value]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = itemsRef.current[focusedIdx];
+    if (el) el.focus();
+  }, [isOpen, focusedIdx]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t) || menuRef.current?.contains(t)) return;
+      setIsOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setIsOpen(false); triggerRef.current?.focus(); return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setFocusedIdx((i) => (i + 1) % TASKS_GROUP_BY_ORDER.length); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setFocusedIdx((i) => (i - 1 + TASKS_GROUP_BY_ORDER.length) % TASKS_GROUP_BY_ORDER.length); }
+      else if (e.key === 'Home') { e.preventDefault(); setFocusedIdx(0); }
+      else if (e.key === 'End') { e.preventDefault(); setFocusedIdx(TASKS_GROUP_BY_ORDER.length - 1); }
+      else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onChange(TASKS_GROUP_BY_ORDER[focusedIdx]);
+        setIsOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [isOpen, focusedIdx, onChange]);
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => setIsOpen((v) => !v)}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-label={value === 'none' ? 'Group by' : `Group by ${GROUP_BY_LABELS[value]}. Click to change.`}
+        onKeyDown={(e) => {
+          if (!isOpen && (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            setIsOpen(true);
+          }
+        }}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          height: 32,
+          padding: '0 12px',
+          borderRadius: 3,
+          border: `1px solid ${(isOpen || value !== 'none')
+            ? token('color.border.selected', '#0C66E4')
+            : token('color.border', '#DFE1E6')}`,
+          background: (isOpen || value !== 'none')
+            ? token('color.background.selected', '#E9F2FF')
+            : token('elevation.surface', '#FFFFFF'),
+          color: (isOpen || value !== 'none')
+            ? token('color.text.selected', '#0055CC')
+            : token('color.text', '#292A2E'),
+          fontSize: 13,
+          fontWeight: 500,
+          fontFamily: 'inherit',
+          cursor: 'pointer',
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}
+      >
+        <span>{triggerText}</span>
+        <AkChevronDownIcon label="" size="small" />
+      </button>
+      {isOpen && anchor && ReactDOM.createPortal(
+        <div
+          ref={menuRef}
+          role="menu"
+          aria-label="Group by"
+          style={{
+            position: 'fixed',
+            top: anchor.top,
+            left: anchor.left,
+            minWidth: 180,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            padding: '8px 0',
+            zIndex: 9999,
+            fontFamily: 'var(--cp-font-body)',
+            fontSize: 14,
+          }}
+        >
+          {TASKS_GROUP_BY_ORDER.map((opt, i) => {
+            const active = value === opt;
+            const focused = focusedIdx === i;
+            return (
+              <button
+                key={opt}
+                ref={(el) => { itemsRef.current[i] = el; }}
+                role="menuitemradio"
+                aria-checked={active}
+                tabIndex={focused ? 0 : -1}
+                type="button"
+                onMouseEnter={() => setFocusedIdx(i)}
+                onClick={() => { onChange(opt); setIsOpen(false); triggerRef.current?.focus(); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                  padding: '8px 16px',
+                  border: 'none',
+                  outline: 'none',
+                  background: active
+                    ? token('color.background.selected', '#E9F2FF')
+                    : focused
+                      ? token('color.background.neutral.subtle.hovered', '#091E4208')
+                      : 'transparent',
+                  color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#292A2E'),
+                  fontWeight: active ? 500 : 400,
+                  fontSize: 14,
+                  fontFamily: 'inherit',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                }}
+              >
+                {GROUP_BY_LABELS[opt]}
+              </button>
+            );
+          })}
+        </div>,
+        document.body,
+      )}
+    </>
+  );
+}
 
 export default function TasksTaskListView() {
   const navigate = useNavigate();
@@ -285,7 +466,12 @@ export default function TasksTaskListView() {
 
   // ── Toolbar state ────────────────────────────────────────────────────────
   const [search, setSearch] = useState('');
-  const [groupBy, setGroupBy] = useState<(typeof GROUP_BY_OPTIONS)[number]['value']>('none');
+  const [groupBy, setGroupBy] = useState<TasksGroupBy>('none');
+
+  // 2026-06-16 Fix #6: Saved filters count placeholder. Real wiring lands when
+  // Tasks Hub gets filter persistence (BacklogSavedFiltersDropdown reads from
+  // `filters` table scoped to project). For now omit suffix when 0.
+  const savedFiltersCount = 0;
 
   // ── JiraTable state ──────────────────────────────────────────────────────
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -421,12 +607,25 @@ export default function TasksTaskListView() {
             />
           </div>
 
-          {/* Filters — PLACEHOLDER. Non-functional in v1. */}
-          <Button appearance="subtle" onClick={() => { /* TODO */ }}>
+          {/* Filters — PLACEHOLDER. Non-functional in v1.
+              2026-06-16 Fix #4: chevron caret after the label matches
+              BacklogPage's JiraFilterAtlaskit trigger which uses an
+              iconAfter glyph (BacklogPage.atlaskit.tsx:3521). */}
+          <Button
+            appearance="subtle"
+            iconAfter={(iconProps) => <AkChevronDownIcon {...iconProps} label="" size="small" />}
+            onClick={() => { /* TODO */ }}
+          >
             Filters
           </Button>
 
-          {/* Avatar group — full team directory (read-only in v1). */}
+          {/* Avatar group — full team directory (read-only in v1).
+              2026-06-16 Fix #3: avatarData was previously empty because
+              useTaskUsers didn't select avatar_url. Fixed in useTaskUsers
+              (added avatar_url to the SELECT + .avatarUrl field on
+              PlannerUser). The AvatarGroup now renders.
+              Mirrors BacklogPage activeAssignees AvatarGroup
+              (BacklogPage.atlaskit.tsx:3554-3580). */}
           {avatarData.length > 0 && (
             <AvatarGroup
               appearance="stack"
@@ -437,46 +636,22 @@ export default function TasksTaskListView() {
             />
           )}
 
-          {/* Saved filters — PLACEHOLDER. */}
+          {/* Saved filters — PLACEHOLDER.
+              2026-06-16 Fix #6: show `Saved filters (N)` when N > 0; omit
+              the suffix at 0 to avoid the always-on "Saved filters (0)"
+              noise. Mirrors BacklogSavedFiltersDropdown's label format
+              (BacklogPage.atlaskit.tsx:7598-7600). */}
           <Button appearance="subtle" onClick={() => { /* TODO */ }}>
-            Saved filters
+            {savedFiltersCount > 0 ? `Saved filters (${savedFiltersCount})` : 'Saved filters'}
           </Button>
 
           <div style={{ flex: 1 }} />
 
-          {/* Group by — PLACEHOLDER native <select> (visual parity, no
-              functional grouping wired yet). Backlog uses GroupByControl
-              portal pattern; Tasks v1 doesn't need grouping. */}
-          <label
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: 13,
-              color: token('color.text.subtlest', '#6B778C'),
-            }}
-          >
-            <span>Group by</span>
-            <select
-              value={groupBy}
-              onChange={(e) => setGroupBy(e.target.value as typeof groupBy)}
-              style={{
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                borderRadius: 3,
-                padding: '4px 8px',
-                fontSize: 13,
-                background: token('color.background.input', '#FFFFFF'),
-                color: token('color.text', '#172B4D'),
-                cursor: 'pointer',
-              }}
-            >
-              {GROUP_BY_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          {/* Group control — single button + chevron + portal dropdown.
+              2026-06-16 Fix #5: replaces the old "Group by [native select]"
+              pair with one Button matching BacklogPage GroupByControl
+              (BacklogPage.atlaskit.tsx:5285). */}
+          <TasksGroupByControl value={groupBy} onChange={setGroupBy} />
 
           {/* View options (sort/density) — PLACEHOLDER. Matches Backlog's
               `toolbarViewOptionsButton` icon (AkFilterIcon). */}
@@ -550,6 +725,27 @@ export default function TasksTaskListView() {
               onSelectionChange={setSelectedIds}
               columnVisibility={visibleColumns}
               onColumnVisibilityChange={setVisibleColumns}
+              // 2026-06-16 Fix #1: compact density = 40px row height with
+              // 6px y-padding (matches Backlog. JiraTable defaults to
+              // 'compact' but pass explicitly to make the intent visible
+              // and prevent future config drift).
+              density="compact"
+              totalRowCount={rows.length}
+              // 2026-06-16 Fix #9: footer with + Create button (left),
+              // "N of M items" + refresh (center). Mirrors BacklogPage's
+              // stickyCreateFooter wiring (BacklogPage.atlaskit.tsx:3736).
+              // Create is a placeholder until a Tasks create modal lands;
+              // surfaces an info flag so users see the affordance. Refresh
+              // invalidates ['planner-tasks'] (the canonical Tasks query
+              // key — useTaskItems.ts:78).
+              enableStickyCreateFooter
+              stickyCreateFooter={{
+                placeholder: 'Create',
+                onActivate: () => flag.info('Create task', 'Inline task create lands in a follow-up.'),
+                onRefresh: async () => {
+                  await queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+                },
+              }}
             />
           </div>
 

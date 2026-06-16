@@ -163,6 +163,18 @@ export function useTasksTableData(args: {
     [usersQuery.data],
   );
 
+  // 2026-06-16 Fix #7: build a Map<assigneeId, avatarUrl> from the team
+  // directory so the Assignee cell renderer can resolve avatars per row
+  // (PlannerTask carries no avatarUrl field). Mirrors BacklogPage's
+  // avatarsByName pattern.
+  const avatarUrlByAssigneeId = useMemo(() => {
+    const m = new Map<string, string | undefined>();
+    (usersQuery.data ?? []).forEach((u) => {
+      m.set(u.id, u.avatarUrl ?? undefined);
+    });
+    return m;
+  }, [usersQuery.data]);
+
   const columnArgs: TasksListColumnArgs = useMemo(
     () => ({
       onOpen: args.onOpen,
@@ -172,6 +184,7 @@ export function useTasksTableData(args: {
       workstreamOptions,
       onCellEdit,
       rowActions: args.rowActions,
+      avatarUrlByAssigneeId,
     }),
     [
       args.onOpen,
@@ -181,6 +194,7 @@ export function useTasksTableData(args: {
       workstreamOptions,
       onCellEdit,
       args.rowActions,
+      avatarUrlByAssigneeId,
     ],
   );
 

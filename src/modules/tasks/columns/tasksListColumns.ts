@@ -77,12 +77,28 @@ export type TasksListColumnArgs = {
    * commit message for the per-action wiring rationale.
    */
   rowActions: RowAction<PlannerTask>[];
+  /**
+   * Optional: avatarUrl lookup for the Assignee column display. PlannerTask
+   * doesn't carry avatarUrl directly; the view supplies a Map<assigneeId,
+   * avatarUrl> built from the full team directory (useTaskUsers) so assigned
+   * rows render a real avatar. Mirrors BacklogPage's avatarsByName lookup
+   * (BacklogPage.atlaskit.tsx:2515).
+   * 2026-06-16 Fix #7.
+   */
+  avatarUrlByAssigneeId?: Map<string, string | undefined>;
 };
 
 // ─── Helpers (zero-assumption: return null when data is absent) ─────────────
-function toAssigneeChoice(row: PlannerTask): AssigneeChoice | null {
+function toAssigneeChoice(
+  row: PlannerTask,
+  avatarUrlByAssigneeId?: Map<string, string | undefined>,
+): AssigneeChoice | null {
   if (!row.assigneeId || !row.assigneeName) return null;
-  return { id: row.assigneeId, name: row.assigneeName };
+  // 2026-06-16 Fix #7: resolve avatarUrl from the team directory lookup.
+  // Falls back to null (not a typed default) when the user isn't in the map
+  // — CLAUDE.md zero-assumption rule.
+  const avatarUrl = avatarUrlByAssigneeId?.get(row.assigneeId) ?? null;
+  return { id: row.assigneeId, name: row.assigneeName, avatarUrl };
 }
 
 function toWorkstreamChoice(row: PlannerTask): WorkstreamChoice | null {
@@ -104,7 +120,20 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
     workstreamOptions,
     onCellEdit,
     rowActions,
+    avatarUrlByAssigneeId,
   } = args;
+
+  // 2026-06-16 Fix #2: slug → proper-case label map (e.g. "in-progress" → "In
+  // Progress") so the StatusPill renders the human-readable name from
+  // task_statuses.name rather than the raw slug. Falls back to the slug
+  // string itself when no option matches (zero-assumption: no typed default).
+  const statusLabelMap = new Map<string, string>(
+    statusOptions.map((o) => [o.value, o.label]),
+  );
+  const statusLabelFor = (s: string | null): string => {
+    if (!s) return '';
+    return statusLabelMap.get(s) ?? s;
+  };
 
   return [
     // 1. Work — combined cell: [Task icon] [KEY] [summary text]. Single flex
@@ -196,6 +225,10 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
           const _exhaustive: never = status;
           return _exhaustive;
         },
+        // 2026-06-16 Fix #2: render the proper-case label ("In Progress")
+        // instead of the slug ("in-progress"). The label comes from
+        // task_statuses.name via statusOptions.
+        labelFor: statusLabelFor,
         options: statusOptions,
         onChange: (row, next) => {
           void onCellEdit(row.id, { status: next as PlannerTask['status'] });
@@ -210,7 +243,12 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
       sortable: true,
       defaultVisible: true,
       cell: makeAssigneeEditCell<PlannerTask>({
-        getAssignee: toAssigneeChoice,
+        // 2026-06-16 Fix #7: bind the avatarUrl lookup so assigned rows
+        // render the assignee's real avatar (matching Project Hub backlog).
+        // The Unassigned state is handled by the canonical makeAssigneeEditCell
+        // pattern — italic ghost "Unassigned" + circle placeholder — and
+        // requires no override.
+        getAssignee: (row) => toAssigneeChoice(row, avatarUrlByAssigneeId),
         options: assigneeOptions,
         onChange: (row, next) => {
           void onCellEdit(row.id, {
