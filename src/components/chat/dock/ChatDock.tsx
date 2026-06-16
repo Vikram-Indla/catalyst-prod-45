@@ -18,6 +18,7 @@ import Tooltip from "@atlaskit/tooltip";
 import AddIcon from "@atlaskit/icon/core/add";
 import GrowDiagonalIcon from "@atlaskit/icon/core/grow-diagonal";
 import CloseIcon from "@atlaskit/icon/core/close";
+import EyeClosedIcon from "@atlaskit/icon/core/eye-closed";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
@@ -30,7 +31,6 @@ import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
-import { CatyClosedEye } from "../caty-mood/CatyClosedEye";
 import { catalystToast } from "@/lib/catalystToast";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
@@ -359,7 +359,7 @@ export function ChatDock({
             aria-label="Wake Caty"
             title="Wake Caty"
           >
-            <CatyClosedEye size={32} />
+            <EyeClosedIcon LEGACY_size="large" />
           </button>
         )}
         {!isDragging && !catyHidden && (
