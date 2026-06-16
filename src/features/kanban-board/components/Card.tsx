@@ -5,7 +5,8 @@
  */
 import React, { useState, useRef, useEffect } from 'react';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import Tooltip from '@atlaskit/tooltip';
 import EditIcon from '@atlaskit/icon/core/edit';
 import { IssueTypeIcon } from './IssueTypeIcon';
@@ -224,7 +225,11 @@ export const Card: React.FC<CardProps> = ({
                   ...(hover ? { background: token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') } : {}),
                 }}
               >
-                <Avatar size="small" src={avatarUrl ?? undefined} name={issue.assigneeName || STRINGS.UNASSIGNED} />
+                <CatalystAvatar
+                  size="small"
+                  src={resolveAvatarUrl(issue.assigneeName) ?? avatarUrl ?? undefined}
+                  name={issue.assigneeName}
+                />
               </span>
             </Tooltip>
           )}

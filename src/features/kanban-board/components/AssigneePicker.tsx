@@ -5,7 +5,8 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { SIZES, STRINGS } from '../constants';
 import type { BoardIssue } from '../types';
 
@@ -45,7 +46,7 @@ export const AssigneePicker: React.FC<Props> = ({ issue, anchor, members, avatar
           color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#172B4D'), fontSize: 14 }}
         onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
         onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}>
-        <Avatar size="small" src={avatarName ? avatars.get(avatarName) ?? undefined : undefined} name={label} />
+        <CatalystAvatar size="small" src={avatarName ? resolveAvatarUrl(avatarName) ?? avatars.get(avatarName) ?? undefined : undefined} name={avatarName} />
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
       </button>
     );
