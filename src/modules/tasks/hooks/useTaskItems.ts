@@ -49,7 +49,10 @@ const transformPlannerTask = (row: any): PlannerTask => ({
   key: row.task_key || row.key || `PLN-${row.id.slice(0, 4).toUpperCase()}`,
   title: row.title || 'Untitled',
   description: row.description || '',
-  status: mapStatusFromPlannerStatuses(row.status?.name),
+  // Canonical: carry the real task_statuses.slug so custom/admin statuses
+  // flow to every view. Fall back to the name-heuristic only when a row has
+  // no joined status (legacy/orphan rows).
+  status: row.status?.slug || mapStatusFromPlannerStatuses(row.status?.name),
   type: 'task',
   priority: mapPriority(row.priority),
   assigneeId: row.assignee_id,

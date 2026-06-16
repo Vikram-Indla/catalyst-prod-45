@@ -347,7 +347,28 @@ export default function DashboardWidgetGrid({
   const widgetsToRender = isEditing && draftWidgets ? draftWidgets : persistedWidgets;
   const visibleWidgets = widgetsToRender.filter((w) => w.visible);
 
-  const collapseHandler = isEditing ? onToggleCollapse : persistedToggleCollapse;
+  // Canonical live-view collapse (2026-06-17). Minimize must work in EVERY
+  // mode. mode='tasks' has no dashboard_widget_config table — its config
+  // query hard-returns [] — so the persisted toggleCollapse upserts a row
+  // that is never read back, leaving `collapsed` pinned at the registry
+  // default → the Minimize button was a no-op. This local override is the
+  // immediate source of truth for the live grid (seeded lazily from the
+  // resolved widget's collapsed flag). Persisted modes also write through.
+  const [collapseOverride, setCollapseOverride] = useState<Record<string, boolean>>({});
+
+  const liveToggleCollapse = (widgetId: string) => {
+    setCollapseOverride((prev) => {
+      const base =
+        prev[widgetId] ??
+        visibleWidgets.find((w) => w.id === widgetId)?.collapsed ??
+        false;
+      return { ...prev, [widgetId]: !base };
+    });
+    // Write through to the per-user config table where one exists.
+    if (mode !== 'tasks') persistedToggleCollapse?.(widgetId);
+  };
+
+  const collapseHandler = isEditing ? onToggleCollapse : liveToggleCollapse;
 
   // Solo / focus mode — transient page-level state. Setting this hides
   // every other widget so the focused one fills the viewport. ESC inside
@@ -436,8 +457,11 @@ export default function DashboardWidgetGrid({
         {visibleWidgets.map((w, idx) => {
           const span = effectiveSpan(w);
           const WidgetComponent = w.component;
-          // First visible widget is always expanded (Vikram directive).
-          const isCollapsed = idx === 0 ? false : w.collapsed;
+          // First visible widget defaults to expanded (Vikram directive),
+          // but a live user toggle (collapseOverride) always wins so the
+          // Minimize button is functional on every widget, idx 0 included.
+          const baseCollapsed = idx === 0 ? false : w.collapsed;
+          const isCollapsed = collapseOverride[w.id] ?? baseCollapsed;
           return (
             <div
               key={w.id}

@@ -37,7 +37,7 @@ export default function TasksOverviewView() {
         background: 'var(--ds-surface, #FFFFFF)',
       }}
     >
-      <TasksPageHeader routeWord="Overview" />
+      <TasksPageHeader routeWord="Dashboard" />
       <div
         style={{
           flex: 1,

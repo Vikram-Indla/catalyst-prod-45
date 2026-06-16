@@ -16,7 +16,11 @@ export type PlannerView =
   | 'workstreams'
   | 'settings';
 
-export type TaskStatus = 'backlog' | 'planned' | 'in-progress' | 'review' | 'done';
+// Status is DB-driven: the real value is `task_statuses.slug` (arbitrary,
+// admin-managed). The five literals are the SYSTEM defaults — kept for
+// autocomplete + the default colour/label maps below; `(string & {})` widens
+// the type so custom statuses added in admin flow through every view.
+export type TaskStatus = 'backlog' | 'planned' | 'in-progress' | 'review' | 'done' | (string & {});
 
 export type TaskPriority = 'critical' | 'high' | 'medium' | 'low';
 

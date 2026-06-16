@@ -7,12 +7,10 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
-  CheckSquare, 
-  LayoutGrid, 
-  Target,
+  LayoutDashboard,
+  LayoutGrid,
   Menu,
-  X 
+  X
 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
@@ -25,9 +23,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', path: '/tasks/overview', icon: LayoutDashboard },
-  { id: 'my-tasks', label: 'My Tasks', path: '/tasks/my-tasks', icon: CheckSquare },
   { id: 'boards', label: 'Boards', path: '/tasks/board', icon: LayoutGrid },
-  { id: 'priorities', label: 'Priorities', path: '/priorities', icon: Target },
 ];
 
 interface MobileBottomNavProps {

@@ -22,25 +22,31 @@ import type { WidgetProps } from '@/components/project-hub/dashboard/widget-type
 import { LABEL, SMALL, H_NUM } from '@/components/project-hub/dashboard/dashboardTypography';
 import { EmptyState, Lozenge } from '@/components/ads';
 import { useTaskItems } from '@/modules/tasks/hooks/useTaskItems';
-import { COLUMN_CONFIG, STATUS_COLORS, type TaskStatus } from '@/modules/tasks/types';
+import { useTaskStatuses } from '@/modules/tasks/hooks/useTaskStatuses';
+import { COLUMN_CONFIG, STATUS_COLORS } from '@/modules/tasks/types';
 
-const STATUS_ORDER: TaskStatus[] = ['backlog', 'planned', 'in-progress', 'review', 'done'];
+// Fallback rows when the DB status list hasn't loaded — the 5 system defaults.
+const FALLBACK_STATUS_ROWS = COLUMN_CONFIG.map((c) => ({
+  slug: c.id,
+  name: c.title,
+  color: STATUS_COLORS[c.id] ?? c.color,
+}));
 
 export default function TasksByStatusWidget({ collapsed, onToggleCollapse }: WidgetProps) {
   const { data: tasks = [], isLoading } = useTaskItems(null);
+  const { data: dbStatuses = [] } = useTaskStatuses();
+
+  // Status rows are DB-driven (task_statuses) so custom/admin statuses appear.
+  const statusRows = dbStatuses.length
+    ? dbStatuses.map((s) => ({ slug: s.slug, name: s.name, color: s.color }))
+    : FALLBACK_STATUS_ROWS;
 
   const { total, byStatus, doneCount, inFlight } = useMemo(() => {
-    const counts: Record<TaskStatus, number> = {
-      backlog: 0,
-      planned: 0,
-      'in-progress': 0,
-      review: 0,
-      done: 0,
-    };
+    const counts: Record<string, number> = {};
     for (const t of tasks) counts[t.status] = (counts[t.status] ?? 0) + 1;
     const totalLocal = tasks.length;
-    const done = counts.done;
-    const flight = counts['in-progress'] + counts.review;
+    const done = counts['done'] ?? 0;
+    const flight = (counts['in-progress'] ?? 0) + (counts['review'] ?? 0);
     return { total: totalLocal, byStatus: counts, doneCount: done, inFlight: flight };
   }, [tasks]);
 
@@ -96,14 +102,12 @@ export default function TasksByStatusWidget({ collapsed, onToggleCollapse }: Wid
 
           {/* Per-status bars */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {STATUS_ORDER.map((status) => {
-              const count = byStatus[status] ?? 0;
+            {statusRows.map((row) => {
+              const count = byStatus[row.slug] ?? 0;
               const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-              const label =
-                COLUMN_CONFIG.find((c) => c.id === status)?.title ?? status;
               return (
-                <div key={status} style={{ display: 'grid', gridTemplateColumns: '140px 1fr 60px', alignItems: 'center', gap: 12 }}>
-                  <span style={{ ...SMALL, color: token('color.text.subtle', '#42526E') }}>{label}</span>
+                <div key={row.slug} style={{ display: 'grid', gridTemplateColumns: '140px 1fr 60px', alignItems: 'center', gap: 12 }}>
+                  <span style={{ ...SMALL, color: token('color.text.subtle', '#42526E') }}>{row.name}</span>
                   <div
                     style={{
                       height: 8,
@@ -116,7 +120,7 @@ export default function TasksByStatusWidget({ collapsed, onToggleCollapse }: Wid
                       style={{
                         width: `${pct}%`,
                         height: '100%',
-                        background: STATUS_COLORS[status],
+                        background: row.color || token('color.text.subtlest', '#64748b'),
                         transition: 'width 200ms ease',
                       }}
                     />

@@ -185,7 +185,7 @@ const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
 const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
 const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
-const MyTasksPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.MyTasksPage })));
+const NotFound = lazy(() => import("../pages/NotFound"));
 
 const TestHubPage = lazy(() => import("../modules-dormant/testhub/TestHubPage"));
 const TestHubVerifyPage = lazy(() => import("../modules-dormant/testhub/TestHubVerifyPage"));
@@ -225,10 +225,6 @@ const TestHubDocsPage = lazy(() => import("../modules-dormant/testhub/TestHubDoc
 const QualityGatesPage = lazy(() => import("../pages/releases/QualityGatesPage"));
 const MyTestScopePage = lazy(() => import("../modules-dormant/testhub/MyTestScopePage"));
 
-const T10LandingPage = lazy(() => import("../modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
-const T10WeekPage = lazy(() => import("../modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
-const T10WeekPageV3 = lazy(() => import("../modules/task10/pages/T10WeekPageV3").then(m => ({ default: m.T10WeekPageV3 })));
-const T10CompletedPage = lazy(() => import("../modules/task10/pages/T10CompletedPage").then(m => ({ default: m.T10CompletedPage })));
 
 const PlanLibraryPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.PlanLibraryPage })));
 const PlanEditorPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.PlanEditorPage })));
@@ -594,15 +590,15 @@ export default function FullAppRoutes() {
 
         <Route path="/tasks" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/tasks/:view" element={<S><PlannerPage /></S>} />
-        <Route path="/tasks/my-tasks" element={<S><MyTasksPage /></S>} />
+        {/* Deprecated 2026-06-17: My Tasks + Workstreams removed. Static segment outranks /tasks/:view in RR6 → 404. */}
+        <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />
+        <Route path="/tasks/workstreams" element={<S><NotFound /></S>} />
 
         {/* Backward-compat redirects from old /taskhub routes */}
         <Route path="/taskhub" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub/boards" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub/task-list" element={<Navigate to="/tasks/list" replace />} />
-        <Route path="/taskhub/my-tasks" element={<Navigate to="/tasks/my-tasks" replace />} />
         <Route path="/taskhub/dashboard" element={<Navigate to="/tasks/overview" replace />} />
-        <Route path="/taskhub/workstreams" element={<Navigate to="/tasks/workstreams" replace />} />
         <Route path="/taskhub/settings" element={<Navigate to="/tasks/settings" replace />} />
         <Route path="/taskhub/:view" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub-kanban" element={<Navigate to="/tasks/board" replace />} />
@@ -680,16 +676,10 @@ export default function FullAppRoutes() {
         <Route path="/releasehub/dashboard" element={<Navigate to="/release-hub/command-center" replace />} />
         <Route path="/releasehub/all" element={<Navigate to="/release-hub/releases" replace />} />
 
-        <Route path="/tasks/priorities" element={<S><T10LandingPage /></S>} />
-        <Route path="/tasks/priorities/completed" element={<S><T10CompletedPage /></S>} />
-        <Route path="/tasks/priorities/list/:listId" element={<S><T10WeekPage /></S>} />
-        <Route path="/tasks/priorities/list/:listId/week/:weekId" element={<S><T10WeekPageV3 /></S>} />
+        {/* Deprecated 2026-06-17: Priorities (Task10) module removed. Subtree → 404. */}
+        <Route path="/tasks/priorities/*" element={<S><NotFound /></S>} />
 
-        {/* Backward-compat redirects from old /priorities and /planner routes */}
-        <Route path="/priorities" element={<Navigate to="/tasks/priorities" replace />} />
-        <Route path="/priorities/*" element={<Navigate to="/tasks/priorities" replace />} />
-        <Route path="/taskhub/task10" element={<Navigate to="/tasks/priorities" replace />} />
-        <Route path="/taskhub/task10/*" element={<Navigate to="/tasks/priorities" replace />} />
+        {/* Backward-compat redirects from old /planner routes */}
         <Route path="/planner" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/planner/*" element={<Navigate to="/tasks/board" replace />} />
 

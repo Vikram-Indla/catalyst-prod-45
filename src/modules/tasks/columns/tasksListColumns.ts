@@ -225,11 +225,10 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
             case 'planned': return 'new';
             case 'backlog': return 'default';
           }
-          // Exhaustiveness check (CLAUDE.md 2026-06-11 zero-assumption code):
-          // if `PlannerTask['status']` gains a new value, TypeScript will flag
-          // this line — surface the missing case rather than silently grey it.
-          const _exhaustive: never = status;
-          return _exhaustive;
+          // Status is now DB-driven (task_statuses.slug). Custom/admin-added
+          // statuses get a neutral lozenge; their real name still renders via
+          // labelFor (task_statuses.name) — neutral, never a wrong label.
+          return 'default';
         },
         // 2026-06-16 Fix #2: render the proper-case label ("In Progress")
         // instead of the slug ("in-progress"). The label comes from
