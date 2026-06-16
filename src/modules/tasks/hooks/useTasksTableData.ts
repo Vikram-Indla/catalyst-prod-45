@@ -10,20 +10,18 @@
  *   useDeletePlannerTask → row-delete mutation
  *   buildTasksListColumns (Task 1.2) → final Column<PlannerTask>[]
  *
- * KNOWN GAPS (surfaced as concerns to Task 1.3, NOT silently masked):
- *   1. `useUpdatePlannerTask` (src/modules/tasks/hooks/useTaskItems.ts:107) does
- *      NOT currently handle `status` or `teamId/teamName/teamColor` patches —
- *      its dbUpdates mapper only covers priority/blocked/blockedReason/progress/
- *      assigneeId/dueDate/startDate/title/description. The column registry
- *      (Task 1.2) emits onCellEdit({ status, teamId, teamName, teamColor }) for
- *      the status + workstream popups, so those edits are SILENTLY DROPPED
- *      today. Per the task spec ("do NOT invent a status-mutation path") this
- *      adapter forwards the patch as-is — extending useUpdatePlannerTask is a
- *      follow-up task.
+ * MUTATION COVERAGE:
+ *   `useUpdatePlannerTask` (src/modules/tasks/hooks/useTaskItems.ts) writes
+ *   status (via `status_id` resolved from the slug) and workstream (via
+ *   `workstream_id`) alongside priority/blocked/blockedReason/progress/
+ *   assigneeId/dueDate/startDate/title/description. Closed in Task 1.3a
+ *   (commit 47a241f3c) — column-registry onCellEdit patches for status and
+ *   teamId now persist through to the DB.
  *
- *   2. assigneeOptions are derived from the loaded tasks set (de-duplicated
- *      assignees). A proper full-directory picker (read from `profiles` or
- *      `resource_inventory`) is a follow-up.
+ * KNOWN GAP:
+ *   assigneeOptions are derived from the loaded tasks set (de-duplicated
+ *   assignees). A proper full-directory picker (read from `profiles` or
+ *   `resource_inventory`) is a follow-up.
  *
  * Zero-assumption code (CLAUDE.md 2026-06-11): all options are derived from
  * real data — when a query returns empty, we return an empty option list, not

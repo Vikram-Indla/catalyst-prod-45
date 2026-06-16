@@ -10,6 +10,7 @@ import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } f
 import type { KanbanTask } from './types/kanban';
 import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
+import TasksTaskListView from './views/TasksTaskListView';
 import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
 import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './components/insights';
@@ -437,20 +438,7 @@ export function PlannerPage() {
           />
         );
       case 'task-list':
-        return (
-          <PlannerTaskList
-            tasks={viewTasks}
-            onTaskClick={handleTaskClick}
-            onTaskUpdate={handleTaskUpdate}
-            selectedTaskIds={selectedTaskIds}
-            onSelectionChange={setSelectedTaskIds}
-            visibleColumns={visibleColumns}
-            onOpenCreateModal={() => {
-              setCreateDefaultStatus('backlog');
-              setIsCreateModalOpen(true);
-            }}
-          />
-        );
+        return <TasksTaskListView />;
       case 'timeline':
         return <PlannerTimeline tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'calendar':
