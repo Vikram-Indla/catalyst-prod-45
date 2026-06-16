@@ -307,6 +307,26 @@ export default function TasksTimelineView() {
       createTopLevelConfig={{ label: 'Create task', iconType: 'Task' }}
       childTypesOverride={['Task']}
       queryClient={queryClient}
+      // 2026-06-17 — Project Hub timeline parity. Explicit enable flags so the
+      // drag flow matches Project Hub's behaviour:
+      //   • enableBarDrag — drag bar start/end edges to resize the range,
+      //     drag bar body to move both dates together. Wires through
+      //     mutations.onUpdateDates (already provided above).
+      //   • enableEmptyRowAdd — "+" button next to today's line on rows that
+      //     have no dates. Click opens EditDatesModal to pick start/end —
+      //     same modal Project Hub uses (canonical shared component).
+      //   • enableRowMenu — three-dot row menu.
+      //   • enableCreateEpicRow — sticky "Create task" row in the sidebar.
+      //
+      // enableInlineCreate is explicitly DISABLED (Vikram 2026-06-17): the
+      // per-row hover "+ create child" button shown next to dates was
+      // unwanted on tasks. The sticky bottom Create row + the per-row ⋯
+      // menu cover that affordance.
+      enableBarDrag
+      enableEmptyRowAdd
+      enableInlineCreate={false}
+      enableRowMenu
+      enableCreateEpicRow
     />
   );
 }

@@ -6,6 +6,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
 import type { PlannerStatus } from './useTaskStatuses';
 
@@ -210,6 +211,12 @@ export function useUpdatePlannerTask() {
       context?.previous?.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
       });
+      // 2026-06-17: surface the error. Previously this rolled back silently,
+      // making status/assignee/priority change failures look like the UI just
+      // ignored the click. The toast shows the real Postgres/PostgREST error.
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('useUpdatePlannerTask failed:', err, 'updates:', variables.updates);
+      catalystToast.error('Update failed', msg);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });

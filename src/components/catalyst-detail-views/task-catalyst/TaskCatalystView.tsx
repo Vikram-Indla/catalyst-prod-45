@@ -144,12 +144,12 @@ export default function TaskCatalystView({
     if (!itemId) return;
     try {
       await deleteMutation.mutateAsync(itemId);
-      catalystToast.success('Task deleted', t?.task_key ?? undefined);
+      catalystToast.success('Task deleted', t?.key ?? undefined);
       onClose();
     } catch (e) {
       catalystToast.error('Delete failed', e instanceof Error ? e.message : String(e));
     }
-  }, [itemId, deleteMutation, t?.task_key, onClose]);
+  }, [itemId, deleteMutation, t?.key, onClose]);
 
   const handleCopyLink = useCallback(() => {
     const url = `${window.location.origin}/tasks/task-list?openTask=${itemId}`;
@@ -288,7 +288,10 @@ export default function TaskCatalystView({
         panelMode={panelMode}
         fullPageMode={fullPageMode}
         itemType="Task"
-        itemKey={t?.task_key || null}
+        // 2026-06-17: tasks are identified by `key` (PLN-N) — the live DB
+        // schema does not expose `task_key`. The BEFORE-INSERT trigger
+        // always fills `key`.
+        itemKey={t?.key || null}
         projectKey={t?.workstream?.key_prefix || projectKey || ''}
         projectName={t?.workstream?.name || 'Tasks'}
         parentKey={null}
@@ -312,7 +315,7 @@ export default function TaskCatalystView({
       <ConfirmDeleteDialog
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
-        issueKey={t?.task_key}
+        issueKey={t?.key || ''}
         issueSummary={t?.title}
         typeLabel="task"
         onConfirm={handleDelete}

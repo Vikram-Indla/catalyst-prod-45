@@ -26,7 +26,13 @@ import type { Column, CellProps } from '@/components/shared/JiraTable/types';
 import { makeKeyCell } from '@/components/shared/JiraTable/cells';
 import {
   makeSummaryInlineEditCell,
-  makeStatusEditCellAkPopup,
+  // 2026-06-17: switched from makeStatusEditCellAkPopup → makeStatusEditCell.
+  // The Atlaskit Popup variant renders an empty portal on this surface
+  // (documented in BacklogPage:2441-2446: "@atlaskit/popup portal mounts but
+  // renders empty content"). makeStatusEditCell uses the bespoke
+  // EditorPopover (portal + manual positioning) which is the only working
+  // path — and the one Project Hub backlog uses.
+  makeStatusEditCell,
   makePriorityEditCell,
   makeAssigneeEditCell,
   makeDateEditCell,
@@ -209,7 +215,7 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
       width: 15,
       sortable: true,
       defaultVisible: true,
-      cell: makeStatusEditCellAkPopup<PlannerTask>({
+      cell: makeStatusEditCell<PlannerTask>({
         getStatus: (row) => row.status,
         appearanceFor: (status) => {
           switch (status) {
