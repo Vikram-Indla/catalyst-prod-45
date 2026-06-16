@@ -18,12 +18,15 @@ export function CatyMascot({
   className = '',
   title = 'Caty',
 }: CatyMascotProps) {
+  // Theme-aware: read inherited --caty-* CSS vars (set by .clmp-root / .dark .clmp-root)
+  // so the mascot flips with light/dark and can never render dark-on-dark. The variant
+  // values are kept only as fallbacks for any consumer outside the .clmp-root token layer.
   // ads-scanner:ignore-next-line
-  const body = variant === 'light' ? '#23222B' : variant === 'dark' ? '#F4F1EA' : 'currentColor';
+  const body = `var(--caty-body, ${variant === 'light' ? '#23222B' : variant === 'dark' ? '#F4F1EA' : 'currentColor'})`;
   // ads-scanner:ignore-next-line
-  const innerEar = variant === 'dark' ? '#23222B' : '#F4F1EA';
+  const innerEar = `var(--caty-inner, ${variant === 'dark' ? '#23222B' : '#F4F1EA'})`;
   // ads-scanner:ignore-next-line
-  const face = variant === 'dark' ? '#23222B' : '#ffffff';
+  const face = `var(--caty-face, ${variant === 'dark' ? '#23222B' : '#ffffff'})`;
 
   return (
     <span className={`caty-mascot ${className}`.trim()} aria-hidden="true">

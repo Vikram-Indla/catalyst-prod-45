@@ -51,11 +51,11 @@ export const catalystToast = {
   show: (options: Omit<CatalystToastItem, 'id'>): string => {
     const id = `catalyst-toast-${++idCounter}`;
 
-    // DEPRECATED 2026-06-16 (Vikram): success + info confirmation badges are
-    // suppressed platform-wide. Only error / warning / loading / undo render.
-    // Call sites are intentionally left intact so feedback can be restored by
-    // deleting this guard alone.
-    if (options.type === 'success' || options.type === 'info') {
+    // DEPRECATED 2026-06-16 (Vikram): success + info + loading transient badges
+    // are suppressed platform-wide. Only error / warning render, plus `undo`
+    // (which carries a functional Undo action). Call sites are intentionally
+    // left intact so feedback can be restored by deleting this guard alone.
+    if (options.type === 'success' || options.type === 'info' || options.type === 'loading') {
       return id;
     }
 
