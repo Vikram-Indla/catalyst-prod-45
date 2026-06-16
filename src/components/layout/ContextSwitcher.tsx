@@ -460,7 +460,9 @@ export function ContextSwitcher() {
 
   // Data
   const { data: projects = [] } = useSwitcherProjects(mode === 'project');
-  const { data: favoriteIds } = useProjectFavorites();
+  const { data: _favoriteRaw } = useProjectFavorites();
+  // React Query may deserialize a cached Set as a plain object — always reconstruct.
+  const favoriteIds: Set<string> = _favoriteRaw instanceof Set ? _favoriteRaw : new Set(Array.isArray(_favoriteRaw) ? _favoriteRaw : []);
   const { data: products = [] } = useSwitcherProducts(mode === 'product');
   const { data: workstreams = [] } = useSwitcherWorkstreams(mode === 'tasks');
 

@@ -242,7 +242,7 @@ const DESC_BUILD_ID = "atlaskit-canonical-v218";
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = "cv-desc-styles-v34";
+const STYLE_ID = "cv-desc-styles-v36";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const s = document.createElement("style");
   s.id = STYLE_ID;
@@ -384,7 +384,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     .cv-sprintrelease-select__option,
     .cv-sprintrelease-select__option * { font-size: 14px !important; line-height: 20px !important; }
     .cv-sprintrelease-select__group-heading { font-size: 11px !important; }
-    .cv-rail-value:hover:not(:focus-within) { background: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08)); }
+    /* cv-rail-value idle border + hover + focus-within now owned by CatalystSidebarDetails (RAIL_BORDER_STYLE_ID). */
     /* v2 extra rule: the dark-mode global stylesheet has
        .dark [class*="Drawer"] input { background-color: rgb(10,10,10) !important; }
        with specificity 0,2,1 — beating our 0,1,1 plain rule. Add .dark prefix

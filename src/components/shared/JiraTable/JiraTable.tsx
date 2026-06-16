@@ -609,7 +609,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* Inner trigger buttons no longer self-tint (the whole cell tints).
          Keep a subtle ring for keyboard focus. */
       [data-jira-cell-editor]:focus-visible {
-        outline: 2px solid var(--ds-border-focused, #4C9AFF);
+        outline: 2px solid var(--ds-border-focused, #4688EC);
         outline-offset: -2px;
         border-radius: 3px;
       }
@@ -862,7 +862,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         right: 2px;
         bottom: 6px;
         width: 2px;
-        background: var(--ds-border-focused, #4C9AFF);
+        background: var(--ds-border-focused, #4688EC);
         border-radius: 1px;
       }
       .jira-table-grid tbody tr.jira-table-group-row > td {
@@ -2079,10 +2079,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               flexShrink: 0,
               marginTop: 'auto',
               ...(creating ? {
-                borderTop: '2px solid var(--ds-border-focused, #0C66E4)',
-                borderLeft: '2px solid var(--ds-border-focused, #0C66E4)',
-                borderRight: '2px solid var(--ds-border-focused, #0C66E4)',
-                borderBottom: '2px solid var(--ds-border-focused, #0C66E4)',
+                borderTop: '2px solid var(--ds-border-focused, #4688EC)',
+                borderLeft: '2px solid var(--ds-border-focused, #4688EC)',
+                borderRight: '2px solid var(--ds-border-focused, #4688EC)',
+                borderBottom: '2px solid var(--ds-border-focused, #4688EC)',
                 borderBottomLeftRadius: 8,
                 borderBottomRightRadius: 8,
               } : {

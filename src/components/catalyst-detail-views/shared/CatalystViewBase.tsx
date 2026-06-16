@@ -309,6 +309,29 @@ export function CatalystViewBase({
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, panelMode, onClose]);
 
+  /* ── Navigation (full-page back) ─────────── */
+  const navigate = useNavigate();
+  const location = useLocation();
+  const hubBase = location.pathname.startsWith('/product-hub/')
+    ? `/product-hub/${projectKey}`
+    : `/project-hub/${projectKey}`;
+  const projectListHref = location.pathname.includes('/backlog/')
+    ? `${hubBase}/backlog`
+    : location.pathname.includes('/timeline/')
+    ? `${hubBase}/timeline`
+    : `${hubBase}/list`;
+  const handleBack = useCallback(() => {
+    if (fullPageMode) {
+      if (projectKey) {
+        navigate(projectListHref);
+      } else {
+        navigate(-1);
+      }
+    } else {
+      onClose();
+    }
+  }, [fullPageMode, projectKey, navigate, onClose]);
+
   if (!isOpen) return null;
 
   /* ── Panel navigation helpers ───────────── */
@@ -359,33 +382,6 @@ export function CatalystViewBase({
   };
 
 
-  /* ── Navigation (full-page back) ─────────── */
-  const navigate = useNavigate();
-  const location = useLocation();
-  // Hub-aware back/list target. The breadcrumb (chevron + first crumb) is the
-  // only back affordance in full-page mode, so it must resolve to the hub the
-  // item actually lives in — product items must not jump to /project-hub.
-  const hubBase = location.pathname.startsWith('/product-hub/')
-    ? `/product-hub/${projectKey}`
-    : `/project-hub/${projectKey}`;
-  const projectListHref = location.pathname.includes('/backlog/')
-    ? `${hubBase}/backlog`
-    : location.pathname.includes('/timeline/')
-    ? `${hubBase}/timeline`
-    : `${hubBase}/list`;
-  const handleBack = useCallback(() => {
-    if (fullPageMode) {
-      if (projectKey) {
-        navigate(projectListHref);
-      } else {
-        navigate(-1);
-      }
-    } else {
-      onClose();
-    }
-  }, [fullPageMode, projectKey, navigate, onClose]);
-
-
   /* ── Card contents ─────────────────────────────────────────────────────
      Top bar + body JSX, extracted as a fragment so all three modes
      (modal / panel / fullpage) render the same content inside different
@@ -421,8 +417,7 @@ export function CatalystViewBase({
         <div style={{
           display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '8px 16px', minHeight: 40, flexShrink: 0,
-          borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
+          padding: '4px 16px', minHeight: 32, flexShrink: 0,
           ...((!panelMode && !fullPageMode) ? {} : {
             position: 'sticky',
             top: 0,
@@ -435,21 +430,7 @@ export function CatalystViewBase({
               we swap the default "+ Add parent" text link for the canonical
               AddParentPicker (Jira-parity bordered pencil chip). */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, flex: 1 }}>
-            {/* Back button — fullPageMode only. Positioned inline with breadcrumb. */}
-            {fullPageMode && (
-              <Tooltip content="Back">
-                <IconButton
-                  appearance="subtle"
-                  icon={() => (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  )}
-                  label="Back"
-                  onClick={handleBack}
-                />
-              </Tooltip>
-            )}
+
             {projectKey ? (
               <TicketBreadcrumbs
                 projectKey={projectKey}
@@ -662,7 +643,7 @@ export function CatalystViewBase({
               cv-drawer-body (overflowY:auto) is now the scroll container.
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-left" data-sdm-scope style={{
-            flex: 1, padding: '16px 16px 32px 16px',
+            flex: 1, padding: '8px 16px 32px 16px',
             borderRight: '1px solid var(--ds-border-subtle, #EBECF0)', minWidth: 0, minHeight: 0,
             // fullPageMode: cap field rows at ~1200px (Jira parity). Without this, fields like
             // Priority and Severity stretch to fill the full viewport width.

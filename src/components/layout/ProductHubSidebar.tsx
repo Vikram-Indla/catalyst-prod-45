@@ -1,19 +1,9 @@
 /**
- * ProductHubSidebar — /product-hub sidebar
- *
- * DUAL MODE (mirrors SidebarProjectNav / ProductRoomSidebar pattern):
- *   - Global (/product-hub/products, /product-hub/backlog, etc.):
- *       Shows "All Products" nav link + Recent BRs section.
- *   - Per-product (/product-hub/{CODE}/*):
- *       Shows product name header + Dashboard / Backlog / Boards / Product Filters nav
- *       + "← All Products" back link.
- *
- * Added 2026-05-16 for /product-hub/products.
- * Dual-mode added 2026-05-16 so /product-hub/INV/* shows per-product nav.
+ * ProductHubSidebar — renders only on per-product routes (/product-hub/{CODE}/*).
+ * Global /product-hub/products returns null — top-nav context switcher owns that.
  */
 
 import {
-  LayoutGrid,
   Settings,
 } from '@/lib/atlaskit-icons';
 import { getProductAvatarUrl } from '@/components/icons';
@@ -86,30 +76,6 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
   };
 }
 
-const GLOBAL_CONFIG: SidebarConfig = {
-  badge: 'PH',
-  label: 'Products',
-  showFavorites: false,
-  sections: [
-    {
-      title: '',
-      items: [
-        {
-          id: 'all-products',
-          title: 'All Products',
-          path: '/product-hub/products',
-          icon: LayoutGrid,
-          exact: false,
-        },
-        // Product Filters intentionally NOT mounted in GLOBAL_CONFIG —
-        // filters are a per-product concept and live in the per-product
-        // sidebar (PRODUCT_CONFIG above). A global "Product Filters" entry
-        // duplicated the per-product link and produced an "any-product"
-        // surface that doesn't exist. Removed 2026-06-01 (design-critique).
-      ],
-    },
-  ],
-};
 
 export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubSidebarProps) {
   const { pathname } = useLocation();
@@ -132,9 +98,15 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
     staleTime: 5 * 60_000,
   });
 
-  const isScoped = !!scopedProduct && !!productCode;
+  // Global /product-hub/products page: no sidebar — navigation handled by
+  // the top-nav context switcher. Only render for per-product routes.
+  if (!productCode) return null;
 
-  const config: SidebarConfig = isScoped ? buildPerProductConfig(scopedProduct!) : GLOBAL_CONFIG;
+  // While per-product query is still loading, render nothing (avoids
+  // flashing the generic "All Products" config before the real nav appears).
+  if (!scopedProduct) return null;
+
+  const config: SidebarConfig = buildPerProductConfig(scopedProduct);
 
   return (
     <SidebarBase
