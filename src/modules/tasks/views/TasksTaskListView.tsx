@@ -474,16 +474,31 @@ export default function TasksTaskListView() {
       </div>
 
       {/* ── Table ──────────────────────────────────────────────────────── */}
+      {/* Bug 2 fix (2026-06-16): mirror Project Hub backlog table+panel split.
+          Outer wrapper has position:relative + flex row to anchor the panel.
+          Table container shrinks via paddingRight = panelWidth so the visible
+          table edge clears the right-side overlay panel. */}
       <div
         style={{
           flex: 1,
-          minWidth: 0,
-          overflow: 'hidden',
           display: 'flex',
-          flexDirection: 'column',
           minHeight: 0,
+          overflow: 'hidden',
+          position: 'relative',
         }}
       >
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            paddingRight: panelTaskId ? panelWidth : 0,
+            transition: 'padding-right 180ms ease',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+          }}
+        >
         <JiraTable<PlannerTask>
           data={filteredRows}
           columns={columns}
@@ -495,29 +510,30 @@ export default function TasksTaskListView() {
           columnVisibility={visibleColumns}
           onColumnVisibilityChange={setVisibleColumns}
         />
-      </div>
+        </div>
 
-      {/* ── Detail panel ──────────────────────────────────────────────── */}
-      {/* Task 1.5d (2026-06-16) — canonical right-side drag-resizable panel
-          (same as Project Hub backlog). Mounts CatalystDetailPanel with
-          entityKind='task' so CatalystDetailRouter dispatches to
-          TaskCatalystView (reads from `tasks` table). */}
-      {panelTaskId && (
-        <CatalystDetailPanel
-          isOpen
-          onClose={closePanel}
-          itemId={panelTaskId}
-          itemType="Task"
-          typeIconLabel="Task"
-          projectKey=""
-          width={panelWidth}
-          onResize={setPanelWidth}
-          onResizeCommit={persistPanelWidth}
-          minWidth={TASK_PANEL_MIN_W}
-          maxWidth={TASK_PANEL_MAX_W}
-          entityKind="task"
-        />
-      )}
+        {/* ── Detail panel ──────────────────────────────────────────────── */}
+        {/* Task 1.5d (2026-06-16) — canonical right-side drag-resizable panel
+            (same as Project Hub backlog). Mounts CatalystDetailPanel with
+            entityKind='task' so CatalystDetailRouter dispatches to
+            TaskCatalystView (reads from `tasks` table). */}
+        {panelTaskId && (
+          <CatalystDetailPanel
+            isOpen
+            onClose={closePanel}
+            itemId={panelTaskId}
+            itemType="Task"
+            typeIconLabel="Task"
+            projectKey=""
+            width={panelWidth}
+            onResize={setPanelWidth}
+            onResizeCommit={persistPanelWidth}
+            minWidth={TASK_PANEL_MIN_W}
+            maxWidth={TASK_PANEL_MAX_W}
+            entityKind="task"
+          />
+        )}
+      </div>
     </div>
   );
 }
