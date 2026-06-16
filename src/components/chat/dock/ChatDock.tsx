@@ -359,7 +359,9 @@ export function ChatDock({
             aria-label="Wake Caty"
             title="Wake Caty"
           >
-            <EyeOpenStrikethroughIcon LEGACY_size="large" />
+            <span style={{ display: 'flex', transform: 'scale(1.4)', color: 'var(--ds-icon, #44546F)' }}>
+              <EyeOpenStrikethroughIcon LEGACY_size="large" />
+            </span>
           </button>
         )}
         {!isDragging && !catyHidden && (
