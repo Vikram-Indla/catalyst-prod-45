@@ -279,8 +279,7 @@ export function ChatDock({
                 or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
             <div style={{ position: 'relative', display: 'inline-block' }}>
               <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
-              <button
-                type="button"
+              <div
                 onClick={(e) => {
                   e.stopPropagation();
                   console.log('[ChatDock] Cross clicked, hiding Caty');
@@ -317,9 +316,11 @@ export function ChatDock({
                 }}
                 aria-label="Hide Caty"
                 title="Hide Caty"
+                role="button"
+                tabIndex={0}
               >
                 <CloseIcon label="" size="small" />
-              </button>
+              </div>
             </div>
             {totalUnread > 0 && (
               <span
