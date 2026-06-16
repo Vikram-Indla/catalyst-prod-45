@@ -1,0 +1,673 @@
+/**
+ * ContextSwitcher — top-bar item/workstream switcher
+ *
+ * Appears between GlobalSearch and the left logo cluster in CatalystHeader.
+ * Shows current project key, product code, or "Workstreams" depending on
+ * the active hub route. Dropdown rendered via createPortal so it is never
+ * clipped by overflow:hidden ancestors (CLAUDE.md 2026-06-13).
+ *
+ * Hubs handled:
+ *   /project-hub/:key/*   → project switcher (starred + recent + search)
+ *   /product-hub/:code/*  → product switcher (starred + recent + search)
+ *   /tasks/*              → workstream switcher (all active workstreams)
+ *
+ * All other routes → component renders null.
+ */
+
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import FolderFilledIcon from '@atlaskit/icon/glyph/folder-filled';
+import LightbulbFilledIcon from '@atlaskit/icon/glyph/lightbulb-filled';
+import TaskIcon from '@atlaskit/icon/glyph/task';
+import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
+import StarIcon from '@atlaskit/icon/glyph/star';
+import RecentIcon from '@atlaskit/icon/glyph/recent';
+import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
+import AddIcon from '@atlaskit/icon/glyph/add';
+import { supabase } from '@/integrations/supabase/client';
+import { useProjectFavorites } from '@/hooks/useProjectHub';
+
+// ─── localStorage keys ────────────────────────────────────────────────────────
+const RECENT_KEY = 'catalyst.switcher-recent';
+const FAV_PRODUCTS_KEY = 'product-hub.favorites';
+const MAX_RECENT = 5;
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+type ItemType = 'project' | 'product' | 'workstream';
+type Mode = 'project' | 'product' | 'tasks';
+
+interface SwitcherItem {
+  id: string;
+  key: string;
+  name: string;
+  color?: string | null;
+  path: string;
+  type: ItemType;
+}
+
+// ─── localStorage helpers ─────────────────────────────────────────────────────
+function loadProductFavs(): Set<string> {
+  try {
+    const raw = localStorage.getItem(FAV_PRODUCTS_KEY);
+    return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
+  } catch { return new Set(); }
+}
+
+function loadRecent(): SwitcherItem[] {
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    return raw ? (JSON.parse(raw) as SwitcherItem[]) : [];
+  } catch { return []; }
+}
+
+function saveRecent(items: SwitcherItem[]): void {
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(items)); } catch {}
+}
+
+function pushRecent(item: SwitcherItem): void {
+  const prev = loadRecent().filter(r => !(r.type === item.type && r.key === item.key));
+  saveRecent([item, ...prev].slice(0, MAX_RECENT));
+}
+
+// ─── Lightweight queries (used only by switcher — not tied to heavy page hooks)
+function useSwitcherProjects(enabled: boolean) {
+  return useQuery({
+    queryKey: ['ctx-switcher-projects'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('v_project_list')
+        .select('id, project_key, name')
+        .order('name');
+      const excluded = new Set(['TH-DEFAULT', 'MDT', 'INV']);
+      return ((data ?? []) as Array<{ id: string; project_key: string; name: string }>)
+        .filter(p => !excluded.has(p.project_key));
+    },
+    staleTime: 5 * 60_000,
+    enabled,
+  });
+}
+
+function useSwitcherProducts(enabled: boolean) {
+  return useQuery({
+    queryKey: ['ctx-switcher-products'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('products')
+        .select('id, code, name, color')
+        .order('name');
+      return (data ?? []) as Array<{ id: string; code: string; name: string; color: string | null }>;
+    },
+    staleTime: 5 * 60_000,
+    enabled,
+  });
+}
+
+function useSwitcherWorkstreams(enabled: boolean) {
+  return useQuery({
+    queryKey: ['ctx-switcher-workstreams'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('task_workstreams')
+        .select('id, name, slug, key_prefix, color')
+        .eq('is_archived', false)
+        .order('name');
+      return (data ?? []) as Array<{ id: string; name: string; slug: string; key_prefix: string; color: string }>;
+    },
+    staleTime: 5 * 60_000,
+    enabled,
+  });
+}
+
+// ─── Dropdown panel (portal-rendered) ────────────────────────────────────────
+interface PanelProps {
+  mode: Mode;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  menuRef: React.RefObject<HTMLDivElement | null>;
+  search: string;
+  onSearchChange: (v: string) => void;
+  starredItems: SwitcherItem[];
+  recentItems: SwitcherItem[];
+  allItems: SwitcherItem[];
+  currentKey: string;
+  managementPath: string;
+  onNavigate: (item: SwitcherItem) => void;
+  onManagementNav: (path: string) => void;
+  onClose: () => void;
+}
+
+function SwitcherPanel({
+  mode, triggerRef, menuRef, search, onSearchChange,
+  starredItems, recentItems, allItems, currentKey,
+  managementPath, onNavigate, onManagementNav, onClose,
+}: PanelProps) {
+  const searchRef = useRef<HTMLInputElement>(null);
+  const q = search.toLowerCase().trim();
+
+  // Focus search on open
+  useEffect(() => { searchRef.current?.focus(); }, []);
+
+  // Derived sections
+  const filtered = (items: SwitcherItem[]) =>
+    q ? items.filter(i => i.name.toLowerCase().includes(q) || i.key.toLowerCase().includes(q)) : items;
+
+  const showStarred = mode !== 'tasks' && !q && filtered(starredItems).length > 0;
+  const showRecent = mode !== 'tasks' && !q && filtered(recentItems).length > 0;
+  const showAll = q || mode === 'tasks';
+  const filteredAll = filtered(allItems);
+
+  // Position from trigger
+  const rect = triggerRef.current!.getBoundingClientRect();
+
+  const managementLabel =
+    mode === 'project' ? 'All projects' :
+    mode === 'product' ? 'All products' :
+    'All workstreams';
+
+  const newLabel =
+    mode === 'project' ? '+ New project' :
+    mode === 'product' ? '+ New product' :
+    '+ New workstream';
+
+  return (
+    <div
+      ref={menuRef}
+      role="dialog"
+      aria-label="Switch context"
+      style={{
+        position: 'fixed',
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: 288,
+        maxHeight: 440,
+        overflowY: 'auto',
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 6,
+        boxShadow: '0 8px 32px rgba(9,30,66,0.20), 0 0 1px rgba(9,30,66,0.14)',
+        zIndex: 9999,
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+      }}
+    >
+      {/* Search */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '8px 12px',
+        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+        flexShrink: 0,
+      }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-subtle, #626F86)" strokeWidth="2.5">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          ref={searchRef}
+          value={search}
+          onChange={e => onSearchChange(e.target.value)}
+          placeholder={
+            mode === 'project' ? 'Search projects…' :
+            mode === 'product' ? 'Search products…' :
+            'Search workstreams…'
+          }
+          style={{
+            flex: 1,
+            border: 'none',
+            outline: 'none',
+            background: 'transparent',
+            fontSize: 13,
+            color: 'var(--ds-text, #172B4D)',
+            fontFamily: 'inherit',
+          }}
+        />
+        {search && (
+          <button
+            onClick={() => onSearchChange('')}
+            style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0,
+              color: 'var(--ds-icon-subtle, #626F86)', fontSize: 14, lineHeight: 1 }}
+            aria-label="Clear search"
+          >×</button>
+        )}
+      </div>
+
+      {/* Body */}
+      <div style={{ overflowY: 'auto', flex: 1 }}>
+
+        {/* Starred section */}
+        {showStarred && (
+          <Section
+            label="STARRED"
+            icon={<StarFilledIcon size="small" label="" primaryColor="var(--ds-icon-warning, #FFC400)" />}
+            items={filtered(starredItems)}
+            currentKey={currentKey}
+            onNavigate={onNavigate}
+          />
+        )}
+
+        {/* Recent section */}
+        {showRecent && (
+          <Section
+            label="RECENT"
+            icon={<RecentIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />}
+            items={filtered(recentItems)}
+            currentKey={currentKey}
+            onNavigate={onNavigate}
+          />
+        )}
+
+        {/* Divider before all-items when searching or tasks mode */}
+        {(showStarred || showRecent) && showAll && filteredAll.length > 0 && (
+          <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+        )}
+
+        {/* All / filtered items */}
+        {showAll && filteredAll.length > 0 && (
+          <Section
+            label={q ? 'RESULTS' : mode === 'tasks' ? 'WORKSTREAMS' : undefined}
+            items={filteredAll}
+            currentKey={currentKey}
+            onNavigate={onNavigate}
+          />
+        )}
+
+        {/* Empty state when search returns nothing */}
+        {q && filteredAll.length === 0 && filtered(starredItems).length === 0 && filtered(recentItems).length === 0 && (
+          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 13,
+            color: 'var(--ds-text-subtlest, #626F86)' }}>
+            No results for "{search}"
+          </div>
+        )}
+
+        {/* Empty state — no items at all */}
+        {!q && allItems.length === 0 && starredItems.length === 0 && recentItems.length === 0 && (
+          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 13,
+            color: 'var(--ds-text-subtlest, #626F86)' }}>
+            {mode === 'tasks' ? 'No active workstreams' :
+             mode === 'project' ? 'No projects yet' : 'No products yet'}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        borderTop: '1px solid var(--ds-border, #DFE1E6)',
+        padding: '6px 8px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexShrink: 0,
+      }}>
+        <button
+          onClick={() => { onManagementNav(managementPath); onClose(); }}
+          style={{
+            border: 'none', background: 'none', cursor: 'pointer', padding: '4px 8px',
+            fontSize: 12, fontWeight: 500, color: 'var(--ds-link, #0052CC)',
+            borderRadius: 3, fontFamily: 'inherit',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F4F5F7)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+        >
+          {managementLabel}
+        </button>
+        <button
+          onClick={() => { onManagementNav(managementPath); onClose(); }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            border: 'none', background: 'none', cursor: 'pointer', padding: '4px 8px',
+            fontSize: 12, fontWeight: 500, color: 'var(--ds-link, #0052CC)',
+            borderRadius: 3, fontFamily: 'inherit',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F4F5F7)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+        >
+          <AddIcon size="small" label="" primaryColor="var(--ds-link, #0052CC)" />
+          {newLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Row section ──────────────────────────────────────────────────────────────
+function Section({
+  label, icon, items, currentKey, onNavigate,
+}: {
+  label?: string;
+  icon?: React.ReactNode;
+  items: SwitcherItem[];
+  currentKey: string;
+  onNavigate: (item: SwitcherItem) => void;
+}) {
+  return (
+    <div style={{ padding: '6px 0 2px' }}>
+      {label && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          padding: '2px 12px 4px',
+          fontSize: 11, fontWeight: 700,
+          color: 'var(--ds-text-subtlest, #626F86)',
+          letterSpacing: '0.06em',
+          textTransform: 'uppercase',
+        }}>
+          {icon}
+          {label}
+        </div>
+      )}
+      {items.map(item => (
+        <ItemRow
+          key={`${item.type}-${item.key}`}
+          item={item}
+          isCurrent={item.key === currentKey}
+          onNavigate={onNavigate}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── Individual row ───────────────────────────────────────────────────────────
+function ItemRow({ item, isCurrent, onNavigate }: {
+  item: SwitcherItem;
+  isCurrent: boolean;
+  onNavigate: (item: SwitcherItem) => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  const colorSwatch = item.color ? (
+    <span style={{
+      width: 8, height: 8, borderRadius: '50%', background: item.color,
+      display: 'inline-block', flexShrink: 0,
+    }} />
+  ) : null;
+
+  return (
+    <button
+      role="menuitem"
+      onClick={() => onNavigate(item)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+        padding: '7px 12px',
+        border: 'none', cursor: 'pointer', textAlign: 'left',
+        background: isCurrent
+          ? 'var(--ds-background-selected, #E9F2FE)'
+          : hovered
+            ? 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'
+            : 'transparent',
+        transition: 'background 80ms',
+        fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+      }}
+    >
+      {/* Color swatch (workstreams / products) or folder icon (projects) */}
+      {colorSwatch ?? (
+        item.type === 'project'
+          ? <FolderFilledIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
+          : item.type === 'product'
+            ? <LightbulbFilledIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
+            : <TaskIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
+      )}
+
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontSize: 13, fontWeight: isCurrent ? 600 : 400,
+          color: isCurrent ? 'var(--ds-text-selected, #0052CC)' : 'var(--ds-text, #172B4D)',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          {item.name}
+        </div>
+        <div style={{
+          fontSize: 11, fontFamily: 'monospace',
+          color: 'var(--ds-text-subtlest, #626F86)',
+          marginTop: 1,
+        }}>
+          {item.key}
+        </div>
+      </div>
+
+      {isCurrent && (
+        <CheckCircleIcon size="small" label="current" primaryColor="var(--ds-icon-accent-blue, #1D7AFC)" />
+      )}
+    </button>
+  );
+}
+
+// ─── Main exported component ──────────────────────────────────────────────────
+export function ContextSwitcher() {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  // Route detection
+  const projectMatch = useMatch('/project-hub/:key/*');
+  const productMatch = useMatch('/product-hub/:code/*');
+  const tasksMatch = useMatch('/tasks/*');
+
+  const projectKey = projectMatch?.params.key;
+  const productCode = productMatch?.params.code;
+
+  const mode: Mode | null =
+    projectKey && projectKey !== 'projects' ? 'project' :
+    productCode && productCode !== 'products' ? 'product' :
+    tasksMatch ? 'tasks' :
+    null;
+
+  // Data
+  const { data: projects = [] } = useSwitcherProjects(mode === 'project');
+  const { data: favoriteIds } = useProjectFavorites();
+  const { data: products = [] } = useSwitcherProducts(mode === 'product');
+  const { data: workstreams = [] } = useSwitcherWorkstreams(mode === 'tasks');
+
+  // Current item label for trigger
+  const currentProject = mode === 'project' ? projects.find(p => p.project_key === projectKey) : null;
+  const currentProduct = mode === 'product' ? products.find(p => p.code === productCode) : null;
+
+  const triggerDisplayKey = mode === 'project' ? projectKey :
+                            mode === 'product' ? productCode :
+                            null;
+
+  const triggerDisplayName = mode === 'project' ? (currentProject?.name ?? null) :
+                             mode === 'product' ? (currentProduct?.name ?? null) :
+                             'Workstreams';
+
+  // Track current item in recent on route change
+  useEffect(() => {
+    if (mode === 'project' && currentProject) {
+      pushRecent({
+        id: currentProject.id,
+        key: currentProject.project_key,
+        name: currentProject.name,
+        path: `/project-hub/${currentProject.project_key}/dashboard`,
+        type: 'project',
+      });
+    } else if (mode === 'product' && currentProduct) {
+      pushRecent({
+        id: currentProduct.id,
+        key: currentProduct.code,
+        name: currentProduct.name,
+        color: currentProduct.color,
+        path: `/product-hub/${currentProduct.code}/backlog`,
+        type: 'product',
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, currentProject?.id, currentProduct?.id]);
+
+  // Close on outside click + Escape
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (!menuRef.current?.contains(t) && !triggerRef.current?.contains(t)) {
+        setOpen(false);
+        setSearch('');
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setOpen(false); setSearch(''); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [open]);
+
+  const handleNavigate = useCallback((item: SwitcherItem) => {
+    pushRecent(item);
+    navigate(item.path);
+    setOpen(false);
+    setSearch('');
+  }, [navigate]);
+
+  const handleManagementNav = useCallback((path: string) => {
+    navigate(path);
+  }, [navigate]);
+
+  if (!mode) return null;
+
+  // Build dropdown item lists
+  const productFavIds = loadProductFavs();
+  const recent = loadRecent();
+
+  const allProjectItems: SwitcherItem[] = projects.map(p => ({
+    id: p.id, key: p.project_key, name: p.name,
+    path: `/project-hub/${p.project_key}/dashboard`, type: 'project',
+  }));
+
+  const allProductItems: SwitcherItem[] = products.map(p => ({
+    id: p.id, key: p.code, name: p.name, color: p.color,
+    path: `/product-hub/${p.code}/backlog`, type: 'product',
+  }));
+
+  const allWorkstreamItems: SwitcherItem[] = workstreams.map(ws => ({
+    id: ws.id, key: ws.key_prefix, name: ws.name, color: ws.color,
+    path: `/tasks/workstreams`, type: 'workstream',
+  }));
+
+  const starredItems: SwitcherItem[] =
+    mode === 'project' ? allProjectItems.filter(p => favoriteIds?.has(p.id)) :
+    mode === 'product' ? allProductItems.filter(p => productFavIds.has(p.id)) :
+    [];
+
+  const recentItems: SwitcherItem[] =
+    mode === 'project' ? recent.filter(r => r.type === 'project') :
+    mode === 'product' ? recent.filter(r => r.type === 'product') :
+    [];
+
+  const allItems: SwitcherItem[] =
+    mode === 'project' ? allProjectItems :
+    mode === 'product' ? allProductItems :
+    allWorkstreamItems;
+
+  const managementPath =
+    mode === 'project' ? '/project-hub/projects' :
+    mode === 'product' ? '/product-hub/products' :
+    '/tasks/workstreams';
+
+  const currentKey = mode === 'project' ? (projectKey ?? '') :
+                     mode === 'product' ? (productCode ?? '') :
+                     '';
+
+  // Trigger hover state
+  const [triggerHover, setTriggerHover] = useState(false);
+
+  const triggerBg = open
+    ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.12))'
+    : triggerHover
+      ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+      : 'transparent';
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        onClick={() => setOpen(v => !v)}
+        onMouseEnter={() => setTriggerHover(true)}
+        onMouseLeave={() => setTriggerHover(false)}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        aria-label={`Switch ${mode === 'tasks' ? 'workstream' : mode}. ${triggerDisplayKey ?? ''} ${triggerDisplayName ?? ''}`}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          height: 32, padding: '0 8px 0 6px',
+          background: triggerBg,
+          border: open
+            ? '1px solid var(--ds-border-focused, #4C9AFF)'
+            : '1px solid var(--ds-border, rgba(161,189,217,0.14))',
+          borderRadius: 4,
+          cursor: 'pointer',
+          fontSize: 13,
+          fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+          fontWeight: 500,
+          color: 'var(--ds-text, #172B4D)',
+          maxWidth: 220,
+          flexShrink: 0,
+          transition: 'background 80ms, border-color 80ms',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Hub type icon */}
+        {mode === 'project' && (
+          <FolderFilledIcon size="small" label="" primaryColor="var(--ds-icon-accent-blue, #1D7AFC)" />
+        )}
+        {mode === 'product' && (
+          <LightbulbFilledIcon size="small" label="" primaryColor="var(--ds-icon-accent-teal, #1D9AAA)" />
+        )}
+        {mode === 'tasks' && (
+          <TaskIcon size="small" label="" primaryColor="var(--ds-icon-accent-purple, #8270DB)" />
+        )}
+
+        {/* Key + name */}
+        <span style={{ display: 'flex', alignItems: 'baseline', gap: 4, overflow: 'hidden' }}>
+          {triggerDisplayKey && (
+            <span style={{
+              fontSize: 12, fontWeight: 700, letterSpacing: '0.02em',
+              color: 'var(--ds-text-subtle, #44546F)',
+              flexShrink: 0,
+            }}>
+              {triggerDisplayKey}
+            </span>
+          )}
+          {triggerDisplayName && (
+            <span style={{
+              overflow: 'hidden', textOverflow: 'ellipsis',
+              color: 'var(--ds-text, #172B4D)',
+            }}>
+              {triggerDisplayName}
+            </span>
+          )}
+        </span>
+
+        <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
+      </button>
+
+      {open && triggerRef.current && createPortal(
+        <SwitcherPanel
+          mode={mode}
+          triggerRef={triggerRef}
+          menuRef={menuRef}
+          search={search}
+          onSearchChange={setSearch}
+          starredItems={starredItems}
+          recentItems={recentItems}
+          allItems={allItems}
+          currentKey={currentKey}
+          managementPath={managementPath}
+          onNavigate={handleNavigate}
+          onManagementNav={handleManagementNav}
+          onClose={() => { setOpen(false); setSearch(''); }}
+        />,
+        document.body,
+      )}
+    </>
+  );
+}

@@ -143,7 +143,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
         name: m.name,
         role: m.role,
         avatarUrl: null,
-        presence: (presenceMap[m.userId] === 'online' ? 'on_set' : 'away') as ChatPerson['presence'],
+        presence: (presenceMap[m.userId] === 'online' ? 'onsite' : 'away') as ChatPerson['presence'],
         presenceNote: null,
       })),
     [memberRows, presenceMap],

@@ -1126,15 +1126,25 @@ export default function TimelineView(props: TimelineViewProps) {
               {!releasesCollapsed && rows.map(({ issue, depth }) => {
                 /* Siblings = same-parent peers in render order. Top-level
                    rows share the `tree` array; nested rows share their
-                   parent's children. Only consumed by the product-jira
-                   menu variant's Move submenu. */
+                   parent's children. Only consumed by the `jira` menu
+                   variant's Move submenu. Walks the whole tree so rows
+                   below depth 1 also resolve correctly. */
                 let siblings: TimelineIssue[] = [];
-                if (menuVariant === 'product-jira') {
+                if (menuVariant === 'jira') {
                   if (depth === 0) {
                     siblings = tree;
                   } else {
-                    const parent = tree.find(t => t.children.some(c => c.issueKey === issue.issueKey));
-                    siblings = parent ? parent.children : [];
+                    const findSiblings = (list: TimelineIssue[]): TimelineIssue[] | null => {
+                      for (const node of list) {
+                        if (node.children.some(c => c.issueKey === issue.issueKey)) return node.children;
+                        if (node.children.length) {
+                          const inner = findSiblings(node.children);
+                          if (inner) return inner;
+                        }
+                      }
+                      return null;
+                    };
+                    siblings = findSiblings(tree) ?? [];
                   }
                 }
                 return (

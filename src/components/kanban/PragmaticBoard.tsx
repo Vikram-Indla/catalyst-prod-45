@@ -450,7 +450,6 @@ const PragmaticColumn = memo(function PragmaticColumn({
           color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
           lineHeight: '16px',
           letterSpacing: '0.04em',
-          textTransform: 'uppercase',
         }}>{column.name}</span>
         {/* Done category → green ✓; other categories → gray count chip when > 0 */}
         {isDoneCategory ? (

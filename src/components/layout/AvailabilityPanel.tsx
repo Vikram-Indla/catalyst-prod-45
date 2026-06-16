@@ -6,9 +6,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import type { PresenceState } from '@/lib/presence';
 import { captureRemoteLocation } from '@/lib/presence-location';
+import { setManualAwayOverride, clearManualAway } from '@/lib/geo-presence';
 
 const QUICK_SET: { label: string; state: Exclude<PresenceState, 'on_leave'>; color: string }[] = [
-  { label: 'In office', state: 'on_set', color: 'var(--ds-icon-success, #22A06B)' },
+  { label: 'In office', state: 'onsite', color: 'var(--ds-icon-success, #22A06B)' },
   { label: 'Remote',    state: 'remote', color: 'var(--ds-icon-information, #1D7AFC)' },
   { label: 'Away',      state: 'away',   color: 'var(--ds-icon-warning, #E2B203)' },
 ];
@@ -51,6 +52,10 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
 
   const handleQuickSet = useCallback(
     async (state: Exclude<PresenceState, 'on_leave'>) => {
+      // Track manual Away so the heartbeat doesn't override it back to geo state.
+      if (state === 'away') setManualAwayOverride();
+      else clearManualAway();
+
       // For 'remote', ask the browser for a coarse location (permission prompt).
       // Never blocks the status change — resolves to null on denial/failure.
       const location = state === 'remote' ? await captureRemoteLocation() : null;

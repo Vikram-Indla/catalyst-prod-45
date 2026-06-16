@@ -572,7 +572,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
           const category: 'todo' | 'in_progress' | 'done' = c.is_done ? 'done' : c.is_backlog ? 'todo' : 'in_progress';
           return {
             id: c.id,
-            name: c.name.toUpperCase(),
+            name: c.name,
             statuses,
             category,
           };
@@ -592,7 +592,7 @@ export default function KanbanBoardPage({ mode = 'project' }: { mode?: 'project'
     if (isProduct && !dynamicBoardData?.columns?.length && brWorkflow?.data?.statuses?.length) {
       const cols: KanbanColumnDef[] = brWorkflow.data.statuses.map((s: any, i: number) => ({
         id: s.id ?? String(i),
-        name: (s.name ?? s.status ?? '').toUpperCase(),
+        name: s.name ?? s.status ?? '',
         statuses: [s.name ?? s.status ?? ''],
         category: (s.category === 'done' ? 'done' : s.category === 'todo' ? 'todo' : 'in_progress') as 'todo' | 'in_progress' | 'done',
       }));

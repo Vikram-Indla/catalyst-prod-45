@@ -476,7 +476,7 @@ export const STOCK_PLACE_REGISTRY: Record<PlaceId, string> = {
  * New products not listed here get a stable rotation via getProductAvatarUrl().
  */
 export const KNOWN_PRODUCT_PLACES: Record<string, PlaceId> = {
-  INV: 'kingdom-centre', // Investor Journey Product → Kingdom Centre (finance landmark)
+  INV: 'elephant-rock', // Investor Journey Product → Elephant Rock (amber-gold; kingdom-centre was Catalyst blue)
 };
 
 /**

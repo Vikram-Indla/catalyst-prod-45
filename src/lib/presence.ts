@@ -1,4 +1,4 @@
-export type PresenceState = 'on_set' | 'remote' | 'away' | 'on_leave';
+export type PresenceState = 'onsite' | 'remote' | 'away' | 'on_leave';
 export type AvailabilityKind = 'vacation' | 'public_holiday' | 'sick' | 'ooo';
 
 export interface UserStatus {

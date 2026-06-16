@@ -22,7 +22,7 @@ import './profile-hover-card.css';
 const db = supabase as unknown as { from: (t: string) => any };
 
 const CARD_W = 260;
-const ONLINE_STATES = new Set(['on_set', 'remote']);
+const ONLINE_STATES = new Set(['onsite', 'remote']);
 const ONLINE_WINDOW_MS = 5 * 60_000;
 
 interface ProfileRow {

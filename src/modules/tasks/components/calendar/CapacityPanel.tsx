@@ -52,8 +52,6 @@ export function CapacityPanel({
   tasks,
   dailyCapacity = 5,
 }: CapacityPanelProps) {
-  if (!visible) return null;
-
   // Generate week days
   const days = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -115,6 +113,8 @@ export function CapacityPanel({
       };
     });
   }, [teamMembers, tasks, days, dailyCapacity]);
+
+  if (!visible) return null;
 
   if (capacityData.length === 0) {
     return (

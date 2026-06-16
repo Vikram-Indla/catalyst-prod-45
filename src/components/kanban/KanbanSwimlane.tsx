@@ -7,6 +7,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
+import { StatusBadge } from '@/components/hierarchy/StatusBadge';
 import { KanbanAvatar } from './KanbanAvatar';
 import { SortableCard } from './SortableCard';
 import { KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID, SPACING_TOKENS } from './kanban-tokens';
@@ -14,28 +15,6 @@ import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 import type { VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings';
-
-/* ── Status Lozenge (3-color guardrail) ── */
-function StatusLozenge({ status, category, tk }: { status: string; category: string; tk: KanbanThemeTokens }) {
-  const cat = category?.toLowerCase() ?? 'todo';
-  let bg: string, fg: string;
-  if (cat === 'done') { bg = 'var(--ds-background-success, #E3FCEF)'; fg = 'var(--ds-text-success, #006644)'; }
-  else if (cat === 'indeterminate' || cat === 'in_progress' || cat === 'in progress') { bg = 'var(--ds-background-information, #DEEBFF)'; fg = 'var(--ds-text-information, #0747A6)'; }
-  else { bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'; fg = 'var(--ds-text, #253858)'; }
-
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center',
-      height: 20, padding: '0 6px', borderRadius: 3,
-      background: bg, color: fg,
-      fontSize: 11, fontWeight: 600, letterSpacing: '0.03em',
-      textTransform: 'uppercase', whiteSpace: 'nowrap',
-      fontFamily: 'var(--cp-font-body)',
-    }}>
-      {status}
-    </span>
-  );
-}
 
 export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields, cardColorMode, columns, statusToColId, subtasksByParentKey }: {
   group: GroupBucket;
@@ -135,7 +114,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
         {/* Epic status lozenge — Jira parity */}
         {epicIssue && (
           <span style={{ marginLeft: 4 }}>
-            <StatusLozenge status={epicIssue.status} category={epicIssue.statusCategory} tk={tk} />
+            <StatusBadge status={epicIssue.status} mini />
           </span>
         )}
       </button>

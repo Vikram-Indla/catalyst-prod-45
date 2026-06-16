@@ -1,1 +1,1 @@
-export function MyTasksContent(props: any) { return null; }
+export { MyTasksContent } from './MyTasksContent';

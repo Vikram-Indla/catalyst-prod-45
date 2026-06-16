@@ -37,7 +37,6 @@ import { useTaskList, useTaskListStats } from '../../hooks/useTaskList';
 import { useTaskUsers } from '../../hooks/useTaskUsers';
 import { useTaskWorkstreams } from '../../hooks/useTaskWorkstreams';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
-import { useTaskRealtime } from '../../hooks/useTaskRealtime';
 import { useUpdatePlannerTask } from '../../hooks/useTaskItems';
 import { useTaskLabelsMap } from '../../hooks/useTaskLabelsMap';
 import { useTaskLabelsRealtime } from '../../hooks/useTaskLabelsRealtime';
@@ -188,8 +187,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
     });
   }, [tasks, labelsMap, selectedLabelFilters]);
 
-  // Real-time subscriptions
-  useTaskRealtime(null);
+  // Real-time subscriptions (useTaskRealtime removed — PlannerPage already subscribes)
   useTaskLabelsRealtime();
 
   // Sync URL params to filter state

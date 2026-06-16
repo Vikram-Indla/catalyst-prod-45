@@ -23,7 +23,7 @@ export interface TimelineIssue {
 }
 
 const SELECT_FIELDS =
-  'id, issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_display_name, parent_key, raw_json, jira_created_at, jira_updated_at';
+  'id, issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_display_name, parent_key, raw_json, position, jira_created_at, jira_updated_at';
 
 const YEAR_2026_START = '2026-01-01T00:00:00Z';
 
@@ -70,6 +70,7 @@ function mapRow(row: any): TimelineIssue {
     epicColor: extractEpicColor(row.raw_json),
     fixVersions: extractFixVersions(row.raw_json),
     children: [],
+    displayOrder: typeof row.position === 'number' ? row.position : null,
   };
 }
 
@@ -88,13 +89,26 @@ function buildTree(issues: TimelineIssue[]): TimelineIssue[] {
     }
   }
 
-  // Sort roots: epics first, then by issue key
-  roots.sort((a, b) => {
-    const aIsEpic = a.issueType === 'Epic';
-    const bIsEpic = b.issueType === 'Epic';
-    if (aIsEpic !== bIsEpic) return aIsEpic ? -1 : 1;
-    return a.issueKey.localeCompare(b.issueKey);
-  });
+  // Sort roots: epics first, then by user-controlled rank (displayOrder),
+  // then by issue key. Children sort by displayOrder within their parent.
+  const orderTuple = (i: TimelineIssue): [number, number, string] => [
+    i.issueType === 'Epic' ? 0 : 1,
+    typeof i.displayOrder === 'number' ? i.displayOrder : Number.POSITIVE_INFINITY,
+    i.issueKey,
+  ];
+  const cmp = (a: TimelineIssue, b: TimelineIssue) => {
+    const [ax, ay, az] = orderTuple(a);
+    const [bx, by, bz] = orderTuple(b);
+    if (ax !== bx) return ax - bx;
+    if (ay !== by) return ay - by;
+    return az.localeCompare(bz);
+  };
+  roots.sort(cmp);
+  const sortChildren = (list: TimelineIssue[]) => {
+    list.sort(cmp);
+    for (const n of list) if (n.children.length) sortChildren(n.children);
+  };
+  sortChildren(roots);
 
   return roots;
 }

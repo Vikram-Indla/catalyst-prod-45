@@ -34,7 +34,7 @@ interface ConversationSidebarProps {
 //
 // Online rule (verified against prod schema lmqwtldpfacrrlvdnmld):
 //   - presence_state enum is on_set | remote | away | on_leave (NO 'online').
-//   - A user is "online" when state IN ('on_set','remote') AND last_seen_at is
+//   - A user is "online" when state IN ('onsite','remote') AND last_seen_at is
 //     fresh (within ONLINE_WINDOW). away / on_leave are never online.
 //   - clean_stale_presence() flips stale rows to 'away' after 5 min; we enforce
 //     the same window client-side so a not-yet-run cron can't show a stale dot.
@@ -43,7 +43,7 @@ interface ConversationSidebarProps {
 //     batch one query over those partner user_ids.
 // If presence can't be confirmed for a partner → NO dot (zero-assumption).
 
-const ONLINE_STATES = ['on_set', 'remote'];
+const ONLINE_STATES = ['onsite', 'remote'];
 const ONLINE_WINDOW_MS = 5 * 60 * 1000;
 
 function useDMPresence(dmConvIds: string[]): Map<string, boolean> {

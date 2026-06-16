@@ -18,6 +18,7 @@ import Tooltip from "@atlaskit/tooltip";
 import AddIcon from "@atlaskit/icon/core/add";
 import GrowDiagonalIcon from "@atlaskit/icon/core/grow-diagonal";
 import CloseIcon from "@atlaskit/icon/core/close";
+import EyeOpenStrikethroughIcon from "@atlaskit/icon/core/eye-open-strikethrough";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
@@ -30,6 +31,7 @@ import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
+import { catalystToast } from "@/lib/catalystToast";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
 
@@ -124,7 +126,7 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
   }
   if (conversation.kind === "ticket") {
     const num =
-      (conversation.ticketKey ?? conversation.title).split("-").pop() ?? "";
+      (conversation.ticketKey ?? conversation.title ?? "").split("-").pop() ?? "";
     return (
       <span
         style={{
@@ -157,7 +159,7 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
             TILE_PALETTE[hashIndex(conversation.id, TILE_PALETTE.length)],
         }}
       >
-        {initials(conversation.title)}
+        {initials(conversation.title ?? "")}
       </span>
     </span>
   );
@@ -211,7 +213,7 @@ export function ChatDock({
   const [whyOpen, setWhyOpen] = React.useState(false);
   const [gesture, setGesture] = React.useState("");
   const [catyHidden, setCatyHidden] = React.useState(() =>
-    localStorage.getItem('caty.fab.hidden') === 'true'
+    localStorage.getItem('caty.fab.hidden') !== 'false'
   );
   const prevUnseen = React.useRef(eventUnseen);
   const hoverTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -230,7 +232,11 @@ export function ChatDock({
 
   // Listen for Caty visibility changes from nav icon
   React.useEffect(() => {
-    const handler = () => setCatyHidden(localStorage.getItem('caty.fab.hidden') === 'true');
+    const handler = () => {
+      const isHidden = localStorage.getItem('caty.fab.hidden') === 'true';
+      console.log('[ChatDock] caty-visibility-changed event fired, isHidden:', isHidden);
+      setCatyHidden(isHidden);
+    };
     window.addEventListener('caty-visibility-changed', handler);
     return () => window.removeEventListener('caty-visibility-changed', handler);
   }, []);
@@ -253,65 +259,109 @@ export function ChatDock({
     return (
       <>
         {!catyHidden ? (
-          <button
-            ref={fabRef}
-            type="button"
-            className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${gesture ? ' ' + gesture : ''}`}
-            style={{ top: pos.y, left: pos.x }}
-            aria-label={`Caty — ${displayState}. ${liveMood.message} Open messages.`}
-            onClick={onToggleCollapsed}
-            onMouseEnter={openHover}
-            onMouseLeave={closeHoverSoon}
-            onFocus={openHover}
-            onBlur={closeHoverSoon}
-            onClickCapture={dragHandlers.onClickCapture}
-            onPointerDown={dragHandlers.onPointerDown}
-            onPointerMove={dragHandlers.onPointerMove}
-            onPointerUp={dragHandlers.onPointerUp}
-          >
-            {/* One stable component across the whole gesture — never swap on isDragging,
-                or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
-            <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
-            {totalUnread > 0 && (
-              <span
-                className="cc-fab__badge"
-                aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
-              >
-                {totalUnread > 99 ? "99+" : totalUnread}
-              </span>
-            )}
-            <span className="cc-fab__presence" />
-          </button>
+          <>
+            <button
+              ref={fabRef}
+              type="button"
+              className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${gesture ? ' ' + gesture : ''}`}
+              style={{ top: pos.y, left: pos.x }}
+              aria-label={`Caty — ${displayState}. ${liveMood.message} Open messages.`}
+              onClick={onToggleCollapsed}
+              onMouseEnter={openHover}
+              onMouseLeave={closeHoverSoon}
+              onFocus={openHover}
+              onBlur={closeHoverSoon}
+              onClickCapture={dragHandlers.onClickCapture}
+              onPointerDown={dragHandlers.onPointerDown}
+              onPointerMove={dragHandlers.onPointerMove}
+              onPointerUp={dragHandlers.onPointerUp}
+            >
+              {/* One stable component across the whole gesture — never swap on isDragging,
+                  or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
+              <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
+              {totalUnread > 0 && (
+                <span
+                  className="cc-fab__badge"
+                  aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
+                >
+                  {totalUnread > 99 ? "99+" : totalUnread}
+                </span>
+              )}
+              <span className="cc-fab__presence" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                localStorage.setItem('caty.fab.hidden', 'true');
+                window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
+                catalystToast.success('Caty is hiding...');
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.transform = 'scale(1.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '0.7';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              style={{
+                position: 'fixed',
+                top: pos.y - 6,
+                left: pos.x + FAB_SIZE + 6,
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                background: 'var(--ds-background-neutral, #F1F2F4)',
+                border: '2px solid var(--ds-surface-overlay, #FFFFFF)',
+                color: 'var(--ds-text, #172B4D)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0,
+                zIndex: 601,
+                opacity: 0.7,
+                transition: 'opacity 120ms ease, transform 120ms ease',
+                pointerEvents: 'auto',
+              }}
+              aria-label="Hide Caty"
+              title="Hide Caty"
+            >
+              <CloseIcon label="" size="small" />
+            </button>
+          </>
         ) : (
           <button
+            ref={fabRef}
             type="button"
             onClick={() => {
               localStorage.setItem('caty.fab.hidden', 'false');
               window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
+              catalystToast.success('Caty is awake!');
             }}
             style={{
               position: 'fixed',
-              bottom: '16px',
-              right: '16px',
+              bottom: '24px',
+              right: '24px',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '8px 12px',
-              borderRadius: '20px',
+              justifyContent: 'center',
+              width: 56,
+              height: 56,
+              borderRadius: '6px',
               border: 'none',
-              background: 'var(--ds-background-information, #0C66E4)',
-              color: '#FFFFFF',
-              fontSize: '12px',
-              fontWeight: 500,
+              background: 'transparent',
+              color: 'var(--ds-icon, #44546F)',
               cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-              fontFamily: 'var(--ds-font-family-body, inherit)',
-              zIndex: 50,
+              padding: 0,
+              zIndex: 500,
             }}
-            aria-label="Show Caty insights"
+            aria-label="Wake Caty"
+            title="Wake Caty"
           >
-            <span>Caty insights hidden</span>
-            <span style={{ fontSize: '10px', opacity: 0.8 }}>Tap to show</span>
+            <span style={{ display: 'flex', transform: 'scale(1.4)', color: 'var(--ds-icon, #44546F)' }}>
+              <EyeOpenStrikethroughIcon LEGACY_size="large" />
+            </span>
           </button>
         )}
         {!isDragging && !catyHidden && (

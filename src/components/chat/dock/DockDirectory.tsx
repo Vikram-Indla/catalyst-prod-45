@@ -998,7 +998,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
               const lastSeenStr = last ? `Last seen ${relativeShort(last)} ago` : '';
               // Remote shows the captured location (presenceNote) when available.
               const remoteLine = p.presenceNote ? `Remote · ${p.presenceNote}` : 'Remote';
-              const statusLine = p.presence === 'on_set'
+              const statusLine = p.presence === 'onsite'
                 ? (p.role ? `${p.role} · In office` : 'In office')
                 : p.presence === 'remote'
                   ? (p.role ? `${p.role} · ${remoteLine}` : remoteLine)

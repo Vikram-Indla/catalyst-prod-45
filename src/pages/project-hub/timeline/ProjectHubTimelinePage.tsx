@@ -26,6 +26,7 @@ import {
 import { useProjectHubTimeline } from '@/hooks/useProjectHubTimeline';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
+import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 
 function resolveItemType(issue: TimelineIssue): string {
   const rawType = (issue.issueType ?? 'Story').toLowerCase();
@@ -34,6 +35,39 @@ function resolveItemType(issue: TimelineIssue): string {
     : rawType === 'business request' ? 'business_request'
     : rawType === 'change request' ? 'change_request'
     : rawType;
+}
+
+/* Walk the timeline tree to find an issue by key. Returns the node or null. */
+function findIssueDeep(list: TimelineIssue[], key: string): TimelineIssue | null {
+  for (const n of list) {
+    if (n.issueKey === key) return n;
+    if (n.children.length) {
+      const inner = findIssueDeep(n.children, key);
+      if (inner) return inner;
+    }
+  }
+  return null;
+}
+
+/* Walk the timeline tree to find the sibling list (same-parent peers) of
+ * a given issue. Top-level rows return the root list. */
+function locateSiblings(
+  tree: TimelineIssue[],
+  key: string,
+): { siblings: TimelineIssue[] } | null {
+  if (tree.some(t => t.issueKey === key)) return { siblings: tree };
+  const dive = (list: TimelineIssue[]): TimelineIssue[] | null => {
+    for (const n of list) {
+      if (n.children.some(c => c.issueKey === key)) return n.children;
+      if (n.children.length) {
+        const inner = dive(n.children);
+        if (inner) return inner;
+      }
+    }
+    return null;
+  };
+  const siblings = dive(tree);
+  return siblings ? { siblings } : null;
 }
 
 export default function ProjectHubTimelinePage() {
@@ -100,12 +134,79 @@ export default function ProjectHubTimelinePage() {
       await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
       invalidate();
     },
+    /* Remove only the start date — keep due. */
+    onRemoveStartDate: async (issueKey) => {
+      const tree = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
+      const found = findIssueDeep(tree, issueKey);
+      patchDatesInCache(issueKey, null, found?.dueDate ?? null);
+      const raw = await fetchIssueRawJson(issueKey);
+      if (!raw) return;
+      const updated = { ...raw, fields: { ...(raw.fields ?? {}), customfield_10015: null } };
+      await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+      invalidate();
+    },
+    /* Remove only the due date — keep start. */
+    onRemoveDueDate: async (issueKey) => {
+      const tree = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
+      const found = findIssueDeep(tree, issueKey);
+      patchDatesInCache(issueKey, found?.startDate ?? null, null);
+      const raw = await fetchIssueRawJson(issueKey);
+      if (!raw) return;
+      const updated = { ...raw, fields: { ...(raw.fields ?? {}), duedate: null } };
+      await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+      invalidate();
+    },
+    /* Reorder a row among its siblings. Rather than trying to compute a
+       midpoint between two neighbours (fragile when existing positions
+       are null or collide), we full-resequence the sibling list: every
+       sibling gets a fresh sparse rank `(i+1)*1024` reflecting its new
+       visual position, then those ranks are written to ph_issues.position
+       in parallel. Cheap (typical sibling count ≤20) and deterministic. */
+    onReorderSibling: async (issueKey, direction) => {
+      const tree = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
+      const located = locateSiblings(tree, issueKey);
+      if (!located) return;
+      const { siblings } = located;
+      const idx = siblings.findIndex(s => s.issueKey === issueKey);
+      if (idx === -1 || siblings.length <= 1) return;
+
+      let newIdx: number;
+      if (direction === 'first') newIdx = 0;
+      else if (direction === 'last') newIdx = siblings.length - 1;
+      else if (direction === 'up') newIdx = Math.max(0, idx - 1);
+      else newIdx = Math.min(siblings.length - 1, idx + 1);
+      if (newIdx === idx) return;
+
+      const reordered = [...siblings];
+      const [moved] = reordered.splice(idx, 1);
+      reordered.splice(newIdx, 0, moved);
+      const ranked = reordered.map((s, i) => ({ ...s, displayOrder: (i + 1) * 1024 }));
+
+      /* Optimistic cache update — replace the sibling list at the level
+         that contains the issue. Recurses so nested children at any
+         depth are handled. */
+      queryClient.setQueryData(
+        ['project-hub-timeline', projectKey],
+        (old: TimelineIssue[] | undefined) => {
+          if (!old) return old;
+          const replace = (list: TimelineIssue[]): TimelineIssue[] => {
+            if (list.some(c => c.issueKey === issueKey)) return ranked;
+            return list.map(n => n.children.length ? { ...n, children: replace(n.children) } : n);
+          };
+          return replace(old);
+        },
+      );
+
+      await Promise.all(
+        ranked.map(s =>
+          (supabase as any).from('ph_issues').update({ position: s.displayOrder }).eq('issue_key', s.issueKey),
+        ),
+      );
+      invalidate();
+    },
     onCreateEpic: async (summary) => {
       if (!projectKey) return null;
-      /* No '-LOCAL-' token — Catalyst-created rows have no Jira webhook to
-       rename them, so SidebarRow's "Saving…" placeholder would persist
-       forever if the key contained '-LOCAL-'. */
-    const localKey = `${projectKey.toUpperCase()}-${Date.now()}`;
+    const localKey = await generateIssueKey(projectKey.toUpperCase());
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,
@@ -150,10 +251,7 @@ export default function ProjectHubTimelinePage() {
     },
     onCreateChild: async (parentKey, _parentType, type, summary) => {
       if (!projectKey) return null;
-      /* No '-LOCAL-' token — Catalyst-created rows have no Jira webhook to
-       rename them, so SidebarRow's "Saving…" placeholder would persist
-       forever if the key contained '-LOCAL-'. */
-    const localKey = `${projectKey.toUpperCase()}-${Date.now()}`;
+    const localKey = await generateIssueKey(projectKey.toUpperCase());
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,
@@ -280,6 +378,7 @@ export default function ProjectHubTimelinePage() {
       resolveItemType={resolveItemType}
       detailRouteOwnerKey={projectKey ?? ''}
       mutations={mutations}
+      menuVariant="jira"
     />
   );
 }
