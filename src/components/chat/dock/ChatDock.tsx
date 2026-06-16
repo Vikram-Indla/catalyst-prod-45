@@ -30,7 +30,7 @@ import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
-import EyeClosedIcon from "@atlaskit/icon/core/eye-open-strikethrough";
+import { CatySleepingFace } from "../caty-mood/CatySleepingFace";
 import { catalystToast } from "@/lib/catalystToast";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
@@ -289,12 +289,12 @@ export function ChatDock({
               )}
               <span className="cc-fab__presence" />
             </button>
-            <div
+            <button
+              type="button"
               onClick={() => {
-                console.log('[ChatDock] Cross clicked, hiding Caty');
                 localStorage.setItem('caty.fab.hidden', 'true');
                 window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
-                console.log('[ChatDock] Event dispatched');
+                catalystToast.success('Caty is hiding...');
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.opacity = '1';
@@ -319,17 +319,16 @@ export function ChatDock({
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: 0,
-                zIndex: 501,
+                zIndex: 601,
                 opacity: 0.7,
                 transition: 'opacity 120ms ease, transform 120ms ease',
+                pointerEvents: 'auto',
               }}
               aria-label="Hide Caty"
               title="Hide Caty"
-              role="button"
-              tabIndex={0}
             >
               <CloseIcon label="" size="small" />
-            </div>
+            </button>
           </>
         ) : (
           <button
@@ -360,7 +359,7 @@ export function ChatDock({
             aria-label="Wake Caty"
             title="Wake Caty"
           >
-            <EyeClosedIcon label="Caty sleeping" size="large" />
+            <CatySleepingFace size={32} />
           </button>
         )}
         {!isDragging && !catyHidden && (
