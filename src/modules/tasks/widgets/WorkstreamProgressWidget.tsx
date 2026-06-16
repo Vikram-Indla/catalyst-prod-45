@@ -85,7 +85,7 @@ export default function WorkstreamProgressWidget({ collapsed, onToggleCollapse }
               display: 'flex',
               alignItems: 'center',
               gap: 16,
-              padding: '10px 12px',
+              padding: '8px 12px',
               background: token('elevation.surface.sunken', '#F7F8F9'),
               borderRadius: token('border.radius', '4px'),
               border: `1px solid ${token('color.border', '#DFE1E6')}`,

@@ -181,7 +181,7 @@ function KpiCell({
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        padding: '10px 12px',
+        padding: '8px 12px',
         borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
       }}
     >

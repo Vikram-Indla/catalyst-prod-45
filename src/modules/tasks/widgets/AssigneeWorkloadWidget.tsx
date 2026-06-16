@@ -102,7 +102,7 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
                   gridTemplateColumns: '32px 1fr 1fr 60px',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '6px 0',
+                  padding: '4px 0',
                   minHeight: 32,
                 }}
               >
