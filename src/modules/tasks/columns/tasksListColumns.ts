@@ -1,16 +1,17 @@
 /**
  * tasksListColumns — canonical JiraTable column schema for the Tasks Hub list.
  *
- * Built per CLAUDE.md "CANONICAL TABLE — JiraTable" rule (P0): every column
- * uses an existing factory from `cells.tsx` / `editors.tsx`. No bespoke cell
- * renderers. The 9 default-visible columns match Project Hub's list parity:
+ * Mirrors Project Hub backlog (`BacklogPage.atlaskit.tsx`) column registry per
+ * CLAUDE.md "CANONICAL TABLE — JiraTable" + "REUSE FIRST" rules (P0). The Work
+ * column composes makeKeyCell + makeSummaryInlineEditCell in a SINGLE flex cell
+ * — same pattern as Project Hub. NO standalone Key / Summary, NO __drag column,
+ * NO placeholder created_at/updated_at columns.
  *
- *   __drag · key · summary · status · priority · assignee · workstream · due_date · __menu
+ * Column order + default visibility (matches Project Hub backlog 2026-05-17+):
  *
- * Hidden-by-default columns (available via the column picker) are placeholders
- * that render empty until later tasks wire them up:
- *
- *   created_at · updated_at · start_date · progress · blocked · description
+ *   Order:    key · workstream · status · assignee · priority · due_date · __actions
+ *   Default:  key · workstream · status · assignee  (4 columns, parity with backlog)
+ *   Hidden:   priority · due_date  (toggle via column picker)
  *
  * DEFAULT_VISIBLE_COLUMNS is the single source of truth for default visibility
  * and MUST equal the set of columns flagged `defaultVisible: true`
@@ -21,12 +22,8 @@
  * 2026-06-11) does NOT apply here because the type is structurally known.
  */
 import React from 'react';
-import type { Column } from '@/components/shared/JiraTable/types';
-import {
-  makeDragHandleCell,
-  makeKeyCell,
-  makeRowMenuCell,
-} from '@/components/shared/JiraTable/cells';
+import type { Column, CellProps } from '@/components/shared/JiraTable/types';
+import { makeKeyCell } from '@/components/shared/JiraTable/cells';
 import {
   makeSummaryInlineEditCell,
   makeStatusEditCellAkPopup,
@@ -34,9 +31,11 @@ import {
   makeAssigneeEditCell,
   makeDateEditCell,
   makeWorkstreamEditCell,
+  makeRowActionsCell,
   type StatusOption,
   type AssigneeChoice,
   type WorkstreamChoice,
+  type RowAction,
 } from '@/components/shared/JiraTable/editors';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { PlannerTask } from '@/modules/tasks/types';
@@ -44,10 +43,15 @@ import type { PlannerTask } from '@/modules/tasks/types';
 // ─── Default visibility set ─────────────────────────────────────────────────
 // Per CLAUDE.md 2026-05-07: this array MUST equal the columns flagged
 // `defaultVisible: true` in the output of `buildTasksListColumns`. The test
-// enforces this.
+// enforces this. Mirrors Project Hub backlog DEFAULT_VISIBLE_COLUMNS:
+//   ['key', 'status', 'parent', 'assignee']  (project)
+//   ['key', 'workstream', 'status', 'assignee']  (tasks — workstream is the
+//   Tasks analog of parent)
 export const DEFAULT_VISIBLE_COLUMNS = [
-  '__drag', 'key', 'summary', 'status', 'priority',
-  'assignee', 'workstream', 'due_date', '__menu',
+  'key',
+  'workstream',
+  'status',
+  'assignee',
 ] as const;
 
 // ─── Runtime wiring args ────────────────────────────────────────────────────
@@ -95,48 +99,98 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
     onRowDelete,
   } = args;
 
-  return [
-    // 1. Drag handle — structural, always-visible, narrow.
+  // Row actions — minimal set for v1. Mirrors Project Hub's `rowActions` shape
+  // (RowAction<T>[]). 'open' is filtered out at the actions-cell site (Project
+  // Hub convention: `rowActions.filter((a) => a.id !== 'open')`).
+  const rowActions: RowAction<PlannerTask>[] = [
     {
-      id: '__drag',
-      label: '',
-      width: 2,
-      defaultVisible: true,
-      alwaysVisible: true,
-      cell: makeDragHandleCell(() => true),
+      id: 'open',
+      label: 'Open task',
+      onClick: (r) => onOpen(r),
     },
-    // 2. Key — leading task-type icon + clickable key.
+    {
+      id: 'delete',
+      label: 'Delete task',
+      danger: true,
+      onClick: (r) => {
+        void onRowDelete(r.id);
+      },
+    },
+  ];
+
+  return [
+    // 1. Work — combined cell: [Task icon] [KEY] [summary text]. Single flex
+    //    column matching Project Hub backlog (BacklogPage.atlaskit.tsx:2274).
     {
       id: 'key',
-      label: 'Key',
-      width: 8,
-      defaultVisible: true,
-      cell: makeKeyCell(
-        (row) => row.key,
-        onOpen,
-        getHref,
-        () => TASK_TYPE_ICON,
-      ),
-    },
-    // 3. Summary — inline-edit title; flex-grow column.
-    {
-      id: 'summary',
-      label: 'Summary',
+      label: 'Work',
       flex: true,
+      sortable: true,
+      alwaysVisible: true,
       defaultVisible: true,
-      cell: makeSummaryInlineEditCell<PlannerTask>({
-        getSummary: (row) => row.title,
+      accessor: (r) => r.key || '',
+      cell: (() => {
+        const keyCellRenderer = makeKeyCell(
+          (r: PlannerTask) => r.key,
+          (r: PlannerTask) => onOpen(r),
+          (r: PlannerTask) => getHref(r),
+          () => TASK_TYPE_ICON,
+        );
+        const summaryCellRenderer = makeSummaryInlineEditCell<PlannerTask>({
+          getSummary: (r) => r.title,
+          onChange: (row, next) => {
+            void onCellEdit(row.id, { title: next });
+          },
+          onOpenWorkItem: (row) => onOpen(row),
+        });
+        return function WorkCell(props: CellProps<PlannerTask>) {
+          return React.createElement(
+            'span',
+            {
+              style: {
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                width: '100%',
+                minWidth: 0,
+              },
+            },
+            keyCellRenderer(props),
+            React.createElement(
+              'span',
+              { style: { flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' } },
+              summaryCellRenderer(props),
+            ),
+          );
+        };
+      })(),
+    },
+    // 2. Workstream — Tasks analog of Project Hub's "Parent" column. Popup
+    //    picker via makeWorkstreamEditCell.
+    {
+      id: 'workstream',
+      label: 'Workstream',
+      width: 11,
+      sortable: true,
+      defaultVisible: true,
+      cell: makeWorkstreamEditCell<PlannerTask>({
+        getValue: toWorkstreamChoice,
+        options: workstreamOptions,
         onChange: (row, next) => {
-          void onCellEdit(row.id, { title: next });
+          void onCellEdit(row.id, {
+            teamId: next?.id ?? undefined,
+            teamName: next?.name ?? undefined,
+            teamColor: next?.color ?? undefined,
+          });
         },
-        onOpenWorkItem: onOpen,
       }),
     },
-    // 4. Status — Atlaskit popup edit cell.
+    // 3. Status — Atlaskit popup edit cell.
     {
       id: 'status',
       label: 'Status',
-      width: 10,
+      width: 15,
+      sortable: true,
       defaultVisible: true,
       cell: makeStatusEditCellAkPopup<PlannerTask>({
         getStatus: (row) => row.status,
@@ -160,24 +214,12 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
         },
       }),
     },
-    // 5. Priority — popup priority edit cell.
-    {
-      id: 'priority',
-      label: 'Priority',
-      width: 7,
-      defaultVisible: true,
-      cell: makePriorityEditCell<PlannerTask>({
-        getPriority: (row) => row.priority,
-        onChange: (row, next) => {
-          void onCellEdit(row.id, { priority: next as PlannerTask['priority'] });
-        },
-      }),
-    },
-    // 6. Assignee — popup assignee picker.
+    // 4. Assignee — popup assignee picker.
     {
       id: 'assignee',
       label: 'Assignee',
       width: 11,
+      sortable: true,
       defaultVisible: true,
       cell: makeAssigneeEditCell<PlannerTask>({
         getAssignee: toAssigneeChoice,
@@ -190,30 +232,28 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
         },
       }),
     },
-    // 7. Workstream — popup workstream picker.
+    // 5. Priority — popup priority edit cell. Hidden by default (matches
+    //    Project Hub default visible set).
     {
-      id: 'workstream',
-      label: 'Workstream',
-      width: 10,
-      defaultVisible: true,
-      cell: makeWorkstreamEditCell<PlannerTask>({
-        getValue: toWorkstreamChoice,
-        options: workstreamOptions,
+      id: 'priority',
+      label: 'Priority',
+      width: 6,
+      sortable: true,
+      defaultVisible: false,
+      cell: makePriorityEditCell<PlannerTask>({
+        getPriority: (row) => row.priority,
         onChange: (row, next) => {
-          void onCellEdit(row.id, {
-            teamId: next?.id ?? undefined,
-            teamName: next?.name ?? undefined,
-            teamColor: next?.color ?? undefined,
-          });
+          void onCellEdit(row.id, { priority: next as PlannerTask['priority'] });
         },
       }),
     },
-    // 8. Due date — date edit cell.
+    // 6. Due date — date edit cell. Hidden by default.
     {
       id: 'due_date',
       label: 'Due date',
       width: 8,
-      defaultVisible: true,
+      sortable: true,
+      defaultVisible: false,
       cell: makeDateEditCell<PlannerTask>({
         getDate: (row) => row.dueDate ?? null,
         onChange: (row, next) => {
@@ -221,68 +261,24 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
         },
       }),
     },
-    // 9. Created at — hidden placeholder (wired in later task).
+    // 7. Row actions (⋯ menu) — structural, always visible. Mirrors Project
+    //    Hub's __actions column. Width 5 ≈ 60px to host the 28×28 button
+    //    without clipping (BacklogPage 2026-06-09 fix).
     {
-      id: 'created_at',
-      label: 'Created',
-      width: 8,
-      defaultVisible: false,
-      cell: () => null,
-    },
-    // 10. Updated at — hidden placeholder.
-    {
-      id: 'updated_at',
-      label: 'Updated',
-      width: 8,
-      defaultVisible: false,
-      cell: () => null,
-    },
-    // 11. Start date — hidden placeholder.
-    {
-      id: 'start_date',
-      label: 'Start date',
-      width: 8,
-      defaultVisible: false,
-      cell: () => null,
-    },
-    // 12. Progress — hidden placeholder.
-    {
-      id: 'progress',
-      label: 'Progress',
-      width: 7,
-      defaultVisible: false,
-      cell: () => null,
-    },
-    // 13. Blocked — hidden placeholder.
-    {
-      id: 'blocked',
-      label: 'Blocked',
-      width: 6,
-      defaultVisible: false,
-      cell: () => null,
-    },
-    // 14. Description — hidden placeholder.
-    {
-      id: 'description',
-      label: 'Description',
-      width: 12,
-      defaultVisible: false,
-      cell: () => null,
-    },
-    // 15. Row menu — structural, always-visible.
-    {
-      id: '__menu',
+      id: '__actions',
       label: '',
-      width: 3,
-      defaultVisible: true,
+      width: 5,
+      align: 'center',
       alwaysVisible: true,
-      cell: makeRowMenuCell({
-        onOpen,
-        onDelete: (row) => {
-          void onRowDelete(row.id);
-        },
-      }),
+      cell: (props) =>
+        React.createElement(
+          'div',
+          { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' } },
+          makeRowActionsCell<PlannerTask>({
+            // Filter out 'open' — row-click already opens the detail.
+            actions: rowActions.filter((a) => a.id !== 'open'),
+          })(props),
+        ),
     },
   ];
 }
-

@@ -6,6 +6,7 @@
  *   useTaskItems         → rows (PlannerTask[])
  *   useTaskStatuses      → status popup options
  *   useTaskWorkstreams   → workstream popup options
+ *   useTaskUsers         → assignee popup options (full team directory)
  *   useUpdatePlannerTask → cell-edit mutations
  *   useDeletePlannerTask → row-delete mutation
  *   buildTasksListColumns (Task 1.2) → final Column<PlannerTask>[]
@@ -18,10 +19,10 @@
  *   (commit 47a241f3c) — column-registry onCellEdit patches for status and
  *   teamId now persist through to the DB.
  *
- * KNOWN GAP:
- *   assigneeOptions are derived from the loaded tasks set (de-duplicated
- *   assignees). A proper full-directory picker (read from `profiles` or
- *   `resource_inventory`) is a follow-up.
+ * 2026-06-16 (Task 1.5b): assigneeOptions switched from derived-from-tasks
+ *   to the full team directory via `useTaskUsers` — mirrors Project Hub
+ *   backlog (which uses a full assignee list, not derived). Also exposes
+ *   `users` from the hook so the toolbar can render the AvatarGroup.
  *
  * Zero-assumption code (CLAUDE.md 2026-06-11): all options are derived from
  * real data — when a query returns empty, we return an empty option list, not
@@ -35,6 +36,7 @@ import {
 } from './useTaskItems';
 import { useTaskStatuses } from './useTaskStatuses';
 import { useTaskWorkstreams } from './useTaskWorkstreams';
+import { useTaskUsers } from './useTaskUsers';
 import {
   buildTasksListColumns,
   type TasksListColumnArgs,
@@ -46,7 +48,7 @@ import type {
   WorkstreamChoice,
 } from '@/components/shared/JiraTable/editors';
 import type { LozengeAppearance } from '@/components/shared/JiraTable/cells';
-import type { PlannerTask, TaskStatus } from '@/modules/tasks/types';
+import type { PlannerTask, PlannerUser, TaskStatus } from '@/modules/tasks/types';
 
 /**
  * Passthrough row mapper. JiraTable consumes PlannerTask directly because the
@@ -88,6 +90,8 @@ export type TasksTableDataReturn = {
   columns: Column<PlannerTask>[];
   isLoading: boolean;
   error: unknown;
+  /** Full team directory — exposed for the toolbar AvatarGroup. */
+  users: PlannerUser[];
 };
 
 export function useTasksTableData(args: {
@@ -97,6 +101,7 @@ export function useTasksTableData(args: {
   const tasksQuery = useTaskItems();
   const statusesQuery = useTaskStatuses();
   const workstreamsQuery = useTaskWorkstreams();
+  const usersQuery = useTaskUsers();
   const updateMutation = useUpdatePlannerTask();
   const deleteMutation = useDeletePlannerTask();
 
@@ -142,22 +147,18 @@ export function useTasksTableData(args: {
     [workstreamsQuery.data],
   );
 
-  // Assignee options: derived from the loaded tasks. De-duplicate by id.
-  // KNOWN GAP (see file header): a full-directory picker is a follow-up task.
-  const assigneeOptions: AssigneeChoice[] = useMemo(() => {
-    const seen = new Set<string>();
-    const out: AssigneeChoice[] = [];
-    for (const t of tasksQuery.data ?? []) {
-      if (!t.assigneeId || seen.has(t.assigneeId)) continue;
-      // Zero-assumption: if a row has assigneeId but no assigneeName, skip it
-      // rather than render a placeholder. The column popup will still show
-      // every assignee that has at least one row with a real name.
-      if (!t.assigneeName) continue;
-      seen.add(t.assigneeId);
-      out.push({ id: t.assigneeId, name: t.assigneeName });
-    }
-    return out;
-  }, [tasksQuery.data]);
+  // Assignee options: full team directory via useTaskUsers (same source the
+  // Kanban + Create modal pickers use). Mirrors Project Hub backlog which
+  // shows the full assignee list, not a derived-from-rows subset.
+  const assigneeOptions: AssigneeChoice[] = useMemo(
+    () =>
+      (usersQuery.data ?? []).map((u) => ({
+        id: u.id,
+        name: u.name,
+        avatarUrl: u.avatarUrl ?? null,
+      })),
+    [usersQuery.data],
+  );
 
   const columnArgs: TasksListColumnArgs = useMemo(
     () => ({
@@ -188,6 +189,7 @@ export function useTasksTableData(args: {
     isLoading:
       tasksQuery.isLoading || statusesQuery.isLoading || workstreamsQuery.isLoading,
     error: tasksQuery.error ?? statusesQuery.error ?? workstreamsQuery.error,
+    users: usersQuery.data ?? [],
   };
 }
 
