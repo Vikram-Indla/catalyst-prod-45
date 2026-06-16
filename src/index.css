@@ -5186,8 +5186,8 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .sidebar,
 [data-theme="dark"] [data-sidebar],
 .dark aside , [data-theme="dark"] aside {
-  background-color: #0A0A0A !important;
-  border-color: var(--cp-ink-1, #2E2E2E) !important;
+  background-color: var(--cp-bg, #1D2125) !important;
+  border-color: var(--cp-bg, #1D2125) !important;
   box-shadow: none !important;
 }
 
