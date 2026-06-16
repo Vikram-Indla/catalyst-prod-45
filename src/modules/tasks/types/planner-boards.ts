@@ -46,6 +46,7 @@ export interface BoardTask {
   // Computed
   due_status: 'overdue' | 'today' | 'tomorrow' | 'upcoming' | null;
   days_until_due: number | null;
+  labels?: string[];
 }
 
 export interface BoardData {

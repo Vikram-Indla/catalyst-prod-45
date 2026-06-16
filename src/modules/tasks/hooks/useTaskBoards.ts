@@ -25,12 +25,21 @@ export function useBoardColumns() {
     queryKey: ['tasks', 'board', 'columns'],
     queryFn: async (): Promise<BoardColumn[]> => {
       const { data, error } = await supabase
-        .from('task_board_columns')
+        .from('task_statuses')
         .select('*')
         .order('position');
-      
+
       if (error) throw error;
-      return (data || []) as BoardColumn[];
+      return (data || []).map((s) => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        color: s.color,
+        position: s.position,
+        is_completed_status: s.is_completed_status ?? false,
+        is_system: s.is_default ?? false,
+        task_count: 0,
+      })) as BoardColumn[];
     },
     staleTime: STALE_TIME,
   });
@@ -43,13 +52,17 @@ export function useBoardTasks(filters?: BoardFilters) {
   return useQuery({
     queryKey: ['tasks', 'board', 'tasks', filters],
     queryFn: async (): Promise<BoardTask[]> => {
-      // Use any to break excessive type recursion in Supabase query builder
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let query: any = supabase
         .from('tasks')
-        .select('*');
-      
-      // Apply filters
+        .select(`
+          *,
+          status:task_statuses(id,name,slug,color,position,is_completed_status),
+          workstream:task_workstreams(id,name,slug,color),
+          assignee:profiles!tasks_assignee_id_fkey(id,full_name,avatar_url)
+        `)
+        .is('deleted_at', null);
+
       if (filters?.workstream_id) {
         query = query.eq('workstream_id', filters.workstream_id);
       }
@@ -59,23 +72,43 @@ export function useBoardTasks(filters?: BoardFilters) {
       if (filters?.priority) {
         query = query.eq('priority', filters.priority);
       }
-      if (filters?.status) {
-        query = query.eq('status_slug', filters.status);
-      }
-      if (filters?.due_status) {
-        query = query.eq('due_status', filters.due_status);
-      }
-      if (filters?.blocked === true) {
-        query = query.eq('blocked', true);
-      }
       if (filters?.search) {
         query = query.or(`title.ilike.%${filters.search}%,key.ilike.%${filters.search}%`);
       }
-      
+
       const { data, error } = await query;
-      
+
       if (error) throw error;
-      return (data || []) as BoardTask[];
+
+      return (data || []).map((r: any): BoardTask => ({
+        id: r.id,
+        key: r.key ?? r.task_key ?? '',
+        title: r.title,
+        description: r.description ?? null,
+        priority: r.priority ?? 'medium',
+        status_id: r.status_id,
+        status_name: r.status?.name ?? '',
+        status_slug: r.status?.slug ?? '',
+        status_color: r.status?.color ?? 'var(--ds-background-neutral, #F1F2F4)',
+        status_position: r.status?.position ?? 0,
+        is_completed_status: r.status?.is_completed_status ?? false,
+        workstream_id: r.workstream_id ?? null,
+        workstream_name: r.workstream?.name ?? null,
+        workstream_slug: r.workstream?.slug ?? null,
+        workstream_color: r.workstream?.color ?? null,
+        assignee_id: r.assignee_id ?? null,
+        assignee_name: r.assignee?.full_name ?? null,
+        assignee_avatar: r.assignee?.avatar_url ?? null,
+        due_date: r.due_date ?? null,
+        due_status: r.due_status ?? null,
+        days_until_due: r.days_until_due ?? null,
+        position: r.position ?? 0,
+        progress: r.progress ?? 0,
+        blocked: r.blocked ?? false,
+        blocked_reason: r.blocked_reason ?? null,
+        created_at: r.created_at,
+        updated_at: r.updated_at,
+      }));
     },
     staleTime: STALE_TIME,
   });
@@ -102,8 +135,16 @@ export function useBoardData(filters?: BoardFilters) {
     }, {} as Record<string, BoardTask[]>);
   }, [tasks.data]);
   
+  const columnsWithCount = useMemo(() => {
+    const raw = columns.data ?? [];
+    return raw.map((col) => ({
+      ...col,
+      task_count: (tasksByStatus[col.slug] ?? []).length,
+    }));
+  }, [columns.data, tasksByStatus]);
+
   return {
-    columns: columns.data ?? [],
+    columns: columnsWithCount,
     tasks: tasks.data ?? [],
     tasksByStatus,
     isLoading: columns.isLoading || tasks.isLoading,

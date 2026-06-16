@@ -1,1 +1,1 @@
-export function WorkstreamsPage(props: any) { return null; }
+export { WorkstreamsPage } from './WorkstreamsPage';

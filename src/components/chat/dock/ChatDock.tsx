@@ -126,7 +126,7 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
   }
   if (conversation.kind === "ticket") {
     const num =
-      (conversation.ticketKey ?? conversation.title).split("-").pop() ?? "";
+      (conversation.ticketKey ?? conversation.title ?? "").split("-").pop() ?? "";
     return (
       <span
         style={{
@@ -159,7 +159,7 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
             TILE_PALETTE[hashIndex(conversation.id, TILE_PALETTE.length)],
         }}
       >
-        {initials(conversation.title)}
+        {initials(conversation.title ?? "")}
       </span>
     </span>
   );
@@ -213,7 +213,7 @@ export function ChatDock({
   const [whyOpen, setWhyOpen] = React.useState(false);
   const [gesture, setGesture] = React.useState("");
   const [catyHidden, setCatyHidden] = React.useState(() =>
-    localStorage.getItem('caty.fab.hidden') === 'true'
+    localStorage.getItem('caty.fab.hidden') !== 'false'
   );
   const prevUnseen = React.useRef(eventUnseen);
   const hoverTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);

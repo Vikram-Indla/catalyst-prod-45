@@ -16,17 +16,19 @@ interface DashboardUpcomingDeadlinesV2Props {
   onTaskClick?: (taskId: string) => void;
 }
 
-function getDaysOverdue(dueDate: string): number {
+function getDaysOverdue(dueDate: string | null | undefined): number {
+  if (!dueDate) return 0;
   const date = parseISO(dueDate);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   date.setHours(0, 0, 0, 0);
-  
+
   if (date >= today) return 0;
   return differenceInDays(today, date);
 }
 
-function isOverdue(dueDate: string): boolean {
+function isOverdue(dueDate: string | null | undefined): boolean {
+  if (!dueDate) return false;
   const date = parseISO(dueDate);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -136,7 +138,7 @@ export function DashboardUpcomingDeadlinesV2({ data, className, onTaskClick }: D
                 {/* Date row: Full date + overdue text */}
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-500 dark:text-slate-400">
-                    {format(parseISO(task.due_date), 'MMM d, yyyy')}
+                    {task.due_date ? format(parseISO(task.due_date), 'MMM d, yyyy') : '—'}
                   </span>
                   {taskIsOverdue && (
                     <>
