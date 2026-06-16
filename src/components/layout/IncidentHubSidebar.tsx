@@ -38,9 +38,13 @@ const sections: SidebarSection[] = [
       { id: 'incident-list', title: 'All Incidents', path: '/incident-hub', icon: List, exact: true, badgeVariant: 'danger' },
       { id: 'analytics', title: 'Analytics', path: '/incident-hub/analytics', icon: BarChart3, exact: false },
       { id: 'insights', title: 'Insights', path: '/incident-hub/insights', icon: Sparkles, exact: false },
-      { id: 'kanban', title: 'Kanban', path: '/incident-hub/kanban', icon: LayoutGrid, exact: false },
-      /* 2026-06-16: Work tab — canonical AllWork view, mode='incident'.
-         Same sequence as project / product hubs (after Kanban). */
+      /* 2026-06-16: "Kanban" → "Board" — matches the label used by
+         project and product hubs. Path repointed to /incident-hub/board
+         (canonical KanbanPage with mode='incident'); the legacy
+         /incident-hub/kanban URL still redirects here. */
+      { id: 'board', title: 'Board', path: '/incident-hub/board', icon: LayoutGrid, exact: false },
+      /* Work tab — canonical AllWork view, mode='incident'.
+         Same sequence as project / product hubs (after Board). */
       { id: 'work', title: 'Work', path: '/incident-hub/work', icon: NavWorkIcon, exact: false },
       { id: 'reports', title: 'Reports', path: '/incident-hub/reports', icon: FileText, exact: false },
       { id: 'committee-queue', title: 'Committee Queue', path: '/incident-hub/committee-queue', icon: Users, exact: false },

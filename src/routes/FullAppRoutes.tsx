@@ -119,6 +119,7 @@ const ReqAssistGenerate = ENABLE_AI ? lazy(() => import("../pages/ReqAssistGener
 const IncidentHubListPage = lazy(() => import("../pages/incidenthub/IncidentListPage"));
 const IncidentHubKanbanPage = lazy(() => import("../pages/incidenthub/IncidentKanbanPage"));
 const IncidentHubWorkPage = lazy(() => import("../pages/incidenthub/IncidentWorkPage"));
+const IncidentHubBoardPage = lazy(() => import("../pages/incidenthub/IncidentBoardPage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
 const IncidentHubInsightsPage = lazy(() => import("../pages/incidenthub/IncidentInsightsPage"));
 const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentReportsPage"));
@@ -677,7 +678,13 @@ export default function FullAppRoutes() {
 
         {/* ═══ IncidentHub ═══ */}
         <Route path="/incident-hub" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubListPage /></S></MG>} />
-        <Route path="/incident-hub/kanban" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubKanbanPage /></S></MG>} />
+        {/* 2026-06-16: Board tab — canonical KanbanPage with mode='incident'.
+            "Kanban" tab in the sidebar was renamed "Board" to match the
+            naming used by project + product hubs. Legacy /incident-hub/kanban
+            path redirects here so any existing link still lands on the
+            canonical surface. */}
+        <Route path="/incident-hub/board" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubBoardPage /></S></MG>} />
+        <Route path="/incident-hub/kanban" element={<Navigate to="/incident-hub/board" replace />} />
         {/* 2026-06-16: Work tab — canonical ProjectAllWorkView with mode='incident'. */}
         <Route path="/incident-hub/work" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubWorkPage /></S></MG>} />
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />

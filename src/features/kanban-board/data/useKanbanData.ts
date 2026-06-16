@@ -19,7 +19,7 @@ import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import type { BoardConfig, BoardIssue, BoardOption, KanbanColumn, StatusCategory } from '../types';
 import { DEFAULT_COLUMNS, indexColumns } from './columnConfig';
 
-export type KanbanMode = 'project' | 'product';
+export type KanbanMode = 'project' | 'product' | 'incident';
 
 const PAGE = 1000;
 const ISSUE_SELECT = 'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, jira_updated_at, jira_created_at, due_date';
@@ -123,6 +123,7 @@ export function useKanbanData(
 ): KanbanData {
   const key = projectKey?.toUpperCase();
   const isProduct = mode === 'product';
+  const isIncident = mode === 'incident';
 
   /* ── PROJECT meta ─────────────────────────────────────────────────────── */
   const { data: projMeta } = useQuery({
@@ -133,7 +134,7 @@ export function useKanbanData(
         .from('ph_projects').select('id, key, name').eq('key', key).maybeSingle();
       return data ?? null;
     },
-    enabled: !!key && !isProduct,
+    enabled: !!key && !isProduct && !isIncident,
     staleTime: 60_000,
   });
 
@@ -165,11 +166,11 @@ export function useKanbanData(
         .order('sort_order');
       return (data ?? []).map((b: any) => ({ id: b.id, name: b.name })) as BoardOption[];
     },
-    enabled: !!key && !isProduct,
+    enabled: !!key && !isProduct && !isIncident,
     staleTime: 60_000,
   });
 
-  const resolvedBoardId = isProduct ? null : (activeBoardId ?? boards[0]?.id ?? null);
+  const resolvedBoardId = (isProduct || isIncident) ? null : (activeBoardId ?? boards[0]?.id ?? null);
 
   /* ── COLUMNS source 1 (project): board_columns + board_status_mappings ── */
   const { data: dynamicCols } = useQuery({
@@ -189,7 +190,7 @@ export function useKanbanData(
       if (!cols?.length) return null;
       return { cols, mappings: mappings ?? [] };
     },
-    enabled: !!resolvedBoardId && !isProduct,
+    enabled: !!resolvedBoardId && !isProduct && !isIncident,
     staleTime: 60_000,
   });
 
@@ -200,9 +201,16 @@ export function useKanbanData(
      defined under the BAU project. */
   const brWorkflow = useTypeWorkflow('BAU', 'Business Request');
 
+  /* ── COLUMNS source 3 (incident): Production Incident workflow statuses ──
+     Mirrors brWorkflow exactly. PI workflow is also rooted at the BAU
+     project — incidents are surfaced cross-project on Catalyst but the
+     status taxonomy is owned by BAU. */
+  const piWorkflow = useTypeWorkflow('BAU', 'Production Incident');
+
   const columns: KanbanColumn[] = useMemo(() => {
-    if (isProduct) {
-      const statuses = (brWorkflow?.data as any)?.statuses ?? [];
+    if (isProduct || isIncident) {
+      const wf = isIncident ? piWorkflow : brWorkflow;
+      const statuses = (wf?.data as any)?.statuses ?? [];
       if (statuses.length === 0) return DEFAULT_COLUMNS;
       return statuses.map((s: any, i: number): KanbanColumn => ({
         id: s.id ?? String(i),
@@ -227,7 +235,7 @@ export function useKanbanData(
       });
     }
     return DEFAULT_COLUMNS;
-  }, [isProduct, brWorkflow, dynamicCols]);
+  }, [isProduct, isIncident, brWorkflow, piWorkflow, dynamicCols]);
 
   const boardConfig: BoardConfig = useMemo(() => {
     const idx = indexColumns(columns);
@@ -235,19 +243,21 @@ export function useKanbanData(
       boardId: resolvedBoardId,
       boardName: isProduct
         ? (productMeta?.name ?? 'Product board')
-        : (boards.find((b) => b.id === resolvedBoardId)?.name ?? 'Board'),
+        : isIncident
+          ? 'Incident board'
+          : (boards.find((b) => b.id === resolvedBoardId)?.name ?? 'Board'),
       columns: idx.columns,
       statusToColId: idx.statusToColId,
       colPrimaryStatus: idx.colPrimaryStatus,
       columnIdSet: idx.columnIdSet,
     };
-  }, [columns, resolvedBoardId, boards, isProduct, productMeta]);
+  }, [columns, resolvedBoardId, boards, isProduct, isIncident, productMeta]);
 
   /* ── PROJECT issues (paginated, progressive) ─────────────────────────── */
   const { data: firstPage = [], isLoading: projectLoading, refetch: refetchFirst } = useQuery({
     queryKey: ['kb-issues-p1', key],
     queryFn: () => (key ? fetchIssuePage(key, 0, PAGE - 1) : Promise.resolve([] as any[])),
-    enabled: !!key && !isProduct,
+    enabled: !!key && !isProduct && !isIncident,
     staleTime: 5 * 60_000,
   });
   const hasMore = firstPage.length >= PAGE;
@@ -267,7 +277,29 @@ export function useKanbanData(
       }
       return all;
     },
-    enabled: !!key && !isProduct && hasMore,
+    enabled: !!key && !isProduct && !isIncident && hasMore,
+    staleTime: 5 * 60_000,
+  });
+
+  /* ── INCIDENT issues (ph_issues filtered by issue_type='Production Incident').
+     Mirrors the productRows pattern. Incident rows are ph_issues, so
+     useKanbanMutations does NOT need an incident branch — its existing
+     project (ph_issues) writes apply unchanged. */
+  const { data: incidentRows = [], isLoading: incidentLoading, refetch: refetchIncidents } = useQuery({
+    queryKey: ['kb-incident-issues'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select(ISSUE_SELECT)
+        .eq('issue_type', 'Production Incident')
+        .is('deleted_at', null)
+        .is('archived_at', null)
+        .order('jira_updated_at', { ascending: false })
+        .limit(2000);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: isIncident,
     staleTime: 5 * 60_000,
   });
 
@@ -331,27 +363,34 @@ export function useKanbanData(
     if (isProduct) {
       return productRows.map((r: any) => mapProductRow(r, assigneeNames, parentKeyById));
     }
+    if (isIncident) {
+      return (incidentRows as any[]).map(mapRow);
+    }
     return [...firstPage, ...restPages].map(mapRow);
-  }, [isProduct, productRows, assigneeNames, parentKeyById, firstPage, restPages]);
+  }, [isProduct, isIncident, productRows, assigneeNames, parentKeyById, incidentRows, firstPage, restPages]);
 
   const refetch = useCallback(() => {
     if (isProduct) {
       refetchProduct();
+    } else if (isIncident) {
+      refetchIncidents();
     } else {
       refetchFirst();
       refetchRest();
     }
-  }, [isProduct, refetchProduct, refetchFirst, refetchRest]);
+  }, [isProduct, isIncident, refetchProduct, refetchIncidents, refetchFirst, refetchRest]);
 
   return {
     projectId: isProduct ? productId : (projMeta?.id ?? null),
     projectName: isProduct
       ? (productMeta?.name ?? key ?? '')
-      : (projMeta?.name ?? key ?? ''),
+      : isIncident
+        ? 'Incidents'
+        : (projMeta?.name ?? key ?? ''),
     boardConfig,
-    boards: isProduct ? [] : boards,
+    boards: (isProduct || isIncident) ? [] : boards,
     issues,
-    isLoading: isProduct ? productLoading : projectLoading,
+    isLoading: isProduct ? productLoading : isIncident ? incidentLoading : projectLoading,
     refetch,
   };
 }
