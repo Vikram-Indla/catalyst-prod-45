@@ -284,12 +284,17 @@ export function useTasksKanbanMutations(statuses: PlannerStatus[]): TasksKanbanM
   const qc = useQueryClient();
 
   const persistDrop = useCallback(
-    ({ cardId, destColId, insertIndex }: {
+    async ({ cardId, destColId, insertIndex }: {
       cardId: string;
       sourceColId: string;
       destColId: string;
       insertIndex: number;
     }) => {
+      // 2026-06-16: cancel any in-flight planner-tasks refetches BEFORE
+      // patching the cache. Without this, an in-flight refetch can land
+      // after the optimistic patch and revert the visible card order,
+      // making the drop appear to "snap back" before the API confirms.
+      await qc.cancelQueries({ queryKey: ['planner-tasks'] });
       // Bug 2 fix (2026-06-16): compute a fractional `position` value from
       // the neighbors at `insertIndex` in the destination column. Without
       // this, every drop wrote `position = insertIndex` (0, 1, 2…) and
@@ -376,13 +381,19 @@ export function useTasksKanbanMutations(statuses: PlannerStatus[]): TasksKanbanM
       // useMoveBoardTask writes status_id + position in a single supabase
       // update + optimistic cache patch. destColId IS the status_id
       // (mapStatusesToColumns sets column.id = status.id).
+      //
+      // 2026-06-16: do NOT call qc.invalidateQueries(['planner-tasks'])
+      // synchronously here. The optimistic patch above is what keeps the
+      // dropped card visually in place; an immediate invalidate triggers a
+      // refetch that races with the mutation's in-flight response and can
+      // briefly revert the card order. useMoveBoardTask.onSettled now
+      // invalidates planner-tasks AFTER the mutation completes, which is
+      // the correct sync point.
       moveTask.mutate({
         task_id: cardId,
         target_status_id: destColId,
         target_position: targetPosition,
       });
-      // Invalidate planner-tasks so the list view / other surfaces refresh.
-      qc.invalidateQueries({ queryKey: ['planner-tasks'] });
     },
     [moveTask, qc, statuses],
   );

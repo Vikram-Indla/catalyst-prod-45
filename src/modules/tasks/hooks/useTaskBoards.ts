@@ -303,6 +303,12 @@ export function useMoveBoardTask() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks', 'board'] });
       queryClient.invalidateQueries({ queryKey: ['tasks', 'dashboard'] });
+      // 2026-06-16: also invalidate the canonical planner-tasks + kanban-tasks
+      // caches so the PragmaticBoard / list view refresh after a drop. The
+      // legacy hook only invalidated ['tasks', 'board'] which the canonical
+      // surfaces don't read from.
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
     },
   });
 }

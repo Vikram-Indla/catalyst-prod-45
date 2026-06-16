@@ -37,6 +37,7 @@ import AvatarGroup from '@atlaskit/avatar-group';
 import AkSearchIcon from '@atlaskit/icon/core/search';
 import AkCloseIcon from '@atlaskit/icon/core/close';
 import AkMoreIcon from '@atlaskit/icon/glyph/more';
+import AkFilterIcon from '@atlaskit/icon/core/filter';
 import AkEditIcon from '@atlaskit/icon/core/edit';
 import AkCommentIcon from '@atlaskit/icon/core/comment';
 import AkClockIcon from '@atlaskit/icon/core/clock';
@@ -48,6 +49,7 @@ import AkLinkIcon from '@atlaskit/icon/core/link';
 import AkTrashIcon from '@atlaskit/icon/glyph/trash';
 import { token } from '@atlaskit/tokens';
 import { JiraTable, flag, type RowAction } from '@/components/shared/JiraTable';
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { supabase } from '@/integrations/supabase/client';
 import { useTasksTableData } from '@/modules/tasks/hooks/useTasksTableData';
 import { useDeletePlannerTask } from '@/modules/tasks/hooks/useTaskItems';
@@ -333,206 +335,246 @@ export default function TasksTaskListView() {
       {/* ── Page header (breadcrumb + H1) ──────────────────────────────── */}
       <TasksPageHeader routeWord="Task list" />
 
-      {/* ── Toolbar ─────────────────────────────────────────────────────── */}
-      <div
-        style={{
-          padding: '16px 24px',
-          marginBottom: 4,
-          display: 'flex',
-          gap: 12,
-          alignItems: 'center',
-          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-        }}
-      >
-        {/* Search list — Atlaskit Textfield (matches Project Hub). */}
-        <div style={{ flex: 1, minWidth: 240, maxWidth: 640 }}>
-          <Textfield
-            isCompact
-            placeholder="Search list"
-            value={search}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-            elemBeforeInput={
-              <span
-                style={{
-                  paddingInlineStart: 8,
-                  color: token('color.text.subtlest', '#6B778C'),
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <AkSearchIcon label="" />
-              </span>
-            }
-            elemAfterInput={
-              search ? (
-                <button
-                  type="button"
-                  aria-label="Clear search"
-                  onClick={() => setSearch('')}
-                  style={{
-                    paddingInlineEnd: 6,
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: token('color.text.subtlest', '#6B778C'),
-                    padding: '0 8px 0 4px',
-                  }}
-                >
-                  <AkCloseIcon label="" />
-                </button>
-              ) : undefined
-            }
-          />
-        </div>
-
-        {/* Filters — PLACEHOLDER. Non-functional in v1. */}
-        <Button appearance="subtle" onClick={() => { /* TODO Task 1.5c */ }}>
-          Filters
-        </Button>
-
-        {/* Avatar group — full team directory (read-only in v1). */}
-        {avatarData.length > 0 && (
-          <AvatarGroup
-            appearance="stack"
-            size="small"
-            maxCount={5}
-            label="Team members"
-            data={avatarData}
-          />
-        )}
-
-        {/* Saved filters — PLACEHOLDER. */}
-        <Button appearance="subtle" onClick={() => { /* TODO Task 1.5c */ }}>
-          Saved filters
-        </Button>
-
-        <div style={{ flex: 1 }} />
-
-        {/* Group by — PLACEHOLDER native <select> (visual parity, no functional
-            grouping wired yet). Project Hub uses GroupByControl portal pattern
-            (overflow-hidden bug workaround). Tasks v1 doesn't need grouping. */}
-        <label
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            fontSize: 13,
-            color: token('color.text.subtlest', '#6B778C'),
-          }}
-        >
-          <span>Group by</span>
-          <select
-            value={groupBy}
-            onChange={(e) => setGroupBy(e.target.value as typeof groupBy)}
-            style={{
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
-              borderRadius: 3,
-              padding: '4px 8px',
-              fontSize: 13,
-              background: token('color.background.input', '#FFFFFF'),
-              color: token('color.text', '#172B4D'),
-              cursor: 'pointer',
-            }}
-          >
-            {GROUP_BY_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {/* More actions ⋯ — PLACEHOLDER (toolbar-level). The row-level ⋯ menu
-            is wired in Task 1.5c via the __actions column. Toolbar-level
-            actions (Apply old List settings, Export, Bulk change, etc.) are a
-            follow-up. */}
-        <IconButton
-          appearance="subtle"
-          icon={AkMoreIcon}
-          label="More actions"
-          onClick={() => { /* TODO future task */ }}
-        />
-
-        {/* Item count — right-aligned. */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            height: 32,
-            padding: '0 12px',
-            marginLeft: 8,
-            color: token('color.text.subtlest', '#626F86'),
-            fontSize: 12,
-            fontWeight: 500,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {filteredRows.length} item{filteredRows.length === 1 ? '' : 's'}
-        </div>
-      </div>
-
-      {/* ── Table ──────────────────────────────────────────────────────── */}
-      {/* Bug 2 fix (2026-06-16): mirror Project Hub backlog table+panel split.
-          Outer wrapper has position:relative + flex row to anchor the panel.
-          Table container shrinks via paddingRight = panelWidth so the visible
-          table edge clears the right-side overlay panel. */}
+      {/* ── Outer bordered card wrapping toolbar + table (Fix 2, 2026-06-16) ─
+          Mirrors Project Hub backlog's AtlaskitPageShell card (cardBorder +
+          cardPadding props). Tasks Hub doesn't go through AtlaskitPageShell
+          so we apply the same border/radius inline. The padding matches the
+          shell's `{ x: 24, y: 16 }` so toolbar items inset visually align
+          with the table content the same way as Backlog. */}
       <div
         style={{
           flex: 1,
           display: 'flex',
+          flexDirection: 'column',
           minHeight: 0,
+          margin: '16px 24px',
+          background: 'var(--ds-surface, #FFFFFF)',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+          borderRadius: 8,
           overflow: 'hidden',
-          position: 'relative',
         }}
       >
+        {/* ── Toolbar — Project Hub backlog parity (Fix 1, 2026-06-16) ──── */}
+        {/* Order mirrors BacklogPage.atlaskit.tsx:3437-3641 exactly:        */}
+        {/* mascot AIIntelligenceButton · Search list · Filters · AvatarGroup */}
+        {/* · Saved filters · spacer · Group by · sort icon · ⋯ · item count */}
+        <div
+          style={{
+            padding: '32px 24px',
+            marginBottom: 4,
+            display: 'flex',
+            gap: 12,
+            alignItems: 'center',
+            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          }}
+        >
+          {/* Mascot — Ask Caty (matches Backlog L3476-3482). Placeholder
+              wiring: opens an info flag until Caty is wired into Tasks. */}
+          <div style={{ flexShrink: 0 }}>
+            <AIIntelligenceButton
+              label="Ask Caty"
+              onClick={() => flag.info('Ask Caty', 'Coming to Tasks Hub soon.')}
+              tooltip="Ask Caty about these tasks"
+            />
+          </div>
+
+          {/* Search list — Atlaskit Textfield (matches Backlog L3486-3519). */}
+          <div style={{ flex: 1, minWidth: 240, maxWidth: 640 }}>
+            <Textfield
+              isCompact
+              placeholder="Search list"
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+              elemBeforeInput={
+                <span
+                  style={{
+                    paddingInlineStart: 8,
+                    color: token('color.text.subtlest', '#6B778C'),
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <AkSearchIcon label="" size="small" />
+                </span>
+              }
+              elemAfterInput={
+                search ? (
+                  <button
+                    type="button"
+                    aria-label="Clear search"
+                    onClick={() => setSearch('')}
+                    style={{
+                      paddingInlineEnd: 6,
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: token('color.text.subtlest', '#6B778C'),
+                      padding: '0 8px 0 4px',
+                    }}
+                  >
+                    <AkCloseIcon label="" size="small" />
+                  </button>
+                ) : undefined
+              }
+            />
+          </div>
+
+          {/* Filters — PLACEHOLDER. Non-functional in v1. */}
+          <Button appearance="subtle" onClick={() => { /* TODO */ }}>
+            Filters
+          </Button>
+
+          {/* Avatar group — full team directory (read-only in v1). */}
+          {avatarData.length > 0 && (
+            <AvatarGroup
+              appearance="stack"
+              size="small"
+              maxCount={5}
+              label="Team members"
+              data={avatarData}
+            />
+          )}
+
+          {/* Saved filters — PLACEHOLDER. */}
+          <Button appearance="subtle" onClick={() => { /* TODO */ }}>
+            Saved filters
+          </Button>
+
+          <div style={{ flex: 1 }} />
+
+          {/* Group by — PLACEHOLDER native <select> (visual parity, no
+              functional grouping wired yet). Backlog uses GroupByControl
+              portal pattern; Tasks v1 doesn't need grouping. */}
+          <label
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 13,
+              color: token('color.text.subtlest', '#6B778C'),
+            }}
+          >
+            <span>Group by</span>
+            <select
+              value={groupBy}
+              onChange={(e) => setGroupBy(e.target.value as typeof groupBy)}
+              style={{
+                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                borderRadius: 3,
+                padding: '4px 8px',
+                fontSize: 13,
+                background: token('color.background.input', '#FFFFFF'),
+                color: token('color.text', '#172B4D'),
+                cursor: 'pointer',
+              }}
+            >
+              {GROUP_BY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {/* View options (sort/density) — PLACEHOLDER. Matches Backlog's
+              `toolbarViewOptionsButton` icon (AkFilterIcon). */}
+          <IconButton
+            appearance="subtle"
+            icon={AkFilterIcon}
+            label="View options"
+            onClick={() => { /* TODO future task */ }}
+          />
+
+          {/* More actions ⋯ — PLACEHOLDER (toolbar-level). The row-level ⋯
+              menu is wired via the __actions column. */}
+          <IconButton
+            appearance="subtle"
+            icon={AkMoreIcon}
+            label="More actions"
+            onClick={() => { /* TODO future task */ }}
+          />
+
+          {/* Item count — right-aligned. Matches Backlog L3628-3640. */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              height: 32,
+              padding: '0 12px',
+              marginLeft: 8,
+              color: token('color.text.subtlest', '#626F86'),
+              fontSize: 12,
+              fontWeight: 500,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {filteredRows.length} item{filteredRows.length === 1 ? '' : 's'}
+          </div>
+        </div>
+
+        {/* ── Table ──────────────────────────────────────────────────────── */}
+        {/* Bug 2 fix (2026-06-16): mirror Project Hub backlog table+panel split.
+            Outer wrapper has position:relative + flex row to anchor the panel.
+            Table container shrinks via paddingRight = panelWidth so the visible
+            table edge clears the right-side overlay panel. */}
         <div
           style={{
             flex: 1,
-            minWidth: 0,
-            paddingRight: panelTaskId ? panelWidth : 0,
-            transition: 'padding-right 180ms ease',
-            overflow: 'hidden',
             display: 'flex',
-            flexDirection: 'column',
             minHeight: 0,
+            overflow: 'hidden',
+            position: 'relative',
           }}
         >
-        <JiraTable<PlannerTask>
-          data={filteredRows}
-          columns={columns}
-          getRowId={(r) => r.id}
-          isLoading={isLoading}
-          selectable
-          selection={selectedIds}
-          onSelectionChange={setSelectedIds}
-          columnVisibility={visibleColumns}
-          onColumnVisibilityChange={setVisibleColumns}
-        />
-        </div>
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              paddingRight: panelTaskId ? panelWidth : 0,
+              transition: 'padding-right 180ms ease',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0,
+            }}
+          >
+            <JiraTable<PlannerTask>
+              data={filteredRows}
+              columns={columns}
+              getRowId={(r) => r.id}
+              isLoading={isLoading}
+              selectable
+              selection={selectedIds}
+              onSelectionChange={setSelectedIds}
+              columnVisibility={visibleColumns}
+              onColumnVisibilityChange={setVisibleColumns}
+            />
+          </div>
 
-        {/* ── Detail panel ──────────────────────────────────────────────── */}
-        {/* Task 1.5d (2026-06-16) — canonical right-side drag-resizable panel
-            (same as Project Hub backlog). Mounts CatalystDetailPanel with
-            entityKind='task' so CatalystDetailRouter dispatches to
-            TaskCatalystView (reads from `tasks` table). */}
-        {panelTaskId && (
-          <CatalystDetailPanel
-            isOpen
-            onClose={closePanel}
-            itemId={panelTaskId}
-            itemType="Task"
-            typeIconLabel="Task"
-            projectKey=""
-            width={panelWidth}
-            onResize={setPanelWidth}
-            onResizeCommit={persistPanelWidth}
-            minWidth={TASK_PANEL_MIN_W}
-            maxWidth={TASK_PANEL_MAX_W}
-            entityKind="task"
-          />
-        )}
+          {/* ── Detail panel ──────────────────────────────────────────────── */}
+          {/* Task 1.5d (2026-06-16) — canonical right-side drag-resizable panel
+              (same as Project Hub backlog). Mounts CatalystDetailPanel with
+              entityKind='task' so CatalystDetailRouter dispatches to
+              TaskCatalystView (reads from `tasks` table). */}
+          {panelTaskId && (
+            <CatalystDetailPanel
+              isOpen
+              onClose={closePanel}
+              itemId={panelTaskId}
+              itemType="Task"
+              typeIconLabel="Task"
+              projectKey=""
+              width={panelWidth}
+              onResize={setPanelWidth}
+              onResizeCommit={persistPanelWidth}
+              minWidth={TASK_PANEL_MIN_W}
+              maxWidth={TASK_PANEL_MAX_W}
+              entityKind="task"
+            />
+          )}
+        </div>
       </div>
     </div>
   );
