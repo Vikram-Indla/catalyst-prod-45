@@ -437,16 +437,16 @@ export default function ProductHubTimelinePage() {
       invalidate();
     },
 
-    /* Reorder a row among its siblings. Top-level rows write
-       business_requests.display_order; nested children write ph_issues.position.
-       Sparse 1024-step ranking — we compute a new value either at one of the
-       ends or at the midpoint between two neighbours. */
+    /* Reorder a row among its siblings via full-resequence: assign every
+       sibling a fresh sparse rank `(i+1)*1024` in its new visual order
+       and write all ranks in parallel. Bulletproof against null/collided
+       existing ranks. Top-level rows write business_requests.display_order;
+       nested rows write ph_issues.position. */
     onReorderSibling: async (issueKey, direction) => {
       const tree = queryClient.getQueryData<TimelineIssue[]>(['product-hub-timeline', productCode]) ?? [];
       let siblings: TimelineIssue[] = [];
       let isTopLevel = false;
-      const topMatch = tree.find(t => t.issueKey === issueKey);
-      if (topMatch) {
+      if (tree.some(t => t.issueKey === issueKey)) {
         siblings = tree;
         isTopLevel = true;
       } else {
@@ -457,56 +457,42 @@ export default function ProductHubTimelinePage() {
       const idx = siblings.findIndex(s => s.issueKey === issueKey);
       if (idx === -1 || siblings.length <= 1) return;
 
-      const order = (i: TimelineIssue, fallback: number) =>
-        typeof i.displayOrder === 'number' ? i.displayOrder : fallback;
-      /* Build a sparse sequence so even null-rank rows participate. */
-      const ranks = siblings.map((s, i) => order(s, (i + 1) * 1024));
+      let newIdx: number;
+      if (direction === 'first') newIdx = 0;
+      else if (direction === 'last') newIdx = siblings.length - 1;
+      else if (direction === 'up') newIdx = Math.max(0, idx - 1);
+      else newIdx = Math.min(siblings.length - 1, idx + 1);
+      if (newIdx === idx) return;
 
-      let newRank: number;
-      if (direction === 'first') {
-        newRank = ranks[0] - 1024;
-      } else if (direction === 'last') {
-        newRank = ranks[ranks.length - 1] + 1024;
-      } else if (direction === 'up') {
-        if (idx === 0) return;
-        const above = ranks[idx - 1];
-        const aboveAbove = idx - 2 >= 0 ? ranks[idx - 2] : above - 2048;
-        newRank = Math.floor((above + aboveAbove) / 2);
-      } else {
-        if (idx === siblings.length - 1) return;
-        const below = ranks[idx + 1];
-        const belowBelow = idx + 2 < siblings.length ? ranks[idx + 2] : below + 2048;
-        newRank = Math.floor((below + belowBelow) / 2);
-      }
+      const reordered = [...siblings];
+      const [moved] = reordered.splice(idx, 1);
+      reordered.splice(newIdx, 0, moved);
+      const ranked = reordered.map((s, i) => ({ ...s, displayOrder: (i + 1) * 1024 }));
 
-      /* optimistic cache patch — re-sort siblings using the new rank. */
+      /* Optimistic cache patch — replace the sibling list at its level. */
       patchTopLevel((tree) => {
-        const updateRanked = (list: TimelineIssue[]) => {
-          const next = list.map(it => it.issueKey === issueKey ? { ...it, displayOrder: newRank } : it);
-          next.sort((a, b) => {
-            const ao = a.displayOrder ?? Number.POSITIVE_INFINITY;
-            const bo = b.displayOrder ?? Number.POSITIVE_INFINITY;
-            return ao - bo;
-          });
-          return next;
-        };
-        if (isTopLevel) return updateRanked(tree);
+        if (isTopLevel) return ranked;
         return tree.map(br =>
           br.children.some(c => c.issueKey === issueKey)
-            ? { ...br, children: updateRanked(br.children) }
+            ? { ...br, children: ranked }
             : br);
       });
 
       if (isTopLevel) {
-        await (supabase as any)
-          .from('business_requests')
-          .update({ display_order: newRank, updated_at: new Date().toISOString() })
-          .eq('request_key', issueKey);
+        await Promise.all(
+          ranked.map(s =>
+            (supabase as any)
+              .from('business_requests')
+              .update({ display_order: s.displayOrder, updated_at: new Date().toISOString() })
+              .eq('request_key', s.issueKey),
+          ),
+        );
       } else {
-        await (supabase as any)
-          .from('ph_issues')
-          .update({ position: newRank })
-          .eq('issue_key', issueKey);
+        await Promise.all(
+          ranked.map(s =>
+            (supabase as any).from('ph_issues').update({ position: s.displayOrder }).eq('issue_key', s.issueKey),
+          ),
+        );
       }
       invalidate();
     },
@@ -533,7 +519,7 @@ export default function ProductHubTimelinePage() {
       createTopLevelConfig={{ label: 'Create business request', iconType: 'Business Request' }}
       childTypesOverride={[...BUSINESS_REQUEST_SUBTASK_TYPES]}
       childrenOnlyOnTopLevel
-      menuVariant="product-jira"
+      menuVariant="jira"
     />
   );
 }
