@@ -8,8 +8,13 @@
  *   useTaskWorkstreams   → workstream popup options
  *   useTaskUsers         → assignee popup options (full team directory)
  *   useUpdatePlannerTask → cell-edit mutations
- *   useDeletePlannerTask → row-delete mutation
  *   buildTasksListColumns (Task 1.2) → final Column<PlannerTask>[]
+ *
+ * Row actions for the ⋯ menu are OWNED BY THE VIEW (Task 1.5c, 2026-06-16) —
+ * they require access to `navigate` / `queryClient` / `supabase` / `flag`
+ * (toasts), which belong at the page level. The view passes the full
+ * `RowAction<PlannerTask>[]` in via the `rowActions` arg. Mirrors Project Hub
+ * backlog (`BacklogPage.atlaskit.tsx:2064`).
  *
  * MUTATION COVERAGE:
  *   `useUpdatePlannerTask` (src/modules/tasks/hooks/useTaskItems.ts) writes
@@ -32,7 +37,6 @@ import { useCallback, useMemo } from 'react';
 import {
   useTaskItems,
   useUpdatePlannerTask,
-  useDeletePlannerTask,
 } from './useTaskItems';
 import { useTaskStatuses } from './useTaskStatuses';
 import { useTaskWorkstreams } from './useTaskWorkstreams';
@@ -46,6 +50,7 @@ import type {
   StatusOption,
   AssigneeChoice,
   WorkstreamChoice,
+  RowAction,
 } from '@/components/shared/JiraTable/editors';
 import type { LozengeAppearance } from '@/components/shared/JiraTable/cells';
 import type { PlannerTask, PlannerUser, TaskStatus } from '@/modules/tasks/types';
@@ -97,13 +102,18 @@ export type TasksTableDataReturn = {
 export function useTasksTableData(args: {
   onOpen: (row: PlannerTask) => void;
   getHref: (row: PlannerTask) => string;
+  /**
+   * Full row-action array. Owned by the view so action handlers have access
+   * to navigate / queryClient / supabase / flag toasts. Mirrors Project Hub
+   * backlog where `rowActions` is built in `BacklogPage.atlaskit.tsx:2064`.
+   */
+  rowActions: RowAction<PlannerTask>[];
 }): TasksTableDataReturn {
   const tasksQuery = useTaskItems();
   const statusesQuery = useTaskStatuses();
   const workstreamsQuery = useTaskWorkstreams();
   const usersQuery = useTaskUsers();
   const updateMutation = useUpdatePlannerTask();
-  const deleteMutation = useDeletePlannerTask();
 
   const onCellEdit = useCallback(
     async (id: string, patch: Partial<PlannerTask>) => {
@@ -113,13 +123,6 @@ export function useTasksTableData(args: {
       await updateMutation.mutateAsync({ id, updates: patch });
     },
     [updateMutation],
-  );
-
-  const onRowDelete = useCallback(
-    async (id: string) => {
-      await deleteMutation.mutateAsync(id);
-    },
-    [deleteMutation],
   );
 
   // Status options: use the PlannerStatus slug as the value so the column
@@ -168,7 +171,7 @@ export function useTasksTableData(args: {
       assigneeOptions,
       workstreamOptions,
       onCellEdit,
-      onRowDelete,
+      rowActions: args.rowActions,
     }),
     [
       args.onOpen,
@@ -177,7 +180,7 @@ export function useTasksTableData(args: {
       assigneeOptions,
       workstreamOptions,
       onCellEdit,
-      onRowDelete,
+      args.rowActions,
     ],
   );
 

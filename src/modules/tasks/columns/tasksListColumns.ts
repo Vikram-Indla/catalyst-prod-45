@@ -68,8 +68,15 @@ export type TasksListColumnArgs = {
   workstreamOptions: WorkstreamChoice[];
   /** Commit a cell edit — receives row id + partial patch. */
   onCellEdit: (id: string, patch: Partial<PlannerTask>) => Promise<void>;
-  /** Delete a row from the row-menu. */
-  onRowDelete: (id: string) => Promise<void>;
+  /**
+   * Row actions for the ⋯ menu. The view owns the full array (so it has
+   * access to navigate/queryClient/supabase). The 'open' action is filtered
+   * out at the actions-cell site — row-click already opens the detail.
+   *
+   * Mirrors Project Hub backlog (BacklogPage.atlaskit.tsx:2064). See Task 1.5c
+   * commit message for the per-action wiring rationale.
+   */
+  rowActions: RowAction<PlannerTask>[];
 };
 
 // ─── Helpers (zero-assumption: return null when data is absent) ─────────────
@@ -96,27 +103,8 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
     assigneeOptions,
     workstreamOptions,
     onCellEdit,
-    onRowDelete,
+    rowActions,
   } = args;
-
-  // Row actions — minimal set for v1. Mirrors Project Hub's `rowActions` shape
-  // (RowAction<T>[]). 'open' is filtered out at the actions-cell site (Project
-  // Hub convention: `rowActions.filter((a) => a.id !== 'open')`).
-  const rowActions: RowAction<PlannerTask>[] = [
-    {
-      id: 'open',
-      label: 'Open task',
-      onClick: (r) => onOpen(r),
-    },
-    {
-      id: 'delete',
-      label: 'Delete task',
-      danger: true,
-      onClick: (r) => {
-        void onRowDelete(r.id);
-      },
-    },
-  ];
 
   return [
     // 1. Work — combined cell: [Task icon] [KEY] [summary text]. Single flex

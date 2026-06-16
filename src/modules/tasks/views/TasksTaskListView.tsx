@@ -1,42 +1,69 @@
 /**
  * TasksTaskListView — Tasks Hub list view.
  *
- * Refactored 2026-06-16 (Task 1.5b) to match Project Hub backlog
- * (`/project-hub/:key/backlog`) structurally:
+ * Task 1.5b (2026-06-16) — matched Project Hub backlog structurally:
  *   1. TasksPageHeader (breadcrumb + H1)
  *   2. Inline toolbar: Search list · Filters · Avatar group · Saved filters
  *      · Group dropdown · Sort caret · ⋯ · item count
  *   3. JiraTable mount with selectable + columnVisibility wired
  *
- * The toolbar mirrors BacklogPage.atlaskit.tsx lines 3437–3641 (Project Hub).
- * Filters / Saved filters / Group / Sort / ⋯ are visual placeholders for v1
- * — they render the right primitives at the right positions but their click
- * handlers are no-ops (or open empty menus). Functional wiring is a follow-up
- * task. Search and Avatar-group are partially functional (search filters
- * client-side; avatar clicks are no-op for now).
+ * Task 1.5c (2026-06-16) — wired the row action menu and side detail panel:
+ *   - Row ⋯ menu now mirrors Project Hub backlog (BacklogPage.atlaskit.tsx:2064),
+ *     excluding `open-in-jira` and `duplicate` (no Jira sync for tasks; no
+ *     duplicate mutation hook). Actions: view · comment · log-work · agile-board
+ *     · rank-top · rank-bottom · attach · copy-link · delete.
+ *   - Row click and the `view` action open `TaskDetailDrawer` — the canonical
+ *     Tasks Hub detail view (reads from `tasks` table). See "Concern" below.
  *
  * REUSE FIRST (CLAUDE.md P0):
  *   - JiraTable for the table itself
  *   - DEFAULT_VISIBLE_COLUMNS from the column registry
  *   - useTasksTableData for rows + columns + users
  *   - TasksPageHeader for breadcrumb + H1
+ *   - TaskDetailDrawer for the detail surface
+ *   - RowAction<PlannerTask>[] + makeRowActionsCell from the canonical
+ *     JiraTable editors module
+ *   - `flag` toast helper from JiraTable index (catalystToast under the hood)
  *
- * Detail route note: at the time of writing there is no `/tasks/list/:key`
- * route registered (only `/tasks/:view`). `onOpen` is a no-op and `getHref`
- * returns '#' until a Tasks detail surface is built.
+ * CONCERN — detail panel parity (Task 1.5c):
+ *   Project Hub backlog uses `CatalystDetailPanel` (right-side, drag-resizable)
+ *   which wraps `CatalystDetailRouter → CatalystViewTask`. CatalystViewTask is
+ *   hardwired to read `ph_issues` via `useCatalystIssue(itemId)` and CANNOT
+ *   render a task from the `tasks` table — passing `itemType='Task'` with a
+ *   task UUID produces an empty result.
+ *
+ *   For v1 we mount `TaskDetailDrawer` (centered modal) which IS canonical for
+ *   tasks (reads from the `tasks` table). This does NOT visually match Project
+ *   Hub's right-side drag-resizable panel UX. Follow-up: either parameterise
+ *   CatalystViewTask with a data-source switch, or build a TaskCatalystView
+ *   that reads from `tasks` and mounts inside CatalystDetailPanel.
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import AvatarGroup from '@atlaskit/avatar-group';
 import AkSearchIcon from '@atlaskit/icon/core/search';
 import AkCloseIcon from '@atlaskit/icon/core/close';
 import AkMoreIcon from '@atlaskit/icon/glyph/more';
+import AkEditIcon from '@atlaskit/icon/core/edit';
+import AkCommentIcon from '@atlaskit/icon/core/comment';
+import AkClockIcon from '@atlaskit/icon/core/clock';
+import AkBoardIcon from '@atlaskit/icon/core/board';
+import AkArrowUpIcon from '@atlaskit/icon/core/arrow-up';
+import AkArrowDownIcon from '@atlaskit/icon/core/arrow-down';
+import AkAttachmentIcon from '@atlaskit/icon/core/attachment';
+import AkLinkIcon from '@atlaskit/icon/core/link';
+import AkTrashIcon from '@atlaskit/icon/glyph/trash';
 import { token } from '@atlaskit/tokens';
-import { JiraTable } from '@/components/shared/JiraTable';
+import { JiraTable, flag, type RowAction } from '@/components/shared/JiraTable';
+import { supabase } from '@/integrations/supabase/client';
 import { useTasksTableData } from '@/modules/tasks/hooks/useTasksTableData';
+import { useDeletePlannerTask } from '@/modules/tasks/hooks/useTaskItems';
 import { DEFAULT_VISIBLE_COLUMNS } from '@/modules/tasks/columns/tasksListColumns';
 import { TasksPageHeader } from '@/modules/tasks/components/TasksPageHeader';
+import { TaskDetailDrawer } from '@/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer';
 import type { PlannerTask } from '@/modules/tasks/types';
 
 // Placeholder Group-by options — wiring deferred. Visual only.
@@ -49,11 +76,198 @@ const GROUP_BY_OPTIONS = [
 ] as const;
 
 export default function TasksTaskListView() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const deleteMutation = useDeletePlannerTask();
+
+  // ── Detail panel state ───────────────────────────────────────────────────
+  // `panelTaskId` holds the row id of the task open in the detail drawer.
+  // Mirrors Project Hub backlog's `panelItem` (BacklogPage.atlaskit.tsx:1930).
+  const [panelTaskId, setPanelTaskId] = useState<string | null>(null);
+
+  const openDetail = useCallback((row: PlannerTask) => {
+    setPanelTaskId(row.id);
+  }, []);
+
+  const closePanel = useCallback(() => {
+    setPanelTaskId(null);
+  }, []);
+
+  // ── Row actions (⋯ menu) ─────────────────────────────────────────────────
+  // Mirrors Project Hub backlog (BacklogPage.atlaskit.tsx:2064). Excludes
+  // `open-in-jira` (tasks aren't Jira-synced) and `duplicate` (no duplicate
+  // mutation hook wired into Tasks Hub yet). 9 actions total.
+  const rowActions = useMemo<RowAction<PlannerTask>[]>(
+    () => [
+      // ── Primary group — Jira-parity 7 ───────────────────────────────────
+      {
+        id: 'view',
+        label: 'View task',
+        icon: <AkEditIcon label="" size="small" />,
+        onClick: (r) => openDetail(r),
+      },
+      {
+        id: 'comment',
+        label: 'Comment',
+        icon: <AkCommentIcon label="" />,
+        onClick: (r) => {
+          openDetail(r);
+          flag.info('Open comments', 'Activity → Comments in the detail view.');
+        },
+      },
+      {
+        id: 'log-work',
+        label: 'Log work',
+        icon: <AkClockIcon label="" />,
+        // Tasks Hub doesn't track worklog today. Surfacing the affordance with
+        // an info flag so the menu structure matches Project Hub — when the
+        // worklog feature ships, wire to the detail drawer's section.
+        onClick: (r) => {
+          openDetail(r);
+          flag.info('Log work', 'Worklog isn’t tracked on tasks yet.');
+        },
+      },
+      {
+        id: 'agile-board',
+        label: 'Agile board',
+        icon: <AkBoardIcon label="" />,
+        onClick: (r) => {
+          // PlannerPage routes board via `/tasks/:view`. Forward-compat hint:
+          // pass `?workstream=<id>` so when the board picks up a workstream
+          // filter prop, the deeplink works without further wiring.
+          const ws = r.teamId ? `?workstream=${r.teamId}` : '';
+          navigate(`/tasks/board${ws}`);
+        },
+      },
+      {
+        id: 'rank-top',
+        label: 'Rank to top',
+        icon: <AkArrowUpIcon label="" />,
+        onClick: async (r) => {
+          // Tasks have a `position` column (Kanban DnD writes to it). Scope by
+          // workstream: only re-rank within the row's workstream. Rows with no
+          // workstream are scoped to the global tasks list (workstream_id IS
+          // NULL — matches `useKanbanTasks` ordering).
+          try {
+            let q = supabase
+              .from('tasks')
+              .select('position')
+              .is('deleted_at', null)
+              .not('position', 'is', null)
+              .order('position', { ascending: true })
+              .limit(1);
+            if (r.teamId) q = q.eq('workstream_id', r.teamId);
+            else q = q.is('workstream_id', null);
+            const { data: minRow, error: minErr } = await q.maybeSingle();
+            if (minErr) throw minErr;
+            // zero-assumption (CLAUDE.md 2026-06-11): if no row found, surface
+            // — don't invent a default. minRow null → empty workstream, just
+            // assign 0.
+            const currentMin =
+              (minRow as { position: number } | null)?.position ?? 100;
+            const newPos = currentMin - 10;
+            const { error: updErr } = await supabase
+              .from('tasks')
+              .update({ position: newPos })
+              .eq('id', r.id);
+            if (updErr) throw updErr;
+            queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+            queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
+            flag.success('Ranked to top', r.key);
+          } catch (e: unknown) {
+            flag.error(
+              'Rank failed',
+              e instanceof Error ? e.message : String(e),
+            );
+          }
+        },
+      },
+      {
+        id: 'rank-bottom',
+        label: 'Rank to bottom',
+        icon: <AkArrowDownIcon label="" />,
+        onClick: async (r) => {
+          try {
+            let q = supabase
+              .from('tasks')
+              .select('position')
+              .is('deleted_at', null)
+              .not('position', 'is', null)
+              .order('position', { ascending: false })
+              .limit(1);
+            if (r.teamId) q = q.eq('workstream_id', r.teamId);
+            else q = q.is('workstream_id', null);
+            const { data: maxRow, error: maxErr } = await q.maybeSingle();
+            if (maxErr) throw maxErr;
+            const currentMax =
+              (maxRow as { position: number } | null)?.position ?? 0;
+            const newPos = currentMax + 10;
+            const { error: updErr } = await supabase
+              .from('tasks')
+              .update({ position: newPos })
+              .eq('id', r.id);
+            if (updErr) throw updErr;
+            queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+            queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
+            flag.success('Ranked to bottom', r.key);
+          } catch (e: unknown) {
+            flag.error(
+              'Rank failed',
+              e instanceof Error ? e.message : String(e),
+            );
+          }
+        },
+      },
+      {
+        id: 'attach',
+        label: 'Attach files',
+        icon: <AkAttachmentIcon label="" />,
+        onClick: (r) => {
+          openDetail(r);
+          flag.info('Attach files', 'Attachments section in the detail view.');
+        },
+      },
+      // ── Secondary group — Catalyst-specific ─────────────────────────────
+      {
+        id: 'copy-link',
+        label: 'Copy link',
+        icon: <AkLinkIcon label="" size="small" />,
+        onClick: (r) => {
+          // Tasks Hub doesn't have a per-task deeplink route yet. Copy the
+          // list URL with an ?openTask=<id> query string so when the route
+          // ships it can hydrate the panel on load.
+          const url = `${window.location.origin}/tasks/task-list?openTask=${r.id}`;
+          navigator.clipboard.writeText(url).then(
+            () => flag.success('Link copied'),
+            () => flag.error('Copy failed', 'Clipboard access denied'),
+          );
+        },
+      },
+      {
+        id: 'delete',
+        label: 'Delete',
+        icon: <AkTrashIcon label="" size="small" />,
+        danger: true,
+        onClick: async (r) => {
+          try {
+            await deleteMutation.mutateAsync(r.id);
+            flag.success('Deleted', r.key);
+          } catch (e: unknown) {
+            flag.error(
+              'Delete failed',
+              e instanceof Error ? e.message : String(e),
+            );
+          }
+        },
+      },
+    ],
+    [openDetail, navigate, queryClient, deleteMutation],
+  );
+
   const { rows, columns, isLoading, error, users } = useTasksTableData({
-    onOpen: () => {
-      // No Tasks detail route yet — intentional no-op.
-    },
+    onOpen: openDetail,
     getHref: () => '#',
+    rowActions,
   });
 
   // ── Toolbar state ────────────────────────────────────────────────────────
@@ -219,12 +433,15 @@ export default function TasksTaskListView() {
           </select>
         </label>
 
-        {/* More actions ⋯ — PLACEHOLDER. */}
+        {/* More actions ⋯ — PLACEHOLDER (toolbar-level). The row-level ⋯ menu
+            is wired in Task 1.5c via the __actions column. Toolbar-level
+            actions (Apply old List settings, Export, Bulk change, etc.) are a
+            follow-up. */}
         <IconButton
           appearance="subtle"
           icon={AkMoreIcon}
           label="More actions"
-          onClick={() => { /* TODO Task 1.5c */ }}
+          onClick={() => { /* TODO future task */ }}
         />
 
         {/* Item count — right-aligned. */}
@@ -268,6 +485,17 @@ export default function TasksTaskListView() {
           onColumnVisibilityChange={setVisibleColumns}
         />
       </div>
+
+      {/* ── Detail drawer ──────────────────────────────────────────────── */}
+      {/* Mounts TaskDetailDrawer (the canonical Tasks Hub detail surface,
+          reads from `tasks` table). See file-level CONCERN comment for why
+          we don't mount CatalystDetailPanel here. */}
+      <TaskDetailDrawer
+        taskId={panelTaskId}
+        open={!!panelTaskId}
+        onClose={closePanel}
+        onOpenChange={(o) => { if (!o) closePanel(); }}
+      />
     </div>
   );
 }

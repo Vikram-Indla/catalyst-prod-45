@@ -13,7 +13,7 @@ function makeNoopArgs(): TasksListColumnArgs {
     assigneeOptions: [],
     workstreamOptions: [],
     onCellEdit: async () => {},
-    onRowDelete: async () => {},
+    rowActions: [],
   };
 }
 
