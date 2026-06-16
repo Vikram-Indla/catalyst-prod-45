@@ -163,33 +163,33 @@ export function CatyWhyCard({
         />
       </div>
 
-      {/* Metrics row: 2 tiles */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-        {/* Tile 1: headline item count */}
-        <div style={{
-          flex: 1,
-          padding: 8,
-          background: 'var(--ds-background-neutral, #F1F2F4)',
-          borderRadius: 6,
-          fontSize: 12,
-          color: 'var(--ds-text, #172B4D)',
-          fontWeight: 500,
-        }}>
-          {mood.contributions.length > 0 ? `${mood.contributions[0].label} (${mood.contributions[0].count})` : 'No updates'}
-        </div>
-
-        {/* Tile 2: secondary metric */}
-        <div style={{
-          flex: 1,
-          padding: 8,
-          background: 'var(--ds-background-neutral, #F1F2F4)',
-          borderRadius: 6,
-          fontSize: 12,
-          color: 'var(--ds-text, #172B4D)',
-          fontWeight: 500,
-        }}>
-          {mood.contributions.length > 1 ? `${mood.contributions[1].label} (${mood.contributions[1].count})` : '—'}
-        </div>
+      {/* Contribution chips: clickable filters */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+        {mood.contributions.length > 0 ? (
+          mood.contributions.map(c => (
+            <button
+              key={c.label}
+              onClick={() => {
+                navigate(`/project-hub/BAU/allwork?contributionCategory=${encodeURIComponent(c.label)}`);
+                onClose();
+              }}
+              style={{
+                padding: '6px 12px',
+                background: 'var(--ds-background-information-subtle, #DFFCF0)',
+                border: '1px solid var(--ds-border-information, #85E6C5)',
+                borderRadius: 6,
+                fontSize: 12,
+                color: 'var(--ds-text, #172B4D)',
+                cursor: 'pointer',
+                fontWeight: 500,
+              }}
+            >
+              {c.label} ({c.count})
+            </button>
+          ))
+        ) : (
+          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>No updates</div>
+        )}
       </div>
 
       {/* Error state message */}
@@ -218,7 +218,6 @@ export function CatyWhyCard({
           try {
             await new Promise(resolve => setTimeout(resolve, 300)); // simulate nav delay
             navigate('/project-hub/BAU/allwork');
-            catalystToast.success('Opening triage view...');
             onClose();
           } catch (err) {
             setTriageError('Failed to navigate. Please try again.');
@@ -228,7 +227,7 @@ export function CatyWhyCard({
         isDisabled={isTriaging}
         style={{ width: '100%', marginBottom: 8 }}
       >
-        {isTriaging ? 'Opening...' : `Review and Triage (${totalCount})`}
+        Review and Triage ({totalCount})
       </Button>
 
       {/* Secondary action: Dismiss for 24h */}
