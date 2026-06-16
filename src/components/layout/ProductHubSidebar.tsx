@@ -108,6 +108,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
   if (!scopedProduct) return null;
 
   const config: SidebarConfig = buildPerProductConfig(scopedProduct);
+  const isScoped = !!productCode && !!scopedProduct;
 
   return (
     <SidebarBase
