@@ -61,10 +61,11 @@ export interface SidebarRowProps {
    *  rows lose their "+". Product hub uses this so BR subtasks don't spawn
    *  their own grandchildren via the timeline. */
   childrenOnlyOnTopLevel?: boolean;
-  /** Picks which menu component renders. `default` (project hub) uses the
-   *  inline flat menu; `product-jira` mounts ProductTimelineRowMenu and
-   *  swaps in the ProductEditDatesModal. */
-  menuVariant?: 'default' | 'product-jira';
+  /** Picks which menu component renders. `default` uses the legacy inline
+   *  flat menu; `jira` mounts ProductTimelineRowMenu (the Jira-parity
+   *  menu shared by product hub + project hub) and swaps in
+   *  ProductEditDatesModal. */
+  menuVariant?: 'default' | 'jira';
   /** Siblings of this row (same parent) in render order. Only used when
    *  menuVariant === 'product-jira' so the Move submenu can compute first
    *  / last boundaries. */
@@ -296,26 +297,34 @@ export function SidebarRow({
   const showDepsInMenu = !!mutations?.onAddDependency;
   const showEpicColorInMenu = !!mutations?.onChangeEpicColor && issue.issueType === 'Epic';
 
-  /* product-jira variant gates — "parent" = top-level row (depth 0) which
-     in product hub maps to a Business Request. Children inherit Change
-     parent + Move; parents inherit Create child + Change colour. */
-  const isProductVariant = menuVariant === 'product-jira';
-  const isProductParent = isProductVariant && depth === 0;
-  const isProductChild = isProductVariant && depth > 0;
-  const productShowCreateChild = isProductParent && !!mutations?.onCreateChild;
-  const productShowMove = isProductVariant && !!mutations?.onReorderSibling && siblings.length > 1;
-  const productShowChangeParent = isProductChild && !!mutations?.onChangeParent;
-  const productShowChangeColor = isProductParent && !!mutations?.onChangeEpicColor;
-  const productShowEditDates = isProductVariant && !!mutations?.onUpdateDates;
-  const productShowRemoveDates = isProductVariant
+  /* jira-variant gates — generic across product + project hubs:
+     - Create child: any row that canHaveChildren (Epic / Story / Feature
+       / Task / BR at depth 0). Sub-task family stays false.
+     - Change parent: any row with a parent (depth > 0).
+     - Change colour: the colorable parent — Epic in project hub, the
+       top-level BR in product hub (childrenOnlyOnTopLevel signal).
+     - Move: when more than one sibling exists.
+     - Edit dates / Remove dates / Edit deps: mutation existence gates. */
+  const isJiraVariant = menuVariant === 'jira';
+  const jiraIsColorableParent =
+    isJiraVariant && (
+      issue.issueType === 'Epic'
+      || (childrenOnlyOnTopLevel && depth === 0)
+    );
+  const jiraShowCreateChild = isJiraVariant && canHaveChildren && !!mutations?.onCreateChild;
+  const jiraShowMove = isJiraVariant && !!mutations?.onReorderSibling && siblings.length > 1;
+  const jiraShowChangeParent = isJiraVariant && depth > 0 && !!mutations?.onChangeParent;
+  const jiraShowChangeColor = jiraIsColorableParent && !!mutations?.onChangeEpicColor;
+  const jiraShowEditDates = isJiraVariant && !!mutations?.onUpdateDates;
+  const jiraShowRemoveDates = isJiraVariant
     && !!(mutations?.onRemoveDates || mutations?.onRemoveStartDate || mutations?.onRemoveDueDate)
     && (!!issue.startDate || !!issue.dueDate);
-  const productShowDeps = isProductVariant && !!mutations?.onAddDependency;
+  const jiraShowDeps = isJiraVariant && !!mutations?.onAddDependency;
 
-  /* Product-jira variant always shows the ⋯ menu — the menu itself renders
-     every Jira-parity row and disables non-applicable ones. Default variant
-     hides the button when nothing inside would be available. */
-  const anyMenuActionAvailable = isProductVariant
+  /* The Jira variant always shows the ⋯ menu — the menu itself renders
+     every Jira-parity row and disables non-applicable ones. Default
+     variant hides the button when nothing inside would be available. */
+  const anyMenuActionAvailable = isJiraVariant
     ? true
     : (showCreateChildInMenu || showEditDatesInMenu || showRemoveDatesInMenu ||
        showMoveToReleaseInMenu || showChangeParentInMenu || showDepsInMenu || showEpicColorInMenu);
@@ -574,14 +583,14 @@ export function SidebarRow({
         </button>
       )}
 
-      {renderMenu && isProductVariant && (
+      {renderMenu && isJiraVariant && (
         <ProductTimelineRowMenu
           isOpen={menuOpen}
           onClose={() => { setMenuOpen(false); setRowHovered(false); }}
           triggerRef={menuBtnRef}
           issue={issue}
           siblings={siblings}
-          isParent={isProductParent}
+          isParent={jiraIsColorableParent}
           hasStartDate={!!issue.startDate}
           hasDueDate={!!issue.dueDate}
           parentCandidates={allItems.filter(i => i.issueKey !== issue.issueKey && !i.isGroup)}
@@ -610,17 +619,17 @@ export function SidebarRow({
           onRemoveAllDates={mutations?.onRemoveDates
             ? () => mutations.onRemoveDates!(issue.issueKey)
             : undefined}
-          showCreateChild={productShowCreateChild}
-          showChangeParent={productShowChangeParent}
-          showChangeColor={productShowChangeColor}
-          showMove={productShowMove}
-          showEditDates={productShowEditDates}
-          showRemoveDates={productShowRemoveDates}
-          showEditDependencies={productShowDeps}
+          showCreateChild={jiraShowCreateChild}
+          showChangeParent={jiraShowChangeParent}
+          showChangeColor={jiraShowChangeColor}
+          showMove={jiraShowMove}
+          showEditDates={jiraShowEditDates}
+          showRemoveDates={jiraShowRemoveDates}
+          showEditDependencies={jiraShowDeps}
         />
       )}
 
-      {renderMenu && !isProductVariant && (
+      {renderMenu && !isJiraVariant && (
         <PortalMenu
           isOpen={menuOpen}
           onClose={() => { setMenuOpen(false); setRowHovered(false); }}
@@ -684,14 +693,14 @@ export function SidebarRow({
         </PortalMenu>
       )}
 
-      {editDatesOpen && mutations?.onUpdateDates && !isProductVariant && (
+      {editDatesOpen && mutations?.onUpdateDates && !isJiraVariant && (
         <EditDatesModal
           issue={issue}
           onClose={() => setEditDatesOpen(false)}
           onSave={(start, due) => mutations.onUpdateDates!(issue.issueKey, start, due)}
         />
       )}
-      {editDatesOpen && mutations?.onUpdateDates && isProductVariant && (
+      {editDatesOpen && mutations?.onUpdateDates && isJiraVariant && (
         <ProductEditDatesModal
           issue={issue}
           onClose={() => setEditDatesOpen(false)}

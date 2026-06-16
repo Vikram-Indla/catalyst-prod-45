@@ -197,13 +197,14 @@ export interface TimelineViewProps {
   childrenOnlyOnTopLevel?: boolean;
 
   /** Selects which three-dots menu component renders on each row.
-   *  - `default` (project hub): inline menu inside SidebarRow with
-   *    Create child / Epic color / Move to release / Change parent /
-   *    Edit deps / Edit dates / Remove dates (flat list).
-   *  - `product-jira` (product hub): mounts ProductTimelineRowMenu, the
-   *    Jira-parity menu with submenus for Create / Move / Change parent /
-   *    Change color / Remove dates. */
-  menuVariant?: 'default' | 'product-jira';
+   *  - `default`: legacy inline menu inside SidebarRow with Create child /
+   *    Epic color / Move to release / Change parent / Edit deps / Edit
+   *    dates / Remove dates (flat list).
+   *  - `jira`: Jira-parity menu (ProductTimelineRowMenu) shared by every
+   *    Catalyst timeline. Always renders Create / Move / Change parent /
+   *    Change color / Edit dates / Remove dates / Edit dependencies with
+   *    per-row disable based on context. */
+  menuVariant?: 'default' | 'jira';
 
   /* the query client used for cache invalidations after mutations.
      Pages keep ownership of the cache key so the view never hardcodes it. */

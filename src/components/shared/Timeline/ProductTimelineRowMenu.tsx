@@ -447,7 +447,9 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
     </>
   ));
 
-  const colorSubmenu = renderSubmenuPortal('color', colorRowRef, 220, (
+  /* Color submenu width = 4 swatches × 24 + 3 gaps × 8 + 12 + 12 padding = 144.
+     Fits the 4×2 grid exactly with no trailing whitespace. */
+  const colorSubmenu = renderSubmenuPortal('color', colorRowRef, 168, (
     <div style={{ padding: '8px 12px' }}>
       <div style={{
         fontSize: 11, fontWeight: 700,
