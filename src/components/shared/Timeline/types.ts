@@ -206,6 +206,13 @@ export interface TimelineViewProps {
    *    per-row disable based on context. */
   menuVariant?: 'default' | 'jira';
 
+  /** Which entity kind the detail panel should dispatch to (forwarded to
+   *  CatalystDetailPanel's `entityKind`). Defaults to 'ph_issue' (project
+   *  hub / product hub legacy path). Tasks Hub passes 'task' so
+   *  CatalystDetailRouter dispatches to TaskCatalystView. Added 2026-06-16
+   *  for Phase 3 Tasks Timeline. */
+  detailEntityKind?: 'ph_issue' | 'task';
+
   /* the query client used for cache invalidations after mutations.
      Pages keep ownership of the cache key so the view never hardcodes it. */
   queryClient?: ReturnType<typeof useQueryClient>;

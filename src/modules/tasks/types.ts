@@ -45,6 +45,7 @@ export interface PlannerTask {
   teamColor?: string;
   startDate?: string;             // Required for timeline
   dueDate?: string;
+  parentTaskId?: string | null;   // Subtask parent (tasks.parent_task_id)
   blocked: boolean;
   blockedReason?: string;
   progress: number;               // 0-100, manually set
@@ -58,6 +59,8 @@ export interface PlannerTask {
   blocksCount?: number;
   createdAt: string;
   updatedAt: string;
+  /** Drag-and-drop ordering (kanban + list within column). NULL → unranked. */
+  position?: number | null;
 }
 
 export interface PlannerUser {

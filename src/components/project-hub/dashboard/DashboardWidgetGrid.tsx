@@ -19,6 +19,7 @@ import { token } from '@atlaskit/tokens';
 import { typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { WIDGET_REGISTRY, getWidgetRegistry, type WidgetSpan } from './widget-registry';
+import type { WidgetDefinition } from './widget-types';
 import { WidgetIdContext, GridEditContext } from './widget-edit-context';
 
 // Re-export for backward compatibility
@@ -34,8 +35,16 @@ interface DashboardWidgetGridProps {
   onResize?: (widgetId: string, direction: 'wider' | 'narrower') => void;
   onToggleCollapse?: (widgetId: string) => void;
   onRemoveWidget?: (widgetId: string) => void;
-  /** 2026-06-15: filters the widget registry — see getWidgetRegistry. */
-  mode?: 'project' | 'product';
+  /** 2026-06-15: filters the widget registry — see getWidgetRegistry.
+   *  2026-06-16: 'tasks' added for Tasks Hub overview. */
+  mode?: 'project' | 'product' | 'tasks';
+  /**
+   * 2026-06-16: optional custom registry. When provided, replaces the
+   * mode-derived default registry. Used by the Tasks Hub overview to
+   * mount task-native widgets without leaking ph_issues widgets into
+   * the layout. Defaults to getWidgetRegistry(mode).
+   */
+  registry?: WidgetDefinition[];
 }
 
 export interface DashboardWidgetConfig {
@@ -72,10 +81,13 @@ export function effectiveSpan(w: ResolvedWidget): number {
 
 export function resolveWidgets(
   configs: DashboardWidgetConfig[],
-  mode: 'project' | 'product' = 'project',
+  mode: 'project' | 'product' | 'tasks' = 'project',
+  registry?: WidgetDefinition[],
 ): ResolvedWidget[] {
   const map = new Map(configs.map((c) => [c.widget_id, c]));
-  return getWidgetRegistry(mode).map((def) => {
+  const effectiveRegistry =
+    registry ?? (mode === 'tasks' ? [] : getWidgetRegistry(mode));
+  return effectiveRegistry.map((def) => {
     const cfg = map.get(def.id);
     return {
       ...def,
@@ -92,15 +104,22 @@ export function resolveWidgets(
 // Persistence hook — query, init, upsert, bulk upsert, reset.
 // ────────────────────────────────────────────────────────────────────
 
-export function useDashboardWidgetConfig(projectId: string, mode: 'project' | 'product' = 'project') {
+export function useDashboardWidgetConfig(
+  projectId: string,
+  mode: 'project' | 'product' | 'tasks' = 'project',
+  registry?: WidgetDefinition[],
+) {
   const { user } = useAuth();
   const userId = user?.id;
   const queryClient = useQueryClient();
 
   const { data: configs, isLoading } = useQuery({
-    queryKey: ['dashboard-widget-config', projectId, userId],
+    queryKey: ['dashboard-widget-config', projectId, userId, mode],
     queryFn: async () => {
       if (!userId) return [];
+      /* 2026-06-16: tasks mode has no per-user config table — return an
+         empty config set so resolveWidgets falls back to registry defaults. */
+      if (mode === 'tasks') return [];
       const { data, error } = await typedQuery('dashboard_widget_config' as any)
         .select('widget_id, visible, position, collapsed, span')
         .eq('project_id', projectId)
@@ -112,14 +131,22 @@ export function useDashboardWidgetConfig(projectId: string, mode: 'project' | 'p
     staleTime: 60000,
   });
 
+  /* 2026-06-16: resolved registry — prop overrides the mode-default.
+     For mode='tasks' the caller MUST supply a registry; an empty default
+     means no widgets render (intentional — there is no canonical tasks
+     widget set in this file). */
+  const resolvedRegistry =
+    registry ?? (mode === 'tasks' ? [] : getWidgetRegistry(mode));
+
   const initRef = useRef(false);
   const initMutation = useMutation({
     mutationFn: async () => {
       if (!userId) return;
       /* 2026-06-15: mode-aware. In product mode the 4 BR-incompatible
          widgets (scope-change, prod-incidents, qa-defects, time-in-status)
-         never get seeded — the gallery never shows them either. */
-      const rows = getWidgetRegistry(mode).map((def) => ({
+         never get seeded — the gallery never shows them either.
+         2026-06-16: tasks mode uses the registry prop directly. */
+      const rows = resolvedRegistry.map((def) => ({
         project_id: projectId,
         user_id: userId,
         widget_id: def.id,
@@ -158,8 +185,15 @@ export function useDashboardWidgetConfig(projectId: string, mode: 'project' | 'p
   useEffect(() => {
     // Don't fire init while projectId is the page's "none" sentinel —
     // that string fails Supabase's UUID type cast and produces a 400.
+    // 2026-06-16: skip persistence entirely for tasks mode — Tasks Hub
+    // overview has no per-user widget config table; widgets render at
+    // their registry defaults every load.
     const projectIdValid =
-      typeof projectId === 'string' && projectId !== 'none' && projectId.length > 0;
+      typeof projectId === 'string' &&
+      projectId !== 'none' &&
+      projectId !== 'tasks' &&
+      mode !== 'tasks' &&
+      projectId.length > 0;
     if (
       !isLoading &&
       configs &&
@@ -219,7 +253,10 @@ export function useDashboardWidgetConfig(projectId: string, mode: 'project' | 'p
     },
   });
 
-  const widgets = useMemo(() => resolveWidgets(configs ?? [], mode), [configs, mode]);
+  const widgets = useMemo(
+    () => resolveWidgets(configs ?? [], mode, resolvedRegistry),
+    [configs, mode, resolvedRegistry],
+  );
   const visibleCount = widgets.filter((w) => w.visible).length;
 
   return {
@@ -252,7 +289,7 @@ export function useDashboardWidgetConfig(projectId: string, mode: 'project' | 'p
     },
     resetToDefaults: () => {
       bulkUpsertMutation.mutate(
-        getWidgetRegistry(mode).map((def) => ({
+        resolvedRegistry.map((def) => ({
           widget_id: def.id,
           visible: true,
           position: def.defaultPosition,
@@ -302,9 +339,10 @@ export default function DashboardWidgetGrid({
   onToggleCollapse,
   onRemoveWidget,
   mode = 'project',
+  registry,
 }: DashboardWidgetGridProps) {
   const { widgets: persistedWidgets, toggleCollapse: persistedToggleCollapse } =
-    useDashboardWidgetConfig(projectId, mode);
+    useDashboardWidgetConfig(projectId, mode, registry);
 
   const widgetsToRender = isEditing && draftWidgets ? draftWidgets : persistedWidgets;
   const visibleWidgets = widgetsToRender.filter((w) => w.visible);

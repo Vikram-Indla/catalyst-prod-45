@@ -112,6 +112,7 @@ export default function TimelineView(props: TimelineViewProps) {
     childrenOnlyOnGroupRows = false,
     childrenOnlyOnTopLevel = false,
     menuVariant = 'default',
+    detailEntityKind,
   } = props;
 
   const navigate = useNavigate();
@@ -133,8 +134,11 @@ export default function TimelineView(props: TimelineViewProps) {
   const closePanel = useCallback(() => setPanelItem(null), []);
   const openDetail = useCallback((issue: TimelineIssue) => {
     const itemType = resolveItemType(issue);
-    setPanelItem({ id: issue.issueKey, itemType, displayType: issue.issueType ?? 'Story' });
-  }, [resolveItemType]);
+    // For task entities the detail panel reads from `tasks` by row UUID.
+    // For ph_issue entities (default) the lookup token is `issue_key`.
+    const id = detailEntityKind === 'task' ? issue.id : issue.issueKey;
+    setPanelItem({ id, itemType, displayType: issue.issueType ?? 'Story' });
+  }, [resolveItemType, detailEntityKind]);
   const goToFullPage = useCallback(() => {
     if (!panelItem) return;
     navigate(buildIssueDetailRoute(panelItem.id));
@@ -1625,6 +1629,7 @@ export default function TimelineView(props: TimelineViewProps) {
         onResizeCommit={persistPanelWidth}
         minWidth={PANEL_MIN_W}
         maxWidth={PANEL_MAX_W}
+        entityKind={detailEntityKind}
       />
     )}
     </AtlaskitPageShell>

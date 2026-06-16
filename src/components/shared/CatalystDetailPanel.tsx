@@ -33,6 +33,12 @@ export interface CatalystDetailPanelProps {
   maxWidth?: number;
   /** Pixels reserved above the panel (global topbar height). Default 56. */
   topOffset?: number;
+  /**
+   * Source table the itemId belongs to. Default 'ph_issue' (project hub /
+   * product hub legacy path). Tasks Hub passes 'task' to route through
+   * TaskCatalystView. Added 2026-06-16 (Task 1.5d).
+   */
+  entityKind?: 'ph_issue' | 'task';
 }
 
 export function CatalystDetailPanel({
@@ -50,6 +56,7 @@ export function CatalystDetailPanel({
   minWidth = 360,
   maxWidth = 550,
   topOffset = 56,
+  entityKind,
 }: CatalystDetailPanelProps) {
   const [resizing, setResizing] = useState<{ originX: number; originWidth: number } | null>(null);
 
@@ -276,6 +283,7 @@ export function CatalystDetailPanel({
             projectKey={projectKey}
             projectId={projectId}
             panelMode={true}
+            entityKind={entityKind}
           />
         </Suspense>
       </div>

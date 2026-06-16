@@ -312,7 +312,15 @@ export function CatalystStatusPill({
 
   // ── Render ──────────────────────────────────────────────────────────────
 
-  // Non-interactive mode: static pill (used in table cells)
+  // Non-interactive mode: static pill (used in table cells AND inside
+  // popup options — where the surrounding MenuItemBtn owns the click).
+  //
+  // 2026-06-17: `pointer-events: none` is critical. When the static pill is
+  // rendered as a popup option's child (StatusPopupCell / EditorPopover),
+  // the disabled inner button would otherwise SWALLOW the click event and
+  // the surrounding MenuItemBtn.onClick (which actually commits the status
+  // change) would never fire. Letting clicks pass through fixes "popup
+  // opens but selecting an option does nothing" on the Tasks list.
   if (!interactive) {
     return (
       <button
@@ -322,7 +330,7 @@ export function CatalystStatusPill({
         data-csp-compact={compact ? 'true' : 'false'}
         disabled
         style={
-          { '--csp-bg': pillBg, '--csp-fg': pillFg, cursor: 'default', opacity: 1 } as React.CSSProperties
+          { '--csp-bg': pillBg, '--csp-fg': pillFg, cursor: 'default', opacity: 1, pointerEvents: 'none' } as React.CSSProperties
         }
       >
         {display}

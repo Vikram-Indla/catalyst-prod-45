@@ -15,8 +15,12 @@ export interface WidgetProps {
    * 2026-06-15: when 'product', the widget queries business_requests
    * instead of ph_issues. projectId is products.id, projectKey is
    * products.code in that mode.
+   *
+   * 2026-06-16: 'tasks' added for the Tasks Hub overview. Tasks widgets
+   * query the `tasks` table via the existing useTaskItems hook; the
+   * projectId / projectKey props are ignored in this mode.
    */
-  mode?: 'project' | 'product';
+  mode?: 'project' | 'product' | 'tasks';
 }
 
 export interface WidgetDefinition {

@@ -145,11 +145,11 @@ export function CreateTaskModal({
 
     createTask(input, {
       onSuccess: (result) => {
-        setSuccessTaskKey(result.task_key);
+        setSuccessTaskKey(result.key);
         setShowSuccess(true);
         
         setTimeout(() => {
-          onSuccess?.(result.task_key);
+          onSuccess?.(result.key);
           onOpenChange(false);
         }, 1800);
       },
