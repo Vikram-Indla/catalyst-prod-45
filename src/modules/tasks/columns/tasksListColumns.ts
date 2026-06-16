@@ -43,7 +43,8 @@ import type { PlannerTask } from '@/modules/tasks/types';
 
 // ─── Default visibility set ─────────────────────────────────────────────────
 // Per CLAUDE.md 2026-05-07: this array MUST equal the columns flagged
-// `defaultVisible: true` in TASKS_LIST_COLUMNS. The test enforces this.
+// `defaultVisible: true` in the output of `buildTasksListColumns`. The test
+// enforces this.
 export const DEFAULT_VISIBLE_COLUMNS = [
   '__drag', 'key', 'summary', 'status', 'priority',
   'assignee', 'workstream', 'due_date', '__menu',
@@ -146,8 +147,12 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
             case 'review': return 'moved';
             case 'planned': return 'new';
             case 'backlog': return 'default';
-            default: return 'default';
           }
+          // Exhaustiveness check (CLAUDE.md 2026-06-11 zero-assumption code):
+          // if `PlannerTask['status']` gains a new value, TypeScript will flag
+          // this line — surface the missing case rather than silently grey it.
+          const _exhaustive: never = status;
+          return _exhaustive;
         },
         options: statusOptions,
         onChange: (row, next) => {
@@ -281,16 +286,3 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
   ];
 }
 
-// ─── No-op default column set ───────────────────────────────────────────────
-// `TASKS_LIST_COLUMNS` is `buildTasksListColumns()` called with no-op runtime
-// args so the schema can be inspected (tests, column picker config) without
-// runtime wiring. Consumers should call `buildTasksListColumns(args)` directly.
-export const TASKS_LIST_COLUMNS: Column<PlannerTask>[] = buildTasksListColumns({
-  onOpen: () => {},
-  getHref: () => '#',
-  statusOptions: [],
-  assigneeOptions: [],
-  workstreamOptions: [],
-  onCellEdit: async () => {},
-  onRowDelete: async () => {},
-});

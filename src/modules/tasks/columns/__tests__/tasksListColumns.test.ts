@@ -1,9 +1,27 @@
 import { describe, it, expect } from 'vitest';
-import { TASKS_LIST_COLUMNS, DEFAULT_VISIBLE_COLUMNS } from '../tasksListColumns';
+import {
+  buildTasksListColumns,
+  DEFAULT_VISIBLE_COLUMNS,
+  type TasksListColumnArgs,
+} from '../tasksListColumns';
+
+function makeNoopArgs(): TasksListColumnArgs {
+  return {
+    onOpen: () => {},
+    getHref: () => '#',
+    statusOptions: [],
+    assigneeOptions: [],
+    workstreamOptions: [],
+    onCellEdit: async () => {},
+    onRowDelete: async () => {},
+  };
+}
 
 describe('tasksListColumns', () => {
+  const columns = buildTasksListColumns(makeNoopArgs());
+
   it('exports the canonical column set with the correct order', () => {
-    const ids = TASKS_LIST_COLUMNS.map((c) => c.id);
+    const ids = columns.map((c) => c.id);
     expect(ids).toEqual([
       '__drag', 'key', 'summary', 'status', 'priority',
       'assignee', 'workstream', 'due_date',
@@ -13,7 +31,7 @@ describe('tasksListColumns', () => {
   });
 
   it('marks the 9 default-visible columns', () => {
-    const visible = TASKS_LIST_COLUMNS.filter((c) => c.defaultVisible).map((c) => c.id);
+    const visible = columns.filter((c) => c.defaultVisible).map((c) => c.id);
     expect(visible).toEqual([
       '__drag', 'key', 'summary', 'status', 'priority',
       'assignee', 'workstream', 'due_date', '__menu',
@@ -21,7 +39,7 @@ describe('tasksListColumns', () => {
   });
 
   it('keeps DEFAULT_VISIBLE_COLUMNS in sync with defaultVisible flags', () => {
-    const flagged = TASKS_LIST_COLUMNS.filter((c) => c.defaultVisible).map((c) => c.id);
+    const flagged = columns.filter((c) => c.defaultVisible).map((c) => c.id);
     expect(DEFAULT_VISIBLE_COLUMNS).toEqual(flagged);
   });
 });
