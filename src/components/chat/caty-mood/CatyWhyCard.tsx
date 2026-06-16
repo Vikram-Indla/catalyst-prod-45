@@ -14,7 +14,6 @@ import Button from '@atlaskit/button';
 import { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import CloseIcon from '@atlaskit/icon/core/close';
-import { CatyMoodFace } from './CatyMoodFace';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { catalystToast } from '@/lib/catalystToast';
 import type { CatyMood, CatyState } from './catyMoodEngine';
@@ -142,7 +141,6 @@ export function CatyWhyCard({
       {/* Header: status icon + message + minimize button */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
-          <CatyMoodFace state={state} size={32} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>
               <Lozenge appearance={style.appearance}>{style.label}</Lozenge>
