@@ -1,329 +1,154 @@
 /**
- * IncidentDetailPage — 2-Column Jira Layout
- * Left: content (flex), Right: metadata rail (300px)
+ * IncidentDetailPage — /incident-hub/view/:id
+ *
+ * 2026-06-16: rewritten to mount the canonical CatalystDetailRouter in
+ * fullPageMode — same pattern as IssueFullPage (/browse/:key) and
+ * BacklogDetailPage. Per CLAUDE.md "ADOPT CANONICAL COMPONENTS — DO NOT
+ * REIMPLEMENT". Future improvements to project / product detail views
+ * automatically propagate here.
+ *
+ * URL contract: :id is the ph_issues.id UUID (legacy — earlier links use
+ * this). We resolve it to issue_key + issue_type, then pass itemId=key
+ * to the canonical router because useCatalystIssue queries by issue_key.
+ *
+ * The bespoke chrome (stat cards, bespoke comment editor, custom Activity
+ * tabs, "Resolve" button) is gone — those affordances live inside
+ * CatalystViewIncident (the side-panel view we already wired) which now
+ * also serves the full page via the same router.
  */
 
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AlertTriangle, ChevronRight, Clock, Plus, Loader2 } from '@/lib/atlaskit-icons';
-import { useTheme } from '@/hooks/useTheme';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useProductionIncident } from '@/hooks/useIncidentHub';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
-import { SeverityChip } from './components/SeverityChip';
-import { PriorityChip } from './components/PriorityChip';
-import { CommitteeModal } from './components/CommitteeModal';
-import { ConvertDialog } from './components/ConvertDialog';
-import { catalystToast } from '@/lib/catalystToast';
-import { formatDistanceToNow } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { useIssueDocumentTitle } from '@/hooks/useIssueDocumentTitle';
+import { useDynamicFavicon } from '@/hooks/useDynamicFavicon';
+import { Loader2 } from '@/lib/atlaskit-icons';
+
+const CatalystDetailRouter = lazy(
+  () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
+);
+
+interface ResolvedIncident {
+  issueKey: string;
+  issueType: string;
+  projectKey: string;
+  summary: string | null;
+}
 
 export default function IncidentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isDark } = useTheme();
-  const { data: incident, isLoading } = useProductionIncident(id || '');
-  const updateIncident = { mutateAsync: async (_: any) => { throw new Error('Read-only'); } };
-  const addComment = { mutateAsync: async (_: any) => { throw new Error('Read-only'); } };
-  const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
-  const [commentText, setCommentText] = useState('');
-  const [showCommittee, setShowCommittee] = useState(false);
-  const [showConvert, setShowConvert] = useState(false);
-  const [slaCountdown, setSlaCountdown] = useState('');
 
-  // SLA Timer
+  const [incident, setIncident] = useState<ResolvedIncident | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useIssueDocumentTitle({
+    issueKey: incident?.issueKey,
+    summary: incident?.summary,
+    isLoading: loading,
+    isError: false,
+    isNotFound: notFound,
+  });
+  useDynamicFavicon(incident?.issueType);
+
   useEffect(() => {
-    if (!incident?.sla?.resolution_due_at) return;
-    const tick = () => {
-      const remaining = new Date(incident.sla!.resolution_due_at).getTime() - Date.now();
-      if (remaining <= 0) { setSlaCountdown('BREACHED'); return; }
-      const h = Math.floor(remaining / 3600000);
-      const m = Math.floor((remaining % 3600000) / 60000);
-      const s = Math.floor((remaining % 60000) / 1000);
-      setSlaCountdown(`${h}h ${m}m ${s}s`);
-    };
-    tick();
-    const timer = setInterval(tick, 1000);
-    return () => clearInterval(timer);
-  }, [incident?.sla?.resolution_due_at]);
-
-  const handleSaveComment = async () => {
-    if (!commentText.trim() || !id) return;
-    try {
-      await addComment.mutateAsync({ incident_id: id, content: commentText.trim(), comment_type: 'update' });
-      setCommentText('');
-      catalystToast.success('Comment saved');
-    } catch {
-      catalystToast.error('Failed to save comment');
+    if (!id) {
+      setLoading(false);
+      setNotFound(true);
+      return;
     }
+    let cancelled = false;
+    setIncident(null);
+    setLoading(true);
+    setNotFound(false);
+    (async () => {
+      const { data, error } = await (supabase as any)
+        .from('ph_issues')
+        .select('id, issue_key, issue_type, project_key, summary')
+        .eq('id', id)
+        .maybeSingle();
+      if (cancelled) return;
+      if (error || !data) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+      setIncident({
+        issueKey: data.issue_key,
+        issueType: data.issue_type,
+        projectKey: data.project_key,
+        summary: data.summary,
+      });
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [id]);
+
+  const handleClose = () => {
+    /* Try closing the tab first (works when opened via target="_blank"
+       from a kebab menu / breadcrumb). Otherwise go back to the list. */
+    window.close();
+    setTimeout(() => navigate('/incident-hub', { replace: true }), 100);
   };
 
-  const handleResolve = async () => {
-    if (!id) return;
-    try {
-      await updateIncident.mutateAsync({ id, data: { status: 'resolved' as any } });
-      catalystToast.success('Incident resolved');
-    } catch {
-      catalystToast.error('Failed to resolve incident');
-    }
-  };
-
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="flex-1 p-6" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-        <Skeleton className="h-6 w-48 mb-4" />
-        <Skeleton className="h-8 w-96 mb-2" />
-        <Skeleton className="h-4 w-64" />
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: '100%', minHeight: 400, fontFamily: 'var(--cp-font-body)',
+        color: 'var(--ds-text-subtle, #5E6C84)',
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <Loader2 size={32} className="animate-spin" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+          <span style={{ fontSize: 14 }}>Loading incident…</span>
+        </div>
       </div>
     );
   }
 
-  if (!incident) {
+  if (notFound || !incident) {
     return (
-      <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-        <p style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Incident not found</p>
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        height: '100%', minHeight: 400, fontFamily: 'var(--cp-font-body)', gap: 12,
+      }}>
+        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #344054)' }}>
+          Incident not found
+        </span>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)' }}>
+          The incident could not be found or has been deleted.
+        </span>
+        <button
+          onClick={() => navigate('/incident-hub')}
+          style={{
+            marginTop: 8, padding: '8px 16px',
+            background: 'var(--ds-text-brand, #2563EB)',
+            color: 'var(--cp-bg-elevated, #FFFFFF)',
+            border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500,
+            cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+          }}
+        >
+          Back to incidents
+        </button>
       </div>
     );
   }
-
-  const slaBreached = incident.sla?.resolution_breached || slaCountdown === 'BREACHED';
-  const slaWarning = !slaBreached && incident.sla?.resolution_due_at &&
-    (new Date(incident.sla.resolution_due_at).getTime() - Date.now()) <= 3600000;
 
   return (
-    /* 2026-06-16: HubSurface wrapper isn't a flex container, so flex-1
-       collapses to height 0 → blank page. Explicit min-height anchors the
-       view to the available route slot. */
-    <div className="flex flex-col overflow-hidden" style={{ minHeight: 'calc(100vh - 96px)', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-      {/* Breadcrumb */}
-      <div className="flex items-center justify-between px-6 shrink-0" style={{
-        height: 50,
-        borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)',
-      }}>
-        <div className="flex items-center gap-1" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
-          <span className="cursor-pointer hover:underline" onClick={() => navigate('/incident-hub')}>Incident List</span>
-          <ChevronRight size={12} />
-          <span style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontWeight: 650 }}>{incident.incident_key || incident.jira_key || 'INC'}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" style={{ borderRadius: 6, fontSize: 12 }} onClick={() => setShowConvert(true)}>Convert</Button>
-          <Button size="sm" style={{ backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, fontSize: 12 }} onClick={handleResolve}>Resolve</Button>
-        </div>
-      </div>
-
-      {/* 2-Column Layout */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Column */}
-        <div className="flex-1 overflow-y-auto" style={{ padding: '28px 32px 40px' }}>
-          {/* Title */}
-          <div className="flex items-start gap-3 mb-4">
-            <svg width="20" height="20" viewBox="0 0 16 16" className="shrink-0 mt-0.5">
-              <path fill="#FF5630" fillRule="evenodd" d="M4.78545267,10 L11.2145473,10 L10.5007848,8 L5.49921516,8 L4.78545267,10 Z M4,11 C3.44771525,11 3,11.4477153 3,12 L3,13 L13,13 L13,12 C13,11.4477153 12.5522847,11 12,11 L4,11 Z M5.8560964,7 L10.1439036,7 L8.94181993,3.63169838 C8.8409899,3.34916733 8.61864892,3.12682636 8.33611787,3.02599632 C7.81596508,2.84036355 7.24381284,3.1115456 7.05818007,3.63169838 L5.8560964,7 Z M2,0 L14,0 C15.1045695,-2.02906125e-16 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 1.3527075e-16,15.1045695 0,14 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z"/>
-            </svg>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', letterSpacing: '-0.02em' }}>
-              {incident.title}
-            </h1>
-          </div>
-
-          {/* Status + Chips */}
-          <div className="flex items-center gap-2 mb-4 flex-wrap">
-            <StatusLozenge status={incident.status} />
-            <SeverityChip severity={incident.severity} />
-            <PriorityChip priority={incident.priority || 'P4'} />
-            <span style={{ color: 'var(--cp-text-muted, #CBD5E1)' }}>&middot;</span>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
-              {incident.incident_key || incident.jira_key}
-            </span>
-            <span style={{ color: 'var(--cp-text-muted, #CBD5E1)' }}>&middot;</span>
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
-              Opened {incident.created_at ? formatDistanceToNow(new Date(incident.created_at), { addSuffix: true }) : ''}
-            </span>
-          </div>
-
-          {/* SLA Alert */}
-          {(slaBreached || slaWarning) && (
-            <div className="flex items-center gap-3 p-3 mb-4" style={{
-              backgroundColor: isDark
-                ? (slaBreached ? 'rgba(248,113,113,0.12)' : 'rgba(251,191,36,0.12)')
-                : (slaBreached ? 'var(--ds-background-danger, #FEF2F2)' : '#FFFBEB'),
-              border: `1px solid ${isDark
-                ? (slaBreached ? 'rgba(248,113,113,0.2)' : 'rgba(251,191,36,0.2)')
-                : (slaBreached ? '#FECACA' : '#FDE68A')}`,
-              borderRadius: 6,
-            }}>
-              <Clock size={16} style={{ color: slaBreached ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
-              <div>
-                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: slaBreached ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))', fontWeight: 650 }}>
-                  {slaBreached ? 'SLA BREACHED' : 'SLA breach in '}
-                </span>
-                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 700, color: slaBreached ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>
-                  {slaCountdown}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Description */}
-          <div className="mb-6">
-            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 8 }}>Description</h3>
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, lineHeight: 1.75, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
-              {incident.description || 'No description provided.'}
-            </p>
-          </div>
-
-          {/* Tags/Labels */}
-          {incident.labels && Array.isArray(incident.labels) && incident.labels.length > 0 && (
-            <div className="mb-6">
-              <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 8 }}>Labels</h3>
-              <div className="flex flex-wrap gap-1">
-                {(incident.labels as string[]).map((label: string) => (
-                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.08)', borderRadius: 4, color: 'var(--cp-text-secondary, #475569)' }}>{label}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Activity Section */}
-          <div>
-            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 8 }}>Activity</h3>
-            <div className="flex items-center gap-1 mb-4">
-              {(['comments', 'history'] as const).map(tab => (
-                <button
-                  key={tab}
-                  role="tab"
-                  onClick={() => setActiveTab(tab)}
-                  className="px-3 py-1.5 text-xs capitalize"
-                  style={{
-                    fontFamily: 'var(--cp-font-body)',
-                    fontWeight: activeTab === tab ? 650 : 400,
-                    color: activeTab === tab ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
-                    borderBottom: activeTab === tab ? '2px solid #2563EB' : '2px solid transparent',
-                    borderRadius: 0,
-                  }}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-
-            {activeTab === 'comments' && (
-              <div>
-                {/* Comment Input */}
-                <div className="mb-4">
-                  <Textarea
-                    placeholder="Add a comment..."
-                    value={commentText}
-                    onChange={e => setCommentText(e.target.value)}
-                    style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, minHeight: 60, borderRadius: 4 }}
-                  />
-                  <div className="flex items-center gap-2 mt-2">
-                    <Button size="sm" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }} onClick={handleSaveComment} disabled={!commentText.trim()}>
-                      Save
-                    </Button>
-                    <Button variant="ghost" size="sm" style={{ borderRadius: 6 }} onClick={() => setCommentText('')}>Cancel</Button>
-                  </div>
-                </div>
-                {/* Comments List */}
-                {(!incident.comments || incident.comments.length === 0) && (
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No comments yet. Be the first to comment.</p>
-                )}
-                {incident.comments?.map((c: any) => (
-                  <div key={c.id} className="mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: 10, fontWeight: 650, color: 'var(--cp-text-secondary, #475569)' }}>
-                        {(c.author?.full_name || c.author_name || 'U').charAt(0).toUpperCase()}
-                      </div>
-                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
-                        {c.author?.full_name || c.author_name || 'User'}
-                      </span>
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
-                        {c.created_at ? formatDistanceToNow(new Date(c.created_at), { addSuffix: true }) : ''}
-                      </span>
-                    </div>
-                    <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', lineHeight: 1.6 }}>{c.content}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {activeTab === 'history' && (
-              <div>
-                {(!incident.history || incident.history.length === 0) && (
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No history entries.</p>
-                )}
-                {incident.history?.map((h: any) => (
-                  <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
-                    <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: isDark ? '2px solid #0A0A0A' : '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', boxShadow: '0 0 0 1px #2563EB' }} />
-                    <div>
-                      <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
-                        {h.field_name} changed
-                      </div>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        {h.old_value && (h.field_name === 'status' ? <StatusLozenge status={h.old_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{h.old_value}</span>)}
-                        <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 11 }}>&rarr;</span>
-                        {h.new_value && (h.field_name === 'status' ? <StatusLozenge status={h.new_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{h.new_value}</span>)}
-                      </div>
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
-                        {h.changed_at ? formatDistanceToNow(new Date(h.changed_at), { addSuffix: true }) : ''}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right Column (300px rail) */}
-        <div className="shrink-0 overflow-y-auto" style={{
-          width: 300,
-          borderLeft: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)',
-          padding: 16,
-          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        }}>
-          {/* Metadata Grid */}
-          <div className="space-y-3">
-            {[
-              { label: 'Status', value: <StatusLozenge status={incident.status} /> },
-              { label: 'Jira Status', value: incident.jira_status || '\u2014' },
-              { label: 'Severity', value: <SeverityChip severity={incident.severity} /> },
-              { label: 'Priority', value: <PriorityChip priority={incident.priority || 'P4'} /> },
-              { label: 'Project', value: incident.project_name || '\u2014' },
-              { label: 'Assignee', value: incident.assignee_name || 'Unassigned' },
-              { label: 'Reporter', value: incident.reporter_name || '\u2014' },
-              { label: 'Resolution', value: incident.resolution || '\u2014' },
-            ].map(row => (
-              <div key={row.label} className="flex items-center gap-2">
-                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: 80, flexShrink: 0 }}>{row.label}</span>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
-                  {typeof row.value === 'string' ? row.value : row.value}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Custom Fields */}
-          <div className="mt-4 pt-4" style={{ borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
-            <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: 80 }}>Created</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
-                {incident.created_at ? new Date(incident.created_at).toLocaleString() : '\u2014'}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: 80 }}>Updated</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
-                {incident.updated_at ? new Date(incident.updated_at).toLocaleString() : '\u2014'}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Modals */}
-      <ConvertDialog open={showConvert} onClose={() => setShowConvert(false)} incidentId={id || ''} />
-      <ConvertDialog open={showConvert} onClose={() => setShowConvert(false)} incidentId={id || ''} />
+    <div style={{ width: '100%', height: '100%', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+      <Suspense fallback={null}>
+        <CatalystDetailRouter
+          isOpen={true}
+          onClose={handleClose}
+          /* useCatalystIssue queries ph_issues by issue_key. Pass the key,
+             not the UUID — same contract IssueFullPage / BacklogDetailPage use. */
+          itemId={incident.issueKey}
+          projectKey={incident.projectKey}
+          itemType={incident.issueType}
+          fullPageMode={true}
+        />
+      </Suspense>
     </div>
   );
 }
