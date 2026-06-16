@@ -273,7 +273,38 @@ export function ChatDock({
           >
             {/* One stable component across the whole gesture — never swap on isDragging,
                 or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
-            <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  localStorage.setItem('caty.fab.hidden', 'true');
+                  window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
+                }}
+                style={{
+                  position: 'absolute',
+                  top: '-6px',
+                  right: '-6px',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  background: 'var(--ds-background-neutral, #F1F2F4)',
+                  border: '2px solid var(--ds-surface-overlay, #FFFFFF)',
+                  color: 'var(--ds-text, #172B4D)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0,
+                  zIndex: 10,
+                }}
+                aria-label="Hide Caty"
+                title="Hide Caty"
+              >
+                <CloseIcon label="" size="small" />
+              </button>
+            </div>
             {totalUnread > 0 && (
               <span
                 className="cc-fab__badge"
