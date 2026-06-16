@@ -30,7 +30,7 @@ import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
-import EyeClosedIcon from "@atlaskit/icon/core/eye-closed";
+import EyeClosedIcon from "@atlaskit/icon/core/eye-open-strikethrough";
 import { catalystToast } from "@/lib/catalystToast";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
