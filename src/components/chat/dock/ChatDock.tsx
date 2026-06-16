@@ -30,6 +30,8 @@ import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
+import EyeClosedIcon from "@atlaskit/icon/core/eye-closed";
+import { catalystToast } from "@/lib/catalystToast";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
 
@@ -284,34 +286,34 @@ export function ChatDock({
           </button>
         ) : (
           <button
+            ref={fabRef}
             type="button"
             onClick={() => {
               localStorage.setItem('caty.fab.hidden', 'false');
               window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
+              catalystToast.success('Caty is awake!');
             }}
             style={{
               position: 'fixed',
-              bottom: '16px',
-              right: '16px',
+              bottom: '24px',
+              right: '24px',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '8px 12px',
-              borderRadius: '20px',
+              justifyContent: 'center',
+              width: 56,
+              height: 56,
+              borderRadius: '6px',
               border: 'none',
-              background: 'var(--ds-background-information, #0C66E4)',
-              color: '#FFFFFF',
-              fontSize: '12px',
-              fontWeight: 500,
+              background: 'transparent',
+              color: 'var(--ds-icon, #44546F)',
               cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-              fontFamily: 'var(--ds-font-family-body, inherit)',
-              zIndex: 50,
+              padding: 0,
+              zIndex: 500,
             }}
-            aria-label="Show Caty insights"
+            aria-label="Wake Caty"
+            title="Wake Caty"
           >
-            <span>Caty insights hidden</span>
-            <span style={{ fontSize: '10px', opacity: 0.8 }}>Tap to show</span>
+            <EyeClosedIcon label="Caty sleeping" size="large" />
           </button>
         )}
         {!isDragging && !catyHidden && (
