@@ -4,7 +4,7 @@
  * 6 items: Incident List, Analytics, Insights, Kanban, (divider), Incident Reports, Committee Queue
  */
 
-import { 
+import {
   List,
   BarChart3,
   Sparkles,
@@ -12,6 +12,7 @@ import {
   FileText,
   Users,
 } from '@/lib/atlaskit-icons';
+import { NavWorkIcon } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface IncidentHubSidebarProps {
@@ -38,6 +39,9 @@ const sections: SidebarSection[] = [
       { id: 'analytics', title: 'Analytics', path: '/incident-hub/analytics', icon: BarChart3, exact: false },
       { id: 'insights', title: 'Insights', path: '/incident-hub/insights', icon: Sparkles, exact: false },
       { id: 'kanban', title: 'Kanban', path: '/incident-hub/kanban', icon: LayoutGrid, exact: false },
+      /* 2026-06-16: Work tab — canonical AllWork view, mode='incident'.
+         Same sequence as project / product hubs (after Kanban). */
+      { id: 'work', title: 'Work', path: '/incident-hub/work', icon: NavWorkIcon, exact: false },
       { id: 'reports', title: 'Reports', path: '/incident-hub/reports', icon: FileText, exact: false },
       { id: 'committee-queue', title: 'Committee Queue', path: '/incident-hub/committee-queue', icon: Users, exact: false },
     ],
