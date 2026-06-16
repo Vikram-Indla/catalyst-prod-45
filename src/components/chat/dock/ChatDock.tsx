@@ -282,6 +282,14 @@ export function ChatDock({
                   localStorage.setItem('caty.fab.hidden', 'true');
                   window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
                 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = '1';
+                  e.currentTarget.style.transform = 'scale(1.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = '0.7';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
                 style={{
                   position: 'absolute',
                   top: '-6px',
@@ -298,6 +306,8 @@ export function ChatDock({
                   justifyContent: 'center',
                   padding: 0,
                   zIndex: 10,
+                  opacity: 0.7,
+                  transition: 'opacity 120ms ease, transform 120ms ease',
                 }}
                 aria-label="Hide Caty"
                 title="Hide Caty"
