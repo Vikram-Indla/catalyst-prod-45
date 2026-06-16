@@ -7,36 +7,26 @@
  *      · Group dropdown · Sort caret · ⋯ · item count
  *   3. JiraTable mount with selectable + columnVisibility wired
  *
- * Task 1.5c (2026-06-16) — wired the row action menu and side detail panel:
- *   - Row ⋯ menu now mirrors Project Hub backlog (BacklogPage.atlaskit.tsx:2064),
+ * Task 1.5c (2026-06-16) — wired the row action menu and side detail surface:
+ *   - Row ⋯ menu mirrors Project Hub backlog (BacklogPage.atlaskit.tsx:2064),
  *     excluding `open-in-jira` and `duplicate` (no Jira sync for tasks; no
  *     duplicate mutation hook). Actions: view · comment · log-work · agile-board
  *     · rank-top · rank-bottom · attach · copy-link · delete.
- *   - Row click and the `view` action open `TaskDetailDrawer` — the canonical
- *     Tasks Hub detail view (reads from `tasks` table). See "Concern" below.
+ *
+ * Task 1.5d (2026-06-16) — mounts `CatalystDetailPanel` (right-side
+ *   drag-resizable panel — same as Project Hub backlog) with
+ *   `entityKind='task'`. CatalystDetailRouter dispatches to TaskCatalystView,
+ *   which reads from the `tasks` table and reuses CatalystViewBase chrome.
  *
  * REUSE FIRST (CLAUDE.md P0):
  *   - JiraTable for the table itself
  *   - DEFAULT_VISIBLE_COLUMNS from the column registry
  *   - useTasksTableData for rows + columns + users
  *   - TasksPageHeader for breadcrumb + H1
- *   - TaskDetailDrawer for the detail surface
+ *   - CatalystDetailPanel (entityKind='task' → TaskCatalystView)
  *   - RowAction<PlannerTask>[] + makeRowActionsCell from the canonical
  *     JiraTable editors module
  *   - `flag` toast helper from JiraTable index (catalystToast under the hood)
- *
- * CONCERN — detail panel parity (Task 1.5c):
- *   Project Hub backlog uses `CatalystDetailPanel` (right-side, drag-resizable)
- *   which wraps `CatalystDetailRouter → CatalystViewTask`. CatalystViewTask is
- *   hardwired to read `ph_issues` via `useCatalystIssue(itemId)` and CANNOT
- *   render a task from the `tasks` table — passing `itemType='Task'` with a
- *   task UUID produces an empty result.
- *
- *   For v1 we mount `TaskDetailDrawer` (centered modal) which IS canonical for
- *   tasks (reads from the `tasks` table). This does NOT visually match Project
- *   Hub's right-side drag-resizable panel UX. Follow-up: either parameterise
- *   CatalystViewTask with a data-source switch, or build a TaskCatalystView
- *   that reads from `tasks` and mounts inside CatalystDetailPanel.
  */
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -63,8 +53,16 @@ import { useTasksTableData } from '@/modules/tasks/hooks/useTasksTableData';
 import { useDeletePlannerTask } from '@/modules/tasks/hooks/useTaskItems';
 import { DEFAULT_VISIBLE_COLUMNS } from '@/modules/tasks/columns/tasksListColumns';
 import { TasksPageHeader } from '@/modules/tasks/components/TasksPageHeader';
-import { TaskDetailDrawer } from '@/modules/tasks/components/TaskDetailDrawer/TaskDetailDrawer';
+import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 import type { PlannerTask } from '@/modules/tasks/types';
+
+// Task 1.5d (2026-06-16) — right-side drag-resizable panel sizing.
+// Mirrors Project Hub backlog's PANEL_MIN_W / PANEL_MAX_W constants and
+// persists the user's chosen width across sessions via localStorage.
+const TASK_PANEL_MIN_W = 400;
+const TASK_PANEL_MAX_W = 900;
+const TASK_PANEL_DEFAULT_W = 600;
+const TASK_PANEL_LS_KEY = 'tasks-hub-detail-panel-width';
 
 // Placeholder Group-by options — wiring deferred. Visual only.
 const GROUP_BY_OPTIONS = [
@@ -81,9 +79,22 @@ export default function TasksTaskListView() {
   const deleteMutation = useDeletePlannerTask();
 
   // ── Detail panel state ───────────────────────────────────────────────────
-  // `panelTaskId` holds the row id of the task open in the detail drawer.
+  // `panelTaskId` holds the row id of the task open in the right-side panel.
   // Mirrors Project Hub backlog's `panelItem` (BacklogPage.atlaskit.tsx:1930).
   const [panelTaskId, setPanelTaskId] = useState<string | null>(null);
+
+  // Drag-resizable panel width — persisted to localStorage (Task 1.5d, 2026-06-16).
+  const [panelWidth, setPanelWidth] = useState<number>(() => {
+    try {
+      const raw = localStorage.getItem(TASK_PANEL_LS_KEY);
+      const n = raw ? Number(raw) : NaN;
+      if (Number.isFinite(n) && n >= TASK_PANEL_MIN_W && n <= TASK_PANEL_MAX_W) return n;
+    } catch { /* ignore */ }
+    return TASK_PANEL_DEFAULT_W;
+  });
+  const persistPanelWidth = useCallback((next: number) => {
+    try { localStorage.setItem(TASK_PANEL_LS_KEY, String(next)); } catch { /* ignore */ }
+  }, []);
 
   const openDetail = useCallback((row: PlannerTask) => {
     setPanelTaskId(row.id);
@@ -486,16 +497,27 @@ export default function TasksTaskListView() {
         />
       </div>
 
-      {/* ── Detail drawer ──────────────────────────────────────────────── */}
-      {/* Mounts TaskDetailDrawer (the canonical Tasks Hub detail surface,
-          reads from `tasks` table). See file-level CONCERN comment for why
-          we don't mount CatalystDetailPanel here. */}
-      <TaskDetailDrawer
-        taskId={panelTaskId}
-        open={!!panelTaskId}
-        onClose={closePanel}
-        onOpenChange={(o) => { if (!o) closePanel(); }}
-      />
+      {/* ── Detail panel ──────────────────────────────────────────────── */}
+      {/* Task 1.5d (2026-06-16) — canonical right-side drag-resizable panel
+          (same as Project Hub backlog). Mounts CatalystDetailPanel with
+          entityKind='task' so CatalystDetailRouter dispatches to
+          TaskCatalystView (reads from `tasks` table). */}
+      {panelTaskId && (
+        <CatalystDetailPanel
+          isOpen
+          onClose={closePanel}
+          itemId={panelTaskId}
+          itemType="Task"
+          typeIconLabel="Task"
+          projectKey=""
+          width={panelWidth}
+          onResize={setPanelWidth}
+          onResizeCommit={persistPanelWidth}
+          minWidth={TASK_PANEL_MIN_W}
+          maxWidth={TASK_PANEL_MAX_W}
+          entityKind="task"
+        />
+      )}
     </div>
   );
 }
