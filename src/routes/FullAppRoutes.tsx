@@ -356,6 +356,32 @@ function MG({ k, t, children }: { k: string; t: string; children: React.ReactNod
   return <ModuleGate moduleKey={k} fallbackTitle={t}>{children}</ModuleGate>;
 }
 
+/* 2026-06-16: /incident-hub/backlog/:key alias. BacklogPage's default
+   "open in full page" URL pattern is {baseUrl}/backlog/{key}, but for
+   incidents the real detail route is /incident-hub/view/{UUID}. This
+   redirect resolves key → UUID via ph_issues and Navigate's there. */
+function IncidentBacklogKeyRedirect() {
+  const { key: incidentKey } = useParams<{ key: string }>();
+  const [uuid, setUuid] = React.useState<string | null | undefined>(undefined);
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!incidentKey) { setUuid(null); return; }
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('id')
+        .eq('issue_key', incidentKey)
+        .maybeSingle();
+      if (!cancelled) setUuid((data as { id: string } | null)?.id ?? null);
+    })();
+    return () => { cancelled = true; };
+  }, [incidentKey]);
+  if (uuid === undefined) return null;
+  if (!uuid) return <Navigate to="/incident-hub" replace />;
+  return <Navigate to={`/incident-hub/view/${uuid}`} replace />;
+}
+
 function Resource360Redirect() {
   const { id } = useParams();
   return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
@@ -656,6 +682,13 @@ export default function FullAppRoutes() {
         <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportsPage /></S></MG>} />
         <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
         <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
+        {/* 2026-06-16: redirect alias — the BacklogPage's default
+            "open in full page" pattern was {baseUrl}/backlog/{key} which
+            for incidents doesn't exist as a route. We resolve key → UUID
+            on the fly and redirect to /incident-hub/view/:uuid so any
+            stale link (cached chunk, manual paste, bookmarked URL) lands
+            on the real detail page instead of an empty router slot. */}
+        <Route path="/incident-hub/backlog/:key" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentBacklogKeyRedirect /></S></MG>} />
 
         <Route path="/release-hub" element={<Navigate to="/release-hub/command-center" replace />} />
         <Route path="/release-hub/command-center" element={<S><RH21CommandCenterPage /></S>} />

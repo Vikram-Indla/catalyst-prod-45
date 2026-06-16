@@ -92,7 +92,10 @@ export default function IncidentDetailPage() {
     (new Date(incident.sla.resolution_due_at).getTime() - Date.now()) <= 3600000;
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+    /* 2026-06-16: HubSurface wrapper isn't a flex container, so flex-1
+       collapses to height 0 → blank page. Explicit min-height anchors the
+       view to the available route slot. */
+    <div className="flex flex-col overflow-hidden" style={{ minHeight: 'calc(100vh - 96px)', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       {/* Breadcrumb */}
       <div className="flex items-center justify-between px-6 shrink-0" style={{
         height: 50,

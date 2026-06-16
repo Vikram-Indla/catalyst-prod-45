@@ -35,6 +35,13 @@ export interface CatalystViewBaseProps {
    *  the @container query. Used by medium-layout panel mode where the detail
    *  container width is insufficient to host both body and sidebar. */
   hideSidebar?: boolean;
+  /**
+   * 2026-06-16: optional override for the "Open in full page" button URL.
+   * Default (undefined): /project-hub/{projectKey}/backlog/{itemKey}.
+   * Incident hub uses this to navigate to /incident-hub/view/{uuid}
+   * instead, since incidents have no project-hub backlog route.
+   */
+  fullPageHrefBuilder?: (itemKey: string) => string;
   /** Optional entity-specific promotion handler.
    *  Currently used by 'idea' to spawn a Request via CreateRequestDrawer.
    *  Other entity types ignore this prop. */

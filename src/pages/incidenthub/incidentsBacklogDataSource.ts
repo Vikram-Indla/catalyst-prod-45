@@ -96,6 +96,19 @@ export function useIncidentsBacklogSource(): BacklogDataSource | null {
     [incidents],
   );
 
+  /* 2026-06-16: incident_key (e.g. 'BAU-1234') → ph_issues.id (UUID) map.
+     The standalone detail page at /incident-hub/view/:id calls
+     useProductionIncident, which queries supabase by UUID — passing the
+     key would 404 / blank. We resolve key → UUID here so onOpenItem
+     navigates to the correct path. */
+  const keyToUuid = useMemo(() => {
+    const m = new Map<string, string>();
+    (incidents as any[]).forEach((r) => {
+      if (r.incident_key && r.id) m.set(r.incident_key, r.id);
+    });
+    return m;
+  }, [incidents]);
+
   const statusOptions: StatusOption[] = useMemo(
     () => INCIDENT_STATUSES.map((s) => ({ value: s, label: STATUS_LABEL[s] })),
     [],
@@ -112,9 +125,12 @@ export function useIncidentsBacklogSource(): BacklogDataSource | null {
     statusLabel: (s) => STATUS_LABEL[String(s ?? '').toLowerCase()] ?? String(s ?? '—'),
     allStatuses: [...INCIDENT_STATUSES],
 
-    /* Click-through: open the incident detail page, not the BR detail. */
+    /* Click-through: open the incident detail page.
+       Route is /incident-hub/view/:id (UUID-keyed, not incident_key). */
     onOpenItem: (key) => {
-      if (key) navigate(`/incident-hub/${key}`);
+      if (!key) return;
+      const uuid = keyToUuid.get(key);
+      if (uuid) navigate(`/incident-hub/view/${uuid}`);
     },
 
     /* All mutations are no-ops — incidents are Jira-sourced and read-only
@@ -128,8 +144,16 @@ export function useIncidentsBacklogSource(): BacklogDataSource | null {
 
     invalidationKeys: [['incident-hub-list']] as const,
 
+    /* 2026-06-16: route the detail panel to CatalystViewIncident, not
+       CatalystViewBusinessRequest. Returns the lowercase 'incident' enum
+       value — BOTH BacklogPage's typeIconLabel mapping (line 3992) AND
+       CatalystDetailRouter.resolveItemType accept this exact string, so
+       the panel header gets the red incident square icon AND the inner
+       view renders CatalystViewIncident (full Details rail + breadcrumb). */
+    resolveItemType: () => 'incident',
+
     /* No chrome override — BacklogPage renders its default header chip.
        allowedColumnIds left undefined → all standard columns are pickable. */
     productId: 'incidents',
-  }), [extraStories, isLoading, statusOptions, navigate]);
+  }), [extraStories, isLoading, statusOptions, keyToUuid, navigate]);
 }

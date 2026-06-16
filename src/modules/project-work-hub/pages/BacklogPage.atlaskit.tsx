@@ -1968,14 +1968,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       fromType: 'story-backlog',
     });
     // Map BacklogItem.type → CatalystItemType. Product-hub BR rows
-    // (source === 'biz') always resolve to 'business_request'; project
+    // (source === 'biz') normally resolve to 'business_request'; project
     // hub rows fall through with a small alias for bug → defect and
     // initiative → business_request.
+    // 2026-06-16: adapters can override the biz-source default via
+    // dataSource.resolveItemType — incident hub uses this so its rows
+    // render CatalystViewIncident instead of CatalystViewBusinessRequest.
     const sourceIsBiz = dataSource && (it as any).source === BIZ_SOURCE;
     const rawType = (it.type as string) || 'story';
     let itemType = rawType;
-    if (sourceIsBiz) itemType = 'business_request';
-    else if (rawType === 'bug') itemType = 'defect';
+    if (sourceIsBiz) {
+      const override = dataSource?.resolveItemType?.(it as any);
+      itemType = override || 'business_request';
+    } else if (rawType === 'bug') itemType = 'defect';
     else if (rawType === 'initiative') itemType = 'business_request';
     setPanelItem({
       id: (it as any).issue_key || it.id,
@@ -2294,10 +2299,23 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         const keyCellRenderer = makeKeyCell(
           (r: BacklogItem) => r.key,
           (r: BacklogItem) => openDetail(r),
-          (r: BacklogItem) => `${resolvedBaseUrl}/backlog/${r.key || r.id}`,
+          /* 2026-06-16: key-cell href (used by middle-click "open in new
+             tab"). For biz-source rows (adapter-owned routing, e.g.
+             incident hub), return undefined so middle-click is a no-op
+             instead of navigating to the broken {baseUrl}/backlog/{key}
+             pattern that doesn't exist on those surfaces. Regular left
+             click still opens the side panel through onClick → openDetail. */
+          (r: BacklogItem) => {
+            if ((r as any).source === 'biz') return undefined;
+            return `${resolvedBaseUrl}/backlog/${r.key || r.id}`;
+          },
           (it: BacklogItem) => {
           if ((it as any).source === 'biz') {
-            return <JiraIssueTypeIcon type="Business Request" size={16} />;
+            /* 2026-06-16: defer to the adapter so non-BR biz-source rows
+               (e.g. incident hub returns 'incident') get the correct icon.
+               JiraIssueTypeIcon already resolves 'incident' → red square. */
+            const override = dataSource?.resolveItemType?.(it as any);
+            return <JiraIssueTypeIcon type={override || 'Business Request'} size={16} />;
           }
           if (it.type === 'initiative') {
             const init = initiativesByKey?.get(it.key || '');
@@ -3999,7 +4017,16 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               projectKey={projectKey ?? ''}
               projectId={projectId}
               onOpenFullPage={() => {
-                navigate(`${resolvedBaseUrl}/backlog/${panelItem.id}`);
+                /* 2026-06-16: defer to the adapter when present — surfaces
+                   like incident hub don't have a {baseUrl}/backlog/{key}
+                   route, so the default navigate produces a blank page.
+                   The adapter knows its own detail URL (e.g.
+                   /incident-hub/view/{UUID}). */
+                if (dataSource?.onOpenItem) {
+                  dataSource.onOpenItem(panelItem.key ?? null, panelItem.id);
+                } else {
+                  navigate(`${resolvedBaseUrl}/backlog/${panelItem.id}`);
+                }
                 closePanel();
               }}
               width={panelWidth}

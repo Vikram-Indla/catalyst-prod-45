@@ -144,6 +144,9 @@ export interface CatalystViewBaseLayoutProps {
    *  Used when the parent layout is in medium mode and the detail container
    *  is too narrow to host both body and sidebar comfortably. */
   hideSidebar?: boolean;
+  /** 2026-06-16: override URL builder for the "Open in full page" button.
+   *  Used by incident-hub (no project-hub backlog route). */
+  fullPageHrefBuilder?: (itemKey: string) => string;
 }
 
 /* ═══════════════════════════════════════════
@@ -156,7 +159,7 @@ export function CatalystViewBase({
   moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
-  isLoading, isNotFound, hideSidebar,
+  isLoading, isNotFound, hideSidebar, fullPageHrefBuilder,
 }: CatalystViewBaseLayoutProps) {
 
   /* ── State ──────────────────────────────── */
@@ -610,7 +613,15 @@ export function CatalystViewBase({
                     </svg>
                   )}
                   label="Open in full page"
-                  onClick={() => navigate(projectKey ? `/project-hub/${projectKey}/backlog/${itemKey}` : `/browse/${itemKey}`)}
+                  onClick={() => {
+                    /* 2026-06-16: builder override for non-project-hub
+                       surfaces (incident hub navigates to /incident-hub/view/:uuid). */
+                    if (fullPageHrefBuilder && itemKey) {
+                      navigate(fullPageHrefBuilder(itemKey));
+                      return;
+                    }
+                    navigate(projectKey ? `/project-hub/${projectKey}/backlog/${itemKey}` : `/browse/${itemKey}`);
+                  }}
                 />
               </Tooltip>
             )}
