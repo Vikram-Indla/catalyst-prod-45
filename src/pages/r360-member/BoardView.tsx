@@ -17,13 +17,11 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import { CatyHead } from '@/components/for-you/atlaskit/CatyButton';
-import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
 import type { R360WorkItem } from '@/types/r360';
-import { QuickSearchInput } from './QuickSearchInput';
 import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
+import { CatalystAiSearch } from '@/components/caty/CatalystAiSearch';
 
 // ── Subtask types that should surface their parent instead ──────────
 const SUBTASK_TYPES = new Set(['sub-task', 'backend', 'frontend']);
@@ -368,56 +366,41 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
 
   return (
     <div>
-      {/* Ask Caty — cross-project NL search (copied from AllWork). Opens above
-          the toolbar; its CatyFilter is applied client-side to the board. */}
-      {askCatyOpen && (
-        <AskCatyInlineBar
-          projectKey={BOARD_CATY_KEY}
-          onClose={() => setAskCatyOpen(false)}
-        />
-      )}
-      {/* Toolbar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 16,
-        marginBottom: 16,
-      }}>
-        {/* Caty cat-head trigger — start of the search row (AllWork parity). */}
-        <button
-          type="button"
-          onClick={() => setAskCatyOpen(o => !o)}
-          aria-label="Ask Caty"
-          aria-expanded={askCatyOpen}
-          title="Ask Caty"
-          style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 32, height: 32, flexShrink: 0,
-            border: 'none', borderRadius: 6, cursor: 'pointer',
-            background: askCatyOpen
-              ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)')
-              : 'transparent',
-          }}
-        >
-          <CatyHead size={22} title="Ask Caty" />
-        </button>
-        <div style={{ flex: 1, maxWidth: 320 }}>
-          <QuickSearchInput
-            value={quickSearch}
-            onChange={setQuickSearch}
-            resultCount={quickSearch.trim() ? filteredItems.length : undefined}
-            totalCount={boardItems.length}
+      {askCatyOpen ? (
+        // Open → canonical Ask Caty takes over the toolbar row (no stacking).
+        // The cross-project CatyFilter is applied client-side via catyVisibleItems.
+        <div style={{ marginBottom: 16 }}>
+          <CatalystAiSearch
+            open
+            onOpenChange={setAskCatyOpen}
+            projectKey={BOARD_CATY_KEY}
           />
         </div>
-        <span style={{
-          fontSize: 12, fontWeight: 400,
-          color: token('color.text.subtlest', '#626F86'),
+      ) : (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 16,
+          marginBottom: 16,
         }}>
-          {catyVisibleItems.length} items across {projectGroups.length} projects
-        </span>
-        {/* Board health pinned to the far-right end of the toolbar. */}
-        <div style={{ marginLeft: 'auto' }}>
-          <CatyBoardInsight resourceId={resourceId} panelPortalTarget={insightSlot} />
+          <CatalystAiSearch
+            open={false}
+            onOpenChange={setAskCatyOpen}
+            projectKey={BOARD_CATY_KEY}
+            value={quickSearch}
+            onValueChange={setQuickSearch}
+            placeholder="Search by key or title…"
+          />
+          <span style={{
+            fontSize: 12, fontWeight: 400,
+            color: token('color.text.subtlest', '#626F86'),
+          }}>
+            {catyVisibleItems.length} items across {projectGroups.length} projects
+          </span>
+          {/* Board health pinned to the far-right end of the toolbar. */}
+          <div style={{ marginLeft: 'auto' }}>
+            <CatyBoardInsight resourceId={resourceId} panelPortalTarget={insightSlot} />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Board health result lands here — below the toolbar, pushing the board down */}
       <div ref={setInsightSlot} />
