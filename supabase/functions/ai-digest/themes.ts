@@ -19,6 +19,8 @@
  * schema and /src/hooks/useAiThemes.ts for the consumer hook.
  */
 
+import { computeSignature } from '../_shared/ai-cache.ts';
+
 export interface ThemesRequestBody {
   mode: 'themes';
   scope: 'project' | 'personal';
@@ -59,16 +61,11 @@ export interface ThemesResponse {
 export async function computeIssuesSignature(
   issues: Array<{ issue_key: string; summary: string; status: string; issue_type: string }>,
 ): Promise<string> {
-  const parts = issues
-    .map(i => `${i.issue_key}:${i.summary}:${i.status}:${i.issue_type}`)
-    .sort()
-    .join('|');
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(parts));
-  // Base16 short (first 16 hex chars) — collisions are fine here, we're
-  // not signing, we're fingerprinting.
-  return Array.from(new Uint8Array(buf).slice(0, 8))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+  // Delegates to the shared signature primitive (2026-06-18). Field list is
+  // the semantic clustering fields — NOT jira_updated_at.
+  return computeSignature(issues as Array<Record<string, unknown>>, [
+    'issue_key', 'summary', 'status', 'issue_type',
+  ]);
 }
 
 /**

@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { CatyInsightCard } from './CatyInsightCard';
 import { CatyRainbowCTA } from './CatyRainbowCTA';
 import type { AgeingItem } from '@/hooks/useAgeingItems';
+import { readAgeingTriageSnapshot, writeAgeingTriageSnapshot } from '@/hooks/aiAgeingTriageSnapshot';
 
 interface TriageResult {
   issueKey: string;
@@ -47,7 +48,9 @@ function buildLocalTriage(items: AgeingItem[]): TriageResult[] {
 }
 
 export function CatyAgeingTriage({ items, onOpenDetail }: CatyAgeingTriageProps) {
-  const [results, setResults] = useState<TriageResult[]>([]);
+  // Seed from the localStorage snapshot so the last result survives unmount /
+  // tab switch instead of dropping back to the button (2026-06-18).
+  const [results, setResults] = useState<TriageResult[]>(() => readAgeingTriageSnapshot() ?? []);
   const [isLoading, setIsLoading] = useState(false);
     const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -72,11 +75,16 @@ export function CatyAgeingTriage({ items, onOpenDetail }: CatyAgeingTriageProps)
 
       if (!error && data?.triageResults) {
         setResults(data.triageResults);
+        writeAgeingTriageSnapshot(data.triageResults);
       } else {
-        setResults(buildLocalTriage(items));
+        const local = buildLocalTriage(items);
+        setResults(local);
+        writeAgeingTriageSnapshot(local);
       }
     } catch {
-      setResults(buildLocalTriage(items));
+      const local = buildLocalTriage(items);
+      setResults(local);
+      writeAgeingTriageSnapshot(local);
     } finally {
       setIsLoading(false);
     }
@@ -92,11 +100,11 @@ export function CatyAgeingTriage({ items, onOpenDetail }: CatyAgeingTriageProps)
   };
 
   if (results.length === 0) {
-    return <CatyRainbowCTA label="Triage stale" onClick={runTriage} isLoading={isLoading} />;
+    return <CatyRainbowCTA label="Review" onClick={runTriage} isLoading={isLoading} />;
   }
 
   return (
-    <CatyInsightCard title="Stale item triage" onRefresh={runTriage} onDismiss={() => { setResults([]); }}>
+    <CatyInsightCard title="Stale item triage" onRefresh={runTriage} onDismiss={() => { setResults([]); writeAgeingTriageSnapshot([]); }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {results.map((r) => (
           <div key={r.issueKey} style={{ padding: 8, borderRadius: 4, background: token('color.background.neutral.subtle', '#F7F8F9') }}>

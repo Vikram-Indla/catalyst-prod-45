@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { handleThemesRequest } from "./themes.ts";
+import { computeSignature, nextSixAmRiyadhUtc } from "../_shared/ai-cache.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -165,6 +166,35 @@ serve(async (req) => {
         responseKey = 'brief';
       }
 
+      // ── ageing-triage cache: no-delta guard (2026-06-18) ──────────────
+      // Hash the top-10 items' semantic state; if it matches the user's cached
+      // row, serve cache and skip Gemini. days_open is excluded from the hash
+      // (it ticks daily and would otherwise bust the cache for no reason).
+      // Shared with themes via _shared/ai-cache.ts. Other modes are uncached.
+      let ageingSignature: string | null = null;
+      if (body.mode === 'ageing-triage') {
+        try {
+          const ctxItems = JSON.parse(context) as Array<Record<string, unknown>>;
+          ageingSignature = await computeSignature(ctxItems, [
+            'key', 'status', 'commentCount', 'assigneeIsInactive',
+          ]);
+          const { data: cachedRow } = await supabase
+            .from('ai_ageing_triage_cache')
+            .select('payload, issues_signature')
+            .eq('user_id', userId)
+            .maybeSingle();
+          if (cachedRow && cachedRow.issues_signature === ageingSignature) {
+            console.log(`[ageing-triage] no-delta cache HIT user=${userId}`);
+            return new Response(
+              JSON.stringify({ ...(cachedRow.payload as Record<string, unknown>), cached: true, no_delta: true }),
+              { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+        } catch (e) {
+          console.error('[ageing-triage] cache read failed (continuing to Gemini):', e);
+        }
+      }
+
       try {
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`,
@@ -206,6 +236,27 @@ serve(async (req) => {
         }
 
         const parsed = JSON.parse(content);
+
+        // ── ageing-triage cache write (2026-06-18) ──────────────────────
+        // Store the fresh result keyed by user_id with the signature computed
+        // above. delete-then-insert keeps it simple across the single-row key.
+        if (body.mode === 'ageing-triage' && ageingSignature) {
+          try {
+            await supabase.from('ai_ageing_triage_cache').delete().eq('user_id', userId);
+            const { error: cacheErr } = await supabase.from('ai_ageing_triage_cache').insert({
+              user_id: userId,
+              payload: parsed,
+              issues_signature: ageingSignature,
+              generated_at: new Date().toISOString(),
+              expires_at: nextSixAmRiyadhUtc(new Date()).toISOString(),
+            });
+            if (cacheErr) console.error('[ageing-triage] cache write failed:', cacheErr.message);
+            else console.log(`[ageing-triage] cache STORED user=${userId}`);
+          } catch (e) {
+            console.error('[ageing-triage] cache write threw (non-fatal):', e);
+          }
+        }
+
         return new Response(
           JSON.stringify(parsed),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
