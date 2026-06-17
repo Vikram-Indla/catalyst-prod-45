@@ -42,6 +42,7 @@ import { token } from '@atlaskit/tokens';
 import { useAuth } from '@/lib/auth';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
 import { useAllUserProjects } from '@/hooks/home/useAllUserProjects';
+import { useRecentProjects } from '@/hooks/home/useRecentProjects';
 import ForYouTabs, { FOR_YOU_TAB_ORDER, type ForYouTabDefinition } from '@/components/for-you/atlaskit/ForYouTabs';
 import RecommendedPanel from '@/components/for-you/atlaskit/RecommendedPanel';
 import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
@@ -135,6 +136,21 @@ export default function ForYouPageAtlaskit() {
 
   const { tab: urlTab } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
+
+  // Starred empty state — route the Filters CTA to the user's most-recent hub
+  // filters. No global /filters route exists, so we use recent-hub context;
+  // when there's no recent hub visit the CTA is omitted (no guessed key).
+  const { recentLocations } = useRecentProjects();
+  const onBrowseFilters = useMemo(() => {
+    const loc = recentLocations.find(
+      l => l.hub === 'project' || l.hub === 'product' || l.hub === 'task',
+    );
+    if (!loc) return undefined;
+    const route = loc.hub === 'task'
+      ? '/tasks/filters'
+      : `/${loc.hub}-hub/${loc.projectKey}/filters`;
+    return () => navigate(route);
+  }, [recentLocations, navigate]);
 
   // Side panel — opened locally on this page when a card's "View thread"
   // link sets `panelMode: true` on the pending item. CatalystShell skips
@@ -268,10 +284,10 @@ export default function ForYouPageAtlaskit() {
       case 'board':       return <BoardPanel />;
       case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} digestOpen={digestOpen} setDigestOpen={setDigestOpen} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} onAskCatyThemify={() => handleTabChange('ai-theme')} />;
-      case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
+      case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} onBrowseFilters={onBrowseFilters} />;
       default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} digestOpen={digestOpen} setDigestOpen={setDigestOpen} />;
     }
-  }, [activeTab, visibleItems, isLoading, isRefreshing, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange, digestOpen, setDigestOpen]);
+  }, [activeTab, visibleItems, isLoading, isRefreshing, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange, digestOpen, setDigestOpen, onBrowseFilters]);
 
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs

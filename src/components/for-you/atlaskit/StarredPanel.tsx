@@ -16,7 +16,8 @@
 import React from 'react';
 import { token } from '@atlaskit/tokens';
 import ForYouRow from './ForYouRow';
-import { ForYouEmptyState, GroupHeading, groupByRecency, StarSparkleArt } from './helpers';
+import { GroupHeading, groupByRecency } from './helpers';
+import { StarredEmptyState } from './StarredEmptyState';
 import type { WorkItem, TabType } from '@/hooks/useForYouData';
 import { CatyStarredDigest } from './CatyStarredDigest';
 
@@ -32,6 +33,12 @@ interface StarredPanelProps {
    * tests that mount StarredPanel directly don't need to pass it.
    */
   onSwitchTab?: (tab: TabType) => void;
+  /**
+   * Routes the empty state to the user's most-recent hub filters. Optional —
+   * omitted when there's no recent hub visit, so the Filters CTA is never a
+   * dead link (zero-assumption, no guessed project key).
+   */
+  onBrowseFilters?: () => void;
 }
 
 function StarredSkeletonLine({ width = '100%', height = 12 }: { width?: string | number; height?: number }) {
@@ -84,20 +91,17 @@ function StarredPanelSkeleton() {
   );
 }
 
-export default function StarredPanel({ items, isLoading, onSelect, onToggleStar, onSwitchTab }: StarredPanelProps) {
+export default function StarredPanel({ items, isLoading, onSelect, onToggleStar, onSwitchTab, onBrowseFilters }: StarredPanelProps) {
   if (isLoading) return <StarredPanelSkeleton />;
 
   if (items.length === 0) {
+    // Teaching empty state bound to the unified star model — replaces the
+    // generic single-CTA placeholder (design-critique 2026-06-18).
     return (
-      <ForYouEmptyState
-        title="No starred items yet"
-        description="Star a work item to keep it close. Starred items appear here and in your sidebar."
-        renderImage={() => <StarSparkleArt />}
-        // Primary action routes the user to a tab with content where they
-        // can actually star something. Without it the Starred tab is a
-        // dead end (Cooper goal-directed P0, design-critique 2026-05-17).
-        primaryActionText={onSwitchTab ? 'Browse assigned work' : undefined}
-        onPrimaryAction={onSwitchTab ? () => onSwitchTab('assigned') : undefined}
+      <StarredEmptyState
+        onBrowseWork={() => onSwitchTab?.('assigned')}
+        onOpenBoard={() => onSwitchTab?.('board')}
+        onBrowseFilters={onBrowseFilters}
       />
     );
   }

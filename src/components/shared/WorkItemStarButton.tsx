@@ -6,12 +6,19 @@
 import { Star } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useStarredItemIds, useToggleStar, StarredItemType } from '@/hooks/home/useStarredItems';
+import { useStarredItemIds, useToggleStar, StarredItemType, StarredMetadata } from '@/hooks/home/useStarredItems';
 import { Tooltip } from '@/components/ads';
 
 interface WorkItemStarButtonProps {
   itemId: string;
   itemType: StarredItemType;
+  /**
+   * Nav payload for surface stars (filter/board/dashboard/backlog/roadmap):
+   * { label, subtitle, route, icon }. Persisted to user_starred_items.metadata
+   * so the Starred hub + sidebar can render and route them. Omit for work items
+   * (they resolve via itemId/issue_key).
+   */
+  metadata?: StarredMetadata;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'ghost' | 'outline';
   className?: string;
@@ -25,6 +32,7 @@ interface WorkItemStarButtonProps {
 export function WorkItemStarButton({
   itemId,
   itemType,
+  metadata,
   size = 'sm',
   variant = 'ghost',
   className,
@@ -46,6 +54,7 @@ export function WorkItemStarButton({
       itemId,
       itemType,
       isCurrentlyStarred: isStarred,
+      ...(metadata ? { metadata } : {}),
     });
   };
 

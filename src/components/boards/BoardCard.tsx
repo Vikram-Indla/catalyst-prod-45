@@ -55,7 +55,14 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
 
   const handleStar = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleStar.mutate({ boardId: board.id, projectId, isStarred: !board.isStarred });
+    // Persist label so the Starred hub can render the board without a join.
+    // Route is resolved at hub read-time (needs hub+key context not available here).
+    toggleStar.mutate({
+      boardId: board.id,
+      projectId,
+      isStarred: !board.isStarred,
+      starMeta: { label: board.name, subtitle: 'Board' },
+    });
   };
 
   const handleDelete = async () => {

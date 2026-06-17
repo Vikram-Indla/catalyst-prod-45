@@ -134,7 +134,7 @@ export function useDeleteBoard() {
 export function useToggleBoardStar() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ boardId, projectId, isStarred }: { boardId: string; projectId: string; isStarred: boolean }) => {
+    mutationFn: async ({ boardId, projectId, isStarred, starMeta }: { boardId: string; projectId: string; isStarred: boolean; starMeta?: { label?: string; subtitle?: string; route?: string } }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
@@ -155,6 +155,7 @@ export function useToggleBoardStar() {
           item_id: boardId,
           item_type: 'board',
           starred_at: new Date().toISOString(),
+          ...(starMeta ? { metadata: starMeta } : {}),
         }, { onConflict: 'user_id,item_id,item_type' });
       } else {
         await supabase.from('user_starred_items')

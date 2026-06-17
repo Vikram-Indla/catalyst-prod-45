@@ -127,7 +127,7 @@ export function useToggleFavorite() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ projectId, isFavorited }: { projectId: string; isFavorited: boolean }) => {
+    mutationFn: async ({ projectId, isFavorited, starMeta }: { projectId: string; isFavorited: boolean; starMeta?: { label?: string; subtitle?: string; route?: string } }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
@@ -158,7 +158,7 @@ export function useToggleFavorite() {
         await supabase
           .from('user_starred_items')
           .upsert(
-            { user_id: user.id, item_id: projectId, item_type: 'project' },
+            { user_id: user.id, item_id: projectId, item_type: 'project', ...(starMeta ? { metadata: starMeta } : {}) },
             { onConflict: 'user_id,item_id,item_type' },
           );
       }
