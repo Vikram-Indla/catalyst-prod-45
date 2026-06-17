@@ -147,6 +147,7 @@ export function CreateSpaceWizard({ onCancel, onCreated }: Props) {
       key: draft.key.trim().toUpperCase(),
       purpose: draft.purpose,
       description: draft.description.trim() || undefined,
+      icon: draft.icon,
       permissionScheme: draft.permissionScheme,
       isPrivate: draft.isPrivate,
       features: draft.features,

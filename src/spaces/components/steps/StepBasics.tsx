@@ -10,6 +10,7 @@ import Select from '@atlaskit/select';
 import { Field, HelperMessage, ErrorMessage } from '@atlaskit/form';
 import { Stack } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
+import { IconPickerGrid, PROJECT_ICONS } from '@/components/shared/IconPickerGrid';
 import type {
   CreateSpaceDraft,
   CreateSpaceFieldErrors,
@@ -174,6 +175,26 @@ export function StepBasics({
           </>
         )}
       </Field>
+
+      {/* Icon — project icon set; persisted to projects.icon */}
+      <Stack space="space.100">
+        <span
+          style={{
+            fontSize: token('font.size.075', '12px'),
+            fontWeight: 600,
+            color: token('color.text'),
+          }}
+        >
+          Icon
+        </span>
+        <IconPickerGrid
+          icons={PROJECT_ICONS}
+          value={draft.icon}
+          onChange={(icon) => onChange({ icon })}
+          testIdPrefix="project-icon"
+        />
+        <HelperMessage>Pick an icon to identify this project.</HelperMessage>
+      </Stack>
     </Stack>
   );
 }

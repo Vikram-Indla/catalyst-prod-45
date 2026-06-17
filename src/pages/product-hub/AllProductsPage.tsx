@@ -60,6 +60,7 @@ interface Product {
   is_active: boolean;
   sort_order: number;
   created_at: string;
+  icon_key: string | null;
 }
 
 const FAV_STORAGE_KEY = 'product-hub.favorites';
@@ -456,7 +457,7 @@ export default function AllProductsPage() {
       const { data, error } = await (supabase as any)
         .from('products')
         .select(
-          'id, code, name, description, color, owner_id, is_active, sort_order, created_at',
+          'id, code, name, description, color, owner_id, is_active, sort_order, created_at, icon_key',
         )
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
@@ -536,7 +537,7 @@ export default function AllProductsPage() {
         return (
           <td key={colKey}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
-              <ProductAvatar code={p.code} size={24} />
+              <ProductAvatar code={p.code} iconKey={p.icon_key} size={24} />
               <RouterLink
                 to={`/product-hub/${p.code}/backlog`}
                 title={p.name}

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Search, Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
+import { iconUrlForKey, PROJECT_ICONS } from '@/components/shared/IconPickerGrid';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -30,8 +31,8 @@ interface Project {
   type: string;
   category: string;
   lead: { name: string; avatar?: string };
-  icon: string;
-  iconBgClass: string;
+  /** projects.icon — PROJECT_ICONS key, resolved to a bundled SVG at render. */
+  iconKey: string | null;
   isStarred: boolean;
 }
 
@@ -55,7 +56,7 @@ export default function ProjectDirectory() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('id, name, key, description, program_id, created_at, programs(id, name, key)')
+        .select('id, name, key, description, icon, program_id, created_at, programs(id, name, key)')
         .order('name');
       if (error) throw error;
       return data;
@@ -75,11 +76,7 @@ export default function ProjectDirectory() {
     },
   });
 
-  // Using semantic color classes instead of hex colors
-  const iconBgClasses = ['bg-blue-500', 'bg-red-500', 'bg-blue-600', 'bg-amber-500', 'bg-green-500', 'bg-gray-500'];
-  const icons = ['🧭', '💼', '🏢', '🔧', '📊', '📱', '⚙️', '🚀'];
-
-  const projects: Project[] = (projectsData || []).map((p: any, index) => ({
+  const projects: Project[] = (projectsData || []).map((p: any) => ({
     id: p.id,
     key: p.key || 'N/A',
     name: p.name || 'Unnamed',
@@ -89,8 +86,7 @@ export default function ProjectDirectory() {
     type: 'Company-managed software',
     category: 'Software',
     lead: { name: 'Unassigned' },
-    icon: icons[index % icons.length],
-    iconBgClass: iconBgClasses[index % iconBgClasses.length],
+    iconKey: p.icon ?? null,
     isStarred: starredProjects.has(p.id),
   }));
 
@@ -188,7 +184,17 @@ export default function ProjectDirectory() {
                 <Star className={`w-4 h-4 ${project.isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
               </button>
               <div className="flex items-center gap-2">
-                <div className={`w-6 h-6 rounded flex items-center justify-center text-sm ${project.iconBgClass}`}>{project.icon}</div>
+                {(() => {
+                  const url = iconUrlForKey(project.iconKey, PROJECT_ICONS);
+                  return (
+                    <div
+                      className="w-6 h-6 rounded flex items-center justify-center shrink-0"
+                      style={{ background: 'var(--ds-background-neutral, #F1F2F4)' }}
+                    >
+                      {url && <img src={url} alt="" aria-hidden style={{ width: 18, height: 18, objectFit: 'contain' }} />}
+                    </div>
+                  );
+                })()}
                 <span className="text-sm font-medium text-primary">{project.name}</span>
               </div>
               <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{project.key}</code>

@@ -78,6 +78,7 @@ export class SupabaseProjectService implements SpaceService {
         key:         req.key.toUpperCase(),
         department:  PURPOSE_TO_DEPARTMENT[req.purpose] ?? null,
         description: req.description?.trim() || null,
+        icon:        req.icon || null,
         user_id:     userId,
       },
     });

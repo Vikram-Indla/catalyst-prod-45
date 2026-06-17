@@ -8,6 +8,8 @@
 // portable across providers (Confluence, Supabase, mock, etc.).
 // ============================================================================
 
+import { PROJECT_ICONS } from '@/components/shared/IconPickerGrid';
+
 /** High-level intent for the new project — drives default features later. */
 export type SpacePurpose = 'COLLABORATION' | 'KNOWLEDGE_BASE' | 'CUSTOM';
 
@@ -27,6 +29,8 @@ export interface CreateSpaceDraft {
   key: string;
   purpose: SpacePurpose;
   description: string;
+  /** PROJECT_ICONS filename stem chosen in the Basics-step icon picker. */
+  icon: string;
   permissionScheme: SpacePermissionScheme;
   isPrivate: boolean;
   features: SpaceFeatureFlags;
@@ -38,6 +42,8 @@ export interface CreateSpaceRequest {
   key: string;
   purpose: SpacePurpose;
   description?: string;
+  /** PROJECT_ICONS filename stem; persisted to projects.icon. */
+  icon: string;
   permissionScheme: SpacePermissionScheme;
   isPrivate: boolean;
   features: SpaceFeatureFlags;
@@ -84,6 +90,7 @@ export function emptyCreateSpaceDraft(): CreateSpaceDraft {
     key: '',
     purpose: 'COLLABORATION',
     description: '',
+    icon: PROJECT_ICONS[0]?.key ?? '',
     permissionScheme: 'DEFAULT',
     isPrivate: false,
     features: {

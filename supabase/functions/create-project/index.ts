@@ -14,12 +14,13 @@ serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   )
 
-  const { name, key, department, description, user_id } = await req.json()
+  const { name, key, department, description, icon, user_id } = await req.json()
 
   const { data: project, error } = await supabase
     .from('projects')
     .insert({
       name, key: key.toUpperCase(), department, description: description || null,
+      icon: icon || null,
       status: 'active', status_category: 'todo', health_status: 'on_track',
       owner_id: user_id, created_by: user_id, lead_id: user_id,
       program_id: '00000000-0000-0000-0000-000000000001', project_type: 'kanban',
@@ -27,7 +28,7 @@ serve(async (req) => {
       work_items_todo: 0, work_items_in_progress: 0, work_items_done: 0,
       completion_percentage: 0,
     })
-    .select('id, name, key, description, department, created_at')
+    .select('id, name, key, description, department, icon, created_at')
     .single()
 
   if (error) {

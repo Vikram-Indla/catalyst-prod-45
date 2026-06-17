@@ -49,6 +49,19 @@ const projectMods = import.meta.glob('../../assets/icons/project-avatars/*.svg',
 export const PRODUCT_ICONS: EntityIcon[] = buildSet(productMods);
 export const PROJECT_ICONS: EntityIcon[] = buildSet(projectMods);
 
+/**
+ * Resolve a stored icon key (products.icon_key / projects.icon) to its bundled
+ * SVG url within the given set. Returns null when the key is empty or unknown —
+ * callers render a neutral fallback rather than a broken image (never a lie).
+ */
+export function iconUrlForKey(
+  key: string | null | undefined,
+  set: EntityIcon[],
+): string | null {
+  if (!key) return null;
+  return set.find((ic) => ic.key === key)?.url ?? null;
+}
+
 interface IconPickerGridProps {
   icons: EntityIcon[];
   value: string | null;
