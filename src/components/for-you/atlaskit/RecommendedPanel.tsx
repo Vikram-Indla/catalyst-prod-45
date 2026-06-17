@@ -318,6 +318,25 @@ export default function RecommendedPanel({
   if (hasMentions || hasComments) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {/* Caty's digest — inline panel at the top of the feed (NOT a modal).
+            Opens when the Summarize button sets digestOpen; pushes the feed
+            down and collapses on × / Close. */}
+        {digestOpen !== null && (
+          <SummarizeDigestModal
+            inline
+            open
+            onClose={() => setDigestOpen(null)}
+            mentions={digestRows}
+            onReply={(commentId) => {
+              // Reply happens in the original feed card — collapse the digest
+              // and scroll the user back to that card's composer.
+              const el = document.querySelector(`[data-comment-id="${commentId}"]`);
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }}
+            onDismiss={handleDismiss}
+            onOpenTicket={(issueKey) => resolveSelect(issueKey)}
+          />
+        )}
         {hasMentions && (
           <FeedSection
             label="Reply to mentions"
@@ -399,19 +418,6 @@ export default function RecommendedPanel({
             onOpenDigest={visibleComments.length >= 2 && setDigestOpen ? () => setDigestOpen('comments') : undefined}
           />
         )}
-        <SummarizeDigestModal
-          open={digestOpen !== null}
-          onClose={() => setDigestOpen(null)}
-          mentions={digestRows}
-          onReply={(commentId) => {
-            // Reply happens in the original feed card. Modal just closes and
-            // scrolls user back to the card so the existing composer takes over.
-            const el = document.querySelector(`[data-comment-id="${commentId}"]`);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }}
-          onDismiss={handleDismiss}
-          onOpenTicket={(issueKey) => resolveSelect(issueKey)}
-        />
       </div>
     );
   }
@@ -1343,7 +1349,7 @@ const ASK_CATY_RAINBOW = `conic-gradient(
   #FF3CAC 360deg
 )`;
 
-function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loading'; onSuggest: () => void }) {
+function SuggestReplyTile({ phase, onSuggest, inline = false }: { phase: 'idle' | 'error' | 'loading'; onSuggest: () => void; inline?: boolean }) {
   // Hover state drives `filter: brightness(1.08)` on the rainbow wrapper
   // — the ADS-canonical hover affordance allowed by the CLAUDE.md
   // ENTERPRISE UI GUARDRAIL carve-out (2026-05-31). No motion, no
@@ -1352,8 +1358,10 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
   return (
     <div
       style={{
-        marginBlockStart: 8,
-        marginInlineStart: 34, /* 32 avatar + 2 nudge */
+        // inline: pill sits on the placeholder row (top-right of the box) so
+        // the avatar/below-box indent is dropped. Default: below-box tile.
+        marginBlockStart: inline ? 0 : 8,
+        marginInlineStart: inline ? 0 : 34, /* 32 avatar + 2 nudge */
         display: 'inline-flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
@@ -1390,6 +1398,7 @@ function SuggestReplyTile({ phase, onSuggest }: { phase: 'idle' | 'error' | 'loa
           Hover affordance: `filter: brightness(1.08)` only — no motion. */}
       <CatyButton
         label="Suggest?"
+        size="compact"
         onClick={onSuggest}
         loading={phase === 'loading'}
         disabled={phase === 'loading'}
@@ -2725,40 +2734,47 @@ function LeaveAReplyBox({
             {/* Inline success indicator — green check + "Reply sent" for
                 ~2s after a successful submit, then quietly reverts to the
                 default placeholder. No corner notification, no overlay. */}
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                color: replyJustSent
-                  ? 'var(--ds-text-success, #1F845A)'
-                  : token('color.text.subtlest', '#6B778C'),
-                transition: 'color 240ms ease',
-              }}
-            >
-              {replyJustSent && (
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path
-                    d="M3 8l3.5 3.5L13 5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              )}
-              {placeholder}
-            </span>
-            {/* Stop propagation so clicking the Ask Caty button does
-                NOT also trigger the outer "open editor" handler on the
-                bordered box. */}
-            <span onClick={(e) => e.stopPropagation()}>
-              <SuggestReplyTile
-                phase={suggestError ? 'error' : 'idle'}
-                onSuggest={onSuggest}
-              />
-            </span>
+            {/* Jira parity: placeholder on the LEFT, "Suggest?" pinned to the
+                RIGHT of the same row (┌─ Leave a reply ──── Suggest a reply ─┐). */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+                  color: replyJustSent
+                    ? 'var(--ds-text-success, #1F845A)'
+                    : token('color.text.subtlest', '#6B778C'),
+                  transition: 'color 240ms ease',
+                }}
+              >
+                {replyJustSent && (
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path
+                      d="M3 8l3.5 3.5L13 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+                {placeholder}
+              </span>
+              {/* Stop propagation so clicking the Ask Caty button does
+                  NOT also trigger the outer "open editor" handler on the
+                  bordered box. */}
+              <span style={{ flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                <SuggestReplyTile
+                  phase={suggestError ? 'error' : 'idle'}
+                  onSuggest={onSuggest}
+                  inline
+                />
+              </span>
+            </div>
           </div>
         )}
       </div>

@@ -337,7 +337,10 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
         }}>
           {filteredItems.length} items across {projectGroups.length} projects
         </span>
-        <CatyBoardInsight resourceId={resourceId} panelPortalTarget={insightSlot} />
+        {/* Board health pinned to the far-right end of the toolbar. */}
+        <div style={{ marginLeft: 'auto' }}>
+          <CatyBoardInsight resourceId={resourceId} panelPortalTarget={insightSlot} />
+        </div>
       </div>
 
       {/* Board health result lands here — below the toolbar, pushing the board down */}
