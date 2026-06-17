@@ -250,10 +250,13 @@ export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
         }
       }
 
-      // Only return filters the current user owns or that are public (is_shared).
-      // Prevents filters from other hubs/owners leaking into Quick Filters dropdowns.
+      // Only return filters the current user created, owns, or that are public
+      // (is_shared). user_id (creator) is included so transferring ownership of a
+      // private filter doesn't make it vanish from the creator's list — they keep
+      // RLS access via the user_id branch (CAT-DEF-006). Still hub-scoped above, so
+      // no cross-hub leakage into Quick Filters dropdowns.
       if (user) {
-        query = (query as any).or(`owner_id.eq.${user.id},is_shared.eq.true`);
+        query = (query as any).or(`owner_id.eq.${user.id},user_id.eq.${user.id},is_shared.eq.true`);
       }
 
       const { data, error } = await query;
