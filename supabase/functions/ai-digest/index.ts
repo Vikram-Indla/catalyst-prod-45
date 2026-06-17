@@ -72,17 +72,37 @@ serve(async (req) => {
     const forceRefresh = req.headers.get("x-force-refresh") === "true";
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // Pre-warm path: a trusted service-role caller (ai-theme-prewarm, the
+    // 06:00 Riyadh pg_cron job) acts on behalf of a user via the
+    // X-User-Id-Override header. getUser() does NOT resolve a service-role
+    // token to a user, so without this branch every pre-warm call 401s
+    // (the latent reason the nightly warm never worked). Both the
+    // service-role key AND the override header are required — normal users
+    // (anon key + user JWT) never take this path.
+    const overrideUserId = req.headers.get("X-User-Id-Override");
+    const isServiceRole = Boolean(serviceRoleKey) && authHeader === `Bearer ${serviceRoleKey}`;
+
+    let supabase;
+    let userId: string;
+    if (isServiceRole && overrideUserId) {
+      supabase = createClient(supabaseUrl, serviceRoleKey!, {
+        auth: { persistSession: false },
       });
+      userId = overrideUserId;
+    } else {
+      supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      userId = user.id;
     }
-    const userId = user.id;
 
     // ── MODE DISPATCH ────────────────────────────────────────────────
     // The ai-digest endpoint serves two modes:
