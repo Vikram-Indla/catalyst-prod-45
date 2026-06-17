@@ -1607,11 +1607,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (f.priority.length && (!it.priority || !f.priority.includes(it.priority as any))) return false;
       // Status filter
       if (f.status.length && (!it.status || !f.status.includes(it.status))) return false;
-      // Work type filter (maps to BacklogType for now — Epic / Feature / Story)
-      if (f.workType.length) {
-        const typeLabel = it.type.charAt(0).toUpperCase() + it.type.slice(1); // story → Story
-        if (!f.workType.includes(typeLabel)) return false;
-      }
+      // Work type filter — compare against the RAW issue_type (e.g. 'QA Bug',
+      // 'Change Request'), which is what the filter option ids hold. The prior
+      // it.type bucket+capitalize never matched multi-word types (CAT-DEF-010).
+      if (f.workType.length && (!it.issue_type || !f.workType.includes(it.issue_type))) return false;
       // Assignee filter
       if (f.assignees.length && (!it.assignee_name || !f.assignees.includes(it.assignee_name))) return false;
       // Reporter filter — sourced from ph_issues.reporter_display_name
@@ -1663,11 +1662,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       effectiveChildrenOf = new Map<string, BacklogItem[]>();
       childrenOf.forEach((v, k) => effectiveChildrenOf.set(k, [...v].sort(compareRows)));
     }
+    // When any filter/search is active, treat all parents as expanded so matching
+    // descendants surface instead of staying hidden under a collapsed parent
+    // (CAT-DEF-010 — assignee filter "not working" + visible/result count desync).
+    const hasActiveFilters =
+      !!search.trim() || typeFilter !== 'all' ||
+      filterValue.priority.length > 0 || filterValue.status.length > 0 || filterValue.workType.length > 0 ||
+      filterValue.assignees.length > 0 || filterValue.reporter.length > 0 || filterValue.sprintReleases.length > 0 ||
+      !!filterValue.updated.from || !!filterValue.updated.to || !!filterValue.created.from || !!filterValue.created.to;
     // flattenTree already dedups by id, so it is the final ordered list.
     return flattenTree<BacklogItem>(
       roots,
       effectiveChildrenOf,
-      (id) => !showHierarchy || expandedIds.has(id),
+      (id) => !showHierarchy || hasActiveFilters || expandedIds.has(id),
       (node) => matchesText(node) && matchesType(node) && matchesFilterBar(node),
     );
   }, [topLevel, childrenOf, items, expandedIds, showHierarchy, typeFilter, search, filterValue, sortKey, sortDir, compareRows]);
@@ -1746,10 +1753,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       const f = filterValue;
       if (f.priority.length && (!it.priority || !f.priority.includes(it.priority as any))) return false;
       if (f.status.length && (!it.status || !f.status.includes(it.status))) return false;
-      if (f.workType.length) {
-        const typeLabel = it.type.charAt(0).toUpperCase() + it.type.slice(1);
-        if (!f.workType.includes(typeLabel)) return false;
-      }
+      if (f.workType.length && (!it.issue_type || !f.workType.includes(it.issue_type))) return false;
       if (f.assignees.length && (!it.assignee_name || !f.assignees.includes(it.assignee_name))) return false;
       if (f.reporter.length && (!it.reporter_name || !f.reporter.includes(it.reporter_name))) return false;
       if (f.sprintReleases.length && (!it.parent_id || !f.sprintReleases.includes(it.parent_id))) return false;
@@ -2096,9 +2100,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     { id: 'log-work', label: 'Log work', icon: <AkClockIcon label="" />,
       onClick: (r) => { openDetail(r); flag.info('Log work', 'Worklog section in the right rail.'); } },
     { id: 'agile-board', label: 'Agile board', icon: <AkBoardIcon label="" />,
-      onClick: (r) => {
-        const parent = r.parent_key || r.key;
-        navigate(`${resolvedBaseUrl}/kanban${parent ? `?epic=${parent}` : ''}`);
+      onClick: () => {
+        // /kanban is a deprecated route that hard-redirects to /boards and drops
+        // the ?epic param — go straight to the live boards surface (CAT-DEF-011).
+        navigate(`${resolvedBaseUrl}/boards`);
       } },
     { id: 'rank-top', label: 'Rank to top', icon: <AkArrowUpIcon label="" />,
       onClick: async (r) => {
@@ -2126,7 +2131,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             .update({ sort_order: newRank } as any)
             .eq('issue_key', r.id);
           if (updErr) throw updErr;
+          // Clear active column sort so the re-ranked row actually moves in the
+          // visible order (sort_order only governs the unsorted view) — CAT-DEF-011.
+          setSortKey(null);
+          setSortDir(null);
           queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+          queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
           flag.success('Ranked to top', r.key || r.id);
         } catch (e: any) {
           flag.error('Rank failed', e?.message ?? String(e));
@@ -2154,7 +2164,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             .update({ sort_order: newRank } as any)
             .eq('issue_key', r.id);
           if (updErr) throw updErr;
+          setSortKey(null);
+          setSortDir(null);
           queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+          queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
           flag.success('Ranked to bottom', r.key || r.id);
         } catch (e: any) {
           flag.error('Rank failed', e?.message ?? String(e));
@@ -3229,6 +3242,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               id: 'expand-all',
               label: 'Expand all work items',
               onClick: () => {
+                // Row hierarchy is driven by expandedIds (childrenOf keys = every
+                // parent that has children); also clear group collapse so both
+                // ungrouped and grouped views open fully (CAT-DEF-008).
+                setExpandedIds(new Set(childrenOf.keys()));
                 setCollapsedGroups(new Set());
                 flag.success('Expanded all work items');
               },
@@ -3237,12 +3254,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               id: 'collapse-all',
               label: 'Collapse all work items',
               onClick: () => {
-                if (groupedRows) {
-                  setCollapsedGroups(new Set(groupedRows.map((g) => g.id)));
-                  flag.success('Collapsed all work items');
-                } else {
-                  flag.info('Collapse all', 'Switch to a grouped view first.');
-                }
+                setExpandedIds(new Set());
+                setCollapsedGroups(groupedRows ? new Set(groupedRows.map((g) => g.id)) : new Set());
+                flag.success('Collapsed all work items');
               },
             },
           ],
@@ -5983,7 +5997,7 @@ function InlineGroupCreateRow({
         display: 'flex',
         alignItems: 'center',
         gap: 6,
-        padding: '4px 10px',
+        padding: '4px 8px',
         background: 'transparent',
       }}
       onKeyDown={(e) => {
@@ -6109,7 +6123,7 @@ function InlineGroupCreateRow({
           flex: 1,
           minWidth: 80,
           height: 28,
-          padding: '0 6px',
+          padding: '0 8px',
           border: 'none',
           outline: 'none',
           background: 'transparent',
@@ -6180,7 +6194,7 @@ function InlineGroupCreateRow({
               fontFamily: 'var(--cp-font-body)',
             }}
           >
-            <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text', '#292A2E'), marginBottom: 6 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text', '#292A2E'), marginBottom: 8 }}>
               Due date
             </div>
             <div style={{ position: 'relative', marginBottom: 12 }}>
