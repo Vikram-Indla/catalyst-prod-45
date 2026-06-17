@@ -77,7 +77,7 @@ function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
     'Sprint Predictor': 'AI-powered sprint completion predictions.',
     'Risk Scanner': 'AI-driven risk detection and mitigation.',
   };
-  return <Suspense fallback={<div className="p-8">Loading...</div>}><PHPlaceholderBase title={title} phase={phase} description={PH_DESCRIPTIONS_MAP[title] || `Coming in ${phase}`} /></Suspense>;
+  return <Suspense fallback={<div style={{ padding: 32 }}>Loading...</div>}><PHPlaceholderBase title={title} phase={phase} description={PH_DESCRIPTIONS_MAP[title] || `Coming in ${phase}`} /></Suspense>;
 }
 
 const ProductionEventsPageLazy = lazy(() => import("../pages/releasehub/ProductionEventsPage"));
@@ -357,7 +357,7 @@ const IncidentKanbanPage = lazy(() => import("../modules/incidents/kanban/pages/
 
 const S = ({ children }: { children: React.ReactNode }) => (
   <ErrorBoundary>
-    <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
+    <Suspense fallback={<div style={{ padding: 32 }}>Loading...</div>}>{children}</Suspense>
   </ErrorBoundary>
 );
 
@@ -475,7 +475,7 @@ export default function FullAppRoutes() {
         <Route path="/browse/:key" element={<S><BrowsePage /></S>} />
 
         {/* ═══ Work Items / BacklogPage ═══ */}
-        <Route path="/workitems" element={<S><Suspense fallback={<div className="p-8">Loading...</div>}><WorkListPageLazy /></Suspense></S>} />
+        <Route path="/workitems" element={<S><Suspense fallback={<div style={{ padding: 32 }}>Loading...</div>}><WorkListPageLazy /></Suspense></S>} />
 
         {/* ═══ Product Hub ═══
             Block A rule 1 (2026-05-01): canonical URL prefix is `/product-hub`.
