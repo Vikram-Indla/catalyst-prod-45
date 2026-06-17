@@ -42,7 +42,8 @@ const RAIL_BORDER_CSS = `
     transition: box-shadow 0.1s, background 0.1s;
   }
   .cv-rail-value:hover:not(:focus-within) {
-    box-shadow: inset 0 0 0 2px var(--ds-border, rgba(11,18,14,0.14));
+    /* 2026-06-17: border (inset box-shadow) removed — Vikram directive.
+       Hover bg alone is the affordance; the gray ring was extra chrome. */
     background: var(--ds-background-neutral-subtle-hovered, rgba(5,21,36,0.06));
   }
   .cv-rail-value:focus-within {
@@ -56,6 +57,49 @@ const RAIL_BORDER_CSS = `
   .cv-rail-value [class*="-select__control--menu-is-open"] {
     border-color: transparent !important;
     box-shadow: none !important;
+  }
+  /* 2026-06-17 — single hover background. .cv-rail-value owns the only
+     hover bg on the right rail. Inner atoms (react-select controls,
+     hand-rolled SidebarAddTrigger buttons, EditablePriority chips,
+     CatalystSeverityField, etc.) each ship their own hover bg — those
+     would stack on top of .cv-rail-value's hover and produce a visible
+     double background. Suppressed here on both idle and :hover. */
+  .cv-rail-value [class*="-select__control"],
+  .cv-rail-value [class*="-select__control"]:hover,
+  .cv-rail-value button,
+  .cv-rail-value button:hover {
+    background: transparent !important;
+  }
+  /* 2026-06-17 — avatar + name vertical centering. react-select's default
+     Control / ValueContainer / SingleValue use line-height baselines that
+     push content above the row's visual centre. Force flex centering at
+     every layer + symmetric zero padding so the avatar sits dead-centre. */
+  .cv-rail-value [class*="-select__control"] {
+    min-height: 32px !important;
+    height: 32px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .cv-rail-value [class*="-select__value-container"] {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+  }
+  .cv-rail-value [class*="-select__single-value"] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .cv-rail-value [class*="-select__input-container"] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 `;
 
