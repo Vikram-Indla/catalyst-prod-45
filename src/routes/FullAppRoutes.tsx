@@ -123,6 +123,7 @@ const IncidentHubBoardPage = lazy(() => import("../pages/incidenthub/IncidentBoa
 const IncidentHubFiltersListPage = lazy(() => import("../pages/incidenthub/IncidentFiltersListPage"));
 const IncidentHubFilterPreviewPage = lazy(() => import("../pages/incidenthub/IncidentFilterPreviewPage"));
 const IncidentHubFilterDetailPage = lazy(() => import("../pages/incidenthub/IncidentFilterDetailPage"));
+const IncidentHubTimelinePage = lazy(() => import("../pages/incidenthub/IncidentTimelinePage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
 const IncidentHubInsightsPage = lazy(() => import("../pages/incidenthub/IncidentInsightsPage"));
 const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentReportsPage"));
@@ -695,6 +696,11 @@ export default function FullAppRoutes() {
         <Route path="/incident-hub/filters" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFiltersListPage /></S></MG>} />
         <Route path="/incident-hub/filters/create" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFilterPreviewPage /></S></MG>} />
         <Route path="/incident-hub/filters/:filterId" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFilterDetailPage /></S></MG>} />
+        {/* 2026-06-17: Timeline tab — canonical TimelineView with
+            useIncidentHubTimeline data (ph_issues filtered to
+            issue_type='Production Incident'). Same Gantt chrome as
+            /project-hub/:key/timeline and /product-hub/:key/timeline. */}
+        <Route path="/incident-hub/timeline" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubTimelinePage /></S></MG>} />
         {/* 2026-06-16: Work tab — canonical ProjectAllWorkView with mode='incident'. */}
         <Route path="/incident-hub/work" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubWorkPage /></S></MG>} />
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />

@@ -12,7 +12,7 @@ import {
   FileText,
   Users,
 } from '@/lib/atlaskit-icons';
-import { NavWorkIcon, NavFiltersIcon } from '@/lib/nav-icons';
+import { NavWorkIcon, NavFiltersIcon, NavTimelineIcon } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface IncidentHubSidebarProps {
@@ -49,6 +49,11 @@ const sections: SidebarSection[] = [
       /* 2026-06-16: Filters tab — canonical FiltersListPage hubType='incident'.
          Sequence (Board → Work → Filters) mirrors project + product hubs. */
       { id: 'filters', title: 'Filters', path: '/incident-hub/filters', icon: NavFiltersIcon, exact: false },
+      /* 2026-06-17: Timeline tab — canonical TimelineView mounted with
+         useIncidentHubTimeline data (ph_issues filtered to
+         issue_type='Production Incident'). Same Gantt chrome as project
+         + product hubs. */
+      { id: 'timeline', title: 'Timeline', path: '/incident-hub/timeline', icon: NavTimelineIcon, exact: false },
       { id: 'reports', title: 'Reports', path: '/incident-hub/reports', icon: FileText, exact: false },
       { id: 'committee-queue', title: 'Committee Queue', path: '/incident-hub/committee-queue', icon: Users, exact: false },
     ],
