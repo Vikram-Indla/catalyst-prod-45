@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import { TaskCard } from '@/modules/tasks/components/TaskCard';
 import { KanbanCard } from '@/modules/tasks/components/kanban/KanbanCard';
 import type { PlannerTask } from '@/modules/tasks/types';

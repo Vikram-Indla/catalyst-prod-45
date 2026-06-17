@@ -5191,6 +5191,22 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: none !important;
 }
 
+/* DARK SURFACE COHERENCE (2026-06-16) — kill neutral-vs-cool seam between
+   nested panels. Atlaskit's setGlobalTheme left --ds-surface at the NEUTRAL
+   #1F1F21 (header / content panels / table cards) and the body backdrop at
+   the NEUTRAL #1A1A1A, while --cp-bg surfaces are cool #1D2125 — producing
+   the "awkward boxes of different darks". Snap them onto the canonical ADS
+   cool dark ramp. #1D2125 IS the canonical ADS elevation.surface dark, so
+   this corrects Atlaskit's override rather than fighting it. Light untouched. */
+html.dark, html[data-color-mode="dark"] {
+  --ds-surface: #1D2125 !important;
+  --ds-surface-raised: #22272B !important;
+  --ds-surface-overlay: #282E33 !important;
+}
+.dark body, [data-theme="dark"] body {
+  background: var(--cp-bg, #1D2125) !important;
+}
+
 .dark [data-sidebar] [class*="group-label"],
 .dark aside .sidebar-section-header,
 .dark aside [class*="SectionHeader"],

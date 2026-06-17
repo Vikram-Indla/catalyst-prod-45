@@ -3,8 +3,7 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { BulkFooterBar } from '@/components/shared/JiraTable/BulkFooterBar';
 import { ColumnVisibilityMenu } from '@/components/shared/dynamic-table/ColumnVisibilityMenu';
@@ -12,14 +11,14 @@ import { DynamicTable } from '@/components/shared/dynamic-table/DynamicTable';
 import { flags } from '@/components/shared/JiraTable/flags';
 
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></MemoryRouter>);
+  return (<div style={{ maxWidth: 900, padding: 16 }}>{children}</div>);
 }
 
 export default { title: 'Components/Shared/Table' };
 
 export const BulkFooterBarDefault: StoryObj = {
   name: 'BulkFooterBar / Default',
-  render: () => <Wrap><BulkFooterBar selectedCount=5 onDeselectAll={fn()} /></Wrap>,
+  render: () => <Wrap><BulkFooterBar selectedCount={5} onDeselectAll={fn()} /></Wrap>,
 }
 
 export const flagsDefault: StoryObj = {

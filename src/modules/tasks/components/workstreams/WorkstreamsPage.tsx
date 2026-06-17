@@ -82,6 +82,17 @@ export function WorkstreamsPage() {
   // Create modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  // Deep-link: /tasks/workstreams?create=1 opens the create modal directly
+  // (switcher "+ New workstream" footer, 2026-06-16). Consume + clear the param.
+  useEffect(() => {
+    if (searchParams.get('create') === '1') {
+      setIsCreateModalOpen(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete('create');
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   // Quick edit dialog
   const [isQuickEditOpen, setIsQuickEditOpen] = useState(false);
   const [quickEditWorkstream, setQuickEditWorkstream] = useState<Workstream | null>(null);

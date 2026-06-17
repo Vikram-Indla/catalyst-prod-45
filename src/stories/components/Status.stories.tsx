@@ -3,7 +3,7 @@ import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/se
 import { STATUSES } from '../fixtures/production-data';
 
 const meta: Meta<typeof CatalystStatusPill> = {
-  title: 'Components/Status Pill',
+  title: 'Components/Status',
   component: CatalystStatusPill,
   parameters: { layout: 'padded' },
 };

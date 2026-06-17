@@ -52,4 +52,16 @@ export interface CatalystViewBaseProps {
 export interface CatalystDetailRouterProps extends CatalystViewBaseProps {
   /** If known, the item type to render — avoids a DB lookup */
   itemType?: CatalystItemType | string;
+  /**
+   * Source table the itemId belongs to.
+   * - 'ph_issue' (default): itemId is a ph_issues.issue_key (or row lookup by issue_key).
+   *   Routes through the legacy CatalystView* per-type components.
+   * - 'task': itemId is a tasks.id (UUID). Routes through TaskCatalystView, which
+   *   reads from the `tasks` table.
+   *
+   * Added 2026-06-16 (Task 1.5d) to allow Tasks Hub to mount the canonical
+   * CatalystDetailPanel chrome WITHOUT forking CatalystViewTask, per
+   * CLAUDE.md REUSE-FIRST + ADOPT-CANONICAL.
+   */
+  entityKind?: 'ph_issue' | 'task';
 }

@@ -44,7 +44,7 @@ export function useTaskUsers() {
       const [profilesResult, userRoleMap] = await Promise.all([
         supabase
           .from('profiles')
-          .select('id, full_name')
+          .select('id, full_name, avatar_url')
           .order('full_name')
           .limit(50),
         fetchUserRolesMap(),
@@ -69,6 +69,10 @@ export function useTaskUsers() {
         team: 'Team',
         // online presence is handled by real-time presence system, not mocked
         online: false,
+        // 2026-06-16 Fix #3/#7: include avatar_url so the toolbar AvatarGroup
+        // renders real avatars (matches BacklogPage activeAssignees pattern),
+        // and so assigned tasks render with the assignee's avatar in the cell.
+        avatarUrl: row.avatar_url || undefined,
       }));
 
       return users;

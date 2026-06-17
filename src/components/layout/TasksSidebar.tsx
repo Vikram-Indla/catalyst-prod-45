@@ -6,58 +6,21 @@
  */
 
 import React from 'react';
-import { 
+import {
   LayoutDashboard,
-  LayoutGrid, 
+  LayoutGrid,
   GanttChartSquare,
   Settings,
-  CheckSquare,
   List,
-  Layers,
-  LucideProps,
 } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
+import { ContextSwitcher } from './ContextSwitcher';
 
 interface TasksSidebarProps {
   expanded: boolean;
   onToggle: () => void;
   className?: string;
 }
-
-// Custom "10" icon component that matches Lucide icon interface
-const Priorities10Icon = React.forwardRef<SVGSVGElement, LucideProps>(
-  ({ size = 24, strokeWidth = 2, color = 'currentColor', ...props }, ref) => (
-    <svg
-      ref={ref}
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <circle cx="12" cy="12" r="10" />
-      <text
-        x="12"
-        y="12"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill={color}
-        stroke="none"
-        fontSize="9"
-        fontWeight="700"
-        fontFamily="system-ui, sans-serif"
-      >
-        10
-      </text>
-    </svg>
-  )
-);
-Priorities10Icon.displayName = 'Priorities10Icon';
 
 const taskHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
@@ -73,19 +36,10 @@ const taskHubSidebarConfig: SidebarConfig = {
     {
       title: '',
       items: [
-        { id: 'dashboard', title: 'Overview', path: '/tasks/overview', icon: LayoutDashboard, exact: true },
-        { id: 'workstreams', title: 'Workstreams', path: '/tasks/workstreams', icon: Layers, exact: true },
-        { id: 'my-tasks', title: 'My Tasks', path: '/tasks/my-tasks', icon: CheckSquare, exact: true },
+        { id: 'dashboard', title: 'Dashboard', path: '/tasks/overview', icon: LayoutDashboard, exact: true },
         { id: 'boards', title: 'Board', path: '/tasks/board', icon: LayoutGrid, exact: true },
         { id: 'task-list', title: 'Task List', path: '/tasks/list', icon: List, exact: true },
         { id: 'timeline', title: 'Timeline', path: '/tasks/timeline', icon: GanttChartSquare, exact: true },
-        {
-          id: 'priorities',
-          title: 'Priorities',
-          path: '/tasks/priorities',
-          icon: Priorities10Icon,
-          exact: false,
-        },
       ],
     },
   ],
@@ -105,6 +59,7 @@ export function TasksSidebar({ expanded, onToggle, className }: TasksSidebarProp
       expanded={expanded}
       onToggle={onToggle}
       className={className}
+      renderHeaderSwitcher={(exp) => <ContextSwitcher variant="sidebar" expanded={exp} />}
     />
   );
 }

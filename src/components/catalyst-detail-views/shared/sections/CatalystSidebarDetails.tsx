@@ -27,6 +27,38 @@ import Button from '@atlaskit/button/new';
 // jira-compare 2026-05-16 correction: FieldRow reverted to STACKED (column) layout
 import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './CatalystConfigureDrawer';
 
+/* Jira-parity: right-rail field chips (probe 2026-06-16).
+   Idle: invisible 2px transparent border (zero layout shift on hover).
+   Hover: 2px border appears + bg tint. Focus: inset 2px blue ring (#4688EC = actual
+   --ds-border-focused resolved value on Jira MDT-818).
+   :focus-within handles the blue ring so each editable component doesn't need
+   its own focus ring inside the sidebar.
+   Style injected via useEffect (not module-level) so it reliably runs on every
+   component mount regardless of Vite HMR / browser bundle caching. */
+const RAIL_BORDER_STYLE_ID = 'cv-rail-value-border-v2';
+const RAIL_BORDER_CSS = `
+  .cv-rail-value {
+    border-radius: 3px;
+    transition: box-shadow 0.1s, background 0.1s;
+  }
+  .cv-rail-value:hover:not(:focus-within) {
+    box-shadow: inset 0 0 0 2px var(--ds-border, rgba(11,18,14,0.14));
+    background: var(--ds-background-neutral-subtle-hovered, rgba(5,21,36,0.06));
+  }
+  .cv-rail-value:focus-within {
+    box-shadow: inset 0 0 0 2px var(--ds-border-focused, #4688EC);
+  }
+  .cv-rail-value:focus-within > div[style] {
+    outline: none !important;
+    border-color: transparent !important;
+  }
+  .cv-rail-value [class*="-select__control--is-focused"],
+  .cv-rail-value [class*="-select__control--menu-is-open"] {
+    border-color: transparent !important;
+    box-shadow: none !important;
+  }
+`;
+
 /**
  * FieldRow — sidebar field row atom (Phase E.3, 2026-04-18).
  *
@@ -86,7 +118,7 @@ function FieldRow({
           display: 'flex',
           alignItems: 'center',
           padding: '0 4px',
-          borderRadius: 4,
+          borderRadius: 3,
         }}
       >
         {children}
@@ -261,6 +293,15 @@ export function CatalystSidebarDetails({
     : STATUS_OPTION_GROUPS;
 
   useEffect(() => { setLocalStatus(''); }, [itemId]);
+
+  useEffect(() => {
+    if (!document.getElementById(RAIL_BORDER_STYLE_ID)) {
+      const s = document.createElement('style');
+      s.id = RAIL_BORDER_STYLE_ID;
+      s.textContent = RAIL_BORDER_CSS;
+      document.head.appendChild(s);
+    }
+  }, []);
 
   useEffect(() => {
     if (deleteRequested) setShowConfirmDelete(true);

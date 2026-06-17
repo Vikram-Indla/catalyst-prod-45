@@ -553,6 +553,14 @@ export function makeSummaryInlineEditCell<T>({
             // span's max-width: 100% resolves against a shrunk wrapper and
             // "Test, 25 April." renders as "Test, 25 A...".
             readViewFitContainerWidth
+            // Bug 3 fix (2026-06-16): Atlaskit InlineEdit's `defaultValue` is
+            // uncontrolled — it pins the initial value on first mount and
+            // never re-syncs even when the prop changes. This caused stale
+            // values to appear in editView after the parent updated. Keying
+            // the InlineEdit on the current summary remounts it whenever the
+            // underlying value actually changes (i.e. after a successful
+            // save), restoring the correct edit baseline.
+            key={summary}
             defaultValue={summary}
             editView={({ errorMessage, ...fieldProps }) => (
               <Textfield {...fieldProps} autoFocus />
@@ -1076,6 +1084,168 @@ export function makeParentEditCell<T>({
                 onClick={() => { onChange(row, opt); close(); }}
               >
                 <ParentChip choice={opt} />
+              </MenuItemBtn>
+            ))}
+            {filtered.length === 0 && (
+              <div style={{ padding: '8px 10px', fontSize: 13, color: token('color.text.subtlest', '#7A869A') }}>No matches</div>
+            )}
+          </>
+        )}
+      </EditorPopover>
+    );
+  };
+}
+
+/* ─── Workstream picker editor ──────────────────────────────────────────────
+   Tasks Hub analog of makeParentEditCell. Mirrors its structure exactly:
+   same trigger button, same EditorPopover, same MenuItemBtn rows, same
+   "no value" reset row, same dash for non-editable empty. The only
+   differences are:
+     - the data type (WorkstreamChoice instead of ParentChoice)
+     - the chip renders a color dot + name (no key prefix, no type icon)
+     - the search placeholder + "no value" label use workstream copy. */
+
+export interface WorkstreamChoice {
+  id: string;
+  name: string;
+  /** Workstream dot color — data-bound (e.g. var(--cp-workstream-*-primary, #hex)).
+   *  Rendered as an 8px dot to the left of the name. */
+  color?: string | null;
+}
+
+// Chip style for the selected workstream AND for options in the dropdown.
+// Mirrors ParentChip's structure: bordered chip, 14/20/400, single-line
+// ellipsis. The leading element is a color dot (data-bound), not a type
+// icon. The bordered chip keeps visual rhythm with Parent column rows.
+function WorkstreamChip({ choice }: { choice: WorkstreamChoice }) {
+  return (
+    <span
+      title={choice.name}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        maxWidth: 260,
+        padding: '2px 8px',
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRadius: 3,
+        fontSize: 14,
+        lineHeight: '20px',
+        fontWeight: 400,
+        color: token('color.text', '#292A2E'),
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+      }}
+    >
+      {choice.color && (
+        <span
+          aria-hidden="true"
+          style={{
+            // 2026-06-16 Fix #8: dot 8→6px so the leading element visually
+            // rhymes with ParentChip's small leading icon. Keeps the chip
+            // feeling "lighter" rather than a saturated lozenge.
+            display: 'inline-block',
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            background: choice.color,
+            flexShrink: 0,
+          }}
+        />
+      )}
+      <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {choice.name}
+      </span>
+    </span>
+  );
+}
+
+export function makeWorkstreamEditCell<T>({
+  getValue,
+  options,
+  canEdit,
+  onChange,
+}: {
+  getValue: (row: T) => WorkstreamChoice | null;
+  options: WorkstreamChoice[];
+  canEdit?: (row: T) => boolean;
+  onChange: (row: T, next: WorkstreamChoice | null) => void;
+}) {
+  return function WorkstreamEditCell({ row }: CellProps<T>) {
+    // All hooks FIRST (Rules of Hooks — no early returns before hooks).
+    const [search, setSearch] = useState('');
+    const q = search.trim().toLowerCase();
+    const filtered = useMemo(
+      () => (q ? options.filter((o) => o.name.toLowerCase().includes(q)) : options),
+      [q, options],
+    );
+
+    const current = getValue(row);
+    const editable = canEdit ? canEdit(row) : true;
+
+    const filledDisplay = current ? <WorkstreamChip choice={current} /> : null;
+
+    // Non-editable + empty: just a dash, no affordance.
+    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+    if (!editable && filledDisplay) return filledDisplay;
+
+    return (
+      <EditorPopover
+        width={320}
+        trigger={({ onClick, isOpen, ref }) => (
+          <button
+            ref={ref}
+            type="button"
+            onClick={onClick}
+            aria-expanded={isOpen}
+            data-jira-cell-editor
+            data-cv-workstream-select
+            style={{
+              display: 'block',
+              width: '100%',
+              background: 'transparent',
+              border: 'none',
+              padding: '2px 4px',
+              margin: '-2px -4px',
+              borderRadius: 3,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: 'inherit',
+              textAlign: 'left',
+            }}
+          >
+            {filledDisplay ?? (
+              <span style={{ color: token('color.text.subtlest', '#7A869A'), fontSize: 14 }}>None</span>
+            )}
+          </button>
+        )}
+      >
+        {(close) => (
+          <>
+            <div style={{ padding: 4 }}>
+              <Textfield
+                isCompact
+                autoFocus
+                placeholder="Search workstreams"
+                value={search}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                elemBeforeInput={
+                  <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
+                    <AkSearchIcon label="" size="small" />
+                  </span>
+                }
+              />
+            </div>
+            <MenuItemBtn onClick={() => { onChange(row, null); close(); }}>
+              <span style={{ color: token('color.text.subtlest', '#7A869A') }}>No workstream</span>
+            </MenuItemBtn>
+            {filtered.slice(0, 20).map((opt) => (
+              <MenuItemBtn
+                key={opt.id}
+                active={current?.id === opt.id}
+                onClick={() => { onChange(row, opt); close(); }}
+              >
+                <WorkstreamChip choice={opt} />
               </MenuItemBtn>
             ))}
             {filtered.length === 0 && (

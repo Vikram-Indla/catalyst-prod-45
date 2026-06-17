@@ -15,6 +15,7 @@ import { StatusRegistryTable } from '@/components/admin/StatusRegistryTable';
 import { StatusRegistryCards } from '@/components/admin/StatusRegistryCards';
 import { EditStatusModal } from '@/components/admin/EditStatusModal';
 import { WorkflowTypePanel } from '@/components/admin/WorkflowTypePanel';
+import { TaskStatusRegistry } from '@/components/admin/TaskStatusRegistry';
 import {
   useWorkflowStatuses,
   useCreateStatus,
@@ -379,6 +380,11 @@ export default function WorkflowAdminPage() {
               </Tabs>
             </div>
           </section>
+
+          {/* Section C — Tasks (Catalyst-native, project-less status workflow) */}
+          <div style={{ marginTop: 40, paddingTop: 40, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+            <TaskStatusRegistry />
+          </div>
         </div>
 
         {/* Edit / Create modal */}

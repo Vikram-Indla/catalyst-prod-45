@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { BoardKanban } from '@/modules/tasks/components/boards/BoardKanban';
 import { KanbanBoard } from '@/modules/tasks/components/kanban/KanbanBoard';
@@ -17,7 +16,7 @@ import { TaskListTable } from '@/modules/tasks/components/TaskList/TaskListTable
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Pages/Tasks/Board Remaining' };
@@ -39,12 +38,12 @@ export const KanbanBoardDefault: StoryObj = {
 
 export const TaskDetailDrawerDefault: StoryObj = {
   name: 'TaskDetailDrawer / Default',
-  render: () => <Wrap><TaskDetailDrawer task=null open=true onOpenChange={fn()} /></Wrap>,
+  render: () => <Wrap><TaskDetailDrawer task={null} open={true} onOpenChange={fn()} /></Wrap>,
 }
 
 export const TaskDetailDrawerOpen: StoryObj = {
   name: 'TaskDetailDrawer / Open',
-  render: () => <Wrap><TaskDetailDrawer task=null open=true onOpenChange={fn()} open={true} /></Wrap>,
+  render: () => <Wrap><TaskDetailDrawer task={null} open={true} onOpenChange={fn()} open={true} /></Wrap>,
 }
 
 export const TaskListPageDefault: StoryObj = {
@@ -59,10 +58,10 @@ export const TaskListPageV3Default: StoryObj = {
 
 export const TaskListTableDefault: StoryObj = {
   name: 'TaskListTable / Default',
-  render: () => <Wrap><TaskListTable tasks=[] isLoading=false sorting={{{}}} onSortChange={fn()} selectedIds={{{}}} onSelectionChange={fn()} onTaskClick={fn()} onTaskDelete={fn()} visibleColumns={{{}}} groupBy={{{}}} /></Wrap>,
+  render: () => <Wrap><TaskListTable tasks={[]} isLoading={false} sorting={{} as any} onSortChange={fn()} selectedIds={{} as any} onSelectionChange={fn()} onTaskClick={fn()} onTaskDelete={fn()} visibleColumns={{} as any} groupBy={{} as any} /></Wrap>,
 }
 
 export const TaskListTableLoading: StoryObj = {
   name: 'TaskListTable / Loading',
-  render: () => <Wrap><TaskListTable tasks=[] isLoading=false sorting={{{}}} onSortChange={fn()} selectedIds={{{}}} onSelectionChange={fn()} onTaskClick={fn()} onTaskDelete={fn()} visibleColumns={{{}}} groupBy={{{}}} /></Wrap>,
+  render: () => <Wrap><TaskListTable tasks={[]} isLoading={false} sorting={{} as any} onSortChange={fn()} selectedIds={{} as any} onSelectionChange={fn()} onTaskClick={fn()} onTaskDelete={fn()} visibleColumns={{} as any} groupBy={{} as any} /></Wrap>,
 }

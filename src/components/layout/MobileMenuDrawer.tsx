@@ -8,13 +8,10 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { 
-  LayoutDashboard, 
-  Layers,
-  CheckSquare, 
-  LayoutGrid, 
+  LayoutDashboard,
+  LayoutGrid,
   List,
   GanttChartSquare,
-  Target,
   Settings,
   X 
 } from '@/lib/atlaskit-icons';
@@ -29,24 +26,9 @@ interface NavItem {
 
 const allNavItems: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', path: '/tasks/overview', icon: LayoutDashboard },
-  { id: 'workstreams', label: 'Workstreams', path: '/tasks/workstreams', icon: Layers },
-  { id: 'my-tasks', label: 'My Tasks', path: '/tasks/my-tasks', icon: CheckSquare },
   { id: 'boards', label: 'Boards', path: '/tasks/board', icon: LayoutGrid },
   { id: 'task-list', label: 'Task List', path: '/tasks/list', icon: List },
   { id: 'timeline', label: 'Timeline', path: '/tasks/timeline', icon: GanttChartSquare },
-  { 
-    id: 'task10', 
-    label: (
-      <span className="flex items-center gap-2">
-        Priorities
-        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold">
-          10
-        </span>
-      </span>
-    ), 
-    path: '/priorities', 
-    icon: Target 
-  },
   { id: 'settings', label: 'Settings', path: '/tasks/settings', icon: Settings },
 ];
 

@@ -81,7 +81,7 @@ export function TicketBreadcrumbs({
   const isEpic = (itemType || '').toLowerCase().includes('epic');
   const hasSlot = middleSlot !== undefined;
   const showParent = !hasSlot && Boolean(parentKey);
-  const showAddParent = !hasSlot && !isEpic && !parentKey;
+  const showAddParent = !hasSlot && !isEpic && !parentKey && Boolean(onAddParent);
 
   const items: BreadcrumbItem[] = [];
 
@@ -148,7 +148,7 @@ export function TicketBreadcrumbs({
   });
 
   return (
-    <div style={{ paddingBlock: 4 }}>
+    <div style={{ paddingBlock: 0 }}>
       {/* Scoped polish for this breadcrumb instance only — does NOT affect
           other Breadcrumbs in the app. Targets `.tk-breadcrumbs` exclusively.
           Styling uses Catalyst --cp-* CSS custom properties so dark mode

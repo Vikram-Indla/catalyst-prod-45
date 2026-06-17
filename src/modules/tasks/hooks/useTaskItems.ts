@@ -6,7 +6,9 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
+import type { PlannerStatus } from './useTaskStatuses';
 
 // Map task_statuses to Planner TaskStatus
 const mapStatusFromPlannerStatuses = (statusName: string | null): TaskStatus => {
@@ -47,7 +49,10 @@ const transformPlannerTask = (row: any): PlannerTask => ({
   key: row.task_key || row.key || `PLN-${row.id.slice(0, 4).toUpperCase()}`,
   title: row.title || 'Untitled',
   description: row.description || '',
-  status: mapStatusFromPlannerStatuses(row.status?.name),
+  // Canonical: carry the real task_statuses.slug so custom/admin statuses
+  // flow to every view. Fall back to the name-heuristic only when a row has
+  // no joined status (legacy/orphan rows).
+  status: row.status?.slug || mapStatusFromPlannerStatuses(row.status?.name),
   type: 'task',
   priority: mapPriority(row.priority),
   assigneeId: row.assignee_id,
@@ -58,12 +63,17 @@ const transformPlannerTask = (row: any): PlannerTask => ({
   teamColor: row.workstream?.color || '#6366f1',
   startDate: row.start_date,
   dueDate: row.due_date,
+  parentTaskId: row.parent_task_id ?? null,
   blocked: row.blocked || false,
   blockedReason: row.blocked_reason,
   progress: row.progress || 0,
   comments: 0,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
+  // Bug 2 fix (2026-06-16): expose `position` so kanban-board reorder writes
+  // can compute fractional positions from neighbor values. NULL means
+  // unranked — falls through to the `created_at` tiebreaker in the query.
+  position: row.position ?? null,
 });
 
 export function useTaskItems(teamId?: string | null) {
@@ -79,6 +89,11 @@ export function useTaskItems(teamId?: string | null) {
           assignee:profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .is('deleted_at', null)
+        // Bug 2 fix (2026-06-16): order by `position` ASC first so kanban
+        // drag-reorder writes are reflected in the visible order. NULLS LAST
+        // keeps unranked rows below ranked ones, then `created_at DESC` is the
+        // tiebreaker (preserves prior behaviour for unranked tasks).
+        .order('position', { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(200);
 
@@ -144,6 +159,38 @@ export function useUpdatePlannerTask() {
         dbUpdates.description = updates.description;
       }
 
+      // Status: resolve TaskStatus slug → task_statuses.id (UUID) via cached
+      // useTaskStatuses query. Falls back to a direct fetch on cache miss.
+      // Throws on unknown slug — zero-assumption (no silent default).
+      if ('status' in updates && updates.status) {
+        let statuses = queryClient.getQueryData<PlannerStatus[]>(['planner-statuses']);
+        if (!statuses || statuses.length === 0) {
+          const { data, error: statusErr } = await supabase
+            .from('task_statuses')
+            .select('id, slug, name, color, sort_order');
+          if (statusErr) throw statusErr;
+          statuses = (data || []).map((s: any) => ({
+            id: s.id,
+            slug: s.slug,
+            name: s.name,
+            color: s.color || '',
+            order: s.sort_order || 0,
+          }));
+        }
+        const match = statuses.find((s) => s.slug === updates.status);
+        if (!match) {
+          throw new Error(`Unknown status slug: ${updates.status}`);
+        }
+        dbUpdates.status_id = match.id;
+      }
+
+      // Workstream: direct teamId → workstream_id passthrough. null is valid
+      // (clears the workstream). teamName/teamColor are JOIN-derived on read
+      // and are NOT separately persisted.
+      if (updates.teamId !== undefined) {
+        dbUpdates.workstream_id = updates.teamId || null;
+      }
+
       const { error } = await supabase
         .from('tasks')
         .update(dbUpdates)
@@ -167,6 +214,12 @@ export function useUpdatePlannerTask() {
       context?.previous?.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
       });
+      // 2026-06-17: surface the error. Previously this rolled back silently,
+      // making status/assignee/priority change failures look like the UI just
+      // ignored the click. The toast shows the real Postgres/PostgREST error.
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('useUpdatePlannerTask failed:', err, 'updates:', variables.updates);
+      catalystToast.error('Update failed', msg);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });

@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React, { useState } from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { ForYouSubTabs } from '@/components/for-you/ForYouSubTabs';
 import { ForYouInlineFilters } from '@/components/for-you/ForYouInlineFilters';
 
@@ -65,7 +64,7 @@ const hubOpts = [
 export const FiltersDefault: StoryObj = {
   name: 'InlineFilters / Default',
   render: () => (
-    <MemoryRouter>
+    
       <div style={{ maxWidth: 900, padding: 16 }}>
         <ForYouInlineFilters
           filters={{}}
@@ -75,14 +74,14 @@ export const FiltersDefault: StoryObj = {
           reportedByOptions={[]}
         />
       </div>
-    </MemoryRouter>
+    
   ),
 };
 
 export const FiltersWithSelections: StoryObj = {
   name: 'InlineFilters / With Active Filters',
   render: () => (
-    <MemoryRouter>
+    
       <div style={{ maxWidth: 900, padding: 16 }}>
         <ForYouInlineFilters
           filters={{ project: 'BAU', hub: 'project' }}
@@ -92,6 +91,6 @@ export const FiltersWithSelections: StoryObj = {
           reportedByOptions={[]}
         />
       </div>
-    </MemoryRouter>
+    
   ),
 };

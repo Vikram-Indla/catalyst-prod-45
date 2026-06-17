@@ -2,9 +2,8 @@
  * Stories for Tasks module: Board cards, Dashboard KPIs, Workstream cards, Calendar pills.
  */
 import type { StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BoardTaskCard } from '@/modules/tasks/components/boards/BoardTaskCard';
 import { DashboardKPIStrip } from '@/modules/tasks/components/dashboard/DashboardKPIStrip';
@@ -19,7 +18,7 @@ import type { PlannerTask } from '@/modules/tasks/types';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children, width = 480 }: { children: React.ReactNode; width?: number }) {
-  return <QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: width, padding: 16 }}>{children}</div></MemoryRouter></QueryClientProvider>;
+  return <QueryClientProvider client={qc}><div style={{ maxWidth: width, padding: 16 }}>{children}</div></QueryClientProvider>;
 }
 
 const now = new Date().toISOString();

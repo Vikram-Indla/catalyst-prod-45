@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { AddColumnModal } from '@/modules/tasks/components/AddColumnModal';
 import { BulkActionBar } from '@/modules/tasks/components/task-list/BulkActionBar';
@@ -30,19 +29,19 @@ import { WeeklySummaryView } from '@/modules/tasks/components/insights/WeeklySum
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Pages/Tasks/Other' };
 
 export const AddColumnModalDefault: StoryObj = {
   name: 'AddColumnModal / Default',
-  render: () => <Wrap><AddColumnModal isOpen=true onClose={fn()} onAdd={fn()} existingColumns=[] /></Wrap>,
+  render: () => <Wrap><AddColumnModal isOpen={true} onClose={fn()} onAdd={fn()} existingColumns={[]} /></Wrap>,
 }
 
 export const AddColumnModalOpen: StoryObj = {
   name: 'AddColumnModal / Open',
-  render: () => <Wrap><AddColumnModal isOpen=true onClose={fn()} onAdd={fn()} existingColumns=[] /></Wrap>,
+  render: () => <Wrap><AddColumnModal isOpen={true} onClose={fn()} onAdd={fn()} existingColumns={[]} /></Wrap>,
 }
 
 export const ChecklistIndicatorDefault: StoryObj = {
@@ -52,22 +51,22 @@ export const ChecklistIndicatorDefault: StoryObj = {
 
 export const PlannerBulkActionBarDefault: StoryObj = {
   name: 'PlannerBulkActionBar / Default',
-  render: () => <Wrap><PlannerBulkActionBar selectedCount=5 onClearSelection={fn()} onBulkDelete={fn()} /></Wrap>,
+  render: () => <Wrap><PlannerBulkActionBar selectedCount={5} onClearSelection={fn()} onBulkDelete={fn()} /></Wrap>,
 }
 
 export const PlannerBulkDeleteModalDefault: StoryObj = {
   name: 'PlannerBulkDeleteModal / Default',
-  render: () => <Wrap><PlannerBulkDeleteModal isOpen=true onClose={fn()} onConfirm={fn()} selectedCount=5 /></Wrap>,
+  render: () => <Wrap><PlannerBulkDeleteModal isOpen={true} onClose={fn()} onConfirm={fn()} selectedCount={5} /></Wrap>,
 }
 
 export const PlannerBulkDeleteModalOpen: StoryObj = {
   name: 'PlannerBulkDeleteModal / Open',
-  render: () => <Wrap><PlannerBulkDeleteModal isOpen=true onClose={fn()} onConfirm={fn()} selectedCount=5 /></Wrap>,
+  render: () => <Wrap><PlannerBulkDeleteModal isOpen={true} onClose={fn()} onConfirm={fn()} selectedCount={5} /></Wrap>,
 }
 
 export const PlannerSearchBarDefault: StoryObj = {
   name: 'PlannerSearchBar / Default',
-  render: () => <Wrap><PlannerSearchBar filters={{{}}} onSearchChange={fn()} onStatusChange={fn()} onPriorityChange={fn()} onBlockedChange={fn()} onOverdueChange={fn()} onClearFilters={fn()} hasActiveFilters=true filteredCount=5 totalCount=5 selectedTeamId="test-value" onTeamChange={fn()} /></Wrap>,
+  render: () => <Wrap><PlannerSearchBar filters={{} as any} onSearchChange={fn()} onStatusChange={fn()} onPriorityChange={fn()} onBlockedChange={fn()} onOverdueChange={fn()} onClearFilters={fn()} hasActiveFilters={true} filteredCount={5} totalCount={5} selectedTeamId="test-value" onTeamChange={fn()} /></Wrap>,
 }
 
 export const PlannerSettingsDefault: StoryObj = {
@@ -77,22 +76,22 @@ export const PlannerSettingsDefault: StoryObj = {
 
 export const PlannerCreateModalDefault: StoryObj = {
   name: 'PlannerCreateModal / Default',
-  render: () => <Wrap><PlannerCreateModal isOpen=true onClose={fn()} onCreate={fn()} /></Wrap>,
+  render: () => <Wrap><PlannerCreateModal isOpen={true} onClose={fn()} onCreate={fn()} /></Wrap>,
 }
 
 export const PlannerCreateModalOpen: StoryObj = {
   name: 'PlannerCreateModal / Open',
-  render: () => <Wrap><PlannerCreateModal isOpen=true onClose={fn()} onCreate={fn()} /></Wrap>,
+  render: () => <Wrap><PlannerCreateModal isOpen={true} onClose={fn()} onCreate={fn()} /></Wrap>,
 }
 
 export const PlannerCreateTeamModalDefault: StoryObj = {
   name: 'PlannerCreateTeamModal / Default',
-  render: () => <Wrap><PlannerCreateTeamModal isOpen=true onClose={fn()} onCreate={{{}}} name="Vikram Indla" emoji="test-value" color="test-value" memberIds=[] /></Wrap>,
+  render: () => <Wrap><PlannerCreateTeamModal isOpen={true} onClose={fn()} onCreate={{} as any} name="Vikram Indla" emoji="test-value" color="test-value" memberIds={[]} /></Wrap>,
 }
 
 export const PlannerCreateTeamModalOpen: StoryObj = {
   name: 'PlannerCreateTeamModal / Open',
-  render: () => <Wrap><PlannerCreateTeamModal isOpen=true onClose={fn()} onCreate={{{}}} name="Vikram Indla" emoji="test-value" color="test-value" memberIds=[] /></Wrap>,
+  render: () => <Wrap><PlannerCreateTeamModal isOpen={true} onClose={fn()} onCreate={{} as any} name="Vikram Indla" emoji="test-value" color="test-value" memberIds={[]} /></Wrap>,
 }
 
 export const TaskChecklistDefault: StoryObj = {
@@ -107,12 +106,12 @@ export const PlannerViewHeaderDefault: StoryObj = {
 
 export const BulkActionBarDefault: StoryObj = {
   name: 'BulkActionBar / Default',
-  render: () => <Wrap><BulkActionBar selectedIds=[] selectedCount=5 onClearSelection={fn()} /></Wrap>,
+  render: () => <Wrap><BulkActionBar selectedIds={[]} selectedCount={5} onClearSelection={fn()} /></Wrap>,
 }
 
 export const InlineDatePickerDefault: StoryObj = {
   name: 'InlineDatePicker / Default',
-  render: () => <Wrap><InlineDatePicker value=null onChange={fn()} /></Wrap>,
+  render: () => <Wrap><InlineDatePicker value={null} onChange={fn()} /></Wrap>,
 }
 
 export const RowActionsDefault: StoryObj = {
@@ -122,22 +121,22 @@ export const RowActionsDefault: StoryObj = {
 
 export const TodayLineDefault: StoryObj = {
   name: 'TodayLine / Default',
-  render: () => <Wrap><TodayLine position=42 /></Wrap>,
+  render: () => <Wrap><TodayLine position={42} /></Wrap>,
 }
 
 export const CompletedTodaySectionDefault: StoryObj = {
   name: 'CompletedTodaySection / Default',
-  render: () => <Wrap><CompletedTodaySection tasks=[] onOpenDetail={fn()} /></Wrap>,
+  render: () => <Wrap><CompletedTodaySection tasks={[]} onOpenDetail={fn()} /></Wrap>,
 }
 
 export const MyTasksHeaderDefault: StoryObj = {
   name: 'MyTasksHeader / Default',
-  render: () => <Wrap><MyTasksHeader filters={{{}}} onFilterChange={fn()} onOpenCreateModal={fn()} /></Wrap>,
+  render: () => <Wrap><MyTasksHeader filters={{} as any} onFilterChange={fn()} onOpenCreateModal={fn()} /></Wrap>,
 }
 
 export const TaskSectionDefault: StoryObj = {
   name: 'TaskSection / Default',
-  render: () => <Wrap><TaskSection title="Sample item title" color="test-value" tasks=[] onOpenDetail={fn()} /></Wrap>,
+  render: () => <Wrap><TaskSection title="Sample item title" color="test-value" tasks={[]} onOpenDetail={fn()} /></Wrap>,
 }
 
 export const DailyScorecardViewDefault: StoryObj = {

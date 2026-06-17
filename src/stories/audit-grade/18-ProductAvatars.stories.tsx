@@ -1,12 +1,11 @@
 
 import type { StoryObj } from '@storybook/react';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } });
 function Providers({ children }: { children: React.ReactNode }) {
-  return <QueryClientProvider client={qc}><MemoryRouter>{children}</MemoryRouter></QueryClientProvider>;
+  return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 }
 function Frame({ children, width = 900 }: { children: React.ReactNode; width?: number }) {
   return <Providers><div style={{ maxWidth: width, padding: 16, background: 'var(--ds-surface, #fff)' }}>{children}</div></Providers>;
@@ -33,7 +32,7 @@ export const AllLandmarks: StoryObj = {
   ),
 };
 
-/** Known product assignment: INV → Kingdom Centre */
+/** Known product assignment: INV → Elephant Rock */
 export const KnownProduct: StoryObj = {
   render: () => (
     <Frame width={400}>
@@ -41,7 +40,7 @@ export const KnownProduct: StoryObj = {
         <ProductAvatar code="INV" size={48} />
         <div>
           <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Investor Journey Product</div>
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>INV → Kingdom Centre</div>
+          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>INV → Elephant Rock</div>
         </div>
       </div>
     </Frame>

@@ -1,6 +1,12 @@
 /**
  * Create Task Mutation Hook
  * Handles task creation with optimistic updates
+ *
+ * 2026-06-17 (Vikram): the `tasks` relation in the live DB does not expose
+ * a `task_key` column ("column tasks.task_key does not exist"). Catalyst
+ * tasks are identified by the `key` column (PLN-N), which is auto-filled
+ * by a BEFORE-INSERT trigger on the base table. Drop all references to
+ * `task_key` here — read & write only `key`.
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -21,52 +27,7 @@ export interface CreateTaskInput {
 
 interface CreateTaskResult {
   id: string;
-  task_key: string;
-}
-
-// Generate unique task key using workstream-based sequence
-async function generateTaskKey(workstreamId?: string): Promise<string> {
-  // Use the new workstream-based key generation function
-  if (workstreamId) {
-    const { data, error } = await supabase.rpc('generate_workstream_task_key', {
-      p_workstream_id: workstreamId,
-    });
-    
-    if (!error && data) {
-      return data;
-    }
-    console.error('Error generating workstream task key:', error);
-  }
-  
-  // Fallback to legacy PLN-based keys for tasks without workstream
-  const { data, error } = await supabase.rpc('generate_task_key');
-  
-  if (error || !data) {
-    console.error('Error generating task key:', error);
-    // Fallback: query max and increment (but DB sequence is preferred)
-    const { data: maxTask } = await supabase
-      .from('tasks')
-      .select('task_key')
-      .like('task_key', 'PLN-%')
-      .order('created_at', { ascending: false })
-      .limit(50);
-    
-    if (maxTask && maxTask.length > 0) {
-      // Find the highest valid number (exclude sub-tasks like PLN-45-2 and timestamps)
-      let maxNum = 0;
-      for (const t of maxTask) {
-        const match = t.task_key?.match(/^PLN-(\d{1,4})$/);
-        if (match) {
-          const num = parseInt(match[1], 10);
-          if (num > maxNum && num < 10000) maxNum = num;
-        }
-      }
-      return `PLN-${maxNum + 1}`;
-    }
-    return `PLN-1`;
-  }
-  
-  return data;
+  key: string;
 }
 
 export function useCreateTaskMutation() {
@@ -76,10 +37,7 @@ export function useCreateTaskMutation() {
     mutationFn: async (input: CreateTaskInput): Promise<CreateTaskResult> => {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
-      
-      // Generate task key based on workstream (uses workstream's key_prefix)
-      const taskKey = await generateTaskKey(input.workstream_id);
-      
+
       // Get backlog status ID if not provided
       let statusId = input.status_id;
       if (!statusId) {
@@ -90,12 +48,12 @@ export function useCreateTaskMutation() {
           .single();
         statusId = backlogStatus?.id || undefined;
       }
-      
-      // Insert task
+
+      // Insert task. `key` is auto-filled by the BEFORE-INSERT trigger
+      // (set_planner_task_key) to 'PLN-N', so we don't pass it.
       const { data, error } = await supabase
         .from('tasks')
         .insert({
-          task_key: taskKey,
           title: input.title,
           description: input.description || null,
           workstream_id: input.workstream_id || null,
@@ -105,8 +63,8 @@ export function useCreateTaskMutation() {
           start_date: input.start_date,
           status_id: statusId || null,
           created_by: user?.id || null,
-        })
-        .select('id, task_key')
+        } as never)
+        .select('id, key')
         .single();
 
       if (error) {
@@ -115,8 +73,8 @@ export function useCreateTaskMutation() {
       }
 
       return {
-        id: data.id,
-        task_key: data.task_key,
+        id: (data as { id: string }).id,
+        key: (data as { key: string | null }).key ?? '',
       };
     },
     onSuccess: (result) => {
@@ -130,8 +88,8 @@ export function useCreateTaskMutation() {
       queryClient.invalidateQueries({ queryKey: ['planner-task-list'] });
       queryClient.invalidateQueries({ queryKey: ['planner-calendar'] });
       queryClient.invalidateQueries({ queryKey: ['calendar-tasks'] });
-      
-      catalystToast.success(`Task ${result.task_key} created successfully`);
+
+      catalystToast.success(`Task ${result.key || 'created'} successfully`);
     },
     onError: (error: Error) => {
       catalystToast.error(`Failed to create task: ${error.message}`);

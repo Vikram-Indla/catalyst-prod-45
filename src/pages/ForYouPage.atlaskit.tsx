@@ -42,7 +42,7 @@ import { token } from '@atlaskit/tokens';
 import { useAuth } from '@/lib/auth';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
 import RecommendedProjectsStrip from '@/components/for-you/atlaskit/RecommendedProjectsStrip';
-import ForYouTabs, { FOR_YOU_TAB_KEY, FOR_YOU_TAB_ORDER, type ForYouTabDefinition } from '@/components/for-you/atlaskit/ForYouTabs';
+import ForYouTabs, { FOR_YOU_TAB_ORDER, type ForYouTabDefinition } from '@/components/for-you/atlaskit/ForYouTabs';
 import RecommendedPanel from '@/components/for-you/atlaskit/RecommendedPanel';
 import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
 import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
@@ -129,40 +129,6 @@ export default function ForYouPageAtlaskit() {
     allUserProjects,
   } = data;
 
-  // ─── Restore tab from localStorage SYNCHRONOUSLY on first render ─────────
-  // Previously this ran in `useEffect` AFTER the first paint, causing a
-  // visible flash from `recommended` → user's actual stored tab. The hook's
-  // default `activeTab` initial value is `'recommended'`, so the effect
-  // approach was always one paint behind reality.
-  //
-  // Now we read localStorage synchronously the first time this component
-  // renders and push the migrated value back into useForYouData via
-  // setActiveTab during a layout effect — before paint. The flash is gone.
-  //
-  // Migrations preserved from the previous effect:
-  //   - 'ai-recap'        → 'ai-theme' (same slot, successor tab)
-  //   - 'worked'|'viewed' → 'recommended' (those tabs were pruned April 2026)
-  const initialStoredTabRef = useRef<TabType | null>(null);
-  if (initialStoredTabRef.current === null) {
-    try {
-      const stored = localStorage.getItem(FOR_YOU_TAB_KEY) as string | null;
-      if (stored === 'ai-recap') {
-        initialStoredTabRef.current = 'ai-theme';
-        localStorage.setItem(FOR_YOU_TAB_KEY, 'ai-theme');
-      } else if (stored === 'worked' || stored === 'viewed') {
-        initialStoredTabRef.current = 'assigned';
-        localStorage.setItem(FOR_YOU_TAB_KEY, 'assigned');
-      } else if (stored) {
-        initialStoredTabRef.current = stored as TabType;
-      } else {
-        // Sentinel value so we don't re-enter this branch — `assigned` is
-        // already the hook default, no setActiveTab needed.
-        initialStoredTabRef.current = 'assigned';
-      }
-    } catch {
-      initialStoredTabRef.current = 'recommended';
-    }
-  }
   const { tab: urlTab } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
 
@@ -187,20 +153,22 @@ export default function ForYouPageAtlaskit() {
     [],
   );
 
-  // useLayoutEffect runs before paint — applies the stored tab to the hook
-  // state before the user sees any UI. URL param takes precedence over localStorage.
+  // Active tab follows the URL. No tab segment in the URL → always land on
+  // "Assigned to me" (Vikram 2026-06-17). The last-used tab is intentionally
+  // NOT restored from localStorage — every fresh navigation to the For You
+  // page resets to Assigned to me. Explicit /for-you/:tab deep-links are
+  // still honored. Runs before paint and re-fires on urlTab change so that
+  // navigating Home (/for-you, no segment) resets even without a remount.
   useLayoutEffect(() => {
     if (urlTab && VALID_TABS.has(urlTab)) {
       setActiveTab(urlTab as TabType);
-    } else if (initialStoredTabRef.current && initialStoredTabRef.current !== activeTab) {
-      setActiveTab(initialStoredTabRef.current);
+    } else if (!urlTab) {
+      setActiveTab('assigned');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [urlTab, VALID_TABS, setActiveTab]);
 
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
-    try { localStorage.setItem(FOR_YOU_TAB_KEY, tab); } catch { /* no-op */ }
     navigate(`/for-you/${tab}`, { replace: true });
     setVisibleCount(PAGE_SIZE); // reset pagination when switching tabs
   }, [setActiveTab, navigate]);
@@ -299,7 +267,7 @@ export default function ForYouPageAtlaskit() {
       case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
       default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} digestOpen={digestOpen} setDigestOpen={setDigestOpen} />;
     }
-  }, [activeTab, visibleItems, isLoading, isRefreshing, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange]);
+  }, [activeTab, visibleItems, isLoading, isRefreshing, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange, digestOpen, setDigestOpen]);
 
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs

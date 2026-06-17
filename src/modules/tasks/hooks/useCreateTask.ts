@@ -46,7 +46,8 @@ export function useCreateTask() {
 
       // Default start_date to today if not provided
       const today = new Date().toISOString().split('T')[0];
-      const dbStatus = statusToDb[data.status];
+      // statusToDb only maps the 5 system slugs; guard custom slugs (legacy hook).
+      const dbStatus = statusToDb[data.status] ?? statusToDb.backlog;
 
       // Determine linked work item (new columns). Back-compat: featureId.
       const linkedWorkItemId = data.linkedWorkItemId || data.featureId || null;

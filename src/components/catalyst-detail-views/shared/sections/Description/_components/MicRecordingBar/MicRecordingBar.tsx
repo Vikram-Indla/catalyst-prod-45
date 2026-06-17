@@ -19,6 +19,7 @@ import VideoPlayIcon from '@atlaskit/icon/core/video-play';
 import VideoStopIcon from '@atlaskit/icon/core/video-stop';
 // eslint-disable-next-line no-restricted-imports
 import CloseIcon from '@atlaskit/icon/core/close';
+import catyHeadUrl from '@/assets/caty-head.svg?url';
 import type { MicPhase } from '../../hooks/useMicVoiceRecorder';
 
 interface Props {
@@ -64,10 +65,6 @@ export function MicRecordingBar({
           0%,80%,100% { transform: scale(0.6); opacity: 0.4; }
           40%          { transform: scale(1);   opacity: 1; }
         }
-        @keyframes caty-mic-ring-pulse {
-          0%,100% { opacity: 0.7; transform: scale(1); }
-          50%     { opacity: 1;   transform: scale(1.15); }
-        }
       `}</style>
 
       {/* Outer centering wrapper */}
@@ -98,47 +95,24 @@ export function MicRecordingBar({
             minWidth: 0,
           }}
         >
-          {/* Animated status dot / ring */}
+          {/* Caty head — canonical voice mark, replaces the status dot */}
           <span
             aria-hidden
             style={{
               flexShrink: 0,
-              position: 'relative',
-              width: 18,
-              height: 18,
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
+              opacity: isPaused ? 0.5 : 1,
+              transition: 'opacity 150ms ease',
             }}
           >
-            {/* Outer ring — only when active recording */}
-            {isRecording && !isPaused && (
-              <span
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: '50%',
-                  border: `2px solid ${
-                    effectivePhase === 'translating'
-                      ? 'var(--ds-background-warning-bold, #F79233)'
-                      : 'var(--ds-background-brand-bold, #0C66E4)'
-                  }`,
-                  animation: 'caty-mic-ring-pulse 1.2s ease-in-out infinite',
-                }}
-              />
-            )}
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: isPaused
-                  ? 'var(--ds-text-subtlest, #97A0AF)'
-                  : effectivePhase === 'translating'
-                    ? 'var(--ds-background-warning-bold, #F79233)'
-                    : 'var(--ds-background-brand-bold, #0C66E4)',
-                flexShrink: 0,
-              }}
+            <img
+              src={catyHeadUrl}
+              alt=""
+              width={22}
+              height={22}
+              style={{ display: 'block' }}
             />
           </span>
 

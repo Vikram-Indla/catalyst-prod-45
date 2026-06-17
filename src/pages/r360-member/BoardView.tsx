@@ -16,9 +16,12 @@ import Badge from '@atlaskit/badge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { useCatySearch } from '@/components/caty/catySearchStore';
+import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
 import type { R360WorkItem } from '@/types/r360';
-import { QuickSearchInput } from './QuickSearchInput';
 import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
+import { CatalystAiSearch } from '@/components/caty/CatalystAiSearch';
 
 // ── Subtask types that should surface their parent instead ──────────
 const SUBTASK_TYPES = new Set(['sub-task', 'backend', 'frontend']);
@@ -164,40 +167,59 @@ function ProjectSwimlane({
         onClick={() => setCollapsed(!collapsed)}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCollapsed(!collapsed); } }}
         style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '8px 16px',
-          height: 40,
-          background: token('color.background.neutral', '#F1F2F4'),
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '0 16px',
+          height: 44,
+          // High-contrast crisp card row — white surface + defined border +
+          // raised shadow + brand left accent. Replaces the faint grey bar
+          // (color.background.neutral on white = near-invisible).
+          background: token('elevation.surface', '#FFFFFF'),
+          border: `1px solid ${token('color.border', '#DFE1E6')}`,
           borderLeft: `3px solid ${token('color.border.brand', '#1D7AFC')}`,
-          borderRadius: collapsed ? 4 : '4px 4px 0 0',
+          borderRadius: collapsed ? 6 : '6px 6px 0 0',
+          boxShadow: collapsed
+            ? token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)')
+            : 'none',
           cursor: 'pointer',
           userSelect: 'none',
         }}
       >
         {collapsed
-          ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon', '#44546F')} />
-          : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon', '#44546F')} />
+          ? <ChevronRightIcon label="" size="medium" primaryColor={token('color.text.subtle', '#44546F')} />
+          : <ChevronDownIcon label="" size="medium" primaryColor={token('color.text.subtle', '#44546F')} />
         }
+        {/* Project brand icon — canonical ProjectIcon (bundled avatar by key).
+            20px fits the fixed 44px row; row dimensions unchanged. */}
+        <ProjectIcon size="small" projectKey={projectKey} name={projectName} />
         <span style={{
-          fontSize: 13, fontWeight: 653, letterSpacing: '0.01em',
+          fontSize: 14, fontWeight: 700, letterSpacing: '0.01em',
           color: token('color.text', '#172B4D'),
         }}>
           {projectKey}
         </span>
         <span style={{
-          fontSize: 12, fontWeight: 400,
+          fontSize: 13, fontWeight: 400,
           color: token('color.text.subtle', '#44546F'),
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {projectName}
         </span>
-        <span style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
-            {todoItems.length} to do
+        <span style={{ marginLeft: 'auto', display: 'flex', gap: 16, alignItems: 'center' }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, fontWeight: 500, color: token('color.text.subtle', '#44546F'),
+          }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.neutral.bold', '#626F86') }} />
+            {todoItems.length} To do
           </span>
-          <span style={{ fontSize: 11, color: token('color.text.information', '#0055CC') }}>
-            {ipItems.length} in progress
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, fontWeight: 600, color: token('color.text.information', '#0055CC'),
+          }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.information.bold', '#0C66E4') }} />
+            {ipItems.length} In progress
           </span>
-          <Badge appearance="default">{items.length}</Badge>
+          <Badge appearance="primary">{items.length}</Badge>
         </span>
       </div>
 
@@ -205,9 +227,11 @@ function ProjectSwimlane({
       {!collapsed && (
         <div style={{
           border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderLeft: `3px solid ${token('color.border.brand', '#1D7AFC')}`,
           borderTop: 'none',
-          borderRadius: '0 0 4px 4px',
+          borderRadius: '0 0 6px 6px',
           padding: 16,
+          background: token('elevation.surface', '#FFFFFF'),
         }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {/* To do column */}
@@ -286,13 +310,28 @@ function filterForBoard(items: R360WorkItem[]): R360WorkItem[] {
   return Array.from(result.values());
 }
 
+// Sentinel project key for cross-project Ask Caty on the For You board.
+// The board spans multiple projects; the returned CatyFilter is applied
+// client-side, so this key only satisfies the store/edge-fn project-scoped
+// contract and drives the placeholder label ("…in my board").
+const BOARD_CATY_KEY = 'my board';
+
 // ── Main Component ──────────────────────────────────────────────────
 export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; resourceId?: string | null }) {
   const [quickSearch, setQuickSearch] = useState('');
+  const [askCatyOpen, setAskCatyOpen] = useState(false);
   // Board health panel renders into this slot (below the toolbar, above the
   // swimlanes) so the button stays inline on the toolbar row and the expanded
   // result pushes the board down instead of replacing the button.
   const [insightSlot, setInsightSlot] = useState<HTMLDivElement | null>(null);
+
+  // Ask Caty (copied from AllWork). The board is cross-project, so we apply
+  // the returned project-agnostic CatyFilter client-side over the loaded
+  // board items rather than via per-project JQL.
+  const catyFilter = useCatySearch((s) => s.filter);
+  const catyStatus = useCatySearch((s) => s.status);
+  const catyStoreKey = useCatySearch((s) => s.projectKey);
+  const catyActive = catyStatus === 'ready' && catyStoreKey === BOARD_CATY_KEY;
 
   const boardItems = useMemo(() => filterForBoard(items), [items]);
 
@@ -306,39 +345,62 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
     );
   }, [boardItems, quickSearch]);
 
+  // Layer the Ask Caty filter on top of the quick-search result. Map
+  // R360WorkItem → BacklogLikeItem (item_type → type; all other field names
+  // already match), filter, then keep the original R360 rows (spread).
+  const catyVisibleItems = useMemo(() => {
+    if (!catyActive || !catyFilter) return filteredItems;
+    const enriched = filteredItems.map(i => ({ ...i, type: i.item_type }));
+    return applyCatyFilterBacklog(enriched, catyFilter);
+  }, [filteredItems, catyActive, catyFilter]);
+
   const projectGroups = useMemo(() => {
     const map: Record<string, { name: string; items: R360WorkItem[] }> = {};
-    filteredItems.forEach(item => {
+    catyVisibleItems.forEach(item => {
       const key = item.project_key;
       if (!map[key]) map[key] = { name: item.project_name || key, items: [] };
       map[key].items.push(item);
     });
     return Object.entries(map).sort(([, a], [, b]) => b.items.length - a.items.length);
-  }, [filteredItems]);
+  }, [catyVisibleItems]);
 
   return (
     <div>
-      {/* Toolbar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 16,
-        marginBottom: 16,
-      }}>
-        <div style={{ flex: 1, maxWidth: 320 }}>
-          <QuickSearchInput
-            value={quickSearch}
-            onChange={setQuickSearch}
-            resultCount={quickSearch.trim() ? filteredItems.length : undefined}
-            totalCount={boardItems.length}
+      {askCatyOpen ? (
+        // Open → canonical Ask Caty takes over the toolbar row (no stacking).
+        // The cross-project CatyFilter is applied client-side via catyVisibleItems.
+        <div style={{ marginBottom: 16 }}>
+          <CatalystAiSearch
+            open
+            onOpenChange={setAskCatyOpen}
+            projectKey={BOARD_CATY_KEY}
           />
         </div>
-        <span style={{
-          fontSize: 12, fontWeight: 400,
-          color: token('color.text.subtlest', '#626F86'),
+      ) : (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 16,
+          marginBottom: 16,
         }}>
-          {filteredItems.length} items across {projectGroups.length} projects
-        </span>
-        <CatyBoardInsight resourceId={resourceId} panelPortalTarget={insightSlot} />
-      </div>
+          <CatalystAiSearch
+            open={false}
+            onOpenChange={setAskCatyOpen}
+            projectKey={BOARD_CATY_KEY}
+            value={quickSearch}
+            onValueChange={setQuickSearch}
+            placeholder="Search by key or title…"
+          />
+          <span style={{
+            fontSize: 12, fontWeight: 400,
+            color: token('color.text.subtlest', '#626F86'),
+          }}>
+            {catyVisibleItems.length} items across {projectGroups.length} projects
+          </span>
+          {/* Board health pinned to the far-right end of the toolbar. */}
+          <div style={{ marginLeft: 'auto' }}>
+            <CatyBoardInsight resourceId={resourceId} panelPortalTarget={insightSlot} />
+          </div>
+        </div>
+      )}
 
       {/* Board health result lands here — below the toolbar, pushing the board down */}
       <div ref={setInsightSlot} />

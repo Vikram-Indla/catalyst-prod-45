@@ -19,8 +19,6 @@ import { createPortal } from 'react-dom';
 import { useMatch, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import FolderFilledIcon from '@atlaskit/icon/glyph/folder-filled';
-import LightbulbFilledIcon from '@atlaskit/icon/glyph/lightbulb-filled';
 import TaskIcon from '@atlaskit/icon/glyph/task';
 import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
 import StarIcon from '@atlaskit/icon/glyph/star';
@@ -29,6 +27,9 @@ import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjectFavorites } from '@/hooks/useProjectHub';
+import { token } from '@atlaskit/tokens';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { getProductAvatarUrl } from '@/components/icons';
 
 // ─── localStorage keys ────────────────────────────────────────────────────────
 const RECENT_KEY = 'catalyst.switcher-recent';
@@ -133,6 +134,7 @@ interface PanelProps {
   allItems: SwitcherItem[];
   currentKey: string;
   managementPath: string;
+  newItemPath: string;
   onNavigate: (item: SwitcherItem) => void;
   onManagementNav: (path: string) => void;
   onClose: () => void;
@@ -141,7 +143,7 @@ interface PanelProps {
 function SwitcherPanel({
   mode, triggerRef, menuRef, search, onSearchChange,
   starredItems, recentItems, allItems, currentKey,
-  managementPath, onNavigate, onManagementNav, onClose,
+  managementPath, newItemPath, onNavigate, onManagementNav, onClose,
 }: PanelProps) {
   const searchRef = useRef<HTMLInputElement>(null);
   const q = search.toLowerCase().trim();
@@ -314,7 +316,7 @@ function SwitcherPanel({
           {managementLabel}
         </button>
         <button
-          onClick={() => { onManagementNav(managementPath); onClose(); }}
+          onClick={() => { onManagementNav(newItemPath); onClose(); }}
           style={{
             display: 'flex', alignItems: 'center', gap: 4,
             border: 'none', background: 'none', cursor: 'pointer', padding: '4px 8px',
@@ -403,14 +405,19 @@ function ItemRow({ item, isCurrent, onNavigate }: {
         fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
       }}
     >
-      {/* Color swatch (workstreams / products) or folder icon (projects) */}
-      {colorSwatch ?? (
-        item.type === 'project'
-          ? <FolderFilledIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
-          : item.type === 'product'
-            ? <LightbulbFilledIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
-            : <TaskIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
-      )}
+      {/* Branded icon via canonical ProjectIcon — matches sidebar header +
+          ProductHeaderChip exactly (CLAUDE.md adopt-canonical). Workstreams
+          keep the colored dot (no avatar registry). */}
+      {item.type === 'workstream'
+        ? (colorSwatch ?? <TaskIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />)
+        : (
+          <ProjectIcon
+            size="small"
+            projectKey={item.key}
+            avatarUrl={item.type === 'product' ? getProductAvatarUrl(item.key) : undefined}
+            name={item.name}
+          />
+        )}
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
@@ -437,7 +444,21 @@ function ItemRow({ item, isCurrent, onNavigate }: {
 }
 
 // ─── Main exported component ──────────────────────────────────────────────────
-export function ContextSwitcher() {
+interface ContextSwitcherProps {
+  /**
+   * 'topnav'  — pill trigger for the global header (legacy mount).
+   * 'sidebar' — trigger styled to BE the left-sidebar header (icon + name +
+   *             chevron when expanded; icon-only when collapsed). 2026-06-16:
+   *             switcher moved off the top nav into the sidebar header to
+   *             reclaim top-nav width and remove the double-render of the
+   *             active context (sidebar header already showed it).
+   */
+  variant?: 'topnav' | 'sidebar';
+  /** sidebar variant only — drives expanded (icon+name+chevron) vs collapsed (icon-only). */
+  expanded?: boolean;
+}
+
+export function ContextSwitcher({ variant = 'topnav', expanded = true }: ContextSwitcherProps = {}) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -460,7 +481,9 @@ export function ContextSwitcher() {
 
   // Data
   const { data: projects = [] } = useSwitcherProjects(mode === 'project');
-  const { data: favoriteIds } = useProjectFavorites();
+  const { data: _favoriteRaw } = useProjectFavorites();
+  // React Query may deserialize a cached Set as a plain object — always reconstruct.
+  const favoriteIds: Set<string> = _favoriteRaw instanceof Set ? _favoriteRaw : new Set(Array.isArray(_favoriteRaw) ? _favoriteRaw : []);
   const { data: products = [] } = useSwitcherProducts(mode === 'product');
   const { data: workstreams = [] } = useSwitcherWorkstreams(mode === 'tasks');
 
@@ -572,6 +595,13 @@ export function ContextSwitcher() {
     mode === 'product' ? '/product-hub/products' :
     '/tasks/workstreams';
 
+  // "+ New …" deep-links straight to the list page's create modal via ?create=1
+  // (the list page consumes + clears the param). 2026-06-16.
+  const newItemPath =
+    mode === 'product' ? '/product-hub/products?create=1' :
+    mode === 'project' ? '/project-hub/projects?create=1' :
+    '/tasks/workstreams?create=1';
+
   const currentKey = mode === 'project' ? (projectKey ?? '') :
                      mode === 'product' ? (productCode ?? '') :
                      '';
@@ -585,70 +615,141 @@ export function ContextSwitcher() {
       ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
       : 'transparent';
 
+  // Hub icon via canonical ProjectIcon so the trigger matches the sidebar
+  // header + ProductHeaderChip exactly (CLAUDE.md adopt-canonical).
+  const renderHubIcon = (size: 'small' | 'medium') => {
+    if (mode === 'project' && triggerDisplayKey) {
+      return <ProjectIcon size={size} projectKey={triggerDisplayKey} name={triggerDisplayName} />;
+    }
+    if (mode === 'product' && triggerDisplayKey) {
+      return (
+        <ProjectIcon
+          size={size}
+          projectKey={triggerDisplayKey}
+          avatarUrl={getProductAvatarUrl(triggerDisplayKey)}
+          name={triggerDisplayName}
+        />
+      );
+    }
+    if (mode === 'tasks') {
+      return <TaskIcon size={size} label="" primaryColor="var(--ds-icon-accent-purple, #8270DB)" />;
+    }
+    return null;
+  };
+
+  const ariaLabel = `Switch ${mode === 'tasks' ? 'workstream' : mode}. ${triggerDisplayKey ?? ''} ${triggerDisplayName ?? ''}`;
+  const isSidebar = variant === 'sidebar';
+
+  // ── Sidebar variant — the trigger IS the left-sidebar header row ──
+  const sidebarTrigger = (
+    <button
+      ref={triggerRef}
+      onClick={() => setOpen(v => !v)}
+      onMouseEnter={() => setTriggerHover(true)}
+      onMouseLeave={() => setTriggerHover(false)}
+      aria-expanded={open}
+      aria-haspopup="dialog"
+      aria-label={ariaLabel}
+      title={expanded ? undefined : (triggerDisplayName ?? '')}
+      style={{
+        display: 'flex', alignItems: 'center',
+        gap: expanded ? 8 : 0,
+        justifyContent: expanded ? 'flex-start' : 'center',
+        width: '100%', height: expanded ? 32 : 40,
+        padding: expanded ? '0 4px' : 0,
+        // Borderless menu-button: transparent idle, subtle hover/open — no
+        // heavy pressed fill (ADS nav-item convention; 2026-06-16 critique).
+        background: (open || triggerHover)
+          ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+          : 'transparent',
+        border: 'none', borderRadius: 6, cursor: 'pointer',
+        transition: 'background 80ms',
+        fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+        overflow: 'hidden',
+      }}
+    >
+      {renderHubIcon(expanded ? 'small' : 'medium')}
+      {expanded && (
+        <>
+          <span
+            className="truncate"
+            style={{
+              flex: 1, minWidth: 0, textAlign: 'left',
+              fontFamily: 'var(--cp-font-heading)',
+              fontSize: token('font.size.100', '14px'),
+              fontWeight: 500,
+              letterSpacing: '-0.3px',
+              color: 'var(--ds-text, #292A2E)',
+            }}
+          >
+            {triggerDisplayName}
+          </span>
+          <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
+        </>
+      )}
+    </button>
+  );
+
+  // ── Top-nav variant — pill trigger (legacy header mount) ──
+  const topnavTrigger = (
+    <button
+      ref={triggerRef}
+      onClick={() => setOpen(v => !v)}
+      onMouseEnter={() => setTriggerHover(true)}
+      onMouseLeave={() => setTriggerHover(false)}
+      aria-expanded={open}
+      aria-haspopup="dialog"
+      aria-label={ariaLabel}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 5,
+        height: 32, padding: '0 8px 0 6px',
+        background: triggerBg,
+        border: open
+          ? '1px solid var(--ds-border-focused, #4C9AFF)'
+          : '1px solid var(--ds-border, rgba(161,189,217,0.14))',
+        borderRadius: 4,
+        cursor: 'pointer',
+        fontSize: 13,
+        fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+        fontWeight: 500,
+        color: 'var(--ds-text, #172B4D)',
+        maxWidth: 220,
+        flexShrink: 0,
+        transition: 'background 80ms, border-color 80ms',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+      }}
+    >
+      {renderHubIcon('small')}
+
+      {/* Key + name */}
+      <span style={{ display: 'flex', alignItems: 'baseline', gap: 4, overflow: 'hidden' }}>
+        {triggerDisplayKey && (
+          <span style={{
+            fontSize: 12, fontWeight: 700, letterSpacing: '0.02em',
+            color: 'var(--ds-text-subtle, #44546F)',
+            flexShrink: 0,
+          }}>
+            {triggerDisplayKey}
+          </span>
+        )}
+        {triggerDisplayName && (
+          <span style={{
+            overflow: 'hidden', textOverflow: 'ellipsis',
+            color: 'var(--ds-text, #172B4D)',
+          }}>
+            {triggerDisplayName}
+          </span>
+        )}
+      </span>
+
+      <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
+    </button>
+  );
+
   return (
     <>
-      <button
-        ref={triggerRef}
-        onClick={() => setOpen(v => !v)}
-        onMouseEnter={() => setTriggerHover(true)}
-        onMouseLeave={() => setTriggerHover(false)}
-        aria-expanded={open}
-        aria-haspopup="dialog"
-        aria-label={`Switch ${mode === 'tasks' ? 'workstream' : mode}. ${triggerDisplayKey ?? ''} ${triggerDisplayName ?? ''}`}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 5,
-          height: 32, padding: '0 8px 0 6px',
-          background: triggerBg,
-          border: open
-            ? '1px solid var(--ds-border-focused, #4C9AFF)'
-            : '1px solid var(--ds-border, rgba(161,189,217,0.14))',
-          borderRadius: 4,
-          cursor: 'pointer',
-          fontSize: 13,
-          fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
-          fontWeight: 500,
-          color: 'var(--ds-text, #172B4D)',
-          maxWidth: 220,
-          flexShrink: 0,
-          transition: 'background 80ms, border-color 80ms',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Hub type icon */}
-        {mode === 'project' && (
-          <FolderFilledIcon size="small" label="" primaryColor="var(--ds-icon-accent-blue, #1D7AFC)" />
-        )}
-        {mode === 'product' && (
-          <LightbulbFilledIcon size="small" label="" primaryColor="var(--ds-icon-accent-teal, #1D9AAA)" />
-        )}
-        {mode === 'tasks' && (
-          <TaskIcon size="small" label="" primaryColor="var(--ds-icon-accent-purple, #8270DB)" />
-        )}
-
-        {/* Key + name */}
-        <span style={{ display: 'flex', alignItems: 'baseline', gap: 4, overflow: 'hidden' }}>
-          {triggerDisplayKey && (
-            <span style={{
-              fontSize: 12, fontWeight: 700, letterSpacing: '0.02em',
-              color: 'var(--ds-text-subtle, #44546F)',
-              flexShrink: 0,
-            }}>
-              {triggerDisplayKey}
-            </span>
-          )}
-          {triggerDisplayName && (
-            <span style={{
-              overflow: 'hidden', textOverflow: 'ellipsis',
-              color: 'var(--ds-text, #172B4D)',
-            }}>
-              {triggerDisplayName}
-            </span>
-          )}
-        </span>
-
-        <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
-      </button>
+      {isSidebar ? sidebarTrigger : topnavTrigger}
 
       {open && triggerRef.current && createPortal(
         <SwitcherPanel
@@ -662,6 +763,7 @@ export function ContextSwitcher() {
           allItems={allItems}
           currentKey={currentKey}
           managementPath={managementPath}
+          newItemPath={newItemPath}
           onNavigate={handleNavigate}
           onManagementNav={handleManagementNav}
           onClose={() => { setOpen(false); setSearch(''); }}

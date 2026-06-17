@@ -14,7 +14,7 @@
  * Data source: ph_ideas (not ph_issues). Lookup by idea_key, hooks live in
  * useIdeasHub. The router skips its ph_issues lookup when itemType="idea".
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Modal, {
   ModalBody,
   ModalFooter,
@@ -172,6 +172,15 @@ export default function CatalystViewIdea({
 
   const isConverted = rawIdea?.status === 'Converted to Request' || rawIdea?.status === 'Converted';
   const canEdit = !isConverted;
+
+  // Stable editor seed — derived from the PERSISTED description and keyed on
+  // the idea id only. Must NOT track localDescriptionAdf (which updates on
+  // every keystroke), or useTiptapEditor would recreate the editor each
+  // keystroke and edits/deletes would be lost.
+  const descSeed = useMemo(
+    () => descriptionStringToAdf(rawIdea?.description),
+    [rawIdea?.id], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   useEffect(() => {
     if (rawIdea) {
@@ -504,7 +513,7 @@ export default function CatalystViewIdea({
                       }}
                     >
                       <RichTextEditor
-                        initialAdf={localDescriptionAdf}
+                        initialAdf={descSeed}
                         hideActionButtons
                         placeholder="Add a description…"
                         minHeight={100}

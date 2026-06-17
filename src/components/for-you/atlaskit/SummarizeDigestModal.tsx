@@ -57,6 +57,8 @@ interface Props {
   onReply: (commentId: string) => void;
   onDismiss: (commentId: string) => void;
   onOpenTicket: (issueKey: string) => void;
+  /** Render as an in-page bordered panel instead of a modal overlay. */
+  inline?: boolean;
 }
 
 async function summarizeMention(m: DigestMention, signal?: AbortSignal): Promise<string> {
@@ -103,7 +105,7 @@ async function summarizeMention(m: DigestMention, signal?: AbortSignal): Promise
 }
 
 export function SummarizeDigestModal({
-  open, onClose, mentions, onReply, onDismiss, onOpenTicket,
+  open, onClose, mentions, onReply, onDismiss, onOpenTicket, inline = false,
 }: Props) {
   const [states, setStates] = useState<Record<string, DigestRowState>>({});
 
@@ -145,65 +147,115 @@ export function SummarizeDigestModal({
 
   if (!open) return null;
 
+  // Shared content — identical in modal and inline modes; only the chrome differs.
+  const titleRow = (
+    /* Rainbow border around the title row — keeps the AI affordance visible. */
+    <div style={{
+      display: 'inline-flex',
+      padding: 1.8,
+      borderRadius: 20,
+      background: ASK_CATY_RAINBOW,
+    }}>
+      <div style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '0 12px',
+        borderRadius: 17,
+        background: '#FFFFFF',
+      }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: token('color.text', '#172B4D') }}>
+          ✦ Caty's digest
+        </span>
+        <span style={{ fontSize: 13, color: token('color.text.subtle', '#44546F') }}>
+          {stats.done} of {stats.total} mentions summarized
+        </span>
+      </div>
+    </div>
+  );
+
+  const body = mentions.length === 0 ? (
+    <div style={{ padding: 24, textAlign: 'center', color: token('color.text.subtle', '#44546F') }}>
+      Nothing to summarize. Caty needs at least one mention to triage.
+    </div>
+  ) : (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {mentions.map(m => {
+        const state = states[m.commentId] ?? { phase: 'loading' as const, summary: '' };
+        return (
+          <DigestRow
+            key={m.commentId}
+            mention={m}
+            state={state}
+            onReply={() => { onReply(m.commentId); onClose(); }}
+            onDismiss={() => onDismiss(m.commentId)}
+            onOpenTicket={() => { onOpenTicket(m.issueKey); onClose(); }}
+          />
+        );
+      })}
+    </div>
+  );
+
+  const footerNote = (
+    <span style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), marginInlineEnd: 'auto' }}>
+      Powered by Caty
+      {stats.errors > 0 && ` · ${stats.errors} shown as original (AI unavailable)`}
+    </span>
+  );
+
+  // Inline mode — an in-page bordered panel mounted at the top of the feed,
+  // NOT a modal overlay. Pushes the feed cards down; × / Close collapses it.
+  if (inline) {
+    return (
+      <div
+        role="region"
+        aria-label="Caty's digest"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+          border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+          borderRadius: 8,
+          padding: 12,
+          background: token('elevation.surface', '#FFFFFF'),
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          {titleRow}
+          <button
+            type="button"
+            aria-label="Close digest"
+            onClick={onClose}
+            style={{
+              all: 'unset',
+              cursor: 'pointer',
+              padding: '2px 8px',
+              borderRadius: 3,
+              fontSize: 18,
+              lineHeight: 1,
+              color: token('color.text.subtle', '#44546F'),
+            }}
+          >
+            ×
+          </button>
+        </div>
+        {body}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {footerNote}
+          <Button appearance="subtle" onClick={onClose}>Close</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <ModalDialog onClose={onClose} width="large">
-          <ModalHeader>
-            {/* Rainbow border around the title row — keeps the AI affordance visible inside the modal. */}
-            <div style={{
-              display: 'inline-flex',
-              padding: 1.8,
-              borderRadius: 20,
-              background: ASK_CATY_RAINBOW,
-            }}>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '0 12px',
-                borderRadius: 17,
-                background: '#FFFFFF',
-              }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: token('color.text', '#172B4D') }}>
-                  ✦ Caty's digest
-                </span>
-                <span style={{ fontSize: 13, color: token('color.text.subtle', '#44546F') }}>
-                  {stats.done} of {stats.total} mentions summarized
-                </span>
-              </div>
-            </div>
-          </ModalHeader>
-
-          <ModalBody>
-            {mentions.length === 0 ? (
-              <div style={{ padding: 24, textAlign: 'center', color: token('color.text.subtle', '#44546F') }}>
-                Nothing to summarize. Caty needs at least one mention to triage.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {mentions.map(m => {
-                  const state = states[m.commentId] ?? { phase: 'loading' as const, summary: '' };
-                  return (
-                    <DigestRow
-                      key={m.commentId}
-                      mention={m}
-                      state={state}
-                      onReply={() => { onReply(m.commentId); onClose(); }}
-                      onDismiss={() => onDismiss(m.commentId)}
-                      onOpenTicket={() => { onOpenTicket(m.issueKey); onClose(); }}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </ModalBody>
-
-          <ModalFooter>
-            <span style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), marginInlineEnd: 'auto' }}>
-              Powered by Caty
-              {stats.errors > 0 && ` · ${stats.errors} shown as original (AI unavailable)`}
-            </span>
-            <Button appearance="subtle" onClick={onClose}>Close</Button>
-          </ModalFooter>
+      <ModalHeader>{titleRow}</ModalHeader>
+      <ModalBody>{body}</ModalBody>
+      <ModalFooter>
+        {footerNote}
+        <Button appearance="subtle" onClick={onClose}>Close</Button>
+      </ModalFooter>
     </ModalDialog>
   );
 }

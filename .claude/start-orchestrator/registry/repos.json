@@ -1,0 +1,92 @@
+{
+  "version": "1.0.0",
+  "vendor_root": ".claude/vendor",
+  "policy": {
+    "auto_clone_on_start": false,
+    "auto_install_on_start": false,
+    "require_user_approval_for_clone": true,
+    "require_user_approval_for_install": true,
+    "treat_vendor_repos_as_read_only": true,
+    "copy_external_skills_only_after_review": true,
+    "configure_mcp_only_after_user_approval": true
+  },
+  "repos": [
+    {
+      "id": "rtk",
+      "name": "RTK",
+      "repo": "https://github.com/rtk-ai/rtk.git",
+      "local_path": ".claude/vendor/rtk",
+      "capability": "Terminal/log/test/build output compression",
+      "type": ["cli", "context-optimization"],
+      "how_claude_uses_it": "If installed, Claude can route noisy shell commands through RTK or follow RTK usage instructions to compress command output. If not installed, Claude must report it as unavailable and use targeted shell commands manually.",
+      "activation_rule": "Use for tests, builds, lint, logs, grep/tree/git output, and other noisy terminal commands.",
+      "exact_metrics_rule": "Report exact token savings only if RTK outputs exact metrics. Otherwise provide an evidence-based estimate."
+    },
+    {
+      "id": "caveman",
+      "name": "Caveman",
+      "repo": "https://github.com/JuliusBrussee/caveman.git",
+      "local_path": ".claude/vendor/caveman",
+      "capability": "Compressed response style / concise output",
+      "type": ["claude-skill", "response-compression"],
+      "how_claude_uses_it": "If cloned and reviewed, copy or reference the Caveman skill instructions. Use only when concise output is needed. Do not use it if detail/accuracy would suffer.",
+      "activation_rule": "Use when the user asks for concise output, reduced tokens, or when final reporting is repetitive.",
+      "exact_metrics_rule": "Report exact output-token savings only if the tool provides exact metrics. Otherwise estimate qualitatively."
+    },
+    {
+      "id": "claude-context",
+      "name": "Claude Context",
+      "repo": "https://github.com/zilliztech/claude-context.git",
+      "local_path": ".claude/vendor/claude-context",
+      "capability": "Semantic codebase search via MCP",
+      "type": ["mcp", "semantic-search", "code-context"],
+      "how_claude_uses_it": "If MCP is configured, use it for semantic repo discovery. If not configured, report it as unavailable and use native search/grep/read.",
+      "activation_rule": "Use for locating business logic, source-target feature mapping, and large repo discovery.",
+      "exact_metrics_rule": "Report reduced blind file reads, not fake token numbers."
+    },
+    {
+      "id": "code-review-graph",
+      "name": "Code Review Graph",
+      "repo": "https://github.com/tirth8205/code-review-graph.git",
+      "local_path": ".claude/vendor/code-review-graph",
+      "capability": "Code graph, dependency map, blast-radius analysis",
+      "type": ["mcp", "code-graph", "dependency-analysis"],
+      "how_claude_uses_it": "If installed/configured, use it to identify imports, consumers, and dependency impact. If unavailable, use manual import tracing.",
+      "activation_rule": "Use before refactors, feature replication, shared hook/service/component changes, and code reviews.",
+      "exact_metrics_rule": "Report dependencies identified and avoided blind reads."
+    },
+    {
+      "id": "token-savior",
+      "name": "Token Savior",
+      "repo": "https://github.com/Mibayy/token-savior.git",
+      "local_path": ".claude/vendor/token-savior",
+      "capability": "Symbol-level inspection and selective file reading",
+      "type": ["mcp", "token-optimization", "symbol-search"],
+      "how_claude_uses_it": "If available, use it to inspect symbols/functions/components/hooks instead of full files. If unavailable, use targeted grep/read.",
+      "activation_rule": "Use when files are large and only specific functions/components/hooks/types are needed.",
+      "exact_metrics_rule": "Report full-file reads avoided."
+    },
+    {
+      "id": "context-mode",
+      "name": "Context Mode",
+      "repo": "https://github.com/mksglu/context-mode.git",
+      "local_path": ".claude/vendor/context-mode",
+      "capability": "Large tool/browser/DOM/MCP/API output isolation",
+      "type": ["tool-output-sandboxing", "context-management"],
+      "how_claude_uses_it": "If available, use it to avoid flooding main context with large DOM, browser, MCP, API, or JSON outputs. If unavailable, summarize outputs manually.",
+      "activation_rule": "Use for browser probes, DOM snapshots, MCP payloads, Playwright output, API JSON, and large tool output.",
+      "exact_metrics_rule": "Report outputs summarized/isolated."
+    },
+    {
+      "id": "memsearch",
+      "name": "Memsearch",
+      "repo": "https://github.com/zilliztech/memsearch.git",
+      "local_path": ".claude/vendor/memsearch",
+      "capability": "Persistent memory and guardrail retrieval",
+      "type": ["memory", "retrieval", "project-context"],
+      "how_claude_uses_it": "If installed/configured, use it to retrieve durable project decisions and guardrails. If unavailable, read local guardrail files.",
+      "activation_rule": "Use when user references prior decisions, recurring Catalyst standards, or durable guardrails.",
+      "exact_metrics_rule": "Report decisions/guardrails retrieved, not fake token savings."
+    }
+  ]
+}

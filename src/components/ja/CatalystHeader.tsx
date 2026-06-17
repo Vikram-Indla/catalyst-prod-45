@@ -10,7 +10,6 @@ import { HubSwitcher } from '@/components/layout/HubSwitcher';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
-import { ContextSwitcher } from '@/components/layout/ContextSwitcher';
 import { Link } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
 import { useCatalystContext } from '@/contexts/CatalystContext';
@@ -204,7 +203,9 @@ export function CatalystHeader() {
         minWidth: 0,
         overflow: 'hidden',
       }}>
-        <ContextSwitcher />
+        {/* 2026-06-16: ContextSwitcher moved OFF the top nav into the left
+            sidebar header (ProductHub/ProjectHub/Tasks sidebars) to reclaim
+            top-nav width and remove the double-render of the active context. */}
         <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: '560px' }}>
           <GlobalSearch />
         </div>

@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { EnterpriseSidebar } from '@/components/layout/EnterpriseSidebar';
 import { GlobalMobileDrawer } from '@/components/layout/GlobalMobileDrawer';
@@ -26,7 +25,7 @@ import { UnifiedSidebar } from '@/components/layout/UnifiedSidebar';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Components/Layout/Shell' };
@@ -38,17 +37,17 @@ export const GlobalSearchDefault: StoryObj = {
 
 export const GlobalPageHeaderDefault: StoryObj = {
   name: 'GlobalPageHeader / Default',
-  render: () => <Wrap><GlobalPageHeader sectionLabel=[] pageTitle="Sample item title" /></Wrap>,
+  render: () => <Wrap><GlobalPageHeader sectionLabel={[]} pageTitle="Sample item title" /></Wrap>,
 }
 
 export const GlobalMobileDrawerDefault: StoryObj = {
   name: 'GlobalMobileDrawer / Default',
-  render: () => <Wrap><GlobalMobileDrawer open=true onClose={fn()} /></Wrap>,
+  render: () => <Wrap><GlobalMobileDrawer open={true} onClose={fn()} /></Wrap>,
 }
 
 export const GlobalMobileDrawerOpen: StoryObj = {
   name: 'GlobalMobileDrawer / Open',
-  render: () => <Wrap><GlobalMobileDrawer open=true onClose={fn()} open={true} /></Wrap>,
+  render: () => <Wrap><GlobalMobileDrawer open={true} onClose={fn()} open={true} /></Wrap>,
 }
 
 export const HubPageHeaderDefault: StoryObj = {
@@ -68,12 +67,12 @@ export const MobileBottomNavDefault: StoryObj = {
 
 export const MobileMenuDrawerDefault: StoryObj = {
   name: 'MobileMenuDrawer / Default',
-  render: () => <Wrap><MobileMenuDrawer open=true onClose={fn()} /></Wrap>,
+  render: () => <Wrap><MobileMenuDrawer open={true} onClose={fn()} /></Wrap>,
 }
 
 export const MobileMenuDrawerOpen: StoryObj = {
   name: 'MobileMenuDrawer / Open',
-  render: () => <Wrap><MobileMenuDrawer open=true onClose={fn()} open={true} /></Wrap>,
+  render: () => <Wrap><MobileMenuDrawer open={true} onClose={fn()} open={true} /></Wrap>,
 }
 
 export const RoomContentShellDefault: StoryObj = {
@@ -88,17 +87,17 @@ export const ResponsivePageContainerDefault: StoryObj = {
 
 export const EnterpriseSidebarDefault: StoryObj = {
   name: 'EnterpriseSidebar / Default',
-  render: () => <Wrap><EnterpriseSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><EnterpriseSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const UnifiedSidebarDefault: StoryObj = {
   name: 'UnifiedSidebar / Default',
-  render: () => <Wrap><UnifiedSidebar workspaceType={{{}}} entityId="item-1" expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><UnifiedSidebar workspaceType={{} as any} entityId="item-1" expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const ProjectSidebarDefault: StoryObj = {
   name: 'ProjectSidebar / Default',
-  render: () => <Wrap><ProjectSidebar projectId="item-1" expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><ProjectSidebar projectId="item-1" expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const ItemsDropdownDefault: StoryObj = {
@@ -113,10 +112,10 @@ export const StarredDropdownDefault: StoryObj = {
 
 export const ReleasesManagementSidebarDefault: StoryObj = {
   name: 'ReleasesManagementSidebar / Default',
-  render: () => <Wrap><ReleasesManagementSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><ReleasesManagementSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }
 
 export const TestManagementSidebarDefault: StoryObj = {
   name: 'TestManagementSidebar / Default',
-  render: () => <Wrap><TestManagementSidebar expanded=false onToggle={fn()} /></Wrap>,
+  render: () => <Wrap><TestManagementSidebar expanded={false} onToggle={fn()} /></Wrap>,
 }

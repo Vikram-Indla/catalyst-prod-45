@@ -683,7 +683,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                 {() => (
                   <Box xcss={editorWrapperStyles}>
                     <RichTextEditor
-                      initialAdf={form.descriptionAdf ?? null}
+                      initialAdf={null}
                       hideActionButtons
                       onSave={() => {}}
                       onCancel={() => {}}

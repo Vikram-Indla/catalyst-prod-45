@@ -22,9 +22,8 @@
  *   To Do          rgb(221,222,225)
  */
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React, { useState } from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { JiraTable } from '@/components/shared/JiraTable/JiraTable';
@@ -49,7 +48,7 @@ const qc = new QueryClient({ defaultOptions: { queries: { retry: false, refetchO
 function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={qc}>
-      <MemoryRouter>{children}</MemoryRouter>
+      {children}
     </QueryClientProvider>
   );
 }

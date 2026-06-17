@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React from 'react';
 import CatalystViewBusinessRequestV3 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v3';
 import { seedForIssue } from '../fixtures/storyQueryClient';

@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import type { StoryObj } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import AtlaskitRenderer from '@/components/shared/AtlaskitRenderer';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
@@ -19,7 +18,7 @@ import { canonicalWorkItemOptions } from '@/components/shared/canonicalWorkItemO
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 function Wrap({ children }: { children: React.ReactNode }) {
-  return (<QueryClientProvider client={qc}><MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}>{children}</MemoryRouter></QueryClientProvider></div>);
+  return (<QueryClientProvider client={qc}><div style={{ maxWidth: 900, padding: 16 }}>{children}</div></QueryClientProvider>);
 }
 
 export default { title: 'Components/Shared/Remaining' };
@@ -31,7 +30,7 @@ export const AtlaskitEditorDefault: StoryObj = {
 
 export const AtlaskitRendererDefault: StoryObj = {
   name: 'AtlaskitRenderer / Default',
-  render: () => <Wrap><AtlaskitRenderer document={{{}}} /></Wrap>,
+  render: () => <Wrap><AtlaskitRenderer document={{} as any} /></Wrap>,
 }
 
 export const PermissionGuardDefault: StoryObj = {
@@ -41,7 +40,7 @@ export const PermissionGuardDefault: StoryObj = {
 
 export const WorkItemIconDefault: StoryObj = {
   name: 'WorkItemIcon / Default',
-  render: () => <Wrap><WorkItemIcon type={{{}}} /></Wrap>,
+  render: () => <Wrap><WorkItemIcon type={{} as any} /></Wrap>,
 }
 
 export const canonicalWorkItemOptionsDefault: StoryObj = {
@@ -66,5 +65,5 @@ export const UnifiedAuditHistoryTabDefault: StoryObj = {
 
 export const UnifiedLinksTabDefault: StoryObj = {
   name: 'UnifiedLinksTab / Default',
-  render: () => <Wrap><UnifiedLinksTab entityType={{{}}} entityId="item-1" /></Wrap>,
+  render: () => <Wrap><UnifiedLinksTab entityType={{} as any} entityId="item-1" /></Wrap>,
 }

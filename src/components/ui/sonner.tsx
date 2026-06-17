@@ -45,10 +45,8 @@ export const toast = Object.assign(
     warning: (title: string, opts?: SonnerOptions) =>
       showFlag({ title, description: opts?.description, appearance: 'warning' }),
 
-    // Loading: show an info flag. Phase 3 will migrate these 4 sites to
-    // button-spinner + deferred success/error flag pattern.
-    loading: (title: string, _opts?: SonnerOptions) =>
-      showFlag({ title, appearance: 'info' }),
+    // DEPRECATED 2026-06-16 (Vikram): loading transient badges suppressed.
+    loading: (_title: string, _opts?: SonnerOptions) => { /* suppressed */ },
 
     // dismiss: no-op — ADS flags dismiss themselves (auto or user X)
     dismiss: (_id?: string | number) => { /* no-op */ },

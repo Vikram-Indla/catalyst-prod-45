@@ -23,6 +23,11 @@ const CatalystViewFeature = lazy(() => import('./feature/CatalystViewFeature'));
 // idea-specific data hooks (useIdeaByKey, useUpdateIdea) under the same
 // CatalystView* contract — see CLAUDE.md.
 const CatalystViewIdea = lazy(() => import('./idea/CatalystViewIdea'));
+// Task 1.5d (2026-06-16) — Tasks Hub canonical detail view. Reads from the
+// `tasks` table (Tasks Hub data) — NOT ph_issues. Routed when callers pass
+// entityKind='task'. See CLAUDE.md REUSE-FIRST + ADOPT-CANONICAL for the
+// rationale (no fork of CatalystViewTask).
+const TaskCatalystView = lazy(() => import('./task-catalyst/TaskCatalystView'));
 
 /** Normalize various issue_type strings to a canonical CatalystItemType */
 function resolveItemType(raw: string | undefined | null): 'story' | 'epic' | 'feature' | 'defect' | 'incident' | 'task' | 'business_request' | 'subtask' | 'idea' | null {
@@ -50,8 +55,34 @@ export default function CatalystDetailRouter({
   isOpen, onClose, itemId, itemType,
   projectId, projectKey, onOpenItem,
   panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
-  onConvert, hideSidebar,
+  onConvert, hideSidebar, entityKind,
 }: CatalystDetailRouterProps) {
+
+  // Task 1.5d (2026-06-16) — short-circuit for Tasks Hub.
+  // Tasks live in a separate table (`tasks`) and have their own canonical
+  // detail surface. We do NOT look up itemType for entityKind='task' — the
+  // route is unambiguous.
+  if (entityKind === 'task') {
+    if (!isOpen) return null;
+    return (
+      <Suspense fallback={null}>
+        <TaskCatalystView
+          isOpen={isOpen}
+          onClose={onClose}
+          itemId={itemId}
+          projectId={projectId}
+          projectKey={projectKey}
+          onOpenItem={onOpenItem}
+          panelMode={panelMode}
+          fullPageMode={fullPageMode}
+          onTogglePanelMode={onTogglePanelMode}
+          navigationItems={navigationItems}
+          onNavigate={onNavigate}
+          hideSidebar={hideSidebar}
+        />
+      </Suspense>
+    );
+  }
 
   // F-iter9 PK fix: ph_issues' primary key is `issue_key` (text), not `id`.
   // The codebase had been silently no-op'ing on .eq('id', ...) since there's

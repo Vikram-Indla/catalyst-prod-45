@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
 import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 import ThemeCard from '@/components/for-you/atlaskit/ThemeCard';
@@ -96,7 +95,7 @@ const infraTheme: Theme = {
 const assignedMeta: Meta<typeof AssignedPanel> = {
   title: 'Pages/For You/AssignedPanel',
   component: AssignedPanel,
-  decorators: [(Story) => <MemoryRouter><div style={{ maxWidth: 900, padding: 16 }}><Story /></div></MemoryRouter>],
+  decorators: [(Story) => <div style={{ maxWidth: 900, padding: 16 }}><Story /></div>],
   args: {
     items: assignedItems,
     isLoading: false,
@@ -132,33 +131,33 @@ export const WithThemifyCTA: APStory = {
 export const StarredWithItems: StoryObj = {
   name: 'StarredPanel / With Items',
   render: () => (
-    <MemoryRouter>
+    
       <div style={{ maxWidth: 900, padding: 16 }}>
         <StarredPanel items={starredItems} isLoading={false} onSelect={fn()} onToggleStar={fn()} onSwitchTab={fn()} />
       </div>
-    </MemoryRouter>
+    
   ),
 };
 
 export const StarredEmpty: StoryObj = {
   name: 'StarredPanel / Empty',
   render: () => (
-    <MemoryRouter>
+    
       <div style={{ maxWidth: 900, padding: 16 }}>
         <StarredPanel items={[]} isLoading={false} onSelect={fn()} onToggleStar={fn()} onSwitchTab={fn()} />
       </div>
-    </MemoryRouter>
+    
   ),
 };
 
 export const StarredLoading: StoryObj = {
   name: 'StarredPanel / Loading',
   render: () => (
-    <MemoryRouter>
+    
       <div style={{ maxWidth: 900, padding: 16 }}>
         <StarredPanel items={[]} isLoading={true} onSelect={fn()} onToggleStar={fn()} />
       </div>
-    </MemoryRouter>
+    
   ),
 };
 
@@ -167,46 +166,46 @@ export const StarredLoading: StoryObj = {
 export const ThemeBugCollapsed: StoryObj = {
   name: 'ThemeCard / Bug Intent (collapsed)',
   render: () => (
-    <MemoryRouter>
+    
       <div style={{ maxWidth: 640, padding: 16 }}>
         <ThemeCard theme={bugTheme} />
       </div>
-    </MemoryRouter>
+    
   ),
 };
 
 export const ThemeFeatureExpanded: StoryObj = {
   name: 'ThemeCard / Feature Intent (expanded)',
   render: () => (
-    <MemoryRouter>
+    
       <div style={{ maxWidth: 640, padding: 16 }}>
         <ThemeCard theme={featureTheme} defaultExpanded />
       </div>
-    </MemoryRouter>
+    
   ),
 };
 
 export const ThemeUX: StoryObj = {
   name: 'ThemeCard / UX Intent',
   render: () => (
-    <MemoryRouter>
+    
       <div style={{ maxWidth: 640, padding: 16 }}>
         <ThemeCard theme={uxTheme} />
       </div>
-    </MemoryRouter>
+    
   ),
 };
 
 export const AllThemes: StoryObj = {
   name: 'ThemeCard / All Intents Grid',
   render: () => (
-    <MemoryRouter>
+    
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, maxWidth: 1200, padding: 16 }}>
         <ThemeCard theme={bugTheme} />
         <ThemeCard theme={featureTheme} />
         <ThemeCard theme={uxTheme} />
         <ThemeCard theme={infraTheme} />
       </div>
-    </MemoryRouter>
+    
   ),
 };
