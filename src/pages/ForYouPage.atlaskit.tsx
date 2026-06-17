@@ -42,7 +42,6 @@ import { token } from '@atlaskit/tokens';
 import { useAuth } from '@/lib/auth';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
 import { useAllUserProjects } from '@/hooks/home/useAllUserProjects';
-import RecommendedProjectsStrip from '@/components/for-you/atlaskit/RecommendedProjectsStrip';
 import ForYouTabs, { FOR_YOU_TAB_ORDER, type ForYouTabDefinition } from '@/components/for-you/atlaskit/ForYouTabs';
 import RecommendedPanel from '@/components/for-you/atlaskit/RecommendedPanel';
 import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
@@ -300,16 +299,12 @@ export default function ForYouPageAtlaskit() {
         boxSizing: 'border-box',
       }}
     >
-      <div style={{ marginBlockEnd: 16, paddingBlockStart: 24 }}>
-        <RecommendedProjectsStrip projects={allUserProjects} />
-      </div>
-
       <h1
         style={{
           font: `653 24px/28px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
           color: token('color.text', '#292A2E'),
           margin: 0,
-          marginBlockStart: 16,
+          marginBlockStart: 24,
           letterSpacing: 0,
         }}
       >

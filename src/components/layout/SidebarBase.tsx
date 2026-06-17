@@ -627,6 +627,25 @@ function renderMenuItem(
           }}
         />
       )}
+      {/* Collapsed rail — active hub left bar. The rail is monochrome
+          (neutral hub glyphs); the ACTIVE hub is the only color, expressed as
+          a single brand-blue bar + the selected pill. Enterprise mental model:
+          color on persistent chrome = "where am I", not per-destination
+          identity (2026-06-18 rail color lockdown). */}
+      {active && !expanded && !tk.isDark && (
+        <span
+          data-hub-active-collapsed
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: '6px',
+            bottom: '6px',
+            width: '3px',
+            background: 'var(--ds-text-selected, #0C66E4)',
+            borderRadius: '0 3px 3px 0',
+          }}
+        />
+      )}
       {/* Project identity bar — active state: full opacity */}
       {active && item.accentColor && expanded && !tk.isDark && (
         <span

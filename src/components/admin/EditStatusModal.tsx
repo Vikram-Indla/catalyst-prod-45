@@ -57,33 +57,6 @@ interface EditStatusModalProps {
   isSaving?: boolean;
 }
 
-function ColorSwatch({ color, selected, onClick }: { color: string; selected: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={color}
-      style={{
-        width: 24,
-        height: 24,
-        borderRadius: '50%',
-        background: color,
-        border: selected ? '2px solid var(--ds-border-selected, #0052CC)' : '2px solid transparent',
-        outline: selected ? '1px solid var(--ds-border-selected, #0052CC)' : 'none',
-        cursor: 'pointer',
-        padding: 0,
-        boxSizing: 'border-box',
-      }}
-    />
-  );
-}
-
-const PRESET_COLORS = [
-  '#64748B', '#2563EB', '#16A34A', '#DC2626',
-  '#D97706', '#7C3AED', '#0891B2', '#DB2777',
-  '#059669', '#EA580C',
-];
-
 export function EditStatusModal({
   isOpen,
   onClose,
@@ -98,8 +71,9 @@ export function EditStatusModal({
 
   const [name, setName] = useState('');
   const [category, setCategory] = useState<StatusCategory>('todo');
-  const [color, setColor] = useState(STATUS_CATEGORY_COLORS.todo);
-  const [hexInput, setHexInput] = useState(STATUS_CATEGORY_COLORS.todo);
+  // Color is LOCKED to the category's canonical value (statusPalette.ts).
+  // No free input — the three status colors are immutable (2026-06-17).
+  const color = STATUS_CATEGORY_COLORS[category];
   const [position, setPosition] = useState(0);
   const [isDefault, setIsDefault] = useState(false);
   const [typeAssignments, setTypeAssignments] = useState<string[]>([]);
@@ -111,16 +85,12 @@ export function EditStatusModal({
     if (status) {
       setName(status.name);
       setCategory(status.category as StatusCategory);
-      setColor(status.color);
-      setHexInput(status.color);
       setPosition(status.position);
       setIsDefault(status.is_default);
       setTypeAssignments(status.work_item_types);
     } else {
       setName('');
       setCategory('todo');
-      setColor(STATUS_CATEGORY_COLORS.todo);
-      setHexInput(STATUS_CATEGORY_COLORS.todo);
       setPosition(0);
       setIsDefault(false);
       setTypeAssignments([]);
@@ -150,19 +120,6 @@ export function EditStatusModal({
     const val = e.target.value;
     setName(val);
     setNameError(validateName(val));
-  }
-
-  function handleHexChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = e.target.value;
-    setHexInput(val);
-    if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-      setColor(val);
-    }
-  }
-
-  function handleColorSwatch(c: string) {
-    setColor(c);
-    setHexInput(c);
   }
 
   function toggleType(type: string) {
@@ -263,10 +220,7 @@ export function EditStatusModal({
                             <button
                               key={opt.value}
                               type="button"
-                              onClick={() => {
-                                setCategory(opt.value);
-                                handleColorSwatch(catColor);
-                              }}
+                              onClick={() => setCategory(opt.value)}
                               style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -303,20 +257,10 @@ export function EditStatusModal({
                     )}
                   </Field>
 
-                  {/* Color */}
+                  {/* Color — LOCKED to the category's canonical value. */}
                   <Field name="status-color" label="Color">
                     {() => (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                          {PRESET_COLORS.map((c) => (
-                            <ColorSwatch
-                              key={c}
-                              color={c}
-                              selected={color === c}
-                              onClick={() => handleColorSwatch(c)}
-                            />
-                          ))}
-                        </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <div
                             style={{
@@ -328,14 +272,13 @@ export function EditStatusModal({
                               flexShrink: 0,
                             }}
                           />
-                          <Textfield
-                            name="hex-color"
-                            value={hexInput}
-                            onChange={handleHexChange}
-                            placeholder="#64748B"
-                            width="100px"
-                          />
+                          <span style={{ fontSize: 13, fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                            {color}
+                          </span>
                         </div>
+                        <HelperMessage>
+                          Locked to the canonical {STATUS_CATEGORY_LABELS[category]} color. Status colors are fixed per category and cannot be changed.
+                        </HelperMessage>
                       </div>
                     )}
                   </Field>

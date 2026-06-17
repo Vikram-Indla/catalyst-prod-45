@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fn } from 'storybook/test';
 
 import ForYouTabs from '@/components/for-you/atlaskit/ForYouTabs';
-import RecommendedProjectsStrip from '@/components/for-you/atlaskit/RecommendedProjectsStrip';
 import ThemeIssueList from '@/components/for-you/atlaskit/ThemeIssueList';
 import { CatyAgeingTriage } from '@/components/for-you/atlaskit/CatyAgeingTriage';
 import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
@@ -63,11 +62,6 @@ export const CatyWorkloadRiskDefault: StoryObj = {
 export const ForYouTabsDefault: StoryObj = {
   name: 'ForYouTabs / Default',
   render: () => <Wrap><ForYouTabs activeTab={{} as any} tabCounts={{} as any} onChange={fn()} /></Wrap>,
-}
-
-export const RecommendedProjectsStripDefault: StoryObj = {
-  name: 'RecommendedProjectsStrip / Default',
-  render: () => <Wrap><RecommendedProjectsStrip projects={[]} /></Wrap>,
 }
 
 export const ThemeIssueListDefault: StoryObj = {

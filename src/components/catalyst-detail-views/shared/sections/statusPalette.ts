@@ -42,6 +42,23 @@ export function statusBg(appearance: string): string {
   return STATUS_BG[appearance as StatusAppearance] ?? STATUS_BG.default;
 }
 
+/**
+ * THE THREE LOCKED CATEGORY COLORS — keyed by ph_issues.status_category.
+ * gray (To Do) · blue (In Progress) · green (Done). Admin status-badge config
+ * and every category-keyed consumer MUST read from here. Hard-locked by
+ * statusPalette.canonical.test.ts + the design-governance STATUS_COLOR_LOCK rule.
+ */
+export const STATUS_CATEGORY_BG: Record<'todo' | 'in_progress' | 'done', string> = {
+  todo:        STATUS_BG.default,    // #DDDEE1 gray
+  in_progress: STATUS_BG.inprogress, // #8FB8F6 blue
+  done:        STATUS_BG.success,    // #94C748 green
+};
+
+/** Resolve a status-pill background from a status_category (canonical). */
+export function categoryBg(category: string | null | undefined): string {
+  return statusBg(categoryToAppearance(category));
+}
+
 /** Status text color (always dark). */
 export function statusFg(_appearance?: string): string {
   return STATUS_TEXT;

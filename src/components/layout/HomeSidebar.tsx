@@ -268,7 +268,7 @@ function SectionIconWrapper({ section, color }: { section: string; color?: strin
     <Icon
       label=""
       size="small"
-      primaryColor={color ?? 'var(--ds-icon-subtle, #626F86)'}
+      primaryColor={color ?? 'var(--ds-text-subtle, #44546F)'}
     />
   );
 }
@@ -395,7 +395,11 @@ export default function HomeSidebar({
       title: <LocationRowTitle location={loc} />,
       tooltip: `${loc.sectionLabel} — ${loc.projectKey}`,
       path: loc.path,
-      icon: () => <SectionIconWrapper section={loc.section} color={loc.color} />,
+      // Functional nav icons are NEUTRAL — color is reserved for the project
+      // avatar (identity) and the active row (orientation). Was loc.color
+      // (uniform blue), which made every icon shout and diverged from the
+      // neutral collapsed rail (2026-06-18 sidebar color architecture).
+      icon: () => <SectionIconWrapper section={loc.section} />,
     });
 
     const sections = groupIntoSpaces(recentLocations).map((group) => ({
