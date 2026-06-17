@@ -392,6 +392,15 @@ export interface UseTiptapEditorOptions {
   editable?: boolean;
   onUpdate?: (json: TiptapDoc) => void;
   autofocus?: boolean;
+  /**
+   * 2026-06-17: handles pasted (Ctrl+V) and dropped image files. When
+   * supplied, the editor intercepts ClipboardEvent / DragEvent items
+   * with `kind === 'file'` and `type.startsWith('image/')`, calls this
+   * function to upload, then inserts an `image` node at the cursor.
+   * When omitted, pasting an image is a no-op (default Tiptap behaviour
+   * drops the file silently because allowBase64=false on CatalystImage).
+   */
+  onImageUpload?: (file: File) => Promise<string>;
 }
 
 export const DEFAULT_PLACEHOLDER =
@@ -505,6 +514,74 @@ export function useTiptapEditor(options: UseTiptapEditorOptions): Editor | null 
         attributes: {
           class: 'catalyst-tiptap-editor',
           'data-testid': 'catalyst-description-editor',
+        },
+        /* 2026-06-17: paste-image support. Walk clipboardData.items for
+           files of type image/*, upload via options.onImageUpload, then
+           insert each as an image node. Returning true tells ProseMirror
+           we handled the event so the default (which drops the binary
+           silently because allowBase64=false) is skipped. */
+        handlePaste: (view, event) => {
+          const upload = options.onImageUpload;
+          if (!upload) return false;
+          const items = event.clipboardData?.items;
+          if (!items || items.length === 0) return false;
+          const images: File[] = [];
+          for (let i = 0; i < items.length; i++) {
+            const it = items[i];
+            if (it.kind === 'file' && it.type.startsWith('image/')) {
+              const f = it.getAsFile();
+              if (f) images.push(f);
+            }
+          }
+          if (images.length === 0) return false;
+          event.preventDefault();
+          (async () => {
+            for (const file of images) {
+              try {
+                const url = await upload(file);
+                view.dispatch(
+                  view.state.tr.replaceSelectionWith(
+                    view.state.schema.nodes.image.create({ src: url, alt: file.name }),
+                  ),
+                );
+              } catch (err) {
+                console.error('[Description] paste image upload failed', err);
+              }
+            }
+          })();
+          return true;
+        },
+        /* 2026-06-17: drop-image support — same pipeline as paste so
+           dragging a screenshot from the OS into the editor uploads it.
+           Mirrors handlePaste so the two surfaces stay in sync. */
+        handleDrop: (view, event) => {
+          const upload = options.onImageUpload;
+          if (!upload) return false;
+          const dt = (event as DragEvent).dataTransfer;
+          if (!dt || !dt.files || dt.files.length === 0) return false;
+          const images: File[] = [];
+          for (let i = 0; i < dt.files.length; i++) {
+            const f = dt.files[i];
+            if (f.type.startsWith('image/')) images.push(f);
+          }
+          if (images.length === 0) return false;
+          event.preventDefault();
+          const coords = view.posAtCoords({ left: (event as DragEvent).clientX, top: (event as DragEvent).clientY });
+          (async () => {
+            for (const file of images) {
+              try {
+                const url = await upload(file);
+                const node = view.state.schema.nodes.image.create({ src: url, alt: file.name });
+                const tr = coords
+                  ? view.state.tr.insert(coords.pos, node)
+                  : view.state.tr.replaceSelectionWith(node);
+                view.dispatch(tr);
+              } catch (err) {
+                console.error('[Description] drop image upload failed', err);
+              }
+            }
+          })();
+          return true;
         },
       },
     },
