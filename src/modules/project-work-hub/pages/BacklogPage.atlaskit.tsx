@@ -3290,6 +3290,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   //   8. Bulk change work items              — opens bulk wizard (task #7)
   //   9. Go to all work items                — wired to /allwork route
   //  10. Give feedback                       — out of scope
+  // Bulk mutations only write Catalyst-owned rows (Jira-synced rows are skipped /
+  // throw). True only when the current selection contains at least one such row —
+  // also false for an empty selection, so it doubles as the empty guard (CAT-DEF-012).
+  const selectedHasCatalyst = useMemo(
+    () => items.some((it) => selectedIds.has(it.id) && it.source === 'catalyst'),
+    [items, selectedIds],
+  );
+
   // Items grouped: view-toggles, data-ops, navigation.
   const toolbarMoreActionsButton = (
     <ToolbarMenuButton
@@ -3318,6 +3326,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           { id: 'import-csv', label: 'Import work items from CSV', icon: <AkDownloadIcon label="" size="small" />,
             onClick: () => flag.info('Import CSV', 'CSV importer scope: pending Vikram approval.') },
           { id: 'bulk-change', label: 'Bulk change work items', icon: <AkEditIcon label="" size="small" />,
+            // Disabled when the selection has no Catalyst-owned rows (incl. empty
+            // selection) — bulk edit can't write Jira-synced rows (CAT-DEF-012).
+            isDisabled: !selectedHasCatalyst,
             onClick: () => setBulkWizardOpen(true), opensModal: true },
         ]},
         // Group 3 — navigation (Jira parity item 9)
