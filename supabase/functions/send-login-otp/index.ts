@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     // Verify the email belongs to an APPROVED profile — no OTP for unknown emails
     const { data: profile } = await supabaseAdmin
       .from('profiles')
-      .select('full_name, approval_status')
+      .select('id, full_name, approval_status')
       .eq('email', normalizedEmail)
       .maybeSingle();
 
@@ -47,6 +47,17 @@ Deno.serve(async (req) => {
         JSON.stringify({ ok: true }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
+    }
+
+    // Self-heal: legacy seeded profiles (2025-12) can be APPROVED with no auth.users
+    // row, so generateLink would fail and they could never sign in (CAT-DEF-005).
+    // Provision the auth account on first code request. Idempotent — no-ops if present.
+    const { data: provStatus, error: provErr } = await supabaseAdmin.rpc(
+      'provision_auth_for_profile', { p_profile_id: profile.id },
+    );
+    if (provErr) console.error('[send-login-otp] provision error:', provErr);
+    else if (provStatus && provStatus !== 'already_has_auth') {
+      console.log('[send-login-otp] provision:', normalizedEmail, provStatus);
     }
 
     // Generate a Supabase-managed OTP — this is the same token verifyOtp expects

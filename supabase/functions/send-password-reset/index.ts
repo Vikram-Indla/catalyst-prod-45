@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     // (Anti-enumeration: always return ok:true so callers can't probe account existence.)
     const { data: profile } = await supabaseAdmin
       .from('profiles')
-      .select('full_name, approval_status')
+      .select('id, full_name, approval_status')
       .eq('email', normalizedEmail)
       .maybeSingle();
 
@@ -58,6 +58,16 @@ Deno.serve(async (req) => {
         JSON.stringify({ ok: true }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
+    }
+
+    // Self-heal: legacy seeded profiles can be APPROVED with no auth.users row, so
+    // generateLink('recovery') would fail. Provision on demand. Idempotent (CAT-DEF-005).
+    const { data: provStatus, error: provErr } = await supabaseAdmin.rpc(
+      'provision_auth_for_profile', { p_profile_id: profile.id },
+    );
+    if (provErr) console.error('[send-password-reset] provision error:', provErr);
+    else if (provStatus && provStatus !== 'already_has_auth') {
+      console.log('[send-password-reset] provision:', normalizedEmail, provStatus);
     }
 
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
