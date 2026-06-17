@@ -19,6 +19,7 @@ import {
   NavKanbanIcon,
   NavBacklogIcon,
   NavWorkIcon,
+  NavFiltersIcon,
 } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { ContextSwitcher } from './ContextSwitcher';
@@ -50,6 +51,11 @@ const taskHubSidebarConfig: SidebarConfig = {
            Same UI shell as /project-hub/:key/allwork + /product-hub/:key/allwork
            + /incident-hub/work. */
         { id: 'work', title: 'Work', path: '/tasks/work', icon: NavWorkIcon, exact: false },
+        /* 2026-06-17: Filters — canonical FiltersListPage hubType='tasks'.
+           Same UI shell as other hubs' filter directories. Path
+           /tasks/filters. exact: false so /tasks/filters/* (create, :id)
+           also keeps this nav item highlighted. */
+        { id: 'filters', title: 'Filters', path: '/tasks/filters', icon: NavFiltersIcon, exact: false },
         { id: 'timeline', title: 'Timeline', path: '/tasks/timeline', icon: GanttChartSquare, exact: true },
       ],
     },

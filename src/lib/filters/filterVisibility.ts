@@ -19,7 +19,11 @@ export interface VisibilityOption {
 }
 
 /** Options for the @atlaskit/select. Project/Product appear only when that
- *  context exists on the originating surface (the backlog has a project, not a product). */
+ *  context exists on the originating surface (the backlog has a project, not a product).
+ *  2026-06-17: Tasks hub uses projectKey='TASKS' sentinel so the standard
+ *  project visibility branch covers it — same shape as incident hub
+ *  ('INCIDENTS' sentinel). The label is the sentinel itself; admins can
+ *  alias it in the UI if desired. */
 export function visibilityOptions(ctx: {
   projectKey?: string | null;
   productKey?: string | null;
@@ -30,6 +34,23 @@ export function visibilityOptions(ctx: {
   out.push({ value: 'everyone', label: 'Everyone — view all' });
   out.push({ value: 'specific', label: 'Specific people…' });
   return out;
+}
+
+/** 2026-06-17: hub type recognized by the filters subsystem. Tasks added
+ *  alongside project/product/incident so downstream code (sidebar, lists,
+ *  saved-filter scoping) can branch consistently. */
+export type FilterHubType = 'project' | 'product' | 'incident' | 'tasks';
+
+/** Map a FilterHubType to its sentinel projectKey when no real project key
+ *  exists in the URL (incident, tasks hubs). project/product hubs return the
+ *  passed-through key. */
+export function hubTypeToProjectKey(
+  hubType: FilterHubType,
+  routeKey: string | undefined,
+): string | undefined {
+  if (hubType === 'incident') return 'INCIDENTS';
+  if (hubType === 'tasks') return 'TASKS';
+  return routeKey;
 }
 
 export interface VisibilityConfig {

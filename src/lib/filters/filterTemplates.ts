@@ -10,7 +10,7 @@
  * - Product Hub: uses business_requests fields (request_type, product_code, etc.)
  */
 
-export type HubTemplateScope = 'project' | 'product' | 'release' | 'testhub';
+export type HubTemplateScope = 'project' | 'product' | 'release' | 'testhub' | 'tasks';
 
 export interface FilterTemplate {
   id: string;
@@ -181,6 +181,46 @@ const TESTHUB_TEMPLATES: FilterTemplate[] = [
   },
 ];
 
+// ─── Tasks Hub templates ─────────────────────────────────────────────────────
+
+const TASKS_TEMPLATES: FilterTemplate[] = [
+  {
+    id: 'tasks-my-open',
+    name: 'My open tasks',
+    description: 'Tasks assigned to me that are not yet done',
+    jql: 'assignee = currentUser() AND status != Done ORDER BY updated DESC',
+    category: 'my-work',
+  },
+  {
+    id: 'tasks-due-this-week',
+    name: 'Due this week',
+    description: 'Tasks with due dates in the next 7 days',
+    jql: 'duedate <= 7d AND status != Done ORDER BY duedate ASC',
+    category: 'dates',
+  },
+  {
+    id: 'tasks-critical-priority',
+    name: 'Critical priority',
+    description: 'Critical tasks not yet completed',
+    jql: 'priority in (Critical, Highest) AND status != Done ORDER BY priority DESC',
+    category: 'priority',
+  },
+  {
+    id: 'tasks-done-7d',
+    name: 'Done in last 7 days',
+    description: 'Tasks completed in the past week',
+    jql: 'status = Done AND updated >= -7d ORDER BY updated DESC',
+    category: 'my-work',
+  },
+  {
+    id: 'tasks-unassigned',
+    name: 'Unassigned tasks',
+    description: 'Open tasks with no assignee',
+    jql: 'assignee is EMPTY AND status != Done ORDER BY created ASC',
+    category: 'team',
+  },
+];
+
 // ─── Registry ────────────────────────────────────────────────────────────────
 
 const REGISTRY: Record<HubTemplateScope, FilterTemplate[]> = {
@@ -188,6 +228,7 @@ const REGISTRY: Record<HubTemplateScope, FilterTemplate[]> = {
   product:  PRODUCT_TEMPLATES,
   release:  RELEASE_TEMPLATES,
   testhub:  TESTHUB_TEMPLATES,
+  tasks:    TASKS_TEMPLATES,
 };
 
 /**

@@ -194,6 +194,11 @@ const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificatio
 const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
 const TasksDetailPage = lazy(() => import("../modules/tasks/pages/TasksDetailPage"));
 const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
+/* 2026-06-17: Tasks Hub filters — canonical FiltersListPage / FilterDetailPage
+   / FilterPreviewPage mounted with hubType='tasks' / mode='tasks'. */
+const TasksFiltersListPage = lazy(() => import("../modules/tasks/pages/TasksFiltersListPage"));
+const TasksFilterPreviewPage = lazy(() => import("../modules/tasks/pages/TasksFilterPreviewPage"));
+const TasksFilterDetailPage = lazy(() => import("../modules/tasks/pages/TasksFilterDetailPage"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 const TestHubPage = lazy(() => import("../modules-dormant/testhub/TestHubPage"));
@@ -635,6 +640,12 @@ export default function FullAppRoutes() {
             /tasks/:view so RR6's specificity ranking selects the
             two-segment route for /tasks/view/<task-key>. */}
         <Route path="/tasks/view/:taskKey" element={<S><TasksDetailPage /></S>} />
+        {/* 2026-06-17: Tasks Hub filters — canonical FiltersListPage /
+            FilterDetailPage / FilterPreviewPage. MUST be declared before
+            /tasks/:view so the static segment outranks the param route. */}
+        <Route path="/tasks/filters" element={<S><TasksFiltersListPage /></S>} />
+        <Route path="/tasks/filters/create" element={<S><TasksFilterPreviewPage /></S>} />
+        <Route path="/tasks/filters/:filterId" element={<S><TasksFilterDetailPage /></S>} />
         <Route path="/tasks/:view" element={<S><PlannerPage /></S>} />
         {/* Deprecated 2026-06-17: My Tasks + Workstreams removed. Static segment outranks /tasks/:view in RR6 → 404. */}
         <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />
