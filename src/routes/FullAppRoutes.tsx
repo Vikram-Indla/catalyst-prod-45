@@ -192,7 +192,13 @@ const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPag
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
 const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
+const TasksDetailPage = lazy(() => import("../modules/tasks/pages/TasksDetailPage"));
 const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
+/* 2026-06-17: Tasks Hub filters — canonical FiltersListPage / FilterDetailPage
+   / FilterPreviewPage mounted with hubType='tasks' / mode='tasks'. */
+const TasksFiltersListPage = lazy(() => import("../modules/tasks/pages/TasksFiltersListPage"));
+const TasksFilterPreviewPage = lazy(() => import("../modules/tasks/pages/TasksFilterPreviewPage"));
+const TasksFilterDetailPage = lazy(() => import("../modules/tasks/pages/TasksFilterDetailPage"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 const TestHubPage = lazy(() => import("../modules-dormant/testhub/TestHubPage"));
@@ -622,16 +628,31 @@ export default function FullAppRoutes() {
 
         <Route path="/work-tree" element={<S><WorkTreePage /></S>} />
 
-        <Route path="/tasks" element={<Navigate to="/tasks/board" replace />} />
-        {/* Deprecated 2026-06-17: /tasks/work removed — route cloned from project-hub but superseded by task-list view. */}
-        <Route path="/tasks/work" element={<Navigate to="/tasks/list" replace />} />
+        {/* 2026-06-17: default landing is Dashboard (matches project +
+            product + incident hubs). Board is reachable from the sidebar
+            or directly via /tasks/board. */}
+        <Route path="/tasks" element={<Navigate to="/tasks/overview" replace />} />
+        {/* 2026-06-17: /tasks/work re-introduced as the canonical Tasks
+            Hub All Work view (TasksWorkCanonical → ProjectAllWorkView
+            with tasksItems + entityKind='task'). The earlier redirect
+            to /tasks/list was deleted now that the real surface exists. */}
+        {/* 2026-06-17: full-page task detail. MUST be declared before
+            /tasks/:view so RR6's specificity ranking selects the
+            two-segment route for /tasks/view/<task-key>. */}
+        <Route path="/tasks/view/:taskKey" element={<S><TasksDetailPage /></S>} />
+        {/* 2026-06-17: Tasks Hub filters — canonical FiltersListPage /
+            FilterDetailPage / FilterPreviewPage. MUST be declared before
+            /tasks/:view so the static segment outranks the param route. */}
+        <Route path="/tasks/filters" element={<S><TasksFiltersListPage /></S>} />
+        <Route path="/tasks/filters/create" element={<S><TasksFilterPreviewPage /></S>} />
+        <Route path="/tasks/filters/:filterId" element={<S><TasksFilterDetailPage /></S>} />
         <Route path="/tasks/:view" element={<S><PlannerPage /></S>} />
         {/* Deprecated 2026-06-17: My Tasks + Workstreams removed. Static segment outranks /tasks/:view in RR6 → 404. */}
         <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />
         <Route path="/tasks/workstreams" element={<S><NotFound /></S>} />
 
         {/* Backward-compat redirects from old /taskhub routes */}
-        <Route path="/taskhub" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/taskhub" element={<Navigate to="/tasks/overview" replace />} />
         <Route path="/taskhub/boards" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub/task-list" element={<Navigate to="/tasks/list" replace />} />
         <Route path="/taskhub/dashboard" element={<Navigate to="/tasks/overview" replace />} />
@@ -754,8 +775,8 @@ export default function FullAppRoutes() {
         <Route path="/tasks/priorities/*" element={<S><NotFound /></S>} />
 
         {/* Backward-compat redirects from old /planner routes */}
-        <Route path="/planner" element={<Navigate to="/tasks/board" replace />} />
-        <Route path="/planner/*" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/planner" element={<Navigate to="/tasks/overview" replace />} />
+        <Route path="/planner/*" element={<Navigate to="/tasks/overview" replace />} />
 
         <Route path="/planhub" element={<S><PlanLibraryPage /></S>} />
         <Route path="/planhub/plan/:planId" element={<S><PlanEditorPage /></S>} />

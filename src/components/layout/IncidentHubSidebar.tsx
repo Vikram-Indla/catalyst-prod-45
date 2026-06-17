@@ -8,11 +8,16 @@ import {
   List,
   BarChart3,
   Sparkles,
-  LayoutGrid,
   FileText,
   Users,
 } from '@/lib/atlaskit-icons';
-import { NavWorkIcon, NavFiltersIcon, NavTimelineIcon, NavDashboardIcon } from '@/lib/nav-icons';
+import {
+  NavWorkIcon,
+  NavFiltersIcon,
+  NavTimelineIcon,
+  NavDashboardIcon,
+  NavKanbanIcon,
+} from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface IncidentHubSidebarProps {
@@ -45,7 +50,7 @@ const sections: SidebarSection[] = [
          project and product hubs. Path repointed to /incident-hub/board
          (canonical KanbanPage with mode='incident'); the legacy
          /incident-hub/kanban URL still redirects here. */
-      { id: 'board', title: 'Board', path: '/incident-hub/board', icon: LayoutGrid, exact: false },
+      { id: 'board', title: 'Board', path: '/incident-hub/board', icon: NavKanbanIcon, exact: false },
       /* Work tab — canonical AllWork view, mode='incident'.
          Same sequence as project / product hubs (after Board). */
       { id: 'work', title: 'Work', path: '/incident-hub/work', icon: NavWorkIcon, exact: false },

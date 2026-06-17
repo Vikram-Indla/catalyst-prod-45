@@ -43,6 +43,14 @@ export function KeyDetailsFieldRow({
   alignBlock?: 'start' | 'center';
   children: React.ReactNode;
 }) {
+  /* 2026-06-17: uniform hover background on every Key details VALUE cell
+     (Parent / Priority / Severity / Workstream / Due date / etc.). The
+     wrapper owns the hover bg via data-cv-keydetails-value. Inner editor
+     atoms (EditablePriority, EditableAssignee, etc.) already render
+     their own hover bg via global `.cv-*-select__control:hover` CSS —
+     that's suppressed inside this wrapper (rule injected below) so we
+     get exactly ONE background, not two stacked. */
+  const [hovered, setHovered] = React.useState(false);
   return (
     <div style={{ padding: '6px 0' }}>
       <Inline space="space.250" alignBlock={alignBlock}>
@@ -50,10 +58,51 @@ export function KeyDetailsFieldRow({
           fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
           minWidth: 120, flexShrink: 0,
         }}>{label}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+        <div
+          data-cv-keydetails-value="true"
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            flex: 1,
+            minWidth: 0,
+            padding: '4px 6px',
+            margin: '-4px -6px',
+            borderRadius: 3,
+            background: hovered
+              ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
+              : 'transparent',
+            transition: 'background 80ms ease',
+          }}
+        >
+          {children}
+        </div>
       </Inline>
     </div>
   );
+}
+
+/* 2026-06-17: suppress inner hover backgrounds on editor atoms whenever
+   they're mounted inside a Key details value cell. Without this, the
+   atom's own `.cv-*-select__control:hover` rule (EditableFields.tsx) +
+   the wrapper bg both fire → two stacked backgrounds. Higher specificity
+   via the data-attr parent selector. */
+const KEY_DETAILS_HOVER_BG_RESET_ID = 'cv-keydetails-hover-bg-reset';
+if (typeof document !== 'undefined' && !document.getElementById(KEY_DETAILS_HOVER_BG_RESET_ID)) {
+  const style = document.createElement('style');
+  style.id = KEY_DETAILS_HOVER_BG_RESET_ID;
+  /* Nuke EVERY inner hover bg inside Key details value cells. Wrapper
+     owns the single hover bg. Covers: react-select controls (atoms),
+     hand-rolled buttons (CatalystParentLinker SidebarAddTrigger),
+     EditablePriority chips, CatalystSeverityField, hover-bg divs, etc. */
+  style.textContent = `
+    [data-cv-keydetails-value="true"] [class*="-select__control"],
+    [data-cv-keydetails-value="true"] [class*="-select__control"]:hover,
+    [data-cv-keydetails-value="true"] button,
+    [data-cv-keydetails-value="true"] button:hover {
+      background: transparent !important;
+    }
+  `;
+  document.head.appendChild(style);
 }
 // Keep the internal alias so existing code inside this file doesn't need
 // a rename sweep; new call sites should import `KeyDetailsFieldRow`.
@@ -83,6 +132,22 @@ interface CatalystKeyDetailsProps {
    *  Defects add: Severity, Found in build, Fix in build, Root Cause,
    *  Resolution. Incidents add: Severity, Impacted services, MTTR. */
   extraRows?: React.ReactNode;
+  /**
+   * 2026-06-17 — adapter for non-ph_issues data sources (tasks hub).
+   * When `onPriorityChange` is set, EditablePriority's internal
+   * ph_issues mutation is bypassed and the override owns the write.
+   * Mirrors the same pattern added to CatalystSidebarDetails.
+   */
+  dataSource?: {
+    onPriorityChange?: (value: string | null) => Promise<void> | void;
+    /**
+     * Override priority option list. Tasks Hub uses a 4-level scale
+     * (Critical/High/Medium/Low) instead of the canonical 5-level Jira
+     * scale (Highest/High/Medium/Low/Lowest). When omitted, the default
+     * PRIORITY_LIST inside EditablePriority is used.
+     */
+    priorityOptions?: string[];
+  };
 }
 
 export function CatalystKeyDetails({
@@ -91,6 +156,7 @@ export function CatalystKeyDetails({
   showPriority = true,
   defaultCollapsed = false,
   extraRows,
+  dataSource,
 }: CatalystKeyDetailsProps) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const queryClient = useQueryClient();
@@ -157,6 +223,8 @@ export function CatalystKeyDetails({
                   issueId={issue.id}
                   currentPriority={issue.priority}
                   onUpdate={invalidateIssue}
+                  onChange={dataSource?.onPriorityChange}
+                  options={dataSource?.priorityOptions}
                 />
               )}
             </FieldRow>

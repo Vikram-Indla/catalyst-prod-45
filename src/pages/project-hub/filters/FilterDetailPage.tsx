@@ -20,16 +20,26 @@ interface FilterDetailPageProps {
    *  links go to ph_issues-backed work + backlog surfaces. product builds the
    *  same chrome with /product-hub/:key/... links + product hub_scope when
    *  saving. 2026-06-16: 'incident' added — same chrome, /incident-hub/...
-   *  links, no :key in URL. Per CLAUDE.md "ADOPT CANONICAL COMPONENTS". */
-  mode?: 'project' | 'product' | 'incident';
+   *  links, no :key in URL. 2026-06-17: 'tasks' added — /tasks/... links,
+   *  no :key in URL, 'TASKS' sentinel projectKey. Per CLAUDE.md "ADOPT
+   *  CANONICAL COMPONENTS". */
+  mode?: 'project' | 'product' | 'incident' | 'tasks';
 }
 
 export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageProps = {}) {
   const isProduct = mode === 'product';
   const isIncident = mode === 'incident';
-  const hubBase = isProduct ? 'product-hub' : isIncident ? 'incident-hub' : 'project-hub';
+  const isTasks = mode === 'tasks';
+  const hubBase =
+    isProduct ? 'product-hub'
+    : isIncident ? 'incident-hub'
+    : isTasks ? 'tasks'
+    : 'project-hub';
   const { key: routeKey, filterId } = useParams<{ key: string; filterId: string }>();
-  const projectKey = isIncident ? 'INCIDENTS' : routeKey;
+  const projectKey =
+    isIncident ? 'INCIDENTS'
+    : isTasks ? 'TASKS'
+    : routeKey;
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -66,8 +76,9 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
     staleTime: 60_000,
   });
 
-  const backHref = isIncident
-    ? '/incident-hub/filters'
+  const backHref =
+    isIncident ? '/incident-hub/filters'
+    : isTasks ? '/tasks/filters'
     : projectKey
       ? `/${hubBase}/${projectKey}/filters`
       : '/product-hub/filters';
@@ -207,7 +218,23 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                 </Button>
               </>
             )}
-            {filter.jql_query && projectKey && !isIncident && (
+            {filter.jql_query && isTasks && (
+              <>
+                <Button
+                  appearance="subtle"
+                  onClick={() => navigate(`/tasks/work?filterId=${filter.id}`)}
+                >
+                  Open in work
+                </Button>
+                <Button
+                  appearance="primary"
+                  onClick={() => navigate(`/tasks/board?filterId=${filter.id}`)}
+                >
+                  Apply to board
+                </Button>
+              </>
+            )}
+            {filter.jql_query && projectKey && !isIncident && !isTasks && (
               <>
                 <Button
                   appearance="subtle"
@@ -223,7 +250,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                 </Button>
               </>
             )}
-            {filter.jql_query && !projectKey && !isIncident && (
+            {filter.jql_query && !projectKey && !isIncident && !isTasks && (
               <Button
                 appearance="primary"
                 onClick={() => navigate(backHref)}
@@ -288,7 +315,12 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                 {linkedBoards.map(board => (
                   <a
                     key={board.id}
-                    href={projectKey ? `/${hubBase}/${projectKey}/board` : '#'}
+                    href={
+                      isTasks ? '/tasks/board'
+                      : isIncident ? '/incident-hub/board'
+                      : projectKey ? `/${hubBase}/${projectKey}/board`
+                      : '#'
+                    }
                     style={{
                       fontSize: 13,
                       color: token('color.link'),
@@ -362,10 +394,13 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
           </div>
         )}
 
-        {/* Live results — the filter in use, rendered with the canonical backlog table */}
+        {/* Live results — the filter in use, rendered with the canonical backlog table.
+            2026-06-17: tasks mode swaps the data source to the `tasks` table; the
+            FilterResultsPanel component branches internally so chrome stays identical. */}
         {filter.jql_query && (
           <FilterResultsPanel
             jql={filter.jql_query}
+            dataSource={isTasks ? 'tasks' : 'ph_issues'}
             emptyHint="This filter has no JQL yet — edit it to see matching work items."
           />
         )}
@@ -377,7 +412,8 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
         <FilterSaveModal
           filter={filter}
           hubScope={isProduct ? 'product' : 'project'}
-          /* 2026-06-16: always pass hub identity for strict scoping. */
+          /* 2026-06-16: always pass hub identity for strict scoping.
+             2026-06-17: tasks hub uses the 'TASKS' sentinel as projectKey. */
           {...(isProduct ? { productKey: projectKey } : { projectKey })}
           onClose={() => setEditOpen(false)}
           onSaved={() => setEditOpen(false)}

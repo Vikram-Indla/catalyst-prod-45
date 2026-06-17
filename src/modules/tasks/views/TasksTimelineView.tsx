@@ -35,6 +35,7 @@ import {
 } from '@/components/shared/Timeline';
 import { TasksPageHeader } from '@/modules/tasks/components/TasksPageHeader';
 import { useTaskItems, useUpdatePlannerTask } from '@/modules/tasks/hooks/useTaskItems';
+import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlannerTask, TaskStatus } from '@/modules/tasks/types';
 
@@ -129,6 +130,11 @@ export default function TasksTimelineView() {
   const queryClient = useQueryClient();
   const { data: tasks = [], isLoading, error } = useTaskItems();
   const updateMutation = useUpdatePlannerTask();
+  /* 2026-06-17: surface Tasks Hub saved filters on the timeline filter
+     bar — matches /project-hub/:key/timeline + /incident-hub/timeline.
+     Scoped strictly to project_key='TASKS' via the chokepoint added
+     today (useFiltersForProject). */
+  const { data: savedFilters = [] } = useFiltersForProject('TASKS', 'project');
 
   const tree = useMemo(() => buildFlatTimelineTree(tasks), [tasks]);
 
@@ -296,9 +302,14 @@ export default function TasksTimelineView() {
       hubKey="tasks"
       filterOptions={{
         workItemTypes: DEFAULT_WORK_ITEM_TYPES,
-        enableSavedFilters: false,
+        enableSavedFilters: true,
+        savedFilters,
       }}
-      buildIssueDetailRoute={() => '#'}
+      /* 2026-06-17: route Timeline row → full-page Tasks detail view
+         (/tasks/view/<task-key>) so it lands on TaskCatalystView with
+         canonical chrome — same surface as the panel's "Open in full
+         page" arrow. */
+      buildIssueDetailRoute={(issueKey) => `/tasks/view/${issueKey}`}
       resolveItemType={() => 'task'}
       detailRouteOwnerKey="tasks"
       detailEntityKind="task"

@@ -2,7 +2,10 @@
  * ToolbarIconButton — shared primitive for all toolbar buttons.
  *
  * Renders a 28px square button with:
- *   - native tooltip via title attribute (lightweight, no extra dep)
+ *   - @atlaskit/tooltip wrapper (2026-06-17 — portals to
+ *     atlaskit-portal-container at document.body, so the tooltip can
+ *     never be clipped by the description editor shell's overflow:hidden
+ *     or any other ancestor with overflow != visible/clip).
  *   - active-state background using ADS selected-bold token
  *   - hover-state background using ADS neutral-subtle-hovered
  *   - disabled-state with reduced opacity
@@ -11,6 +14,7 @@
  * e.g. "Bold Ctrl+B". The active prop reflects current mark/node state.
  */
 import type { CSSProperties, ReactNode, MouseEvent } from 'react';
+import Tooltip from '@atlaskit/tooltip';
 
 export interface ToolbarIconButtonProps {
   label: string;
@@ -57,31 +61,32 @@ export function ToolbarIconButton({
   };
 
   return (
-    <button
-      type="button"
-      title={label}
-      aria-label={label}
-      aria-pressed={active}
-      disabled={disabled}
-      onMouseDown={(e) => {
-        // Keep editor focus when clicking the toolbar.
-        e.preventDefault();
-      }}
-      onClick={onClick}
-      style={base}
-      data-testid={testId}
-      onMouseEnter={(e) => {
-        if (disabled || active) return;
-        e.currentTarget.style.background =
-          'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
-      }}
-      onMouseLeave={(e) => {
-        if (disabled || active) return;
-        e.currentTarget.style.background = 'transparent';
-      }}
-    >
-      {children}
-    </button>
+    <Tooltip content={label} position="top">
+      <button
+        type="button"
+        aria-label={label}
+        aria-pressed={active}
+        disabled={disabled}
+        onMouseDown={(e) => {
+          // Keep editor focus when clicking the toolbar.
+          e.preventDefault();
+        }}
+        onClick={onClick}
+        style={base}
+        data-testid={testId}
+        onMouseEnter={(e) => {
+          if (disabled || active) return;
+          e.currentTarget.style.background =
+            'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+        }}
+        onMouseLeave={(e) => {
+          if (disabled || active) return;
+          e.currentTarget.style.background = 'transparent';
+        }}
+      >
+        {children}
+      </button>
+    </Tooltip>
   );
 }
 

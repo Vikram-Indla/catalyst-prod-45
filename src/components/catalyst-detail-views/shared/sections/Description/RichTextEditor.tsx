@@ -162,6 +162,10 @@ export function RichTextEditor({
 
   const currentDocRef = useRef<TiptapDoc | null>(null);
 
+  /* 2026-06-17: forward the same upload pipeline used by the toolbar to
+     useTiptapEditor's paste/drop handlers. Defined as a stable ref-style
+     function below; passed here as the `onImageUpload` option so
+     Ctrl+V on a screenshot or drag-from-OS lands as an image node. */
   const editor = useTiptapEditor({
     initialAdf,
     editable: true,
@@ -170,6 +174,16 @@ export function RichTextEditor({
       currentDocRef.current = json;
       onChange?.(json);
     },
+    onImageUpload: onImageUpload
+      ? async (file) => {
+          setPendingUploads((n) => n + 1);
+          try {
+            return await onImageUpload(file);
+          } finally {
+            setPendingUploads((n) => Math.max(0, n - 1));
+          }
+        }
+      : undefined,
   });
 
   const { trigger, dismiss: dismissTrigger, commit: commitTrigger } =

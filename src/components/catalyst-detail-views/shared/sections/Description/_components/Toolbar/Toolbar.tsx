@@ -10,8 +10,12 @@
  * Background is transparent so the shell border owns the visual frame.
  */
 import type { Editor } from '@tiptap/react';
-import { GenerateStoriesButton } from '@/components/catalyst-detail-views/epic/GenerateStoriesButton';
-import { GenerateEpicsButton } from '@/components/catalyst-detail-views/business-request/GenerateEpicsButton';
+/* 2026-06-17: GenerateStoriesButton + GenerateEpicsButton removed from
+   the canonical description toolbar — Jira has no such buttons there
+   (Vikram directive). The features remain accessible from their owning
+   epic/business-request surfaces; the description toolbar is now
+   parity-clean with Jira's Bold/InlineFmt/List/Color/Image/Code/Emoji
+   /Insert/Link/Undo/Redo/History set. */
 import { TextStylesDropdown } from './buttons/TextStylesDropdown';
 import { BoldButton } from './buttons/BoldButton';
 import { InlineFormattingDropdown } from './buttons/InlineFormattingDropdown';
@@ -102,8 +106,6 @@ export function Toolbar({
           onVoiceModeChange={onVoiceModeChange}
         />
       )}
-      <GenerateStoriesButton issue={issue ?? null} />
-      <GenerateEpicsButton issue={issue ?? null} />
       <TextStylesDropdown editor={editor} />
       <BoldButton editor={editor} />
       <InlineFormattingDropdown editor={editor} />

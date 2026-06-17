@@ -134,7 +134,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     expect(hrefByLabel.Release).toBe('/release-hub/command-center');
     expect(hrefByLabel.Test).toBe('/testhub/dashboard');
     expect(hrefByLabel.Incident).toBe('/incident-hub');
-    expect(hrefByLabel.Task).toBe('/tasks/board');
+    expect(hrefByLabel.Task).toBe('/tasks/overview');
     expect(hrefByLabel.Plan).toBe('/planhub');
     expect(hrefByLabel.Wiki).toBe('/wiki');
   });
@@ -225,7 +225,7 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
     ['6', '/release-hub/command-center'],
     ['7', '/testhub/dashboard'],
     ['8', '/incident-hub'],
-    ['9', '/tasks/board'],
+    ['9', '/tasks/overview'],
     ['0', '/planhub'],
     ['-', '/wiki'],
   ])('Cmd+%s fires without error', (key, _expectedPath) => {

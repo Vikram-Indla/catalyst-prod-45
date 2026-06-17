@@ -34,11 +34,13 @@ import './styles.css';
    (mode='project', default) and /product-hub/:key/boards/:boardId (mode='product').
    2026-06-16: 'incident' mode added for /incident-hub/board — no :key in URL,
    so `keyOverride` is supplied directly by the host page (sentinel 'INCIDENTS').
+   2026-06-17: 'tasks' mode added for /tasks/board — columns from task_statuses,
+   rows from `tasks` table, no :key in URL (sentinel 'TASKS').
    useKanbanData + useKanbanMutations branch internally on the same mode value. */
 interface KanbanPageProps {
-  mode?: 'project' | 'product' | 'incident';
+  mode?: 'project' | 'product' | 'incident' | 'tasks';
   /** When set, overrides the URL :key param. Used by surfaces where the
-   *  board route doesn't carry a :key (e.g. /incident-hub/board). */
+   *  board route doesn't carry a :key (e.g. /incident-hub/board, /tasks/board). */
   keyOverride?: string;
 }
 
@@ -169,10 +171,23 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
             columnId={colId}
             status={status}
             mode={mode}
-            /* Product board: lock the type to Business Request — that is the
-               only entity on a product board. Project board: leave undefined
-               so the canonical Catalyst type list applies. */
-            creatableTypes={mode === 'product' ? ['Business Request'] : undefined}
+            /* 2026-06-17: lock the creatable type per hub —
+                 product   → Business Request
+                 incident  → Production Incident
+                 tasks     → Task
+                 project   → undefined (canonical 9-type list, default Story).
+               Locking the type makes the dropdown reflect the only
+               entity that surface actually creates, and the default
+               selection matches the hub. */
+            creatableTypes={
+              mode === 'product'
+                ? ['Business Request']
+                : mode === 'incident'
+                  ? ['Production Incident']
+                  : mode === 'tasks'
+                    ? ['Task']
+                    : undefined
+            }
             onCreateCard={() => { setOpenCreateCol(null); refetch(); }}
             onCancel={() => setOpenCreateCol(null)}
           />
@@ -231,14 +246,20 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         <Breadcrumbs>
           {mode === 'product' ? (
             <BreadcrumbsItem text="Products" href="/product-hub/products" />
+          ) : mode === 'incident' ? (
+            <BreadcrumbsItem text="Incidents" href="/incident-hub" />
+          ) : mode === 'tasks' ? (
+            <BreadcrumbsItem text="Tasks" href="/tasks/overview" />
           ) : (
             <BreadcrumbsItem text={STRINGS.PROJECTS} href="/project-hub/projects" />
           )}
-          <BreadcrumbsItem
-            text={projectName}
-            href={mode === 'product' ? `/product-hub/${key}` : `/project-hub/${key}`}
-          />
-          <BreadcrumbsItem text="Kanban" />
+          {mode !== 'incident' && mode !== 'tasks' && (
+            <BreadcrumbsItem
+              text={projectName}
+              href={mode === 'product' ? `/product-hub/${key}` : `/project-hub/${key}`}
+            />
+          )}
+          <BreadcrumbsItem text="Board" />
         </Breadcrumbs>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Heading size="large">{boardConfig.boardName === 'Board' ? 'Kanban' : boardConfig.boardName}</Heading>

@@ -171,6 +171,16 @@ export interface BacklogDataSource {
    * 'business_request', 'production incident', 'story', etc.
    */
   resolveItemType?: (row: { type?: string; id?: string }) => string | null | undefined;
+
+  /**
+   * 2026-06-17: hub-level entity routing for the detail panel.
+   * When set to 'task', the row click mounts CatalystDetailPanel with
+   * entityKind='task' so CatalystDetailRouter short-circuits to
+   * TaskCatalystView instead of querying ph_issues. Required by the Tasks
+   * Hub adapter — tasks live in the `tasks` table, not ph_issues.
+   * Defaults to 'ph_issue' when omitted.
+   */
+  entityKind?: 'task' | 'ph_issue';
 }
 
 // ─── Mapper ──────────────────────────────────────────────────────────────────

@@ -247,6 +247,7 @@ export function EditableAssignee({
   currentAssigneeId,
   currentAssigneeName,
   onUpdate,
+  onChange,
 }: {
   issueId: string;
   issueKey?: string;
@@ -254,6 +255,10 @@ export function EditableAssignee({
   currentAssigneeId: string | null;
   currentAssigneeName: string | null;
   onUpdate: () => void;
+  /** Custom write callback. When provided, called INSTEAD of the default ph_issues mutation.
+   *  Receives (userId, displayName). Enables non-ph_issues data sources (tasks, business_requests)
+   *  to reuse this canonical picker — see CLAUDE.md "Adopt canonical components" rule (2026-06-01). */
+  onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   // Pull from `profiles` (approved users) so every user is searchable —
@@ -285,11 +290,18 @@ export function EditableAssignee({
 
   const updateMutation = useMutation({
     mutationFn: async (userId: string | null) => {
+      const displayName = userId
+        ? (members.find((m) => m.user_id === userId)?.full_name ?? null)
+        : null;
+      // If a custom onChange is provided, the call site owns the write (e.g. tasks.assignee_id).
+      // Otherwise fall back to the canonical ph_issues mutation.
+      if (onChange) {
+        await onChange(userId, displayName);
+        return;
+      }
       const updateData = {
         assignee_account_id: userId,
-        assignee_display_name: userId
-          ? (members.find((m) => m.user_id === userId)?.full_name ?? null)
-          : null,
+        assignee_display_name: displayName,
       };
       const query = issueKey
         ? supabase
@@ -517,12 +529,16 @@ export function EditableReporter({
   currentReporterId,
   currentReporterName,
   onUpdate,
+  onChange,
 }: {
   issueId: string;
   projectId: string;
   currentReporterId: string | null;
   currentReporterName: string | null;
   onUpdate: () => void;
+  /** Custom write callback. When provided, called INSTEAD of the default ph_issues mutation.
+   *  Receives (userId, displayName). Enables non-ph_issues data sources to reuse this picker. */
+  onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const { data: members = [] } = useQuery({
@@ -550,11 +566,17 @@ export function EditableReporter({
 
   const updateMutation = useMutation({
     mutationFn: async (userId: string | null) => {
+      const displayName = userId
+        ? (members.find((m) => m.user_id === userId)?.full_name ?? null)
+        : null;
+      // Custom onChange overrides the ph_issues mutation entirely.
+      if (onChange) {
+        await onChange(userId, displayName);
+        return;
+      }
       const updateData = {
         reporter_account_id: userId,
-        reporter_display_name: userId
-          ? (members.find((m) => m.user_id === userId)?.full_name ?? null)
-          : null,
+        reporter_display_name: displayName,
       };
       const { error } = await supabase
         .from("ph_issues")
@@ -1077,14 +1099,22 @@ export function EditableLabels({
   issueKey,
   currentLabels,
   onUpdate,
+  onChange,
 }: {
   issueId: string;
   issueKey?: string;
   currentLabels: string[];
   onUpdate: () => void;
+  /** Custom write callback. When provided, called INSTEAD of the default ph_issues mutation. */
+  onChange?: (labels: string[]) => Promise<void> | void;
 }) {
   const updateMutation = useMutation({
     mutationFn: async (labels: string[]) => {
+      // Custom onChange overrides the ph_issues mutation entirely.
+      if (onChange) {
+        await onChange(labels);
+        return;
+      }
       const query = issueKey
         ? supabase
             .from("ph_issues")

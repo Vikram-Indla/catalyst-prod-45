@@ -10,8 +10,17 @@ import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } f
 import type { KanbanTask } from './types/kanban';
 import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
-import TasksTaskListView from './views/TasksTaskListView';
-import TasksBoardView from './views/TasksBoardView';
+/* TasksTaskListView retired 2026-06-17 — superseded by TasksTaskListCanonical,
+   which mounts the canonical BacklogPage with the tasks adapter (same UI
+   as /project-hub/:key/backlog and /product-hub/:key/backlog). */
+import TasksTaskListCanonical from './views/TasksTaskListCanonical';
+/* 2026-06-17: TasksWorkCanonical mounts the canonical ProjectAllWorkView
+   (3-panel All Work UI shared by project / product / incident hubs)
+   with tasksItems pre-fetched from the `tasks` table. */
+import TasksWorkCanonical from './views/TasksWorkCanonical';
+/* TasksBoardView (PragmaticBoard adapter) replaced 2026-06-17 by
+   TasksBoardCanonical (features/kanban-board KanbanPage mode='tasks'). */
+import TasksBoardCanonical from './views/TasksBoardCanonical';
 import TasksTimelineView from './views/TasksTimelineView';
 import TasksOverviewView from './views/TasksOverviewView';
 // Legacy PlannerTimeline kept in the tree but no longer mounted from this route.
@@ -49,6 +58,7 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'dashboard': 'Dashboard',
   'boards': 'Boards',
   'task-list': 'Task List',
+  'work': 'Work',
   'timeline': 'Timeline',
   'calendar': 'Calendar',
   'weekly-report': 'Weekly Summary',
@@ -69,6 +79,7 @@ const VIEW_ALIASES: Record<string, PlannerView> = {
   boards: 'boards',
   list: 'task-list',
   'task-list': 'task-list',
+  work: 'work',
 };
 const normalizeView = (v?: string): PlannerView =>
   ((v && (VIEW_ALIASES[v] ?? (v as PlannerView))) || 'boards');
@@ -79,6 +90,7 @@ const VIEW_TO_SLUG: Partial<Record<PlannerView, string>> = {
   dashboard: 'overview',
   boards: 'board',
   'task-list': 'list',
+  work: 'work',
 };
 const viewToSlug = (v: PlannerView): string => VIEW_TO_SLUG[v] ?? v;
 
@@ -432,13 +444,18 @@ export function PlannerPage() {
         // but unmounted from this route.
         return <TasksOverviewView />;
       case 'boards':
-        // Phase 2 (2026-06-16): canonical PragmaticBoard + KanbanToolbar.
-        // The legacy PlannerBoardsPage (custom BoardKanban) is kept in the
-        // tree but unmounted from this route — see TasksBoardView for the
-        // canonical mount.
-        return <TasksBoardView />;
+        /* 2026-06-17: switched to TasksBoardCanonical which mounts the
+           features/kanban-board KanbanPage (mode='tasks') — the SAME
+           component used by /project-hub/:key/boards/:boardId,
+           /product-hub/:key/boards/:boardId, and /incident-hub/board.
+           Per CLAUDE.md "ADOPT CANONICAL COMPONENTS". The legacy
+           TasksBoardView (PragmaticBoard adapter) is kept in the tree
+           but no longer mounted from this route. */
+        return <TasksBoardCanonical />;
       case 'task-list':
-        return <TasksTaskListView />;
+        return <TasksTaskListCanonical />;
+      case 'work':
+        return <TasksWorkCanonical />;
       case 'timeline':
         // Phase 3 (2026-06-16): canonical TimelineView. Legacy
         // PlannerTimeline kept in the tree but unmounted from this route.
