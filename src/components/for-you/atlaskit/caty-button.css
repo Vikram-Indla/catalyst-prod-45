@@ -33,6 +33,32 @@
   white-space: nowrap;
 }
 
+/* Hover-revealed quota counter (e.g. "· 3 left"). Hidden until the button is
+   hovered or keyboard-focused, so the idle state reads as a clean "Re-analyze". */
+.caty-btn__count {
+  color: var(--text-subtle, #6b778c);
+  font-weight: 400;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-left: 0;
+  transition: max-width 0.2s ease, opacity 0.2s ease, margin-left 0.2s ease;
+}
+
+.caty-btn:hover .caty-btn__count,
+.caty-btn:focus-visible .caty-btn__count {
+  max-width: 80px;
+  opacity: 1;
+  margin-left: 4px;
+}
+
+.caty-btn:disabled,
+.caty-btn[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* The ONLY place the warm gradient appears on the control itself: the thinking dots. */
 .caty-btn__dots {
   display: inline-flex;

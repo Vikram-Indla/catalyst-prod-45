@@ -59,6 +59,8 @@ export function CatyButton({
   size = 'default',
   className = '',
   badge,
+  trailing,
+  disabled = false,
   'aria-label': ariaLabelProp,
   ...rest
 }: {
@@ -68,6 +70,10 @@ export function CatyButton({
   size?: 'compact' | 'default' | 'large';
   className?: string;
   badge?: number | string;
+  /** Inline node rendered after the label (e.g. a hover-revealed quota counter). Hidden while loading. */
+  trailing?: React.ReactNode;
+  /** Disable the button (e.g. daily quota exhausted). Pass a `title` via rest for the reason tooltip. */
+  disabled?: boolean;
   'aria-label'?: string;
   [key: string]: any;
 }) {
@@ -87,7 +93,8 @@ export function CatyButton({
     <div style={{ position: 'relative', display: 'inline-flex' }}>
       <button
         type="button"
-        onClick={onClick}
+        onClick={disabled || loading ? undefined : onClick}
+        disabled={disabled}
         className={`caty-btn ${className}`}
         style={{
           display: 'inline-flex',
@@ -117,6 +124,7 @@ export function CatyButton({
       >
         <CatyPulseIcon size={iconSize} />
         {visibleLabel && <span className="caty-btn__label">{visibleLabel}</span>}
+        {!loading && trailing}
         {loading && (
           <span className="caty-btn__dots" style={{ display: 'inline-flex', gap: 2 }} aria-hidden="true">
             <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'currentColor' }} />

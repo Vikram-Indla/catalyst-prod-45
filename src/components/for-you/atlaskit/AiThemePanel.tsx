@@ -47,14 +47,13 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { Box, Text, xcss } from '@atlaskit/primitives';
 import Button from '@atlaskit/button/new';
-import Spinner from '@atlaskit/spinner';
 import Select from '@atlaskit/select';
-import RefreshIcon from '@atlaskit/icon/glyph/refresh';
 import { useAiThemes } from '@/hooks/useAiThemes';
+import { useThemeQuota } from '@/hooks/useThemeQuota';
 import type { Project } from '@/hooks/useForYouData';
 import ThemeCard from './ThemeCard';
+import { CatyButton, CatyHead } from './CatyButton';
 import { ForYouEmptyState } from './helpers';
-import { type } from '@/lib/typography';
 
 // ─── A1 · Toolbar surface (Atlaskit primitives Box + xcss) ──────────────────
 // Replaces the previous `<div style={{ paddingInline: 12, ... borderBlockEnd:
@@ -134,6 +133,49 @@ function formatGeneratedAt(iso: string | undefined): string {
   return `As of ${dateStr} at ${timeStr}`;
 }
 
+/**
+ * Skeleton placeholder card — shown during a cold load with no cached snapshot
+ * to seed. Keeps the grid populated so the surface is never blank and never
+ * collapses to a centered spinner. Pure ADS tokens; a subtle pulse conveys
+ * "loading" without any text.
+ */
+function ThemeCardSkeleton() {
+  const bar = (w: string, h = 12) => ({
+    width: w,
+    height: h,
+    borderRadius: 4,
+    background: token('color.background.neutral', '#F1F2F4'),
+  });
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        padding: 16,
+        borderRadius: 8,
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        background: token('elevation.surface.raised', '#FFFFFF'),
+        animation: 'catyShimmerPulse 1.4s ease-in-out infinite',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={bar('48px', 20)} />
+        <div style={bar('72px')} />
+      </div>
+      <div style={bar('70%', 16)} />
+      <div style={bar('100%')} />
+      <div style={bar('85%')} />
+      <div style={bar('100%', 7)} />
+      <div style={{ display: 'flex', gap: 8 }}>
+        <div style={bar('96px', 30)} />
+        <div style={bar('110px', 30)} />
+      </div>
+      <style>{`@keyframes catyShimmerPulse{0%,100%{opacity:1}50%{opacity:.55}}`}</style>
+    </div>
+  );
+}
+
 export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
   // NOTE: Previously this component called `useForYouData()` directly to
   // grab `allUserProjects`. That mounted a second full instance of an
@@ -194,8 +236,6 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
   const {
     data,
     isLoading,
-    isFetching,
-    isPlaceholderData,
     isError,
     error,
     refresh,
@@ -212,27 +252,53 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
     setScope(next);
   }, []);
 
+  // Daily Re-analyze budget (3/day/user, Riyadh-day reset). Server enforces;
+  // this drives the hover counter + locked state on the button.
+  const quota = useThemeQuota();
+
+  const handleReanalyze = useCallback(() => {
+    if (quota.isExhausted || isRefreshing) return;
+    refresh();
+    // Server increments the quota inside the forceRefresh path; re-read after
+    // a beat so the counter reflects the new "left" value.
+    window.setTimeout(() => quota.refetch(), 1500);
+  }, [quota, isRefreshing, refresh]);
+
   // ─── Header chrome (scope toggle + project picker + refresh) ──────────────
 
   const header = (
     <Box xcss={headerStyles}>
-      {/* Segmented scope control — two Atlaskit buttons adjacent, first is
-          primary when active. Subtle when inactive. Avoids a custom toggle. */}
-      <div role="group" aria-label="Theme scope" style={{ display: 'inline-flex', gap: 4 }}>
-        <Button
-          appearance={scope === 'personal' ? 'primary' : 'subtle'}
-          spacing="compact"
-          onClick={() => handleScopeChange('personal')}
+      {/* Hidden Caty mark + segmented scope control. The neutral pill
+          background gives the two options equal visual weight so "By project"
+          stops reading as secondary text — it's a real toggle, not a link. */}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <CatyHead size={20} title="Caty themes" />
+        <div
+          role="group"
+          aria-label="Theme scope"
+          style={{
+            display: 'inline-flex',
+            gap: 2,
+            padding: 4,
+            background: token('color.background.neutral', '#F1F2F4'),
+            borderRadius: 8,
+          }}
         >
-          Assigned to me
-        </Button>
-        <Button
-          appearance={scope === 'project' ? 'primary' : 'subtle'}
-          spacing="compact"
-          onClick={() => handleScopeChange('project')}
-        >
-          By project
-        </Button>
+          <Button
+            appearance={scope === 'personal' ? 'primary' : 'subtle'}
+            spacing="compact"
+            onClick={() => handleScopeChange('personal')}
+          >
+            Assigned to me
+          </Button>
+          <Button
+            appearance={scope === 'project' ? 'primary' : 'subtle'}
+            spacing="compact"
+            onClick={() => handleScopeChange('project')}
+          >
+            By project
+          </Button>
+        </div>
       </div>
 
       {scope === 'project' && (
@@ -290,26 +356,26 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
         </div>
       )}
 
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        onClick={() => refresh()}
-        iconBefore={RefreshIcon}
-        isDisabled={isLoading || isRefreshing}
-        title={data?.no_delta ? 'No changes in your issues since last analysis — results are still current' : undefined}
-      >
-        {isRefreshing ? 'Re-analyzing…' : 'Re-analyze'}
-      </Button>
-      {/* no_delta indicator — shown briefly after a Re-analyze that found no changes */}
-      {data?.no_delta && !isRefreshing && (
-        <span style={{
-          font: `400 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-          color: token('color.text.subtlest', '#626F86'),
-          whiteSpace: 'nowrap',
-        }}>
-          No changes since last analysis
-        </span>
-      )}
+      {/* Re-analyze — the pulse-line Caty CTA. Idle reads "Re-analyze"; while
+          running the label flips to "Thinking" with the animated EKG line +
+          dots (motion lives ONLY here, never as a page-level takeover). The
+          quota counter ("· N left") is hover-revealed; at zero the button
+          locks with a polite tooltip. */}
+      <CatyButton
+        label="Re-analyze"
+        size="compact"
+        loading={isRefreshing}
+        disabled={quota.isExhausted}
+        onClick={handleReanalyze}
+        title={
+          quota.isExhausted
+            ? "You've used all 3 re-analyses today — fresh themes return at 6:00 AM"
+            : data?.no_delta
+            ? 'No changes since last analysis — results are still current'
+            : undefined
+        }
+        trailing={<span className="caty-btn__count">· {quota.remaining} left</span>}
+      />
     </Box>
   );
 
@@ -331,22 +397,26 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
     );
   }
 
+  // Cold load with no cached snapshot to seed. Never show a centered spinner +
+  // "Clustering…" takeover — render the header (so Re-analyze still animates as
+  // "Thinking") plus skeleton cards. The page is never blank.
   if (isLoading || (scope === 'project' && !projectKey)) {
     return (
       <div>
         {header}
         <div
           style={{
-            padding: 24,
-            display: 'flex',
-            alignItems: 'center',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
             gap: 12,
+            padding: 12,
           }}
+          aria-busy="true"
+          aria-label="Loading themes"
         >
-          <Spinner size="small" />
-          <span style={{ ...type.body, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
-            Clustering your issues into themes…
-          </span>
+          {[0, 1, 2].map((i) => (
+            <ThemeCardSkeleton key={i} />
+          ))}
         </div>
       </div>
     );
@@ -419,22 +489,6 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
   return (
     <div>
       {header}
-      {(isFetching || isRefreshing) && !isLoading && (
-        <div
-          style={{
-            paddingInline: 12,
-            paddingBlock: 8,
-            ...type.meta,
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
-        >
-          <Spinner size="xsmall" />
-          {isPlaceholderData ? 'Updating themes…' : 'Refreshing themes…'}
-        </div>
-      )}
       <div
         style={{
           display: 'grid',

@@ -51,7 +51,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { Box, xcss } from '@atlaskit/primitives';
 import Lozenge from '@atlaskit/lozenge';
-import ProgressBar from '@atlaskit/progress-bar';
 import Button from '@atlaskit/button/new';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
@@ -166,25 +165,14 @@ const INTENT_META: Record<ThemeIntent, { label: string; appearance: React.Compon
 // peripheral vision, even before the lozenge label registers. Token names
 // match the Lozenge appearance family above, but use the *.bolder ramp so
 // the ribbon stays legible against both light and dark page surfaces.
-const INTENT_RIBBON: Record<ThemeIntent, { name: string; fallback: string }> = {
-  bug:     { name: 'color.background.danger.bolder',    fallback: '#CA3521' },
-  feature: { name: 'color.background.discovery.bolder', fallback: '#5E4DB2' },
-  infra:   { name: 'color.background.brand.bolder',     fallback: '#0C66E4' },
-  ux:      { name: 'color.background.warning.bolder',   fallback: '#B65C02' },
-  data:    { name: 'color.background.success.bolder',   fallback: '#1F845A' },
-  other:   { name: 'color.background.neutral.bolder',   fallback: '#626F86' },
+const INTENT_RIBBON: Record<ThemeIntent, string> = {
+  bug:     'var(--ds-background-danger-bolder, #CA3521)',
+  feature: 'var(--ds-background-discovery-bolder, #5E4DB2)',
+  infra:   'var(--ds-background-brand-bolder, #0C66E4)',
+  ux:      'var(--ds-background-warning-bolder, #B65C02)',
+  data:    'var(--ds-background-success-bolder, #1F845A)',
+  other:   'var(--ds-background-neutral-bolder, #626F86)',
 };
-
-// ─── Progress bar appearance (Atlaskit v4) ──────────────────────────────────
-// 'default' = neutral blue bar. 'success' shifts to green once the theme
-// dominates the dataset (≥50%) — visual signal that "this cluster IS your
-// backlog right now, not just a slice". We deliberately don't wire this to
-// intent because intent is already carried by the lozenge; overloading
-// colour channels would dilute both signals.
-function progressAppearance(percentage: number): React.ComponentProps<typeof ProgressBar>['appearance'] {
-  if (percentage >= 50) return 'success';
-  return 'default';
-}
 
 // ─── Clipboard action formatters ────────────────────────────────────────────
 function formatThemeMarkdown(
@@ -232,7 +220,32 @@ export interface ThemeCardProps {
 interface AssigneeRow {
   assignee_account_id: string | null;
   assignee_display_name: string | null;
+  status_category: string | null;
 }
+
+// ─── Status roll-up ─────────────────────────────────────────────────────────
+// The card's headline signal is no longer "N issues · N%" (a number the user
+// said carries no meaning) — it's "where does this cluster stand": how many
+// are to-do / in-progress / done. ph_issues.status_category is the canonical
+// 3-bucket axis (To Do / In Progress / Done). Normalise defensively since the
+// column carries either Jira's lowercase keys (new/indeterminate/done) or
+// human labels depending on sync vintage.
+type StatusBucket = 'todo' | 'inprogress' | 'done';
+
+function bucketOf(category: string | null): StatusBucket {
+  const c = (category ?? '').toLowerCase();
+  if (/done|complete|closed/.test(c)) return 'done';
+  if (/progress|indeterminate|review|doing/.test(c)) return 'inprogress';
+  return 'todo';
+}
+
+// ADS semantic fills — grey (neutral), blue (information/in-progress), green
+// (success/done). Bright enough to read on both light and dark surfaces.
+const STATUS_META: Record<StatusBucket, { label: string; color: string }> = {
+  todo:       { label: 'to do',        color: 'var(--ds-background-neutral-bold, #6B778C)' },
+  inprogress: { label: 'in progress',  color: 'var(--ds-background-information-bold, #0C66E4)' },
+  done:       { label: 'done',         color: 'var(--ds-background-success-bold, #22A06B)' },
+};
 
 export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
@@ -240,7 +253,6 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
   const [assignees, setAssignees] = useState<AssigneeRow[]>([]);
 
   const intent = INTENT_META[theme.intent] ?? INTENT_META.other;
-  const progressValue = useMemo(() => Math.max(0, Math.min(1, theme.percentage / 100)), [theme.percentage]);
 
   // Fetch the assignee tuple for this theme's issues. We don't gate on
   // `expanded` — the avatar group lives in Row 1 and must render at first
@@ -256,7 +268,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
     (async () => {
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('assignee_account_id, assignee_display_name')
+        .select('assignee_account_id, assignee_display_name, status_category')
         .in('issue_key', theme.issueKeys);
       if (cancelled) return;
       if (error) {
@@ -293,6 +305,16 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
     }
     return items;
   }, [assignees]);
+
+  // Roll the fetched rows into to-do / in-progress / done counts. Drives the
+  // segmented status bar — the card's primary "where does this stand" read.
+  const statusCounts = useMemo(() => {
+    const c = { todo: 0, inprogress: 0, done: 0 };
+    for (const row of assignees) c[bucketOf(row.status_category)] += 1;
+    return c;
+  }, [assignees]);
+
+  const statusTotal = statusCounts.todo + statusCounts.inprogress + statusCounts.done;
 
   const handleCopy = async () => {
     try {
@@ -343,10 +365,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
           insetBlock: 0,
           insetInlineStart: 0,
           width: 4,
-          backgroundColor: token(
-            INTENT_RIBBON[theme.intent].name as Parameters<typeof token>[0],
-            INTENT_RIBBON[theme.intent].fallback,
-          ),
+          backgroundColor: INTENT_RIBBON[theme.intent],
         }}
       />
 
@@ -378,7 +397,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
             whiteSpace: 'nowrap',
           }}
         >
-          {theme.count} {theme.count === 1 ? 'issue' : 'issues'} · {theme.percentage}%
+          {theme.count} {theme.count === 1 ? 'issue' : 'issues'}
         </span>
       </div>
 
@@ -450,14 +469,65 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
         </button>
       )}
 
-      {/* ─── Row 4: progress bar ───────────────────────────────────────── */}
-      <div aria-label={`Share of input issues: ${theme.percentage}%`}>
-        <ProgressBar
-          value={progressValue}
-          appearance={progressAppearance(theme.percentage)}
-          ariaLabel={`${theme.name}: ${theme.percentage}% of analysed issues`}
-        />
-      </div>
+      {/* ─── Row 4: status roll-up (to do / in progress / done) ─────────────
+          Replaces the single share-of-backlog progress bar. A segmented bar
+          + legend answers "where does this cluster stand" — the question a
+          delivery manager actually asks. Only renders once the status fetch
+          has resolved at least one issue (statusTotal > 0). */}
+      {statusTotal > 0 && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ ...type.meta, color: token('color.text', '#172B4D'), fontWeight: 500 }}>
+              {statusTotal} {statusTotal === 1 ? 'issue' : 'issues'}
+            </span>
+            <span style={{ ...type.meta, color: token('color.text.subtle', '#44546F') }}>
+              {Math.round((statusCounts.done / statusTotal) * 100)}% done
+            </span>
+          </div>
+          <div
+            style={{ display: 'flex', gap: 3, height: 7, marginBottom: 8 }}
+            role="img"
+            aria-label={`${statusCounts.todo} to do, ${statusCounts.inprogress} in progress, ${statusCounts.done} done`}
+          >
+            {(['todo', 'inprogress', 'done'] as StatusBucket[]).map((b) =>
+              statusCounts[b] > 0 ? (
+                <div
+                  key={b}
+                  style={{
+                    flex: statusCounts[b],
+                    background: STATUS_META[b].color,
+                    borderRadius: 3,
+                  }}
+                />
+              ) : null,
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+            {(['todo', 'inprogress', 'done'] as StatusBucket[]).map((b) => (
+              <span
+                key={b}
+                style={{
+                  ...type.meta,
+                  color: token('color.text.subtle', '#44546F'),
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                }}
+              >
+                <span
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: 2,
+                    background: STATUS_META[b].color,
+                  }}
+                />
+                {statusCounts[b]} {STATUS_META[b].label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ─── Row 5: action toolbar ─────────────────────────────────────── */}
       <div
@@ -474,7 +544,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
             left of View issues so the action block reads
             [INTENT] [reveal] [utility]. View issues stays `default`
             (navigational reveal), Copy summary stays `subtle` (utility). */}
-        <Lozenge appearance={intent.appearance}>{intent.label}</Lozenge>
+        <Lozenge appearance={intent.appearance} isBold>{intent.label}</Lozenge>
         <Button
           spacing="compact"
           appearance="default"
