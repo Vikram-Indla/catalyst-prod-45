@@ -1,21 +1,21 @@
 /**
- * ProjectHubTimelinePage — /project-hub/:key/timeline
+ * IncidentTimelinePage — /incident-hub/timeline
  *
- * Thin data + mutation adapter that mounts the canonical shared TimelineView.
- * The full visual + interaction shell lives in `src/components/shared/Timeline/`
- * so the product hub timeline reuses the exact same UI primitives.
+ * 2026-06-17: thin data + mutation adapter that mounts the canonical
+ * shared TimelineView per CLAUDE.md "ADOPT CANONICAL COMPONENTS — DO NOT
+ * REIMPLEMENT". Same Gantt chrome as /project-hub/:key/timeline and
+ * /product-hub/:key/timeline — only the data source differs:
+ *   - Data: ph_issues filtered to issue_type='Production Incident'
+ *           (cross-project) via useIncidentHubTimeline
+ *   - Saved filters: hubScope='project', projectKey='INCIDENTS' sentinel
+ *   - Detail route: /incident-hub/view/:id (matches IncidentHub detail page)
  *
- * Responsibilities here:
- *   - fetch ph_issues data via useProjectHubTimeline
- *   - fetch saved filters + project display name
- *   - implement project-side mutations against ph_issues
- *   - tell TimelineView how to build full-page detail routes and resolve item types
+ * Mutations write to ph_issues exactly like the project-hub timeline —
+ * incidents are ph_issues rows, so the same update paths apply.
  */
 
 import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import {
   TimelineView,
@@ -23,13 +23,15 @@ import {
   type TimelineMutations,
   DEFAULT_WORK_ITEM_TYPES,
 } from '@/components/shared/Timeline';
-import { useProjectHubTimeline } from '@/hooks/useProjectHubTimeline';
+import {
+  useIncidentHubTimeline,
+  INCIDENT_TIMELINE_QUERY_KEY,
+} from '@/hooks/useIncidentHubTimeline';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
-import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 
 function resolveItemType(issue: TimelineIssue): string {
-  const rawType = (issue.issueType ?? 'Story').toLowerCase();
+  const rawType = (issue.issueType ?? 'Production Incident').toLowerCase();
   return rawType === 'qa bug' || rawType === 'defect' ? 'defect'
     : rawType === 'production incident' ? 'incident'
     : rawType === 'business request' ? 'business_request'
@@ -37,7 +39,6 @@ function resolveItemType(issue: TimelineIssue): string {
     : rawType;
 }
 
-/* Walk the timeline tree to find an issue by key. Returns the node or null. */
 function findIssueDeep(list: TimelineIssue[], key: string): TimelineIssue | null {
   for (const n of list) {
     if (n.issueKey === key) return n;
@@ -49,8 +50,6 @@ function findIssueDeep(list: TimelineIssue[], key: string): TimelineIssue | null
   return null;
 }
 
-/* Walk the timeline tree to find the sibling list (same-parent peers) of
- * a given issue. Top-level rows return the root list. */
 function locateSiblings(
   tree: TimelineIssue[],
   key: string,
@@ -70,19 +69,14 @@ function locateSiblings(
   return siblings ? { siblings } : null;
 }
 
-export default function ProjectHubTimelinePage() {
-  const { key: projectKey } = useParams<{ key: string }>();
+export default function IncidentTimelinePage() {
   const queryClient = useQueryClient();
-  const { data: tree = [], isLoading, error } = useProjectHubTimeline(projectKey);
-  const { data: savedFilters = [] } = useFiltersForProject(projectKey, 'project');
-  const { data: jiraProjects = [] } = useJiraProjects();
+  const { data: tree = [], isLoading, error } = useIncidentHubTimeline();
+  /* Saved filters scoped to the INCIDENTS sentinel — same convention used
+     by /incident-hub/filters. */
+  const { data: savedFilters = [] } = useFiltersForProject('INCIDENTS', 'project');
 
-  const projectName = useMemo(() => {
-    const proj = jiraProjects.find(p => p.project_key === (projectKey ?? '').toUpperCase());
-    return proj?.name ?? projectKey ?? 'Releases';
-  }, [jiraProjects, projectKey]);
-
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['project-hub-timeline', projectKey] });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: INCIDENT_TIMELINE_QUERY_KEY });
 
   const fetchIssueRawJson = async (issueKey: string) => {
     const { data: row } = await (supabase as any)
@@ -90,13 +84,9 @@ export default function ProjectHubTimelinePage() {
     return row?.raw_json ?? null;
   };
 
-  /* Optimistically patch dates on a single issue inside the React Query cache.
-     Runs BEFORE the Supabase round-trip so the bar holds its dragged position
-     across the entire write — no flicker back to original between
-     setDragging(null) and refetch completion. */
   const patchDatesInCache = (issueKey: string, startDate: string | null, dueDate: string | null) => {
     queryClient.setQueryData(
-      ['project-hub-timeline', projectKey],
+      INCIDENT_TIMELINE_QUERY_KEY,
       (old: TimelineIssue[] | undefined) => {
         function patch(list: TimelineIssue[]): TimelineIssue[] {
           return list.map(i => {
@@ -113,14 +103,15 @@ export default function ProjectHubTimelinePage() {
   const mutations: TimelineMutations = useMemo(() => ({
     fetchIssueRawJson,
     /* 2026-06-17: write due dates to BOTH the dedicated `due_date` column
-       AND `raw_json.fields.duedate` so the timeline and detail-view stay
-       in sync — detail view reads/writes the column, the timeline
-       historically only touched raw_json. */
-    /* 2026-06-17: ALWAYS write raw_json (stub if it didn't exist). Skipping
-       the raw_json write when raw was null silently dropped the start date
-       for Catalyst-created rows — the column has due_date but the start
-       lives only in raw_json.fields.customfield_10015, so the row read back
-       as startDate=null → diamond instead of bar. */
+       AND `raw_json.fields.duedate`. The detail view reads the column,
+       the timeline historically only wrote raw_json — keeping them in
+       sync means dates round-trip between surfaces. */
+    /* 2026-06-17: ALWAYS write raw_json — even when the row has no prior
+       raw_json (Catalyst-created incidents start with raw_json=null).
+       Skipping the raw_json write when raw was null meant the start date
+       (which only lives at raw_json.fields.customfield_10015) was silently
+       dropped — only the due_date column persisted → reader returned
+       startDate=null → diamond instead of bar. */
     onUpdateDates: async (issueKey, startDate, dueDate) => {
       patchDatesInCache(issueKey, startDate, dueDate);
       const raw = (await fetchIssueRawJson(issueKey)) ?? { fields: {} };
@@ -147,20 +138,18 @@ export default function ProjectHubTimelinePage() {
       }).eq('issue_key', issueKey);
       invalidate();
     },
-    /* Remove only the start date — keep due. */
     onRemoveStartDate: async (issueKey) => {
-      const tree = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
-      const found = findIssueDeep(tree, issueKey);
+      const t = queryClient.getQueryData<TimelineIssue[]>(INCIDENT_TIMELINE_QUERY_KEY) ?? [];
+      const found = findIssueDeep(t, issueKey);
       patchDatesInCache(issueKey, null, found?.dueDate ?? null);
       const raw = (await fetchIssueRawJson(issueKey)) ?? { fields: {} };
       const updated = { ...raw, fields: { ...(raw.fields ?? {}), customfield_10015: null } };
       await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
       invalidate();
     },
-    /* Remove only the due date — keep start. */
     onRemoveDueDate: async (issueKey) => {
-      const tree = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
-      const found = findIssueDeep(tree, issueKey);
+      const t = queryClient.getQueryData<TimelineIssue[]>(INCIDENT_TIMELINE_QUERY_KEY) ?? [];
+      const found = findIssueDeep(t, issueKey);
       patchDatesInCache(issueKey, found?.startDate ?? null, null);
       const raw = (await fetchIssueRawJson(issueKey)) ?? { fields: {} };
       const updated = { ...raw, fields: { ...(raw.fields ?? {}), duedate: null } };
@@ -170,15 +159,9 @@ export default function ProjectHubTimelinePage() {
       }).eq('issue_key', issueKey);
       invalidate();
     },
-    /* Reorder a row among its siblings. Rather than trying to compute a
-       midpoint between two neighbours (fragile when existing positions
-       are null or collide), we full-resequence the sibling list: every
-       sibling gets a fresh sparse rank `(i+1)*1024` reflecting its new
-       visual position, then those ranks are written to ph_issues.position
-       in parallel. Cheap (typical sibling count ≤20) and deterministic. */
     onReorderSibling: async (issueKey, direction) => {
-      const tree = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
-      const located = locateSiblings(tree, issueKey);
+      const t = queryClient.getQueryData<TimelineIssue[]>(INCIDENT_TIMELINE_QUERY_KEY) ?? [];
+      const located = locateSiblings(t, issueKey);
       if (!located) return;
       const { siblings } = located;
       const idx = siblings.findIndex(s => s.issueKey === issueKey);
@@ -196,11 +179,8 @@ export default function ProjectHubTimelinePage() {
       reordered.splice(newIdx, 0, moved);
       const ranked = reordered.map((s, i) => ({ ...s, displayOrder: (i + 1) * 1024 }));
 
-      /* Optimistic cache update — replace the sibling list at the level
-         that contains the issue. Recurses so nested children at any
-         depth are handled. */
       queryClient.setQueryData(
-        ['project-hub-timeline', projectKey],
+        INCIDENT_TIMELINE_QUERY_KEY,
         (old: TimelineIssue[] | undefined) => {
           if (!old) return old;
           const replace = (list: TimelineIssue[]): TimelineIssue[] => {
@@ -213,21 +193,21 @@ export default function ProjectHubTimelinePage() {
 
       await Promise.all(
         ranked.map(s =>
-          (supabase as any).from('ph_issues').update({ position: s.displayOrder }).eq('issue_key', s.issueKey),
+          (supabase as any).from('ph_issues').update({ position: (s as any).displayOrder }).eq('issue_key', s.issueKey),
         ),
       );
       invalidate();
     },
     onCreateEpic: async (summary) => {
-      if (!projectKey) return null;
-    const localKey = await generateIssueKey(projectKey.toUpperCase());
+      /* Incidents have no Epic — synthesize a Production Incident at root. */
+      const localKey = await generateIssueKey('BAU');
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,
-        projectKey: projectKey.toUpperCase(),
-        issueType: 'Epic',
+        projectKey: 'BAU',
+        issueType: 'Production Incident',
         summary,
-        status: 'To Do',
+        status: 'Open',
         statusCategory: 'default',
         priority: null,
         startDate: null,
@@ -240,16 +220,16 @@ export default function ProjectHubTimelinePage() {
         children: [],
       };
       queryClient.setQueryData(
-        ['project-hub-timeline', projectKey],
+        INCIDENT_TIMELINE_QUERY_KEY,
         (old: TimelineIssue[] | undefined) => [...(old ?? []), optimistic],
       );
       try {
         await (supabase as any).from('ph_issues').insert({
           issue_key: localKey,
-          project_key: projectKey.toUpperCase(),
-          issue_type: 'Epic',
+          project_key: 'BAU',
+          issue_type: 'Production Incident',
           summary,
-          status: 'To Do',
+          status: 'Open',
           source: 'catalyst',
           jira_created_at: new Date().toISOString(),
         });
@@ -257,22 +237,21 @@ export default function ProjectHubTimelinePage() {
         return optimistic;
       } catch (err) {
         queryClient.setQueryData(
-          ['project-hub-timeline', projectKey],
+          INCIDENT_TIMELINE_QUERY_KEY,
           (old: TimelineIssue[] | undefined) => (old ?? []).filter(i => i.issueKey !== localKey),
         );
         throw err;
       }
     },
     onCreateChild: async (parentKey, _parentType, type, summary) => {
-      if (!projectKey) return null;
-    const localKey = await generateIssueKey(projectKey.toUpperCase());
+      const localKey = await generateIssueKey('BAU');
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,
-        projectKey: projectKey.toUpperCase(),
+        projectKey: 'BAU',
         issueType: type,
         summary,
-        status: 'To Do',
+        status: 'Open',
         statusCategory: 'default',
         priority: null,
         startDate: null,
@@ -285,7 +264,7 @@ export default function ProjectHubTimelinePage() {
         children: [],
       };
       queryClient.setQueryData(
-        ['project-hub-timeline', projectKey],
+        INCIDENT_TIMELINE_QUERY_KEY,
         (old: TimelineIssue[] | undefined) => {
           function inject(list: TimelineIssue[]): TimelineIssue[] {
             return list.map(i => {
@@ -300,10 +279,10 @@ export default function ProjectHubTimelinePage() {
       try {
         await (supabase as any).from('ph_issues').insert({
           issue_key: localKey,
-          project_key: projectKey.toUpperCase(),
+          project_key: 'BAU',
           issue_type: type,
           summary,
-          status: 'To Do',
+          status: 'Open',
           source: 'catalyst',
           parent_key: parentKey,
           jira_created_at: new Date().toISOString(),
@@ -312,7 +291,7 @@ export default function ProjectHubTimelinePage() {
         return optimistic;
       } catch (err) {
         queryClient.setQueryData(
-          ['project-hub-timeline', projectKey],
+          INCIDENT_TIMELINE_QUERY_KEY,
           (old: TimelineIssue[] | undefined) => {
             function remove(list: TimelineIssue[]): TimelineIssue[] {
               return list.map(i => ({ ...i, children: remove(i.children.filter(c => c.issueKey !== localKey)) }));
@@ -356,7 +335,7 @@ export default function ProjectHubTimelinePage() {
       invalidate();
     },
     onChangeEpicColor: async (issueKey, hex) => {
-      queryClient.setQueryData(['project-hub-timeline', projectKey], (old: TimelineIssue[] | undefined) => {
+      queryClient.setQueryData(INCIDENT_TIMELINE_QUERY_KEY, (old: TimelineIssue[] | undefined) => {
         function update(list: TimelineIssue[]): TimelineIssue[] {
           return list.map(i => {
             if (i.issueKey === issueKey) return { ...i, epicColor: hex || null };
@@ -373,24 +352,23 @@ export default function ProjectHubTimelinePage() {
       await (supabase as any).from('ph_issues').update({ raw_json: { ...raw, fields } }).eq('issue_key', issueKey);
     },
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [projectKey, queryClient]);
+  }), [queryClient]);
 
   return (
     <TimelineView
       items={tree}
       isLoading={isLoading}
       error={error}
-      chromeBand={<ProjectPageHeader projectKey={projectKey} />}
-      hubLabel={projectName}
-      hubKey={`project-${projectKey ?? ''}`}
+      hubLabel="Incidents"
+      hubKey="incident-hub"
       filterOptions={{
         workItemTypes: DEFAULT_WORK_ITEM_TYPES,
         enableSavedFilters: true,
         savedFilters,
       }}
-      buildIssueDetailRoute={(issueKey) => `/project-hub/${projectKey}/timeline/${issueKey}`}
+      buildIssueDetailRoute={(issueKey) => `/incident-hub/backlog/${issueKey}`}
       resolveItemType={resolveItemType}
-      detailRouteOwnerKey={projectKey ?? ''}
+      detailRouteOwnerKey="INCIDENTS"
       mutations={mutations}
       menuVariant="jira"
     />

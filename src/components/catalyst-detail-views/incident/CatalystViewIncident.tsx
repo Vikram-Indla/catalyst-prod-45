@@ -141,6 +141,9 @@ export default function CatalystViewIncident({
       ], [issue?.issue_key])}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
+      /* 2026-06-16: incident hub has no project-hub backlog route. The
+         "Open in full page" button must go to /incident-hub/view/{UUID}. */
+      fullPageHrefBuilder={() => issue?.id ? `/incident-hub/view/${issue.id}` : '/incident-hub'}
     />
       <ConfirmCloneDialog
         isOpen={showCloneDialog}

@@ -39,9 +39,13 @@ export interface VisibilityConfig {
   product_key: string | null;
 }
 
-/** Selected scope -> the columns written to ph_saved_filters. project_key always
- *  reflects the originating project (so the row shows on that project's board);
- *  product_key is set only when the scope is 'product'. */
+/** Selected scope -> the columns written to ph_saved_filters.
+ *  project_key / product_key reflect the ORIGINATING hub and are independent
+ *  of the visibility scope — a private filter created on /product-hub/INV
+ *  still belongs to INV, just with viewers_config={private}. This split
+ *  matches Vikram's directive (2026-06-16) that each hub shows only its own
+ *  filters; mixing hub identity with visibility produced orphaned filters
+ *  (both keys null) when the creator picked Private/Everyone visibility. */
 export function scopeToVisibility(
   scope: FilterVisibilityScope,
   ctx: { projectKey?: string | null; productKey?: string | null; userIds?: string[] },
@@ -53,7 +57,7 @@ export function scopeToVisibility(
         ? { type: 'specific', user_ids: ctx.userIds ?? [] }
         : { type: scope },
     project_key: ctx.projectKey ?? null,
-    product_key: scope === 'product' ? (ctx.productKey ?? null) : null,
+    product_key: ctx.productKey ?? null,
   };
 }
 

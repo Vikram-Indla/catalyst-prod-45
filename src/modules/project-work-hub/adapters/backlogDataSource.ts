@@ -155,6 +155,22 @@ export interface BacklogDataSource {
 
   /** Product UUID — forwarded to CreateBusinessRequestModal. */
   productId: string;
+
+  /**
+   * 2026-06-16: optional override for the detail-panel item-type resolution.
+   * When an adapter row is opened, BacklogPage normally forces
+   * itemType='business_request' (because the only canonical biz-source
+   * adapter is product hub's business_requests). The incident-hub adapter
+   * needs a different routing — its rows are Production Incidents living
+   * in ph_issues, so the detail panel must render CatalystViewIncident,
+   * not CatalystViewBusinessRequest.
+   *
+   * Return a string to override the default 'business_request' resolution;
+   * return null/undefined to keep the default. The string is passed straight
+   * to CatalystDetailRouter which already understands 'incident',
+   * 'business_request', 'production incident', 'story', etc.
+   */
+  resolveItemType?: (row: { type?: string; id?: string }) => string | null | undefined;
 }
 
 // ─── Mapper ──────────────────────────────────────────────────────────────────

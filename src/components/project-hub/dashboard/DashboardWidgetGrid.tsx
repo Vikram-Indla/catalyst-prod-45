@@ -36,8 +36,9 @@ interface DashboardWidgetGridProps {
   onToggleCollapse?: (widgetId: string) => void;
   onRemoveWidget?: (widgetId: string) => void;
   /** 2026-06-15: filters the widget registry — see getWidgetRegistry.
-   *  2026-06-16: 'tasks' added for Tasks Hub overview. */
-  mode?: 'project' | 'product' | 'tasks';
+   *  2026-06-16: 'tasks' added for Tasks Hub overview.
+   *  2026-06-17: 'incident' added for Incident Hub dashboard. */
+  mode?: 'project' | 'product' | 'tasks' | 'incident';
   /**
    * 2026-06-16: optional custom registry. When provided, replaces the
    * mode-derived default registry. Used by the Tasks Hub overview to
@@ -81,7 +82,7 @@ export function effectiveSpan(w: ResolvedWidget): number {
 
 export function resolveWidgets(
   configs: DashboardWidgetConfig[],
-  mode: 'project' | 'product' | 'tasks' = 'project',
+  mode: 'project' | 'product' | 'tasks' | 'incident' = 'project',
   registry?: WidgetDefinition[],
 ): ResolvedWidget[] {
   const map = new Map(configs.map((c) => [c.widget_id, c]));
@@ -106,7 +107,7 @@ export function resolveWidgets(
 
 export function useDashboardWidgetConfig(
   projectId: string,
-  mode: 'project' | 'product' | 'tasks' = 'project',
+  mode: 'project' | 'product' | 'tasks' | 'incident' = 'project',
   registry?: WidgetDefinition[],
 ) {
   const { user } = useAuth();
@@ -454,14 +455,18 @@ export default function DashboardWidgetGrid({
           maxWidth: '100%',
         }}
       >
-        {visibleWidgets.map((w, idx) => {
+        {visibleWidgets.map((w) => {
           const span = effectiveSpan(w);
           const WidgetComponent = w.component;
-          // First visible widget defaults to expanded (Vikram directive),
-          // but a live user toggle (collapseOverride) always wins so the
-          // Minimize button is functional on every widget, idx 0 included.
-          const baseCollapsed = idx === 0 ? false : w.collapsed;
-          const isCollapsed = collapseOverride[w.id] ?? baseCollapsed;
+          /* 2026-06-17: combined resolution.
+             - Live collapseOverride wins → immediate render after a click
+               (no waiting for the DB round-trip + cache refetch).
+             - Falls back to `w.collapsed` (persisted state).
+             - Dropped the previous `idx === 0 ? false :` shortcut: it
+               forced the top widget to expanded on every render, so the
+               persisted collapsed=true was ignored on reload — the top
+               row could never stay collapsed across sessions. */
+          const isCollapsed = collapseOverride[w.id] ?? w.collapsed;
           return (
             <div
               key={w.id}

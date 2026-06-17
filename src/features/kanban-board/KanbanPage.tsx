@@ -32,13 +32,20 @@ import './styles.css';
 
 /* 2026-06-15: mode prop lets the same KanbanPage power both /project-hub/:key/boards/:boardId
    (mode='project', default) and /product-hub/:key/boards/:boardId (mode='product').
+   2026-06-16: 'incident' mode added for /incident-hub/board — no :key in URL,
+   so `keyOverride` is supplied directly by the host page (sentinel 'INCIDENTS').
    useKanbanData + useKanbanMutations branch internally on the same mode value. */
 interface KanbanPageProps {
-  mode?: 'project' | 'product';
+  mode?: 'project' | 'product' | 'incident';
+  /** When set, overrides the URL :key param. Used by surfaces where the
+   *  board route doesn't carry a :key (e.g. /incident-hub/board). */
+  keyOverride?: string;
 }
 
-export default function KanbanPage({ mode = 'project' }: KanbanPageProps = {}) {
-  const { key, boardId } = useParams<{ key: string; boardId?: string }>();
+export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPageProps = {}) {
+  const params = useParams<{ key: string; boardId?: string }>();
+  const key = keyOverride ?? params.key;
+  const boardId = params.boardId;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   // boardId from route param takes precedence; fallback to ?board=<id> query param for legacy redirects.

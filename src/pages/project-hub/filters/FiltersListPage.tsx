@@ -46,7 +46,7 @@ import { relativeFromIso } from '@/components/shared/RelativeTime';
 import { supabase } from '@/integrations/supabase/client';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
-export type HubType = 'project' | 'product';
+export type HubType = 'project' | 'product' | 'incident';
 
 interface FiltersListPageProps {
   hubType?: HubType;
@@ -137,7 +137,10 @@ type QuickTabId = 'all' | 'mine' | 'starred';
 interface SelectOption { label: string; value: string }
 
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
-  const { key: projectKey } = useParams<{ key: string }>();
+  const { key: routeKey } = useParams<{ key: string }>();
+  /* Incident hub has no :key in the URL — use the 'INCIDENTS' sentinel so
+     downstream code (save scope, list filtering) has a stable token. */
+  const projectKey = hubType === 'incident' ? 'INCIDENTS' : routeKey;
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
@@ -164,7 +167,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   const createHref = hubType === 'product'
     ? `/product-hub/${projectKey}/filters/create`
-    : `/project-hub/${projectKey}/filters/create`;
+    : hubType === 'incident'
+      ? `/incident-hub/filters/create`
+      : `/project-hub/${projectKey}/filters/create`;
 
   // Keyboard shortcut: N opens the create flow (Jira pattern)
   React.useEffect(() => {
@@ -254,7 +259,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   const detailHref = (f: SavedFilterFull) => hubType === 'product'
     ? `/product-hub/${projectKey}/filters/create?filterId=${f.id}`
-    : `/project-hub/${projectKey}/filters/create?filterId=${f.id}`;
+    : hubType === 'incident'
+      ? `/incident-hub/filters/create?filterId=${f.id}`
+      : `/project-hub/${projectKey}/filters/create?filterId=${f.id}`;
 
   const columns = useMemo<Column<SavedFilterFull>[]>(() => [
     {
@@ -517,7 +524,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   return (
     <CatalystListPageLayout
-      chromeBand={projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined}
+      chromeBand={hubType === 'incident' ? undefined : (projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined)}
       tabs={QUICK_TABS}
       activeTab={quickTab}
       onTabChange={id => setQuickTab(id as QuickTabId)}

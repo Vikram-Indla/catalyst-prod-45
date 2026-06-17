@@ -6,6 +6,8 @@ import type { ComponentType } from 'react';
 
 export type WidgetSpan = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
+export type DashboardMode = 'project' | 'product' | 'incident' | 'tasks';
+
 export interface WidgetProps {
   projectId: string;
   projectKey: string;
@@ -19,8 +21,12 @@ export interface WidgetProps {
    * 2026-06-16: 'tasks' added for the Tasks Hub overview. Tasks widgets
    * query the `tasks` table via the existing useTaskItems hook; the
    * projectId / projectKey props are ignored in this mode.
+   *
+   * 2026-06-17: when 'incident', the widget queries ph_issues filtered to
+   * issue_type='Production Incident' cross-project. projectId/projectKey
+   * are both the 'INCIDENTS' sentinel.
    */
-  mode?: 'project' | 'product' | 'tasks';
+  mode?: DashboardMode;
 }
 
 export interface WidgetDefinition {
@@ -50,4 +56,12 @@ export interface WidgetDefinition {
    * unaffected.
    */
   hideOnProduct?: boolean;
+  /**
+   * 2026-06-17: when true, this widget is HIDDEN on incident-hub
+   * dashboards. Used for widgets that don't apply to incidents — Epic
+   * Progress (no Jira hierarchy linking), Scope Change (no scope tracking),
+   * QA Defects (incident hub IS the incident data, defects are a peer not
+   * a sub-stat), Production Incidents (the data already IS incidents).
+   */
+  hideOnIncident?: boolean;
 }

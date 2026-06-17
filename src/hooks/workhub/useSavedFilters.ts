@@ -234,12 +234,18 @@ export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
         query = query.in('hub_scope', [hubScope, 'both']);
       }
 
-      // Scope to the specific project/product when a key is provided.
-      // Products scope by product_key; projects scope by project_key.
-      // Both include global (null) filters so org-level shared filters remain visible.
+      // Scope to the specific project/product/incident when a key is provided.
+      // 2026-06-16: Incident hub uses STRICT scoping (project_key='INCIDENTS'
+      // only) because no legacy incident filters exist with null project_key.
+      // Project + product hubs keep the OR-NULL fallback so pre-existing
+      // filters (created before originating-hub identity was tracked) still
+      // show up — strict scoping there hides every filter saved before
+      // 2026-06-16.
       if (projectKey) {
         if (hubScope === 'product') {
           query = (query as any).or(`product_key.eq.${projectKey},product_key.is.null`);
+        } else if (projectKey === 'INCIDENTS') {
+          query = query.eq('project_key', 'INCIDENTS');
         } else {
           query = (query as any).or(`project_key.eq.${projectKey},project_key.is.null`);
         }
