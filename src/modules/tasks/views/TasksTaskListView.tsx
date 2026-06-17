@@ -52,7 +52,7 @@ import AkAttachmentIcon from '@atlaskit/icon/core/attachment';
 import AkLinkIcon from '@atlaskit/icon/core/link';
 import AkTrashIcon from '@atlaskit/icon/glyph/trash';
 import { token } from '@atlaskit/tokens';
-import { JiraTable, flag, type RowAction } from '@/components/shared/JiraTable';
+import { JiraTable, flag, type RowAction, type RowGroup } from '@/components/shared/JiraTable';
 import {
   JiraFilterAtlaskit,
   emptyFilterValue,
@@ -1472,6 +1472,31 @@ export default function TasksTaskListView() {
     });
   }, [rows, search, filters]);
 
+  // ── Grouping — build RowGroup[] from the active Group-by field. When
+  // 'none', groups stays undefined and JiraTable paginates the flat rows.
+  // (2026-06-17: groupBy was previously set but never consumed — the
+  // "Group: Status" control was a no-op. This wires it to JiraTable.groups.)
+  const groups = useMemo<RowGroup<PlannerTask>[] | undefined>(() => {
+    if (groupBy === 'none') return undefined;
+    const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, ' ');
+    const keyer = (r: PlannerTask): { id: string; label: string } => {
+      switch (groupBy) {
+        case 'workstream': return { id: r.teamId ?? '__none', label: r.teamName ?? 'No workstream' };
+        case 'assignee':   return { id: r.assigneeId ?? '__none', label: r.assigneeName ?? 'Unassigned' };
+        case 'priority':   return { id: r.priority ?? '__none', label: cap(r.priority ?? 'None') };
+        case 'status':
+        default:           return { id: r.status ?? '__none', label: cap(r.status ?? 'No status') };
+      }
+    };
+    const map = new Map<string, RowGroup<PlannerTask>>();
+    for (const r of filteredRows) {
+      const { id, label } = keyer(r);
+      if (!map.has(id)) map.set(id, { id, label, rows: [] });
+      map.get(id)!.rows.push(r);
+    }
+    return Array.from(map.values());
+  }, [groupBy, filteredRows]);
+
   // ── Filter option pools — derived from current rows + users.
   // Workstream filtering is exposed via the canonical "Sprint/Iteration"
   // facet (tasks don't have sprints, so we reuse that section's pill-chip
@@ -1750,7 +1775,8 @@ export default function TasksTaskListView() {
             }}
           >
             <JiraTable<PlannerTask>
-              data={filteredRows}
+              data={groups ? undefined : filteredRows}
+              groups={groups}
               columns={columns}
               getRowId={(r) => r.id}
               isLoading={isLoading}

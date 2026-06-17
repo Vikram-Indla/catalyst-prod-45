@@ -4,6 +4,7 @@ import Button from "@atlaskit/button/new";
 import AddIcon from "@atlaskit/icon/core/add";
 import { CreateStoryModal } from "@/components/workhub/create-story";
 import { CreateBusinessRequestModal } from "@/components/business-requests/CreateBusinessRequestModal";
+import { CreateTaskModal } from "@/modules/tasks/components/CreateTaskModal";
 
 /**
  * "+ Create" button — opens the Jira-style CreateStoryModal directly.
@@ -25,6 +26,7 @@ interface CreateDropdownProps {
 export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
   const [storyOpen, setStoryOpen] = useState(false);
   const [brOpen, setBrOpen] = useState(false);
+  const [taskOpen, setTaskOpen] = useState(false);
   const [pendingWorkType, setPendingWorkType] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
   const isProductHubBacklog = /^\/product-hub\/[^/]+\/backlog/.test(pathname);
@@ -43,6 +45,7 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
         open={storyOpen}
         onClose={() => { setStoryOpen(false); setPendingWorkType(undefined); }}
         onOpenBusinessRequest={() => { setStoryOpen(false); setBrOpen(true); }}
+        onOpenTask={() => { setStoryOpen(false); setTaskOpen(true); }}
         workTypes={isProductHubBacklog ? ['Business Request'] : undefined}
         defaultWorkType={pendingWorkType ?? (isProductHubBacklog ? 'Business Request' : 'Story')}
       />
@@ -51,6 +54,11 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
         isOpen={brOpen}
         onClose={() => setBrOpen(false)}
         onWorkTypeChange={(type) => { setBrOpen(false); setPendingWorkType(type); setStoryOpen(true); }}
+      />
+
+      <CreateTaskModal
+        open={taskOpen}
+        onOpenChange={setTaskOpen}
       />
     </>
   );
