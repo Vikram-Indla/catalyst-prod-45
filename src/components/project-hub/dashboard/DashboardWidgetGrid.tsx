@@ -88,14 +88,24 @@ export function resolveWidgets(
   const map = new Map(configs.map((c) => [c.widget_id, c]));
   const effectiveRegistry =
     registry ?? (mode === 'tasks' ? [] : getWidgetRegistry(mode));
+  /* 2026-06-17: identify the top widget by lowest defaultPosition so its
+     default collapsed state is `false` (expanded). Everyone below stays
+     collapsed by default. User-persisted state always wins. */
+  const minPosition = effectiveRegistry.reduce(
+    (m, d) => Math.min(m, d.defaultPosition),
+    Number.POSITIVE_INFINITY,
+  );
   return effectiveRegistry.map((def) => {
     const cfg = map.get(def.id);
+    const isTopByDefault = def.defaultPosition === minPosition;
     return {
       ...def,
       visible: cfg?.visible ?? true,
       position: cfg?.position ?? def.defaultPosition,
-      /* 2026-06-09 Vikram parity — default collapsed when no persisted cfg. */
-      collapsed: cfg?.collapsed ?? true,
+      /* 2026-06-09 Vikram parity — default collapsed when no persisted cfg.
+         2026-06-17: top widget defaults to expanded so the dashboard opens
+         with something visible instead of a wall of collapsed headers. */
+      collapsed: cfg?.collapsed ?? !isTopByDefault,
       span: cfg?.span ?? null,
     } as ResolvedWidget;
   }).sort((a, b) => a.position - b.position);
@@ -146,16 +156,20 @@ export function useDashboardWidgetConfig(
       /* 2026-06-15: mode-aware. In product mode the 4 BR-incompatible
          widgets (scope-change, prod-incidents, qa-defects, time-in-status)
          never get seeded — the gallery never shows them either.
-         2026-06-16: tasks mode uses the registry prop directly. */
+         2026-06-16: tasks mode uses the registry prop directly.
+         2026-06-17: top widget seeds as expanded (collapsed=false) so the
+         dashboard opens with something visible. */
+      const seedMinPosition = resolvedRegistry.reduce(
+        (m, d) => Math.min(m, d.defaultPosition),
+        Number.POSITIVE_INFINITY,
+      );
       const rows = resolvedRegistry.map((def) => ({
         project_id: projectId,
         user_id: userId,
         widget_id: def.id,
         visible: true,
         position: def.defaultPosition,
-        /* 2026-06-09 Vikram parity — gadgets default to collapsed so
-           dashboard reads as widget index; user expands per-widget. */
-        collapsed: true,
+        collapsed: def.defaultPosition !== seedMinPosition,
         span: def.defaultSpan,
       }));
       const { error } = await typedQuery('dashboard_widget_config' as any).upsert(rows, {

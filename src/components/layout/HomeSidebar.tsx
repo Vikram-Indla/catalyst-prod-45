@@ -58,7 +58,7 @@ const HUB_NAV_ITEMS = [
   { key: 'release', label: 'Release Hub', href: '/release-hub/command-center' },
   { key: 'test', label: 'Test Hub', href: '/testhub/dashboard' },
   { key: 'incident', label: 'Incident Hub', href: '/incident-hub' },
-  { key: 'task', label: 'Tasks', href: '/tasks/board' },
+  { key: 'task', label: 'Tasks', href: '/tasks/overview' },
   { key: 'plan', label: 'Plan Hub', href: '/planhub' },
   { key: 'wiki', label: 'Wiki', href: '/wiki' },
 ] as const;

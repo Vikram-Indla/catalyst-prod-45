@@ -24,7 +24,7 @@ const HUB_ITEMS = [
   { label: "Releases", path: "/release-hub/command-center", moduleKey: "releases", featureFlagKey: "release_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
   { label: "Testing", path: "/testhub/dashboard", moduleKey: "testhub", featureFlagKey: "test_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
   { label: "Incidents", path: "/incident-hub", moduleKey: "operations", featureFlagKey: "incident_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
-  { label: "Tasks", path: "/tasks/board", moduleKey: "planner", featureFlagKey: "task_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
+  { label: "Tasks", path: "/tasks/overview", moduleKey: "planner", featureFlagKey: "task_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
   { label: "Planning", path: "/planhub", moduleKey: "planhub", featureFlagKey: "plan_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
   { label: "Wiki", path: "/wiki", moduleKey: "wiki", featureFlagKey: "wiki_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
 ];

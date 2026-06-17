@@ -622,7 +622,10 @@ export default function FullAppRoutes() {
 
         <Route path="/work-tree" element={<S><WorkTreePage /></S>} />
 
-        <Route path="/tasks" element={<Navigate to="/tasks/board" replace />} />
+        {/* 2026-06-17: default landing is Dashboard (matches project +
+            product + incident hubs). Board is reachable from the sidebar
+            or directly via /tasks/board. */}
+        <Route path="/tasks" element={<Navigate to="/tasks/overview" replace />} />
         {/* Deprecated 2026-06-17: /tasks/work removed — route cloned from project-hub but superseded by task-list view. */}
         <Route path="/tasks/work" element={<Navigate to="/tasks/list" replace />} />
         <Route path="/tasks/:view" element={<S><PlannerPage /></S>} />
@@ -631,7 +634,7 @@ export default function FullAppRoutes() {
         <Route path="/tasks/workstreams" element={<S><NotFound /></S>} />
 
         {/* Backward-compat redirects from old /taskhub routes */}
-        <Route path="/taskhub" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/taskhub" element={<Navigate to="/tasks/overview" replace />} />
         <Route path="/taskhub/boards" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub/task-list" element={<Navigate to="/tasks/list" replace />} />
         <Route path="/taskhub/dashboard" element={<Navigate to="/tasks/overview" replace />} />
@@ -754,8 +757,8 @@ export default function FullAppRoutes() {
         <Route path="/tasks/priorities/*" element={<S><NotFound /></S>} />
 
         {/* Backward-compat redirects from old /planner routes */}
-        <Route path="/planner" element={<Navigate to="/tasks/board" replace />} />
-        <Route path="/planner/*" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/planner" element={<Navigate to="/tasks/overview" replace />} />
+        <Route path="/planner/*" element={<Navigate to="/tasks/overview" replace />} />
 
         <Route path="/planhub" element={<S><PlanLibraryPage /></S>} />
         <Route path="/planhub/plan/:planId" element={<S><PlanEditorPage /></S>} />

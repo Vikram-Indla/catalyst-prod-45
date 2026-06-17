@@ -268,7 +268,7 @@ const HUB_ROUTES: Record<string, string> = {
   release: '/release-hub/command-center',
   test: '/testhub/dashboard',
   incident: '/incident-hub',
-  task: '/tasks/board',
+  task: '/tasks/overview',
   plan: '/planhub',
   wiki: '/wiki',
 };
