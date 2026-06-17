@@ -6,10 +6,7 @@
  */
 
 import React from 'react';
-import {
-  GanttChartSquare,
-  Settings,
-} from '@/lib/atlaskit-icons';
+import { Settings } from '@/lib/atlaskit-icons';
 /* 2026-06-17: Dashboard + Board + Task List nav icons now use the
    canonical NavDashboardIcon / NavKanbanIcon / NavBacklogIcon from
    @/lib/nav-icons — same icons the project / product / incident hub
@@ -20,6 +17,7 @@ import {
   NavBacklogIcon,
   NavWorkIcon,
   NavFiltersIcon,
+  NavTimelineIcon,
 } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { ContextSwitcher } from './ContextSwitcher';
@@ -56,7 +54,11 @@ const taskHubSidebarConfig: SidebarConfig = {
            /tasks/filters. exact: false so /tasks/filters/* (create, :id)
            also keeps this nav item highlighted. */
         { id: 'filters', title: 'Filters', path: '/tasks/filters', icon: NavFiltersIcon, exact: false },
-        { id: 'timeline', title: 'Timeline', path: '/tasks/timeline', icon: GanttChartSquare, exact: true },
+        /* 2026-06-17: Timeline — canonical TimelineView mounted via
+           TasksTimelineView. Same Gantt shell as /project-hub/:key/timeline,
+           /product-hub/:key/timeline, /incident-hub/timeline. Uses
+           NavTimelineIcon — the icon every other hub's Timeline tab uses. */
+        { id: 'timeline', title: 'Timeline', path: '/tasks/timeline', icon: NavTimelineIcon, exact: false },
       ],
     },
   ],
