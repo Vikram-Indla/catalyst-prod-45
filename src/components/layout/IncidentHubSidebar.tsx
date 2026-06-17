@@ -12,7 +12,7 @@ import {
   FileText,
   Users,
 } from '@/lib/atlaskit-icons';
-import { NavWorkIcon } from '@/lib/nav-icons';
+import { NavWorkIcon, NavFiltersIcon } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface IncidentHubSidebarProps {
@@ -46,6 +46,9 @@ const sections: SidebarSection[] = [
       /* Work tab — canonical AllWork view, mode='incident'.
          Same sequence as project / product hubs (after Board). */
       { id: 'work', title: 'Work', path: '/incident-hub/work', icon: NavWorkIcon, exact: false },
+      /* 2026-06-16: Filters tab — canonical FiltersListPage hubType='incident'.
+         Sequence (Board → Work → Filters) mirrors project + product hubs. */
+      { id: 'filters', title: 'Filters', path: '/incident-hub/filters', icon: NavFiltersIcon, exact: false },
       { id: 'reports', title: 'Reports', path: '/incident-hub/reports', icon: FileText, exact: false },
       { id: 'committee-queue', title: 'Committee Queue', path: '/incident-hub/committee-queue', icon: Users, exact: false },
     ],

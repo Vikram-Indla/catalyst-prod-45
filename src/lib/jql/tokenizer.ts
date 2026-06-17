@@ -151,7 +151,12 @@ export function tokenize(jql: string): Token[] {
       if (op) {
         tokens.push({ type: 'operator', value: op });
         state = 'expect-value';
+        continue;
       }
+      /* 2026-06-17: defensive — if we expected an operator but didn't find
+         one (e.g. the previous "field" was actually punctuation like `(`),
+         advance `i` so we don't infinite-loop. */
+      i++;
       continue;
     }
 

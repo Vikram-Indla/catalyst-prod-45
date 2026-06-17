@@ -120,6 +120,9 @@ const IncidentHubListPage = lazy(() => import("../pages/incidenthub/IncidentList
 const IncidentHubKanbanPage = lazy(() => import("../pages/incidenthub/IncidentKanbanPage"));
 const IncidentHubWorkPage = lazy(() => import("../pages/incidenthub/IncidentWorkPage"));
 const IncidentHubBoardPage = lazy(() => import("../pages/incidenthub/IncidentBoardPage"));
+const IncidentHubFiltersListPage = lazy(() => import("../pages/incidenthub/IncidentFiltersListPage"));
+const IncidentHubFilterPreviewPage = lazy(() => import("../pages/incidenthub/IncidentFilterPreviewPage"));
+const IncidentHubFilterDetailPage = lazy(() => import("../pages/incidenthub/IncidentFilterDetailPage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
 const IncidentHubInsightsPage = lazy(() => import("../pages/incidenthub/IncidentInsightsPage"));
 const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentReportsPage"));
@@ -685,6 +688,13 @@ export default function FullAppRoutes() {
             canonical surface. */}
         <Route path="/incident-hub/board" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubBoardPage /></S></MG>} />
         <Route path="/incident-hub/kanban" element={<Navigate to="/incident-hub/board" replace />} />
+        {/* 2026-06-16: Filters tab — canonical FiltersListPage / FilterPreviewPage /
+            FilterDetailPage with hubType='incident' / mode='incident'. Data is
+            ph_issues filtered to issue_type='Production Incident'; saves are
+            scoped via the 'INCIDENTS' projectKey sentinel. */}
+        <Route path="/incident-hub/filters" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFiltersListPage /></S></MG>} />
+        <Route path="/incident-hub/filters/create" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFilterPreviewPage /></S></MG>} />
+        <Route path="/incident-hub/filters/:filterId" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFilterDetailPage /></S></MG>} />
         {/* 2026-06-16: Work tab — canonical ProjectAllWorkView with mode='incident'. */}
         <Route path="/incident-hub/work" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubWorkPage /></S></MG>} />
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />

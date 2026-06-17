@@ -19,14 +19,17 @@ interface FilterDetailPageProps {
   /** 2026-06-15: mode switch. project (default) = /project-hub/:key/filters/...
    *  links go to ph_issues-backed work + backlog surfaces. product builds the
    *  same chrome with /product-hub/:key/... links + product hub_scope when
-   *  saving. Per CLAUDE.md "ADOPT CANONICAL COMPONENTS". */
-  mode?: 'project' | 'product';
+   *  saving. 2026-06-16: 'incident' added — same chrome, /incident-hub/...
+   *  links, no :key in URL. Per CLAUDE.md "ADOPT CANONICAL COMPONENTS". */
+  mode?: 'project' | 'product' | 'incident';
 }
 
 export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageProps = {}) {
   const isProduct = mode === 'product';
-  const hubBase = isProduct ? 'product-hub' : 'project-hub';
-  const { key: projectKey, filterId } = useParams<{ key: string; filterId: string }>();
+  const isIncident = mode === 'incident';
+  const hubBase = isProduct ? 'product-hub' : isIncident ? 'incident-hub' : 'project-hub';
+  const { key: routeKey, filterId } = useParams<{ key: string; filterId: string }>();
+  const projectKey = isIncident ? 'INCIDENTS' : routeKey;
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -63,9 +66,11 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
     staleTime: 60_000,
   });
 
-  const backHref = projectKey
-    ? `/${hubBase}/${projectKey}/filters`
-    : '/product-hub/filters';
+  const backHref = isIncident
+    ? '/incident-hub/filters'
+    : projectKey
+      ? `/${hubBase}/${projectKey}/filters`
+      : '/product-hub/filters';
 
   if (isLoading) {
     return (
@@ -186,7 +191,23 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
             >
               Edit filter
             </Button>
-            {filter.jql_query && projectKey && (
+            {filter.jql_query && isIncident && (
+              <>
+                <Button
+                  appearance="subtle"
+                  onClick={() => navigate(`/incident-hub/work?filterId=${filter.id}`)}
+                >
+                  Open in work
+                </Button>
+                <Button
+                  appearance="primary"
+                  onClick={() => navigate(`/incident-hub/board?filterId=${filter.id}`)}
+                >
+                  Apply to board
+                </Button>
+              </>
+            )}
+            {filter.jql_query && projectKey && !isIncident && (
               <>
                 <Button
                   appearance="subtle"
@@ -202,7 +223,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                 </Button>
               </>
             )}
-            {filter.jql_query && !projectKey && (
+            {filter.jql_query && !projectKey && !isIncident && (
               <Button
                 appearance="primary"
                 onClick={() => navigate(backHref)}
@@ -356,7 +377,8 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
         <FilterSaveModal
           filter={filter}
           hubScope={isProduct ? 'product' : 'project'}
-          {...(isProduct ? { productKey: projectKey } : {})}
+          /* 2026-06-16: always pass hub identity for strict scoping. */
+          {...(isProduct ? { productKey: projectKey } : { projectKey })}
           onClose={() => setEditOpen(false)}
           onSaved={() => setEditOpen(false)}
         />
