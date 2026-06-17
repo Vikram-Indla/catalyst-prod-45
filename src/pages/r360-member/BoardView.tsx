@@ -21,7 +21,12 @@ import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
 import type { R360WorkItem } from '@/types/r360';
 import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
-import { CatalystAiSearch } from '@/components/caty/CatalystAiSearch';
+// 2026-06-17 — Adopt the backlog search pattern: a standalone Caty icon
+// beside a plain search field (image-1 parity). Deprecates the combined
+// CatalystAiSearch box with its embedded "Ask" pill on this board.
+import { CatyIconCTA } from '@/components/ui/CatyIconCTA';
+import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
+import { QuickSearchInput } from './QuickSearchInput';
 
 // ── Subtask types that should surface their parent instead ──────────
 const SUBTASK_TYPES = new Set(['sub-task', 'backend', 'frontend']);
@@ -370,10 +375,9 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
         // Open → canonical Ask Caty takes over the toolbar row (no stacking).
         // The cross-project CatyFilter is applied client-side via catyVisibleItems.
         <div style={{ marginBottom: 16 }}>
-          <CatalystAiSearch
-            open
-            onOpenChange={setAskCatyOpen}
+          <AskCatyInlineBar
             projectKey={BOARD_CATY_KEY}
+            onClose={() => setAskCatyOpen(false)}
           />
         </div>
       ) : (
@@ -381,14 +385,20 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
           display: 'flex', alignItems: 'center', gap: 16,
           marginBottom: 16,
         }}>
-          <CatalystAiSearch
-            open={false}
-            onOpenChange={setAskCatyOpen}
-            projectKey={BOARD_CATY_KEY}
-            value={quickSearch}
-            onValueChange={setQuickSearch}
-            placeholder="Search by key or title…"
+          <CatyIconCTA
+            tooltip="Ask Caty about this board"
+            onClick={() => setAskCatyOpen(true)}
+            size={20}
           />
+          {/* QuickSearchInput bakes a 12px bottom margin for stacked-above-list
+              use; cancel it so it baselines with the toolbar row siblings. */}
+          <div style={{ marginBottom: -12, display: 'flex', alignItems: 'center', flex: 1 }}>
+            <QuickSearchInput
+              value={quickSearch}
+              onChange={setQuickSearch}
+              totalCount={boardItems.length}
+            />
+          </div>
           <span style={{
             fontSize: 12, fontWeight: 400,
             color: token('color.text.subtlest', '#626F86'),

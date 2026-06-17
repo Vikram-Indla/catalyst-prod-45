@@ -1,5 +1,6 @@
 import React from 'react';
 import './caty-button.css';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 
 /** The compact, brand-faithful Caty head: gradient ears + dark inner strokes,
  *  signature sleepy eyes, whiskers. Legible down to ~20px. Use the FULL lockup
@@ -114,7 +115,7 @@ export function CatyButton({
         aria-label={ariaLabel}
         {...rest}
       >
-        <CatyHead size={iconSize} />
+        <CatyPulseIcon size={iconSize} />
         {visibleLabel && <span className="caty-btn__label">{visibleLabel}</span>}
         {loading && (
           <span className="caty-btn__dots" style={{ display: 'inline-flex', gap: 2 }} aria-hidden="true">

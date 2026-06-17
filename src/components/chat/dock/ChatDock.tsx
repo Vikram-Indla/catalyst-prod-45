@@ -18,7 +18,7 @@ import Tooltip from "@atlaskit/tooltip";
 import AddIcon from "@atlaskit/icon/core/add";
 import GrowDiagonalIcon from "@atlaskit/icon/core/grow-diagonal";
 import CloseIcon from "@atlaskit/icon/core/close";
-import EyeOpenStrikethroughIcon from "@atlaskit/icon/core/eye-open-strikethrough";
+import { CatyPulseIcon } from "@/components/ui/CatyPulseIcon";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
@@ -217,6 +217,52 @@ export function ChatDock({
   );
   const prevUnseen = React.useRef(eventUnseen);
   const hoverTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hideHoverTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoCloseTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastWake = React.useRef(0);
+  const [fabHover, setFabHover] = React.useState(false);
+  const [catyQuiet, setCatyQuiet] = React.useState(false);
+  const quietTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Idle → Quiet (5 min). Caty stays on screen but dims and stops
+  // surfacing proactive cards. Any user activity wakes it. NEVER hides
+  // automatically — full hide is a manual choice only.
+  React.useEffect(() => {
+    const QUIET_MS = 5 * 60 * 1000;
+    const arm = () => {
+      if (quietTimer.current) clearTimeout(quietTimer.current);
+      quietTimer.current = setTimeout(() => setCatyQuiet(true), QUIET_MS);
+    };
+    const wake = () => {
+      setCatyQuiet((q) => (q ? false : q));
+      const now = performance.now();
+      if (now - lastWake.current < 1000) return; // throttle re-arming
+      lastWake.current = now;
+      arm();
+    };
+    arm();
+    const opts = { passive: true } as AddEventListenerOptions;
+    window.addEventListener('pointerdown', wake, opts);
+    window.addEventListener('keydown', wake, opts);
+    window.addEventListener('mousemove', wake, opts);
+    return () => {
+      if (quietTimer.current) clearTimeout(quietTimer.current);
+      window.removeEventListener('pointerdown', wake, opts);
+      window.removeEventListener('keydown', wake, opts);
+      window.removeEventListener('mousemove', wake, opts);
+    };
+  }, []);
+
+  // FAB hover/focus reveals the dismiss X; small delay so moving the
+  // cursor from the FAB onto the X doesn't flicker it away.
+  const showHideX = () => {
+    if (hideHoverTimer.current) clearTimeout(hideHoverTimer.current);
+    setFabHover(true);
+  };
+  const hideHideX = () => {
+    if (hideHoverTimer.current) clearTimeout(hideHoverTimer.current);
+    hideHoverTimer.current = setTimeout(() => setFabHover(false), 180);
+  };
 
   // One-time gesture when a NEW unseen event arrives, then silent (calm tech, no nag).
   React.useEffect(() => {
@@ -224,6 +270,13 @@ export function ChatDock({
       const newest = events.find((e) => !e.seen);
       setGesture(newest ? gestureFor(newest.kind) : "");
       const t = setTimeout(() => setGesture(""), 1600);
+      // New event = intent to surface. Wake from Quiet and open the power
+      // card once; auto-close after 8s unless the user hovers it (openHover
+      // clears autoCloseTimer). Replaces passive-hover opening.
+      setCatyQuiet(false);
+      setWhyOpen(true);
+      if (autoCloseTimer.current) clearTimeout(autoCloseTimer.current);
+      autoCloseTimer.current = setTimeout(() => setWhyOpen(false), 8000);
       prevUnseen.current = eventUnseen;
       return () => clearTimeout(t);
     }
@@ -244,6 +297,7 @@ export function ChatDock({
   const eventLine = React.useMemo(() => buildEventLine(events), [events]);
   const openHover = () => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    if (autoCloseTimer.current) clearTimeout(autoCloseTimer.current);
     setWhyOpen(true);
   };
   const closeHoverSoon = () => {
@@ -264,13 +318,13 @@ export function ChatDock({
               ref={fabRef}
               type="button"
               className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${gesture ? ' ' + gesture : ''}`}
-              style={{ top: pos.y, left: pos.x }}
+              style={{ top: pos.y, left: pos.x, opacity: catyQuiet ? 0.55 : 1, transition: 'opacity 200ms ease' }}
               aria-label={`Caty — ${displayState}. ${liveMood.message} Open messages.`}
               onClick={onToggleCollapsed}
-              onMouseEnter={openHover}
-              onMouseLeave={closeHoverSoon}
-              onFocus={openHover}
-              onBlur={closeHoverSoon}
+              onMouseEnter={showHideX}
+              onMouseLeave={hideHideX}
+              onFocus={showHideX}
+              onBlur={hideHideX}
               onClickCapture={dragHandlers.onClickCapture}
               onPointerDown={dragHandlers.onPointerDown}
               onPointerMove={dragHandlers.onPointerMove}
@@ -294,16 +348,12 @@ export function ChatDock({
               onClick={() => {
                 localStorage.setItem('caty.fab.hidden', 'true');
                 window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
-                catalystToast.success('Caty is hiding...');
+                catalystToast.success('Caty hidden — bring it back from the Caty nav icon');
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.transform = 'scale(1.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '0.7';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
+              onMouseEnter={showHideX}
+              onMouseLeave={hideHideX}
+              onFocus={showHideX}
+              onBlur={hideHideX}
               style={{
                 position: 'fixed',
                 top: pos.y - 6,
@@ -320,9 +370,10 @@ export function ChatDock({
                 justifyContent: 'center',
                 padding: 0,
                 zIndex: 601,
-                opacity: 0.7,
-                transition: 'opacity 120ms ease, transform 120ms ease',
-                pointerEvents: 'auto',
+                opacity: fabHover ? 1 : 0,
+                transform: fabHover ? 'scale(1)' : 'scale(0.8)',
+                pointerEvents: fabHover ? 'auto' : 'none',
+                transition: 'opacity 140ms ease, transform 140ms ease',
               }}
               aria-label="Hide Caty"
               title="Hide Caty"
@@ -359,9 +410,7 @@ export function ChatDock({
             aria-label="Wake Caty"
             title="Wake Caty"
           >
-            <span style={{ display: 'flex', transform: 'scale(1.4)', color: 'var(--ds-icon, #44546F)' }}>
-              <EyeOpenStrikethroughIcon LEGACY_size="large" />
-            </span>
+            <CatyPulseIcon size={28} />
           </button>
         )}
         {!isDragging && !catyHidden && (

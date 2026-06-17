@@ -1,4 +1,14 @@
 /**
+ * CatalystAiSearch — DEPRECATED (2026-06-17).
+ *
+ * The combined search box with an embedded trailing "Ask" pill was retired in
+ * favour of the backlog pattern: a standalone CatyIconCTA beside a plain
+ * search field (QuickSearchInput / Textfield), with AskCatyInlineBar replacing
+ * the toolbar when Ask Caty opens. Its last consumer (R360 BoardView) was
+ * migrated. Do NOT add new usages — adopt the backlog pattern instead.
+ *
+ * Original docstring follows.
+ *
  * CatalystAiSearch — the canonical work-item search control.
  *
  * One affordance, two states:

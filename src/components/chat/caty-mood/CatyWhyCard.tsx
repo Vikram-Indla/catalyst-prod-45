@@ -152,13 +152,9 @@ export function CatyWhyCard({
         </div>
         <IconButton
           icon={CloseIcon}
-          label="Hide Caty insights"
+          label="Close"
           appearance="subtle"
-          onClick={() => {
-            localStorage.setItem('caty.fab.hidden', 'true');
-            window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
-            onClose();
-          }}
+          onClick={onClose}
           style={{ flexShrink: 0 }}
         />
       </div>

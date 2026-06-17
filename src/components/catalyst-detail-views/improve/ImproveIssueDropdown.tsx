@@ -28,7 +28,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { CatyHead } from '@/components/for-you/atlaskit/CatyButton';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import WandIcon from '@atlaskit/icon/core/magic-wand';
 import CommentIcon from '@atlaskit/icon/core/comment';
 import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
@@ -419,7 +419,7 @@ export function ImproveIssueDropdown({
           {catyIsImproving ? (
             <Spinner size="small" />
           ) : (
-            <CatyHead size={20} />
+            <CatyPulseIcon size={20} />
           )}
           <span>{catyIsImproving ? 'Stop' : triggerLabel}</span>
         </button>
