@@ -6,9 +6,9 @@
  */
 
 import React from 'react';
-import { 
+import {
   LayoutDashboard,
-  LayoutGrid, 
+  LayoutGrid,
   GanttChartSquare,
   Settings,
   List,

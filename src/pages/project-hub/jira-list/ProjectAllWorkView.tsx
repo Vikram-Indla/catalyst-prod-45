@@ -122,6 +122,10 @@ interface Props {
   mode?: 'project' | 'product';
   /** Product mode only — used in the header and detail empty-state copy. */
   productName?: string;
+  /** tasks mode: pre-fetched WorkItem list. Skips project/product DB queries. */
+  tasksItems?: WorkItem[];
+  /** Entity kind forwarded to CatalystDetailRouter. Default 'ph_issue'. */
+  entityKind?: 'ph_issue' | 'task';
 }
 
 /** Split container widths for 3-state responsive layout:
@@ -132,8 +136,9 @@ interface Props {
 const WIDE_BP = 1120;
 const NARROW_BP = 480;
 
-export default function ProjectAllWorkView({ projectKey, projectId, mode = 'project', productName }: Props) {
+export default function ProjectAllWorkView({ projectKey, projectId, mode = 'project', productName, tasksItems, entityKind = 'ph_issue' }: Props) {
   const isProduct = mode === 'product';
+  const isTasks = !!tasksItems;
 
   // PERF: useProjectAllWorkItems now returns paginated results with keyset cursor.
   // toolbarFilters is forwarded so server-side predicates are applied before LIMIT,
@@ -151,7 +156,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
      quickly, which is fine — we ignore that result and use the product
      branch below. */
   const projectQuery = useProjectAllWorkItems(
-    isProduct ? undefined : projectKey,
+    (isProduct || isTasks) ? undefined : projectKey,
     activeFilterJql ? EMPTY_FILTERS : toolbarFilters,
     activeFilterJql,
   );
@@ -196,15 +201,15 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
     [productBrs, productProfileMap, productStatusCategoryMap],
   );
 
-  /* Uniform shape consumed by the rest of the component. Product mode keeps
-     a single "page" with all items — no server-side pagination on BRs. */
-  const items: WorkItem[] = isProduct ? productItems : (projectQuery.items ?? []);
-  const rowsPerPage = isProduct ? Math.max(1, productItems.length) : projectQuery.rowsPerPage;
-  const setRowsPerPage = isProduct ? (() => { /* no-op in product mode */ }) : projectQuery.setRowsPerPage;
-  const totalCount = isProduct ? productItems.length : projectQuery.totalCount;
-  const page = isProduct ? 1 : projectQuery.page;
-  const setPage = isProduct ? (() => { /* no-op */ }) : projectQuery.setPage;
-  const pageCount = isProduct ? 1 : projectQuery.pageCount;
+  /* Uniform shape consumed by the rest of the component. Product/tasks mode
+     keeps a single "page" with all items — no server-side pagination. */
+  const items: WorkItem[] = isTasks ? (tasksItems ?? []) : isProduct ? productItems : (projectQuery.items ?? []);
+  const rowsPerPage = isTasks ? Math.max(1, (tasksItems ?? []).length) : isProduct ? Math.max(1, productItems.length) : projectQuery.rowsPerPage;
+  const setRowsPerPage = (isTasks || isProduct) ? (() => {}) : projectQuery.setRowsPerPage;
+  const totalCount = isTasks ? (tasksItems ?? []).length : isProduct ? productItems.length : projectQuery.totalCount;
+  const page = (isTasks || isProduct) ? 1 : projectQuery.page;
+  const setPage = (isTasks || isProduct) ? (() => {}) : projectQuery.setPage;
+  const pageCount = (isTasks || isProduct) ? 1 : projectQuery.pageCount;
 
   /* ── Filter URL params ────────────────────────────────────────────────────
      ?filterId=<uuid>    — navigated here by clicking a saved filter name
@@ -323,13 +328,12 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
       return next;
     }
     /* Project mode: server-side filter already applied; items as-is.
-       Product mode: business_requests aren't filtered server-side, so
-       apply the toolbar filter client-side via itemPassesFilters here. */
-    if (isProduct) {
+       Product/tasks mode: not filtered server-side, apply client-side. */
+    if (isProduct || isTasks) {
       return items.filter((i) => itemPassesFilters(i, toolbarFilters));
     }
     return items;
-  }, [items, catyActive, catyFilter, catySecondaryQuery, isProduct, toolbarFilters]);
+  }, [items, catyActive, catyFilter, catySecondaryQuery, isProduct, isTasks, toolbarFilters]);
 
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
@@ -451,7 +455,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           name + Add people / meatball / share / automation / feedback /
           fullscreen actions. The previous solo h2 was a Catalyst-only
           divergence with no parity reference on the Jira side. */}
-      <ProjectPageHeader projectKey={projectKey} hubType={isProduct ? 'product' : undefined} />
+      {!isTasks && <ProjectPageHeader projectKey={projectKey} hubType={isProduct ? 'product' : undefined} />}
       {/* Filter context banner — shown when viewing a saved filter or in create-filter mode.
           Matches Jira's "Filter by: [name]" breadcrumb strip above the issue list. */}
       {(activeFilter || isCreateMode) && (
@@ -683,32 +687,18 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                   <CatalystDetailRouter
                     isOpen={true}
                     onClose={() => selectItem(null)}
-                    // CatalystDetailRouter queries ph_issues by UUID PK —
-                    // WorkItem.id is the issue_key (e.g. "BAU-5500"), NOT a UUID.
-                    // Use dbId (ph_issues.id). CLAUDE.md §L39 warns that
-                    // passing the issue_key here yields a silent 400 and an
-                    // empty issue object → title falls back to "—".
-                    itemId={activeItem.id}
-                    // Use rawType (the DB's issue_type string) so CatalystDetailRouter's
-                    // resolveItemType gets "Production Incident" / "Business Gap" / etc.
-                    // instead of the collapsed WorkItemType 'task'. Fixes wrong view
-                    // rendering for incident/change-request/business-gap types.
+                    // tasks mode: TaskCatalystView queries tasks by UUID (tasks.id).
+                    // ph_issue mode: CatalystDetailRouter queries ph_issues by issue_key.
+                    itemId={entityKind === 'task' ? (activeItem.dbId ?? activeItem.id) : activeItem.id}
                     itemType={activeItem.rawType || activeItem.type}
                     projectId={projectId}
                     projectKey={projectKey}
-                    // Subtask clicks come in with the child row's UUID.
-                    // selectItem normalises that back to issue_key so the
-                    // URL-sync effect writes `?issue=BAU-XXXX` instead of a
-                    // UUID (P1-5 + P1-8 fix from 2026-04-20 critique).
-                    // jira-compare 2026-05-10 — N1: parent crumb (often an
-                    // Epic) is NOT in the AllWork items list. Dispatch via
-                    // makeOpenItemHandler so out-of-list targets fall
-                    // through to the overlay router.
                     onOpenItem={handleOpenItem}
                     panelMode={true}
                     navigationItems={navigationItems}
                     onNavigate={handleNavigate}
                     hideSidebar={panelLayout === 'medium'}
+                    entityKind={entityKind}
                   />
                 </Suspense>
               </div>
@@ -741,7 +731,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                     color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                     lineHeight: '20px',
                   }}>
-                    {isProduct ? 'Select a business request' : 'Select a work item'}
+                    {isProduct ? 'Select a business request' : isTasks ? 'Select a task' : 'Select a work item'}
                   </p>
                   <p
                     data-testid="allwork-empty-state-subtitle"
@@ -754,6 +744,8 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                   >
                     {isProduct
                       ? 'Choose a request from the list to view its details, comments, and related work.'
+                      : isTasks
+                      ? 'Choose a task from the list to view its details, comments, and related work.'
                       : 'Choose an item from the list to view its details, comments, and related work.'}
                   </p>
                 </div>
@@ -778,13 +770,16 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           <CatalystDetailRouter
             isOpen={true}
             onClose={() => setOverlayItemId(null)}
-            itemId={overlayItemId}
+            itemId={isTasks
+              ? (items.find(i => i.id === overlayItemId)?.dbId ?? overlayItemId ?? '')
+              : (overlayItemId ?? '')}
             {...(isProduct ? { itemType: 'business_request' as any } : {})}
             projectId={projectId ?? ''}
             projectKey={projectKey}
             onOpenItem={handleOpenItem}
             navigationItems={navigationItems}
             onNavigate={handleOverlayNavigate}
+            {...(isTasks ? { entityKind: 'task' as const } : {})}
           />
         </Suspense>
       )}

@@ -63,6 +63,7 @@ const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/Fi
 const ProductFilterPreviewPageLazy = lazy(() => import("../pages/product-hub/filters/ProductFilterPreviewPage").then(m => ({ default: m.ProductFilterPreviewPage })));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
+
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
 function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
@@ -589,6 +590,8 @@ export default function FullAppRoutes() {
         <Route path="/work-tree" element={<S><WorkTreePage /></S>} />
 
         <Route path="/tasks" element={<Navigate to="/tasks/board" replace />} />
+        {/* Deprecated 2026-06-17: /tasks/work removed — route cloned from project-hub but superseded by task-list view. */}
+        <Route path="/tasks/work" element={<Navigate to="/tasks/list" replace />} />
         <Route path="/tasks/:view" element={<S><PlannerPage /></S>} />
         {/* Deprecated 2026-06-17: My Tasks + Workstreams removed. Static segment outranks /tasks/:view in RR6 → 404. */}
         <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />
