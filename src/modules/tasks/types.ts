@@ -3,14 +3,15 @@
 // Enhanced with Resources and AI Insights types
 // ============================================================
 
-export type PlannerView = 
+export type PlannerView =
   | 'dashboard'
-  | 'boards' 
-  | 'task-list' 
-  | 'timeline' 
-  | 'calendar' 
-  | 'weekly-report' 
-  | 'workstream-performance' 
+  | 'boards'
+  | 'task-list'
+  | 'work'
+  | 'timeline'
+  | 'calendar'
+  | 'weekly-report'
+  | 'workstream-performance'
   | 'ai-insights'
   | 'resources'
   | 'workstreams'

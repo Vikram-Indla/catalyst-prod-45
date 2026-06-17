@@ -18,6 +18,7 @@ import {
   NavDashboardIcon,
   NavKanbanIcon,
   NavBacklogIcon,
+  NavWorkIcon,
 } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { ContextSwitcher } from './ContextSwitcher';
@@ -45,6 +46,10 @@ const taskHubSidebarConfig: SidebarConfig = {
         { id: 'dashboard', title: 'Dashboard', path: '/tasks/overview', icon: NavDashboardIcon, exact: true },
         { id: 'boards', title: 'Board', path: '/tasks/board', icon: NavKanbanIcon, exact: true },
         { id: 'task-list', title: 'Task List', path: '/tasks/list', icon: NavBacklogIcon, exact: true },
+        /* 2026-06-17: Work — canonical ProjectAllWorkView with tasksItems.
+           Same UI shell as /project-hub/:key/allwork + /product-hub/:key/allwork
+           + /incident-hub/work. */
+        { id: 'work', title: 'Work', path: '/tasks/work', icon: NavWorkIcon, exact: false },
         { id: 'timeline', title: 'Timeline', path: '/tasks/timeline', icon: GanttChartSquare, exact: true },
       ],
     },

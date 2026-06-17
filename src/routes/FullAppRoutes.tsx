@@ -627,8 +627,10 @@ export default function FullAppRoutes() {
             product + incident hubs). Board is reachable from the sidebar
             or directly via /tasks/board. */}
         <Route path="/tasks" element={<Navigate to="/tasks/overview" replace />} />
-        {/* Deprecated 2026-06-17: /tasks/work removed — route cloned from project-hub but superseded by task-list view. */}
-        <Route path="/tasks/work" element={<Navigate to="/tasks/list" replace />} />
+        {/* 2026-06-17: /tasks/work re-introduced as the canonical Tasks
+            Hub All Work view (TasksWorkCanonical → ProjectAllWorkView
+            with tasksItems + entityKind='task'). The earlier redirect
+            to /tasks/list was deleted now that the real surface exists. */}
         {/* 2026-06-17: full-page task detail. MUST be declared before
             /tasks/:view so RR6's specificity ranking selects the
             two-segment route for /tasks/view/<task-key>. */}

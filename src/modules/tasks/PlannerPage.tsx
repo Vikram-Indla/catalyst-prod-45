@@ -14,6 +14,10 @@ import { PlannerTaskList } from './components/PlannerTaskList';
    which mounts the canonical BacklogPage with the tasks adapter (same UI
    as /project-hub/:key/backlog and /product-hub/:key/backlog). */
 import TasksTaskListCanonical from './views/TasksTaskListCanonical';
+/* 2026-06-17: TasksWorkCanonical mounts the canonical ProjectAllWorkView
+   (3-panel All Work UI shared by project / product / incident hubs)
+   with tasksItems pre-fetched from the `tasks` table. */
+import TasksWorkCanonical from './views/TasksWorkCanonical';
 /* TasksBoardView (PragmaticBoard adapter) replaced 2026-06-17 by
    TasksBoardCanonical (features/kanban-board KanbanPage mode='tasks'). */
 import TasksBoardCanonical from './views/TasksBoardCanonical';
@@ -54,6 +58,7 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'dashboard': 'Dashboard',
   'boards': 'Boards',
   'task-list': 'Task List',
+  'work': 'Work',
   'timeline': 'Timeline',
   'calendar': 'Calendar',
   'weekly-report': 'Weekly Summary',
@@ -74,6 +79,7 @@ const VIEW_ALIASES: Record<string, PlannerView> = {
   boards: 'boards',
   list: 'task-list',
   'task-list': 'task-list',
+  work: 'work',
 };
 const normalizeView = (v?: string): PlannerView =>
   ((v && (VIEW_ALIASES[v] ?? (v as PlannerView))) || 'boards');
@@ -84,6 +90,7 @@ const VIEW_TO_SLUG: Partial<Record<PlannerView, string>> = {
   dashboard: 'overview',
   boards: 'board',
   'task-list': 'list',
+  work: 'work',
 };
 const viewToSlug = (v: PlannerView): string => VIEW_TO_SLUG[v] ?? v;
 
@@ -447,6 +454,8 @@ export function PlannerPage() {
         return <TasksBoardCanonical />;
       case 'task-list':
         return <TasksTaskListCanonical />;
+      case 'work':
+        return <TasksWorkCanonical />;
       case 'timeline':
         // Phase 3 (2026-06-16): canonical TimelineView. Legacy
         // PlannerTimeline kept in the tree but unmounted from this route.
