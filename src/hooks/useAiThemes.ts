@@ -84,7 +84,7 @@ export interface ThemesResponse {
 }
 
 export interface ThemesError {
-  error: 'rate_limited' | 'credits_exhausted' | 'themes_unavailable' | 'query_failed' | 'project_key_required';
+  error: 'rate_limited' | 'credits_exhausted' | 'themes_unavailable' | 'query_failed' | 'project_key_required' | 'daily_limit';
   message?: string;
 }
 
@@ -216,15 +216,17 @@ async function invokeThemes(
 }
 
 /**
- * Compute milliseconds from `now` until the next 21:00 Asia/Riyadh (AST=UTC+3).
+ * Compute milliseconds from `now` until the next 06:00 Asia/Riyadh (AST=UTC+3).
  * Used as React Query `staleTime` so the AI theme analyzer is fetched at most
- * once per day on the client (matches the server-side daily TTL set by
- * supabase/functions/ai-digest/themes.ts and the nightly pg_cron pre-warm).
+ * once per day on the client, aligned to the 06:00 Riyadh pre-warm boundary
+ * (pg_cron job `ai-theme-prewarm-daily` at 03:00 UTC). Before that boundary
+ * every page load serves the cached result; manual `refresh()` is the only
+ * intra-day path to a fresh LLM run.
  */
-function msUntilNext9pmRiyadh(now: Date = new Date()): number {
-  // 21:00 AST == 18:00 UTC.
+function msUntilNext6amRiyadh(now: Date = new Date()): number {
+  // 06:00 AST == 03:00 UTC.
   const target = new Date(Date.UTC(
-    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 18, 0, 0, 0,
+    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 3, 0, 0, 0,
   ));
   if (target.getTime() <= now.getTime()) {
     target.setUTCDate(target.getUTCDate() + 1);
@@ -241,12 +243,12 @@ export function useAiThemes(args: UseAiThemesArgs) {
   const enabled = args.enabled ?? true;
   const hasSession = useHasAuthSession();
 
-  // Daily-refresh policy (2026-04-30): the AI theme analyzer is regenerated
-  // ONCE per day at 21:00 AST by a pg_cron pre-warm. We mirror that on the
-  // client so React Query never re-invokes the Edge Function within the
-  // window — page loads always serve the cached result. Manual `refresh()`
-  // is the only intra-day path to a fresh LLM run.
-  const dailyStaleMs = msUntilNext9pmRiyadh();
+  // Daily-refresh policy: the AI theme analyzer is regenerated ONCE per day at
+  // 06:00 Riyadh by a pg_cron pre-warm (retimed from 21:00, 2026-06-18). We
+  // mirror that on the client so React Query never re-invokes the Edge Function
+  // within the window — page loads always serve the cached result. Manual
+  // `refresh()` is the only intra-day path to a fresh LLM run.
+  const dailyStaleMs = msUntilNext6amRiyadh();
 
   const query = useQuery<ThemesResponse, Error>({
     queryKey,

@@ -250,11 +250,40 @@ export async function handleThemesRequest(args: {
 }): Promise<Response> {
   const { body, supabase, userId, geminiApiKey, corsHeaders } = args;
   const forceRefresh = body.forceRefresh === true;
+  // Pre-warm calls (the pg_cron path) tag the body so they never consume the
+  // user's manual budget — only genuine user-initiated forceRefresh counts
+  // against the 3/day quota.
+  const isPrewarm = Boolean((body as { _prewarmedForUser?: string })._prewarmedForUser);
   const scope = body.scope;
   const projectKey = body.projectKey ?? null;
   const limit = Math.min(Math.max(body.limit ?? 50, 10), 100);
 
   const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
+
+  // Riyadh calendar day (UTC+3, no DST) — the daily reset boundary shared by
+  // the quota counter and the cache TTL / 06:00 pre-warm.
+  const riyadhDay = new Date(Date.now() + 3 * 3_600_000).toISOString().slice(0, 10);
+  const THEME_DAILY_LIMIT = 3;
+
+  // ── Daily re-analyze quota (user-initiated forceRefresh only) ───────────
+  // Block before any expensive work if the user has spent today's budget.
+  if (forceRefresh && !isPrewarm) {
+    const { data: qRow } = await supabase
+      .from('ai_theme_quota')
+      .select('used')
+      .eq('user_id', userId)
+      .eq('day_riyadh', riyadhDay)
+      .maybeSingle();
+    if ((qRow?.used ?? 0) >= THEME_DAILY_LIMIT) {
+      return new Response(
+        JSON.stringify({
+          error: 'daily_limit',
+          message: 'Daily re-analyze limit reached. Fresh themes return at 6:00 AM.',
+        }),
+        { status: 429, headers: jsonHeaders },
+      );
+    }
+  }
 
   // ── 1. Fetch input issues from ph_issues ────────────────────────────────
   // Schema reminders (verified against ph_issues 2026-04):
@@ -481,22 +510,22 @@ export async function handleThemesRequest(args: {
   };
 
   // ── 5. Upsert cache ─────────────────────────────────────────────────────
-  // Daily-refresh policy (2026-04-30): cache stays valid until the next
-  // 21:00 Asia/Riyadh (AST = UTC+3). A pg_cron job at 21:00 AST pre-warms
-  // active caches with forceRefresh=true, so the day's first page load after
-  // 9 PM is served warm. Signature mismatch still re-runs intra-day if the
-  // input issue set drifts (new issue, status update, etc.).
-  function nextNinePmRiyadhUtc(now: Date): Date {
-    // 21:00 AST == 18:00 UTC. Build today's 18:00 UTC; if past, use tomorrow.
+  // Daily-refresh policy (retimed 2026-06-18): cache stays valid until the
+  // next 06:00 Asia/Riyadh (AST = UTC+3). A pg_cron job at 06:00 AST pre-warms
+  // active caches with forceRefresh=true, so the morning's first page load is
+  // served warm. Signature mismatch still re-runs intra-day if the input issue
+  // set drifts (new issue, status update, etc.).
+  function nextSixAmRiyadhUtc(now: Date): Date {
+    // 06:00 AST == 03:00 UTC. Build today's 03:00 UTC; if past, use tomorrow.
     const target = new Date(Date.UTC(
-      now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 18, 0, 0, 0,
+      now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 3, 0, 0, 0,
     ));
     if (target.getTime() <= now.getTime()) {
       target.setUTCDate(target.getUTCDate() + 1);
     }
     return target;
   }
-  const expiresAt = nextNinePmRiyadhUtc(new Date()).toISOString();
+  const expiresAt = nextSixAmRiyadhUtc(new Date()).toISOString();
 
   // Two-step: DELETE existing row for this scope (RLS-safe), then INSERT.
   // Simpler than matching PostgREST upsert semantics across null project_key.
@@ -524,6 +553,17 @@ export async function handleThemesRequest(args: {
     // Still return the computed response — cache failure is non-fatal.
   } else {
     console.log(`[themes] cache STORED user=${userId} scope=${scope} project=${projectKey ?? 'personal'} themes=${themes.length}`);
+  }
+
+  // ── 6. Consume one unit of the daily quota ──────────────────────────────
+  // Only after a real LLM run by a user (not pre-warm, not a no-delta/cache
+  // serve — those return earlier). Atomic increment via SECURITY DEFINER RPC.
+  if (forceRefresh && !isPrewarm) {
+    const { error: quotaErr } = await supabase.rpc('increment_theme_quota', {
+      p_user_id: userId,
+      p_day: riyadhDay,
+    });
+    if (quotaErr) console.error('[themes] quota increment failed:', quotaErr.message);
   }
 
   return new Response(JSON.stringify(response), { headers: jsonHeaders });

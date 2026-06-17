@@ -53,10 +53,19 @@ const ACTIVE_DAYS = 30; // only pre-warm users who ran themes in last 30 days
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  // Auth: only pg_cron via service_role_key can call this
+  // Auth: pg_cron calls this with a Bearer secret. Accept either the
+  // service_role_key (legacy/manual invocation) OR LIFECYCLE_CRON_SECRET —
+  // the same secret the other Catalyst edge-function crons use
+  // (routing-taxonomy-scan etc.). This lets the daily 06:00 Riyadh schedule
+  // authenticate via a GUC (app.settings.lifecycle_cron_secret) without ever
+  // putting the service_role_key in a migration / git.
   const authHeader = req.headers.get("Authorization") ?? "";
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!serviceRoleKey || !authHeader.includes(serviceRoleKey)) {
+  const cronSecret = Deno.env.get("LIFECYCLE_CRON_SECRET");
+  const authorized =
+    (!!serviceRoleKey && authHeader.includes(serviceRoleKey)) ||
+    (!!cronSecret && authHeader.includes(cronSecret));
+  if (!authorized) {
     console.error("[prewarm] Unauthorized — invalid Authorization header");
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
