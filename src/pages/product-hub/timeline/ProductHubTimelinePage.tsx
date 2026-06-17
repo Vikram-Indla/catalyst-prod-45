@@ -289,6 +289,9 @@ export default function ProductHubTimelinePage() {
       }
     },
 
+    /* 2026-06-17: write start_date alongside end_date on BR top-level rows
+       (business_requests has both columns; the previous code wrote end_date
+       only, silently dropping startDate → BRs always rendered as diamonds). */
     onUpdateDates: async (issueKey, startDate, dueDate) => {
       const loc = findIssueLocation(issueKey);
       patchDatesInCache(issueKey, startDate, dueDate);
@@ -296,7 +299,7 @@ export default function ProductHubTimelinePage() {
       if (loc.isTopLevel) {
         const { error: updErr } = await (supabase as any)
           .from('business_requests')
-          .update({ end_date: dueDate, updated_at: new Date().toISOString() })
+          .update({ start_date: startDate, end_date: dueDate, updated_at: new Date().toISOString() })
           .eq('request_key', issueKey);
         if (updErr) throw updErr;
       } else {
@@ -308,7 +311,7 @@ export default function ProductHubTimelinePage() {
           fields: { ...(raw.fields ?? {}), customfield_10015: startDate, duedate: dueDate },
         };
         const { error: updErr } = await (supabase as any)
-          .from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+          .from('ph_issues').update({ raw_json: updated, due_date: dueDate }).eq('issue_key', issueKey);
         if (updErr) throw updErr;
       }
       invalidate();
@@ -321,7 +324,7 @@ export default function ProductHubTimelinePage() {
       if (loc.isTopLevel) {
         await (supabase as any)
           .from('business_requests')
-          .update({ end_date: null, updated_at: new Date().toISOString() })
+          .update({ start_date: null, end_date: null, updated_at: new Date().toISOString() })
           .eq('request_key', issueKey);
       } else {
         const { data: row } = await (supabase as any)
@@ -331,22 +334,24 @@ export default function ProductHubTimelinePage() {
           ...raw,
           fields: { ...(raw.fields ?? {}), customfield_10015: null, duedate: null },
         };
-        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+        await (supabase as any).from('ph_issues').update({ raw_json: updated, due_date: null }).eq('issue_key', issueKey);
       }
       invalidate();
     },
 
-    /* Remove only the start date (keep the due). Mirrors onRemoveDates but
-       writes only the start field. */
+    /* Remove only the start date (keep the due). */
     onRemoveStartDate: async (issueKey) => {
       const loc = findIssueLocation(issueKey);
       const due = loc?.issue.dueDate ?? null;
       patchDatesInCache(issueKey, null, due);
       if (!loc) { invalidate(); return; }
       if (loc.isTopLevel) {
-        /* BRs store only end_date — there's no start_date column. Removing
-           the start has no DB effect at the top level (the UI startDate is
-           always null for BRs). */
+        /* 2026-06-17: business_requests has a start_date column — clear it
+           explicitly so the bar collapses to a diamond. */
+        await (supabase as any)
+          .from('business_requests')
+          .update({ start_date: null, updated_at: new Date().toISOString() })
+          .eq('request_key', issueKey);
         invalidate();
         return;
       }
@@ -373,7 +378,7 @@ export default function ProductHubTimelinePage() {
           .from('ph_issues').select('raw_json').eq('issue_key', issueKey).maybeSingle();
         const raw = row?.raw_json ?? {};
         const updated = { ...raw, fields: { ...(raw.fields ?? {}), duedate: null } };
-        await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+        await (supabase as any).from('ph_issues').update({ raw_json: updated, due_date: null }).eq('issue_key', issueKey);
       }
       invalidate();
     },
