@@ -216,11 +216,19 @@ export function CatalystLoginPage() {
   };
 
   const handleForgotPassword = async (email: string): Promise<{ error?: any }> => {
-    const { error } = await supabase.auth.resetPasswordForEmail(
-      email.toLowerCase().trim(),
-      { redirectTo: `${window.location.origin}/auth/reset-password` }
-    );
-    return { error };
+    // Route through the branded Resend pipeline (send-password-reset edge function)
+    // instead of Supabase's default unbranded reset email (CAT-DEF-005).
+    const { data, error } = await supabase.functions.invoke('send-password-reset', {
+      body: {
+        email: email.toLowerCase().trim(),
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      },
+    });
+    // The function is anti-enumeration: it returns ok:true even for unknown emails.
+    // Surface only a genuine transport/server failure.
+    if (error) return { error };
+    if (data && data.ok === false) return { error: new Error(data.error || 'Failed to send reset email') };
+    return {};
   };
 
   const handleSignUp = async (

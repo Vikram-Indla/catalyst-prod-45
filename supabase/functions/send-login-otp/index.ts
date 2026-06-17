@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
 function otpEmailHtml(firstName: string, code: string) {
   return `<!DOCTYPE html>
 <html>
-  <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f5f7;margin:0;padding:24px;">
+  <body style="font-family:'Atlassian Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f5f7;margin:0;padding:24px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:8px;padding:40px 32px;">
       <tr><td>
         <p style="margin:0 0 4px;color:#6B778C;font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Catalyst</p>
@@ -103,7 +103,7 @@ function otpEmailHtml(firstName: string, code: string) {
           Hi ${firstName}, use this code to sign in to Catalyst:
         </p>
         <div style="background:#F4F5F7;border-radius:8px;padding:24px;text-align:center;margin-bottom:24px;">
-          <span style="font-size:40px;font-weight:700;color:#172B4D;letter-spacing:0.25em;font-family:monospace;">${code}</span>
+          <span style="font-size:40px;font-weight:700;color:#172B4D;letter-spacing:0.25em;font-family:'Atlassian Mono',ui-monospace,monospace;">${code}</span>
         </div>
         <p style="margin:0 0 8px;color:#6B778C;font-size:12px;line-height:18px;">
           This code expires in 10 minutes.

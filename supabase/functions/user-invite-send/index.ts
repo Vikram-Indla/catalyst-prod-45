@@ -119,7 +119,7 @@ function inviteHtml(inviterName: string, acceptUrl: string, expiresAt: string) {
   const expiry = new Date(expiresAt).toUTCString();
   return `<!DOCTYPE html>
 <html>
-  <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f4f5f7; margin:0; padding:24px;">
+  <body style="font-family: 'Atlassian Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f4f5f7; margin:0; padding:24px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px; margin:0 auto; background:#ffffff; border-radius:8px; padding:32px;">
       <tr><td>
         <h2 style="margin:0 0 8px; color:#172B4D; font-size:14px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Catalyst</h2>
