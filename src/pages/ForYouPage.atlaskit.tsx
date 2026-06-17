@@ -41,6 +41,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { useAuth } from '@/lib/auth';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
+import { useAllUserProjects } from '@/hooks/home/useAllUserProjects';
 import RecommendedProjectsStrip from '@/components/for-you/atlaskit/RecommendedProjectsStrip';
 import ForYouTabs, { FOR_YOU_TAB_ORDER, type ForYouTabDefinition } from '@/components/for-you/atlaskit/ForYouTabs';
 import RecommendedPanel from '@/components/for-you/atlaskit/RecommendedPanel';
@@ -126,8 +127,12 @@ export default function ForYouPageAtlaskit() {
     trackView,
     recommendedMentions,
     recommendedComments,
-    allUserProjects,
   } = data;
+
+  // allUserProjects sourced from a dedicated lightweight query (not the heavy
+  // for-you-data mega query) so the Recommended strip's project + product
+  // cards resolve in parallel and paint together — no two-wave stagger.
+  const { allUserProjects } = useAllUserProjects(authUser?.id);
 
   const { tab: urlTab } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
