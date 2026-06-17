@@ -11,7 +11,9 @@ import type { KanbanTask } from './types/kanban';
 import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
 import TasksTaskListView from './views/TasksTaskListView';
-import TasksBoardView from './views/TasksBoardView';
+/* TasksBoardView (PragmaticBoard adapter) replaced 2026-06-17 by
+   TasksBoardCanonical (features/kanban-board KanbanPage mode='tasks'). */
+import TasksBoardCanonical from './views/TasksBoardCanonical';
 import TasksTimelineView from './views/TasksTimelineView';
 import TasksOverviewView from './views/TasksOverviewView';
 // Legacy PlannerTimeline kept in the tree but no longer mounted from this route.
@@ -432,11 +434,14 @@ export function PlannerPage() {
         // but unmounted from this route.
         return <TasksOverviewView />;
       case 'boards':
-        // Phase 2 (2026-06-16): canonical PragmaticBoard + KanbanToolbar.
-        // The legacy PlannerBoardsPage (custom BoardKanban) is kept in the
-        // tree but unmounted from this route — see TasksBoardView for the
-        // canonical mount.
-        return <TasksBoardView />;
+        /* 2026-06-17: switched to TasksBoardCanonical which mounts the
+           features/kanban-board KanbanPage (mode='tasks') — the SAME
+           component used by /project-hub/:key/boards/:boardId,
+           /product-hub/:key/boards/:boardId, and /incident-hub/board.
+           Per CLAUDE.md "ADOPT CANONICAL COMPONENTS". The legacy
+           TasksBoardView (PragmaticBoard adapter) is kept in the tree
+           but no longer mounted from this route. */
+        return <TasksBoardCanonical />;
       case 'task-list':
         return <TasksTaskListView />;
       case 'timeline':

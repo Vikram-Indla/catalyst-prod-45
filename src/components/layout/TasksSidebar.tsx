@@ -7,12 +7,15 @@
 
 import React from 'react';
 import {
-  LayoutDashboard,
-  LayoutGrid,
   GanttChartSquare,
   Settings,
   List,
 } from '@/lib/atlaskit-icons';
+/* 2026-06-17: Dashboard + Board nav icons now use the canonical
+   NavDashboardIcon / NavKanbanIcon from @/lib/nav-icons — same icons the
+   project / product / incident hub sidebars use, so the glyph is identical
+   across every hub's nav. */
+import { NavDashboardIcon, NavKanbanIcon } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { ContextSwitcher } from './ContextSwitcher';
 
@@ -36,8 +39,8 @@ const taskHubSidebarConfig: SidebarConfig = {
     {
       title: '',
       items: [
-        { id: 'dashboard', title: 'Dashboard', path: '/tasks/overview', icon: LayoutDashboard, exact: true },
-        { id: 'boards', title: 'Board', path: '/tasks/board', icon: LayoutGrid, exact: true },
+        { id: 'dashboard', title: 'Dashboard', path: '/tasks/overview', icon: NavDashboardIcon, exact: true },
+        { id: 'boards', title: 'Board', path: '/tasks/board', icon: NavKanbanIcon, exact: true },
         { id: 'task-list', title: 'Task List', path: '/tasks/list', icon: List, exact: true },
         { id: 'timeline', title: 'Timeline', path: '/tasks/timeline', icon: GanttChartSquare, exact: true },
       ],
