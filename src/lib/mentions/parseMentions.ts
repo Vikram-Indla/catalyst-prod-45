@@ -28,7 +28,10 @@ export type MentionPart =
 
 const BOUNDARY_BEFORE = /\s|[(\[<,;:"']/;
 const BOUNDARY_AFTER = /[\s.,;:!?)\]>'"]/;
-const FALLBACK_NAME = /^@[A-Za-z][A-Za-z'.-]*(?:\s+[A-Za-z][A-Za-z'.-]*){0,2}/;
+// Follow-on words must be space/tab-separated (NEVER a newline — a mention
+// must not cross a line break) AND start uppercase, so genuine name parts
+// chip while trailing lowercase prose ("@Name kindly …") stays plain text.
+const FALLBACK_NAME = /^@[A-Za-z][A-Za-z'.-]*(?:[ \t]+[A-Z][A-Za-z'.-]*){0,2}/;
 
 /**
  * `roster` is an array of `{ name, userId }` entries. The `name` is the
