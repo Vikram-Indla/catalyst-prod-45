@@ -15,11 +15,14 @@
  */
 import React from 'react';
 import { token } from '@atlaskit/tokens';
-import ForYouRow from './ForYouRow';
-import { GroupHeading, groupByRecency } from './helpers';
+import { useNavigate } from 'react-router-dom';
 import { StarredEmptyState } from './StarredEmptyState';
-import type { WorkItem, TabType } from '@/hooks/useForYouData';
+import { StarredHubList } from './StarredHubList';
 import { CatyStarredDigest } from './CatyStarredDigest';
+import { useStarredHub } from '@/hooks/home/useStarredHub';
+import { useToggleStar } from '@/hooks/home/useStarredItems';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import type { WorkItem, TabType } from '@/hooks/useForYouData';
 
 interface StarredPanelProps {
   items: WorkItem[];
@@ -91,10 +94,14 @@ function StarredPanelSkeleton() {
   );
 }
 
-export default function StarredPanel({ items, isLoading, onSelect, onToggleStar, onSwitchTab, onBrowseFilters }: StarredPanelProps) {
+export default function StarredPanel({ onSwitchTab, onBrowseFilters }: StarredPanelProps) {
+  const navigate = useNavigate();
+  const toggleStar = useToggleStar();
+  const { data: rows = [], isLoading } = useStarredHub();
+
   if (isLoading) return <StarredPanelSkeleton />;
 
-  if (items.length === 0) {
+  if (rows.length === 0) {
     // Teaching empty state bound to the unified star model — replaces the
     // generic single-CTA placeholder (design-critique 2026-06-18).
     return (
@@ -106,28 +113,27 @@ export default function StarredPanel({ items, isLoading, onSelect, onToggleStar,
     );
   }
 
-  // Recency grouping — mirrors RecommendedPanel's fallback so the Starred
-  // tab scales past a handful of items without becoming an unscannable
-  // dump. Order matches the rest of the For You strip exactly.
-  const groups = groupByRecency(items, ['TODAY', 'YESTERDAY', 'LAST_WEEK', 'LAST_MONTH', 'EARLIER']);
+  // Open: work items via openDetail(issue_key); surfaces via stored route.
+  // No route + non-issue → no-op (never navigate somewhere guessed).
+  const handleOpen = (row: typeof rows[number]) => {
+    if (row.category === 'work_item') {
+      useGlobalSearchStore.getState().openDetail({ id: row.id });
+    } else if (row.route) {
+      navigate(row.route);
+    }
+  };
+
+  const handleUnstar = (row: typeof rows[number]) => {
+    toggleStar.mutate({ itemId: row.id, itemType: row.type, isCurrentlyStarred: true });
+  };
+
+  // Work-item keys feed the Caty digest (it summarises issues only).
+  const workItemKeys = rows.filter(r => r.category === 'work_item').map(r => r.id);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', paddingBlockStart: 8 }}>
-      <CatyStarredDigest starredKeys={items.map(i => i.jiraKey || i.id)} />
-      {groups.map(({ bucket, items: groupItems }) => (
-        <div key={bucket}>
-          <GroupHeading bucket={bucket} />
-          {groupItems.map(item => (
-            <ForYouRow
-              key={item.id}
-              item={item}
-              alwaysShowStar
-              onSelect={onSelect}
-              onToggleStar={onToggleStar}
-            />
-          ))}
-        </div>
-      ))}
+      {workItemKeys.length > 0 && <CatyStarredDigest starredKeys={workItemKeys} />}
+      <StarredHubList rows={rows} onOpenRow={handleOpen} onUnstar={handleUnstar} />
     </div>
   );
 }
