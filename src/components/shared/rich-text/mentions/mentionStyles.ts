@@ -44,20 +44,15 @@ export function injectMentionStyles(): void {
        overflows our padding box. */
     span[data-mention-id],
     span.atlaskit-mention[data-id] {
-      display: inline-flex !important;
-      align-items: center !important;
+      display: inline !important;
       box-sizing: border-box !important;
-      height: 22px !important;
-      border-radius: 9999px !important;
-      padding-top: 0 !important;
-      padding-right: 10px !important;
-      padding-bottom: 0 !important;
-      padding-left: 10px !important;
+      border-radius: 3px !important;
+      padding: 0 4px !important;
       margin: 0 !important;
       font-size: inherit !important;
       font-weight: 500 !important;
-      line-height: 1 !important;
-      vertical-align: middle !important;
+      line-height: inherit !important;
+      vertical-align: baseline !important;
       text-decoration: none !important;
       border: none !important;
       box-shadow: none !important;
@@ -106,11 +101,13 @@ export function injectMentionStyles(): void {
       content: "@";
     }
 
-    /* ── OTHER-user — gray background, subtle text ─────────────────── */
+    /* ── OTHER-user — Atlassian inline mention: link-blue text on a
+       faint neutral tint (NOT a solid grey pill). Matches @atlaskit/mention
+       read-mode rendering. */
     span[data-mention-id]:not([data-mention-self="true"]),
     span.atlaskit-mention[data-id]:not([data-mention-self="true"]) {
-      background: var(--ds-background-neutral, #F1F2F4) !important;
-      color: var(--ds-text-subtle, #44546F) !important;
+      background: var(--ds-background-neutral-subtle, #F7F8F9) !important;
+      color: var(--ds-link, #0052CC) !important;
     }
 
     /* ── CURRENT-user — bold brand blue + white text ───────────────── */
