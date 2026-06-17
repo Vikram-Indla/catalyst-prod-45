@@ -1,9 +1,10 @@
 import React, { useCallback, useRef, useState } from 'react';
-import Spinner from '@atlaskit/spinner';
 import Tooltip from '@atlaskit/tooltip';
 import EditorUndoIcon from '@atlaskit/icon/glyph/editor/undo';
 import { useTranslation } from '@/hooks/useTranslation';
 import { containsArabic } from '@/lib/detectArabic';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
+import './title-translate.css';
 
 interface Props {
   issueKey: string | null;
@@ -70,7 +71,7 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
             color: 'var(--ds-text-information, #0747A6)',
           }}
         >
-          <Spinner size="xsmall" />
+          <span className="ttw-caty-pulse"><CatyPulseIcon size={14} /></span>
           <span>Translating…</span>
         </span>
       ) : showing === 'translated' ? (
@@ -131,7 +132,7 @@ export function BizArabicTranslateLink({ issueKey, original, onChange }: Props) 
               transition: 'opacity 0.12s ease',
             }}
           >
-            <span style={{ fontSize: 13, filter: 'grayscale(1)', opacity: 0.75 }} aria-hidden="true">🌐</span>
+            <CatyPulseIcon size={14} />
           </button>
         </Tooltip>
       )}
