@@ -45,7 +45,7 @@ import React, { memo, useCallback, useState, useRef, useEffect, useLayoutEffect,
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import Lozenge from '@atlaskit/lozenge';
+import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 import Tooltip from '@atlaskit/tooltip';
 import { Star, StarOff } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -281,12 +281,10 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               Jira-assigned variant moves the lozenge to the trailing slot
               (right-edge, marginLeft:auto) per /jira/for-you DOM. */}
           {!isJiraAssigned && item.status && (
-            // data-cp-lozenge-jira-parity: activates the index.css override that
-            // strips text-transform:uppercase + letter-spacing from Atlaskit's
-            // inner label span (jira-compare 2026-04-28 lesson).
-            <span data-cp-lozenge-jira-parity>
-              <Lozenge appearance={statusToAppearance(item.status, item.statusCategory)}>{item.status}</Lozenge>
-            </span>
+            // Canonical status pill (statusPalette.ts) — was @atlaskit/lozenge
+            // which rendered a pale ADS green diverging from #94C748. Unified
+            // 2026-06-17 so both For You variants share one canonical pill.
+            <JiraForYouLozenge status={item.status} statusCategory={item.statusCategory} />
           )}
           {!isJiraAssigned && (
             <span
@@ -518,44 +516,28 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
 export default memo(ForYouRowImpl);
 
 // ─── Jira For You Lozenge ────────────────────────────────────────────────────
-// 2026-05-17 — Catalyst's Atlaskit Lozenge v11 renders `appearance="default"`
-// non-bold as `rgba(5,21,36,0.06)` (6% translucent dark overlay) with
-// `color.text.subtle` (medium grey) text. That looks washed out — user
-// flagged "very light, no contrast".
-//
-// LIVE Jira DOM probe of /jira/for-you (2026-05-17) shows Jira uses a newer
-// theme:
-//   • Default (To Do family):  bg `rgb(221, 222, 225)` SOLID grey, dark text
-//   • In Progress family:      bg `rgb(143, 184, 246)` SOLID light blue, dark text
-//   • Done family:             bg `rgb(186, 240, 199)` SOLID light green, dark text
-//   • Inner text: `653 11px/16px Atlassian Sans` UPPERCASE, ls 0.165px
-//
-// We inline-style the exact two-span structure Jira uses so the contrast
-// matches pixel-for-pixel, bypassing Atlaskit v11's translucent default.
+// Canonical inline status pill for For You rows. Backgrounds come from the
+// shared canonical palette (statusPalette.ts) so the done-green matches the
+// #94C748 used by Recommended/detail/table surfaces. Inner text is Jira's
+// `653 11px/16px Atlassian Sans` UPPERCASE, ls 0.165px two-span structure.
 function JiraForYouLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
   const ap = statusToAppearance(status, statusCategory);
-  const bg = ap === 'inprogress'
-    ? 'rgb(143, 184, 246)'
-    : ap === 'success'
-    ? 'rgb(186, 240, 199)'
-    : ap === 'moved'
-    ? 'rgb(254, 222, 164)' // amber for moved/on-hold
-    : ap === 'removed'
-    ? 'rgb(255, 198, 188)' // soft red for blocked/removed
-    : 'rgb(221, 222, 225)'; // default — Jira's actual SOLID grey
+  // Canonical palette — single source of truth (statusPalette.ts). The local
+  // pale done-green drifted from the canonical #94C748 that Recommended/detail/
+  // table surfaces use; unified 2026-06-17.
   return (
     <span style={{
       flexShrink: 0,
       display: 'inline-flex',
       alignItems: 'center',
-      backgroundColor: bg,
+      backgroundColor: statusBg(ap),
       padding: '0px 4px',
       borderRadius: 3,
       height: 20,
     }}>
       <span style={{
         font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: 'rgb(41, 42, 46)',
+        color: statusFg(),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         padding: '2px',

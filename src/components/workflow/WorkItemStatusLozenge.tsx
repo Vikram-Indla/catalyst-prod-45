@@ -6,16 +6,8 @@
  * No legacy WorkflowProvider dependency.
  */
 import React from 'react';
-import Lozenge from '@atlaskit/lozenge';
 import type { WorkItem } from '../../types/workItem.types';
-
-type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'new' | 'moved';
-
-function categoryToAppearance(statusCategory: string | null | undefined): LozengeAppearance {
-  if (statusCategory === 'in_progress') return 'inprogress';
-  if (statusCategory === 'done') return 'success';
-  return 'default';
-}
+import { statusBg, statusFg, categoryToAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 export interface WorkItemStatusLozengeProps {
   item: WorkItem;
@@ -53,17 +45,32 @@ export function StatusLozengeByType({
 }: StatusLozengeByTypeProps) {
   const displayName = statusName || '—';
   const appearance = categoryToAppearance(statusCategory);
-  const isBoldEffective = variant === 'bold' && appearance !== 'default';
 
+  // Canonical status pill (statusPalette.ts). Was @atlaskit/lozenge whose bold
+  // success rendered the dark #1F845A/white that diverged from the canonical
+  // #94C748 pastel; unified 2026-06-17 with all other work-item status pills.
   return (
-    <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-      <Lozenge
-        appearance={appearance}
-        isBold={isBoldEffective}
-        maxWidth={maxWidth}
-      >
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      backgroundColor: statusBg(appearance),
+      borderRadius: 3,
+      padding: '0 6px',
+      height: 20,
+      maxWidth: maxWidth ?? undefined,
+    }}>
+      <span style={{
+        font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+        color: statusFg(),
+        textTransform: 'uppercase',
+        letterSpacing: '0.165px',
+        padding: '2px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }}>
         {displayName}
-      </Lozenge>
+      </span>
     </span>
   );
 }

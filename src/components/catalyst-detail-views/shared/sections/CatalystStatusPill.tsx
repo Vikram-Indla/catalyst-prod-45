@@ -25,6 +25,7 @@ import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozeng
 import { CatalystWorkflowModal } from '../workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
+import { statusBg, statusFg } from './statusPalette';
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * SECTION 1: STYLE INJECTION (module-level, runs once)
@@ -99,26 +100,9 @@ if (typeof document !== 'undefined') {
 
 type Appearance = 'success' | 'inprogress' | 'moved' | 'removed' | 'new' | 'default';
 
-/** Always dark — Jira NIN DOM probe rgb(41,42,46). */
-const STATUS_TEXT = '#292A2E';
-
-/** Jira-probed medium-pastel backgrounds per status category. */
-const STATUS_BG: Record<string, string> = {
-  success:    '#94C748',  // done — medium lime green
-  inprogress: '#8FB8F6',  // in progress — medium periwinkle blue
-  moved:      '#F3D664',  // moved/warning — medium warm yellow
-  new:        '#B8ACF6',  // new/discovery — medium lavender
-  removed:    '#FD9891',  // cancelled/rejected — medium coral red
-  default:    '#DDDEE1',  // todo/backlog — light grey
-};
-
-function getStatusBg(appearance: string): string {
-  return STATUS_BG[appearance] ?? STATUS_BG['default'];
-}
-
-function getStatusFg(_appearance: string): string {
-  return STATUS_TEXT;
-}
+// Canonical palette — single source of truth in statusPalette.ts.
+const getStatusBg = statusBg;
+const getStatusFg = statusFg;
 
 /**
  * Maps a workflow group's category to an appearance string.

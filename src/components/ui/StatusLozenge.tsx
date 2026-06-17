@@ -1,10 +1,13 @@
 import React from "react";
 import { toStatusCategory } from "@/components/ads";
+import { statusBg, statusFg } from "@/components/catalyst-detail-views/shared/sections/statusPalette";
 
-const PILL_BG: Record<string, string> = {
-  todo:       'rgb(221, 222, 225)',
-  inProgress: 'rgb(143, 184, 246)',
-  done:       'rgb(179, 223, 114)',
+// Canonical palette (statusPalette.ts). Local pale done-green drifted from
+// canonical #94C748 — unified 2026-06-17.
+const CATEGORY_TO_APPEARANCE: Record<string, string> = {
+  todo:       'default',
+  inProgress: 'inprogress',
+  done:       'success',
 };
 
 function getDisplayName(status: string): string {
@@ -34,7 +37,7 @@ function getDisplayName(status: string): string {
 export function StatusLozenge({ status }: { status: string }) {
   const category = toStatusCategory(status);
   const label = getDisplayName(status);
-  const bg = PILL_BG[category] ?? PILL_BG.todo;
+  const bg = statusBg(CATEGORY_TO_APPEARANCE[category] ?? 'default');
   return (
     <span style={{
       display: 'inline-flex',
@@ -48,7 +51,7 @@ export function StatusLozenge({ status }: { status: string }) {
         fontSize: '11px',
         fontWeight: 700,
         lineHeight: '20px',
-        color: 'rgb(41, 42, 46)',
+        color: statusFg(),
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
         overflow: 'hidden',

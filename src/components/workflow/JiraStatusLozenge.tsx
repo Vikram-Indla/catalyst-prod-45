@@ -6,8 +6,8 @@
  * tall pill with 14px text, colors per @atlaskit/tokens.
  */
 import React from 'react';
-import Lozenge from '@atlaskit/lozenge';
 import type { StatusCategory, WorkflowState } from '../../lib/workflows/types';
+import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 const APPEARANCE_MAP: Record<StatusCategory, 'default' | 'inprogress' | 'success' | 'removed' | 'new' | 'moved'> = {
   default:    'default',
@@ -35,15 +35,31 @@ export function JiraStatusLozenge({
   variant = 'bold',
   maxWidth,
 }: JiraStatusLozengeProps) {
+  // Canonical status pill (statusPalette.ts). Was @atlaskit/lozenge whose bold
+  // success rendered the dark #1F845A/white; unified 2026-06-17 to the canonical
+  // #94C748 pastel shared by all work-item status pills.
   return (
-    <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-      <Lozenge
-        appearance={APPEARANCE_MAP[category]}
-        isBold={variant === 'bold'}
-        maxWidth={maxWidth}
-      >
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      backgroundColor: statusBg(APPEARANCE_MAP[category]),
+      borderRadius: 3,
+      padding: '0 6px',
+      height: 20,
+      maxWidth: maxWidth ?? undefined,
+    }}>
+      <span style={{
+        font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
+        color: statusFg(),
+        textTransform: 'uppercase',
+        letterSpacing: '0.165px',
+        padding: '2px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }}>
         {name}
-      </Lozenge>
+      </span>
     </span>
   );
 }
