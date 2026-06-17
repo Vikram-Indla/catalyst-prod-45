@@ -1178,6 +1178,120 @@ function TasksInlineCreateRow({
   );
 }
 
+/** Export the given task rows to a CSV download (current filter applied). */
+function exportRowsToCsv(rows: PlannerTask[]) {
+  const headers = ['Key', 'Title', 'Status', 'Assignee', 'Priority', 'Workstream', 'Due date'];
+  const esc = (v: unknown) => {
+    const s = v == null ? '' : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const lines = [headers.join(',')];
+  for (const r of rows) {
+    lines.push([r.key, r.title, r.status, r.assigneeName ?? '', r.priority, r.teamName ?? '', r.dueDate ?? ''].map(esc).join(','));
+  }
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tasks-${rows.length}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * TasksIconMenu — generic icon-trigger + portal dropdown for the toolbar's
+ * View-options and More-actions buttons. Uses ReactDOM.createPortal to
+ * <body> (same reason as the group/filter controls: @atlaskit/dropdown-menu
+ * renders an empty/origin portal inside this overflow:hidden surface).
+ */
+interface IconMenuItem {
+  id: string;
+  label: string;
+  onClick: () => void;
+  selected?: boolean;
+}
+function TasksIconMenu({
+  icon,
+  label,
+  items,
+}: {
+  icon: React.ComponentType<{ label: string }>;
+  label: string;
+  items: IconMenuItem[];
+}) {
+  const [open, setOpen] = useState(false);
+  const [anchor, setAnchor] = useState<{ top: number; right: number } | null>(null);
+  const wrapRef = useRef<HTMLSpanElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!open || !wrapRef.current) return;
+    const r = wrapRef.current.getBoundingClientRect();
+    setAnchor({ top: r.bottom + 4, right: window.innerWidth - r.right });
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (wrapRef.current?.contains(t) || menuRef.current?.contains(t)) return;
+      setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setOpen(false); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [open]);
+
+  return (
+    <span ref={wrapRef} style={{ display: 'inline-flex' }}>
+      <IconButton appearance="subtle" icon={icon} label={label} onClick={() => setOpen((v) => !v)} />
+      {open && anchor && ReactDOM.createPortal(
+        <div
+          ref={menuRef}
+          role="menu"
+          aria-label={label}
+          style={{
+            position: 'fixed', top: anchor.top, right: anchor.right,
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6,
+            boxShadow: '0 8px 28px rgba(9,30,66,0.25)', padding: '4px 0',
+            minWidth: 180, zIndex: 9999,
+          }}
+        >
+          {items.map((it) => (
+            <button
+              key={it.id}
+              role="menuitem"
+              type="button"
+              onClick={() => { it.onClick(); setOpen(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                padding: '6px 12px', border: 'none', background: 'none',
+                font: 'inherit', fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                cursor: 'pointer', textAlign: 'left',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+            >
+              <span style={{ width: 14, display: 'inline-block', color: 'var(--ds-text-selected, #0C66E4)' }}>{it.selected ? '✓' : ''}</span>
+              {it.label}
+            </button>
+          ))}
+        </div>,
+        document.body,
+      )}
+    </span>
+  );
+}
+
 export default function TasksTaskListView() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -1389,6 +1503,7 @@ export default function TasksTaskListView() {
   // ── Toolbar state ────────────────────────────────────────────────────────
   const [search, setSearch] = useState('');
   const [groupBy, setGroupBy] = useState<TasksGroupBy>('none');
+  const [density, setDensity] = useState<'comfortable' | 'compact'>('compact');
   // 2026-06-17 Filters: canonical JiraFilterValue (REUSE FIRST). Drives the
   // JiraFilterAtlaskit drawer below.
   const [filters, setFilters] = useState<JiraFilterValue>(emptyFilterValue);
@@ -1708,22 +1823,24 @@ export default function TasksTaskListView() {
               (BacklogPage.atlaskit.tsx:5285). */}
           <TasksGroupByControl value={groupBy} onChange={setGroupBy} />
 
-          {/* View options (sort/density) — PLACEHOLDER. Matches Backlog's
-              `toolbarViewOptionsButton` icon (AkFilterIcon). */}
-          <IconButton
-            appearance="subtle"
+          {/* View options — row density (Comfortable / Compact). */}
+          <TasksIconMenu
             icon={AkFilterIcon}
             label="View options"
-            onClick={() => { /* TODO future task */ }}
+            items={[
+              { id: 'comfortable', label: 'Comfortable', selected: density === 'comfortable', onClick: () => setDensity('comfortable') },
+              { id: 'compact', label: 'Compact', selected: density === 'compact', onClick: () => setDensity('compact') },
+            ]}
           />
 
-          {/* More actions ⋯ — PLACEHOLDER (toolbar-level). The row-level ⋯
-              menu is wired via the __actions column. */}
-          <IconButton
-            appearance="subtle"
+          {/* More actions — export the current (filtered) rows + refresh. */}
+          <TasksIconMenu
             icon={AkMoreIcon}
             label="More actions"
-            onClick={() => { /* TODO future task */ }}
+            items={[
+              { id: 'export', label: 'Export to CSV', onClick: () => exportRowsToCsv(filteredRows) },
+              { id: 'refresh', label: 'Refresh', onClick: () => { void queryClient.invalidateQueries({ queryKey: ['planner-tasks'] }); } },
+            ]}
           />
 
           {/* Item count — right-aligned. Matches Backlog L3628-3640. */}
@@ -1789,7 +1906,7 @@ export default function TasksTaskListView() {
               // 6px y-padding (matches Backlog. JiraTable defaults to
               // 'compact' but pass explicitly to make the intent visible
               // and prevent future config drift).
-              density="compact"
+              density={density}
               totalRowCount={rows.length}
               // 2026-06-16 Fix #9: footer with + Create button (left),
               // "N of M items" + refresh (center). Mirrors BacklogPage's
