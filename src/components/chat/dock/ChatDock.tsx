@@ -261,7 +261,7 @@ export function ChatDock({
   };
   const hideHideX = () => {
     if (hideHoverTimer.current) clearTimeout(hideHoverTimer.current);
-    hideHoverTimer.current = setTimeout(() => setFabHover(false), 180);
+    hideHoverTimer.current = setTimeout(() => setFabHover(false), 320);
   };
 
   // One-time gesture when a NEW unseen event arrives, then silent (calm tech, no nag).
@@ -356,8 +356,11 @@ export function ChatDock({
               onBlur={hideHideX}
               style={{
                 position: 'fixed',
-                top: pos.y - 6,
-                left: pos.x + FAB_SIZE + 6,
+                // Overlap the cat's top-right corner (no dead-zone gap) so the
+                // cursor never crosses empty space cat→X and the reveal can't
+                // time out mid-travel (Fitts' law — 2026-06-17).
+                top: pos.y - 2,
+                left: pos.x + FAB_SIZE - 18,
                 width: '24px',
                 height: '24px',
                 borderRadius: '50%',
