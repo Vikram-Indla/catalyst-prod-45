@@ -114,7 +114,17 @@ export const ColumnBody = forwardRef<HTMLDivElement, ColumnBodyProps>(
     }, [virtualize, virtualizer]);
 
     return (
-      <div style={{ width: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column', maxHeight: '100%', minHeight: fill ? 0 : 40 }}>
+      <div style={{
+        width: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column',
+        maxHeight: '100%',
+        /* 2026-06-16: flex:1 + minHeight:0 in flat mode so this wrapper
+           expands to fill the column container. Without it the wrapper
+           is content-sized, kb-column-body's flex:1 has nothing to expand
+           into, and the column's empty space below the cards is part of
+           the column container — NOT the drop target. Drops into that
+           empty space miss → dropTargets:0 → snap back. */
+        ...(fill ? { flex: 1, minHeight: 0 } : { minHeight: 40 }),
+      }}>
         <div
           ref={setRef}
           role="list"

@@ -6,13 +6,19 @@
  */
 
 import React from 'react';
+import { Settings } from '@/lib/atlaskit-icons';
+/* 2026-06-17: Dashboard + Board + Task List nav icons now use the
+   canonical NavDashboardIcon / NavKanbanIcon / NavBacklogIcon from
+   @/lib/nav-icons — same icons the project / product / incident hub
+   sidebars use, so the glyph is identical across every hub's nav. */
 import {
-  LayoutDashboard,
-  LayoutGrid,
-  GanttChartSquare,
-  Settings,
-  List,
-} from '@/lib/atlaskit-icons';
+  NavDashboardIcon,
+  NavKanbanIcon,
+  NavBacklogIcon,
+  NavWorkIcon,
+  NavFiltersIcon,
+  NavTimelineIcon,
+} from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { ContextSwitcher } from './ContextSwitcher';
 
@@ -36,10 +42,23 @@ const taskHubSidebarConfig: SidebarConfig = {
     {
       title: '',
       items: [
-        { id: 'dashboard', title: 'Dashboard', path: '/tasks/overview', icon: LayoutDashboard, exact: true },
-        { id: 'boards', title: 'Board', path: '/tasks/board', icon: LayoutGrid, exact: true },
-        { id: 'task-list', title: 'Task List', path: '/tasks/list', icon: List, exact: true },
-        { id: 'timeline', title: 'Timeline', path: '/tasks/timeline', icon: GanttChartSquare, exact: true },
+        { id: 'dashboard', title: 'Dashboard', path: '/tasks/overview', icon: NavDashboardIcon, exact: true },
+        { id: 'boards', title: 'Board', path: '/tasks/board', icon: NavKanbanIcon, exact: true },
+        { id: 'task-list', title: 'Task List', path: '/tasks/list', icon: NavBacklogIcon, exact: true },
+        /* 2026-06-17: Work — canonical ProjectAllWorkView with tasksItems.
+           Same UI shell as /project-hub/:key/allwork + /product-hub/:key/allwork
+           + /incident-hub/work. */
+        { id: 'work', title: 'Work', path: '/tasks/work', icon: NavWorkIcon, exact: false },
+        /* 2026-06-17: Filters — canonical FiltersListPage hubType='tasks'.
+           Same UI shell as other hubs' filter directories. Path
+           /tasks/filters. exact: false so /tasks/filters/* (create, :id)
+           also keeps this nav item highlighted. */
+        { id: 'filters', title: 'Filters', path: '/tasks/filters', icon: NavFiltersIcon, exact: false },
+        /* 2026-06-17: Timeline — canonical TimelineView mounted via
+           TasksTimelineView. Same Gantt shell as /project-hub/:key/timeline,
+           /product-hub/:key/timeline, /incident-hub/timeline. Uses
+           NavTimelineIcon — the icon every other hub's Timeline tab uses. */
+        { id: 'timeline', title: 'Timeline', path: '/tasks/timeline', icon: NavTimelineIcon, exact: false },
       ],
     },
   ],

@@ -303,6 +303,200 @@ function jqlToFilterState(jql: string): Partial<FilterState> {
 // the Work type chip options so FilterPreviewPage shows the same set as AllWork.
 const TOOLBAR_FACET_TYPES = ['Story', 'Backend', 'Frontend', 'Sub-task', 'Epic', 'Feature'];
 
+/* 2026-06-16 — incident-mode facet items.
+   Same SELECT/shape as useProjectFacetItems but filtered by
+   issue_type='Production Incident' across ALL projects (incidents are
+   cross-project in Catalyst). Enabled flag is passed by the caller. */
+function useIncidentFacetItems(enabled: boolean): WorkItem[] {
+  const { data = [] } = useQuery<WorkItem[]>({
+    queryKey: ['filter-preview-incident-facet-items'],
+    enabled,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data: rows } = await supabase
+        .from('ph_issues')
+        .select(
+          'issue_key, project_key, issue_type, status, status_category, assignee_account_id, assignee_display_name, reporter_account_id, reporter_display_name, priority, labels, sprint_release, sprint_name, resolution, severity, parent_key, parent_summary'
+        )
+        .eq('issue_type', 'Production Incident')
+        .is('jira_removed_at', null)
+        .is('archived_at', null)
+        .is('deleted_at', null)
+        .limit(5000);
+      if (!rows) return [];
+      return (rows as any[]).map(
+        (r: any): WorkItem =>
+          ({
+            id: r.issue_key,
+            projectId: r.project_key ?? 'INCIDENTS',
+            parentId: null,
+            parentKey: r.parent_key ?? null,
+            parentSummary: r.parent_summary ?? null,
+            jiraKey: r.issue_key,
+            type: 'task' as any,
+            rawType: r.issue_type ?? null,
+            summary: '',
+            status: 'todo' as any,
+            statusName: r.status ?? '',
+            statusCategory: (r.status_category ?? 'todo') as any,
+            assigneeId: r.assignee_account_id ?? null,
+            assignee: r.assignee_display_name
+              ? { id: r.assignee_account_id ?? r.assignee_display_name, name: r.assignee_display_name, avatarUrl: null, initials: '', color: '' }
+              : undefined,
+            reporterId: null,
+            reporter: r.reporter_display_name
+              ? { id: r.reporter_account_id ?? '', name: r.reporter_display_name }
+              : undefined,
+            priority: (r.priority ?? 'medium') as any,
+            fixVersion: null,
+            sprintRelease: Array.isArray(r.sprint_release) && r.sprint_release.length > 0 ? r.sprint_release[0] : null,
+            sprintName: r.sprint_name ?? null,
+            labels: r.labels ?? [],
+            resolution: r.resolution ?? null,
+            severity: r.severity ?? null,
+            commentsCount: 0,
+            childCount: 0,
+            createdAt: '',
+            updatedAt: '',
+            createdBy: null,
+          } as any)
+      );
+    },
+  });
+  return data;
+}
+
+/* 2026-06-17 — tasks-mode helpers.
+   Maps a row from the `tasks` table → JqlResultRow so the canonical results
+   table renders unchanged. Parent / sprint fields are null (tasks don't carry
+   these per CLAUDE.md zero-assumption — render NOTHING, never lie). */
+function mapTaskRowToJqlRow(r: any): JqlResultRow {
+  return {
+    id: r.id,
+    key: r.task_key ?? r.key ?? r.id,
+    summary: r.title ?? '',
+    issueType: 'Task',
+    status: r.status?.name ?? '',
+    statusCategory: r.status?.slug ?? 'todo',
+    projectKey: r.workstream?.key_prefix ?? 'TASKS',
+    assigneeName: r.assignee?.full_name ?? null,
+    priority: r.priority ?? null,
+    created: r.created_at ?? null,
+    updated: r.updated_at ?? null,
+    dueDate: r.due_date ?? null,
+    parentKey: null,
+    parentSummary: null,
+    sprintName: null,
+    isFlagged: null,
+    flagReason: null,
+    ...({
+      sprintRelease: [],
+      labels: [],
+      commentCount: 0,
+      reporterName: null,
+    } as any),
+  };
+}
+
+/* Facet items for the chip dropdowns. Returns the `tasks` table mapped to
+ *  the WorkItem shape so the shared `distinctOptions` helper (which only
+ *  reads `assignee.name`, `priority`, `statusName`, `rawType`) produces the
+ *  same chip options the project / product / incident hubs do. */
+function useTasksFacetItems(enabled: boolean): WorkItem[] {
+  const { data = [] } = useQuery<WorkItem[]>({
+    queryKey: ['filter-preview-tasks-facet-items'],
+    enabled,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data: rows } = await (supabase as any)
+        .from('tasks')
+        .select(
+          '*, status:task_statuses(id, name, slug), assignee:profiles!tasks_assignee_id_fkey(id, full_name, avatar_url), workstream:task_workstreams(id, name, key_prefix)',
+        )
+        .is('deleted_at', null)
+        .limit(2000);
+      if (!rows) return [];
+      return (rows as any[]).map(
+        (r: any): WorkItem =>
+          ({
+            id: r.task_key ?? r.key ?? r.id,
+            projectId: r.workstream?.key_prefix ?? 'TASKS',
+            parentId: null,
+            parentKey: null,
+            parentSummary: null,
+            jiraKey: r.task_key ?? r.key ?? r.id,
+            type: 'task' as any,
+            rawType: 'Task',
+            summary: r.title ?? '',
+            status: 'todo' as any,
+            statusName: r.status?.name ?? '',
+            statusCategory: (r.status?.slug ?? 'todo') as any,
+            assigneeId: r.assignee_id ?? null,
+            assignee: r.assignee
+              ? { id: r.assignee.id, name: r.assignee.full_name ?? 'Unknown', avatarUrl: r.assignee.avatar_url ?? null, initials: '', color: '' }
+              : undefined,
+            reporterId: null,
+            reporter: undefined,
+            priority: (r.priority ?? 'medium') as any,
+            fixVersion: null,
+            sprintRelease: null,
+            sprintName: null,
+            labels: [],
+            resolution: null,
+            severity: null,
+            commentsCount: 0,
+            childCount: 0,
+            createdAt: r.created_at ?? '',
+            updatedAt: r.updated_at ?? '',
+            createdBy: null,
+          } as any),
+      );
+    },
+  });
+  return data;
+}
+
+/* Tasks results — client-side JQL evaluation over the `tasks` table. The
+ *  JQL engine in useJqlResults is hardcoded to ph_issues, so we replicate a
+ *  small field-aware filter pass here. Supported fields: assignee, status,
+ *  priority, duedate, summary search. Free-text search lifts the search box
+ *  value over the title field. */
+function useTasksResults(filters: FilterState, search: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ['tasks-filter-results', JSON.stringify(filters), search],
+    enabled,
+    staleTime: 30 * 1000,
+    queryFn: async () => {
+      const { data: rows } = await (supabase as any)
+        .from('tasks')
+        .select(
+          '*, status:task_statuses(id, name, slug), assignee:profiles!tasks_assignee_id_fkey(id, full_name, avatar_url), workstream:task_workstreams(id, name, key_prefix)',
+        )
+        .is('deleted_at', null)
+        .order('updated_at', { ascending: false })
+        .limit(500);
+      if (!rows) return { items: [] as JqlResultRow[], totalCount: 0 };
+
+      let items: JqlResultRow[] = (rows as any[]).map(mapTaskRowToJqlRow);
+
+      if (filters.assignee.length > 0) {
+        items = items.filter(r => r.assigneeName && filters.assignee.includes(r.assigneeName));
+      }
+      if (filters.status.length > 0) {
+        items = items.filter(r => filters.status.includes(r.status));
+      }
+      if (filters.priority.length > 0) {
+        items = items.filter(r => r.priority && filters.priority.includes(r.priority));
+      }
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        items = items.filter(r => r.summary.toLowerCase().includes(q) || r.key.toLowerCase().includes(q));
+      }
+      return { items, totalCount: items.length };
+    },
+  });
+}
+
 function useProjectFacetItems(projectKey: string | undefined): WorkItem[] {
   const { data = [] } = useQuery<WorkItem[]>({
     queryKey: ['filter-preview-facet-items', projectKey],
@@ -413,18 +607,27 @@ function useLinkedEntities(_filterId: string | null): LinkedFilterEntity[] {
 interface FilterPreviewPageProps {
   /** 2026-06-15: mode switch. project (default) hits ph_issues via the JQL
    *  engine. product hits business_requests via a client-side filter pass.
-   *  The same view chrome (toolbar, table, save modal, density, columns)
-   *  serves both routes per CLAUDE.md "ADOPT CANONICAL COMPONENTS" rule. */
-  mode?: 'project' | 'product';
+   *  2026-06-16: 'incident' added — same chrome, ph_issues filtered to
+   *  issue_type='Production Incident' (cross-project). 2026-06-17: 'tasks'
+   *  added — same chrome, `tasks` table via a client-side filter pass.
+   *  Per CLAUDE.md "ADOPT CANONICAL COMPONENTS" rule. */
+  mode?: 'project' | 'product' | 'incident' | 'tasks';
 }
 
 export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps = {}) {
   const isProduct = mode === 'product';
+  const isIncident = mode === 'incident';
+  const isTasks = mode === 'tasks';
   const { key: routeKey } = useParams<{ key: string }>();
   /* `projectKey` keeps its original name through the file so we don't have to
      touch hundreds of references. In project mode it's the project key (e.g.
-     'BAU'); in product mode it's the product code (e.g. 'INV'). */
-  const projectKey = routeKey;
+     'BAU'); in product mode it's the product code (e.g. 'INV'); in incident
+     mode the sentinel 'INCIDENTS' (no :key in URL); in tasks mode the
+     sentinel 'TASKS' (no :key in URL). */
+  const projectKey =
+    isIncident ? 'INCIDENTS'
+    : isTasks ? 'TASKS'
+    : routeKey;
   /* Product info — only fetched when mode='product'. id is the products.id
      UUID used to filter business_requests. Name shows in the header. */
   const productInfo = useProductByCode(isProduct ? routeKey : undefined);
@@ -497,12 +700,28 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   );
 
   const linkedEntities = useLinkedEntities(savedFilterId);
-  /* Facet items: project pulls from ph_issues; product pulls from business_requests.
-     Both hooks return the same WorkItem shape so the facet chip logic doesn't branch. */
-  const projectFacetItems = useProjectFacetItems(isProduct ? undefined : projectKey);
+  /* Facet items: project pulls from ph_issues; product pulls from business_requests;
+     incident pulls from ph_issues filtered by issue_type='Production Incident';
+     2026-06-17: tasks pulls from the `tasks` table joined with statuses /
+     assignees / workstreams. All four hooks return the same WorkItem shape
+     so the facet chip logic doesn't branch downstream. */
+  const projectFacetItems = useProjectFacetItems((isProduct || isIncident || isTasks) ? undefined : projectKey);
   const productFacetItems = useProductBrFacetItems(isProduct ? productInfo.id : null);
-  const facetItems = isProduct ? productFacetItems : projectFacetItems;
-  const members = useProjectMembers(isProduct ? undefined : projectKey);
+  const incidentFacetItems = useIncidentFacetItems(isIncident);
+  const tasksFacetItems = useTasksFacetItems(isTasks);
+  /* Stable empty array shared across renders for modes where the facet
+     source is disabled — keeps `facetItems` reference identity when
+     incident-mode data is still loading and prevents the upstream
+     `facetOptions` memo from invalidating on every render. */
+  const EMPTY_FACET_ITEMS: WorkItem[] = useMemo(() => [], []);
+  const facetItems = isProduct
+    ? productFacetItems
+    : isIncident
+      ? (incidentFacetItems.length > 0 ? incidentFacetItems : EMPTY_FACET_ITEMS)
+      : isTasks
+        ? (tasksFacetItems.length > 0 ? tasksFacetItems : EMPTY_FACET_ITEMS)
+        : projectFacetItems;
+  const members = useProjectMembers((isProduct || isIncident || isTasks) ? undefined : projectKey);
   const jqlValuePool = useJQLValuePool(facetItems, projectKey);
 
   // Load saved filter when navigated from FiltersListPage with ?filterId=
@@ -548,19 +767,57 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
 
   // When a saved filter is loaded via ?filterId=, use its stored JQL directly.
   // In JQL mode, use the raw jqlText. Otherwise derive from chip state.
+  /* 2026-06-17: for incident mode, don't inject `project = "INCIDENTS"` into
+     the JQL — 'INCIDENTS' is a sentinel for save scope, not a real project,
+     and the resulting `project = "INCIDENTS"` query returns zero rows and
+     wastes the JQL pipeline. The issuetype guard in effectiveJql is what
+     actually constrains incident results. Tasks mode follows the same
+     pattern — the 'TASKS' sentinel is for save scope only, and the tasks
+     query path doesn't go through the ph_issues JQL engine at all. */
+  const jqlProjectKey = (isIncident || isTasks) ? undefined : projectKey;
   const jql = useMemo(() => {
-    if (filterMode === 'jql') return jqlText || filterStateToJql(filters, projectKey);
-    return savedFilterJql ?? filterStateToJql(filters, projectKey);
-  }, [filterMode, jqlText, savedFilterJql, filters, projectKey]);
+    if (filterMode === 'jql') return jqlText || filterStateToJql(filters, jqlProjectKey);
+    return savedFilterJql ?? filterStateToJql(filters, jqlProjectKey);
+  }, [filterMode, jqlText, savedFilterJql, filters, jqlProjectKey]);
 
   /* Data fetch: project uses the JQL engine over ph_issues; product runs a
-     client-side filter pass over business_requests. Both return the same
-     { items, totalCount } shape so the downstream sort/search uses one path. */
-  const projectResults = useJqlResults(isProduct ? '' : jql);
+     client-side filter pass over business_requests; incident reuses the same
+     JQL engine but constrains every query to issue_type='Production Incident'
+     so the results panel only ever shows incidents regardless of what the
+     user enters in the chips/JQL editor.
+
+     2026-06-16: separate the ORDER BY so we don't produce malformed JQL like
+     `(x ORDER BY y) AND z` — the translator breaks at ORDER BY and drops the
+     trailing AND clause. We strip ORDER BY from the user JQL, append the
+     guard, then re-append ORDER BY at the end.
+     2026-06-17: do NOT wrap the body in parentheses. The JQL tokenizer has
+     an infinite-loop bug when state is 'expect-operator' and the next char
+     is `(` — readBareWord returns empty, tryReadOperator returns null, and
+     `i` never advances. The translator treats AND-conjunctions implicitly,
+     so paren-wrapping was never needed for correctness anyway. */
+  const effectiveJql = useMemo(() => {
+    if (isProduct || isTasks) return '';
+    if (!isIncident) return jql;
+    const guard = 'issuetype = "Production Incident"';
+    const raw = (jql ?? '').trim();
+    if (!raw) return guard;
+    const orderByMatch = raw.match(/\s+ORDER\s+BY\s+.+$/i);
+    const orderBy = orderByMatch ? orderByMatch[0] : '';
+    const body = orderBy ? raw.slice(0, raw.length - orderBy.length).trim() : raw;
+    return body ? `${body} AND ${guard}${orderBy}` : `${guard}${orderBy}`;
+  }, [isProduct, isIncident, isTasks, jql]);
+  const projectResults = useJqlResults(effectiveJql);
   const productResults = useProductBrResults(isProduct ? productInfo.id : null, filters, search);
-  const data = isProduct ? productResults.data : projectResults.data;
-  const isLoading = isProduct ? productResults.isLoading : projectResults.isLoading;
-  const isFetching = isProduct ? productResults.isFetching : projectResults.isFetching;
+  const tasksResults = useTasksResults(filters, search, isTasks);
+  const data = isProduct ? productResults.data
+    : isTasks ? tasksResults.data
+    : projectResults.data;
+  const isLoading = isProduct ? productResults.isLoading
+    : isTasks ? tasksResults.isLoading
+    : projectResults.isLoading;
+  const isFetching = isProduct ? productResults.isFetching
+    : isTasks ? tasksResults.isFetching
+    : projectResults.isFetching;
 
   const items = useMemo(() => {
     const rows = [...(data?.items ?? [])];
@@ -587,10 +844,10 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const markDirty = useCallback(() => setIsDirty(true), []);
 
   const switchToJql = useCallback(() => {
-    const current = savedFilterJql ?? filterStateToJql(filters, projectKey);
+    const current = savedFilterJql ?? filterStateToJql(filters, jqlProjectKey);
     setJqlText(current);
     setFilterMode('jql');
-  }, [savedFilterJql, filters, projectKey]);
+  }, [savedFilterJql, filters, jqlProjectKey]);
 
   const switchToBasic = useCallback(() => {
     const parsed = jqlToFilterState(jqlText);
@@ -650,9 +907,15 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
       setSavedFilterId(id);
       setIsDirty(false);
       if (linkedEntities.length > 0) addFlag('impact-entities');
-      navigate(`/${isProduct ? 'product-hub' : 'project-hub'}/${projectKey}/filters`);
+      navigate(
+        isIncident
+          ? '/incident-hub/filters'
+          : isTasks
+            ? '/tasks/filters'
+            : `/${isProduct ? 'product-hub' : 'project-hub'}/${projectKey}/filters`
+      );
     },
-    [linkedEntities, addFlag, navigate, projectKey]
+    [linkedEntities, addFlag, navigate, projectKey, isIncident, isTasks, isProduct]
   );
 
   // ── Column definitions — mirrors BacklogPage.atlaskit.tsx canonical structure
@@ -1181,7 +1444,11 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
           initialJql={jql}
           initialName="Untitled filter"
           hubScope={isProduct ? 'product' : 'project'}
-          {...(isProduct ? { productKey: projectKey } : {})}
+          /* 2026-06-16: always pass the hub identity so the saved row's
+             project_key / product_key reflects the originating hub. Strict
+             scoping in useFiltersForProject requires this — without it,
+             saved filters wouldn't match any hub's list query. */
+          {...(isProduct ? { productKey: projectKey } : { projectKey })}
           onClose={() => setSaveOpen(false)}
           onSaved={handleSaved}
         />
@@ -1193,7 +1460,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
           initialJql={jql}
           initialName={savedFilterName ? `${savedFilterName} (copy)` : 'Untitled filter'}
           hubScope={isProduct ? 'product' : 'project'}
-          {...(isProduct ? { productKey: projectKey } : {})}
+          {...(isProduct ? { productKey: projectKey } : { projectKey })}
           onClose={() => setSaveAsOpen(false)}
           onSaved={handleSaved}
         />

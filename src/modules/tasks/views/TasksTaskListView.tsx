@@ -2004,6 +2004,9 @@ export default function TasksTaskListView() {
               onColumnVisibilityChange={setVisibleColumns}
               // Density driven by the View options menu (compact = 40px rows,
               // comfortable = taller). Mirrors BacklogPage's density state.
+              // (Backlog parity: compact = 40px row height, 6px y-padding;
+              // JiraTable defaults to 'compact' — passed explicitly to make
+              // intent visible and prevent config drift.)
               density={density}
               totalRowCount={rows.length}
               // 2026-06-16 Fix #9: footer with + Create button (left),

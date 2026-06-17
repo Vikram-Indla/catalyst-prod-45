@@ -234,14 +234,19 @@ export function useFiltersForProject(projectKey?: string, hubScope?: HubScope) {
         query = query.in('hub_scope', [hubScope, 'both']);
       }
 
-      // Scope to the specific project/product when a key is provided.
-      // Products scope by product_key; projects scope by project_key.
-      // Both include global (null) filters so org-level shared filters remain visible.
+      // Scope to the specific project/product/incident/tasks hub.
+      // 2026-06-17 (Vikram directive): STRICT per-hub scoping for every
+      // hub — no OR-NULL fallback. Each hub MUST only show filters whose
+      // originating hub key matches. Cross-hub leakage (a project filter
+      // appearing under tasks, or a null-project legacy filter showing
+      // up everywhere) is a P0 UX defect. Filters saved before
+      // originating-hub identity was tracked will need a backfill
+      // migration to land in the correct hub directory.
       if (projectKey) {
         if (hubScope === 'product') {
-          query = (query as any).or(`product_key.eq.${projectKey},product_key.is.null`);
+          query = query.eq('product_key', projectKey);
         } else {
-          query = (query as any).or(`project_key.eq.${projectKey},project_key.is.null`);
+          query = query.eq('project_key', projectKey);
         }
       }
 

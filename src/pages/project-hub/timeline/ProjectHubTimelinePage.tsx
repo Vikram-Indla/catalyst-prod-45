@@ -112,26 +112,39 @@ export default function ProjectHubTimelinePage() {
 
   const mutations: TimelineMutations = useMemo(() => ({
     fetchIssueRawJson,
+    /* 2026-06-17: write due dates to BOTH the dedicated `due_date` column
+       AND `raw_json.fields.duedate` so the timeline and detail-view stay
+       in sync — detail view reads/writes the column, the timeline
+       historically only touched raw_json. */
+    /* 2026-06-17: ALWAYS write raw_json (stub if it didn't exist). Skipping
+       the raw_json write when raw was null silently dropped the start date
+       for Catalyst-created rows — the column has due_date but the start
+       lives only in raw_json.fields.customfield_10015, so the row read back
+       as startDate=null → diamond instead of bar. */
     onUpdateDates: async (issueKey, startDate, dueDate) => {
       patchDatesInCache(issueKey, startDate, dueDate);
-      const raw = await fetchIssueRawJson(issueKey);
-      if (!raw) return;
+      const raw = (await fetchIssueRawJson(issueKey)) ?? { fields: {} };
       const updated = {
         ...raw,
         fields: { ...(raw.fields ?? {}), customfield_10015: startDate, duedate: dueDate },
       };
-      await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+      await (supabase as any).from('ph_issues').update({
+        due_date: dueDate,
+        raw_json: updated,
+      }).eq('issue_key', issueKey);
       invalidate();
     },
     onRemoveDates: async (issueKey) => {
       patchDatesInCache(issueKey, null, null);
-      const raw = await fetchIssueRawJson(issueKey);
-      if (!raw) return;
+      const raw = (await fetchIssueRawJson(issueKey)) ?? { fields: {} };
       const updated = {
         ...raw,
         fields: { ...(raw.fields ?? {}), customfield_10015: null, duedate: null },
       };
-      await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+      await (supabase as any).from('ph_issues').update({
+        due_date: null,
+        raw_json: updated,
+      }).eq('issue_key', issueKey);
       invalidate();
     },
     /* Remove only the start date — keep due. */
@@ -139,8 +152,7 @@ export default function ProjectHubTimelinePage() {
       const tree = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
       const found = findIssueDeep(tree, issueKey);
       patchDatesInCache(issueKey, null, found?.dueDate ?? null);
-      const raw = await fetchIssueRawJson(issueKey);
-      if (!raw) return;
+      const raw = (await fetchIssueRawJson(issueKey)) ?? { fields: {} };
       const updated = { ...raw, fields: { ...(raw.fields ?? {}), customfield_10015: null } };
       await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
       invalidate();
@@ -150,10 +162,12 @@ export default function ProjectHubTimelinePage() {
       const tree = queryClient.getQueryData<TimelineIssue[]>(['project-hub-timeline', projectKey]) ?? [];
       const found = findIssueDeep(tree, issueKey);
       patchDatesInCache(issueKey, found?.startDate ?? null, null);
-      const raw = await fetchIssueRawJson(issueKey);
-      if (!raw) return;
+      const raw = (await fetchIssueRawJson(issueKey)) ?? { fields: {} };
       const updated = { ...raw, fields: { ...(raw.fields ?? {}), duedate: null } };
-      await (supabase as any).from('ph_issues').update({ raw_json: updated }).eq('issue_key', issueKey);
+      await (supabase as any).from('ph_issues').update({
+        due_date: null,
+        raw_json: updated,
+      }).eq('issue_key', issueKey);
       invalidate();
     },
     /* Reorder a row among its siblings. Rather than trying to compute a

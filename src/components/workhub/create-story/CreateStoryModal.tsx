@@ -118,6 +118,12 @@ export interface CreateStoryModalProps {
    */
   onOpenBusinessRequest?: () => void;
   /**
+   * When provided, selecting "Task" as the work type closes this modal and
+   * calls this callback so the caller can open the Tasks module's
+   * CreateTaskModal (tasks are Catalyst-native, not ph_issues).
+   */
+  onOpenTask?: () => void;
+  /**
    * Optional restricted list of work-type options. When omitted, the modal
    * shows the full WORK_TYPES catalogue. Product hub passes
    * ['Business Request'] so the dropdown shows only that single option.
@@ -143,6 +149,9 @@ const WORK_TYPES = [
   'QA Bug',
   'Production Incident',
   'Change Request',
+  // Catalyst-native task (project-less). Selecting it hands off to the Tasks
+  // module's CreateTaskModal via onOpenTask — it is NOT created in ph_issues.
+  'Task',
 ] as const;
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
@@ -163,6 +172,7 @@ export const PARENT_TYPE_RULES: Record<string, string[]> = {
   'QA Bug':              ['Feature', 'Story'],
   'Production Incident': ['Business Request', 'Story', 'Feature', 'Epic'],
   'Change Request':      ['Epic', 'Business Request', 'Feature'],
+  'Task':                [],  // project-less; handed off to CreateTaskModal
 };
 
 // Per type → which initial status appears in the read-only Status lozenge.
@@ -388,6 +398,7 @@ export function CreateStoryModal({
   onSuccess,
   linkedSource,
   onOpenBusinessRequest,
+  onOpenTask,
   workTypes,
   defaultWorkType = 'Story',
 }: CreateStoryModalProps) {
@@ -723,6 +734,12 @@ export function CreateStoryModal({
                         if (selected === 'Business Request' && onOpenBusinessRequest) {
                           handleClose();
                           onOpenBusinessRequest();
+                          return;
+                        }
+                        // Task is Catalyst-native — hand off to CreateTaskModal.
+                        if (selected === 'Task' && onOpenTask) {
+                          handleClose();
+                          onOpenTask();
                           return;
                         }
                         setWorkType(selected);

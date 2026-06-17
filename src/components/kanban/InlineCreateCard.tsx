@@ -153,9 +153,14 @@ interface InlineCreateCardProps {
   /** 2026-06-15: insert target.
    *    'project' (default) → ph_issues, generated issue_key
    *    'product'           → business_requests, generated MIM-N request_key
+   *  2026-06-17:
+   *    'incident'          → ph_issues (same table as project; the locked
+   *                          type='Production Incident' makes it surface
+   *                          on the incident hub)
+   *    'tasks'             → tasks table with status resolved by name
    *  When 'product', `projectKey` holds the product CODE (e.g. 'INV') and
    *  is used to resolve `products.id` for the insert. */
-  mode?: 'project' | 'product';
+  mode?: 'project' | 'product' | 'incident' | 'tasks';
   onCreateCard: (issue: CreatedIssue) => void;
   onCancel: () => void;
 }
@@ -350,7 +355,60 @@ function InlineCreateCardComponent({
     try {
       const nowIso = new Date().toISOString();
 
-      if (mode === 'product') {
+      if (mode === 'tasks') {
+        /* 2026-06-17: TASKS branch — insert into `tasks` table.
+           - status_id is resolved by looking up task_statuses by NAME
+             (the column header passes the status NAME, not the slug).
+           - assignee_id resolved from profiles.full_name.
+           - No workstream_id (Tasks Hub board is cross-workstream). */
+        let statusId: string | null = null;
+        if (status) {
+          const { data: stRow } = await (supabase as any)
+            .from('task_statuses').select('id').eq('name', status).maybeSingle();
+          statusId = (stRow as { id: string } | null)?.id ?? null;
+        }
+        if (!statusId) {
+          /* Fallback: pick the first task_statuses row by position. */
+          const { data: firstStatus } = await (supabase as any)
+            .from('task_statuses').select('id').order('position', { ascending: true }).limit(1).maybeSingle();
+          statusId = (firstStatus as { id: string } | null)?.id ?? null;
+        }
+        if (!statusId) throw new Error('No task statuses configured');
+
+        let assigneeId: string | null = null;
+        if (assigneeName) {
+          const { data: prof } = await supabase
+            .from('profiles').select('id').eq('full_name', assigneeName).maybeSingle();
+          assigneeId = (prof as { id: string } | null)?.id ?? null;
+        }
+
+        const insertRow: Record<string, any> = {
+          title: summary.trim(),
+          status_id: statusId,
+          priority: 'medium',
+          assignee_id: assigneeId,
+          due_date: dueDate || null,
+          created_at: nowIso,
+          updated_at: nowIso,
+        };
+        const { data, error: insErr } = await (supabase as any)
+          .from('tasks')
+          .insert(insertRow)
+          .select('id, key')
+          .single();
+        if (insErr) throw insErr;
+
+        const createdIssue: CreatedIssue = {
+          issueId: (data as any)?.id ?? '',
+          issueKey: (data as any)?.key ?? (data as any)?.id ?? '',
+          issueType: 'Task',
+          summary: summary.trim(),
+          status: status || '',
+          dueDate: dueDate || undefined,
+          assigneeId: assigneeName || undefined,
+        };
+        onCreateCard(createdIssue);
+      } else if (mode === 'product') {
         /* 2026-06-15: PRODUCT branch — insert into business_requests.
            projectKey holds the product CODE; we resolve products.id. */
         const { data: prodRow, error: prodErr } = await (supabase as any)

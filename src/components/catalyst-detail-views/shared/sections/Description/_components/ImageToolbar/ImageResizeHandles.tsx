@@ -151,6 +151,40 @@ export function ImageResizeHandles({ editor, imagePos }: Props) {
   const top = rect.top + rect.height / 2 - HANDLE_HEIGHT / 2;
   const left = rect.right + HANDLE_GAP;
 
+  /* 2026-06-17: clip the handle to the nearest scrollable ancestor so
+     it doesn't float on top of the Description container when the image
+     scrolls under it. Walk up from the image element looking for an
+     element with overflow-y != visible (the editor body has
+     overflow-y: auto). Compute the handle's intended top + bottom,
+     clamp to the scroller's visible y-range, and hide entirely when
+     the clipped height collapses to 0. */
+  let scrollerRect: DOMRect | null = null;
+  let node: HTMLElement | null = imgRef.current?.parentElement ?? null;
+  while (node && node !== document.body) {
+    const ov = getComputedStyle(node).overflowY;
+    if (ov === 'auto' || ov === 'scroll' || ov === 'hidden') {
+      scrollerRect = node.getBoundingClientRect();
+      break;
+    }
+    node = node.parentElement;
+  }
+
+  let clippedTop = top;
+  let clippedHeight = HANDLE_HEIGHT;
+  if (scrollerRect) {
+    const intendedBottom = top + HANDLE_HEIGHT;
+    const visTop = Math.max(top, scrollerRect.top);
+    const visBottom = Math.min(intendedBottom, scrollerRect.bottom);
+    clippedTop = visTop;
+    clippedHeight = Math.max(0, visBottom - visTop);
+    if (clippedHeight <= 0) return null;
+    /* Hide when the image's centre (handle's vertical mid-point) is
+       outside the scroller — the visible sliver would be misleading
+       since dragging it still resizes the now-off-screen image. */
+    const handleMid = top + HANDLE_HEIGHT / 2;
+    if (handleMid < scrollerRect.top || handleMid > scrollerRect.bottom) return null;
+  }
+
   return createPortal(
     <div
       role="slider"
@@ -158,10 +192,10 @@ export function ImageResizeHandles({ editor, imagePos }: Props) {
       onMouseDown={startDrag}
       style={{
         position: 'fixed',
-        top,
+        top: clippedTop,
         left,
         width: HANDLE_WIDTH,
-        height: HANDLE_HEIGHT,
+        height: clippedHeight,
         background: 'var(--ds-border-selected, #0C66E4)',
         borderRadius: HANDLE_WIDTH,
         cursor: 'col-resize',

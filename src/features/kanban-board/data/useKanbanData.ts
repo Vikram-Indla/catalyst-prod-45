@@ -19,7 +19,15 @@ import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import type { BoardConfig, BoardIssue, BoardOption, KanbanColumn, StatusCategory } from '../types';
 import { DEFAULT_COLUMNS, indexColumns } from './columnConfig';
 
-export type KanbanMode = 'project' | 'product';
+export type KanbanMode = 'project' | 'product' | 'incident' | 'tasks';
+
+/* 2026-06-17: tasks mode SELECT lists.
+   - Tasks live in `tasks` with FK to task_statuses (slug + name + order).
+   - Assignee resolved via profiles (we use full_name for the avatar).
+   - No project_key — tasks board is global across workstreams. */
+/* SELECT * matches what useTaskItems uses (and works) — the `tasks` table
+   column set varies across environments, so explicit lists are fragile. */
+const TASKS_SELECT = '*';
 
 const PAGE = 1000;
 const ISSUE_SELECT = 'id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, sprint_release, is_flagged, jira_updated_at, jira_created_at, due_date';
@@ -123,6 +131,8 @@ export function useKanbanData(
 ): KanbanData {
   const key = projectKey?.toUpperCase();
   const isProduct = mode === 'product';
+  const isIncident = mode === 'incident';
+  const isTasks = mode === 'tasks';
 
   /* ── PROJECT meta ─────────────────────────────────────────────────────── */
   const { data: projMeta } = useQuery({
@@ -133,7 +143,7 @@ export function useKanbanData(
         .from('ph_projects').select('id, key, name').eq('key', key).maybeSingle();
       return data ?? null;
     },
-    enabled: !!key && !isProduct,
+    enabled: !!key && !isProduct && !isIncident && !isTasks,
     staleTime: 60_000,
   });
 
@@ -165,11 +175,44 @@ export function useKanbanData(
         .order('sort_order');
       return (data ?? []).map((b: any) => ({ id: b.id, name: b.name })) as BoardOption[];
     },
-    enabled: !!key && !isProduct,
+    enabled: !!key && !isProduct && !isIncident && !isTasks,
     staleTime: 60_000,
   });
 
-  const resolvedBoardId = isProduct ? null : (activeBoardId ?? boards[0]?.id ?? null);
+  const resolvedBoardId = (isProduct || isIncident || isTasks) ? null : (activeBoardId ?? boards[0]?.id ?? null);
+
+  /* ── TASKS columns (mode='tasks'): task_statuses table ─────────────────── */
+  const { data: tasksStatusRows = [] } = useQuery({
+    queryKey: ['kb-tasks-statuses'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('task_statuses')
+        .select('id, name, slug, color, position')
+        .order('position', { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; name: string; slug: string; color: string | null; position: number }>;
+    },
+    enabled: isTasks,
+    staleTime: 5 * 60_000,
+  });
+
+  /* ── TASKS rows (mode='tasks'): tasks table cross-workstream ──────────── */
+  const { data: tasksRows = [], isLoading: tasksLoading, refetch: refetchTasks } = useQuery({
+    queryKey: ['kb-tasks-rows'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('tasks')
+        .select(TASKS_SELECT)
+        .is('deleted_at', null)
+        .order('position', { ascending: true, nullsFirst: false })
+        .order('updated_at', { ascending: false })
+        .limit(2000);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: isTasks,
+    staleTime: 30_000,
+  });
 
   /* ── COLUMNS source 1 (project): board_columns + board_status_mappings ── */
   const { data: dynamicCols } = useQuery({
@@ -189,7 +232,7 @@ export function useKanbanData(
       if (!cols?.length) return null;
       return { cols, mappings: mappings ?? [] };
     },
-    enabled: !!resolvedBoardId && !isProduct,
+    enabled: !!resolvedBoardId && !isProduct && !isIncident && !isTasks,
     staleTime: 60_000,
   });
 
@@ -200,9 +243,38 @@ export function useKanbanData(
      defined under the BAU project. */
   const brWorkflow = useTypeWorkflow('BAU', 'Business Request');
 
+  /* ── COLUMNS source 3 (incident): Production Incident workflow statuses ──
+     Mirrors brWorkflow exactly. PI workflow is also rooted at the BAU
+     project — incidents are surfaced cross-project on Catalyst but the
+     status taxonomy is owned by BAU. */
+  const piWorkflow = useTypeWorkflow('BAU', 'Production Incident');
+
   const columns: KanbanColumn[] = useMemo(() => {
-    if (isProduct) {
-      const statuses = (brWorkflow?.data as any)?.statuses ?? [];
+    /* 2026-06-17: tasks columns come from task_statuses. Each column carries
+       both the slug and the name as recognized statuses so the resolver
+       matches either form on the task row. Category derived from slug
+       (task_statuses has no is_done/is_initial columns). */
+    if (isTasks) {
+      if (!tasksStatusRows.length) return DEFAULT_COLUMNS;
+      return tasksStatusRows.map((s): KanbanColumn => {
+        const slug = (s.slug ?? '').toLowerCase();
+        const category: StatusCategory = /done|complete|closed|finished/.test(slug)
+          ? 'done'
+          : /backlog|todo|planned|new|open/.test(slug)
+            ? 'todo'
+            : 'in_progress';
+        return {
+          id: s.id,
+          name: (s.name ?? '').toUpperCase(),
+          statuses: [s.name, s.slug].filter(Boolean) as string[],
+          category,
+          max: null,
+        };
+      });
+    }
+    if (isProduct || isIncident) {
+      const wf = isIncident ? piWorkflow : brWorkflow;
+      const statuses = (wf?.data as any)?.statuses ?? [];
       if (statuses.length === 0) return DEFAULT_COLUMNS;
       return statuses.map((s: any, i: number): KanbanColumn => ({
         id: s.id ?? String(i),
@@ -227,7 +299,7 @@ export function useKanbanData(
       });
     }
     return DEFAULT_COLUMNS;
-  }, [isProduct, brWorkflow, dynamicCols]);
+  }, [isProduct, isIncident, isTasks, brWorkflow, piWorkflow, dynamicCols, tasksStatusRows]);
 
   const boardConfig: BoardConfig = useMemo(() => {
     const idx = indexColumns(columns);
@@ -235,19 +307,23 @@ export function useKanbanData(
       boardId: resolvedBoardId,
       boardName: isProduct
         ? (productMeta?.name ?? 'Product board')
-        : (boards.find((b) => b.id === resolvedBoardId)?.name ?? 'Board'),
+        : isIncident
+          ? 'Incident board'
+          : isTasks
+            ? 'Tasks board'
+            : (boards.find((b) => b.id === resolvedBoardId)?.name ?? 'Board'),
       columns: idx.columns,
       statusToColId: idx.statusToColId,
       colPrimaryStatus: idx.colPrimaryStatus,
       columnIdSet: idx.columnIdSet,
     };
-  }, [columns, resolvedBoardId, boards, isProduct, productMeta]);
+  }, [columns, resolvedBoardId, boards, isProduct, isIncident, isTasks, productMeta]);
 
   /* ── PROJECT issues (paginated, progressive) ─────────────────────────── */
   const { data: firstPage = [], isLoading: projectLoading, refetch: refetchFirst } = useQuery({
     queryKey: ['kb-issues-p1', key],
     queryFn: () => (key ? fetchIssuePage(key, 0, PAGE - 1) : Promise.resolve([] as any[])),
-    enabled: !!key && !isProduct,
+    enabled: !!key && !isProduct && !isIncident && !isTasks,
     staleTime: 5 * 60_000,
   });
   const hasMore = firstPage.length >= PAGE;
@@ -267,7 +343,29 @@ export function useKanbanData(
       }
       return all;
     },
-    enabled: !!key && !isProduct && hasMore,
+    enabled: !!key && !isProduct && !isIncident && !isTasks && hasMore,
+    staleTime: 5 * 60_000,
+  });
+
+  /* ── INCIDENT issues (ph_issues filtered by issue_type='Production Incident').
+     Mirrors the productRows pattern. Incident rows are ph_issues, so
+     useKanbanMutations does NOT need an incident branch — its existing
+     project (ph_issues) writes apply unchanged. */
+  const { data: incidentRows = [], isLoading: incidentLoading, refetch: refetchIncidents } = useQuery({
+    queryKey: ['kb-incident-issues'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select(ISSUE_SELECT)
+        .eq('issue_type', 'Production Incident')
+        .is('deleted_at', null)
+        .is('archived_at', null)
+        .order('jira_updated_at', { ascending: false })
+        .limit(2000);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: isIncident,
     staleTime: 5 * 60_000,
   });
 
@@ -326,32 +424,110 @@ export function useKanbanData(
     staleTime: 60_000,
   });
 
+  /* ── TASKS row → BoardIssue mapper ─────────────────────────────────────
+     Tasks have a separate shape. We synthesize a status name from the
+     joined task_statuses row so columns can match it. */
+  const statusNameById = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const s of tasksStatusRows) m.set(s.id, s.name);
+    return m;
+  }, [tasksStatusRows]);
+
+  /* 2026-06-17: separate assignee_id → full_name lookup. Avoids the embed
+     join syntax which silently failed when the FK constraint name didn't
+     match — that nuked the whole `tasks` query and the board went empty. */
+  const taskAssigneeIds = useMemo(
+    () => Array.from(new Set((tasksRows as any[]).map((t) => t.assignee_id).filter(Boolean))),
+    [tasksRows],
+  );
+  const { data: taskAssigneeNames = new Map<string, string>() } = useQuery({
+    queryKey: ['kb-tasks-assignees', taskAssigneeIds.length, taskAssigneeIds.slice().sort().join(',')],
+    queryFn: async () => {
+      if (!taskAssigneeIds.length) return new Map<string, string>();
+      const { data } = await supabase
+        .from('profiles').select('id, full_name').in('id', taskAssigneeIds as string[]);
+      const m = new Map<string, string>();
+      ((data ?? []) as Array<{ id: string; full_name: string | null }>).forEach((p) => {
+        if (p.full_name) m.set(p.id, p.full_name);
+      });
+      return m;
+    },
+    enabled: isTasks && taskAssigneeIds.length > 0,
+    staleTime: 60_000,
+  });
+
+  function mapTaskRow(r: any): BoardIssue {
+    const statusName = statusNameById.get(r.status_id) ?? '';
+    return {
+      id: r.id,
+      issueKey: r.task_key ?? r.key ?? r.id,
+      summary: r.title ?? '',
+      issueType: 'Task',
+      priority: r.priority ?? '',
+      status: statusName,
+      statusCategory: '',
+      assigneeName: r.assignee_id ? (taskAssigneeNames.get(r.assignee_id) ?? null) : null,
+      labels: Array.isArray(r.tags) ? (r.tags as string[]) : [],
+      sprintName: null,
+      storyPoints: null,
+      parentKey: null,
+      parentSummary: null,
+      sprintRelease: null,
+      isFlagged: false,
+      updatedAt: r.updated_at ?? null,
+      createdAt: r.created_at ?? null,
+      statusChangedAt: null,
+      dueDate: r.due_date ?? null,
+    };
+  }
+
   /* ── Mapped issues ──────────────────────────────────────────────────── */
   const issues = useMemo(() => {
     if (isProduct) {
       return productRows.map((r: any) => mapProductRow(r, assigneeNames, parentKeyById));
     }
+    if (isIncident) {
+      return (incidentRows as any[]).map(mapRow);
+    }
+    if (isTasks) {
+      return (tasksRows as any[]).map(mapTaskRow);
+    }
     return [...firstPage, ...restPages].map(mapRow);
-  }, [isProduct, productRows, assigneeNames, parentKeyById, firstPage, restPages]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isProduct, isIncident, isTasks, productRows, assigneeNames, parentKeyById, incidentRows, tasksRows, statusNameById, taskAssigneeNames, firstPage, restPages]);
 
   const refetch = useCallback(() => {
     if (isProduct) {
       refetchProduct();
+    } else if (isIncident) {
+      refetchIncidents();
+    } else if (isTasks) {
+      refetchTasks();
     } else {
       refetchFirst();
       refetchRest();
     }
-  }, [isProduct, refetchProduct, refetchFirst, refetchRest]);
+  }, [isProduct, isIncident, isTasks, refetchProduct, refetchIncidents, refetchTasks, refetchFirst, refetchRest]);
 
   return {
     projectId: isProduct ? productId : (projMeta?.id ?? null),
     projectName: isProduct
       ? (productMeta?.name ?? key ?? '')
-      : (projMeta?.name ?? key ?? ''),
+      : isIncident
+        ? 'Incidents'
+        : isTasks
+          ? 'Tasks'
+          : (projMeta?.name ?? key ?? ''),
     boardConfig,
-    boards: isProduct ? [] : boards,
+    boards: (isProduct || isIncident || isTasks) ? [] : boards,
     issues,
-    isLoading: isProduct ? productLoading : projectLoading,
+    isLoading: isProduct
+      ? productLoading
+      : isIncident
+        ? incidentLoading
+        : isTasks
+          ? tasksLoading
+          : projectLoading,
     refetch,
   };
 }

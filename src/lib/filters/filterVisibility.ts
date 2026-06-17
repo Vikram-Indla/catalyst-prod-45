@@ -19,7 +19,11 @@ export interface VisibilityOption {
 }
 
 /** Options for the @atlaskit/select. Project/Product appear only when that
- *  context exists on the originating surface (the backlog has a project, not a product). */
+ *  context exists on the originating surface (the backlog has a project, not a product).
+ *  2026-06-17: Tasks hub uses projectKey='TASKS' sentinel so the standard
+ *  project visibility branch covers it — same shape as incident hub
+ *  ('INCIDENTS' sentinel). The label is the sentinel itself; admins can
+ *  alias it in the UI if desired. */
 export function visibilityOptions(ctx: {
   projectKey?: string | null;
   productKey?: string | null;
@@ -32,6 +36,23 @@ export function visibilityOptions(ctx: {
   return out;
 }
 
+/** 2026-06-17: hub type recognized by the filters subsystem. Tasks added
+ *  alongside project/product/incident so downstream code (sidebar, lists,
+ *  saved-filter scoping) can branch consistently. */
+export type FilterHubType = 'project' | 'product' | 'incident' | 'tasks';
+
+/** Map a FilterHubType to its sentinel projectKey when no real project key
+ *  exists in the URL (incident, tasks hubs). project/product hubs return the
+ *  passed-through key. */
+export function hubTypeToProjectKey(
+  hubType: FilterHubType,
+  routeKey: string | undefined,
+): string | undefined {
+  if (hubType === 'incident') return 'INCIDENTS';
+  if (hubType === 'tasks') return 'TASKS';
+  return routeKey;
+}
+
 export interface VisibilityConfig {
   is_shared: boolean;
   viewers_config: { type: FilterVisibilityScope; user_ids?: string[] };
@@ -39,9 +60,13 @@ export interface VisibilityConfig {
   product_key: string | null;
 }
 
-/** Selected scope -> the columns written to ph_saved_filters. project_key always
- *  reflects the originating project (so the row shows on that project's board);
- *  product_key is set only when the scope is 'product'. */
+/** Selected scope -> the columns written to ph_saved_filters.
+ *  project_key / product_key reflect the ORIGINATING hub and are independent
+ *  of the visibility scope — a private filter created on /product-hub/INV
+ *  still belongs to INV, just with viewers_config={private}. This split
+ *  matches Vikram's directive (2026-06-16) that each hub shows only its own
+ *  filters; mixing hub identity with visibility produced orphaned filters
+ *  (both keys null) when the creator picked Private/Everyone visibility. */
 export function scopeToVisibility(
   scope: FilterVisibilityScope,
   ctx: { projectKey?: string | null; productKey?: string | null; userIds?: string[] },
@@ -53,7 +78,7 @@ export function scopeToVisibility(
         ? { type: 'specific', user_ids: ctx.userIds ?? [] }
         : { type: scope },
     project_key: ctx.projectKey ?? null,
-    product_key: scope === 'product' ? (ctx.productKey ?? null) : null,
+    product_key: ctx.productKey ?? null,
   };
 }
 

@@ -36,8 +36,9 @@ interface DashboardWidgetGridProps {
   onToggleCollapse?: (widgetId: string) => void;
   onRemoveWidget?: (widgetId: string) => void;
   /** 2026-06-15: filters the widget registry — see getWidgetRegistry.
-   *  2026-06-16: 'tasks' added for Tasks Hub overview. */
-  mode?: 'project' | 'product' | 'tasks';
+   *  2026-06-16: 'tasks' added for Tasks Hub overview.
+   *  2026-06-17: 'incident' added for Incident Hub dashboard. */
+  mode?: 'project' | 'product' | 'tasks' | 'incident';
   /**
    * 2026-06-16: optional custom registry. When provided, replaces the
    * mode-derived default registry. Used by the Tasks Hub overview to
@@ -81,20 +82,30 @@ export function effectiveSpan(w: ResolvedWidget): number {
 
 export function resolveWidgets(
   configs: DashboardWidgetConfig[],
-  mode: 'project' | 'product' | 'tasks' = 'project',
+  mode: 'project' | 'product' | 'tasks' | 'incident' = 'project',
   registry?: WidgetDefinition[],
 ): ResolvedWidget[] {
   const map = new Map(configs.map((c) => [c.widget_id, c]));
   const effectiveRegistry =
     registry ?? (mode === 'tasks' ? [] : getWidgetRegistry(mode));
+  /* 2026-06-17: identify the top widget by lowest defaultPosition so its
+     default collapsed state is `false` (expanded). Everyone below stays
+     collapsed by default. User-persisted state always wins. */
+  const minPosition = effectiveRegistry.reduce(
+    (m, d) => Math.min(m, d.defaultPosition),
+    Number.POSITIVE_INFINITY,
+  );
   return effectiveRegistry.map((def) => {
     const cfg = map.get(def.id);
+    const isTopByDefault = def.defaultPosition === minPosition;
     return {
       ...def,
       visible: cfg?.visible ?? true,
       position: cfg?.position ?? def.defaultPosition,
-      /* 2026-06-09 Vikram parity — default collapsed when no persisted cfg. */
-      collapsed: cfg?.collapsed ?? true,
+      /* 2026-06-09 Vikram parity — default collapsed when no persisted cfg.
+         2026-06-17: top widget defaults to expanded so the dashboard opens
+         with something visible instead of a wall of collapsed headers. */
+      collapsed: cfg?.collapsed ?? !isTopByDefault,
       span: cfg?.span ?? null,
     } as ResolvedWidget;
   }).sort((a, b) => a.position - b.position);
@@ -106,7 +117,7 @@ export function resolveWidgets(
 
 export function useDashboardWidgetConfig(
   projectId: string,
-  mode: 'project' | 'product' | 'tasks' = 'project',
+  mode: 'project' | 'product' | 'tasks' | 'incident' = 'project',
   registry?: WidgetDefinition[],
 ) {
   const { user } = useAuth();
@@ -145,16 +156,20 @@ export function useDashboardWidgetConfig(
       /* 2026-06-15: mode-aware. In product mode the 4 BR-incompatible
          widgets (scope-change, prod-incidents, qa-defects, time-in-status)
          never get seeded — the gallery never shows them either.
-         2026-06-16: tasks mode uses the registry prop directly. */
+         2026-06-16: tasks mode uses the registry prop directly.
+         2026-06-17: top widget seeds as expanded (collapsed=false) so the
+         dashboard opens with something visible. */
+      const seedMinPosition = resolvedRegistry.reduce(
+        (m, d) => Math.min(m, d.defaultPosition),
+        Number.POSITIVE_INFINITY,
+      );
       const rows = resolvedRegistry.map((def) => ({
         project_id: projectId,
         user_id: userId,
         widget_id: def.id,
         visible: true,
         position: def.defaultPosition,
-        /* 2026-06-09 Vikram parity — gadgets default to collapsed so
-           dashboard reads as widget index; user expands per-widget. */
-        collapsed: true,
+        collapsed: def.defaultPosition !== seedMinPosition,
         span: def.defaultSpan,
       }));
       const { error } = await typedQuery('dashboard_widget_config' as any).upsert(rows, {
@@ -454,14 +469,18 @@ export default function DashboardWidgetGrid({
           maxWidth: '100%',
         }}
       >
-        {visibleWidgets.map((w, idx) => {
+        {visibleWidgets.map((w) => {
           const span = effectiveSpan(w);
           const WidgetComponent = w.component;
-          // First visible widget defaults to expanded (Vikram directive),
-          // but a live user toggle (collapseOverride) always wins so the
-          // Minimize button is functional on every widget, idx 0 included.
-          const baseCollapsed = idx === 0 ? false : w.collapsed;
-          const isCollapsed = collapseOverride[w.id] ?? baseCollapsed;
+          /* 2026-06-17: combined resolution.
+             - Live collapseOverride wins → immediate render after a click
+               (no waiting for the DB round-trip + cache refetch).
+             - Falls back to `w.collapsed` (persisted state).
+             - Dropped the previous `idx === 0 ? false :` shortcut: it
+               forced the top widget to expanded on every render, so the
+               persisted collapsed=true was ignored on reload — the top
+               row could never stay collapsed across sessions. */
+          const isCollapsed = collapseOverride[w.id] ?? w.collapsed;
           return (
             <div
               key={w.id}

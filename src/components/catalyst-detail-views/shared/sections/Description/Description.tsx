@@ -30,9 +30,25 @@ import { catyMarkdownToAdf } from './utils/catyMarkdownToAdf';
 interface DescriptionProps {
   issue: PhIssue | null;
   label?: string;
+  /**
+   * Override the default ph_issues save mutation. When provided, the
+   * canonical Description component calls this instead of writing to
+   * ph_issues.description_adf. Enables non-ph_issues data sources (e.g.
+   * tasks table — see TaskCatalystView) to reuse this canonical component
+   * without forking. Per CLAUDE.md "Adopt canonical components" rule.
+   */
+  saveOverride?: (adf: AdfDoc) => Promise<void>;
+  /**
+   * Override the initial ADF document loaded into the editor and display
+   * view. When provided, this is used instead of issue.description_adf.
+   * Non-ph_issues data sources (tasks, business_requests, etc.) construct
+   * an AdfDoc from their own column (typically plain text wrapped in a
+   * paragraph) and pass it here.
+   */
+  loadAdf?: AdfDoc | null;
 }
 
-export function Description({ issue, label = 'Description' }: DescriptionProps) {
+export function Description({ issue, label = 'Description', saveOverride, loadAdf }: DescriptionProps) {
   const [editing, setEditing] = useState(false);
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -80,9 +96,13 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
   // temporal dead zone, and the effect runs during the same render in
   // which it's declared.
   const initialAdf: AdfDoc | null = useMemo(() => {
+    // When an override loadAdf is supplied (e.g. tasks data source),
+    // prefer it over the ph_issues column. Allows non-ph_issues callers
+    // to drive the editor content from their own column.
+    if (loadAdf !== undefined) return loadAdf;
     const raw = (issue?.description_adf ?? null) as unknown;
     return (raw as AdfDoc) ?? null;
-  }, [issue?.description_adf]);
+  }, [issue?.description_adf, loadAdf]);
 
   useEffect(() => {
     if (catyActiveForThisIssue) {
@@ -241,8 +261,16 @@ export function Description({ issue, label = 'Description' }: DescriptionProps) 
 
   const saveMutation = useMutation({
     mutationFn: async (adfJson: string) => {
+      const adf = JSON.parse(adfJson) as AdfDoc;
+      // When the caller provides a saveOverride, it owns the persistence
+      // path entirely (e.g. tasks.description plain-text write). The
+      // canonical ph_issues mutation is skipped — see CLAUDE.md "Adopt
+      // canonical components" rule (2026-06-01).
+      if (saveOverride) {
+        await saveOverride(adf);
+        return;
+      }
       if (!issue?.issue_key) return;
-      const adf = JSON.parse(adfJson);
       await supabase
         .from('ph_issues')
         .update({ description_adf: adf as unknown as never })

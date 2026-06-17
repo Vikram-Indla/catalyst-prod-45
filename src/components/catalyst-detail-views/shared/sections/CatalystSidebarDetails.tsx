@@ -42,7 +42,8 @@ const RAIL_BORDER_CSS = `
     transition: box-shadow 0.1s, background 0.1s;
   }
   .cv-rail-value:hover:not(:focus-within) {
-    box-shadow: inset 0 0 0 2px var(--ds-border, rgba(11,18,14,0.14));
+    /* 2026-06-17: border (inset box-shadow) removed — Vikram directive.
+       Hover bg alone is the affordance; the gray ring was extra chrome. */
     background: var(--ds-background-neutral-subtle-hovered, rgba(5,21,36,0.06));
   }
   .cv-rail-value:focus-within {
@@ -56,6 +57,49 @@ const RAIL_BORDER_CSS = `
   .cv-rail-value [class*="-select__control--menu-is-open"] {
     border-color: transparent !important;
     box-shadow: none !important;
+  }
+  /* 2026-06-17 — single hover background. .cv-rail-value owns the only
+     hover bg on the right rail. Inner atoms (react-select controls,
+     hand-rolled SidebarAddTrigger buttons, EditablePriority chips,
+     CatalystSeverityField, etc.) each ship their own hover bg — those
+     would stack on top of .cv-rail-value's hover and produce a visible
+     double background. Suppressed here on both idle and :hover. */
+  .cv-rail-value [class*="-select__control"],
+  .cv-rail-value [class*="-select__control"]:hover,
+  .cv-rail-value button,
+  .cv-rail-value button:hover {
+    background: transparent !important;
+  }
+  /* 2026-06-17 — avatar + name vertical centering. react-select's default
+     Control / ValueContainer / SingleValue use line-height baselines that
+     push content above the row's visual centre. Force flex centering at
+     every layer + symmetric zero padding so the avatar sits dead-centre. */
+  .cv-rail-value [class*="-select__control"] {
+    min-height: 32px !important;
+    height: 32px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .cv-rail-value [class*="-select__value-container"] {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+  }
+  .cv-rail-value [class*="-select__single-value"] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .cv-rail-value [class*="-select__input-container"] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 `;
 
@@ -256,6 +300,25 @@ interface CatalystSidebarDetailsProps {
   parentSource?: CatalystItemType;
   projectKey?: string;
   onOpenItem?: (key: string) => void;
+  /**
+   * Optional data-source adapter. When supplied, each callback overrides
+   * the corresponding canonical ph_issues mutation in this sidebar (and
+   * in the EditableAssignee/EditableReporter/EditablePriority/EditableLabels
+   * children it mounts). Enables non-ph_issues callers (tasks, business_requests)
+   * to reuse this canonical sidebar without forking. Per CLAUDE.md "Adopt
+   * canonical components" rule (2026-06-01). When the prop is omitted,
+   * the existing ph_issues write paths are preserved verbatim.
+   */
+  dataSource?: {
+    onAssigneeChange?: (accountId: string | null, displayName: string | null) => Promise<void> | void;
+    onAssignToMe?: () => Promise<void> | void;
+    onReporterChange?: (accountId: string | null, displayName: string | null) => Promise<void> | void;
+    onPriorityChange?: (priority: string | null) => Promise<void> | void;
+    onDueDateChange?: (date: string | null) => Promise<void> | void;
+    onLabelsChange?: (labels: string[]) => Promise<void> | void;
+    onFixVersionsChange?: (versions: string[]) => Promise<void> | void;
+    onComponentsChange?: (components: string[]) => Promise<void> | void;
+  };
 }
 
 export function CatalystSidebarDetails({
@@ -263,6 +326,7 @@ export function CatalystSidebarDetails({
   children, improveDropdown, statusPill, typeLabel = 'item',
   deleteRequested, onDeleteDismiss,
   parentSource, projectKey, onOpenItem,
+  dataSource,
 }: CatalystSidebarDetailsProps) {
   const queryClient = useQueryClient();
 
@@ -340,11 +404,23 @@ export function CatalystSidebarDetails({
   const handleAssignToMe = useCallback(async () => {
     if (!user) return;
     const displayName = (currentProfile as any)?.full_name ?? user.email ?? 'Me';
+    // dataSource adapter takes precedence — non-ph_issues callers handle
+    // their own assignee column (e.g. tasks.assignee_id).
+    if (dataSource?.onAssignToMe) {
+      await dataSource.onAssignToMe();
+      invalidateIssue();
+      return;
+    }
+    if (dataSource?.onAssigneeChange) {
+      await dataSource.onAssigneeChange(user.id, displayName);
+      invalidateIssue();
+      return;
+    }
     await (supabase as any).from('ph_issues')
       .update({ assignee_account_id: user.id, assignee_display_name: displayName })
       .eq('issue_key', itemId);
     invalidateIssue();
-  }, [user, currentProfile, itemId, invalidateIssue]);
+  }, [user, currentProfile, itemId, invalidateIssue, dataSource]);
 
   return (
     <>
@@ -392,6 +468,7 @@ export function CatalystSidebarDetails({
                         currentAssigneeId={issue.assignee_account_id}
                         currentAssigneeName={issue.assignee_display_name}
                         onUpdate={invalidateIssue}
+                        onChange={dataSource?.onAssigneeChange}
                       />
                     )}
                   </div>
@@ -406,6 +483,7 @@ export function CatalystSidebarDetails({
                       currentReporterId={issue.reporter_account_id}
                       currentReporterName={issue.reporter_display_name}
                       onUpdate={invalidateIssue}
+                      onChange={dataSource?.onReporterChange}
                     />
                   )}
                 </FieldRow>
@@ -417,6 +495,7 @@ export function CatalystSidebarDetails({
                       issueId={issue.id}
                       currentPriority={issue.priority}
                       onUpdate={invalidateIssue}
+                      onChange={dataSource?.onPriorityChange}
                     />
                   )}
                 </FieldRow>
@@ -438,6 +517,7 @@ export function CatalystSidebarDetails({
                       issueKey={issue.issue_key}
                       currentLabels={(issue as any).labels ?? []}
                       onUpdate={invalidateIssue}
+                      onChange={dataSource?.onLabelsChange}
                     />
                   )}
                 </FieldRow>
@@ -513,6 +593,7 @@ export function CatalystSidebarDetails({
                 currentAssigneeId={issue.assignee_account_id}
                 currentAssigneeName={issue.assignee_display_name}
                 onUpdate={invalidateIssue}
+                onChange={dataSource?.onAssigneeChange}
               />
             )}
           </FieldRow>
@@ -539,6 +620,7 @@ export function CatalystSidebarDetails({
                   issueId={issue.id}
                   currentPriority={issue.priority}
                   onUpdate={invalidateIssue}
+                  onChange={dataSource?.onPriorityChange}
                 />
               )}
             </FieldRow>
@@ -554,6 +636,7 @@ export function CatalystSidebarDetails({
                 currentReporterId={issue.reporter_account_id}
                 currentReporterName={issue.reporter_display_name}
                 onUpdate={invalidateIssue}
+                onChange={dataSource?.onReporterChange}
               />
             )}
           </FieldRow>
@@ -571,6 +654,7 @@ export function CatalystSidebarDetails({
                   issueKey={issue.issue_key}
                   currentLabels={(issue as any).labels ?? []}
                   onUpdate={invalidateIssue}
+                  onChange={dataSource?.onLabelsChange}
                 />
               )}
             </FieldRow>
@@ -598,11 +682,17 @@ export function CatalystSidebarDetails({
           {issue && issue.issue_type !== 'Epic'
             && (normalizeIssueTypeBucket(issue.issue_type) === 'subtask'
               || issue.issue_type === 'Production Incident'
-              || issue.issue_type === 'Change Request') && (
+              || issue.issue_type === 'Change Request'
+              || dataSource?.onDueDateChange) && (
             <FieldRow label="Due date" direction="row">
               <CatalystDueDateField
                 value={(issue as any).due_date ?? null}
                 onSave={async (date) => {
+                  if (dataSource?.onDueDateChange) {
+                    await dataSource.onDueDateChange(date);
+                    invalidateIssue();
+                    return;
+                  }
                   const { error } = await (supabase as any)
                     .from('ph_issues')
                     .update({ due_date: date })

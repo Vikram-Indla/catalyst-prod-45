@@ -3,9 +3,10 @@
  * code, e.g. "INV") and normalises them to the shared TimelineIssue shape
  * consumed by the canonical TimelineView.
  *
- * BR rows have only end_date (no startDate) and render as diamond markers
- * on the grid. Assignee display name + avatar are resolved from profiles via
- * the project_manager_user_id FK.
+ * BR rows now read BOTH start_date and end_date (2026-06-17) — when both
+ * are set they render as a bar from start→end, when only end_date is set
+ * they fall back to a diamond marker on the grid. Assignee display name +
+ * avatar are resolved from profiles via the project_manager_user_id FK.
  *
  * 2026-06-15 — BRs are parents. Each BR is rendered as a top-level row in
  * a flat list (no synthetic group buckets). Any `ph_issues` row whose
@@ -35,6 +36,7 @@ const BR_SELECT_NEW = `
   process_step,
   urgency,
   project_manager_user_id,
+  start_date,
   end_date,
   display_order,
   color_hex,
@@ -51,6 +53,7 @@ const BR_SELECT_LEGACY = `
   process_step,
   urgency,
   project_manager_user_id,
+  start_date,
   end_date,
   created_at,
   updated_at
@@ -204,7 +207,10 @@ export function useProductHubTimeline(productCode: string | undefined) {
           assigneeDisplayName: assignee?.name ?? null,
           assigneeAvatarUrl: assignee?.avatarUrl ?? null,
           parentKey: null,
-          startDate: null,
+          /* 2026-06-17: BRs now have a start_date column too. Reading it
+             lets the bar render start→end when both are present (was
+             always-diamond before). */
+          startDate: r.start_date ?? null,
           dueDate: r.end_date ?? null,
           epicColor: r.color_hex ?? null,
           fixVersions: [],

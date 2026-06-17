@@ -118,11 +118,15 @@ interface Props {
   /** Optional — enables inline-edit mutations that need the project/product UUID. */
   projectId?: string;
   /** 2026-06-15: mode switch — project = ph_issues (default). product =
-   *  business_requests filtered by productId, mapped via mapBrToWorkItem. */
-  mode?: 'project' | 'product';
+   *  business_requests filtered by productId. 2026-06-16: 'incident' =
+   *  ph_issues filtered by issue_type='Production Incident' across all
+   *  projects (used by /incident-hub/work). The 'tasks' branch is not a
+   *  mode value — it is activated by passing `tasksItems` below (treated
+   *  as orthogonal: tasks pre-fetched WorkItem[] vs server-side fetch). */
+  mode?: 'project' | 'product' | 'incident';
   /** Product mode only — used in the header and detail empty-state copy. */
   productName?: string;
-  /** tasks mode: pre-fetched WorkItem list. Skips project/product DB queries. */
+  /** tasks branch: pre-fetched WorkItem list. Skips project/product DB queries. */
   tasksItems?: WorkItem[];
   /** Entity kind forwarded to CatalystDetailRouter. Default 'ph_issue'. */
   entityKind?: 'ph_issue' | 'task';
@@ -138,7 +142,64 @@ const NARROW_BP = 480;
 
 export default function ProjectAllWorkView({ projectKey, projectId, mode = 'project', productName, tasksItems, entityKind = 'ph_issue' }: Props) {
   const isProduct = mode === 'product';
+  const isIncident = mode === 'incident';
   const isTasks = !!tasksItems;
+
+  /* ── Incident items (mode='incident') ───────────────────────────────────────
+     Fetches ph_issues where issue_type='Production Incident' across ALL
+     projects, ordered by most recent first. Maps to WorkItem shape so the
+     navigator / toolbar / detail router see uniform data — same approach as
+     the product branch but with a different source filter. */
+  const incidentItemsQuery = useQuery<WorkItem[]>({
+    queryKey: ['allwork-incident-items'],
+    enabled: isIncident,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, reporter_display_name, project_key, project_name, parent_key, parent_summary, labels, jira_created_at, jira_updated_at, due_date')
+        .eq('issue_type', 'Production Incident')
+        .is('deleted_at', null)
+        .is('archived_at', null)
+        .order('jira_updated_at', { ascending: false })
+        .limit(2000);
+      if (error) throw error;
+      return (data ?? []).map((r: any): WorkItem => ({
+        id: r.issue_key,
+        dbId: r.id,
+        projectId: r.project_key ?? '',
+        parentId: null,
+        parentKey: r.parent_key ?? null,
+        parentSummary: r.parent_summary ?? null,
+        jiraKey: r.issue_key,
+        type: 'task' as any,
+        rawType: r.issue_type ?? 'Production Incident',
+        summary: r.summary ?? '',
+        status: 'in_progress' as any,
+        statusName: r.status ?? '',
+        statusCategory: (r.status_category ?? 'in_progress') as any,
+        assigneeId: null,
+        assignee: r.assignee_display_name ? {
+          id: r.assignee_display_name, name: r.assignee_display_name,
+          avatarUrl: null, initials: '', color: '',
+        } : undefined,
+        reporterId: null,
+        reporter: r.reporter_display_name ? {
+          id: r.reporter_display_name, name: r.reporter_display_name,
+        } : undefined,
+        priority: (r.priority ?? 'medium') as any,
+        sprintRelease: null,
+        fixVersion: null,
+        commentsCount: 0,
+        childCount: 0,
+        createdAt: r.jira_created_at ?? '',
+        updatedAt: r.jira_updated_at ?? '',
+        createdBy: null,
+        severity: null,
+        labels: Array.isArray(r.labels) ? r.labels : [],
+      } as any));
+    },
+  });
 
   // PERF: useProjectAllWorkItems now returns paginated results with keyset cursor.
   // toolbarFilters is forwarded so server-side predicates are applied before LIMIT,
@@ -156,7 +217,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
      quickly, which is fine — we ignore that result and use the product
      branch below. */
   const projectQuery = useProjectAllWorkItems(
-    (isProduct || isTasks) ? undefined : projectKey,
+    (isProduct || isIncident || isTasks) ? undefined : projectKey,
     activeFilterJql ? EMPTY_FILTERS : toolbarFilters,
     activeFilterJql,
   );
@@ -201,15 +262,24 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
     [productBrs, productProfileMap, productStatusCategoryMap],
   );
 
-  /* Uniform shape consumed by the rest of the component. Product/tasks mode
-     keeps a single "page" with all items — no server-side pagination. */
-  const items: WorkItem[] = isTasks ? (tasksItems ?? []) : isProduct ? productItems : (projectQuery.items ?? []);
-  const rowsPerPage = isTasks ? Math.max(1, (tasksItems ?? []).length) : isProduct ? Math.max(1, productItems.length) : projectQuery.rowsPerPage;
-  const setRowsPerPage = (isTasks || isProduct) ? (() => {}) : projectQuery.setRowsPerPage;
-  const totalCount = isTasks ? (tasksItems ?? []).length : isProduct ? productItems.length : projectQuery.totalCount;
-  const page = (isTasks || isProduct) ? 1 : projectQuery.page;
-  const setPage = (isTasks || isProduct) ? (() => {}) : projectQuery.setPage;
-  const pageCount = (isTasks || isProduct) ? 1 : projectQuery.pageCount;
+  /* Uniform shape consumed by the rest of the component. Product / tasks /
+     incident modes use a single "page" with all items — no server-side
+     pagination. */
+  const incidentItems = (isIncident ? incidentItemsQuery.data ?? [] : []) as WorkItem[];
+  const items: WorkItem[] = isTasks
+    ? (tasksItems ?? [])
+    : isIncident
+      ? incidentItems
+      : isProduct
+        ? productItems
+        : (projectQuery.items ?? []);
+  const isSinglePageMode = isTasks || isProduct || isIncident;
+  const rowsPerPage = isSinglePageMode ? Math.max(1, items.length) : projectQuery.rowsPerPage;
+  const setRowsPerPage = isSinglePageMode ? (() => { /* no-op */ }) : projectQuery.setRowsPerPage;
+  const totalCount = isSinglePageMode ? items.length : projectQuery.totalCount;
+  const page = isSinglePageMode ? 1 : projectQuery.page;
+  const setPage = isSinglePageMode ? (() => { /* no-op */ }) : projectQuery.setPage;
+  const pageCount = isSinglePageMode ? 1 : projectQuery.pageCount;
 
   /* ── Filter URL params ────────────────────────────────────────────────────
      ?filterId=<uuid>    — navigated here by clicking a saved filter name
@@ -263,7 +333,10 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
     if (activeFilter && activeFilter.id !== appliedFilterIdRef.current) {
       appliedFilterIdRef.current = activeFilter.id;
       if (activeFilter.jql_query) {
-        if (isProduct) {
+        if (isProduct || isIncident) {
+          /* Client-side filter pass for surfaces without a server-side
+             JQL engine over their data (incidents = ph_issues filtered by
+             type, products = business_requests). */
           setToolbarFilters(jqlToFilterState(activeFilter.jql_query));
         } else {
           setActiveFilterJql(activeFilter.jql_query);
@@ -274,7 +347,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
       appliedFilterIdRef.current = null;
       setActiveFilterJql(undefined);
     }
-  }, [activeFilter, isProduct]);
+  }, [activeFilter, isProduct, isIncident]);
 
   /* Shift+F toggles the filter popup, mirroring Jira's "Press Shift + F
      to open and close" hint at the bottom of the popup. Skipped while
@@ -328,12 +401,13 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
       return next;
     }
     /* Project mode: server-side filter already applied; items as-is.
-       Product/tasks mode: not filtered server-side, apply client-side. */
-    if (isProduct || isTasks) {
+       Product / tasks / incident modes use a client-side filter pass since
+       their queries don't go through the JQL engine. */
+    if (isProduct || isTasks || isIncident) {
       return items.filter((i) => itemPassesFilters(i, toolbarFilters));
     }
     return items;
-  }, [items, catyActive, catyFilter, catySecondaryQuery, isProduct, isTasks, toolbarFilters]);
+  }, [items, catyActive, catyFilter, catySecondaryQuery, isProduct, isTasks, isIncident, toolbarFilters]);
 
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
@@ -455,7 +529,11 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           name + Add people / meatball / share / automation / feedback /
           fullscreen actions. The previous solo h2 was a Catalyst-only
           divergence with no parity reference on the Jira side. */}
-      {!isTasks && <ProjectPageHeader projectKey={projectKey} hubType={isProduct ? 'product' : undefined} />}
+      {/* 2026-06-16: in tasks + incident modes the projectKey is a hub
+          sentinel — ProjectPageHeader would query ph_projects and 404.
+          Both hubs render their own page chrome via the sidebar, so we
+          skip the header here. */}
+      {!isTasks && !isIncident && <ProjectPageHeader projectKey={projectKey} hubType={isProduct ? 'product' : undefined} />}
       {/* Filter context banner — shown when viewing a saved filter or in create-filter mode.
           Matches Jira's "Filter by: [name]" breadcrumb strip above the issue list. */}
       {(activeFilter || isCreateMode) && (
@@ -731,7 +809,13 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                     color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                     lineHeight: '20px',
                   }}>
-                    {isProduct ? 'Select a business request' : isTasks ? 'Select a task' : 'Select a work item'}
+                    {isProduct
+                      ? 'Select a business request'
+                      : isTasks
+                        ? 'Select a task'
+                        : isIncident
+                          ? 'Select an incident'
+                          : 'Select a work item'}
                   </p>
                   <p
                     data-testid="allwork-empty-state-subtitle"
@@ -745,8 +829,10 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                     {isProduct
                       ? 'Choose a request from the list to view its details, comments, and related work.'
                       : isTasks
-                      ? 'Choose a task from the list to view its details, comments, and related work.'
-                      : 'Choose an item from the list to view its details, comments, and related work.'}
+                        ? 'Choose a task from the list to view its details, comments, and related work.'
+                        : isIncident
+                          ? 'Choose an incident from the list to view its details, comments, and related work.'
+                          : 'Choose an item from the list to view its details, comments, and related work.'}
                   </p>
                 </div>
               </div>
@@ -773,7 +859,11 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
             itemId={isTasks
               ? (items.find(i => i.id === overlayItemId)?.dbId ?? overlayItemId ?? '')
               : (overlayItemId ?? '')}
-            {...(isProduct ? { itemType: 'business_request' as any } : {})}
+            {...(isProduct
+              ? { itemType: 'business_request' as any }
+              : isIncident
+                ? { itemType: 'incident' as any }
+                : {})}
             projectId={projectId ?? ''}
             projectKey={projectKey}
             onOpenItem={handleOpenItem}

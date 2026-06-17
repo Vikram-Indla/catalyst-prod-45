@@ -119,6 +119,13 @@ const ReqAssistGenerate = ENABLE_AI ? lazy(() => import("../pages/ReqAssistGener
 
 const IncidentHubListPage = lazy(() => import("../pages/incidenthub/IncidentListPage"));
 const IncidentHubKanbanPage = lazy(() => import("../pages/incidenthub/IncidentKanbanPage"));
+const IncidentHubWorkPage = lazy(() => import("../pages/incidenthub/IncidentWorkPage"));
+const IncidentHubBoardPage = lazy(() => import("../pages/incidenthub/IncidentBoardPage"));
+const IncidentHubFiltersListPage = lazy(() => import("../pages/incidenthub/IncidentFiltersListPage"));
+const IncidentHubFilterPreviewPage = lazy(() => import("../pages/incidenthub/IncidentFilterPreviewPage"));
+const IncidentHubFilterDetailPage = lazy(() => import("../pages/incidenthub/IncidentFilterDetailPage"));
+const IncidentHubTimelinePage = lazy(() => import("../pages/incidenthub/IncidentTimelinePage"));
+const IncidentHubDashboardPage = lazy(() => import("../pages/incidenthub/IncidentDashboardPage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
 const IncidentHubInsightsPage = lazy(() => import("../pages/incidenthub/IncidentInsightsPage"));
 const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentReportsPage"));
@@ -185,7 +192,13 @@ const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPag
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
 const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
+const TasksDetailPage = lazy(() => import("../modules/tasks/pages/TasksDetailPage"));
 const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
+/* 2026-06-17: Tasks Hub filters — canonical FiltersListPage / FilterDetailPage
+   / FilterPreviewPage mounted with hubType='tasks' / mode='tasks'. */
+const TasksFiltersListPage = lazy(() => import("../modules/tasks/pages/TasksFiltersListPage"));
+const TasksFilterPreviewPage = lazy(() => import("../modules/tasks/pages/TasksFilterPreviewPage"));
+const TasksFilterDetailPage = lazy(() => import("../modules/tasks/pages/TasksFilterDetailPage"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 const TestHubPage = lazy(() => import("../modules-dormant/testhub/TestHubPage"));
@@ -351,6 +364,32 @@ const S = ({ children }: { children: React.ReactNode }) => (
 /** Runtime module gate wrapper for route elements */
 function MG({ k, t, children }: { k: string; t: string; children: React.ReactNode }) {
   return <ModuleGate moduleKey={k} fallbackTitle={t}>{children}</ModuleGate>;
+}
+
+/* 2026-06-16: /incident-hub/backlog/:key alias. BacklogPage's default
+   "open in full page" URL pattern is {baseUrl}/backlog/{key}, but for
+   incidents the real detail route is /incident-hub/view/{UUID}. This
+   redirect resolves key → UUID via ph_issues and Navigate's there. */
+function IncidentBacklogKeyRedirect() {
+  const { key: incidentKey } = useParams<{ key: string }>();
+  const [uuid, setUuid] = React.useState<string | null | undefined>(undefined);
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!incidentKey) { setUuid(null); return; }
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('id')
+        .eq('issue_key', incidentKey)
+        .maybeSingle();
+      if (!cancelled) setUuid((data as { id: string } | null)?.id ?? null);
+    })();
+    return () => { cancelled = true; };
+  }, [incidentKey]);
+  if (uuid === undefined) return null;
+  if (!uuid) return <Navigate to="/incident-hub" replace />;
+  return <Navigate to={`/incident-hub/view/${uuid}`} replace />;
 }
 
 function Resource360Redirect() {
@@ -589,16 +628,31 @@ export default function FullAppRoutes() {
 
         <Route path="/work-tree" element={<S><WorkTreePage /></S>} />
 
-        <Route path="/tasks" element={<Navigate to="/tasks/board" replace />} />
-        {/* Deprecated 2026-06-17: /tasks/work removed — route cloned from project-hub but superseded by task-list view. */}
-        <Route path="/tasks/work" element={<Navigate to="/tasks/list" replace />} />
+        {/* 2026-06-17: default landing is Dashboard (matches project +
+            product + incident hubs). Board is reachable from the sidebar
+            or directly via /tasks/board. */}
+        <Route path="/tasks" element={<Navigate to="/tasks/overview" replace />} />
+        {/* 2026-06-17: /tasks/work re-introduced as the canonical Tasks
+            Hub All Work view (TasksWorkCanonical → ProjectAllWorkView
+            with tasksItems + entityKind='task'). The earlier redirect
+            to /tasks/list was deleted now that the real surface exists. */}
+        {/* 2026-06-17: full-page task detail. MUST be declared before
+            /tasks/:view so RR6's specificity ranking selects the
+            two-segment route for /tasks/view/<task-key>. */}
+        <Route path="/tasks/view/:taskKey" element={<S><TasksDetailPage /></S>} />
+        {/* 2026-06-17: Tasks Hub filters — canonical FiltersListPage /
+            FilterDetailPage / FilterPreviewPage. MUST be declared before
+            /tasks/:view so the static segment outranks the param route. */}
+        <Route path="/tasks/filters" element={<S><TasksFiltersListPage /></S>} />
+        <Route path="/tasks/filters/create" element={<S><TasksFilterPreviewPage /></S>} />
+        <Route path="/tasks/filters/:filterId" element={<S><TasksFilterDetailPage /></S>} />
         <Route path="/tasks/:view" element={<S><PlannerPage /></S>} />
         {/* Deprecated 2026-06-17: My Tasks + Workstreams removed. Static segment outranks /tasks/:view in RR6 → 404. */}
         <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />
         <Route path="/tasks/workstreams" element={<S><NotFound /></S>} />
 
         {/* Backward-compat redirects from old /taskhub routes */}
-        <Route path="/taskhub" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/taskhub" element={<Navigate to="/tasks/overview" replace />} />
         <Route path="/taskhub/boards" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub/task-list" element={<Navigate to="/tasks/list" replace />} />
         <Route path="/taskhub/dashboard" element={<Navigate to="/tasks/overview" replace />} />
@@ -648,13 +702,51 @@ export default function FullAppRoutes() {
         </Route>
 
         {/* ═══ IncidentHub ═══ */}
-        <Route path="/incident-hub" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubListPage /></S></MG>} />
-        <Route path="/incident-hub/kanban" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubKanbanPage /></S></MG>} />
+        {/* 2026-06-17: default landing is now Dashboard (matches project +
+            product hubs where /:hub/:key redirects to /:hub/:key/dashboard).
+            The All Incidents list moves to /incident-hub/all-incidents. */}
+        <Route path="/incident-hub" element={<Navigate to="/incident-hub/dashboard" replace />} />
+        <Route path="/incident-hub/all-incidents" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubListPage /></S></MG>} />
+        {/* 2026-06-16: Board tab — canonical KanbanPage with mode='incident'.
+            "Kanban" tab in the sidebar was renamed "Board" to match the
+            naming used by project + product hubs. Legacy /incident-hub/kanban
+            path redirects here so any existing link still lands on the
+            canonical surface. */}
+        <Route path="/incident-hub/board" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubBoardPage /></S></MG>} />
+        <Route path="/incident-hub/kanban" element={<Navigate to="/incident-hub/board" replace />} />
+        {/* 2026-06-16: Filters tab — canonical FiltersListPage / FilterPreviewPage /
+            FilterDetailPage with hubType='incident' / mode='incident'. Data is
+            ph_issues filtered to issue_type='Production Incident'; saves are
+            scoped via the 'INCIDENTS' projectKey sentinel. */}
+        <Route path="/incident-hub/filters" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFiltersListPage /></S></MG>} />
+        <Route path="/incident-hub/filters/create" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFilterPreviewPage /></S></MG>} />
+        <Route path="/incident-hub/filters/:filterId" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubFilterDetailPage /></S></MG>} />
+        {/* 2026-06-17: Timeline tab — canonical TimelineView with
+            useIncidentHubTimeline data (ph_issues filtered to
+            issue_type='Production Incident'). Same Gantt chrome as
+            /project-hub/:key/timeline and /product-hub/:key/timeline. */}
+        <Route path="/incident-hub/timeline" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubTimelinePage /></S></MG>} />
+        {/* 2026-06-17: Dashboard tab — canonical ProjectDashboardPage with
+            mode='incident'. Same 11-widget grid as project + product hubs,
+            with the 5 widgets that don't apply (Epic Progress, Scope
+            Change, Production Incidents peer, QA Defects, Time in Status)
+            dropped via hideOnIncident. Remaining widgets pull from
+            ph_issues filtered to issue_type='Production Incident'. */}
+        <Route path="/incident-hub/dashboard" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDashboardPage /></S></MG>} />
+        {/* 2026-06-16: Work tab — canonical ProjectAllWorkView with mode='incident'. */}
+        <Route path="/incident-hub/work" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubWorkPage /></S></MG>} />
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
         <Route path="/incident-hub/insights" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubInsightsPage /></S></MG>} />
         <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportsPage /></S></MG>} />
         <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
         <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
+        {/* 2026-06-16: redirect alias — the BacklogPage's default
+            "open in full page" pattern was {baseUrl}/backlog/{key} which
+            for incidents doesn't exist as a route. We resolve key → UUID
+            on the fly and redirect to /incident-hub/view/:uuid so any
+            stale link (cached chunk, manual paste, bookmarked URL) lands
+            on the real detail page instead of an empty router slot. */}
+        <Route path="/incident-hub/backlog/:key" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentBacklogKeyRedirect /></S></MG>} />
 
         <Route path="/release-hub" element={<Navigate to="/release-hub/command-center" replace />} />
         <Route path="/release-hub/command-center" element={<S><RH21CommandCenterPage /></S>} />
@@ -683,8 +775,8 @@ export default function FullAppRoutes() {
         <Route path="/tasks/priorities/*" element={<S><NotFound /></S>} />
 
         {/* Backward-compat redirects from old /planner routes */}
-        <Route path="/planner" element={<Navigate to="/tasks/board" replace />} />
-        <Route path="/planner/*" element={<Navigate to="/tasks/board" replace />} />
+        <Route path="/planner" element={<Navigate to="/tasks/overview" replace />} />
+        <Route path="/planner/*" element={<Navigate to="/tasks/overview" replace />} />
 
         <Route path="/planhub" element={<S><PlanLibraryPage /></S>} />
         <Route path="/planhub/plan/:planId" element={<S><PlanEditorPage /></S>} />

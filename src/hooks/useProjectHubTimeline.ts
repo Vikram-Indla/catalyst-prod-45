@@ -23,7 +23,7 @@ export interface TimelineIssue {
 }
 
 const SELECT_FIELDS =
-  'id, issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_display_name, parent_key, raw_json, position, jira_created_at, jira_updated_at';
+  'id, issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_display_name, parent_key, raw_json, position, due_date, effective_due_date, jira_created_at, jira_updated_at';
 
 const YEAR_2026_START = '2026-01-01T00:00:00Z';
 
@@ -35,9 +35,13 @@ function extractStartDate(rawJson: any): string | null {
   return null;
 }
 
-function extractDueDate(rawJson: any): string | null {
-  if (!rawJson?.fields) return null;
-  const due = rawJson.fields.duedate;
+/* 2026-06-17: prefer the dedicated columns over the raw_json fallback.
+   Detail-view writes use `.update({ due_date: ... })` on the column —
+   a timeline that only reads `raw_json.fields.duedate` will miss them. */
+function extractDueDate(row: any): string | null {
+  if (row?.effective_due_date && typeof row.effective_due_date === 'string') return row.effective_due_date;
+  if (row?.due_date && typeof row.due_date === 'string') return row.due_date;
+  const due = row?.raw_json?.fields?.duedate;
   if (due && typeof due === 'string') return due;
   return null;
 }
@@ -66,7 +70,7 @@ function mapRow(row: any): TimelineIssue {
     assigneeAvatarUrl: resolveAvatarUrl(row.assignee_display_name),
     parentKey: row.parent_key ?? null,
     startDate: extractStartDate(row.raw_json),
-    dueDate: extractDueDate(row.raw_json),
+    dueDate: extractDueDate(row),
     epicColor: extractEpicColor(row.raw_json),
     fixVersions: extractFixVersions(row.raw_json),
     children: [],

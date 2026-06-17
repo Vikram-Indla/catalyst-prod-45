@@ -83,8 +83,10 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     defaultPosition: 0,
     component: DemandFulfilmentGadget,
     /* Epics are a Jira-hierarchy concept; business_requests has no epic
-       linking. Hidden on product per PO + Vikram judgment (2026-06-15). */
+       linking. Hidden on product per PO + Vikram judgment (2026-06-15).
+       Incidents have no epic linking either — hidden on incident too. */
     hideOnProduct: true,
+    hideOnIncident: true,
   },
   {
     id: 'release-health',
@@ -95,6 +97,10 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 1,
     component: ReleaseHealthWidget,
+    /* Releases (rh_releases) are scoped per project — incidents are
+       cross-project, so there's no meaningful aggregation. Hidden on
+       incident hub. */
+    hideOnIncident: true,
   },
 
   // ─── §2 VOLUME & SHAPE ──────────────────────────────────────────────
@@ -119,8 +125,10 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     defaultPosition: 3,
     component: ScopeChangeWidget,
     /* No BR equivalent — business_requests has no scope_change tracking.
-       Hidden on product-hub dashboards per PO directive (2026-06-15). */
+       Hidden on product-hub dashboards per PO directive (2026-06-15).
+       Incidents have no scope concept — hidden on incident too. */
     hideOnProduct: true,
+    hideOnIncident: true,
   },
 
   // ─── §3 EXCEPTIONS ──────────────────────────────────────────────────
@@ -157,8 +165,11 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 6,
     component: ProductionIncidentsWidget,
-    /* No BR equivalent. Hidden on product per PO (2026-06-15). */
+    /* No BR equivalent. Hidden on product per PO (2026-06-15).
+       On incident hub the entire dashboard IS incidents — this peer-widget
+       is redundant, so hidden there too. */
     hideOnProduct: true,
+    hideOnIncident: true,
   },
   {
     id: 'qa-defects',
@@ -169,8 +180,10 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 7,
     component: QADefectsWidget,
-    /* No BR equivalent. Hidden on product per PO (2026-06-15). */
+    /* No BR equivalent. Hidden on product per PO (2026-06-15).
+       Not relevant on incident hub (incidents !== QA defects). */
     hideOnProduct: true,
+    hideOnIncident: true,
   },
 
   // ─── §5 CAPACITY & FLOW ─────────────────────────────────────────────
@@ -195,8 +208,11 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     defaultPosition: 9,
     component: TimeInStatusWidget,
     /* business_requests has no status_changed_at column — no time-in-status
-       computation possible. Hidden on product per PO (2026-06-15). */
+       computation possible. Hidden on product per PO (2026-06-15).
+       Incident hub: ph_issues has no status_changed_at column either, so
+       same constraint — hidden here too. */
     hideOnProduct: true,
+    hideOnIncident: true,
   },
 ];
 
@@ -205,10 +221,17 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
  * instead of WIDGET_REGISTRY directly so the four product-incompatible
  * widgets (scope-change, prod-incidents, qa-defects, time-in-status) are
  * automatically dropped from product-hub dashboards.
+ * 2026-06-17: same idea for incident hub — drops widgets that don't apply
+ * to a Production-Incident-filtered ph_issues view.
  */
-export function getWidgetRegistry(mode: 'project' | 'product' = 'project'): WidgetDefinition[] {
+export type DashboardRegistryMode = 'project' | 'product' | 'incident';
+
+export function getWidgetRegistry(mode: DashboardRegistryMode = 'project'): WidgetDefinition[] {
   if (mode === 'product') {
     return WIDGET_REGISTRY.filter((w) => !w.hideOnProduct);
+  }
+  if (mode === 'incident') {
+    return WIDGET_REGISTRY.filter((w) => !w.hideOnIncident);
   }
   return WIDGET_REGISTRY;
 }

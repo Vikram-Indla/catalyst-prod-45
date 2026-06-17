@@ -68,11 +68,31 @@ async function generateRequestKey(): Promise<string> {
   return `MIM-${maxNum + 1}`;
 }
 
+/* 2026-06-17: helper — resolve a task status NAME → task_statuses.id so
+   updateStatus can write `status_id` on the `tasks` row. The `status` arg
+   from the board is the column's primary status NAME. */
+async function resolveTaskStatusIdByName(name: string): Promise<string | null> {
+  const { data } = await (supabase as any)
+    .from('task_statuses').select('id').eq('name', name).maybeSingle();
+  return (data as { id: string } | null)?.id ?? null;
+}
+
 export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutations {
   const isProduct = mode === 'product';
+  const isTasks = mode === 'tasks';
 
   /* ── updateStatus ──────────────────────────────────────────────────── */
   const updateStatus = useCallback(async (issueId: string, status: string, category?: StatusCategory) => {
+    if (isTasks) {
+      const statusId = await resolveTaskStatusIdByName(status);
+      if (!statusId) throw new Error(`Unknown task status: ${status}`);
+      const { error } = await (supabase as any)
+        .from('tasks')
+        .update({ status_id: statusId, updated_at: new Date().toISOString() })
+        .eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isProduct) {
       const { error } = await (supabase as any)
         .from('business_requests')
@@ -86,17 +106,37 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     if (jiraCat) patch.status_category = jiraCat;
     const { error } = await supabase.from('ph_issues').update(patch).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   /* ── toggleFlag ────────────────────────────────────────────────────── */
   const toggleFlag = useCallback(async (issueId: string, isFlagged: boolean) => {
+    if (isTasks) {
+      /* tasks table has no is_flagged column — no-op so the card menu's
+         flag toggle silently does nothing instead of erroring. */
+      void isFlagged; void issueId;
+      return;
+    }
     const table = isProduct ? 'business_requests' : 'ph_issues';
     const { error } = await (supabase as any).from(table).update({ is_flagged: isFlagged }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   /* ── updateAssignee ────────────────────────────────────────────────── */
   const updateAssignee = useCallback(async (issueId: string, displayName: string | null, accountId: string | null) => {
+    if (isTasks) {
+      let profileId: string | null = null;
+      if (displayName) {
+        const { data } = await supabase
+          .from('profiles').select('id').eq('full_name', displayName).maybeSingle();
+        profileId = (data as { id: string } | null)?.id ?? null;
+      }
+      const { error } = await (supabase as any)
+        .from('tasks')
+        .update({ assignee_id: profileId, updated_at: new Date().toISOString() })
+        .eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isProduct) {
       /* Product: assignee is stored as `project_manager_user_id` (uuid) on
          business_requests. We need to resolve displayName → profile.id. If
@@ -119,11 +159,25 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       .update({ assignee_display_name: displayName, assignee_account_id: accountId })
       .eq('id', issueId);
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   /* ── createIssue ───────────────────────────────────────────────────── */
   const createIssue = useCallback(async (input: NewIssueInput) => {
     const now = new Date().toISOString();
+    if (isTasks) {
+      const statusId = await resolveTaskStatusIdByName(input.status);
+      if (!statusId) throw new Error(`Unknown task status: ${input.status}`);
+      const { error } = await (supabase as any).from('tasks').insert({
+        title: input.summary,
+        status_id: statusId,
+        priority: 'medium',
+        created_at: now,
+        updated_at: now,
+        ...(input.dueDate ? { due_date: input.dueDate } : {}),
+      });
+      if (error) throw error;
+      return;
+    }
     if (isProduct) {
       /* Product create: input.projectKey holds the product CODE. We need
          the product UUID for product_id. The host passes a product key here
@@ -164,10 +218,16 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       ...(input.dueDate ? { due_date: input.dueDate } : {}),
     });
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   /* ── updateSummary ─────────────────────────────────────────────────── */
   const updateSummary = useCallback(async (issueId: string, summary: string) => {
+    if (isTasks) {
+      const { error } = await (supabase as any)
+        .from('tasks').update({ title: summary, updated_at: new Date().toISOString() }).eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isProduct) {
       const { error } = await (supabase as any)
         .from('business_requests').update({ title: summary }).eq('id', issueId);
@@ -176,11 +236,17 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issues').update({ summary }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   /* ── addLabel ──────────────────────────────────────────────────────── */
   const addLabel = useCallback(async (issueId: string, current: string[], label: string) => {
     const next = Array.from(new Set([...(current ?? []), label]));
+    if (isTasks) {
+      const { error } = await (supabase as any)
+        .from('tasks').update({ tags: next, updated_at: new Date().toISOString() }).eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isProduct) {
       const { error } = await (supabase as any)
         .from('business_requests').update({ tags: next }).eq('id', issueId);
@@ -189,10 +255,16 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issues').update({ labels: next }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   /* ── archiveIssue ──────────────────────────────────────────────────── */
   const archiveIssue = useCallback(async (issueId: string) => {
+    if (isTasks) {
+      const { error } = await (supabase as any)
+        .from('tasks').update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isProduct) {
       /* business_requests has no archived_at — soft-delete instead, matching
          the OLD KanbanBoardPage product branch behavior. */
@@ -203,14 +275,14 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issues').update({ archived_at: new Date().toISOString() }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   /* ── deleteIssue ───────────────────────────────────────────────────── */
   const deleteIssue = useCallback(async (issueId: string) => {
-    const table = isProduct ? 'business_requests' : 'ph_issues';
+    const table = isTasks ? 'tasks' : isProduct ? 'business_requests' : 'ph_issues';
     const { error } = await (supabase as any).from(table).update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   /* ── setParent ─────────────────────────────────────────────────────── */
   const setParent = useCallback(async (issueId: string, parentKey: string | null, parentSummary: string | null) => {
@@ -230,15 +302,25 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       if (error) throw error;
       return;
     }
+    if (isTasks) {
+      /* tasks table has no parent_key / parent_summary columns — no-op. */
+      void parentKey; void parentSummary; void issueId;
+      return;
+    }
     const { error } = await supabase
       .from('ph_issues')
       .update({ parent_key: parentKey, parent_summary: parentSummary })
       .eq('id', issueId);
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   /* ── linkIssue ─────────────────────────────────────────────────────── */
   const linkIssue = useCallback(async (sourceKey: string, targetKey: string, linkType: string) => {
+    if (isTasks) {
+      /* No issue-links table for tasks in v1. No-op. */
+      void sourceKey; void targetKey; void linkType;
+      return;
+    }
     if (isProduct) {
       const { error } = await (supabase as any)
         .from('business_request_relations')
@@ -248,7 +330,7 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issue_links').insert({ source_id: sourceKey, target_id: targetKey, link_type: linkType });
     if (error) throw error;
-  }, [isProduct]);
+  }, [isProduct, isTasks]);
 
   return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue };
 }

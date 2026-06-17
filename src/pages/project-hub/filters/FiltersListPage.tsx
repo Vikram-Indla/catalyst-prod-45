@@ -46,7 +46,10 @@ import { relativeFromIso } from '@/components/shared/RelativeTime';
 import { supabase } from '@/integrations/supabase/client';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
-export type HubType = 'project' | 'product';
+/* 2026-06-17: 'tasks' added — same chrome, /tasks/filters links, no :key in
+ *  URL. Saves use the 'TASKS' projectKey sentinel. Per CLAUDE.md "ADOPT
+ *  CANONICAL COMPONENTS — DO NOT REIMPLEMENT". */
+export type HubType = 'project' | 'product' | 'incident' | 'tasks';
 
 interface FiltersListPageProps {
   hubType?: HubType;
@@ -137,7 +140,14 @@ type QuickTabId = 'all' | 'mine' | 'starred';
 interface SelectOption { label: string; value: string }
 
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
-  const { key: projectKey } = useParams<{ key: string }>();
+  const { key: routeKey } = useParams<{ key: string }>();
+  /* Incident hub has no :key in the URL — use the 'INCIDENTS' sentinel so
+     downstream code (save scope, list filtering) has a stable token.
+     2026-06-17: Tasks hub uses the 'TASKS' sentinel for the same reason. */
+  const projectKey =
+    hubType === 'incident' ? 'INCIDENTS'
+    : hubType === 'tasks' ? 'TASKS'
+    : routeKey;
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
@@ -164,7 +174,11 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   const createHref = hubType === 'product'
     ? `/product-hub/${projectKey}/filters/create`
-    : `/project-hub/${projectKey}/filters/create`;
+    : hubType === 'incident'
+      ? `/incident-hub/filters/create`
+      : hubType === 'tasks'
+        ? `/tasks/filters/create`
+        : `/project-hub/${projectKey}/filters/create`;
 
   // Keyboard shortcut: N opens the create flow (Jira pattern)
   React.useEffect(() => {
@@ -254,7 +268,11 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   const detailHref = (f: SavedFilterFull) => hubType === 'product'
     ? `/product-hub/${projectKey}/filters/create?filterId=${f.id}`
-    : `/project-hub/${projectKey}/filters/create?filterId=${f.id}`;
+    : hubType === 'incident'
+      ? `/incident-hub/filters/create?filterId=${f.id}`
+      : hubType === 'tasks'
+        ? `/tasks/filters/create?filterId=${f.id}`
+        : `/project-hub/${projectKey}/filters/create?filterId=${f.id}`;
 
   const columns = useMemo<Column<SavedFilterFull>[]>(() => [
     {
@@ -517,7 +535,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   return (
     <CatalystListPageLayout
-      chromeBand={projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined}
+      chromeBand={(hubType === 'incident' || hubType === 'tasks') ? undefined : (projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined)}
       tabs={QUICK_TABS}
       activeTab={quickTab}
       onTabChange={id => setQuickTab(id as QuickTabId)}
