@@ -192,6 +192,7 @@ const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPag
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
 const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
+const TasksDetailPage = lazy(() => import("../modules/tasks/pages/TasksDetailPage"));
 const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
@@ -628,6 +629,10 @@ export default function FullAppRoutes() {
         <Route path="/tasks" element={<Navigate to="/tasks/overview" replace />} />
         {/* Deprecated 2026-06-17: /tasks/work removed — route cloned from project-hub but superseded by task-list view. */}
         <Route path="/tasks/work" element={<Navigate to="/tasks/list" replace />} />
+        {/* 2026-06-17: full-page task detail. MUST be declared before
+            /tasks/:view so RR6's specificity ranking selects the
+            two-segment route for /tasks/view/<task-key>. */}
+        <Route path="/tasks/view/:taskKey" element={<S><TasksDetailPage /></S>} />
         <Route path="/tasks/:view" element={<S><PlannerPage /></S>} />
         {/* Deprecated 2026-06-17: My Tasks + Workstreams removed. Static segment outranks /tasks/:view in RR6 → 404. */}
         <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />

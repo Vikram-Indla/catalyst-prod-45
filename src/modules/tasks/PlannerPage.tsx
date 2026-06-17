@@ -10,7 +10,10 @@ import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } f
 import type { KanbanTask } from './types/kanban';
 import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
-import TasksTaskListView from './views/TasksTaskListView';
+/* TasksTaskListView retired 2026-06-17 — superseded by TasksTaskListCanonical,
+   which mounts the canonical BacklogPage with the tasks adapter (same UI
+   as /project-hub/:key/backlog and /product-hub/:key/backlog). */
+import TasksTaskListCanonical from './views/TasksTaskListCanonical';
 /* TasksBoardView (PragmaticBoard adapter) replaced 2026-06-17 by
    TasksBoardCanonical (features/kanban-board KanbanPage mode='tasks'). */
 import TasksBoardCanonical from './views/TasksBoardCanonical';
@@ -443,7 +446,7 @@ export function PlannerPage() {
            but no longer mounted from this route. */
         return <TasksBoardCanonical />;
       case 'task-list':
-        return <TasksTaskListView />;
+        return <TasksTaskListCanonical />;
       case 'timeline':
         // Phase 3 (2026-06-16): canonical TimelineView. Legacy
         // PlannerTimeline kept in the tree but unmounted from this route.

@@ -256,6 +256,25 @@ interface CatalystSidebarDetailsProps {
   parentSource?: CatalystItemType;
   projectKey?: string;
   onOpenItem?: (key: string) => void;
+  /**
+   * Optional data-source adapter. When supplied, each callback overrides
+   * the corresponding canonical ph_issues mutation in this sidebar (and
+   * in the EditableAssignee/EditableReporter/EditablePriority/EditableLabels
+   * children it mounts). Enables non-ph_issues callers (tasks, business_requests)
+   * to reuse this canonical sidebar without forking. Per CLAUDE.md "Adopt
+   * canonical components" rule (2026-06-01). When the prop is omitted,
+   * the existing ph_issues write paths are preserved verbatim.
+   */
+  dataSource?: {
+    onAssigneeChange?: (accountId: string | null, displayName: string | null) => Promise<void> | void;
+    onAssignToMe?: () => Promise<void> | void;
+    onReporterChange?: (accountId: string | null, displayName: string | null) => Promise<void> | void;
+    onPriorityChange?: (priority: string | null) => Promise<void> | void;
+    onDueDateChange?: (date: string | null) => Promise<void> | void;
+    onLabelsChange?: (labels: string[]) => Promise<void> | void;
+    onFixVersionsChange?: (versions: string[]) => Promise<void> | void;
+    onComponentsChange?: (components: string[]) => Promise<void> | void;
+  };
 }
 
 export function CatalystSidebarDetails({
@@ -263,6 +282,7 @@ export function CatalystSidebarDetails({
   children, improveDropdown, statusPill, typeLabel = 'item',
   deleteRequested, onDeleteDismiss,
   parentSource, projectKey, onOpenItem,
+  dataSource,
 }: CatalystSidebarDetailsProps) {
   const queryClient = useQueryClient();
 
@@ -340,11 +360,23 @@ export function CatalystSidebarDetails({
   const handleAssignToMe = useCallback(async () => {
     if (!user) return;
     const displayName = (currentProfile as any)?.full_name ?? user.email ?? 'Me';
+    // dataSource adapter takes precedence — non-ph_issues callers handle
+    // their own assignee column (e.g. tasks.assignee_id).
+    if (dataSource?.onAssignToMe) {
+      await dataSource.onAssignToMe();
+      invalidateIssue();
+      return;
+    }
+    if (dataSource?.onAssigneeChange) {
+      await dataSource.onAssigneeChange(user.id, displayName);
+      invalidateIssue();
+      return;
+    }
     await (supabase as any).from('ph_issues')
       .update({ assignee_account_id: user.id, assignee_display_name: displayName })
       .eq('issue_key', itemId);
     invalidateIssue();
-  }, [user, currentProfile, itemId, invalidateIssue]);
+  }, [user, currentProfile, itemId, invalidateIssue, dataSource]);
 
   return (
     <>
@@ -392,6 +424,7 @@ export function CatalystSidebarDetails({
                         currentAssigneeId={issue.assignee_account_id}
                         currentAssigneeName={issue.assignee_display_name}
                         onUpdate={invalidateIssue}
+                        onChange={dataSource?.onAssigneeChange}
                       />
                     )}
                   </div>
@@ -406,6 +439,7 @@ export function CatalystSidebarDetails({
                       currentReporterId={issue.reporter_account_id}
                       currentReporterName={issue.reporter_display_name}
                       onUpdate={invalidateIssue}
+                      onChange={dataSource?.onReporterChange}
                     />
                   )}
                 </FieldRow>
@@ -417,6 +451,7 @@ export function CatalystSidebarDetails({
                       issueId={issue.id}
                       currentPriority={issue.priority}
                       onUpdate={invalidateIssue}
+                      onChange={dataSource?.onPriorityChange}
                     />
                   )}
                 </FieldRow>
@@ -438,6 +473,7 @@ export function CatalystSidebarDetails({
                       issueKey={issue.issue_key}
                       currentLabels={(issue as any).labels ?? []}
                       onUpdate={invalidateIssue}
+                      onChange={dataSource?.onLabelsChange}
                     />
                   )}
                 </FieldRow>
@@ -513,6 +549,7 @@ export function CatalystSidebarDetails({
                 currentAssigneeId={issue.assignee_account_id}
                 currentAssigneeName={issue.assignee_display_name}
                 onUpdate={invalidateIssue}
+                onChange={dataSource?.onAssigneeChange}
               />
             )}
           </FieldRow>
@@ -539,6 +576,7 @@ export function CatalystSidebarDetails({
                   issueId={issue.id}
                   currentPriority={issue.priority}
                   onUpdate={invalidateIssue}
+                  onChange={dataSource?.onPriorityChange}
                 />
               )}
             </FieldRow>
@@ -554,6 +592,7 @@ export function CatalystSidebarDetails({
                 currentReporterId={issue.reporter_account_id}
                 currentReporterName={issue.reporter_display_name}
                 onUpdate={invalidateIssue}
+                onChange={dataSource?.onReporterChange}
               />
             )}
           </FieldRow>
@@ -571,6 +610,7 @@ export function CatalystSidebarDetails({
                   issueKey={issue.issue_key}
                   currentLabels={(issue as any).labels ?? []}
                   onUpdate={invalidateIssue}
+                  onChange={dataSource?.onLabelsChange}
                 />
               )}
             </FieldRow>
@@ -598,11 +638,17 @@ export function CatalystSidebarDetails({
           {issue && issue.issue_type !== 'Epic'
             && (normalizeIssueTypeBucket(issue.issue_type) === 'subtask'
               || issue.issue_type === 'Production Incident'
-              || issue.issue_type === 'Change Request') && (
+              || issue.issue_type === 'Change Request'
+              || dataSource?.onDueDateChange) && (
             <FieldRow label="Due date" direction="row">
               <CatalystDueDateField
                 value={(issue as any).due_date ?? null}
                 onSave={async (date) => {
+                  if (dataSource?.onDueDateChange) {
+                    await dataSource.onDueDateChange(date);
+                    invalidateIssue();
+                    return;
+                  }
                   const { error } = await (supabase as any)
                     .from('ph_issues')
                     .update({ due_date: date })

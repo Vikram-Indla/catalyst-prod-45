@@ -83,6 +83,22 @@ interface CatalystKeyDetailsProps {
    *  Defects add: Severity, Found in build, Fix in build, Root Cause,
    *  Resolution. Incidents add: Severity, Impacted services, MTTR. */
   extraRows?: React.ReactNode;
+  /**
+   * 2026-06-17 — adapter for non-ph_issues data sources (tasks hub).
+   * When `onPriorityChange` is set, EditablePriority's internal
+   * ph_issues mutation is bypassed and the override owns the write.
+   * Mirrors the same pattern added to CatalystSidebarDetails.
+   */
+  dataSource?: {
+    onPriorityChange?: (value: string | null) => Promise<void> | void;
+    /**
+     * Override priority option list. Tasks Hub uses a 4-level scale
+     * (Critical/High/Medium/Low) instead of the canonical 5-level Jira
+     * scale (Highest/High/Medium/Low/Lowest). When omitted, the default
+     * PRIORITY_LIST inside EditablePriority is used.
+     */
+    priorityOptions?: string[];
+  };
 }
 
 export function CatalystKeyDetails({
@@ -91,6 +107,7 @@ export function CatalystKeyDetails({
   showPriority = true,
   defaultCollapsed = false,
   extraRows,
+  dataSource,
 }: CatalystKeyDetailsProps) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const queryClient = useQueryClient();
@@ -157,6 +174,8 @@ export function CatalystKeyDetails({
                   issueId={issue.id}
                   currentPriority={issue.priority}
                   onUpdate={invalidateIssue}
+                  onChange={dataSource?.onPriorityChange}
+                  options={dataSource?.priorityOptions}
                 />
               )}
             </FieldRow>

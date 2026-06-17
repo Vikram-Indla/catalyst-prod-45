@@ -1150,6 +1150,7 @@ export function CatalystShell() {
             projectId={pendingItem.projectId || ""}
             projectKey={pendingItem.projectKey || ""}
             itemType={pendingItem.itemType}
+            entityKind={pendingItem.entityKind}
           />
         </Suspense>
       )}

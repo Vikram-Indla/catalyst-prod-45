@@ -591,7 +591,14 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[] }) {
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds, initialOpenItemId }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[];
+  /* 2026-06-17: when set, BacklogPage opens the right side-panel for
+     the matching row on first render. Used by the canonical
+     "Open in full page" button on TaskCatalystView so the landing URL
+     `/tasks/list?openTask=<id>` lands with the panel already open
+     instead of an empty list page. */
+  initialOpenItemId?: string;
+}) {
   // Optional adapter — when present, BacklogPage reads rows + status vocab
   // from the adapter (e.g. business_requests for product hub) and routes all
   // mutations through it. When absent, behavior is identical to today's
@@ -1989,6 +1996,21 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       key: it.key ?? null,
     });
   }, [projectKey, dataSource, resolvedBaseUrl]);
+
+  /* 2026-06-17: open the panel on first render when the caller asks for
+     it (e.g. /tasks/list?openTask=<id> landing from the "Open in full
+     page" button on TaskCatalystView). Runs once per id — find the row
+     by id, then call openDetail. Guard against running before items hydrate. */
+  const initialOpenAppliedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!initialOpenItemId) return;
+    if (initialOpenAppliedRef.current === initialOpenItemId) return;
+    if (!items || items.length === 0) return;
+    const match = items.find((it: any) => it.id === initialOpenItemId || (it as any).issue_key === initialOpenItemId);
+    if (!match) return;
+    initialOpenAppliedRef.current = initialOpenItemId;
+    openDetail(match);
+  }, [initialOpenItemId, items, openDetail]);
   // Detail callbacks removed 2026-05-12 task E: no longer managing panel state.
 
   // Detail navigation (j/k keys) removed 2026-05-12 task E: detail view now
@@ -4014,16 +4036,27 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               onClose={closePanel}
               itemId={panelItem.id}
               itemType={panelItem.itemType}
+              /* 2026-06-17: forward entityKind from the data-source adapter
+                 so the panel mounts TaskCatalystView (tasks) instead of the
+                 default ph_issues-backed flow. */
+              entityKind={dataSource?.entityKind}
               typeIconLabel={typeIconLabel}
               projectKey={projectKey ?? ''}
               projectId={projectId}
               onOpenFullPage={() => {
-                /* 2026-06-16: defer to the adapter when present — surfaces
-                   like incident hub don't have a {baseUrl}/backlog/{key}
-                   route, so the default navigate produces a blank page.
-                   The adapter knows its own detail URL (e.g.
-                   /incident-hub/view/{UUID}). */
-                if (dataSource?.onOpenItem) {
+                /* 2026-06-17: full-page routing for every hub.
+                   - tasks (entityKind='task'): /tasks/view/<task-key>
+                     mounted by TasksDetailPage (CatalystDetailRouter +
+                     entityKind=task + fullPageMode).
+                   - incidents adapter: onOpenItem navigates to
+                     /incident-hub/view/<uuid>. Tasks adapter onOpenItem
+                     opens a centred modal via globalOpenDetail — that's
+                     why we gate on entityKind first.
+                   - default project-hub path:
+                     {baseUrl}/backlog/<issue-key>. */
+                if (dataSource?.entityKind === 'task' && panelItem.key) {
+                  navigate(`/tasks/view/${panelItem.key}`);
+                } else if (dataSource?.onOpenItem) {
                   dataSource.onOpenItem(panelItem.key ?? null, panelItem.id);
                 } else {
                   navigate(`${resolvedBaseUrl}/backlog/${panelItem.id}`);

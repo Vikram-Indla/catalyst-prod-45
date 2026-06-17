@@ -7,6 +7,13 @@ export interface PendingDetailItem {
   /** Work item type hint — allows CatalystDetailRouter to skip a DB lookup */
   itemType?: string;
   /**
+   * 2026-06-17: hub-level entity routing. CatalystDetailRouter short-circuits
+   * on entityKind='task' to mount TaskCatalystView (tasks live in their own
+   * `tasks` table, not ph_issues). Other values fall through to the standard
+   * itemType-based routing.
+   */
+  entityKind?: 'task' | 'ph_issue';
+  /**
    * Open as the right-side panel (the same affordance backlog rows use)
    * instead of the default centred modal. Defaults to false.
    */
