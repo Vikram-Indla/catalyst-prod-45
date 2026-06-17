@@ -12,7 +12,7 @@ import {
   FileText,
   Users,
 } from '@/lib/atlaskit-icons';
-import { NavWorkIcon, NavFiltersIcon, NavTimelineIcon } from '@/lib/nav-icons';
+import { NavWorkIcon, NavFiltersIcon, NavTimelineIcon, NavDashboardIcon } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface IncidentHubSidebarProps {
@@ -35,7 +35,10 @@ const sections: SidebarSection[] = [
   {
     title: '',
     items: [
-      { id: 'incident-list', title: 'All Incidents', path: '/incident-hub', icon: List, exact: true, badgeVariant: 'danger' },
+      /* 2026-06-17: Dashboard as first item to match project + product
+         hubs (Dashboard → Backlog/Board → Work → …). */
+      { id: 'dashboard', title: 'Dashboard', path: '/incident-hub/dashboard', icon: NavDashboardIcon, exact: false },
+      { id: 'incident-list', title: 'All Incidents', path: '/incident-hub/all-incidents', icon: List, exact: false, badgeVariant: 'danger' },
       { id: 'analytics', title: 'Analytics', path: '/incident-hub/analytics', icon: BarChart3, exact: false },
       { id: 'insights', title: 'Insights', path: '/incident-hub/insights', icon: Sparkles, exact: false },
       /* 2026-06-16: "Kanban" → "Board" — matches the label used by

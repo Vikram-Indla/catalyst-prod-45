@@ -35,7 +35,7 @@ interface DashboardWidgetGridProps {
   onToggleCollapse?: (widgetId: string) => void;
   onRemoveWidget?: (widgetId: string) => void;
   /** 2026-06-15: filters the widget registry — see getWidgetRegistry. */
-  mode?: 'project' | 'product';
+  mode?: 'project' | 'product' | 'incident';
 }
 
 export interface DashboardWidgetConfig {
@@ -72,7 +72,7 @@ export function effectiveSpan(w: ResolvedWidget): number {
 
 export function resolveWidgets(
   configs: DashboardWidgetConfig[],
-  mode: 'project' | 'product' = 'project',
+  mode: 'project' | 'product' | 'incident' = 'project',
 ): ResolvedWidget[] {
   const map = new Map(configs.map((c) => [c.widget_id, c]));
   return getWidgetRegistry(mode).map((def) => {
@@ -92,7 +92,7 @@ export function resolveWidgets(
 // Persistence hook — query, init, upsert, bulk upsert, reset.
 // ────────────────────────────────────────────────────────────────────
 
-export function useDashboardWidgetConfig(projectId: string, mode: 'project' | 'product' = 'project') {
+export function useDashboardWidgetConfig(projectId: string, mode: 'project' | 'product' | 'incident' = 'project') {
   const { user } = useAuth();
   const userId = user?.id;
   const queryClient = useQueryClient();
@@ -395,11 +395,16 @@ export default function DashboardWidgetGrid({
           maxWidth: '100%',
         }}
       >
-        {visibleWidgets.map((w, idx) => {
+        {visibleWidgets.map((w) => {
           const span = effectiveSpan(w);
           const WidgetComponent = w.component;
-          // First visible widget is always expanded (Vikram directive).
-          const isCollapsed = idx === 0 ? false : w.collapsed;
+          /* 2026-06-17: removed the "first widget always expanded"
+             override per Vikram. Toggles on the top widget were firing
+             + persisting but the render was ignoring `w.collapsed` for
+             idx === 0, so the top row could never collapse on project,
+             product, or incident dashboards. Now every widget honours
+             its persisted collapsed state. */
+          const isCollapsed = w.collapsed;
           return (
             <div
               key={w.id}

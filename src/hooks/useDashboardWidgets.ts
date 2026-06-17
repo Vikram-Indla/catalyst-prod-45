@@ -154,7 +154,25 @@ export function resolveAvatarUrl(avatarMap: Map<string, string | null>, displayN
   return avatarMap.get(displayName.toLowerCase()) || null;
 }
 
+/* 2026-06-17: incident-hub dashboard uses these sentinels so the existing
+   project_key plumbing routes correctly. `getProjectKey` short-circuits
+   the sentinel UUID to the sentinel key — no DB lookup needed. Every
+   ph_issues query then filters with `scopeFilter` instead of a raw
+   `.eq('project_key', pKey)` so an INCIDENTS pKey swaps to an
+   `issue_type='Production Incident'` filter (cross-project) automatically. */
+export const INCIDENT_SENTINEL_KEY = 'INCIDENTS';
+export const INCIDENT_SENTINEL_ID = '00000000-0000-0000-0000-000000000001';
+
+/** Apply the right hub scope to a ph_issues query builder. */
+function scopeFilter<T>(q: T, pKey: string): T {
+  if (pKey === INCIDENT_SENTINEL_KEY) {
+    return (q as any).eq('issue_type', 'Production Incident');
+  }
+  return (q as any).eq('project_key', pKey);
+}
+
 async function getProjectKey(projectId: string): Promise<string | null> {
+  if (projectId === INCIDENT_SENTINEL_ID) return INCIDENT_SENTINEL_KEY;
   // Try ph_projects first (dashboard resolves projectId from ph_projects);
   // fall back to canonical projects table for legacy callers.
   const { data: ph } = await supabase.from('ph_projects').select('key').eq('id', projectId).maybeSingle();
@@ -255,15 +273,19 @@ export function useDashboardStatusCounts(
         blockedDetail: { onHold: 0, awaitingInfo: 0, blocked: 0 },
       };
 
-      let q = supabase
+      let q: any = supabase
         .from('ph_issues')
         .select('status_category, status')
-        .eq('project_key', pKey)
         .is('deleted_at', null);
+      q = scopeFilter(q, pKey);
 
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo)   q = q.lte('jira_created_at', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
+      /* 2026-06-17: skip fiscal-scope auto-filter in incident mode —
+         incidents are cross-project so there's no single fiscal year. */
+      if (!dateFrom && !dateTo && pKey !== INCIDENT_SENTINEL_KEY) {
+        q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
+      }
 
       // Apply Release / Assignee / Item Type / Priority / Status filters
       // from the gadget settings panel (Layer 2). Same helper used by all
@@ -322,10 +344,9 @@ export function useDashboardOverdueItems(
       if (!pKey) return [];
 
       const today = new Date().toISOString().split('T')[0];
-      let q = supabase
+      let q: any = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, status_category, effective_due_date, assignee_display_name, issue_type')
-        .eq('project_key', pKey)
         .is('deleted_at', null)
         .neq('status_category', 'Done')
         // 2026-06-09 Vikram parity — exclude subtasks (Backend / Frontend /
@@ -334,10 +355,13 @@ export function useDashboardOverdueItems(
         .not('issue_type', 'in', '("Sub-task","Subtask","Backend","Frontend","Integration","API Requirement","API Req")')
         .lt('effective_due_date', today)
         .not('effective_due_date', 'is', null);
+      q = scopeFilter(q, pKey);
 
       if (dateFrom) q = q.gte('effective_due_date', dateFrom);
       if (dateTo) q = q.lte('effective_due_date', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(await fiscalScopeFor(pKey,'effective_due_date', 'effective_due_date'));
+      if (!dateFrom && !dateTo && pKey !== INCIDENT_SENTINEL_KEY) {
+        q = q.or(await fiscalScopeFor(pKey,'effective_due_date', 'effective_due_date'));
+      }
 
       q = applyPhIssuesLayer2Filters(q, filters);
 
@@ -367,18 +391,20 @@ export function useDashboardOnHoldItems(
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      let q = supabase
+      let q: any = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, status_category, assignee_display_name, issue_type')
-        .eq('project_key', pKey)
         .is('deleted_at', null)
         // 2026-06-09 Vikram parity — exclude subtasks.
         .not('issue_type', 'in', '("Sub-task","Subtask","Backend","Frontend","Integration","API Requirement","API Req")')
         .or('status.ilike.%hold%,status.ilike.%block%,status.ilike.%awaiting%,status.ilike.%impediment%');
+      q = scopeFilter(q, pKey);
 
       if (dateFrom) q = q.gte('jira_updated_at', dateFrom);
       if (dateTo) q = q.lte('jira_updated_at', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
+      if (!dateFrom && !dateTo && pKey !== INCIDENT_SENTINEL_KEY) {
+        q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
+      }
 
       q = applyPhIssuesLayer2Filters(q, filters);
 
@@ -409,15 +435,17 @@ export function useDashboardTeamWorkload(
       // 2026-06-09 — KPI strip now shows ToDo / In Progress / Done counts so
       // the Done filter is removed; row-level "open" totals are derived
       // (todo + inprogress) at the consumer.
-      let q = supabase
+      let q: any = supabase
         .from('ph_issues')
         .select('assignee_display_name, assignee_account_id, issue_type, status_category')
-        .eq('project_key', pKey)
         .is('deleted_at', null);
+      q = scopeFilter(q, pKey);
 
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo) q = q.lte('jira_created_at', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
+      if (!dateFrom && !dateTo && pKey !== INCIDENT_SENTINEL_KEY) {
+        q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
+      }
 
       q = applyPhIssuesLayer2Filters(q, filters);
 

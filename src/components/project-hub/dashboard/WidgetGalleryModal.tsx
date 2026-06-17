@@ -22,8 +22,8 @@ interface WidgetGalleryModalProps {
   widgets: { id: string; visible: boolean }[];
   onToggleVisibility: (widgetId: string) => void;
   onReset: () => void;
-  /** 2026-06-15: mode-aware. Product hides BR-incompatible widgets. */
-  mode?: 'project' | 'product';
+  /** 2026-06-15: mode-aware. Product/incident hide widgets that don't apply. */
+  mode?: 'project' | 'product' | 'incident';
 }
 
 export default function WidgetGalleryModal({

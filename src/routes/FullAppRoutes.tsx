@@ -124,6 +124,7 @@ const IncidentHubFiltersListPage = lazy(() => import("../pages/incidenthub/Incid
 const IncidentHubFilterPreviewPage = lazy(() => import("../pages/incidenthub/IncidentFilterPreviewPage"));
 const IncidentHubFilterDetailPage = lazy(() => import("../pages/incidenthub/IncidentFilterDetailPage"));
 const IncidentHubTimelinePage = lazy(() => import("../pages/incidenthub/IncidentTimelinePage"));
+const IncidentHubDashboardPage = lazy(() => import("../pages/incidenthub/IncidentDashboardPage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
 const IncidentHubInsightsPage = lazy(() => import("../pages/incidenthub/IncidentInsightsPage"));
 const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentReportsPage"));
@@ -681,7 +682,11 @@ export default function FullAppRoutes() {
         </Route>
 
         {/* ═══ IncidentHub ═══ */}
-        <Route path="/incident-hub" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubListPage /></S></MG>} />
+        {/* 2026-06-17: default landing is now Dashboard (matches project +
+            product hubs where /:hub/:key redirects to /:hub/:key/dashboard).
+            The All Incidents list moves to /incident-hub/all-incidents. */}
+        <Route path="/incident-hub" element={<Navigate to="/incident-hub/dashboard" replace />} />
+        <Route path="/incident-hub/all-incidents" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubListPage /></S></MG>} />
         {/* 2026-06-16: Board tab — canonical KanbanPage with mode='incident'.
             "Kanban" tab in the sidebar was renamed "Board" to match the
             naming used by project + product hubs. Legacy /incident-hub/kanban
@@ -701,6 +706,13 @@ export default function FullAppRoutes() {
             issue_type='Production Incident'). Same Gantt chrome as
             /project-hub/:key/timeline and /product-hub/:key/timeline. */}
         <Route path="/incident-hub/timeline" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubTimelinePage /></S></MG>} />
+        {/* 2026-06-17: Dashboard tab — canonical ProjectDashboardPage with
+            mode='incident'. Same 11-widget grid as project + product hubs,
+            with the 5 widgets that don't apply (Epic Progress, Scope
+            Change, Production Incidents peer, QA Defects, Time in Status)
+            dropped via hideOnIncident. Remaining widgets pull from
+            ph_issues filtered to issue_type='Production Incident'. */}
+        <Route path="/incident-hub/dashboard" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDashboardPage /></S></MG>} />
         {/* 2026-06-16: Work tab — canonical ProjectAllWorkView with mode='incident'. */}
         <Route path="/incident-hub/work" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubWorkPage /></S></MG>} />
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
