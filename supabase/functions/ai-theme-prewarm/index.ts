@@ -1,19 +1,10 @@
 /**
  * ai-theme-prewarm — nightly pg_cron pre-warm for AI Focus (ai_theme_cache).
  *
- * Scheduled at 18:00 UTC (= 21:00 AST, Riyadh) daily by pg_cron:
- *   SELECT cron.schedule(
- *     'ai-theme-prewarm-daily',
- *     '0 18 * * *',
- *     $$SELECT net.http_post(
- *       url := current_setting('app.supabase_url') || '/functions/v1/ai-theme-prewarm',
- *       headers := jsonb_build_object(
- *         'Authorization', 'Bearer ' || current_setting('app.service_role_key'),
- *         'Content-Type', 'application/json'
- *       ),
- *       body := '{}'::jsonb
- *     )$$
- *   );
+ * Scheduled at 03:00 UTC (= 06:00 AST, Riyadh) daily by pg_cron. The cron
+ * reads the shared secret from ai_theme_prewarm_config at runtime (the GUC
+ * pattern is broken in this project — app.settings.* are unset). See
+ * supabase/migrations/20260618000300_ai_theme_prewarm_cron.sql.
  *
  * What it does
  * ─────────────
@@ -33,10 +24,10 @@
  *
  * Security
  * ─────────
- * Called exclusively by pg_cron using the service_role_key — never via the
- * anon key or user JWT. Validates the Authorization header against
- * PREWARM_SECRET env var (set equal to service_role_key in the Supabase
- * dashboard Secrets panel).
+ * verify_jwt is OFF (custom auth). The handler authorises the bearer against
+ * the service_role_key, LIFECYCLE_CRON_SECRET, or the ai_theme_prewarm_config
+ * secret — never the anon key. When it calls ai-digest it presents the
+ * service_role_key + X-User-Id-Override so the digest acts on each user's behalf.
  */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
@@ -53,18 +44,46 @@ const ACTIVE_DAYS = 30; // only pre-warm users who ran themes in last 30 days
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  // Auth: pg_cron calls this with a Bearer secret. Accept either the
-  // service_role_key (legacy/manual invocation) OR LIFECYCLE_CRON_SECRET —
-  // the same secret the other Catalyst edge-function crons use
-  // (routing-taxonomy-scan etc.). This lets the daily 06:00 Riyadh schedule
-  // authenticate via a GUC (app.settings.lifecycle_cron_secret) without ever
-  // putting the service_role_key in a migration / git.
-  const authHeader = req.headers.get("Authorization") ?? "";
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const cronSecret = Deno.env.get("LIFECYCLE_CRON_SECRET");
+  const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+
+  if (!serviceRoleKey) {
+    console.error("[prewarm] SUPABASE_SERVICE_ROLE_KEY not configured — aborting");
+    return new Response(JSON.stringify({ error: "service role not configured" }), {
+      status: 503,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // Service-role client: can read/write all rows bypassing RLS.
+  const supabase = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { persistSession: false },
+  });
+
+  // Auth: pg_cron presents a Bearer secret. Accept the service_role_key, the
+  // LIFECYCLE_CRON_SECRET env, OR the runtime secret stored in
+  // ai_theme_prewarm_config (read here via the service-role client). The
+  // DB-secret path is what the 06:00 Riyadh cron uses — it reads the same row
+  // to build its Authorization header, so the secret never lives in git or a
+  // GUC. (The GUC pattern is broken in this project — those settings are unset.)
+  const authHeader = req.headers.get("Authorization") ?? "";
+  let dbSecret: string | null = null;
+  try {
+    const { data } = await supabase
+      .from("ai_theme_prewarm_config")
+      .select("secret")
+      .maybeSingle();
+    dbSecret = (data as { secret?: string } | null)?.secret ?? null;
+  } catch (_e) {
+    dbSecret = null;
+  }
+
   const authorized =
-    (!!serviceRoleKey && authHeader.includes(serviceRoleKey)) ||
-    (!!cronSecret && authHeader.includes(cronSecret));
+    authHeader.includes(serviceRoleKey) ||
+    (!!cronSecret && authHeader.includes(cronSecret)) ||
+    (!!dbSecret && authHeader.includes(dbSecret));
   if (!authorized) {
     console.error("[prewarm] Unauthorized — invalid Authorization header");
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -73,9 +92,6 @@ serve(async (req) => {
     });
   }
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-  const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
-
   if (!geminiApiKey) {
     console.error("[prewarm] GEMINI_API_KEY not configured — aborting");
     return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured" }), {
@@ -83,11 +99,6 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-
-  // Service-role client: can read/write all rows bypassing RLS
-  const supabase = createClient(supabaseUrl, serviceRoleKey, {
-    auth: { persistSession: false },
-  });
 
   // Step 1: find all active cache entries (updated in last ACTIVE_DAYS days)
   const cutoff = new Date(Date.now() - ACTIVE_DAYS * 86_400_000).toISOString();
