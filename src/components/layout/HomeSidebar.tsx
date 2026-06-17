@@ -37,8 +37,10 @@ import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
 import FilterIcon from '@atlaskit/icon/glyph/filter';
 import ListIcon from '@atlaskit/icon/glyph/list';
 import RoadmapIcon from '@atlaskit/icon/glyph/roadmap';
+import TaskIcon from '@atlaskit/icon/glyph/task';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
 
 const RECENT_LIMIT = 16;
@@ -104,23 +106,18 @@ function formatTimestamp(visitedAtMs: number): string {
 }
 
 /**
- * Title renderer — ADS split-hierarchy layout (2026-05-28 identity redesign).
+ * Row title — single line within a space group (2026-06-17 space-grouped redesign).
  *
- * Two-line structure with clear typographic weight separation:
- *   Line 1: Section name — dominant (14px/500/color.text)
- *   Line 2: Project key (left) + Timestamp (right) — subordinate meta
+ *   [section glyph]  Section name ………………………… time chip
  *
- * Design rationale:
- * - "All work" is what you want to jump back to — it's the PRIMARY identifier
- * - "BAU" is WHICH project — already implied by context, shown as quiet meta
- * - "7h ago" is WHEN — useful for recency scanning, pushed right so it
- *    doesn't compete with the destination name
- * - No "›" separator — the two-line vertical split IS the hierarchy;
- *   symbols that encode structure Tufte-style add zero data-ink value
+ * The project identity now lives in the group header (SpaceGroupHeader), so the
+ * row no longer repeats the project key. Each row carries only what
+ * distinguishes it WITHIN its space: the section name (primary) and when it was
+ * last opened (subtlest, right-aligned). This is the Alt B "spaces, not
+ * timestamps" model — time is demoted from a section axis to a quiet chip.
  *
  * ADS tokens used:
  *   color.text          (#292A2E)  — section name (primary)
- *   color.text.subtle   (#44546F)  — project key (secondary)
  *   color.text.subtlest (#626F86)  — timestamp (tertiary)
  *   font.size.100       (14px)     — body
  *   font.size.050       (11px)     — micro/labels
@@ -132,75 +129,105 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
     <span
       style={{
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: 0,
+        alignItems: 'center',
+        gap: token('space.100', '8px'),
         minWidth: 0,
         width: '100%',
       }}
     >
-      {/* Line 1: Section name — the destination, primary weight */}
+      {/* Section name — the destination, primary weight */}
       <span
         style={{
+          flex: 1,
+          minWidth: 0,
           color: token('color.text', '#292A2E'),
           fontWeight: 500,
-          // ADS font.size.100 = 14px body
-          // Source: https://atlassian.design/foundations/typography
           fontSize: token('font.size.100', '14px'),
-          lineHeight: '18px',
+          lineHeight: '20px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          width: '100%',
         }}
       >
         {location.sectionLabel}
       </span>
 
-      {/* Line 2: Project key (left) + Timestamp (right) — context meta */}
+      {/* Timestamp — subtlest, pushed to the right edge */}
       <span
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          width: '100%',
-          gap: 0,
-          marginTop: 0,
+          flexShrink: 0,
+          color: token('color.text.subtlest', '#626F86'),
+          fontWeight: 400,
+          fontSize: token('font.size.050', '11px'),
+          lineHeight: '16px',
         }}
       >
-        {/* Project key — subtle, secondary context */}
-        <span
-          style={{
-            color: token('color.text.subtle', '#44546F'),
-            fontWeight: 400,
-            // ADS font.size.050 = 11px micro/rail labels
-            // Source: https://atlassian.design/foundations/typography
-            fontSize: token('font.size.050', '11px'),
-            lineHeight: '16px',
-            flex: 1,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {location.projectKey}
-        </span>
-
-        {/* Timestamp — subtlest, pushed to right edge */}
-        <span
-          style={{
-            color: token('color.text.subtlest', '#626F86'),
-            fontWeight: 400,
-            // ADS font.size.050 = 11px
-            fontSize: token('font.size.050', '11px'),
-            lineHeight: '16px',
-            flexShrink: 0,
-            paddingLeft: token('space.050', '4px'),
-          }}
-        >
-          {formatTimestamp(location.visitedAt)}
-        </span>
+        {formatTimestamp(location.visitedAt)}
       </span>
     </span>
+  );
+}
+
+/**
+ * Space group header — project avatar + name, rendered once above the group's
+ * rows. Uses the canonical ProjectIcon (bundled brand avatar → Lucide+color →
+ * stock). NEVER a single-letter tile (mem://constraints/canonical-project-icons).
+ * The standalone Tasks hub has no project row, so it gets the canonical Tasks
+ * glyph in a tinted tile instead.
+ *
+ * Generous vertical padding (12px top) separates each space without a hairline
+ * divider — the enterprise "calm whitespace" read requested 2026-06-17.
+ */
+function SpaceGroupHeader({ head }: { head: RecentLocation }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: token('space.100', '8px'),
+        padding: '12px 12px 6px 12px',
+      }}
+    >
+      {head.hub === 'task' ? (
+        <span
+          aria-hidden="true"
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 3,
+            flexShrink: 0,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--ds-background-accent-yellow-subtler, #FFF7D6)',
+          }}
+        >
+          <TaskIcon label="" size="small" primaryColor="var(--ds-icon-accent-yellow, #946F00)" />
+        </span>
+      ) : (
+        <ProjectIcon
+          projectKey={head.projectKey}
+          iconName={head.iconName}
+          color={head.color}
+          name={head.projectName}
+          size="small"
+        />
+      )}
+      <span
+        style={{
+          minWidth: 0,
+          color: token('color.text', '#292A2E'),
+          fontWeight: 500,
+          fontSize: token('font.size.100', '14px'),
+          lineHeight: '20px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {head.projectName}
+      </span>
+    </div>
   );
 }
 
@@ -246,33 +273,21 @@ function SectionIconWrapper({ section, color }: { section: string; color?: strin
   );
 }
 
-// ─── Time-bucketing helpers ───────────────────────────────────────────────────
+// ─── Space-grouping helper ────────────────────────────────────────────────────
 
-type TimeBucket = 'today' | 'yesterday' | 'day-before' | 'older';
-
-function timeBucket(visitedAt: number): TimeBucket {
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const dayMs = 86_400_000;
-  const t = todayStart.getTime();
-  if (visitedAt >= t) return 'today';
-  if (visitedAt >= t - dayMs) return 'yesterday';
-  if (visitedAt >= t - 2 * dayMs) return 'day-before';
-  return 'older';
+interface SpaceGroup {
+  key: string;
+  head: RecentLocation;
+  items: RecentLocation[];
 }
 
-const BUCKET_LABELS: Record<TimeBucket, string> = {
-  today: 'Today',
-  yesterday: 'Yesterday',
-  'day-before': 'Day before',
-  older: 'Older',
-};
-
-const BUCKET_ORDER: TimeBucket[] = ['today', 'yesterday', 'day-before', 'older'];
-
-/** Group locations by space (hub:key) preserving the most-recent-space-first
- *  ordering, so within a time bucket same-space entries cluster together. */
-function groupBySpace(locs: RecentLocation[]): RecentLocation[] {
+/**
+ * Group locations by space (hub:projectKey), preserving most-recently-visited-
+ * space-first order (recentLocations arrives newest-first). Within a space,
+ * sections stay in visit order. This is the top-level organising axis of the
+ * Alt B redesign — replaces the former Today/Yesterday/Day-before time buckets.
+ */
+function groupIntoSpaces(locs: RecentLocation[]): SpaceGroup[] {
   const order: string[] = [];
   const groups = new Map<string, RecentLocation[]>();
   for (const loc of locs) {
@@ -280,7 +295,10 @@ function groupBySpace(locs: RecentLocation[]): RecentLocation[] {
     if (!groups.has(k)) { groups.set(k, []); order.push(k); }
     groups.get(k)!.push(loc);
   }
-  return order.flatMap((k) => groups.get(k)!);
+  return order.map((k) => {
+    const items = groups.get(k)!;
+    return { key: k, head: items[0], items };
+  });
 }
 
 export default function HomeSidebar({
@@ -369,26 +387,9 @@ export default function HomeSidebar({
       };
     }
 
-    // Group locations into time buckets, then cluster same-space entries within each bucket.
-    const bucketMap = new Map<TimeBucket, RecentLocation[]>();
-    for (const loc of recentLocations) {
-      const b = timeBucket(loc.visitedAt);
-      if (!bucketMap.has(b)) bucketMap.set(b, []);
-      bucketMap.get(b)!.push(loc);
-    }
-
-    // Cross-bucket dedup: Today owns any path — suppress same path from older buckets.
-    // A path in Today is removed from Yesterday/DayBefore/Older so each entry appears once.
-    const seenPaths = new Set<string>();
-    for (const b of BUCKET_ORDER) {
-      const locs = bucketMap.get(b);
-      if (!locs) continue;
-      const filtered = locs.filter((loc) => !seenPaths.has(loc.path));
-      filtered.forEach((loc) => seenPaths.add(loc.path));
-      if (filtered.length === 0) bucketMap.delete(b);
-      else bucketMap.set(b, filtered);
-    }
-
+    // Space-grouped Recents (Alt B, 2026-06-17): top-level axis is the space
+    // (project/product/Tasks), not a time bucket. The hook already family-dedupes
+    // and orders newest-first, so each section's rows are unique and ordered.
     const toItem = (loc: RecentLocation): SidebarMenuItem => ({
       id: `recent-${loc.path}`,
       title: <LocationRowTitle location={loc} />,
@@ -397,17 +398,17 @@ export default function HomeSidebar({
       icon: () => <SectionIconWrapper section={loc.section} color={loc.color} />,
     });
 
-    const sections = BUCKET_ORDER
-      .filter((b) => bucketMap.has(b))
-      .map((b) => ({
-        title: BUCKET_LABELS[b],
-        items: groupBySpace(bucketMap.get(b)!).map(toItem),
-      }));
+    const sections = groupIntoSpaces(recentLocations).map((group) => ({
+      title: group.head.projectName,
+      titleNode: <SpaceGroupHeader head={group.head} />,
+      items: group.items.map(toItem),
+    }));
 
     return {
       badge: null,
       label: 'Home',
       showFavorites: false,
+      hideSectionDividers: true,
       sections,
     };
   }, [recentLocations, loading, expanded]);

@@ -129,6 +129,14 @@ export interface SidebarMenuItem {
 
 export interface SidebarSection {
   title: string;
+  /**
+   * Optional rich header node rendered in place of the plain 11px micro-label.
+   * Used by HomeSidebar's space-grouped Recents to render a project avatar
+   * (ProjectIcon) + project name as the group header. When set, the default
+   * micro-label span is bypassed entirely. `title` is still required as the
+   * React key and collapsed-mode fallback. Added 2026-06-17.
+   */
+  titleNode?: React.ReactNode;
   items: SidebarMenuItem[];
 }
 
@@ -139,6 +147,13 @@ export interface SidebarConfig {
   items?: SidebarMenuItem[];
   footerItem?: SidebarMenuItem;
   showFavorites?: boolean;
+  /**
+   * When true, suppresses the 1px divider drawn between sections. HomeSidebar's
+   * space-grouped Recents separates groups with generous whitespace + an avatar
+   * header instead of a hairline rule, for a cleaner enterprise read. Other
+   * consumers omit this and keep the divider. Added 2026-06-17.
+   */
+  hideSectionDividers?: boolean;
   /** Collapsed-rail icon — pass projectKey so ProjectIcon resolves the bundled avatar */
   badgeProjectKey?: string | null;
   badgeProjectColor?: string | null;
@@ -444,15 +459,18 @@ export function SidebarBase({
               
               return (
                 <div key={section.title}>
-                  {sectionIndex > 0 && (
+                  {sectionIndex > 0 && !config.hideSectionDividers && (
                     <div style={{ borderTop: `1px solid ${dividerColor}`, margin: '8px 12px' }} />
                   )}
-                  {/* Section header — ADS rail micro-label spec:
-                      11px/600/color.text.subtlest — matches Jira admin
-                      sidebar section headers (probed 2026-05-19).
-                      Previously 14px/400/color.text — no hierarchy vs items.
+                  {/* Section header. Rich `titleNode` (e.g. project avatar +
+                      name for HomeSidebar's space groups) wins over the plain
+                      micro-label. Default micro-label spec: 11px/600/
+                      color.text.subtlest — matches Jira admin sidebar section
+                      headers (probed 2026-05-19).
                       Source: https://atlassian.design/foundations/typography */}
-                  {expanded && section.title && (
+                  {expanded && section.titleNode ? (
+                    section.titleNode
+                  ) : expanded && section.title ? (
                     <div
                       style={{
                         padding: '8px 12px 4px 12px',
@@ -473,7 +491,7 @@ export function SidebarBase({
                         {section.title}
                       </span>
                     </div>
-                  )}
+                  ) : null}
                   {section.items.map((item) => renderMenuItem(
                     item, isActive, iconResolver, expanded, handleNavigation, 
                     false, isFavorite, toggleFavorite, tokens

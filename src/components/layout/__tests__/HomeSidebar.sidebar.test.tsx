@@ -1,15 +1,20 @@
 /**
- * HomeSidebar — sidebar display contract.
+ * HomeSidebar — space-grouped Recents display contract (Alt B, 2026-06-17).
  *
  * Acceptance criteria:
- *   1. Row title shows projectKey ("BAU"), NOT projectName ("Senaei BAU").
- *   2. ProjectIcon receives projectKey so bundled avatars resolve.
+ *   1. The space GROUP HEADER shows the project name ("Senaei BAU") + a
+ *      ProjectIcon resolved from the projectKey. Identity lives here, once.
+ *   2. The ROW title shows only the section label ("Backlog") + a time chip —
+ *      it does NOT repeat the project key (that's now in the header).
+ *   3. No time-bucket headers ("Today" / "Yesterday" / "Day before") — space is
+ *      the organising axis, not time.
  *
- * Root-cause ref: preflight 2026-05-10 L1 + L2
+ * Supersedes the pre-2026-06-17 contract (projectKey-in-row, no ProjectIcon,
+ * time buckets), which the space-grouped redesign intentionally inverts.
  */
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -34,6 +39,7 @@ const mockRecentLocations = [
     iconName: null,
     color: null,
     visitedAt: Date.now(),
+    hub: 'project' as const,
   },
 ];
 
@@ -49,20 +55,30 @@ vi.mock('@/components/shared/ProjectIcon', () => ({
   },
 }));
 
-// SidebarBase renders items — stub minimally so we can check what's passed
-vi.mock('./SidebarBase', async () => {
-  // no-op: we test HomeSidebar's own output
-  return {};
-});
-
-// Stub SidebarBase to render its items directly
+// Stub SidebarBase to render section headers (titleNode) AND rows so we can
+// assert both the group-header identity and the row contents independently.
 vi.mock('@/components/layout/SidebarBase', () => ({
-  SidebarBase: ({ config }: { config: { sections: Array<{ items: Array<{ title: React.ReactNode; icon: React.ComponentType }> }> } }) => (
+  SidebarBase: ({
+    config,
+  }: {
+    config: {
+      sections: Array<{
+        title: string;
+        titleNode?: React.ReactNode;
+        items: Array<{ title: React.ReactNode; icon?: React.ComponentType }>;
+      }>;
+    };
+  }) => (
     <div>
-      {config.sections.flatMap(s => s.items).map((item, i) => (
-        <div key={i}>
-          {typeof item.title === 'string' ? item.title : item.title}
-          {item.icon && React.createElement(item.icon as React.ComponentType, {})}
+      {config.sections.map((s, si) => (
+        <div key={si}>
+          <div data-testid="section-header">{s.titleNode ?? s.title}</div>
+          {s.items.map((item, i) => (
+            <div key={i} data-testid="recent-row">
+              {item.title}
+              {item.icon && React.createElement(item.icon as React.ComponentType, {})}
+            </div>
+          ))}
         </div>
       ))}
     </div>
@@ -71,7 +87,7 @@ vi.mock('@/components/layout/SidebarBase', () => ({
 
 let HomeSidebar: React.ComponentType<{ expanded?: boolean; onToggle?: () => void }>;
 
-describe('HomeSidebar — sidebar display', () => {
+describe('HomeSidebar — space-grouped Recents', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     capturedProjectIconProps.length = 0;
@@ -79,27 +95,30 @@ describe('HomeSidebar — sidebar display', () => {
     HomeSidebar = mod.default;
   });
 
-  it('renders projectKey (BAU) not full projectName (Senaei BAU) in row title', () => {
+  it('renders the project name in the space group header', () => {
     render(<HomeSidebar />, { wrapper });
-
-    // "BAU" should appear somewhere in the rendered text (the span renders "BAU › Backlog")
-    expect(screen.getByText(/BAU/)).toBeTruthy();
-    // "Senaei BAU" (full name) must NOT appear as the primary label
-    const fullName = screen.queryByText(/Senaei BAU/);
-    expect(fullName).toBeNull();
+    const header = screen.getByTestId('section-header');
+    expect(within(header).getByText('Senaei BAU')).toBeTruthy();
   });
 
-  it('renders a section-specific icon (not ProjectIcon) so the icon is always visible', () => {
+  it('passes projectKey to the canonical ProjectIcon (no letter tile)', () => {
     render(<HomeSidebar />, { wrapper });
+    expect(capturedProjectIconProps.length).toBeGreaterThan(0);
+    expect(capturedProjectIconProps[0].projectKey).toBe('BAU');
+  });
 
-    // L2 fix: HomeSidebar replaced ProjectIcon (which had variant="ghost" — invisible) with
-    // section-specific Lucide icons so the icon is always clearly rendered.
-    // The SidebarBase stub renders each item's icon via React.createElement(item.icon).
-    // Verify at least one icon element is in the DOM.
-    const icons = screen.queryAllByTestId('project-icon');
-    // ProjectIcon is mocked to data-testid="project-icon" but is no longer used,
-    // so icons.length should be 0 — the real icon renders via lucide without a testid.
-    // What we care about: no ProjectIcon ghost renders (which was always invisible).
-    expect(icons.length).toBe(0);
+  it('row shows the section label and NOT the project key', () => {
+    render(<HomeSidebar />, { wrapper });
+    const row = screen.getByTestId('recent-row');
+    expect(within(row).getByText('Backlog')).toBeTruthy();
+    // Project key is in the header, never repeated in the row.
+    expect(within(row).queryByText('BAU')).toBeNull();
+  });
+
+  it('renders no time-bucket headers', () => {
+    render(<HomeSidebar />, { wrapper });
+    expect(screen.queryByText('Today')).toBeNull();
+    expect(screen.queryByText('Yesterday')).toBeNull();
+    expect(screen.queryByText('Day before')).toBeNull();
   });
 });
