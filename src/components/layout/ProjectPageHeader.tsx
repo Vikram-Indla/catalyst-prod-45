@@ -89,6 +89,10 @@ export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'projec
       }}
     >
       <Breadcrumbs>
+        {/* Home root — the always-on, one-click path home from any hub
+            surface (2026-06-18 nav mental-model: every breadcrumb roots at
+            Home, no new icon). */}
+        <BreadcrumbsItem text="Home" href="/for-you" />
         <BreadcrumbsItem text={rootLabel} href={rootHref} />
         <BreadcrumbsItem text={projectName} href={entityHref} />
         <BreadcrumbsItem text={routeWord} />

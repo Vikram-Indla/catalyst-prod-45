@@ -11,6 +11,7 @@
  */
 
 import React, { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 interface GlobalPageHeaderProps {
@@ -80,6 +81,22 @@ export function GlobalPageHeader({
       >
         {/* Left: Breadcrumb + Title (inline) */}
         <div className="flex items-center gap-2">
+          {/* Home root — always-on, one-click path home from any surface
+              (2026-06-18 nav mental-model: every breadcrumb roots at Home). */}
+          <Link
+            to="/for-you"
+            className="text-[11px] font-semibold uppercase tracking-wider hover:underline"
+            style={{ color: 'var(--text-3)' }}
+          >
+            Home
+          </Link>
+          <span
+            className="text-[14px]"
+            style={{ color: 'var(--text-4)' }}
+            aria-hidden="true"
+          >
+            /
+          </span>
           {breadcrumbSegments.map((segment, idx) => (
             <React.Fragment key={idx}>
               {idx > 0 && (
