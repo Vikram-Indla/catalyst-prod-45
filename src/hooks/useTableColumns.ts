@@ -25,7 +25,7 @@ export function useTableColumns(tableKey: string, defaultColumns: ColumnDef[]) {
   const defaultWidths = Object.fromEntries(defaultColumns.map(c => [c.key, c.defaultWidth]));
 
   // Fetch persisted prefs
-  const { data: savedPrefs } = useQuery({
+  const { data: savedPrefs, isPending: prefsPending } = useQuery({
     queryKey: ['table-prefs', tableKey],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -44,9 +44,14 @@ export function useTableColumns(tableKey: string, defaultColumns: ColumnDef[]) {
   // Local state
   const [columnOrder, setColumnOrder] = useState<string[]>(defaultOrder);
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(defaultWidths);
+  // prefsReady flips true ONLY after saved order/widths are applied (or confirmed absent),
+  // so consumers can hold render until then and avoid the key/name column-shift flicker
+  // on first paint (CAT-DEF-007). `savedPrefs === undefined` means the query is still loading.
+  const [prefsReady, setPrefsReady] = useState(false);
 
   // Apply saved prefs when loaded
   useEffect(() => {
+    if (prefsPending) return; // still loading; settles on success OR error (no hang)
     if (savedPrefs) {
       if (savedPrefs.column_order?.length) {
         const validKeys = new Set(defaultOrder);
@@ -58,7 +63,8 @@ export function useTableColumns(tableKey: string, defaultColumns: ColumnDef[]) {
         setColumnWidths(prev => ({ ...prev, ...savedPrefs.column_widths }));
       }
     }
-  }, [savedPrefs]);
+    setPrefsReady(true);
+  }, [prefsPending, savedPrefs]);
 
   // Save mutation (debounced via ref)
   const saveTimeout = useRef<ReturnType<typeof setTimeout>>();
@@ -199,5 +205,6 @@ export function useTableColumns(tableKey: string, defaultColumns: ColumnDef[]) {
     onDragOver,
     onDragEnd,
     resetColumns,
+    prefsReady,
   };
 }

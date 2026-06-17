@@ -310,6 +310,16 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
     staleTime: 60_000,
   });
 
+  /* CAT-DEF-013: when arriving via ?filterId, hold the list empty + show a spinner
+     until the saved filter's JQL is actually applied, so stale UNFILTERED tickets
+     never flash before the filtered result. Resolves once activeFilterJql is set;
+     also clears when the filter resolved with no JQL (null), so it can never hang.
+     Only relevant in project mode — product/incident/tasks filter client-side. */
+  const filterPending =
+    !!urlFilterId && !isProduct && !isIncident && !isTasks &&
+    (activeFilter === undefined ||
+      (!!activeFilter?.jql_query && activeFilterJql === undefined));
+
   // Save filter modal state — opened from "Save filter" toolbar button
   const [saveModalOpen, setSaveModalOpen] = useState(false);
 
@@ -388,6 +398,9 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
 
      When Caty is inactive, filteredItems === items (server already filtered). */
   const filteredItems = useMemo(() => {
+    // Hold empty while a saved filter's JQL is still resolving (CAT-DEF-013) so no
+    // stale unfiltered rows reach the list / auto-select / count during the gap.
+    if (filterPending) return [];
     if (catyActive && catyFilter) {
       let next = applyCatyFilter(items, catyFilter);
       const q = catySecondaryQuery.trim().toLowerCase();
@@ -407,7 +420,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
       return items.filter((i) => itemPassesFilters(i, toolbarFilters));
     }
     return items;
-  }, [items, catyActive, catyFilter, catySecondaryQuery, isProduct, isTasks, isIncident, toolbarFilters]);
+  }, [filterPending, items, catyActive, catyFilter, catySecondaryQuery, isProduct, isTasks, isIncident, toolbarFilters]);
 
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
@@ -650,6 +663,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           }}>
             <WorkListPanel
               items={filteredItems}
+              isLoading={filterPending}
               selectedKey={activeItem?.id ?? null}
               onSelect={id => {
                 if (isNarrow) {

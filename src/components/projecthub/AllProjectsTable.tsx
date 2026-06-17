@@ -1141,8 +1141,35 @@ export function AllProjectsTable({
 
   const {
     orderedColumns, columnWidths, dragKey, dragOverKey,
-    onResizeStart, onDragStart, onDragOver, onDragEnd,
+    onResizeStart, onDragStart, onDragOver, onDragEnd, prefsReady,
   } = useTableColumns('projects', PROJECT_COLUMNS);
+
+  // Hold render until persisted column order/widths are applied, so the key/name
+  // columns never paint in default order and shift on hydration (CAT-DEF-007).
+  if (!prefsReady) {
+    return (
+      <div
+        style={{
+          borderRadius: 8,
+          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          padding: token('space.500', '40px'),
+          backgroundColor: token('elevation.surface', '#FFFFFF'),
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.150', '12px') }}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="animate-pulse" style={{ display: 'flex', alignItems: 'center', gap: token('space.200', '16px') }}>
+              <div style={{ height: 28, width: 28, borderRadius: '50%', backgroundColor: token('color.background.neutral.subtle', '#F4F5F7') }} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: token('space.075', '6px') }}>
+                <div style={{ height: 12, width: '30%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', '#F4F5F7') }} />
+                <div style={{ height: 10, width: '20%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', '#F4F5F7') }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   // Per-project sync stats are passed in via projectSyncStats prop (built in AllProjectsPage
   // from ph_issues). No separate query needed here — data flows top-down.

@@ -74,6 +74,12 @@ interface Props {
    * whole dataset, so its internal count is misleading there.
    */
   hideFooter?: boolean;
+  /**
+   * Show a centered spinner instead of cards/empty-state while a parent gate is
+   * still resolving (e.g. a saved filter's JQL on first paint — CAT-DEF-013), so
+   * the panel never flashes "No work items" or stale rows during that window.
+   */
+  isLoading?: boolean;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -87,6 +93,7 @@ export function WorkListPanel({
   externalQuery,
   disableAssigneePicker = false,
   hideFooter = false,
+  isLoading = false,
 }: Props) {
   const [innerQuery, setInnerQuery] = useState('');
   const query = externalQuery !== undefined ? externalQuery : innerQuery;
@@ -607,8 +614,15 @@ export function WorkListPanel({
           </div>
         )}
 
+        {/* Loading state — parent gate still resolving (e.g. saved-filter JQL) */}
+        {isLoading && (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '32px 0' }}>
+            <Spinner size="medium" />
+          </div>
+        )}
+
         {/* Empty state */}
-        {visible.length === 0 && !isFetchingMore && (
+        {visible.length === 0 && !isFetchingMore && !isLoading && (
           <div
             style={{
               padding: '32px 16px',
