@@ -16,6 +16,8 @@ import { useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
+import { translate } from '@/lib/jql/translator';
+import { applyJqlToQuery } from '@/lib/jql';
 import type { BoardConfig, BoardIssue, BoardOption, KanbanColumn, StatusCategory } from '../types';
 import { DEFAULT_COLUMNS, indexColumns } from './columnConfig';
 
@@ -37,14 +39,26 @@ const ISSUE_SELECT = 'id, issue_key, summary, status, status_category, issue_typ
      is_flagged, parent_request_id, tags. */
 const BR_SELECT = 'id, request_key, title, process_step, urgency, project_manager_user_id, is_flagged, parent_request_id, tags, created_at, updated_at';
 
-/** Fetch one page of project issues (raw rows). */
-async function fetchIssuePage(key: string, from: number, to: number): Promise<any[]> {
-  const { data, error } = await supabase
+/** Fetch one page of project issues (raw rows). When the board was created from a
+ *  saved filter, `jql` carries that filter's query so the board only shows matching
+ *  work items (CAT-DEF-003) instead of every project issue. */
+async function fetchIssuePage(key: string, from: number, to: number, jql?: string | null): Promise<any[]> {
+  let q = supabase
     .from('ph_issues')
     .select(ISSUE_SELECT)
     .eq('project_key', key)
     .is('deleted_at', null)
-    .is('archived_at', null)
+    .is('archived_at', null);
+  if (jql) {
+    // Defensive: a malformed/unsupported saved filter must never break the board —
+    // fall back to the project-scoped view if the JQL can't be translated.
+    try {
+      q = applyJqlToQuery(q, translate(jql)) as typeof q;
+    } catch (e) {
+      console.warn('[kanban] could not apply board filter JQL:', e);
+    }
+  }
+  const { data, error } = await q
     .order('jira_updated_at', { ascending: false })
     .range(from, to);
   if (error) throw error;
@@ -180,6 +194,25 @@ export function useKanbanData(
   });
 
   const resolvedBoardId = (isProduct || isIncident || isTasks) ? null : (activeBoardId ?? boards[0]?.id ?? null);
+
+  /* ── Board filter JQL (CAT-DEF-003) ────────────────────────────────────────
+     Boards created from a saved filter carry boards.board_query (the filter's
+     JQL). The project-issue fetch applies it so the board shows only matching
+     work items. Null for plain project boards (→ full project scope). */
+  const { data: resolvedBoardQuery = null } = useQuery({
+    queryKey: ['kb-board-query', resolvedBoardId],
+    queryFn: async () => {
+      if (!resolvedBoardId) return null;
+      const { data } = await supabase
+        .from('boards')
+        .select('board_query')
+        .eq('id', resolvedBoardId)
+        .maybeSingle();
+      return ((data as any)?.board_query ?? null) as string | null;
+    },
+    enabled: !!resolvedBoardId && !isProduct && !isIncident && !isTasks,
+    staleTime: 60_000,
+  });
 
   /* ── TASKS columns (mode='tasks'): task_statuses table ─────────────────── */
   const { data: tasksStatusRows = [] } = useQuery({
@@ -321,21 +354,21 @@ export function useKanbanData(
 
   /* ── PROJECT issues (paginated, progressive) ─────────────────────────── */
   const { data: firstPage = [], isLoading: projectLoading, refetch: refetchFirst } = useQuery({
-    queryKey: ['kb-issues-p1', key],
-    queryFn: () => (key ? fetchIssuePage(key, 0, PAGE - 1) : Promise.resolve([] as any[])),
+    queryKey: ['kb-issues-p1', key, resolvedBoardQuery],
+    queryFn: () => (key ? fetchIssuePage(key, 0, PAGE - 1, resolvedBoardQuery) : Promise.resolve([] as any[])),
     enabled: !!key && !isProduct && !isIncident && !isTasks,
     staleTime: 5 * 60_000,
   });
   const hasMore = firstPage.length >= PAGE;
   const { data: restPages = [], refetch: refetchRest } = useQuery({
-    queryKey: ['kb-issues-rest', key],
+    queryKey: ['kb-issues-rest', key, resolvedBoardQuery],
     queryFn: async () => {
       if (!key) return [] as any[];
       let all: any[] = [];
       let from = PAGE;
       // eslint-disable-next-line no-constant-condition
       while (true) {
-        const data = await fetchIssuePage(key, from, from + PAGE - 1);
+        const data = await fetchIssuePage(key, from, from + PAGE - 1, resolvedBoardQuery);
         if (!data.length) break;
         all = all.concat(data);
         if (data.length < PAGE) break;

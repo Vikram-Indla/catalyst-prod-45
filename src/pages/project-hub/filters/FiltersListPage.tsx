@@ -452,7 +452,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       alwaysVisible: true,
       cell: ({ row: f }) => (
         <span onClick={e => e.stopPropagation()}>
-          <FilterKebabMenu filter={f} currentUserId={currentUserId} />
+          <FilterKebabMenu filter={f} currentUserId={currentUserId} hubType={hubScope} />
         </span>
       ),
     },

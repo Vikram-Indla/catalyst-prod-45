@@ -527,6 +527,10 @@ export default function FullAppRoutes() {
             standups.project_key text column, which accepts product codes too. */}
         <Route path="/product-hub/:key/standups" element={<MG k="producthub" t="ProductHub"><S><StandupHistoryPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
+        {/* Filter-derived roadmap (CAT-DEF-004): "Create roadmap from filter" in the
+            product hub now lands on the filter-aware FilterRoadmapPage (same component
+            the project hub uses) instead of the old static RoadmapPage. */}
+        <Route path="/product-hub/:key/roadmaps/:id" element={<MG k="producthub" t="ProductHub"><S><FilterRoadmapPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/timeline/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductTimelineDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePage /></S></MG>} />
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
