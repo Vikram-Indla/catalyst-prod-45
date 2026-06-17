@@ -164,40 +164,56 @@ function ProjectSwimlane({
         onClick={() => setCollapsed(!collapsed)}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCollapsed(!collapsed); } }}
         style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '8px 16px',
-          height: 40,
-          background: token('color.background.neutral', '#F1F2F4'),
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '0 16px',
+          height: 44,
+          // High-contrast crisp card row — white surface + defined border +
+          // raised shadow + brand left accent. Replaces the faint grey bar
+          // (color.background.neutral on white = near-invisible).
+          background: token('elevation.surface', '#FFFFFF'),
+          border: `1px solid ${token('color.border', '#DFE1E6')}`,
           borderLeft: `3px solid ${token('color.border.brand', '#1D7AFC')}`,
-          borderRadius: collapsed ? 4 : '4px 4px 0 0',
+          borderRadius: collapsed ? 6 : '6px 6px 0 0',
+          boxShadow: collapsed
+            ? token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)')
+            : 'none',
           cursor: 'pointer',
           userSelect: 'none',
         }}
       >
         {collapsed
-          ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon', '#44546F')} />
-          : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon', '#44546F')} />
+          ? <ChevronRightIcon label="" size="medium" primaryColor={token('color.text.subtle', '#44546F')} />
+          : <ChevronDownIcon label="" size="medium" primaryColor={token('color.text.subtle', '#44546F')} />
         }
         <span style={{
-          fontSize: 13, fontWeight: 653, letterSpacing: '0.01em',
+          fontSize: 14, fontWeight: 700, letterSpacing: '0.01em',
           color: token('color.text', '#172B4D'),
         }}>
           {projectKey}
         </span>
         <span style={{
-          fontSize: 12, fontWeight: 400,
+          fontSize: 13, fontWeight: 400,
           color: token('color.text.subtle', '#44546F'),
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {projectName}
         </span>
-        <span style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
-            {todoItems.length} to do
+        <span style={{ marginLeft: 'auto', display: 'flex', gap: 16, alignItems: 'center' }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, fontWeight: 500, color: token('color.text.subtle', '#44546F'),
+          }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.neutral.bold', '#626F86') }} />
+            {todoItems.length} To do
           </span>
-          <span style={{ fontSize: 11, color: token('color.text.information', '#0055CC') }}>
-            {ipItems.length} in progress
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, fontWeight: 600, color: token('color.text.information', '#0055CC'),
+          }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.information.bold', '#0C66E4') }} />
+            {ipItems.length} In progress
           </span>
-          <Badge appearance="default">{items.length}</Badge>
+          <Badge appearance="primary">{items.length}</Badge>
         </span>
       </div>
 
@@ -205,9 +221,11 @@ function ProjectSwimlane({
       {!collapsed && (
         <div style={{
           border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderLeft: `3px solid ${token('color.border.brand', '#1D7AFC')}`,
           borderTop: 'none',
-          borderRadius: '0 0 4px 4px',
+          borderRadius: '0 0 6px 6px',
           padding: 16,
+          background: token('elevation.surface', '#FFFFFF'),
         }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {/* To do column */}
