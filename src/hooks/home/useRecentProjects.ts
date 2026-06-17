@@ -46,7 +46,7 @@ export interface RecentLocation {
   hub: 'project' | 'product' | 'task';
 }
 
-interface StoredEntry {
+export interface StoredEntry {
   projectKey: string;
   path: string;
   section: string;
@@ -130,6 +130,38 @@ const SECTION_FAMILY: Record<string, string> = {
 
 function sectionFamily(section: string): string {
   return SECTION_FAMILY[section] ?? section;
+}
+
+/**
+ * Select the recent entries to surface: TODAY's actions only (since local
+ * midnight), deduped by hub|project|section-family, capped at `limit`. If
+ * nothing was visited today, fall back to the most-recent entries so the
+ * Home rail is never blank (2026-06-18 today-only scope + empty guard).
+ */
+export function selectRecentEntries(
+  entries: StoredEntry[],
+  limit: number,
+  nowMs: number,
+): StoredEntry[] {
+  const start = new Date(nowMs);
+  start.setHours(0, 0, 0, 0);
+  const startMs = start.getTime();
+
+  const dedupe = (src: StoredEntry[]): StoredEntry[] => {
+    const seen = new Set<string>();
+    const out: StoredEntry[] = [];
+    for (const e of src) {
+      const familyKey = `${e.hub ?? 'project'}|${e.projectKey}|${sectionFamily(e.section)}`;
+      if (seen.has(familyKey)) continue;
+      seen.add(familyKey);
+      out.push(e);
+      if (out.length >= limit) break;
+    }
+    return out;
+  };
+
+  const today = dedupe(entries.filter((e) => e.visitedAt >= startMs));
+  return today.length > 0 ? today : dedupe(entries);
 }
 
 function titleCase(slug: string): string {
@@ -277,15 +309,8 @@ export function useRecentProjects(limit = 8) {
       ((e.hub ?? 'project') === 'task' && TASK_NAV_SECTIONS.has(e.section)) ||
       CANONICAL_NAV_SECTIONS.has(e.section),
   );
-  const seenFamily = new Set<string>();
-  const entries: StoredEntry[] = [];
-  for (const e of allEntries) {
-    const familyKey = `${e.hub ?? 'project'}|${e.projectKey}|${sectionFamily(e.section)}`;
-    if (seenFamily.has(familyKey)) continue;
-    seenFamily.add(familyKey);
-    entries.push(e);
-    if (entries.length >= limit) break;
-  }
+  // Today's actions only — falls back to most-recent when today is empty.
+  const entries = selectRecentEntries(allEntries, limit, Date.now());
 
   const projectKeys = Array.from(
     new Set(entries.filter((e) => (e.hub ?? 'project') === 'project').map((e) => e.projectKey)),
