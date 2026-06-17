@@ -25,6 +25,7 @@ import { ProjectHubKeyRedirect } from "@/routes/ProjectHubKeyGuard";
 
 const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
+import { ProjectHubLanding, ProductHubLanding } from "./components/layout/HubLanding";
 // HotToaster removed — replaced by FlagsHost (@atlaskit/flag) below
 // For You surface — Atlaskit/Jira-parity rebuild (Apr 2026).
 // Legacy `./pages/ForYouPage` remains in the tree for reference but is no
@@ -171,7 +172,7 @@ function App() {
                     legacy redirects above: CatalystShell's re-render loop
                     fires Navigate without committing the URL change when
                     redirects live inside the shell. */}
-                <Route path="/product-hub" element={<Navigate to="/product-hub/products" replace />} />
+                <Route path="/product-hub" element={<ProductHubLanding />} />
 
                 {/* Legacy global backlog retired (2026-06-01) — RequestListingPage
                     queried the dead ph_backlog_requests_view (0 rows); live BR data
@@ -184,7 +185,7 @@ function App() {
                 {/* Same pattern for /project-hub — CatalystShell re-render loop
                     prevents Navigate from committing when the redirect lives
                     inside the shell. Mirror the /product-hub treatment above. */}
-                <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
+                <Route path="/project-hub" element={<ProjectHubLanding />} />
 
                 {/* Excluded keys (products / modules typed under /project-hub) redirect
                     to their canonical hub. Mounted OUTSIDE the protected shell — same
