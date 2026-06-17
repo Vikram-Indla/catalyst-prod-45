@@ -3098,6 +3098,17 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     onError: (e: Error) => flag.error('Bulk delete failed', e.message),
   });
 
+  // Bulk mutations only write Catalyst-owned rows (Jira-synced rows are skipped /
+  // throw). True only when the current selection contains at least one such row —
+  // also false for an empty selection, so it doubles as the empty guard (CAT-DEF-012).
+  // MUST stay above the early-return guards below — moving it under them violates
+  // the Rules of Hooks (the hook would be skipped while loading, then run after,
+  // crashing with "Rendered more hooks than during the previous render").
+  const selectedHasCatalyst = useMemo(
+    () => items.some((it) => selectedIds.has(it.id) && it.source === 'catalyst'),
+    [items, selectedIds],
+  );
+
   // For dataSource (e.g. product hub), gate on adapter loading.
   // For project hub, gate on the ph_issues hooks.
   const effectiveLoading = dataSource ? dataSource.isLoading : (storiesLoading || epicsLoading);
@@ -3290,14 +3301,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   //   8. Bulk change work items              — opens bulk wizard (task #7)
   //   9. Go to all work items                — wired to /allwork route
   //  10. Give feedback                       — out of scope
-  // Bulk mutations only write Catalyst-owned rows (Jira-synced rows are skipped /
-  // throw). True only when the current selection contains at least one such row —
-  // also false for an empty selection, so it doubles as the empty guard (CAT-DEF-012).
-  const selectedHasCatalyst = useMemo(
-    () => items.some((it) => selectedIds.has(it.id) && it.source === 'catalyst'),
-    [items, selectedIds],
-  );
-
+  // `selectedHasCatalyst` (used below for the bulk-change disable state) is
+  // computed above the loading guards — see its definition near `effectiveLoading`.
   // Items grouped: view-toggles, data-ops, navigation.
   const toolbarMoreActionsButton = (
     <ToolbarMenuButton

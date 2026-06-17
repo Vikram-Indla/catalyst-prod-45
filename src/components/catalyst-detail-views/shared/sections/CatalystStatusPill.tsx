@@ -306,19 +306,23 @@ export function CatalystStatusPill({
   // change) would never fire. Letting clicks pass through fixes "popup
   // opens but selecting an option does nothing" on the Tasks list.
   if (!interactive) {
+    // Rendered as a <span>, NOT a <button>: the static pill is frequently
+    // mounted inside an interactive wrapper (makeStatusEditCell's trigger
+    // button, JiraTable cell editors, popup MenuItemBtn). A nested <button>
+    // is invalid HTML (validateDOMNesting) and an a11y focus-ambiguity defect.
+    // `pointerEvents: none` keeps clicks passing through to the owning control
+    // (preserves the 2026-06-17 popup-option fix).
     return (
-      <button
-        type="button"
+      <span
         className={PILL_CLASS}
         data-testid="catalyst-status-pill-static"
         data-csp-compact={compact ? 'true' : 'false'}
-        disabled
         style={
           { '--csp-bg': pillBg, '--csp-fg': pillFg, cursor: 'default', opacity: 1, pointerEvents: 'none' } as React.CSSProperties
         }
       >
         {display}
-      </button>
+      </span>
     );
   }
 
