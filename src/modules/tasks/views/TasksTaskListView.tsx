@@ -32,7 +32,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import Button, { IconButton } from '@atlaskit/button/new';
+import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Avatar from '@atlaskit/avatar';
 import AvatarGroup from '@atlaskit/avatar-group';
@@ -51,8 +51,19 @@ import AkArrowDownIcon from '@atlaskit/icon/core/arrow-down';
 import AkAttachmentIcon from '@atlaskit/icon/core/attachment';
 import AkLinkIcon from '@atlaskit/icon/core/link';
 import AkTrashIcon from '@atlaskit/icon/glyph/trash';
+import AkRefreshIcon from '@atlaskit/icon/core/refresh';
+import AkDownloadIcon from '@atlaskit/icon/core/download';
 import { token } from '@atlaskit/tokens';
-import { JiraTable, flag, type RowAction } from '@/components/shared/JiraTable';
+import {
+  JiraTable,
+  StatusPill,
+  ToolbarMenuButton,
+  flag,
+  type RowAction,
+  type RowGroup,
+  type LozengeAppearance,
+} from '@/components/shared/JiraTable';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import {
   JiraFilterAtlaskit,
   emptyFilterValue,
@@ -286,6 +297,42 @@ const TASK_PRIORITY_TO_FILTER: Record<string, string> = {
   high: 'high',
   medium: 'medium',
   low: 'low',
+};
+
+// Task status slug → Lozenge appearance (StatusPill). Single source of truth
+// for both the Filters status chips and the grouped-view status header pill.
+function taskStatusAppearance(status: string | undefined | null): LozengeAppearance {
+  if (!status) return 'default';
+  if (status === 'done' || status === 'completed') return 'success';
+  if (status === 'in_progress' || status === 'in-progress') return 'inprogress';
+  if (status === 'blocked') return 'removed';
+  return 'default';
+}
+
+// Priority → bar level + color, mirrors BacklogPage's group-header PRIORITY_RANK
+// (BacklogPage.atlaskit.tsx:1843). Tasks use critical/high/medium/low.
+const TASK_PRIORITY_RANK: Record<string, { level: number; color: string }> = {
+  critical: { level: 4, color: 'var(--ds-icon-accent-red, #C9372C)' },
+  high: { level: 3, color: 'var(--ds-text-warning, #F59E0B)' },
+  medium: { level: 2, color: 'var(--ds-text-success, #22C55E)' },
+  low: { level: 1, color: 'var(--ds-text-success, #22C55E)' },
+};
+
+// Subtle 32×32 transparent icon-button style for the toolbar overflow menus
+// (View options + ⋯), matching BacklogPage's `toolbarIconButtonStyle`.
+const TOOLBAR_ICON_BTN_STYLE: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 32,
+  height: 32,
+  padding: 0,
+  border: 'none',
+  borderRadius: 3,
+  background: 'transparent',
+  color: 'var(--ds-text-subtle, #44546F)',
+  cursor: 'pointer',
+  flexShrink: 0,
 };
 
 /**
@@ -1389,6 +1436,20 @@ export default function TasksTaskListView() {
   // ── Toolbar state ────────────────────────────────────────────────────────
   const [search, setSearch] = useState('');
   const [groupBy, setGroupBy] = useState<TasksGroupBy>('none');
+  // 2026-06-17 — Backlog-parity toolbar state. `hideDoneItems` filters out
+  // done/completed rows (View options + ⋯ menus). `density` drives JiraTable
+  // row height (View options menu). `collapsedGroups` + `toggleGroup` mirror
+  // BacklogPage (BacklogPage.atlaskit.tsx:1098) so grouped rows collapse.
+  const [hideDoneItems, setHideDoneItems] = useState(false);
+  const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const toggleGroup = useCallback((id: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
   // 2026-06-17 Filters: canonical JiraFilterValue (REUSE FIRST). Drives the
   // JiraFilterAtlaskit drawer below.
   const [filters, setFilters] = useState<JiraFilterValue>(emptyFilterValue);
@@ -1434,7 +1495,7 @@ export default function TasksTaskListView() {
   const filteredRows = useMemo(() => {
     const q = search.trim().toLowerCase();
     const hasFacets = countActiveFilters(filters) > 0;
-    if (!q && !hasFacets) return rows;
+    if (!q && !hasFacets && !hideDoneItems) return rows;
     const dueFrom = filters.dateRange.start ?? null;
     const dueTo = filters.dateRange.due ?? null;
     const createdFrom = filters.created.from ?? null;
@@ -1442,6 +1503,7 @@ export default function TasksTaskListView() {
     const updatedFrom = filters.updated.from ?? null;
     const updatedTo = filters.updated.to ?? null;
     return rows.filter((r) => {
+      if (hideDoneItems && /^(done|completed|closed)$/i.test((r.status || '').trim())) return false;
       if (q && !(r.title.toLowerCase().includes(q) || r.key.toLowerCase().includes(q))) return false;
       if (filters.status.length && !filters.status.includes(r.status)) return false;
       if (filters.priority.length) {
@@ -1470,7 +1532,7 @@ export default function TasksTaskListView() {
       }
       return true;
     });
-  }, [rows, search, filters]);
+  }, [rows, search, filters, hideDoneItems]);
 
   // ── Filter option pools — derived from current rows + users.
   // Workstream filtering is exposed via the canonical "Sprint/Iteration"
@@ -1484,13 +1546,11 @@ export default function TasksTaskListView() {
       if (!r.status) continue;
       if (!seen.has(r.status)) {
         const label = r.status.charAt(0).toUpperCase() + r.status.slice(1).replace(/-/g, ' ');
-        // Map task status slug → Lozenge appearance for chip color.
-        const appearance: StatusFilterOption['appearance'] =
-          r.status === 'done' || r.status === 'completed' ? 'success'
-          : r.status === 'in_progress' || r.status === 'in-progress' ? 'inprogress'
-          : r.status === 'blocked' ? 'removed'
-          : 'default';
-        seen.set(r.status, { value: r.status, label, appearance });
+        seen.set(r.status, {
+          value: r.status,
+          label,
+          appearance: taskStatusAppearance(r.status) as StatusFilterOption['appearance'],
+        });
       }
     }
     return Array.from(seen.values());
@@ -1521,6 +1581,110 @@ export default function TasksTaskListView() {
         .map((u) => ({ key: u.id, name: u.name, src: u.avatarUrl })),
     [users],
   );
+
+  // name → avatarUrl lookup, used by the grouped-by-assignee header avatar.
+  const avatarByName = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const u of users) if (u.avatarUrl) m.set(u.name, u.avatarUrl);
+    return m;
+  }, [users]);
+
+  // ── Grouped rows ─────────────────────────────────────────────────────────
+  // Builds RowGroup<PlannerTask>[] from the active `groupBy` over the filtered
+  // rows. Mirrors BacklogPage's `groupedRows` memo (BacklogPage.atlaskit.tsx:
+  // 1727) including the rich labelNode per group type (StatusPill for status,
+  // Avatar for assignee, priority bars for priority, color dot for
+  // workstream). When groupBy === 'none' returns null so JiraTable falls back
+  // to the flat `data` prop.
+  const groupedRows = useMemo<RowGroup<PlannerTask>[] | null>(() => {
+    if (groupBy === 'none') return null;
+
+    const groupLabelFor = (r: PlannerTask): string => {
+      switch (groupBy) {
+        case 'status': return r.status ? r.status.charAt(0).toUpperCase() + r.status.slice(1).replace(/-/g, ' ') : 'No status';
+        case 'workstream': return r.teamName || 'No workstream';
+        case 'assignee': return r.assigneeName || 'Unassigned';
+        case 'priority': return r.priority ? r.priority[0].toUpperCase() + r.priority.slice(1) : 'No priority';
+        default: return '—';
+      }
+    };
+
+    const buckets = new Map<string, PlannerTask[]>();
+    for (const r of filteredRows) {
+      const k = groupLabelFor(r);
+      if (!buckets.has(k)) buckets.set(k, []);
+      buckets.get(k)!.push(r);
+    }
+
+    // Stable group order — alpha, with "No X" / "Unassigned" buckets last.
+    const keys = Array.from(buckets.keys()).sort((a, b) => {
+      const aOrphan = /^(No |Unassigned)/i.test(a);
+      const bOrphan = /^(No |Unassigned)/i.test(b);
+      if (aOrphan !== bOrphan) return aOrphan ? 1 : -1;
+      return a.localeCompare(b);
+    });
+
+    return keys.map((k) => {
+      const sample = buckets.get(k)![0];
+      let labelNode: React.ReactNode = undefined;
+      if (groupBy === 'status') {
+        labelNode = <StatusPill appearance={taskStatusAppearance(sample.status)}>{k}</StatusPill>;
+      } else if (groupBy === 'assignee') {
+        const isUnassigned = !sample.assigneeName;
+        const avatarUrl = sample.assigneeName
+          ? (avatarByName.get(sample.assigneeName) ?? resolveAvatarUrl(sample.assigneeName) ?? undefined)
+          : undefined;
+        labelNode = (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Avatar size="small" name={k} src={avatarUrl} appearance={isUnassigned ? 'square' : 'circle'} />
+            <span>{k}</span>
+          </span>
+        );
+      } else if (groupBy === 'priority') {
+        const p = (sample.priority || '').toLowerCase();
+        const rank = TASK_PRIORITY_RANK[p] || { level: 0, color: token('color.border', '#DFE1E6') };
+        labelNode = (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={k}>
+            <span style={{ display: 'inline-flex', gap: 2 }}>
+              {[1, 2, 3, 4].map((i) => (
+                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : token('color.border', '#DFE1E6') }} />
+              ))}
+            </span>
+            <span>{k}</span>
+          </span>
+        );
+      } else if (groupBy === 'workstream') {
+        const color = sample.teamColor;
+        labelNode = (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            {color && <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />}
+            <span>{k}</span>
+          </span>
+        );
+      }
+      return { id: k, label: k, labelNode, rows: buckets.get(k)! };
+    });
+  }, [groupBy, filteredRows, avatarByName]);
+
+  // ── CSV export ───────────────────────────────────────────────────────────
+  // Exports the currently-filtered rows (respects search + facets + hide-done).
+  const handleExportCSV = useCallback(() => {
+    const esc = (v: string) => `"${(v ?? '').replace(/"/g, '""')}"`;
+    const header = ['Key', 'Title', 'Status', 'Priority', 'Assignee', 'Workstream', 'Due date'];
+    const lines = filteredRows.map((r) => [
+      esc(r.key), esc(r.title), esc(r.status || ''), esc(r.priority || ''),
+      esc(r.assigneeName || ''), esc(r.teamName || ''), esc(r.dueDate ? r.dueDate.slice(0, 10) : ''),
+    ].join(','));
+    const csv = [header.map(esc).join(','), ...lines].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tasks-${filteredRows.length}-items.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    flag.success('Exported to CSV', `${filteredRows.length} item${filteredRows.length === 1 ? '' : 's'}`);
+  }, [filteredRows]);
 
   if (error) {
     return (
@@ -1683,22 +1847,94 @@ export default function TasksTaskListView() {
               (BacklogPage.atlaskit.tsx:5285). */}
           <TasksGroupByControl value={groupBy} onChange={setGroupBy} />
 
-          {/* View options (sort/density) — PLACEHOLDER. Matches Backlog's
-              `toolbarViewOptionsButton` icon (AkFilterIcon). */}
-          <IconButton
-            appearance="subtle"
-            icon={AkFilterIcon}
-            label="View options"
-            onClick={() => { /* TODO future task */ }}
+          {/* View options — wired ToolbarMenuButton (2026-06-17, Backlog
+              parity BacklogPage.atlaskit.tsx:3173). Hide done · Expand all ·
+              Collapse all · density. */}
+          <ToolbarMenuButton
+            icon={<AkFilterIcon label="" size="small" />}
+            ariaLabel="View options"
+            tooltipContent="View options"
+            buttonStyle={TOOLBAR_ICON_BTN_STYLE}
+            groups={[
+              {
+                items: [
+                  {
+                    id: 'hide-done',
+                    label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
+                    onClick: () => setHideDoneItems((v) => !v),
+                  },
+                  {
+                    id: 'expand-all',
+                    label: 'Expand all groups',
+                    // Not applicable when ungrouped — disable so the affordance
+                    // reads as inert (Norman: visible-but-disabled > dead-click).
+                    isDisabled: groupBy === 'none',
+                    onClick: () => { setCollapsedGroups(new Set()); flag.success('Expanded all groups'); },
+                  },
+                  {
+                    id: 'collapse-all',
+                    label: 'Collapse all groups',
+                    isDisabled: groupBy === 'none' || !groupedRows,
+                    onClick: () => {
+                      if (groupedRows) {
+                        setCollapsedGroups(new Set(groupedRows.map((g) => g.id)));
+                        flag.success('Collapsed all groups');
+                      }
+                    },
+                  },
+                ],
+              },
+              {
+                items: [
+                  { id: 'density-compact', label: density === 'compact' ? '✓ Compact' : 'Compact', onClick: () => setDensity('compact') },
+                  { id: 'density-comfortable', label: density === 'comfortable' ? '✓ Comfortable' : 'Comfortable', onClick: () => setDensity('comfortable') },
+                ],
+              },
+            ]}
           />
 
-          {/* More actions ⋯ — PLACEHOLDER (toolbar-level). The row-level ⋯
-              menu is wired via the __actions column. */}
-          <IconButton
-            appearance="subtle"
-            icon={AkMoreIcon}
-            label="More actions"
-            onClick={() => { /* TODO future task */ }}
+          {/* More actions ⋯ — wired ToolbarMenuButton (2026-06-17, Backlog
+              parity BacklogPage.atlaskit.tsx:3239). Tasks-applicable subset:
+              hide-done toggle · Refresh · Export CSV · Go to board. (No
+              hierarchy/bulk-change/import — not modelled in Tasks Hub.) */}
+          <ToolbarMenuButton
+            icon={<AkMoreIcon label="" size="small" />}
+            ariaLabel="More actions"
+            tooltipContent="More actions"
+            buttonStyle={TOOLBAR_ICON_BTN_STYLE}
+            groups={[
+              {
+                items: [
+                  {
+                    id: 'toggle-hide-done',
+                    label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
+                    onClick: () => setHideDoneItems((v) => !v),
+                  },
+                  {
+                    id: 'refresh',
+                    label: 'Refresh',
+                    icon: <AkRefreshIcon label="" size="small" />,
+                    onClick: () => { queryClient.invalidateQueries({ queryKey: ['planner-tasks'] }); flag.success('Refreshed'); },
+                  },
+                  {
+                    id: 'export-csv',
+                    label: 'Export to CSV',
+                    icon: <AkDownloadIcon label="" size="small" />,
+                    onClick: handleExportCSV,
+                  },
+                ],
+              },
+              {
+                items: [
+                  {
+                    id: 'go-board',
+                    label: 'Go to board',
+                    icon: <AkBoardIcon label="" size="small" />,
+                    onClick: () => navigate('/tasks/board'),
+                  },
+                ],
+              },
+            ]}
           />
 
           {/* Item count — right-aligned. Matches Backlog L3628-3640. */}
@@ -1751,6 +1987,13 @@ export default function TasksTaskListView() {
           >
             <JiraTable<PlannerTask>
               data={filteredRows}
+              // 2026-06-17: grouping wired. When groupBy !== 'none' the memo
+              // produces RowGroup[] and JiraTable renders collapsible group
+              // headers (groups takes precedence over data). collapsedGroups +
+              // onToggleGroup mirror BacklogPage (BacklogPage.atlaskit.tsx:3702).
+              groups={groupedRows ?? undefined}
+              collapsedGroups={collapsedGroups}
+              onToggleGroup={toggleGroup}
               columns={columns}
               getRowId={(r) => r.id}
               isLoading={isLoading}
@@ -1759,11 +2002,9 @@ export default function TasksTaskListView() {
               onSelectionChange={setSelectedIds}
               columnVisibility={visibleColumns}
               onColumnVisibilityChange={setVisibleColumns}
-              // 2026-06-16 Fix #1: compact density = 40px row height with
-              // 6px y-padding (matches Backlog. JiraTable defaults to
-              // 'compact' but pass explicitly to make the intent visible
-              // and prevent future config drift).
-              density="compact"
+              // Density driven by the View options menu (compact = 40px rows,
+              // comfortable = taller). Mirrors BacklogPage's density state.
+              density={density}
               totalRowCount={rows.length}
               // 2026-06-16 Fix #9: footer with + Create button (left),
               // "N of M items" + refresh (center). Mirrors BacklogPage's

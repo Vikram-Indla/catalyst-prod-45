@@ -32,6 +32,7 @@ import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
 import BacklogIcon from '@atlaskit/icon/glyph/backlog';
 import BoardIcon from '@atlaskit/icon/glyph/board';
+import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
 import FilterIcon from '@atlaskit/icon/glyph/filter';
 import ListIcon from '@atlaskit/icon/glyph/list';
@@ -216,6 +217,7 @@ type SectionIconType = React.ComponentType<{ label: string; size?: string; prima
 
 const SECTION_ICON_MAP: Record<string, SectionIconType> = {
   dashboard: DashboardIcon as unknown as SectionIconType,
+  overview: DashboardIcon as unknown as SectionIconType,
   backlog: BacklogIcon as unknown as SectionIconType,
   'epic-backlog': BacklogIcon as unknown as SectionIconType,
   'feature-backlog': BacklogIcon as unknown as SectionIconType,
@@ -224,6 +226,7 @@ const SECTION_ICON_MAP: Record<string, SectionIconType> = {
   board: BoardIcon as unknown as SectionIconType,
   allwork: ListIcon as unknown as SectionIconType,
   list: ListIcon as unknown as SectionIconType,
+  calendar: CalendarIcon as unknown as SectionIconType,
   timeline: RoadmapIcon as unknown as SectionIconType,
   filters: FilterIcon as unknown as SectionIconType,
 };

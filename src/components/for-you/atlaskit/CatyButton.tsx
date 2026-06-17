@@ -1,4 +1,5 @@
 import React from 'react';
+import './caty-button.css';
 
 /** The compact, brand-faithful Caty head: gradient ears + dark inner strokes,
  *  signature sleepy eyes, whiskers. Legible down to ~20px. Use the FULL lockup

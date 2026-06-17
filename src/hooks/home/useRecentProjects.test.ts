@@ -147,3 +147,51 @@ describe('recordLocationVisit — deduplication', () => {
     expect(stored[0].projectKey).toBe('BAU');
   });
 });
+
+// 2026-06-17 — Tasks module footprints must surface on the Home Recent rail
+// alongside project/product sub-pages. Tasks is a standalone hub (no project
+// key), so entries are recorded with hub: 'task' and a normalized /tasks/<view>
+// path. Each task view (Board, List, Overview, Timeline, Calendar, Settings)
+// is its own row, matching the per-location grain used for project/product hubs.
+describe('recordLocationVisit — tasks module footprints', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  it('records a task-hub visit with a normalized /tasks/<view> path', () => {
+    recordLocationVisit({ projectKey: 'tasks', path: '/tasks/board', section: 'board', hub: 'task' });
+
+    const stored = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
+
+    expect(stored).toHaveLength(1);
+    expect(stored[0]).toMatchObject({
+      projectKey: 'tasks',
+      path: '/tasks/board',
+      section: 'board',
+      hub: 'task',
+    });
+  });
+
+  it('keeps distinct task views as separate rows', () => {
+    recordLocationVisit({ projectKey: 'tasks', path: '/tasks/board', section: 'board', hub: 'task' });
+    recordLocationVisit({ projectKey: 'tasks', path: '/tasks/list', section: 'list', hub: 'task' });
+    recordLocationVisit({ projectKey: 'tasks', path: '/tasks/board', section: 'board', hub: 'task' });
+
+    const stored = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
+
+    expect(stored).toHaveLength(2);
+    expect(stored[0].path).toBe('/tasks/board'); // most recent revisit floats to top
+    expect(stored[1].path).toBe('/tasks/list');
+  });
+
+  it('dedupes deep task paths to the view root', () => {
+    recordLocationVisit({ projectKey: 'tasks', path: '/tasks/board', section: 'board', hub: 'task' });
+    recordLocationVisit({ projectKey: 'tasks', path: '/tasks/board/TASK-12', section: 'board', hub: 'task' });
+
+    const stored = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
+
+    expect(stored).toHaveLength(1);
+    expect(stored[0].path).toBe('/tasks/board');
+  });
+});

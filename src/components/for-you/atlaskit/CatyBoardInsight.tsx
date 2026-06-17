@@ -8,8 +8,7 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { CatyInsightCard } from './CatyInsightCard';
-import { CatyButton } from './CatyButton';
-import './caty-button.css';
+import Spinner from '@atlaskit/spinner';
 
 interface RiskItem {
   issueKey: string;
@@ -226,8 +225,45 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
      inline (legacy callers) or portals to `panelPortalTarget` when
      provided (kanban board: button in toolbar, panel below toolbar at
      full width). */
+  /* De-catted 2026-06-17: Board health is analytics, not conversational AI.
+     The Caty cat is reserved for the Ask Caty search affordance so the two no
+     longer compete. Pulse glyph in ADS magenta (Caty-family pink, token-clean)
+     as a subtle AI tie-in; ADS spinner while loading. */
   const button = (
-    <CatyButton label="Board health" onClick={() => generateInsight()} loading={isLoading} />
+    <button
+      type="button"
+      onClick={() => generateInsight()}
+      disabled={isLoading}
+      aria-busy={isLoading || undefined}
+      aria-label={isLoading ? 'Generating board health…' : 'Board health'}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        height: 32,
+        padding: '0 16px',
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRadius: 999,
+        background: token('elevation.surface', '#FFFFFF'),
+        color: token('color.text', '#172B4D'),
+        fontSize: 13,
+        fontWeight: 500,
+        cursor: isLoading ? 'default' : 'pointer',
+        opacity: isLoading ? 0.7 : 1,
+      }}
+    >
+      {isLoading ? (
+        <Spinner size="small" />
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M1 8h3l2-5 3 10 2-5h4" stroke={token('color.icon.accent.magenta', '#CD519D')} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+      {/* In-progress affordance — "Thinking…" label while the digest generates
+          (mirrors the CatyButton loading state that was lost when Board health
+          was de-catted). */}
+      {isLoading ? 'Thinking…' : 'Board health'}
+    </button>
   );
 
   const panel = !insight ? null : insight.totalItems === 0 ? (

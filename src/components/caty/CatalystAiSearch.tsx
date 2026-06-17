@@ -35,6 +35,24 @@ import React from 'react';
 import { token } from '@atlaskit/tokens';
 import { CatyHead } from '@/components/for-you/atlaskit/CatyButton';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
+import SearchIconCore from '@atlaskit/icon/core/search';
+
+/* Focus model — injected once. The whole control owns the focus ring via
+ * :focus-within; the bare input's own ring (a global ADS input box-shadow)
+ * is hard-suppressed so the control highlights as one unit. Injected rather
+ * than a .css import to keep the file ADS-audit clean (tokens only). */
+const CAS_STYLE_ID = 'catalyst-ai-search-styles-v2';
+function ensureCasStyles() {
+  if (typeof document === 'undefined' || document.getElementById(CAS_STYLE_ID)) return;
+  const el = document.createElement('style');
+  el.id = CAS_STYLE_ID;
+  el.textContent =
+    '.cas-field:focus-within{border-color:var(--ds-border-focused,#388BFF);box-shadow:0 0 0 1px var(--ds-border-focused,#388BFF);}' +
+    // Descendant selector beats a global `input:focus` rule; kills the inner
+    // ring so only the container highlights. Covers box-shadow AND outline.
+    '.cas-field input.cas-input:focus,.cas-field input.cas-input:focus-visible{outline:none!important;box-shadow:none!important;border-color:transparent!important;}';
+  document.head.appendChild(el);
+}
 
 export interface CatalystAiSearchProps {
   /** Whether Ask Caty is open (controlled by the parent). */
@@ -62,6 +80,7 @@ export function CatalystAiSearch({
   maxWidth = 320,
   onJqlGenerated,
 }: CatalystAiSearchProps) {
+  ensureCasStyles();
   if (open) {
     return (
       <AskCatyInlineBar
@@ -74,6 +93,7 @@ export function CatalystAiSearch({
 
   return (
     <div
+      className="cas-field"
       style={{
         flex: 1,
         maxWidth,
@@ -81,44 +101,28 @@ export function CatalystAiSearch({
         alignItems: 'center',
         gap: 8,
         height: 36,
-        padding: '0 10px',
+        padding: '0 4px 0 8px',
         background: token('elevation.surface', '#FFFFFF'),
-        border: `0.5px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
         borderRadius: 6,
         boxSizing: 'border-box',
+        transition: 'border-color 150ms ease, box-shadow 150ms ease',
       }}
     >
-      {/* Embedded Caty cat — the single AI affordance for this surface. */}
-      <button
-        type="button"
-        onClick={() => onOpenChange(true)}
-        aria-label="Ask Caty"
-        title="Ask Caty"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 22,
-          height: 22,
-          flexShrink: 0,
-          border: 'none',
-          background: 'transparent',
-          padding: 0,
-          cursor: 'pointer',
-        }}
-      >
-        <CatyHead size={18} title="Ask Caty" />
-      </button>
+      {/* Leading magnifier — this is unambiguously a text search. */}
       <span
         aria-hidden
         style={{
-          width: 1,
-          height: 18,
+          display: 'inline-flex',
+          alignItems: 'center',
           flexShrink: 0,
-          background: token('color.border', '#DFE1E6'),
+          color: token('color.text.subtle', '#505258'),
         }}
-      />
+      >
+        <SearchIconCore label="" color="currentColor" />
+      </span>
       <input
+        className="cas-input"
         value={value}
         onChange={(e) => onValueChange?.(e.target.value)}
         placeholder={placeholder}
@@ -142,6 +146,39 @@ export function CatalystAiSearch({
           WebkitAppearance: 'none',
         }}
       />
+      {/* Trailing Ask Caty pill — the AI affordance, distinct from search.
+          The cat is the only Caty mark on the surface (Board health is
+          de-catted to a neutral analytics icon). */}
+      <button
+        type="button"
+        onClick={() => onOpenChange(true)}
+        aria-label="Ask Caty"
+        title="Ask Caty"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          height: 26,
+          padding: '0 8px 0 4px',
+          flexShrink: 0,
+          // Defined-but-secondary: a hairline-bordered chip so it's clearly a
+          // button (not invisible) yet visually subordinate to the primary
+          // magnifier + input search. AI is opt-in, not co-equal.
+          border: `0.5px solid ${token('color.border', '#DFE1E6')}`,
+          borderRadius: 999,
+          background: token('elevation.surface', '#FFFFFF'),
+          cursor: 'pointer',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)');
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = token('elevation.surface', '#FFFFFF');
+        }}
+      >
+        <CatyHead size={16} title="Ask Caty" />
+        <span style={{ fontSize: 12, fontWeight: 500, color: token('color.text.subtle', '#505258') }}>Ask</span>
+      </button>
     </div>
   );
 }

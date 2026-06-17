@@ -43,7 +43,7 @@ export interface RecentLocation {
   iconName: string | null;
   color: string | null;
   visitedAt: number;
-  hub: 'project' | 'product';
+  hub: 'project' | 'product' | 'task';
 }
 
 interface StoredEntry {
@@ -51,16 +51,18 @@ interface StoredEntry {
   path: string;
   section: string;
   visitedAt: number;
-  hub?: 'project' | 'product';
+  hub?: 'project' | 'product' | 'task';
 }
 
 const SECTION_LABELS: Record<string, string> = {
   dashboard: 'Dashboard',
+  overview: 'Overview',
   backlog: 'Backlog',
   board: 'Board',
   boards: 'Boards',
   allwork: 'All work',
   list: 'List',
+  calendar: 'Calendar',
   timeline: 'Timeline',
   releases: 'Releases',
   reports: 'Reports',
@@ -73,6 +75,21 @@ const SECTION_LABELS: Record<string, string> = {
   'feature-backlog': 'Backlog',
   'story-backlog': 'Backlog',
 };
+
+/**
+ * Tasks module nav views (standalone hub at /tasks/<view>). Unlike project/
+ * product hubs these are not space-scoped — they all live under the single
+ * "Tasks" hub, recorded with hub: 'task' and projectKey 'tasks'.
+ */
+const TASK_NAV_SECTIONS = new Set([
+  'board',
+  'list',
+  'overview',
+  'timeline',
+  'calendar',
+  'settings',
+]);
+const TASK_SPACE_KEY = 'tasks';
 
 /**
  * Canonical sidebar nav sections — covers both Project Hub and Product Hub slugs.
@@ -171,14 +188,16 @@ export function recordLocationVisit(input: {
   projectKey: string;
   path: string;
   section: string;
-  hub?: 'project' | 'product';
+  hub?: 'project' | 'product' | 'task';
 }) {
   const { projectKey, path, section, hub = 'project' } = input;
   if (!projectKey || !path) return;
   const now = Date.now();
 
   const normalizedPath =
-    hub === 'product'
+    hub === 'task'
+      ? `/tasks/${section}`
+      : hub === 'product'
       ? `/product-hub/${projectKey}/${section}`
       : `/project-hub/${projectKey}/${section}`;
 
@@ -206,6 +225,17 @@ export function recordLocationVisit(input: {
 export function useRecordProjectVisit() {
   const location = useLocation();
   useEffect(() => {
+    // Tasks module is a standalone hub: /tasks/<view>. Record it on its own
+    // grain so each view (Board, List, Overview, …) surfaces as a Recent row.
+    const taskMatch = location.pathname.match(/^\/tasks\/([^/]+)/);
+    if (taskMatch) {
+      const view = taskMatch[1];
+      if (TASK_NAV_SECTIONS.has(view)) {
+        recordLocationVisit({ projectKey: TASK_SPACE_KEY, path: location.pathname, section: view, hub: 'task' });
+      }
+      return;
+    }
+
     let match = location.pathname.match(/^\/project-hub\/([^/]+)(?:\/([^/]+))?/);
     let hub: 'project' | 'product' = 'project';
 
@@ -242,7 +272,11 @@ export function useRecentProjects(limit = 8) {
     return () => window.removeEventListener('catalyst:recent-locations-updated', handler);
   }, []);
 
-  const allEntries = readStore().filter((e) => CANONICAL_NAV_SECTIONS.has(e.section));
+  const allEntries = readStore().filter(
+    (e) =>
+      ((e.hub ?? 'project') === 'task' && TASK_NAV_SECTIONS.has(e.section)) ||
+      CANONICAL_NAV_SECTIONS.has(e.section),
+  );
   const seenFamily = new Set<string>();
   const entries: StoredEntry[] = [];
   for (const e of allEntries) {
@@ -285,6 +319,20 @@ export function useRecentProjects(limit = 8) {
       return entries
         .map<RecentLocation | null>((e) => {
           const hub = e.hub ?? 'project';
+          if (hub === 'task') {
+            // Standalone hub — no DB row to hydrate. Synthesize directly.
+            return {
+              projectKey: 'Tasks',
+              path: e.path,
+              section: e.section,
+              sectionLabel: labelForSection(e.section),
+              projectName: 'Tasks',
+              iconName: null,
+              color: null,
+              visitedAt: e.visitedAt,
+              hub: 'task',
+            };
+          }
           if (hub === 'product') {
             const row = byProductCode.get(e.projectKey);
             if (!row) return null;
