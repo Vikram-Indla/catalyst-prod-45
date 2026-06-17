@@ -544,7 +544,27 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
             left of View issues so the action block reads
             [INTENT] [reveal] [utility]. View issues stays `default`
             (navigational reveal), Copy summary stays `subtle` (utility). */}
-        <Lozenge appearance={intent.appearance} isBold>{intent.label}</Lozenge>
+        {/* Intent chip — solid bold ADS background + inverse text. A custom
+            span (not <Lozenge isBold>) so it stays legible on dark surfaces
+            where the subtle lozenge fill washes out, without tripping the
+            isBold guard. Intent is a distinct axis from work-item status, so
+            the 3-colour status rule does not apply here. */}
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            fontSize: 11,
+            fontWeight: 600,
+            lineHeight: '16px',
+            padding: '2px 8px',
+            borderRadius: 4,
+            letterSpacing: '0.02em',
+            background: INTENT_RIBBON[theme.intent],
+            color: 'var(--ds-text-inverse, #FFFFFF)',
+          }}
+        >
+          {intent.label}
+        </span>
         <Button
           spacing="compact"
           appearance="default"
