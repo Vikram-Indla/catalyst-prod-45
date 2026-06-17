@@ -179,6 +179,12 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
  * divider — the enterprise "calm whitespace" read requested 2026-06-17.
  */
 function SpaceGroupHeader({ head }: { head: RecentLocation }) {
+  // Space-scoped hubs (project/product) carry a per-space KEY → show "KEY · Type".
+  // Global single hubs (task/incident/release/plan) have no key → type word only.
+  const isSpaceScoped = head.hub === 'project' || head.hub === 'product';
+  const globalHubIcon =
+    HUB_ICON_OUTLINE_REGISTRY[head.hub as keyof typeof HUB_ICON_OUTLINE_REGISTRY];
+
   return (
     <div
       style={{
@@ -204,6 +210,22 @@ function SpaceGroupHeader({ head }: { head: RecentLocation }) {
         >
           <TaskIcon label="" size="small" primaryColor="var(--ds-icon-accent-yellow, #946F00)" />
         </span>
+      ) : !isSpaceScoped ? (
+        <span
+          aria-hidden="true"
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 3,
+            flexShrink: 0,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--ds-background-neutral, #F1F2F4)',
+          }}
+        >
+          <img src={globalHubIcon} alt="" style={{ width: 16, height: 16, display: 'block' }} />
+        </span>
       ) : (
         <ProjectIcon
           projectKey={head.projectKey}
@@ -214,18 +236,41 @@ function SpaceGroupHeader({ head }: { head: RecentLocation }) {
         />
       )}
       <span
+        title={head.projectName}
         style={{
           minWidth: 0,
-          color: token('color.text', '#292A2E'),
-          fontWeight: 500,
-          fontSize: token('font.size.100', '14px'),
-          lineHeight: '20px',
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: token('space.050', '4px'),
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
         }}
       >
-        {head.projectName}
+        <span
+          style={{
+            color: token('color.text', '#292A2E'),
+            fontWeight: 500,
+            fontSize: token('font.size.100', '14px'),
+            lineHeight: '20px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {isSpaceScoped ? head.projectKey : head.projectName}
+        </span>
+        {isSpaceScoped && (
+          <span
+            style={{
+              flexShrink: 0,
+              color: token('color.text.subtlest', '#626F86'),
+              fontWeight: 400,
+              fontSize: token('font.size.075', '12px'),
+              lineHeight: '20px',
+            }}
+          >
+            · {head.hub === 'product' ? 'Product' : 'Project'}
+          </span>
+        )}
       </span>
     </div>
   );
