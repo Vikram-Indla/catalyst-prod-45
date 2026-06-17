@@ -48,7 +48,15 @@ import { ChecklistSection } from '@/modules/tasks/components/TaskDetailDrawer/Ch
 import { AttachmentsSection } from '@/modules/tasks/components/TaskDetailDrawer/AttachmentsSection';
 import { ActivitySection } from '@/modules/tasks/components/TaskDetailDrawer/ActivitySection';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
+import { KeyDetailsFieldRow } from '../shared/sections';
 import type { CatalystViewBaseProps } from '../shared/types';
+
+const PRIORITY_COLOR: Record<string, string> = {
+  critical: 'var(--ds-text-danger, #dc2626)',
+  high: '#ca8a04',
+  medium: 'var(--ds-text-brand, #2563eb)',
+  low: 'var(--ds-text-subtlest, #94a3b8)',
+};
 
 /* ═══════════════════════════════════════════
    DATA HOOK — task detail (same shape used by TaskDetailDrawer)
@@ -190,6 +198,28 @@ export default function TaskCatalystView({
         >
           {t.title}
         </h1>
+
+        {/* Key details — type, priority, workstream (mirrors CatalystKeyDetails pattern) */}
+        <div style={{
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          paddingBottom: 8,
+          marginBottom: 4,
+        }}>
+          <KeyDetailsFieldRow label="Priority">
+            {t.priority ? (
+              <span style={{ fontSize: 14, fontWeight: 500, color: PRIORITY_COLOR[t.priority] || 'var(--ds-text-subtle, #505258)' }}>
+                {t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
+              </span>
+            ) : (
+              <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>–</span>
+            )}
+          </KeyDetailsFieldRow>
+          {t.workstream?.name && (
+            <KeyDetailsFieldRow label="Workstream">
+              <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{t.workstream.name}</span>
+            </KeyDetailsFieldRow>
+          )}
+        </div>
 
         {/* Description */}
         <section>

@@ -164,6 +164,80 @@ The clone is not done while any P0 (missing component) or P1 (dropped prop) gap 
 
 ---
 
+# Detail Panel DOM Probe Gate (BLOCKING for surfaces with a detail panel)
+
+`coverage-gate.mjs` audits the **list component tree only** — it walks static import graphs from the entry file and does NOT execute the app. When a source route opens a detail panel (drawer, modal, full-page view) on row click, that panel's DOM is invisible to the static graph walk.
+
+**Pre-existing target detail components are treated as already-correct by the coverage gate. This is wrong.**
+
+## When this gate applies
+
+Run whenever the source route has ANY of:
+- A detail drawer / panelMode
+- A detail modal
+- A full-page detail view
+- A side panel that opens on row/card click
+
+## Mandatory steps (all BLOCKING)
+
+### Step A — Open source detail panel, probe DOM
+
+Navigate to the source route in Chrome MCP. Click any row to open the detail panel. Probe:
+
+```js
+// Chrome MCP javascript_tool
+__probeStyles([
+  '[data-testid="cv-drawer-body"]',
+  '[data-testid="catalyst-status-pill-trigger"]',
+  '.cv-drawer-sidebar',
+  'h1[contenteditable]',
+])
+```
+
+Save as `source-detail.json`.
+
+### Step B — Open target detail panel, probe DOM
+
+Navigate to the target route. Click any row. Probe the same selectors. Save as `dest-detail.json`.
+
+### Step C — Diff
+
+```bash
+node .claude/skills/pixel-twin-route/scripts/style-diff.mjs \
+  --source source-detail.json --dest dest-detail.json
+```
+
+Any selector present in source but **absent** in dest → P0 gap, clone is not done.
+
+### Step D — Section checklist (manual, compare side-by-side)
+
+For each section visible in the open source detail panel, confirm present in target:
+
+- [ ] Breadcrumb — exact shape, no orphan `+ Add parent` text without a wired handler
+- [ ] Title — inline-editable h1
+- [ ] Key details section (type icon, key, priority, parent)
+- [ ] Status pill — confirm location (left panel vs right rail) matches source
+- [ ] Description
+- [ ] Checklist / subtasks (if in source)
+- [ ] Linked work items (if in source)
+- [ ] Attachments
+- [ ] Activity / comments
+- [ ] Right rail fields (assignee, priority, labels, dates)
+
+The clone is not done until this checklist passes.
+
+## Known gap — 2026-06-17 (tasks/work ← project-hub/BAU/allwork)
+
+`TaskCatalystView` was pre-existing when the clone ran. The coverage gate never opened the detail panel — the component was outside the scanned closure. Three defects shipped:
+
+1. **Breadcrumb garbled** — `TicketBreadcrumbs.showAddParent` fired without `onAddParent` wired → rendered `"Catalyst Track+ Add parentTSK-1"`. Fix: `&& Boolean(onAddParent)` guard in `showAddParent`.
+2. **Key details section missing** — `CatalystKeyDetails` is ph_issues-only; no task equivalent was built. Fix: inline `KeyDetailsFieldRow`-based section in `TaskCatalystView` leftContent.
+3. **Status pill absent** — tasks use `SidebarFields` with a different status model; `CatalystStatusPill` (ph_issues) was never reproduced for tasks.
+
+Root cause: static graph walk cannot discover gaps in a detail component created outside the current clone run. Only a live DOM probe against the open-panel state catches them.
+
+---
+
 # Schema Pre-Check (run before writing any adapter)
 
 The #1 silent defect in Catalyst is reading a column that does not exist → empty render, no error (CLAUDE.md Assumption Class 2; raw rows are snake_case, Assumption Class 4). Verify every target column the adapter will read BEFORE generating binding code:
@@ -815,6 +889,7 @@ Follow this exact sequence:
 26. Update target route registration only.
 27. Do not modify source route registration behavior.
 28. Run `coverage-gate.mjs` — resolve every P0/P1 gap before proceeding.
+28b. **If source has a detail panel**: run the Detail Panel DOM Probe Gate — open a row on both source and target in Chrome MCP, probe DOM, diff, confirm all sections present. This gate is BLOCKING. Do not skip because the detail component was pre-existing.
 29. Run leak scan.
 30. Run source hash verification (`source-shield.mjs verify`).
 31. Run typecheck/lint/build/tests.
@@ -838,6 +913,8 @@ Stop and report if:
 - a shared/canonical component was COPIED into the target instead of mounted
 - Atlaskit components were replaced by non-Atlaskit components
 - coverage-gate.mjs reports an unresolved P0/P1 gap
+- source detail panel has sections absent from target detail panel (Detail Panel DOM Probe Gate failed)
+- a pre-existing target detail component was assumed correct without running the Detail Panel DOM Probe Gate
 - validation fails and cannot be fixed without source modification
 
 ---

@@ -81,7 +81,7 @@ export function TicketBreadcrumbs({
   const isEpic = (itemType || '').toLowerCase().includes('epic');
   const hasSlot = middleSlot !== undefined;
   const showParent = !hasSlot && Boolean(parentKey);
-  const showAddParent = !hasSlot && !isEpic && !parentKey;
+  const showAddParent = !hasSlot && !isEpic && !parentKey && Boolean(onAddParent);
 
   const items: BreadcrumbItem[] = [];
 
