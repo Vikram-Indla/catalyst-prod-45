@@ -16,6 +16,11 @@ import Badge from '@atlaskit/badge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { CatyHead } from '@/components/for-you/atlaskit/CatyButton';
+import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
+import { useCatySearch } from '@/components/caty/catySearchStore';
+import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
 import type { R360WorkItem } from '@/types/r360';
 import { QuickSearchInput } from './QuickSearchInput';
 import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
@@ -185,6 +190,9 @@ function ProjectSwimlane({
           ? <ChevronRightIcon label="" size="medium" primaryColor={token('color.text.subtle', '#44546F')} />
           : <ChevronDownIcon label="" size="medium" primaryColor={token('color.text.subtle', '#44546F')} />
         }
+        {/* Project brand icon — canonical ProjectIcon (bundled avatar by key).
+            20px fits the fixed 44px row; row dimensions unchanged. */}
+        <ProjectIcon size="small" projectKey={projectKey} name={projectName} />
         <span style={{
           fontSize: 14, fontWeight: 700, letterSpacing: '0.01em',
           color: token('color.text', '#172B4D'),
@@ -304,13 +312,28 @@ function filterForBoard(items: R360WorkItem[]): R360WorkItem[] {
   return Array.from(result.values());
 }
 
+// Sentinel project key for cross-project Ask Caty on the For You board.
+// The board spans multiple projects; the returned CatyFilter is applied
+// client-side, so this key only satisfies the store/edge-fn project-scoped
+// contract and drives the placeholder label ("…in my board").
+const BOARD_CATY_KEY = 'my board';
+
 // ── Main Component ──────────────────────────────────────────────────
 export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; resourceId?: string | null }) {
   const [quickSearch, setQuickSearch] = useState('');
+  const [askCatyOpen, setAskCatyOpen] = useState(false);
   // Board health panel renders into this slot (below the toolbar, above the
   // swimlanes) so the button stays inline on the toolbar row and the expanded
   // result pushes the board down instead of replacing the button.
   const [insightSlot, setInsightSlot] = useState<HTMLDivElement | null>(null);
+
+  // Ask Caty (copied from AllWork). The board is cross-project, so we apply
+  // the returned project-agnostic CatyFilter client-side over the loaded
+  // board items rather than via per-project JQL.
+  const catyFilter = useCatySearch((s) => s.filter);
+  const catyStatus = useCatySearch((s) => s.status);
+  const catyStoreKey = useCatySearch((s) => s.projectKey);
+  const catyActive = catyStatus === 'ready' && catyStoreKey === BOARD_CATY_KEY;
 
   const boardItems = useMemo(() => filterForBoard(items), [items]);
 
@@ -324,23 +347,58 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
     );
   }, [boardItems, quickSearch]);
 
+  // Layer the Ask Caty filter on top of the quick-search result. Map
+  // R360WorkItem → BacklogLikeItem (item_type → type; all other field names
+  // already match), filter, then keep the original R360 rows (spread).
+  const catyVisibleItems = useMemo(() => {
+    if (!catyActive || !catyFilter) return filteredItems;
+    const enriched = filteredItems.map(i => ({ ...i, type: i.item_type }));
+    return applyCatyFilterBacklog(enriched, catyFilter);
+  }, [filteredItems, catyActive, catyFilter]);
+
   const projectGroups = useMemo(() => {
     const map: Record<string, { name: string; items: R360WorkItem[] }> = {};
-    filteredItems.forEach(item => {
+    catyVisibleItems.forEach(item => {
       const key = item.project_key;
       if (!map[key]) map[key] = { name: item.project_name || key, items: [] };
       map[key].items.push(item);
     });
     return Object.entries(map).sort(([, a], [, b]) => b.items.length - a.items.length);
-  }, [filteredItems]);
+  }, [catyVisibleItems]);
 
   return (
     <div>
+      {/* Ask Caty — cross-project NL search (copied from AllWork). Opens above
+          the toolbar; its CatyFilter is applied client-side to the board. */}
+      {askCatyOpen && (
+        <AskCatyInlineBar
+          projectKey={BOARD_CATY_KEY}
+          onClose={() => setAskCatyOpen(false)}
+        />
+      )}
       {/* Toolbar */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 16,
         marginBottom: 16,
       }}>
+        {/* Caty cat-head trigger — start of the search row (AllWork parity). */}
+        <button
+          type="button"
+          onClick={() => setAskCatyOpen(o => !o)}
+          aria-label="Ask Caty"
+          aria-expanded={askCatyOpen}
+          title="Ask Caty"
+          style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 32, height: 32, flexShrink: 0,
+            border: 'none', borderRadius: 6, cursor: 'pointer',
+            background: askCatyOpen
+              ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)')
+              : 'transparent',
+          }}
+        >
+          <CatyHead size={22} title="Ask Caty" />
+        </button>
         <div style={{ flex: 1, maxWidth: 320 }}>
           <QuickSearchInput
             value={quickSearch}
@@ -353,7 +411,7 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
           fontSize: 12, fontWeight: 400,
           color: token('color.text.subtlest', '#626F86'),
         }}>
-          {filteredItems.length} items across {projectGroups.length} projects
+          {catyVisibleItems.length} items across {projectGroups.length} projects
         </span>
         {/* Board health pinned to the far-right end of the toolbar. */}
         <div style={{ marginLeft: 'auto' }}>
