@@ -17,7 +17,7 @@ export type StatusCategory = 'todo' | 'inProgress' | 'done';
 export function toStatusCategory(raw: string | null | undefined): StatusCategory {
   const v = (raw ?? '').trim().toLowerCase().replace(/_/g, ' ');
   if (!v) return 'todo';
-  if (['done', 'closed', 'resolved', 'released', 'approved', 'completed', 'archived', 'fixed', 'verified'].includes(v)) {
+  if (['done', 'closed', 'resolved', 'released', 'approved', 'completed', 'archived', 'fixed', 'verified', 'implemented'].includes(v)) {
     return 'done';
   }
   if (
@@ -48,6 +48,17 @@ export function toStatusCategory(raw: string | null | undefined): StatusCategory
       'open',
       'new',
       'reopened',
+      // Release Operations lifecycle — in-flight stages (blue, not grey).
+      'in readiness',
+      'ready for signoff',
+      'scheduled',
+      'deploying',
+      'monitoring',
+      'assessing',
+      'ready for approval',
+      'implementing',
+      'validating',
+      'in beta',
     ].includes(v)
   ) {
     return 'inProgress';

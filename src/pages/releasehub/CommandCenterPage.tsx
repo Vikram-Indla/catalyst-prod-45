@@ -1,29 +1,35 @@
 /**
  * Release Operations — Overview (route /release-hub/overview)
  *
- * Rebuilt 2026-06-18 (Phase 3) to ADS tokens + canonical components.
- *   - KPI stat cards (whole card is a drill-down button)
- *   - Pending Approvals panel — face avatars of the pending approver(s),
- *     name + role + change + wait time + Review action (handoff §3b priority)
- *   - Release Status + Recent Production Events supporting panels
+ * Rebuilt 2026-06-18 to match the design artifact (01-artifact-source.html):
+ *   - header with Create change / Create release
+ *   - 8 KPI stat cards (status dot + value), drill-down
+ *   - Upcoming Release Windows + Release Health (readiness bars)
+ *   - Pending Approvals (face avatars + role + change + wait + Review)
+ *   - Change Execution Queue + CATY risk summary + Recent Production Events
  *
- * Status pills via StatusLozenge; avatars via ads/Avatar. No --cp-* tokens.
+ * ADS tokens + canonical StatusLozenge / ads Avatar only.
  */
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formatDistanceToNowStrict, format } from 'date-fns';
-import { Rocket, ArrowLeftRight, CheckSquare, Clock, ChevronRight } from '@/lib/atlaskit-icons';
+import { formatDistanceToNowStrict, format, isToday, differenceInDays } from 'date-fns';
+import { Rocket, CheckSquare, ArrowLeftRight, Clock, Calendar, AlertTriangle, Sparkles, ChevronRight } from '@/lib/atlaskit-icons';
 import {
-  useReleases,
-  useChanges,
-  useCommandCenterKPIs,
-  useProductionEvents,
+  useReleasesList,
+  useChangesList,
   usePendingApprovals,
+  useProductionEventsList,
+  useFreezeWindowsList,
   type PendingApproval,
+  type ReleaseListRow,
+  type ChangeListRow,
 } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { Avatar } from '@/components/ads/Avatar';
+import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
+import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
+import { catalystToast } from '@/lib/catalystToast';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -35,47 +41,69 @@ const T = {
   subtle: 'var(--ds-text-subtle, #44546F)',
   subtlest: 'var(--ds-text-subtlest, #626F86)',
   link: 'var(--ds-link, #0C66E4)',
-  hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+  brand: 'var(--ds-background-brand-bold, #0C66E4)',
+  inverse: 'var(--ds-text-inverse, #FFFFFF)',
   danger: 'var(--ds-text-danger, #AE2A19)',
   success: 'var(--ds-text-success, #216E4E)',
+  warning: 'var(--ds-text-warning, #A54800)',
+  hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
+  mono: 'var(--ds-font-family-code, monospace)',
+  discoveryFg: 'var(--ds-text-discovery, #5E4DB2)',
+  discoveryBg: 'var(--ds-background-discovery, #F3F0FF)',
+  discoveryBorder: 'var(--ds-border-discovery, #B8ACF6)',
 };
 
-function KPICard({ label, value, icon: Icon, loading, onClick }: {
-  label: string; value: number | string; icon: any; loading?: boolean; onClick?: () => void;
-}) {
+const TERMINAL_RELEASE = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived'];
+const IN_FLIGHT_CHANGE = ['assessing', 'ready_for_approval', 'approved', 'scheduled', 'implementing', 'validating', 'in_uat', 'in_beta', 'new'];
+
+function titleCase(v: string | null | undefined) {
+  if (!v) return '—';
+  return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
+}
+
+function EnvLozenge({ env }: { env: string | null }) {
+  if (!env) return null;
+  const prod = env === 'production';
+  const fg = prod ? 'var(--ds-text-success, #216E4E)' : 'var(--ds-text-information, #0055CC)';
+  const bg = prod ? 'var(--ds-background-success, #DCFFF1)' : 'var(--ds-background-information, #E9F2FE)';
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: fg, background: bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{titleCase(env)}</span>;
+}
+
+function HealthLozenge({ health }: { health: string | null }) {
+  const map: Record<string, { label: string; fg: string; bg: string }> = {
+    at_risk: { label: 'At risk', fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    on_track: { label: 'On track', fg: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FE)' },
+    done: { label: 'Done', fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+  };
+  const m = map[health ?? ''] ?? { label: titleCase(health), fg: T.subtle, bg: T.sunken };
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{m.label}</span>;
+}
+
+function KpiCard({ label, value, dot, onClick }: { label: string; value: number; dot: string; onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        background: T.card, border: `1px solid ${T.border}`, borderRadius: 8,
-        padding: 16, textAlign: 'left', cursor: onClick ? 'pointer' : 'default',
-        transition: 'border-color 120ms', display: 'block', width: '100%',
-      }}
+      style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, textAlign: 'left', cursor: onClick ? 'pointer' : 'default', display: 'block', width: '100%', transition: 'border-color 120ms' }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.borderBold; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-        <div>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtlest, margin: 0 }}>{label}</p>
-          {loading ? (
-            <div style={{ height: 32, width: 56, borderRadius: 4, background: T.sunken, marginTop: 8 }} />
-          ) : (
-            <p style={{ fontFamily: RH.fontDisplay, fontSize: 28, fontWeight: 600, color: T.text, margin: '4px 0 0', fontVariantNumeric: 'tabular-nums' }}>{value}</p>
-          )}
-        </div>
-        <span style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: T.sunken }}>
-          <Icon size={16} style={{ color: T.subtle }} />
-        </span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.subtlest }}>{label}</span>
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: dot }} />
       </div>
+      <p style={{ fontFamily: RH.fontDisplay, fontSize: 28, fontWeight: 600, color: T.text, margin: '8px 0 0', fontVariantNumeric: 'tabular-nums' }}>{value}</p>
     </button>
   );
 }
 
-function Panel({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
+function Panel({ title, sub, action, children }: { title: string; sub?: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-        <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: 0 }}>{title}</h2>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+          <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: 0 }}>{title}</h2>
+          {sub && <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>{sub}</span>}
+        </div>
         {action}
       </div>
       {children}
@@ -83,173 +111,235 @@ function Panel({ title, action, children }: { title: string; action?: React.Reac
   );
 }
 
-function ViewAll({ onClick }: { onClick: () => void }) {
-  return (
-    <button onClick={onClick} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
-      View all
-    </button>
-  );
+function ViewLink({ label, onClick }: { label: string; onClick: () => void }) {
+  return <button onClick={onClick} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>{label}</button>;
 }
 
-function waitLabel(iso: string | null): string {
-  if (!iso) return '—';
-  try { return `${formatDistanceToNowStrict(new Date(iso))} waiting`; } catch { return '—'; }
-}
-
-function PendingApprovalRow({ a, onReview }: { a: PendingApproval; onReview: () => void }) {
-  const name = a.approverName ?? 'Unassigned';
-  return (
-    <div
-      style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = T.hover; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-    >
-      <Avatar name={name} src={a.approverAvatarUrl ?? undefined} size="medium" />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</span>
-          {a.role && (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{a.role}</span>
-          )}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-          {a.chgNumber && (
-            <span style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12, fontWeight: 600, color: T.link }}>{a.chgNumber}</span>
-          )}
-          <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {a.changeTitle ?? '—'} · {waitLabel(a.waitStartedAt)}
-          </span>
-        </div>
-      </div>
-      <button
-        onClick={onReview}
-        style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', padding: '4px 0' }}
-      >
-        Review <ChevronRight size={14} style={{ color: T.link }} />
-      </button>
-    </div>
-  );
+function rowStyleClickable(onClick?: () => void): React.CSSProperties {
+  return { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}`, cursor: onClick ? 'pointer' : 'default' };
 }
 
 export default function CommandCenterPage() {
   const navigate = useNavigate();
-  const { data: releases = [], isLoading: relLoading } = useReleases();
-  const { data: changes = [], isLoading: chgLoading } = useChanges();
-  const { data: kpis, isLoading: kpiLoading } = useCommandCenterKPIs();
-  const { data: approvals = [], isLoading: apLoading } = usePendingApprovals();
-  const { data: prodEvents = [], isLoading: evLoading } = useProductionEvents();
+  const { data: releases = [] } = useReleasesList();
+  const { data: changes = [] } = useChangesList();
+  const { data: approvals = [] } = usePendingApprovals();
+  const { data: prodEvents = [] } = useProductionEventsList();
+  const { data: freezes = [] } = useFreezeWindowsList();
+  const [showCreateRel, setShowCreateRel] = useState(false);
+  const [showCreateChg, setShowCreateChg] = useState(false);
 
-  const kpiLoad = relLoading || chgLoading || kpiLoading;
+  const activeReleases = releases.filter((r) => !TERMINAL_RELEASE.includes(r.status));
 
-  // A release is "active" while it is in-flight — i.e. not in a terminal
-  // state. Works for both the new lifecycle (draft→…→completed) and legacy
-  // statuses (released/done).
-  const TERMINAL_RELEASE = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived'];
-  const isActiveRelease = (r: any) => !TERMINAL_RELEASE.includes(r.status);
+  const kpis = useMemo(() => {
+    const dateOf = (c: ChangeListRow) => c.window_start ?? c.deployment_date;
+    return {
+      active: activeReleases.length,
+      readyForSignoff: releases.filter((r) => r.status === 'ready_for_signoff' || r.status === 'in_readiness').length,
+      atRisk: releases.filter((r) => r.health === 'at_risk').length,
+      changesToday: changes.filter((c) => { const d = dateOf(c); return d ? isToday(new Date(d)) : false; }).length,
+      freezeConflicts: freezes.reduce((s, f) => s + f.conflicts, 0),
+      prodThisWeek: prodEvents.filter((e) => e.deployedAt ? differenceInDays(new Date(), new Date(e.deployedAt)) <= 7 : false).length,
+      pending: approvals.length,
+      deploymentWindows: changes.filter((c) => !!c.window_start && !['closed', 'implemented', 'cancelled'].includes(c.status)).length,
+    };
+  }, [releases, activeReleases, changes, freezes, prodEvents, approvals]);
 
-  // Compute directly from the loaded rows — the rh_command_center_kpis view
-  // pre-dates the new lifecycle vocabulary and reports stale counts.
-  const activeReleases = releases.filter(isActiveRelease).length;
-  const openChanges = changes.filter((c: any) => !['in_production', 'closed', 'cancelled'].includes(c.status)).length;
-  const pendingCount = approvals.length;
-  const prodCount = prodEvents.length;
+  const upcoming = useMemo(
+    () => releases
+      .filter((r) => (r.planned_release_date ?? r.target_date))
+      .filter((r) => !TERMINAL_RELEASE.includes(r.status))
+      .sort((a, b) => new Date(a.planned_release_date ?? a.target_date!).getTime() - new Date(b.planned_release_date ?? b.target_date!).getTime())
+      .slice(0, 4),
+    [releases],
+  );
 
-  const activeRels = releases.filter(isActiveRelease);
+  const execQueue = useMemo(
+    () => changes.filter((c) => IN_FLIGHT_CHANGE.includes(c.status) || c.status === 'implementing').slice(0, 4),
+    [changes],
+  );
+
+  const caty = useMemo(() => {
+    const reasons: string[] = [];
+    const atRiskRel = releases.find((r) => r.health === 'at_risk');
+    if (kpis.freezeConflicts > 0) reasons.push(`${kpis.freezeConflicts} freeze conflict${kpis.freezeConflicts === 1 ? '' : 's'}`);
+    if (kpis.pending > 0) reasons.push(`${kpis.pending} sign-off${kpis.pending === 1 ? '' : 's'} pending`);
+    if (kpis.atRisk > 0) reasons.push(`${kpis.atRisk} at-risk release${kpis.atRisk === 1 ? '' : 's'}`);
+    const lead = atRiskRel ? `${atRiskRel.name} is at risk.` : reasons.length ? 'Attention needed.' : 'Release path is clear.';
+    const body = reasons.length
+      ? `${lead} ${reasons.join(', ')}. Resolve freeze conflicts and complete approvals before the next deployment window.`
+      : `${lead} No blocking signals across the active releases.`;
+    const basis = `Based on ${kpis.active} active releases · ${changes.length} changes · ${kpis.freezeConflicts} freeze conflict${kpis.freezeConflicts === 1 ? '' : 's'}`;
+    return { body, basis };
+  }, [releases, kpis, changes]);
+
+  const copyCaty = () => { navigator.clipboard?.writeText(caty.body).then(() => catalystToast.success('Copied')).catch(() => {}); };
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Release Operations Overview</h1>
-        <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Releases, changes, and approvals at a glance</p>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: 0 }}>Release Operations / Overview</p>
+          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: '4px 0 0' }}>Release Operations</h1>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Manage release readiness, change execution, sign-offs, and production events.</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button onClick={() => setShowCreateChg(true)} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create change</button>
+          <button onClick={() => setShowCreateRel(true)} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: T.brand, color: T.inverse, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create release</button>
+        </div>
       </div>
 
-      {/* KPI cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-        <KPICard label="Active Releases" value={activeReleases} icon={Rocket} loading={kpiLoad} onClick={() => navigate('/release-hub/releases')} />
-        <KPICard label="Open Changes" value={openChanges} icon={ArrowLeftRight} loading={kpiLoad} onClick={() => navigate('/release-hub/changes')} />
-        <KPICard label="Pending Approvals" value={pendingCount} icon={CheckSquare} loading={apLoading} onClick={() => navigate('/release-hub/sign-off-queue')} />
-        <KPICard label="Production Events" value={prodCount} icon={Clock} loading={evLoading} onClick={() => navigate('/release-hub/production-events')} />
+      {/* 8 KPI cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 16 }}>
+        <KpiCard label="Active Releases" value={kpis.active} dot={T.link} onClick={() => navigate('/release-hub/releases')} />
+        <KpiCard label="Ready for Sign-off" value={kpis.readyForSignoff} dot={T.link} onClick={() => navigate('/release-hub/sign-off-queue')} />
+        <KpiCard label="At-risk Releases" value={kpis.atRisk} dot={T.danger} onClick={() => navigate('/release-hub/releases')} />
+        <KpiCard label="Changes Today" value={kpis.changesToday} dot={T.link} onClick={() => navigate('/release-hub/changes')} />
+        <KpiCard label="Freeze Conflicts" value={kpis.freezeConflicts} dot={T.danger} onClick={() => navigate('/release-hub/freeze-windows')} />
+        <KpiCard label="Prod Events This Week" value={kpis.prodThisWeek} dot={T.success} onClick={() => navigate('/release-hub/production-events')} />
+        <KpiCard label="Pending Approvals" value={kpis.pending} dot={T.warning} onClick={() => navigate('/release-hub/sign-off-queue')} />
+        <KpiCard label="Deployment Windows" value={kpis.deploymentWindows} dot={T.link} onClick={() => navigate('/release-hub/calendar')} />
       </div>
 
-      {/* Pending Approvals — priority surface */}
-      <div style={{ marginBottom: 24 }}>
-        <Panel title="Pending Approvals" action={<ViewAll onClick={() => navigate('/release-hub/sign-off-queue')} />}>
-          {apLoading ? (
-            <div style={{ padding: 16 }}>
-              {[0, 1, 2].map((i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: T.sunken }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ height: 12, width: '40%', background: T.sunken, borderRadius: 4, marginBottom: 8 }} />
-                    <div style={{ height: 10, width: '60%', background: T.sunken, borderRadius: 4 }} />
-                  </div>
+      {/* Upcoming Release Windows + Release Health */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+        <Panel title="Upcoming Release Windows" action={<ViewLink label="View calendar" onClick={() => navigate('/release-hub/calendar')} />}>
+          {upcoming.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No upcoming releases</div>
+          ) : upcoming.map((r) => {
+            const d = new Date(r.planned_release_date ?? r.target_date!);
+            return (
+              <div key={r.id} style={rowStyleClickable(() => navigate(`/release-hub/${r.id}`))} onClick={() => navigate(`/release-hub/${r.id}`)}>
+                <div style={{ width: 44, textAlign: 'center', flexShrink: 0 }}>
+                  <div style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: T.subtlest }}>{format(d, 'MMM')}</div>
+                  <div style={{ fontFamily: RH.fontDisplay, fontSize: 18, fontWeight: 600, color: T.text }}>{format(d, 'd')}</div>
                 </div>
-              ))}
-            </div>
-          ) : approvals.length === 0 ? (
-            <div style={{ padding: '32px 16px', textAlign: 'center' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.text, margin: 0 }}>{r.jira_key ?? r.name}</p>
+                  <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{r.name} · {titleCase(r.target_env)}</p>
+                </div>
+                <EnvLozenge env={r.target_env} />
+              </div>
+            );
+          })}
+        </Panel>
+
+        <Panel title="Release Health">
+          {activeReleases.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No active releases</div>
+          ) : activeReleases.slice(0, 4).map((r) => {
+            const pct = r.readiness_pct ?? 0;
+            const barColor = r.health === 'at_risk' ? T.danger : T.link;
+            return (
+              <div key={r.id} style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.text }}>{r.jira_key ?? r.name}</span>
+                  <HealthLozenge health={r.health} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ flex: 1, height: 6, borderRadius: 4, background: T.sunken, overflow: 'hidden' }}>
+                    <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 4 }} />
+                  </div>
+                  <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtle, minWidth: 32, textAlign: 'right' }}>{pct}%</span>
+                </div>
+              </div>
+            );
+          })}
+        </Panel>
+      </div>
+
+      {/* Pending Approvals */}
+      <div style={{ marginBottom: 16 }}>
+        <Panel title="Pending Approvals" sub="Waiting on specific approvers" action={<ViewLink label="Open sign-off queue" onClick={() => navigate('/release-hub/sign-off-queue')} />}>
+          {approvals.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center' }}>
               <CheckSquare size={20} style={{ color: T.success }} />
               <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.success, margin: '8px 0 0' }}>No pending approvals</p>
             </div>
-          ) : (
-            approvals.map((a) => (
-              <PendingApprovalRow key={a.id} a={a} onReview={() => navigate('/release-hub/sign-off-queue')} />
-            ))
-          )}
-        </Panel>
-      </div>
-
-      {/* Release Status + Production Events */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
-        <Panel title="Release Status" action={<ViewAll onClick={() => navigate('/release-hub/releases')} />}>
-          {relLoading ? (
-            <div style={{ padding: '32px 16px', textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading…</div>
-          ) : activeRels.length === 0 ? (
-            <div style={{ padding: '32px 16px', textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No active releases</div>
-          ) : (
-            activeRels.map((r: any) => {
-              const chgCount = r.chg_count ?? changes.filter((c: any) => c.release_id === r.id).length;
-              return (
-                <div
-                  key={r.id}
-                  onClick={() => navigate(`/release-hub/${r.id}`)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}`, cursor: 'pointer' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = T.hover; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                >
-                  <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.name}</span>
-                  <StatusLozenge status={r.status} />
-                  <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap' }}>
-                    {chgCount} {chgCount === 1 ? 'change' : 'changes'}
-                  </span>
-                  <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap' }}>
-                    {r.target_date ? format(new Date(r.target_date), 'MMM d') : '—'}
-                  </span>
-                </div>
-              );
-            })
-          )}
-        </Panel>
-
-        <Panel title="Recent Production Events" action={<ViewAll onClick={() => navigate('/release-hub/production-events')} />}>
-          {evLoading ? (
-            <div style={{ padding: '32px 16px', textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading…</div>
-          ) : prodEvents.length === 0 ? (
-            <div style={{ padding: '32px 16px', textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No production events</div>
-          ) : (
-            prodEvents.slice(0, 5).map((ev: any) => (
-              <div key={ev.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ev.title}</p>
-                  <p style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest, margin: '4px 0 0' }}>
-                    {ev.deployed_at ? format(new Date(ev.deployed_at), 'MMM d, HH:mm') : '—'}{ev.deployed_by ? ` · ${ev.deployed_by}` : ''}
-                  </p>
-                </div>
+          ) : approvals.slice(0, 6).map((a: PendingApproval) => (
+            <div key={a.id} style={rowStyleClickable()}>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3, minWidth: 56, textAlign: 'center', flexShrink: 0 }}>Change</span>
+              <div style={{ width: 220, minWidth: 0 }}>
+                {a.chgNumber && <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{a.chgNumber}</span>}
+                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.changeTitle ?? '—'}</p>
               </div>
-            ))
-          )}
+              <Avatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="small" />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0 }}>Waiting on {a.approverName ?? 'Unassigned'}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{a.approverName ?? 'Unassigned'} · {a.role ?? '—'}</p>
+              </div>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, color: T.warning, background: 'var(--ds-background-warning, #FFF7D6)', padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{a.waitStartedAt ? formatDistanceToNowStrict(new Date(a.waitStartedAt)) : '—'}</span>
+              <button onClick={() => navigate('/release-hub/sign-off-queue')} style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border, #DFE1E6)`, borderRadius: 6, padding: '4px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}>Review</button>
+            </div>
+          ))}
         </Panel>
       </div>
+
+      {/* Change Execution Queue */}
+      <div style={{ marginBottom: 16 }}>
+        <Panel title="Change Execution Queue" action={<ViewLink label="All changes" onClick={() => navigate('/release-hub/changes')} />}>
+          {execQueue.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No changes in flight</div>
+          ) : execQueue.map((c) => (
+            <div key={c.id} style={rowStyleClickable(() => navigate(`/release-hub/changes/${c.id}`))} onClick={() => navigate(`/release-hub/changes/${c.id}`)}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.text }}>{c.chg_number}</span>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{c.window_start ? format(new Date(c.window_start), 'MMM d, HH:mm') : (c.deployment_date ? format(new Date(c.deployment_date), 'MMM d') : '—')}</p>
+              </div>
+              <StatusLozenge status={c.status} />
+            </div>
+          ))}
+        </Panel>
+      </div>
+
+      {/* CATY Risk Summary */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ background: T.discoveryBg, border: `1px solid ${T.discoveryBorder}`, borderRadius: 8, padding: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Sparkles size={14} style={{ color: T.discoveryFg }} />
+              <span style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.discoveryFg }}>AI Release Risk Summary · CATY</span>
+            </div>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>{caty.basis}</span>
+          </div>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0, lineHeight: 1.5 }}>{caty.body}</p>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <button onClick={() => catalystToast.info('Recomputed from live data')} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.discoveryFg, background: 'transparent', border: `1px solid ${T.discoveryBorder}`, borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Regenerate</button>
+            <button onClick={copyCaty} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.discoveryFg, background: 'transparent', border: `1px solid ${T.discoveryBorder}`, borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Copy</button>
+            <button onClick={() => catalystToast.success('Saved as note')} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.discoveryFg, background: 'transparent', border: `1px solid ${T.discoveryBorder}`, borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Save as note</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Production Events */}
+      <Panel title="Recent Production Events" action={<ViewLink label="All events" onClick={() => navigate('/release-hub/production-events')} />}>
+        {prodEvents.length === 0 ? (
+          <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No production events</div>
+        ) : prodEvents.slice(0, 4).map((ev) => {
+          const ok = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'success';
+          const partial = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'partial';
+          const fg = ok ? T.success : partial ? T.warning : T.danger;
+          const bg = ok ? 'var(--ds-background-success, #DCFFF1)' : partial ? 'var(--ds-background-warning, #FFF7D6)' : 'var(--ds-background-danger, #FFECEB)';
+          const wi = Array.isArray(ev.workItemsSnapshot) ? ev.workItemsSnapshot.length : null;
+          const br = Array.isArray(ev.businessRequestsSnapshot) ? ev.businessRequestsSnapshot.length : null;
+          return (
+            <div key={ev.id} style={rowStyleClickable()}>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: fg, background: bg, padding: '0 8px', borderRadius: 3, minWidth: 64, textAlign: 'center', flexShrink: 0 }}>{titleCase(ev.result ?? ev.deploymentStatus)}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0 }}>{ev.title}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>
+                  {wi != null ? `${wi} work items · ` : ''}{br != null ? `${br} business requests · ` : ''}{ev.changeKey ? `change ${ev.changeKey}` : ev.deployedBy}
+                </p>
+              </div>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap' }}>{ev.deployedAt ? format(new Date(ev.deployedAt), 'MMM d') : '—'}</span>
+            </div>
+          );
+        })}
+      </Panel>
+
+      {showCreateRel && <CreateReleaseModal onClose={() => setShowCreateRel(false)} />}
+      {showCreateChg && <CreateChgModal onClose={() => setShowCreateChg(false)} />}
     </div>
   );
 }
