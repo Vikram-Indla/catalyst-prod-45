@@ -1,25 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
+import { useThemeMode } from '@/providers/ThemeProvider';
 
-const STORAGE_KEY = 'cv2-chat-theme';
 export type ChatTheme = 'dark' | 'light';
 
-function readInitial(): ChatTheme {
-  if (typeof window === 'undefined') return 'dark';
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  if (stored === 'light' || stored === 'dark') return stored;
-  return 'dark';
-}
-
 export function useChatTheme(): { theme: ChatTheme; toggle: () => void; setTheme: (t: ChatTheme) => void } {
-  const [theme, setThemeState] = useState<ChatTheme>(readInitial);
+  const { resolvedTheme, setTheme: setGlobalTheme } = useThemeMode();
+  const theme: ChatTheme = resolvedTheme;
 
-  useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+  const setTheme = useCallback((t: ChatTheme) => setGlobalTheme(t), [setGlobalTheme]);
+  const toggle = useCallback(() => setGlobalTheme(resolvedTheme === 'dark' ? 'light' : 'dark'), [resolvedTheme, setGlobalTheme]);
 
-  const toggle = useCallback(() => {
-    setThemeState(t => (t === 'dark' ? 'light' : 'dark'));
-  }, []);
-
-  return { theme, toggle, setTheme: setThemeState };
+  return { theme, toggle, setTheme };
 }
