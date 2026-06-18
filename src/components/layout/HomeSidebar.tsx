@@ -592,6 +592,7 @@ export default function HomeSidebar({
       label: 'Home',
       showFavorites: false,
       hideSectionDividers: true,
+      sectionsHeading: 'Recent',
       sections,
     };
   }, [recentLocations, loading, expanded, collapsed, showAll, toggleCollapsed, toggleShowAll]);

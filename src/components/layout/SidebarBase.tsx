@@ -154,6 +154,13 @@ export interface SidebarConfig {
    * consumers omit this and keep the divider. Added 2026-06-17.
    */
   hideSectionDividers?: boolean;
+  /**
+   * Optional overline rendered once above ALL sections (expanded only). Used by
+   * HomeSidebar to label the space-grouped Recents as "Recent" so they read as
+   * recently-visited pages, not nav items. 11px/600/subtlest — the ADS section-
+   * label spec. Added 2026-06-18.
+   */
+  sectionsHeading?: string;
   /** Collapsed-rail icon — pass projectKey so ProjectIcon resolves the bundled avatar */
   badgeProjectKey?: string | null;
   badgeProjectColor?: string | null;
@@ -458,6 +465,26 @@ export function SidebarBase({
                   false, isFavorite, toggleFavorite, tokens
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Sections overline — labels the group list (e.g. "Recent") once,
+              above all space groups. */}
+          {expanded && config.sectionsHeading && config.sections && config.sections.length > 0 && (
+            <div style={{ padding: '4px 12px 2px 12px', lineHeight: 1 }}>
+              <span
+                style={{
+                  fontFamily: 'var(--cp-font-body)',
+                  color: 'var(--ds-text-subtlest, #626F86)',
+                  fontSize: token('font.size.050', '11px'),
+                  fontWeight: 600,
+                  letterSpacing: '0',
+                  textTransform: 'none' as const,
+                  lineHeight: '16px',
+                }}
+              >
+                {config.sectionsHeading}
+              </span>
             </div>
           )}
 

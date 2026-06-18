@@ -2,15 +2,18 @@
  * sidebar-clock — pure timezone resolution for the Home sidebar footer clock.
  *
  * Product rule (Vikram, 2026-06-18):
- *   - Riyadh time is ALWAYS shown (the app is built for Saudi Arabia).
- *   - If the user's local offset equals Riyadh's (UTC+3), the two clocks would
- *     render an identical time — so collapse to ONE chip (Riyadh only). Never
- *     duplicate the same time.
- *   - If the user is in any other zone, show TWO chips: their local time AND
- *     Riyadh. Riyadh is mandatory.
+ *   - Riyadh time (the work / HQ zone) is ALWAYS shown — the app is built for
+ *     Saudi Arabia. Its row is labelled "Riyadh".
+ *   - The resource's HOME time (their base country, from resource_inventory →
+ *     resource_countries) is shown as a second row — but ONLY when it is a
+ *     different zone. When the resource's home is also UTC+3 (Saudi, Jordan…)
+ *     the two rows would render an identical time, so collapse to the single
+ *     Riyadh row. Never duplicate the same time.
+ *   - There is no device-"Local" row. Home comes from the admin record, not
+ *     the browser.
  *
- * Riyadh (Asia/Riyadh) observes no DST — fixed UTC+3 year-round. The local
- * zone's DST is handled automatically by Intl, so no offsets are hardcoded.
+ * Riyadh (Asia/Riyadh) observes no DST — fixed UTC+3. The home zone's DST is
+ * handled automatically by Intl, so no offsets are hardcoded.
  */
 
 export const RIYADH_TZ = 'Asia/Riyadh';
@@ -40,73 +43,68 @@ export function tzOffsetMinutes(timeZone: string, at: Date): number {
   return Math.round((asUTC - at.getTime()) / 60000);
 }
 
-/** Short timezone abbreviation (e.g. "GMT+5:30", "GST") for `timeZone` at `at`. */
-export function tzAbbr(timeZone: string, at: Date): string {
-  try {
-    const part = new Intl.DateTimeFormat('en-US', { timeZone, timeZoneName: 'short' })
-      .formatToParts(at)
-      .find((p) => p.type === 'timeZoneName');
-    return part?.value ?? '';
-  } catch {
-    return '';
-  }
-}
-
-/** 24h "HH:MM" for `timeZone` at `at`. */
+/** 12h "11:46 AM" / "2:16 AM" for `timeZone` at `at`. No timezone suffix. */
 export function tzTime(timeZone: string, at: Date): string {
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat('en-US', {
     timeZone,
-    hour: '2-digit',
+    hour: 'numeric',
     minute: '2-digit',
-    hour12: false,
+    hour12: true,
   }).format(at);
 }
 
-/** "Wed 18 Jun" for `timeZone` at `at`. */
+/** "Thursday, 18 June 2026" for `timeZone` at `at`. */
 export function tzDate(timeZone: string, at: Date): string {
   return new Intl.DateTimeFormat('en-GB', {
     timeZone,
-    weekday: 'short',
+    weekday: 'long',
     day: 'numeric',
-    month: 'short',
+    month: 'long',
+    year: 'numeric',
   }).format(at);
 }
 
-export interface ClockZone {
+export interface ClockRow {
+  /** City/country name shown in the row (e.g. "Riyadh", "India"). */
+  label: string;
+  /** 12h time, e.g. "11:46 AM" — no timezone suffix. */
   time: string;
-  abbr: string;
 }
 
 export interface ClockZones {
-  /** True when the local zone differs from Riyadh — render both chips. */
-  showLocal: boolean;
-  /** Local zone clock; null when collapsed (local IS Riyadh-equivalent). */
-  local: ClockZone | null;
-  /** Riyadh clock — always present. */
-  riyadh: ClockZone;
-  /** Date label, taken from the user's local zone (their calendar day). */
+  /** One row per distinct zone. Always starts with Riyadh. */
+  rows: ClockRow[];
+  /** Day + date, anchored to Riyadh (the always-present work zone). */
   dateLabel: string;
 }
 
 /**
- * Resolve which clocks to show for a user in `localTimeZone` at instant `at`.
- * Collapses to Riyadh-only when the local offset equals Riyadh's.
+ * Resolve the clock rows for a resource whose home is `homeTimeZone`
+ * (label `homeLabel`, e.g. country name) at instant `at`.
+ *
+ * Riyadh is always row 0. A Home row is appended only when `homeTimeZone` is
+ * present AND its offset differs from Riyadh — otherwise the identical time is
+ * suppressed. Pass `homeTimeZone = null` when the resource's home cannot be
+ * resolved; the widget then shows Riyadh only (never a fabricated home).
  */
 export function resolveClockZones(
-  localTimeZone: string,
+  homeTimeZone: string | null,
+  homeLabel: string | null,
   at: Date = new Date(),
 ): ClockZones {
-  const sameAsRiyadh =
-    tzOffsetMinutes(localTimeZone, at) === tzOffsetMinutes(RIYADH_TZ, at);
+  const rows: ClockRow[] = [
+    { label: 'Riyadh', time: tzTime(RIYADH_TZ, at) },
+  ];
 
-  const riyadh: ClockZone = { time: tzTime(RIYADH_TZ, at), abbr: 'AST' };
+  if (
+    homeTimeZone &&
+    tzOffsetMinutes(homeTimeZone, at) !== tzOffsetMinutes(RIYADH_TZ, at)
+  ) {
+    rows.push({
+      label: homeLabel ?? 'Home',
+      time: tzTime(homeTimeZone, at),
+    });
+  }
 
-  return {
-    showLocal: !sameAsRiyadh,
-    local: sameAsRiyadh
-      ? null
-      : { time: tzTime(localTimeZone, at), abbr: tzAbbr(localTimeZone, at) },
-    riyadh,
-    dateLabel: tzDate(sameAsRiyadh ? RIYADH_TZ : localTimeZone, at),
-  };
+  return { rows, dateLabel: tzDate(RIYADH_TZ, at) };
 }

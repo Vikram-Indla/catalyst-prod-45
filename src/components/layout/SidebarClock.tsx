@@ -1,16 +1,15 @@
 /**
- * SidebarClock — quiet dual-zone clock pinned to the Home sidebar footer.
+ * SidebarClock — quiet day/date + Riyadh/Home clock pinned to the Home sidebar
+ * footer.
  *
- * Catalyst is built for Saudi Arabia, so Riyadh time is always shown. Users in
- * other zones also see their own local time; users already on UTC+3 see a
- * single chip (no duplicated identical time). All zone logic lives in the pure
- * `resolveClockZones` helper (sidebar-clock.ts) — this component only renders
- * and ticks.
+ * Catalyst is built for Saudi Arabia, so the Riyadh (work) time is always
+ * shown. A second "Home" row shows the signed-in resource's base-country time,
+ * resolved from resource_inventory → resource_countries via
+ * useResourceHomeTimezone. When the home zone is also UTC+3, or cannot be
+ * resolved, only the Riyadh row renders (no duplicate, no fabricated zone).
  *
- * Option C — one-line ticker:
- *   [clock]  Wed 18 Jun
- *   14:32 GMT+5:30 · 12:02 AST        (away)
- *   12:02 Riyadh · AST                (in Riyadh)
+ * All zone logic is in the pure resolveClockZones helper (sidebar-clock.ts);
+ * this component only renders and ticks.
  *
  * ADS tokens only (color.text.*, surface, border). Sentence case. 4/8/12 grid.
  * Source: https://atlassian.design/foundations/typography · /foundations/color
@@ -18,16 +17,46 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import ClockIcon from '@atlaskit/icon/core/clock';
+import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from 'lucide-react';
 import { Tooltip } from '@/components/ads';
 import { resolveClockZones } from '@/lib/sidebar-clock';
+import { RIYADH_GEO, countryToGeo, weatherCodeToIcon, type WeatherIconKey } from '@/lib/weather-geo';
+import { useResourceHomeTimezone } from '@/hooks/useResourceHomeTimezone';
+import { useCityWeather, type CityWeather } from '@/hooks/useCityWeather';
 
 interface SidebarClockProps {
   expanded: boolean;
 }
 
-const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const WEATHER_ICON: Record<WeatherIconKey, typeof Sun> = {
+  sun: Sun,
+  cloud: Cloud,
+  rain: CloudRain,
+  snow: CloudSnow,
+  storm: CloudLightning,
+  fog: CloudFog,
+};
+
+/** Inline weather chip — symbol + temperature, rendered in the row's gap. */
+function WeatherChip({ weather, color }: { weather: CityWeather | null; color: string }) {
+  if (!weather) return <span />; // no data → empty slot, row keeps label + time
+  const { icon, label } = weatherCodeToIcon(weather.code);
+  const Icon = WEATHER_ICON[icon];
+  return (
+    <span
+      style={{ display: 'flex', alignItems: 'center', gap: '4px', color }}
+      title={`${label} ${weather.tempC}°`}
+    >
+      <Icon size={13} aria-hidden="true" />
+      <span style={{ fontSize: token('font.size.050', '11px'), fontVariantNumeric: 'tabular-nums' }}>
+        {weather.tempC}°
+      </span>
+    </span>
+  );
+}
 
 export default function SidebarClock({ expanded }: SidebarClockProps) {
+  const { homeTz, homeCountry } = useResourceHomeTimezone();
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -35,36 +64,35 @@ export default function SidebarClock({ expanded }: SidebarClockProps) {
     return () => clearInterval(id);
   }, []);
 
-  const zones = useMemo(() => resolveClockZones(LOCAL_TZ, now), [now]);
+  const zones = useMemo(
+    () => resolveClockZones(homeTz, homeCountry, now),
+    [homeTz, homeCountry, now],
+  );
+
+  // Per-row weather: row 0 is always Riyadh; row 1 (when present) is Home.
+  const riyadhWeather = useCityWeather(RIYADH_GEO);
+  const homeWeather = useCityWeather(countryToGeo(homeCountry));
+  const weatherForRow = (index: number) => (index === 0 ? riyadhWeather : homeWeather);
+
+  const muted = token('color.text.subtlest', '#626F86');
+  const primary = token('color.text', '#292A2E');
 
   // Collapsed rail (56px): icon only, full read in the tooltip.
   if (!expanded) {
-    const tip = zones.showLocal
-      ? `${zones.local!.time} ${zones.local!.abbr} · ${zones.riyadh.time} Riyadh`
-      : `${zones.riyadh.time} Riyadh (AST)`;
+    const tip = zones.rows.map((r) => `${r.time} ${r.label}`).join(' · ');
     return (
       <Tooltip content={`${zones.dateLabel} — ${tip}`} position="right">
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '32px',
-          }}
-        >
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '32px' }}>
           <ClockIcon label="" color="var(--ds-icon-subtle, #626F86)" />
         </div>
       </Tooltip>
     );
   }
 
-  const muted = token('color.text.subtlest', '#626F86');
-  const primary = token('color.text', '#292A2E');
-
   return (
     <div style={{ padding: '4px 12px' }} aria-label={`Date and time. ${zones.dateLabel}.`}>
-      {/* Date row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+      {/* Day + date row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
         <span style={{ display: 'inline-flex', flexShrink: 0 }} aria-hidden="true">
           <ClockIcon label="" color={muted} />
         </span>
@@ -74,40 +102,66 @@ export default function SidebarClock({ expanded }: SidebarClockProps) {
             fontFamily: 'var(--cp-font-body)',
             fontSize: token('font.size.050', '11px'),
             lineHeight: '16px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}
         >
           {zones.dateLabel}
         </span>
       </div>
 
-      {/* Time chips row — tabular figures so digits don't jitter each tick */}
+      {/* Zone rows — Riyadh always, Home (country) when distinct. Aligned grid:
+          country | weather | time, so temps and times line up vertically.
+          Tabular figures keep digits from jittering each tick. */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'baseline',
-          flexWrap: 'wrap',
-          gap: '6px',
+          display: 'grid',
+          gridTemplateColumns: '1fr auto auto',
+          columnGap: '12px',
+          rowGap: '8px',
           paddingLeft: '24px',
-          fontVariantNumeric: 'tabular-nums',
+          alignItems: 'baseline',
         }}
       >
-        {zones.showLocal && zones.local && (
-          <>
-            <span style={{ color: primary, fontSize: token('font.size.075', '12px'), fontWeight: 500, lineHeight: '16px' }}>
-              {zones.local.time}
+        {zones.rows.map((r, i) => (
+          <React.Fragment key={r.label}>
+            {/* Country / city — prominent */}
+            <span
+              style={{
+                color: primary,
+                fontFamily: 'var(--cp-font-body)',
+                fontSize: token('font.size.075', '12px'),
+                fontWeight: 500,
+                lineHeight: '18px',
+                minWidth: 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {r.label}
             </span>
-            <span style={{ color: muted, fontSize: token('font.size.050', '11px'), lineHeight: '16px' }}>
-              {zones.local.abbr}
+            {/* Weather chip — own column so temps align; empty when unavailable */}
+            <span style={{ justifySelf: 'end' }}>
+              <WeatherChip weather={weatherForRow(i)} color={muted} />
             </span>
-            <span style={{ color: 'var(--ds-border, #DFE1E6)' }} aria-hidden="true">·</span>
-          </>
-        )}
-        <span style={{ color: primary, fontSize: token('font.size.075', '12px'), fontWeight: 500, lineHeight: '16px' }}>
-          {zones.riyadh.time}
-        </span>
-        <span style={{ color: muted, fontSize: token('font.size.050', '11px'), lineHeight: '16px' }}>
-          {zones.showLocal ? 'AST' : 'Riyadh · AST'}
-        </span>
+            {/* Time — 12h, no timezone suffix */}
+            <span
+              style={{
+                justifySelf: 'end',
+                color: primary,
+                fontSize: token('font.size.075', '12px'),
+                fontWeight: 500,
+                lineHeight: '18px',
+                fontVariantNumeric: 'tabular-nums',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {r.time}
+            </span>
+          </React.Fragment>
+        ))}
       </div>
     </div>
   );
