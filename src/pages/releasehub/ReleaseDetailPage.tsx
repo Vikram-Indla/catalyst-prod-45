@@ -15,7 +15,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Spinner from '@atlaskit/spinner';
-import { ArrowLeft, Check, Sparkles } from '@/lib/atlaskit-icons';
+import { Check, Sparkles } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useRelease, useUpdateReleaseStatus } from '@/hooks/useReleaseHub';
@@ -25,6 +25,7 @@ import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -177,9 +178,16 @@ export default function ReleaseDetailPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <button onClick={() => navigate('/release-hub/releases')} style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 13, color: T.subtle, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 16 }}>
-        <ArrowLeft size={14} style={{ color: T.subtle }} /> Releases
-      </button>
+      <div style={{ margin: '-24px -24px 16px' }}>
+        <ProjectPageHeader
+          hubType="release"
+          projectKey="RELEASES"
+          hideTitle
+          trail={[
+            { text: r.jira_key ?? r.name },
+          ]}
+        />
+      </div>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 8 }}>

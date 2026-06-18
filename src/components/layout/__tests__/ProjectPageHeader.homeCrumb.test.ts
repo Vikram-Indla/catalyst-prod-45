@@ -48,7 +48,7 @@ describe('ProjectPageHeader — global-hub mode (incident/release)', () => {
   });
 
   it('omits the entity crumb for global hubs', () => {
-    expect(SRC).toMatch(/!isGlobalHub\s*&&\s*<BreadcrumbsItem text=\{projectName\}/);
+    expect(SRC).toMatch(/!isGlobalHub\s*&&\s*!trail\s*&&\s*<BreadcrumbsItem text=\{projectName\}/);
   });
 
   it('skips the DB name lookup for global hubs', () => {

@@ -27,6 +27,7 @@ import {
 import { RH } from '@/constants/releasehub.design';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 import { Avatar } from '@/components/ads/Avatar';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
@@ -63,22 +64,37 @@ function titleCase(v: string | null | undefined) {
   return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
 }
 
-function EnvLozenge({ env }: { env: string | null }) {
-  if (!env) return null;
-  const prod = env === 'production';
-  const fg = prod ? 'var(--ds-text-success, #216E4E)' : 'var(--ds-text-information, #0055CC)';
-  const bg = prod ? 'var(--ds-background-success, #DCFFF1)' : 'var(--ds-background-information, #E9F2FE)';
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: fg, background: bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{titleCase(env)}</span>;
+/**
+ * Canonical Jira status pill — identical geometry + palette to the shared
+ * `StatusLozenge` (statusPalette.ts): medium-pastel Jira background, dark text
+ * (#292A2E, never white/inverse), 11px/700/uppercase. Every status-like badge
+ * on this page routes through here so the overview matches the home page and
+ * uses ONLY the canonical Jira status colors. `appearance` is a statusPalette
+ * key: success | inprogress | moved | new | removed | default.
+ */
+function JiraPill({ appearance, label }: { appearance: string; label: string }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: statusBg(appearance), borderRadius: 3, padding: '0 7px', height: 20 }}>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, lineHeight: '20px', color: statusFg(), textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{label}</span>
+    </span>
+  );
 }
 
+// Environment → canonical Jira appearance. Production = live = green (done),
+// beta = lavender (new), staging = warm yellow (moved), everything else = blue.
+const ENV_APPEARANCE: Record<string, string> = { production: 'success', beta: 'new', staging: 'moved', uat: 'inprogress' };
+function EnvLozenge({ env }: { env: string | null }) {
+  if (!env) return null;
+  return <JiraPill appearance={ENV_APPEARANCE[env] ?? 'inprogress'} label={titleCase(env)} />;
+}
+
+// Health → canonical Jira appearance. at_risk = coral red (removed),
+// on_track = blue (inprogress), done = green (success).
+const HEALTH_APPEARANCE: Record<string, string> = { at_risk: 'removed', on_track: 'inprogress', done: 'success' };
 function HealthLozenge({ health }: { health: string | null }) {
-  const map: Record<string, { label: string; fg: string; bg: string }> = {
-    at_risk: { label: 'At risk', fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
-    on_track: { label: 'On track', fg: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FE)' },
-    done: { label: 'Done', fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
-  };
-  const m = map[health ?? ''] ?? { label: titleCase(health), fg: T.subtle, bg: T.sunken };
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{m.label}</span>;
+  if (!health) return null;
+  const label = health === 'at_risk' ? 'At risk' : health === 'on_track' ? 'On track' : titleCase(health);
+  return <JiraPill appearance={HEALTH_APPEARANCE[health] ?? 'default'} label={label} />;
 }
 
 function KpiCard({ label, value, dot, onClick }: { label: string; value: number; dot: string; onClick?: () => void }) {
@@ -211,9 +227,9 @@ export default function CommandCenterPage() {
             const d = new Date(r.planned_release_date ?? r.target_date!);
             return (
               <div key={r.id} style={rowStyleClickable(() => navigate(`/release-hub/${r.id}`))} onClick={() => navigate(`/release-hub/${r.id}`)}>
-                <div style={{ width: 44, textAlign: 'center', flexShrink: 0 }}>
-                  <div style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: T.subtlest }}>{format(d, 'MMM')}</div>
-                  <div style={{ fontFamily: RH.fontDisplay, fontSize: 18, fontWeight: 600, color: T.text }}>{format(d, 'd')}</div>
+                <div style={{ width: 48, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '6px 0', borderRadius: 8, background: 'var(--ds-background-selected, #E9F2FE)' }}>
+                  <div style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--ds-text-information, #0055CC)' }}>{format(d, 'MMM')}</div>
+                  <div style={{ fontFamily: RH.fontDisplay, fontSize: 18, fontWeight: 700, color: 'var(--ds-text-information, #0055CC)' }}>{format(d, 'd')}</div>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.text, margin: 0 }}>{r.jira_key ?? r.name}</p>
@@ -319,13 +335,12 @@ export default function CommandCenterPage() {
         ) : prodEvents.slice(0, 4).map((ev) => {
           const ok = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'success';
           const partial = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'partial';
-          const fg = ok ? T.success : partial ? T.warning : T.danger;
-          const bg = ok ? 'var(--ds-background-success, #DCFFF1)' : partial ? 'var(--ds-background-warning, #FFF7D6)' : 'var(--ds-background-danger, #FFECEB)';
+          const resultAppearance = ok ? 'success' : partial ? 'moved' : 'removed';
           const wi = Array.isArray(ev.workItemsSnapshot) ? ev.workItemsSnapshot.length : null;
           const br = Array.isArray(ev.businessRequestsSnapshot) ? ev.businessRequestsSnapshot.length : null;
           return (
             <div key={ev.id} style={rowStyleClickable()}>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: fg, background: bg, padding: '0 8px', borderRadius: 3, minWidth: 64, textAlign: 'center', flexShrink: 0 }}>{titleCase(ev.result ?? ev.deploymentStatus)}</span>
+              <span style={{ flexShrink: 0 }}><JiraPill appearance={resultAppearance} label={titleCase(ev.result ?? ev.deploymentStatus)} /></span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0 }}>{ev.title}</p>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>
