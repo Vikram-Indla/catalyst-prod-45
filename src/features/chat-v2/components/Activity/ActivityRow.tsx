@@ -24,6 +24,10 @@ interface ActivityRowProps {
   isMenuOpen?: boolean;
   /** Dense variant uses this to suppress the bottom divider on the last row of its group container. */
   isLastInGroup?: boolean;
+  /** Show a checkbox to the left of the row (selection mode is active). */
+  showCheckbox?: boolean;
+  isChecked?: boolean;
+  onToggleChecked?: () => void;
   onSelect: () => void;
   onOpenThread: () => void;
   onJumpToSource: () => void;
@@ -41,6 +45,9 @@ export function ActivityRow({
   isSelected,
   isMenuOpen = false,
   isLastInGroup = false,
+  showCheckbox = false,
+  isChecked = false,
+  onToggleChecked,
   onSelect,
   onOpenThread,
   onJumpToSource,
@@ -76,40 +83,51 @@ export function ActivityRow({
     else onJumpToSource();
   };
 
-  if (variant === 'dense') {
+  const innerRow = (() => {
+    if (variant === 'dense') {
+      return (
+        <DenseRow
+          item={item}
+          isSelected={isSelected}
+          isLastInGroup={isLastInGroup}
+          isMenuOpen={isMenuOpen}
+          rowRef={rowRef}
+          onClick={handleClick}
+          onMarkUnread={onMarkUnread}
+          onMarkRead={onMarkRead}
+          onMore={onMore}
+          selfToken={selfToken}
+        />
+      );
+    }
+    if (useSingleLine) {
+      return (
+        <SingleLineRow
+          item={item}
+          isSelected={isSelected}
+          isMenuOpen={isMenuOpen}
+          rowRef={rowRef}
+          onClick={handleClick}
+          onMarkUnread={onMarkUnread}
+          onMarkRead={onMarkRead}
+          onMore={onMore}
+          selfToken={selfToken}
+        />
+      );
+    }
+    return null;
+  })();
+
+  if (innerRow) {
+    if (!showCheckbox) return innerRow;
     return (
-      <DenseRow
-        item={item}
-        isSelected={isSelected}
-        isLastInGroup={isLastInGroup}
-        isMenuOpen={isMenuOpen}
-        rowRef={rowRef}
-        onClick={handleClick}
-        onMarkUnread={onMarkUnread}
-        onMarkRead={onMarkRead}
-        onMore={onMore}
-        selfToken={selfToken}
-      />
+      <RowWithCheckbox isChecked={isChecked} onToggle={onToggleChecked}>
+        {innerRow}
+      </RowWithCheckbox>
     );
   }
 
-  if (useSingleLine) {
-    return (
-      <SingleLineRow
-        item={item}
-        isSelected={isSelected}
-        isMenuOpen={isMenuOpen}
-        rowRef={rowRef}
-        onClick={handleClick}
-        onMarkUnread={onMarkUnread}
-        onMarkRead={onMarkRead}
-        onMore={onMore}
-        selfToken={selfToken}
-      />
-    );
-  }
-
-  return (
+  const detailedRow = (
     <div
       ref={rowRef}
       className="cv2-activity-row"
@@ -125,6 +143,8 @@ export function ActivityRow({
       }}
       style={{
         position: 'relative',
+        flex: 1,
+        minWidth: 0,
         padding: '12px 14px',
         borderRadius: 8,
         background: 'transparent',
@@ -206,6 +226,60 @@ export function ActivityRow({
           />
         </div>
       </div>
+    </div>
+  );
+
+  if (!showCheckbox) return detailedRow;
+  return (
+    <RowWithCheckbox isChecked={isChecked} onToggle={onToggleChecked}>
+      {detailedRow}
+    </RowWithCheckbox>
+  );
+}
+
+function RowWithCheckbox({
+  isChecked,
+  onToggle,
+  children,
+}: {
+  isChecked: boolean;
+  onToggle?: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={isChecked}
+        aria-label={isChecked ? 'Deselect' : 'Select'}
+        onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
+        style={{
+          flex: '0 0 auto',
+          width: 24,
+          height: 24,
+          padding: 0,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'transparent',
+          color: isChecked ? 'var(--cv2-accent, #1264A3)' : 'var(--cv2-text-subtle)',
+          border: 'none',
+          cursor: 'pointer',
+        }}
+      >
+        {isChecked ? (
+          <svg width={18} height={18} viewBox="0 0 18 18" aria-hidden="true">
+            <rect x="1" y="1" width="16" height="16" rx="2" fill="currentColor" />
+            <path d="M4.6 9.1l3 3 5.4-5.6" fill="none" stroke="#FFFFFF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        ) : (
+          <svg width={18} height={18} viewBox="0 0 18 18" aria-hidden="true">
+            <rect x="1" y="1" width="16" height="16" rx="2" fill="none" stroke="currentColor" strokeWidth="1.4" />
+          </svg>
+        )}
+      </button>
+      {children}
     </div>
   );
 }

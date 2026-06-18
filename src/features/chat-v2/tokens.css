@@ -56,9 +56,12 @@ body[data-cv2-theme] {
 .cv2-chat-shell,
 .cv2-chat-shell[data-cv2-theme="dark"],
 body[data-cv2-theme="dark"] {
-  --cv2-bg-rail: #19171D;
-  --cv2-bg-sidebar: #1A1D29;
-  --cv2-bg-panel: #1A1A1E;
+  /* Rail removed 2026-06-18 — sidebar now mounts at the Catalyst shell
+     position with ADS neutral tokens. --cv2-bg-rail kept as an alias to
+     --cv2-bg-sidebar so any orphaned reference still resolves. */
+  --cv2-bg-rail: var(--ds-surface, #1D2125);
+  --cv2-bg-sidebar: var(--ds-surface, #1D2125);
+  --cv2-bg-panel: var(--ds-surface, #22272B);
   --cv2-bg-row-hover: rgba(255, 255, 255, 0.04);
   --cv2-bg-row-active: rgba(255, 255, 255, 0.07);
   --cv2-bg-rail-active: rgba(255, 255, 255, 0.10);
@@ -99,9 +102,11 @@ body[data-cv2-theme="dark"] {
 /* ── Light theme ──────────────────────────────────────────────────── */
 .cv2-chat-shell[data-cv2-theme="light"],
 body[data-cv2-theme="light"] {
-  --cv2-bg-rail: #3F0E40;
-  --cv2-bg-sidebar: #F8F8F8;
-  --cv2-bg-panel: #FFFFFF;
+  /* Rail removed 2026-06-18 — sidebar now mounts at the Catalyst shell
+     position with ADS neutral tokens (matches the / screen sidebar). */
+  --cv2-bg-rail: var(--ds-surface, #FFFFFF);
+  --cv2-bg-sidebar: var(--ds-surface, #FFFFFF);
+  --cv2-bg-panel: var(--ds-surface, #FFFFFF);
   --cv2-bg-row-hover: rgba(0, 0, 0, 0.04);
   --cv2-bg-row-active: rgba(29, 155, 209, 0.12);
   --cv2-bg-rail-active: rgba(255, 255, 255, 0.18);

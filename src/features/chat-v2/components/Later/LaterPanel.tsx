@@ -116,7 +116,7 @@ export function LaterPanel({ selectedItemId, onSelectItem, showRightBorder = tru
     <section
       aria-label="Later"
       style={{
-        gridArea: 'activity',
+        gridArea: 'sidebar',
         display: 'flex',
         flexDirection: 'column',
         background: 'var(--cv2-bg-panel)',
@@ -139,8 +139,8 @@ export function LaterPanel({ selectedItemId, onSelectItem, showRightBorder = tru
           style={{
             margin: 0,
             fontFamily: 'var(--cv2-font)',
-            fontSize: 22,
-            fontWeight: 800,
+            fontSize: 'var(--cv2-fs-sidebar-header)',
+            fontWeight: 700,
             color: 'var(--cv2-text-strong)',
             letterSpacing: '-0.01em',
           }}

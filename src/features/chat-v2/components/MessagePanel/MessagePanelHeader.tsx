@@ -67,7 +67,9 @@ export function MessagePanelHeader({
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 12,
-        padding: '0 16px',
+        // Right padding reserves room for the floating MinimizeButton
+        // anchored at top:8 / right:12 of the chat shell (28px wide).
+        padding: '0 52px 0 16px',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>

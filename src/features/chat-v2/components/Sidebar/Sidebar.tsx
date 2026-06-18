@@ -19,12 +19,12 @@ interface SidebarProps {
   onNewConversation: () => void;
   onCreateChannel: () => void;
   onOpenDrafts: () => void;
+  /** Opens the chat-wide search modal (replaces what the deleted purple
+   *  WorkspaceSearchBar used to trigger). */
+  onOpenSearchModal: () => void;
 }
 
 function isRealChannel(c: ChatConversation): boolean {
-  // Ad-hoc Slack-style channels created via chat_create_channel.
-  // Project-bound conversations (kind === 'channel' with project_key) and
-  // ticket conversations keep their original ConversationRow look below.
   if (c.kind === 'custom_channel') return true;
   if (c.kind === 'channel' && !c.projectKey) return true;
   return false;
@@ -48,6 +48,7 @@ export function Sidebar({
   onNewConversation,
   onCreateChannel,
   onOpenDrafts,
+  onOpenSearchModal,
 }: SidebarProps) {
   const [search, setSearch] = useState('');
   const [unreadsOnly, setUnreadsOnly] = useState(false);
@@ -68,9 +69,6 @@ export function Sidebar({
       const bt = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0;
       return bt - at;
     };
-    // Starred items get their own section and are EXCLUDED from their origin
-    // section (Channels / Projects / Direct messages) so they never render
-    // twice. This matches Slack's behaviour.
     const isUnstarred = (c: ChatConversation) => !c.isStarred;
     return {
       starred: list.filter(c => !!c.isStarred).slice().sort(sortAlpha),
@@ -82,9 +80,6 @@ export function Sidebar({
 
   const showOnlyDms = activeView === 'dms';
 
-  // Sort DMs by most-recent message for the dedicated DM tab. Existing
-  // `dms` memo above sorts by recency too, but excludes starred — for the
-  // tab we want EVERY DM (starred + unstarred), still recency-ordered.
   const dmsForDmTab = useMemo(() => {
     let list = conversations.filter(c => !c.isArchived && isDmKind(c));
     if (unreadsOnly) list = list.filter(c => c.unreadCount > 0);
@@ -172,7 +167,10 @@ export function Sidebar({
         onToggleUnreadsOnly={setUnreadsOnly}
         onNewConversation={onNewConversation}
       />
-      <SidebarSearch value={search} onChange={setSearch} placeholder="Search conversations…" />
+      <SidebarSearch
+        onOpenSearchModal={onOpenSearchModal}
+        placeholder="Search conversations…"
+      />
       <div
         style={{
           flex: 1,
@@ -194,7 +192,7 @@ export function Sidebar({
             onClick={onOpenDrafts}
           />
         </div>
-        {!showOnlyDms && starred.length > 0 && (
+        {starred.length > 0 && (
           <SidebarSection title="Starred">
             <ul
               style={{
@@ -227,30 +225,28 @@ export function Sidebar({
             </ul>
           </SidebarSection>
         )}
-        {!showOnlyDms && (
-          <SidebarSection
-            title="Channels"
-            actions={
-              <SectionIconButton label="Create new channel" onClick={onCreateChannel}>
-                <PlusIcon size={12} />
-              </SectionIconButton>
-            }
-          >
-            {channels.length === 0 ? (
-              <EmptySection label="No channels yet" />
-            ) : (
-              channels.map(c => (
-                <ChannelRow
-                  key={c.id}
-                  conversation={c}
-                  isActive={c.id === activeConversationId}
-                  onClick={() => onSelectConversation(c.id)}
-                />
-              ))
-            )}
-          </SidebarSection>
-        )}
-        {!showOnlyDms && projects.length > 0 && (
+        <SidebarSection
+          title="Channels"
+          actions={
+            <SectionIconButton label="Create new channel" onClick={onCreateChannel}>
+              <PlusIcon size={12} />
+            </SectionIconButton>
+          }
+        >
+          {channels.length === 0 ? (
+            <EmptySection label="No channels yet" />
+          ) : (
+            channels.map(c => (
+              <ChannelRow
+                key={c.id}
+                conversation={c}
+                isActive={c.id === activeConversationId}
+                onClick={() => onSelectConversation(c.id)}
+              />
+            ))
+          )}
+        </SidebarSection>
+        {projects.length > 0 && (
           <SidebarSection title="Projects">
             <ul
               style={{

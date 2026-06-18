@@ -17,7 +17,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useConversations } from '@/hooks/chat/useConversations';
 import { useActivityFeed, type ActivityItem } from '../../hooks/useActivityFeed';
-import { ActivityHeader, type ActivityTab, type ActivityViewMode } from './ActivityHeader';
+import {
+  ActivityHeader,
+  type ActivityTab,
+  type ActivityViewMode,
+  type ActivitySelectionMode,
+  type ActivityFilterKey,
+  type ActivityMentionSubKey,
+} from './ActivityHeader';
 import { ActivityRow } from './ActivityRow';
 import { ActivityMoreMenu } from './ActivityMoreMenu';
 import { ReminderModal } from './ReminderModal';
@@ -43,9 +50,21 @@ export function ActivityPanel({ onSelectActivity, selectedItemId, showRightBorde
   const [viewMode, setViewMode] = useState<ActivityViewMode>('detailed');
   const [unreadsOnly, setUnreadsOnly] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
   const [moreAnchor, setMoreAnchor] = useState<{ item: ActivityItem; rect: DOMRect } | null>(null);
   const [customReminderItem, setCustomReminderItem] = useState<ActivityItem | null>(null);
   const [reminderToast, setReminderToast] = useState<string | null>(null);
+  // Selection state — selectionMode === null means idle (no toolbar).
+  const [selectionMode, setSelectionMode] = useState<ActivitySelectionMode>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  // Local "cleared" overlay — ids removed from the feed view after the user
+  // clicks "Clear selected". Persists for the lifetime of this mount so the
+  // user sees the empty state immediately; on next refetch the items also
+  // drop from the underlying feed because we marked them read.
+  const [clearedIds, setClearedIds] = useState<Set<string>>(() => new Set());
+  // Filter state.
+  const [filterKeys, setFilterKeys] = useState<Set<ActivityFilterKey>>(() => new Set());
+  const [filterMentionSubs, setFilterMentionSubs] = useState<Set<ActivityMentionSubKey>>(() => new Set());
   const sectionRef = useRef<HTMLElement>(null);
   const [panelWidth, setPanelWidth] = useState(0);
 
@@ -95,7 +114,7 @@ export function ActivityPanel({ onSelectActivity, selectedItemId, showRightBorde
   }, [items, activeTab, unreadsOnly, searchTerm, viewMode]);
 
   const filtered = useMemo(() => {
-    let list = items;
+    let list = items.filter(i => !clearedIds.has(i.id));
     if (activeTab === 'dms') list = list.filter(i => i.kind === 'dm');
     else if (activeTab === 'mentions') list = list.filter(i => i.kind === 'mention');
     else if (activeTab === 'threads') list = list.filter(i => i.kind === 'thread');
@@ -108,8 +127,21 @@ export function ActivityPanel({ onSelectActivity, selectedItemId, showRightBorde
         i.conversationTitle.toLowerCase().includes(needle),
       );
     }
+    // Filter popover — multi-select. When ANY filter key is set, only items
+    // matching at least one key are kept. dms/mentions/threads map to the
+    // ActivityItem.kind. The other keys (channels, reactions, invitations,
+    // apps, reminders) don't exist in the underlying data model yet, so
+    // they filter to empty when used alone — by design, per the spec.
+    if (filterKeys.size > 0) {
+      list = list.filter(i => {
+        if (filterKeys.has('dms') && i.kind === 'dm') return true;
+        if (filterKeys.has('mentions') && i.kind === 'mention') return true;
+        if (filterKeys.has('threads') && i.kind === 'thread') return true;
+        return false;
+      });
+    }
     return list;
-  }, [items, activeTab, unreadsOnly, searchTerm]);
+  }, [items, activeTab, unreadsOnly, searchTerm, filterKeys, clearedIds]);
 
   // Group by day for separators.
   const grouped = useMemo(() => {
@@ -165,12 +197,84 @@ export function ActivityPanel({ onSelectActivity, selectedItemId, showRightBorde
     setReminderToast(`Reminder set for ${at.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}`);
   };
 
+  // Whenever the visible feed or selection mode changes, recompute the
+  // selected ids to honour the mode contract. Custom mode does NOT auto-
+  // mutate — the user picks individuals.
+  useEffect(() => {
+    if (selectionMode === null) {
+      if (selectedIds.size > 0) setSelectedIds(new Set());
+      return;
+    }
+    if (selectionMode === 'custom') return;
+    const next = new Set<string>();
+    for (const i of filtered) {
+      if (selectionMode === 'all') next.add(i.id);
+      else if (selectionMode === 'reads' && !i.isUnread) next.add(i.id);
+      else if (selectionMode === 'unreads' && i.isUnread) next.add(i.id);
+    }
+    setSelectedIds(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectionMode, filtered.length, clearedIds]);
+
+  const selfMentionName = useMemo(() => {
+    const meta = (user?.user_metadata ?? {}) as Record<string, unknown>;
+    const fullName = typeof meta.full_name === 'string' ? meta.full_name : '';
+    return fullName || (user?.email ?? '');
+  }, [user]);
+
+  const handleSelectionModeChange = (m: ActivitySelectionMode) => {
+    setSelectionMode(m);
+    if (m === 'custom') setSelectedIds(new Set());
+  };
+
+  const handleToggleRowChecked = (item: ActivityItem) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(item.id)) next.delete(item.id);
+      else next.add(item.id);
+      return next;
+    });
+  };
+
+  const handleMarkSelectedAsRead = async () => {
+    const targets = filtered.filter(i => selectedIds.has(i.id));
+    for (const item of targets) {
+      // eslint-disable-next-line no-await-in-loop
+      await handleMarkRead(item);
+    }
+  };
+
+  const handleClearSelected = async () => {
+    const targets = filtered.filter(i => selectedIds.has(i.id));
+    // Mark each selected item as read so they drop from the feed on next refetch.
+    for (const item of targets) {
+      // eslint-disable-next-line no-await-in-loop
+      await handleMarkRead(item);
+    }
+    // Local optimistic remove so the user sees the empty state immediately.
+    setClearedIds(prev => {
+      const next = new Set(prev);
+      for (const t of targets) next.add(t.id);
+      return next;
+    });
+    setSelectedIds(new Set());
+    setSelectionMode(null);
+  };
+
+  const handleResetFilters = () => {
+    setFilterKeys(new Set());
+    setFilterMentionSubs(new Set());
+  };
+
+  const showRowCheckbox = selectionMode !== null;
+  const allClearedEmpty = clearedIds.size > 0 && filtered.length === 0;
+
   return (
     <section
       ref={sectionRef}
       aria-label="Activity"
       style={{
-        gridArea: 'activity',
+        gridArea: 'sidebar',
         display: 'flex',
         flexDirection: 'column',
         background: 'var(--cv2-bg-panel)',
@@ -183,14 +287,34 @@ export function ActivityPanel({ onSelectActivity, selectedItemId, showRightBorde
       <ActivityHeader
         activeTab={activeTab}
         unreadCounts={countsByTab}
-        onTabChange={setActiveTab}
+        onTabChange={t => {
+          setActiveTab(t);
+          // Switching tabs while in selection mode would leave a confusing
+          // partial selection from the previous tab — exit selection mode.
+          setSelectionMode(null);
+          setSelectedIds(new Set());
+        }}
         unreadsOnly={unreadsOnly}
         onToggleUnreadsOnly={() => setUnreadsOnly(v => !v)}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
+        searchOpen={searchOpen}
+        onSearchOpenChange={setSearchOpen}
         panelWidth={panelWidth}
+        selectionMode={selectionMode}
+        onSelectionModeChange={handleSelectionModeChange}
+        selectedCount={selectedIds.size}
+        totalVisibleCount={filtered.length}
+        onMarkSelectedAsRead={() => { void handleMarkSelectedAsRead(); }}
+        onClearSelected={() => { void handleClearSelected(); }}
+        selfMentionName={selfMentionName}
+        filterKeys={filterKeys}
+        filterMentionSubs={filterMentionSubs}
+        onFilterKeysChange={setFilterKeys}
+        onFilterMentionSubsChange={setFilterMentionSubs}
+        onResetFilters={handleResetFilters}
       />
 
       <div
@@ -204,15 +328,19 @@ export function ActivityPanel({ onSelectActivity, selectedItemId, showRightBorde
         {isLoading ? (
           <EmptyState message="Loading activity…" />
         ) : grouped.length === 0 ? (
-          <EmptyState
-            message={
-              searchTerm.trim()
-                ? `No activity matches “${searchTerm.trim()}”.`
-                : unreadsOnly
-                  ? 'No unreads. You’re all caught up.'
-                  : 'No activity yet.'
-            }
-          />
+          allClearedEmpty || items.filter(i => !clearedIds.has(i.id)).length === 0 ? (
+            <AllCaughtUpEmptyState />
+          ) : (
+            <EmptyState
+              message={
+                searchTerm.trim()
+                  ? `No activity matches “${searchTerm.trim()}”.`
+                  : unreadsOnly
+                    ? 'No unreads. You’re all caught up.'
+                    : 'No activity yet.'
+              }
+            />
+          )
         ) : (
           grouped.map((group, idx) => (
             <React.Fragment key={group.key}>
@@ -246,6 +374,9 @@ export function ActivityPanel({ onSelectActivity, selectedItemId, showRightBorde
                     isSelected={selectedItemId === item.id}
                     isMenuOpen={moreAnchor?.item.id === item.id}
                     isLastInGroup={rowIdx === group.items.length - 1}
+                    showCheckbox={showRowCheckbox}
+                    isChecked={selectedIds.has(item.id)}
+                    onToggleChecked={() => handleToggleRowChecked(item)}
                     onSelect={() => onSelectActivity(item)}
                     onOpenThread={() => onSelectActivity({ ...item, kind: 'thread' as const })}
                     onJumpToSource={() => onSelectActivity(item)}
@@ -302,6 +433,64 @@ function EmptyState({ message }: { message: string }) {
       }}
     >
       {message}
+    </div>
+  );
+}
+
+function AllCaughtUpEmptyState() {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '64px 24px',
+        textAlign: 'center',
+        gap: 12,
+        height: '100%',
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: 8,
+          background: 'var(--cv2-success, #2BAC76)',
+          color: '#FFFFFF',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <svg width={32} height={32} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </div>
+      <h2
+        style={{
+          margin: 0,
+          fontFamily: 'var(--cv2-font)',
+          fontSize: 18,
+          fontWeight: 700,
+          color: 'var(--cv2-text-strong)',
+        }}
+      >
+        All caught up
+      </h2>
+      <p
+        style={{
+          margin: 0,
+          maxWidth: 320,
+          fontFamily: 'var(--cv2-font)',
+          fontSize: 14,
+          color: 'var(--cv2-text-muted)',
+          lineHeight: 1.45,
+        }}
+      >
+        Looks like things are quiet for now. When there's new activity, it'll be here.
+      </p>
     </div>
   );
 }
