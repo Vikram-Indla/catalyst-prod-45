@@ -32,6 +32,7 @@ import { DraftsAndSentPanel } from './components/DraftsAndSent/DraftsAndSentPane
 import type { LaterItem } from './hooks/useLaterItems';
 import type { DraftListItem } from './hooks/useAllDrafts';
 import type { ScheduledMessage } from './hooks/useMyScheduledMessages';
+import type { SentMessage } from './hooks/useMySentMessages';
 import { WorkspaceSearchBar } from './components/Search/WorkspaceSearchBar';
 import { WorkspaceSearchModal } from './components/Search/WorkspaceSearchModal';
 import { WorkspaceSearchResultsPanel } from './components/Search/WorkspaceSearchResultsPanel';
@@ -450,6 +451,32 @@ function ChatV2Inner() {
     [shell.setActiveView, shell.closeThread],
   );
 
+  // Sent-tab row click: jump-pulse the message in its source chat.
+  // Mirrors handleSelectActivity for non-thread items + the activity
+  // flow for thread replies (open ThreadPane + pulse inside it).
+  const handleSelectSent = useCallback(
+    (msg: SentMessage) => {
+      shell.setActiveView('chat');
+      setActiveConversationId(msg.conversationId);
+      setSelectedActivityId(null);
+      setSelectedLaterId(null);
+      setEditScheduledMessage(null);
+      if (msg.parentId) {
+        shell.openThread(msg.parentId);
+        setThreadJumpMessageId(null);
+        window.setTimeout(() => setThreadJumpMessageId(msg.id), 0);
+        setActivityJumpMessageId(null);
+      } else {
+        shell.closeThread();
+        setThreadJumpMessageId(null);
+        setActivityJumpMessageId(null);
+        window.setTimeout(() => setActivityJumpMessageId(msg.id), 0);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [shell.setActiveView, shell.closeThread, shell.openThread],
+  );
+
   // Clear the edit target whenever the user navigates to a different
   // conversation or leaves chat mode — the panel only makes sense for
   // the conversation it was queued in.
@@ -619,6 +646,7 @@ function ChatV2Inner() {
             onActiveTabChange={shell.setDraftsActiveTab}
             onSelectDraft={handleSelectDraft}
             onSelectScheduled={handleSelectScheduled}
+            onSelectSent={handleSelectSent}
             onNewMessage={handleOpenNewMessagePanel}
           />
         ) : (

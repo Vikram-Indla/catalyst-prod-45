@@ -16,10 +16,12 @@ import { DraftsAndSentHeader } from './DraftsAndSentHeader';
 import { DraftsAndSentTabs } from './DraftsAndSentTabs';
 import { DraftsTab } from './DraftsTab';
 import { ScheduledTab } from './ScheduledTab';
+import { SentTab } from './SentTab';
 import { OutgoingMessagesBanner, useOutgoingBannerDismissed } from './OutgoingMessagesBanner';
 import { useMyScheduledCount } from '../../hooks/useMyScheduledCount';
 import type { DraftListItem } from '../../hooks/useAllDrafts';
 import type { ScheduledMessage } from '../../hooks/useMyScheduledMessages';
+import type { SentMessage } from '../../hooks/useMySentMessages';
 import {
   isDraftsTableAvailable,
   isMissingTableError,
@@ -33,6 +35,7 @@ interface DraftsAndSentPanelProps {
   onActiveTabChange: (tab: DraftsTabId) => void;
   onSelectDraft: (draft: DraftListItem) => void;
   onSelectScheduled: (msg: ScheduledMessage) => void;
+  onSelectSent: (msg: SentMessage) => void;
   onNewMessage: () => void;
 }
 
@@ -41,6 +44,7 @@ export function DraftsAndSentPanel({
   onActiveTabChange,
   onSelectDraft,
   onSelectScheduled,
+  onSelectSent,
   onNewMessage,
 }: DraftsAndSentPanelProps) {
   const { user } = useAuth();
@@ -177,24 +181,9 @@ export function DraftsAndSentPanel({
         {activeTab === 'scheduled' && (
           <ScheduledTab onSelectScheduled={onSelectScheduled} />
         )}
-        {activeTab === 'sent' && <SentTabPlaceholder />}
+        {activeTab === 'sent' && <SentTab onSelectSent={onSelectSent} />}
       </div>
     </aside>
   );
 }
 
-function SentTabPlaceholder() {
-  return (
-    <div
-      style={{
-        padding: '40px 24px',
-        textAlign: 'center',
-        color: 'var(--cv2-text-muted)',
-        fontFamily: 'var(--cv2-font)',
-        fontSize: 14,
-      }}
-    >
-      Sent messages will appear here.
-    </div>
-  );
-}
