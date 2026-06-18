@@ -1160,7 +1160,7 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     
     /* === BRAND TOKENS (V5 Compliant) === */
-    --brand-dark: var(--cp-ink-1, #1A1A1A);  /* DARK MODE ADS neutral elevated surface */
+    --brand-dark: var(--cp-bg-elevated, #22272B);  /* ADS dark elevated surface (blue-grey) */
     --brand-gold: #0d9488;
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
@@ -1472,14 +1472,14 @@ html:has(body[data-scroll-locked]) {
     --card-border: var(--divider);
     
     /* === TABLE TOKENS (Bloomberg grade — surface only) === */
-    --table-container-bg: var(--cp-ink-1, #1A1A1A);
+    --table-container-bg: var(--cp-bg-page, #1D2125);
     --table-container-border: var(--cp-border, #2C333A);
-    --table-header-bg: #111111;
+    --table-header-bg: var(--cp-bg-page, #1D2125);
     --table-header-text: var(--cp-text-secondary, #878787);
     --table-header-border: var(--cp-border, #2C333A);
-    --table-row-bg: var(--cp-ink-1, #1A1A1A);
-    --table-row-alt-bg: var(--cp-ink-1, #1A1A1A);
-    --table-row-hover: #1F1F1F;
+    --table-row-bg: var(--cp-bg-elevated, #22272B);
+    --table-row-alt-bg: var(--cp-bg-page, #1D2125);
+    --table-row-hover: var(--cp-border, #2C333A);
     --table-row-selected: var(--cp-border, #2C333A);
     --table-row-border: var(--cp-border, #2C333A);
     --table-cell-divider: var(--cp-border, #2C333A);
@@ -3349,7 +3349,7 @@ input[type="range"]::-moz-range-thumb {
   --cp-err: #F87171;
   --cp-err-bg: rgba(248,113,113,0.10);
   --cp-err-text: #F87171;
-  --cp-float: var(--cp-ink-1, #1A1A1A);
+  --cp-float: var(--ds-surface-raised, #282E33);
   --cp-hover: var(--cp-border, #2C333A);
   --cp-interact-hover: var(--cp-border, #2C333A);
   --cp-interact-press: var(--cp-border, #2C333A);
