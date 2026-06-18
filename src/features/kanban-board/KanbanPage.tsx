@@ -244,6 +244,9 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
       {/* Header */}
       <div style={{ height: SIZES.HEADER_HEIGHT, padding: `0 ${SIZES.PAGE_PADDING_X}px`, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2, flexShrink: 0 }}>
         <Breadcrumbs>
+          {/* Home root — every hub breadcrumb roots at Home (2026-06-18 nav
+              mental-model, matches ProjectPageHeader). */}
+          <BreadcrumbsItem text="Home" href="/for-you" />
           {mode === 'product' ? (
             <BreadcrumbsItem text="Products" href="/product-hub/products" />
           ) : mode === 'incident' ? (

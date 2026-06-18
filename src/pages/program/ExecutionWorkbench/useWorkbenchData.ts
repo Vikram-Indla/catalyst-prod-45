@@ -263,7 +263,7 @@ export function useWorkbenchData(
     if (!programId) return;
 
     const channel = supabase
-      .channel('workbench-realtime')
+      .channel(`workbench-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'epics' }, () => {
         queryClient.invalidateQueries({ queryKey: ['workbench-epics'] });
       })

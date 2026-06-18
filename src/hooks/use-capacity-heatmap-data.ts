@@ -278,7 +278,7 @@ export function useCapacityHeatmapData(monthCount = 12) {
   // Set up real-time subscription
   useEffect(() => {
     const channel = supabase
-      .channel('heatmap-realtime-updates')
+      .channel(`heatmap-realtime-updates-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'resource_allocations' },

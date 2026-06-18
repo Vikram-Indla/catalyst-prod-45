@@ -2,8 +2,8 @@
  * IncidentAnalyticsPage — V12 Redesigned Analytics
  */
 
-import { BarChart3, Loader2 } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIncidentListView, useIncidentStats } from '@/hooks/useIncidentHub';
@@ -53,17 +53,8 @@ export default function IncidentAnalyticsPage() {
 
   return (
     <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-      <div className="px-6 pt-6 pb-4">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--ds-background-selected, #EFF6FF)' }}>
-            <BarChart3 size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-          </div>
-          <div>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>Analytics</h1>
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Incident management metrics and trends</p>
-          </div>
-        </div>
-
+      <ProjectPageHeader projectKey="INCIDENTS" hubType="incident" />
+      <div className="px-6 pt-2 pb-4">
         {/* Stat Cards */}
         <div className="grid grid-cols-4 gap-3 mb-6">
           {[

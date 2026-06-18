@@ -36,7 +36,7 @@ export function useCapacityDepartments() {
   // Real-time subscription
   useEffect(() => {
     const channel = supabase
-      .channel('capacity-departments-realtime')
+      .channel(`capacity-departments-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_departments' }, () => {
         queryClient.invalidateQueries({ queryKey: ['capacity-departments'] });
       })

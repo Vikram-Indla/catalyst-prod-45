@@ -3,10 +3,10 @@
  */
 
 import { useState } from 'react';
-import { FileText } from '@/lib/atlaskit-icons';
 import { useIncidentListView } from '@/hooks/useIncidentHub';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTheme } from '@/hooks/useTheme';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const TABS = ['SLA Breach', 'Incident Aging', 'Conversion Funnel', 'Severity vs Priority'];
 
@@ -29,15 +29,8 @@ export default function IncidentReportsPage() {
 
   return (
     <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-      <div className="px-6 pt-6 pb-4">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--ds-background-selected, #EFF6FF)' }}>
-            <FileText size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-          </div>
-          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>Incident Reports</h1>
-        </div>
-
+      <ProjectPageHeader projectKey="INCIDENTS" hubType="incident" />
+      <div className="px-6 pt-2 pb-4">
         {/* Tab Bar */}
         <div className="flex items-center gap-1 mb-6" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
           {TABS.map((tab, i) => (

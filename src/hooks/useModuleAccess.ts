@@ -27,15 +27,23 @@ interface UserModulePermission {
  */
 export function useUserModulePermissions() {
   const { user } = useAuth();
-  const { isSuperAdmin, productRoles, isLoading: roleLoading } = useUserRole();
+  const { role, isAdmin, isSuperAdmin, productRoles, isLoading: roleLoading } = useUserRole();
+
+  // Access resolves against BOTH the system role (user_roles.role) and the product
+  // role codes (product_roles.code). admin_role_module_permissions.role_code holds
+  // either. Highest access level across all of a user's roles wins.
+  const roleCodes = [
+    ...(role ? [role] : []),
+    ...(productRoles || []),
+  ];
 
   const { data: permissions, isLoading: permissionsLoading } = useQuery({
-    queryKey: ['user-module-permissions', user?.id, productRoles],
+    queryKey: ['user-module-permissions', user?.id, roleCodes],
     queryFn: async (): Promise<UserModulePermission[]> => {
       if (!user) return [];
 
-      // Super Admin gets full access to everything — no override needed
-      if (isSuperAdmin) {
+      // Admin (system) and Super Admin (product) bypass the matrix — always full
+      if (isAdmin || isSuperAdmin) {
         const { data: modules } = await supabase
           .from('admin_nav_modules')
           .select('module_key');
@@ -47,11 +55,11 @@ export function useUserModulePermissions() {
 
       // Fetch role-based permissions and per-user override in parallel
       const [rolePermsResult, profileResult] = await Promise.all([
-        productRoles && productRoles.length > 0
+        roleCodes.length > 0
           ? supabase
               .from('admin_role_module_permissions')
               .select('module_key, access_level')
-              .in('role_code', productRoles)
+              .in('role_code', roleCodes)
           : Promise.resolve({ data: [], error: null }),
         supabase
           .from('profiles')
@@ -97,7 +105,7 @@ export function useUserModulePermissions() {
 
       // No per-user override — use role defaults only.
       // If the user has no roles at all, everything is hidden.
-      if (!productRoles || productRoles.length === 0) {
+      if (roleCodes.length === 0) {
         const { data: modules } = await supabase
           .from('admin_nav_modules')
           .select('module_key');
@@ -128,15 +136,20 @@ export function useUserModulePermissions() {
  */
 // Core navigation modules that should NOT be blocked by org_modules
 // These are controlled purely by role-based access in admin_role_module_permissions
+// All top-level hub modules are governed purely by role-based access
+// (admin_role_module_permissions), bypassing the org_modules availability layer.
+// org_modules is an optional per-org feature-toggle layer (currently unpopulated);
+// gating hub nav on it would hide every non-core hub for all non-admins.
 const CORE_NAV_MODULES = new Set([
   'home', 'enterprise', 'product', 'releases', 'operations', 'tasks',
+  'planner', 'testhub', 'workhub', 'wiki',
   'settings', 'create', 'notifications', 'global_search'
 ]);
 
 export function useModuleAccess() {
   const { permissions, isLoading: permissionsLoading } = useUserModulePermissions();
   const { enabledModules, isLoading: modulesLoading } = useEnabledModules();
-  const { isSuperAdmin } = useUserRole();
+  const { isAdmin, isSuperAdmin } = useUserRole();
 
   const isLoading = permissionsLoading || modulesLoading;
 
@@ -150,8 +163,8 @@ export function useModuleAccess() {
     // Normalize to lowercase for consistent matching
     const normalizedKey = moduleKey.toLowerCase();
     
-    // Super Admin always gets full access
-    if (isSuperAdmin) return 'full';
+    // Admin (system) and Super Admin (product) always get full access
+    if (isAdmin || isSuperAdmin) return 'full';
 
     // Core nav modules bypass org_modules check - controlled purely by role permissions
     const isCoreModule = CORE_NAV_MODULES.has(normalizedKey);

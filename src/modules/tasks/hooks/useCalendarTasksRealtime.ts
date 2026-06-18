@@ -17,7 +17,7 @@ export function useCalendarTasksRealtime({ startDate, endDate }: UseCalendarReal
 
   useEffect(() => {
     const channel = supabase
-      .channel('calendar-tasks-realtime')
+      .channel(`calendar-tasks-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

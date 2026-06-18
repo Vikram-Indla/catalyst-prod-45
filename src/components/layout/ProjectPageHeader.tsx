@@ -28,9 +28,22 @@ interface Props {
   projectKey: string;
   /** Horizontal padding in px. Default 20px (matches KanbanPage PAGE_PADDING_X). */
   paddingX?: number;
-  /** 'project' renders "Projects / …" breadcrumb; 'product' renders "Products / …". */
-  hubType?: 'project' | 'product';
+  /**
+   * 'project' → "Projects / [name] / …"; 'product' → "Products / [name] / …"
+   * (4-crumb, entity-scoped). 'incident' / 'release' are GLOBAL hubs with no
+   * entity — they render a 3-crumb breadcrumb "Home / [Root] / [RouteWord]",
+   * skip the DB name lookup, and show no star.
+   */
+  hubType?: 'project' | 'product' | 'incident' | 'release';
 }
+
+/** Root crumb label + href per hub type. Global hubs have no entity crumb. */
+const HUB_ROOT: Record<NonNullable<Props['hubType']>, { label: string; href: string }> = {
+  project: { label: 'Projects', href: '/project-hub/projects' },
+  product: { label: 'Products', href: '/product-hub' },
+  incident: { label: 'Incidents', href: '/incident-hub' },
+  release: { label: 'Releases', href: '/release-hub/overview' },
+};
 
 // Which project/product surfaces are starrable. Only these route words get a
 // star control; anything else returns undefined (no guessed star affordance).
@@ -45,10 +58,13 @@ export function surfaceStarType(routeWord: string): StarredItemType | undefined 
 
 export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'project' }: Props) {
   const { pathname } = useLocation();
+  const isGlobalHub = hubType === 'incident' || hubType === 'release';
 
   const { data: project } = useQuery({
     queryKey: ['project-page-header', hubType, projectKey],
-    enabled: !!projectKey,
+    // Global hubs (incident/release) have no project/product entity — skip the
+    // name lookup entirely; the breadcrumb omits the entity crumb.
+    enabled: !!projectKey && !isGlobalHub,
     staleTime: 5 * 60_000,
     queryFn: async () => {
       if (hubType === 'product') {
@@ -82,10 +98,10 @@ export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'projec
 
   const projectName = project?.name ?? projectKey;
   const routeWord = deriveRouteWord(pathname) ?? projectKey;
-  const starType = surfaceStarType(routeWord);
+  // No star on global hubs — star items are project/product-scoped instances.
+  const starType = isGlobalHub ? undefined : surfaceStarType(routeWord);
 
-  const rootLabel = hubType === 'product' ? 'Products' : 'Projects';
-  const rootHref = hubType === 'product' ? '/product-hub' : '/project-hub/projects';
+  const { label: rootLabel, href: rootHref } = HUB_ROOT[hubType];
   const entityHref = hubType === 'product'
     ? `/product-hub/${projectKey}`
     : `/project-hub/${projectKey}`;
@@ -108,7 +124,9 @@ export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'projec
             Home, no new icon). */}
         <BreadcrumbsItem text="Home" href="/for-you" />
         <BreadcrumbsItem text={rootLabel} href={rootHref} />
-        <BreadcrumbsItem text={projectName} href={entityHref} />
+        {/* Entity crumb only for entity-scoped hubs (project/product). Global
+            hubs (incident/release) jump straight to the route word. */}
+        {!isGlobalHub && <BreadcrumbsItem text={projectName} href={entityHref} />}
         <BreadcrumbsItem text={routeWord} />
       </Breadcrumbs>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

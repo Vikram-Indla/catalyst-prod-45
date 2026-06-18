@@ -17,7 +17,7 @@ export function useAllTeamMembers() {
     };
 
     const channel = supabase
-      .channel('all-team-members-sync')
+      .channel(`all-team-members-sync-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'profiles' },
@@ -115,7 +115,7 @@ export function useTeamMemberIds() {
     };
 
     const channel = supabase
-      .channel('team-member-ids-sync')
+      .channel(`team-member-ids-sync-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'profiles' },

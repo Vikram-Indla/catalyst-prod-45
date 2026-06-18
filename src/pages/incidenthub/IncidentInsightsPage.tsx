@@ -6,6 +6,7 @@
 import { Sparkles } from '@/lib/atlaskit-icons';
 import { useIncidentListView } from '@/hooks/useIncidentHub';
 import { useTheme } from '@/hooks/useTheme';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 export default function IncidentInsightsPage() {
   const { isDark } = useTheme();
@@ -17,25 +18,13 @@ export default function IncidentInsightsPage() {
   const pageBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   const surfaceBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))';
-  const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
   const textBody = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))';
   const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
 
   return (
     <div className="flex-1 overflow-auto" style={{ backgroundColor: pageBg }}>
-      <div className="px-6 pt-6 pb-4">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-purple-5, #F3E8FF)' }}>
-            <Sparkles size={18} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
-          </div>
-          <div className="flex items-center gap-2">
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: textPrimary }}>Insights</h1>
-            <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: 'var(--cp-purple-5, #F3E8FF)', color: 'var(--cp-purple-60, #7C3AED)', borderRadius: 3 }}>AI</span>
-          </div>
-          <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: textSecondary, marginLeft: 'auto' }}>Pattern analysis and recommendations</p>
-        </div>
-
+      <ProjectPageHeader projectKey="INCIDENTS" hubType="incident" />
+      <div className="px-6 pt-2 pb-4">
         {/* Featured AI Card */}
         <div className="p-4 mb-6" style={{ border: `1px solid ${isDark ? 'rgba(124,58,237,0.25)' : '#E9D5FF'}`, borderRadius: 6, backgroundColor: surfaceBg }}>
           <div className="flex items-start gap-3">

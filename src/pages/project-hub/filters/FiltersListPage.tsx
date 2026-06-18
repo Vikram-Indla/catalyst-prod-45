@@ -535,7 +535,14 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   return (
     <CatalystListPageLayout
-      chromeBand={(hubType === 'incident' || hubType === 'tasks') ? undefined : (projectKey ? <ProjectPageHeader projectKey={projectKey} /> : undefined)}
+      chromeBand={hubType === 'tasks'
+        ? undefined
+        : (projectKey
+          ? <ProjectPageHeader
+              projectKey={projectKey}
+              hubType={hubType === 'incident' ? 'incident' : hubType === 'product' ? 'product' : undefined}
+            />
+          : undefined)}
       tabs={QUICK_TABS}
       activeTab={quickTab}
       onTabChange={id => setQuickTab(id as QuickTabId)}

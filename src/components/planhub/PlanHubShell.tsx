@@ -66,7 +66,7 @@ export default function PlanHubShell() {
 
   const subscribeToSettings = () => {
     const channel = supabase
-      .channel('planhub-settings-user')
+      .channel(`planhub-settings-user-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', 
         { event: 'UPDATE', schema: 'public', table: 'planhub_settings' },
         () => loadSettings()

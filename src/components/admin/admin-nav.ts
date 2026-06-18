@@ -131,7 +131,7 @@ export const adminPockets: AdminNavPocket[] = [
     iconName: 'Code2',
     path: '/admin/feature-flags',
     children: [
-      { label: 'Feature Flags', path: '/admin/feature-flags' },
+      { label: 'Module access', path: '/admin/feature-flags' },
     ],
   },
 ];

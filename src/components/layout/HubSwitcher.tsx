@@ -35,6 +35,7 @@ import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import { MenuGroup, LinkItem, Section } from '@atlaskit/menu';
 import { useHubShortcuts } from '@/hooks/useHubShortcuts';
+import { useModuleAccess } from '@/hooks/useModuleAccess';
 
 import {
   DropdownMenu,
@@ -56,20 +57,22 @@ interface HubEntry {
   tone: HubTone;
   /** Keyboard shortcut suffix bound to Cmd/Ctrl. '1'–'9', '0', '-'. */
   shortcut: string;
+  /** admin_nav_modules.module_key used for role-based visibility (useModuleAccess). Mirrors MobileNavigationMenu HUB_ITEMS. */
+  moduleKey: string;
 }
 
 const HUBS: HubEntry[] = [
-  { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1' },
-  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2' },
-  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3' },
-  { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4' },
-  { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5' },
-  { key: 'release',  label: 'Release',  href: '/release-hub/overview', section: 'build_ship', tone: 'magenta', shortcut: '6' },
-  { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7' },
-  { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8' },
-  { key: 'task',     label: 'Tasks',    href: '/tasks/overview',             section: 'build_ship', tone: 'yellow',  shortcut: '9' },
-  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0' },
-  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-' },
+  { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1', moduleKey: 'home' },
+  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'enterprise' },
+  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3', moduleKey: 'product' },
+  { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4', moduleKey: 'product' },
+  { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5', moduleKey: 'workhub' },
+  { key: 'release',  label: 'Release',  href: '/release-hub/overview', section: 'build_ship', tone: 'magenta', shortcut: '6', moduleKey: 'releases' },
+  { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7', moduleKey: 'testhub' },
+  { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8', moduleKey: 'operations' },
+  { key: 'task',     label: 'Tasks',    href: '/tasks/overview',             section: 'build_ship', tone: 'yellow',  shortcut: '9', moduleKey: 'planner' },
+  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0', moduleKey: 'planner' },
+  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-', moduleKey: 'wiki' },
 ];
 
 const SECTIONS: { key: SectionKey; title: string }[] = [
@@ -113,6 +116,7 @@ export function HubSwitcher() {
   const navigate = useNavigate();
   const location = useLocation();
   const { setSidebarHidden, setSidebarExpanded, setSidebarPinned } = useCatalystContext();
+  const { canViewInNav, isLoading: accessLoading } = useModuleAccess();
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -162,8 +166,12 @@ export function HubSwitcher() {
   const matches = (hub: HubEntry) =>
     !normalisedQuery || hub.label.toLowerCase().includes(normalisedQuery);
 
+  // Role-based visibility: hide hubs the user's role(s) cannot view.
+  // While access is loading, show all to avoid a reveal-flash; filter once resolved.
+  const canSee = (hub: HubEntry) => accessLoading || canViewInNav(hub.moduleKey);
+
   const hubsBySection = (key: SectionKey) =>
-    HUBS.filter((h) => h.section === key && matches(h));
+    HUBS.filter((h) => h.section === key && matches(h) && canSee(h));
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -213,7 +221,7 @@ export function HubSwitcher() {
         sideOffset={8}
         alignOffset={-8}
         avoidCollisions={false}
-        className="z-[1000] p-0"
+        className="z-[1000]"
         style={{
           width: 343,
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -228,7 +236,7 @@ export function HubSwitcher() {
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            padding: '10px 12px',
+            padding: '8px 12px',
             borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
           }}
         >

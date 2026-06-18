@@ -46,7 +46,7 @@ export function useBusinessRequests(searchQuery?: string) {
   // Set up real-time subscription for automatic updates
   useEffect(() => {
     const channel = supabase
-      .channel('business-requests-realtime')
+      .channel(`business-requests-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

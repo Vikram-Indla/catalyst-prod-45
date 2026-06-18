@@ -85,7 +85,7 @@ export function useKanbanData() {
   // Real-time subscription for business_requests updates
   useEffect(() => {
     const channel = supabase
-      .channel('kanban-business-requests')
+      .channel(`kanban-business-requests-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

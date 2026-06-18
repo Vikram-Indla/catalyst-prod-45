@@ -22,7 +22,7 @@ export function useApprovedProfiles() {
   useEffect(() => {
     let debounceTimer: ReturnType<typeof setTimeout>;
     const channel = supabase
-      .channel('approved-profiles-sync')
+      .channel(`approved-profiles-sync-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'profiles' },

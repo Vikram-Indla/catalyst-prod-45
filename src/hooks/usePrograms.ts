@@ -46,7 +46,7 @@ export function usePrograms() {
   // Subscribe to realtime updates
   useEffect(() => {
     const channel = supabase
-      .channel('programs-changes')
+      .channel(`programs-changes-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'programs' },

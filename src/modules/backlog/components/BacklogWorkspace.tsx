@@ -98,7 +98,7 @@ export function BacklogWorkspace() {
   // This ensures orphan epics and cross-program updates are captured
   useEffect(() => {
     const channel = supabase
-      .channel('epic-backlog-realtime')
+      .channel(`epic-backlog-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

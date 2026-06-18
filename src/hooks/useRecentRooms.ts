@@ -102,7 +102,7 @@ export function useRecentRooms(options: UseRecentRoomsOptions = {}) {
 
     // Set up realtime subscription
     const channel = supabase
-      .channel("recent-activity-changes")
+      .channel(`recent-activity-changes-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         "postgres_changes",
         {

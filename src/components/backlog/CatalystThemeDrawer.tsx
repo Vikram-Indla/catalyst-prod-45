@@ -716,7 +716,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       ).subscribe();
 
     const statusesChannel = supabase
-      .channel('theme-statuses-config')
+      .channel(`theme-statuses-config-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'theme_statuses' },
         () => {
           queryClient.invalidateQueries({ queryKey: ['theme-statuses'] });

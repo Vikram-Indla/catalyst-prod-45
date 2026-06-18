@@ -9,11 +9,12 @@ function IssueRedirectToBrowse() {
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
+import { ModuleGuard } from '../components/guards/ModuleGuard';
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { RouteRoleGuard } from "../components/RouteRoleGuard";
 
-const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
+const ModuleAccessAdminPage = lazy(() => import("../pages/admin/ModuleAccessAdminPage"));
 const GovernanceSettings = lazy(() => import("../pages/admin/GovernanceSettings"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
@@ -364,9 +365,24 @@ const S = ({ children }: { children: React.ReactNode }) => (
   </ErrorBoundary>
 );
 
-/** Runtime module gate wrapper for route elements */
+/** Maps a ModuleGate feature-flag key to its admin_nav_modules role key
+ *  (admin_role_module_permissions). Only keys listed here get role-gated. */
+const MG_ROLE_KEY: Record<string, string> = {
+  producthub: 'product',
+  strategyhub: 'enterprise',
+  testhub: 'testhub',
+  incidenthub: 'operations',
+  ai_features: 'product',
+};
+
+/** Runtime module gate wrapper for route elements.
+ *  Outer = org availability (ModuleGate / feature_flags).
+ *  Inner = role-based access (ModuleGuard / admin_role_module_permissions),
+ *  applied only when the key maps to a known role module. admin/super_admin bypass. */
 function MG({ k, t, children }: { k: string; t: string; children: React.ReactNode }) {
-  return <ModuleGate moduleKey={k} fallbackTitle={t}>{children}</ModuleGate>;
+  const roleKey = MG_ROLE_KEY[k];
+  const inner = roleKey ? <ModuleGuard moduleCode={roleKey}>{children}</ModuleGuard> : children;
+  return <ModuleGate moduleKey={k} fallbackTitle={t}>{inner}</ModuleGate>;
 }
 
 /* 2026-06-16: /incident-hub/backlog/:key alias. BacklogPage's default
@@ -653,7 +669,7 @@ export default function FullAppRoutes() {
         <Route path="/tasks/filters" element={<S><TasksFiltersListPage /></S>} />
         <Route path="/tasks/filters/create" element={<S><TasksFilterPreviewPage /></S>} />
         <Route path="/tasks/filters/:filterId" element={<S><TasksFilterDetailPage /></S>} />
-        <Route path="/tasks/:view" element={<S><PlannerPage /></S>} />
+        <Route path="/tasks/:view" element={<ModuleGuard moduleCode="planner"><S><PlannerPage /></S></ModuleGuard>} />
         {/* Deprecated 2026-06-17: My Tasks + Workstreams removed. Static segment outranks /tasks/:view in RR6 → 404. */}
         <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />
         <Route path="/tasks/workstreams" element={<S><NotFound /></S>} />
@@ -794,7 +810,7 @@ export default function FullAppRoutes() {
         <Route path="/planner" element={<Navigate to="/tasks/overview" replace />} />
         <Route path="/planner/*" element={<Navigate to="/tasks/overview" replace />} />
 
-        <Route path="/planhub" element={<S><PlanLibraryPage /></S>} />
+        <Route path="/planhub" element={<ModuleGuard moduleCode="planner"><S><PlanLibraryPage /></S></ModuleGuard>} />
         <Route path="/planhub/plan/:planId" element={<S><PlanEditorPage /></S>} />
         <Route path="/planhub/compare" element={<S><ScenarioComparePage /></S>} />
         <Route path="/planhub/master" element={<S><MasterPlanPage /></S>} />
@@ -804,7 +820,7 @@ export default function FullAppRoutes() {
         <Route path="/planhub/capacity" element={<S><CapacityPlannerPage /></S>} />
         <Route path="/planhub/budget-planner" element={<S><BudgetPlannerPage /></S>} />
 
-        <Route path="/wiki" element={<S><WikiHomePage /></S>} />
+        <Route path="/wiki" element={<ModuleGuard moduleCode="wiki"><S><WikiHomePage /></S></ModuleGuard>} />
         <Route path="/wiki/search" element={<S><WikiSearchPage /></S>} />
         <Route path="/wiki/whats-new" element={<S><WikiWhatsNewPage /></S>} />
         <Route path="/wiki/learning-paths" element={<S><WikiLearningPathsPage /></S>} />
@@ -970,7 +986,7 @@ export default function FullAppRoutes() {
           <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
-          <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+          <Route path="feature-flags" element={<S><ModuleAccessAdminPage /></S>} />
           <Route path="ai-governance/translations" element={<S><AiTranslationsAuditPage /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />
           <Route path="storybook" element={<S><AdminStorybookPage /></S>} />

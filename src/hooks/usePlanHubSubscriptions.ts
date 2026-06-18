@@ -55,7 +55,7 @@ export function useSettingsSubscription() {
 
   useEffect(() => {
     const channel = supabase
-      .channel('planhub-settings')
+      .channel(`planhub-settings-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'planhub_settings' },

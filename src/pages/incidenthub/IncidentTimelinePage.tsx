@@ -29,6 +29,7 @@ import {
 } from '@/hooks/useIncidentHubTimeline';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 function resolveItemType(issue: TimelineIssue): string {
   const rawType = (issue.issueType ?? 'Production Incident').toLowerCase();
@@ -359,6 +360,7 @@ export default function IncidentTimelinePage() {
       items={tree}
       isLoading={isLoading}
       error={error}
+      chromeBand={<ProjectPageHeader projectKey="INCIDENTS" hubType="incident" />}
       hubLabel="Incidents"
       hubKey="incident-hub"
       filterOptions={{

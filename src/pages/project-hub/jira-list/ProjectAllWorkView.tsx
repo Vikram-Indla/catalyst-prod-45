@@ -542,11 +542,16 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           name + Add people / meatball / share / automation / feedback /
           fullscreen actions. The previous solo h2 was a Catalyst-only
           divergence with no parity reference on the Jira side. */}
-      {/* 2026-06-16: in tasks + incident modes the projectKey is a hub
-          sentinel — ProjectPageHeader would query ph_projects and 404.
-          Both hubs render their own page chrome via the sidebar, so we
-          skip the header here. */}
-      {!isTasks && !isIncident && <ProjectPageHeader projectKey={projectKey} hubType={isProduct ? 'product' : undefined} />}
+      {/* 2026-06-16: in tasks mode the projectKey is a hub sentinel and the
+          page renders its own chrome, so the header is skipped. Incident mode
+          now renders the canonical global-hub header (Home / Incidents / Work)
+          — ProjectPageHeader's incident hubType skips the ph_projects query. */}
+      {!isTasks && (
+        <ProjectPageHeader
+          projectKey={projectKey}
+          hubType={isProduct ? 'product' : isIncident ? 'incident' : undefined}
+        />
+      )}
       {/* Filter context banner — shown when viewing a saved filter or in create-filter mode.
           Matches Jira's "Filter by: [name]" breadcrumb strip above the issue list. */}
       {(activeFilter || isCreateMode) && (

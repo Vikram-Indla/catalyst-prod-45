@@ -77,7 +77,7 @@ export function EpicKanbanBoard({
   // Realtime subscription for epic_statuses changes
   useEffect(() => {
     const channel = supabase
-      .channel('epic-statuses-realtime')
+      .channel(`epic-statuses-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

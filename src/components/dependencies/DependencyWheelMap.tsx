@@ -117,7 +117,7 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
   // Real-time subscription for dependencies and epics
   useEffect(() => {
     const depsChannel = supabase
-      .channel('wheel-deps-realtime')
+      .channel(`wheel-deps-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {
@@ -132,7 +132,7 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
       .subscribe();
 
     const epicsChannel = supabase
-      .channel('wheel-epics-realtime')
+      .channel(`wheel-epics-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {
@@ -147,7 +147,7 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
       .subscribe();
 
     const featuresChannel = supabase
-      .channel('wheel-features-realtime')
+      .channel(`wheel-features-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

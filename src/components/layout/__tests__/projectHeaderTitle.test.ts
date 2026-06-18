@@ -25,8 +25,28 @@ describe('deriveRouteWord', () => {
     expect(deriveRouteWord('/product-hub/INV/dashboard')).toBe('Product Dashboard');
   });
 
+  it('maps global incident-hub segments (no :key) to display words', () => {
+    expect(deriveRouteWord('/incident-hub/dashboard')).toBe('Dashboard');
+    expect(deriveRouteWord('/incident-hub/board')).toBe('Board');
+    expect(deriveRouteWord('/incident-hub/committee-queue')).toBe('Committee queue');
+    expect(deriveRouteWord('/incident-hub/all-incidents')).toBe('Incidents');
+  });
+
+  it('maps global release-hub segments (no :key) to display words', () => {
+    expect(deriveRouteWord('/release-hub/calendar')).toBe('Calendar');
+    expect(deriveRouteWord('/release-hub/sign-off-queue')).toBe('Sign-off queue');
+    expect(deriveRouteWord('/release-hub/sop-templates')).toBe('SOP templates');
+    expect(deriveRouteWord('/release-hub/changes/abc-123')).toBe('Changes');
+  });
+
+  it('sentence-cases unknown global-hub segments (hyphens → spaces)', () => {
+    expect(deriveRouteWord('/incident-hub/blast-radius')).toBe('Blast radius');
+  });
+
   it('returns null for non-hub or segment-less paths', () => {
     expect(deriveRouteWord('/project-hub/BAU')).toBeNull();
+    expect(deriveRouteWord('/incident-hub')).toBeNull();
+    expect(deriveRouteWord('/release-hub')).toBeNull();
     expect(deriveRouteWord('/home')).toBeNull();
   });
 });

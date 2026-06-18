@@ -71,7 +71,7 @@ export function useKanbanTasksRealtime() {
 
   useEffect(() => {
     const channel = supabase
-      .channel('kanban-tasks-realtime')
+      .channel(`kanban-tasks-realtime-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

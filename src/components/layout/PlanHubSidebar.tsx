@@ -53,7 +53,7 @@ export function PlanHubSidebar({ expanded, onToggle, className }: PlanHubSidebar
     
     // Real-time subscription for settings changes
     const channel = supabase
-      .channel('planhub-sidebar-settings')
+      .channel(`planhub-sidebar-settings-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', 
         { event: 'UPDATE', schema: 'public', table: 'planhub_settings' },
         () => loadSettings()

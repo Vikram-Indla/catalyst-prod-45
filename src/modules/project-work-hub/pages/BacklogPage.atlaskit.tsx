@@ -646,6 +646,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const { data: project } = useProject(projectId);
   const projectDisplayName = displayName || project?.name || projectKey;
   const resolvedBaseUrl = baseUrl ?? `/project-hub/${projectKey}`;
+  // Global-hub mounts (incident/release) render the 3-crumb breadcrumb header
+  // (Home / Incidents|Releases / RouteWord) — no project entity. Derived from
+  // baseUrl so every incident/release BacklogPage mount inherits it without a
+  // new prop at each callsite. project/product mounts keep the default.
+  const headerHubType: 'incident' | 'release' | undefined =
+    resolvedBaseUrl.startsWith('/incident-hub') ? 'incident'
+    : resolvedBaseUrl.startsWith('/release-hub') ? 'release'
+    : undefined;
   // Apr 28, 2026 — chrome band background derived from
   // `projects.settings.background`. Falls back to the Jira-parity blue.
   const projectBackground = readProjectBackground(project);
@@ -3387,7 +3395,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             still mount it directly, but Backlog now uses the chip alone. */}
         {dataSource?.ChromeHeader
           ? <dataSource.ChromeHeader productCode={projectKey} productName={projectDisplayName} />
-          : <ProjectPageHeader projectKey={projectKey} />}
+          : <ProjectPageHeader projectKey={projectKey} hubType={headerHubType} />}
         {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
         {false && <ProjectChromeBand
           projectName={pageTitle}

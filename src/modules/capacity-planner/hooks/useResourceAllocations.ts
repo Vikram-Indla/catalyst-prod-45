@@ -86,7 +86,7 @@ export function useResourceAllocations() {
 
   useEffect(() => {
     const channel = supabase
-      .channel('resource-allocations-changes')
+      .channel(`resource-allocations-changes-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'resource_allocations' },

@@ -43,21 +43,70 @@ const PRODUCT_ROUTE_WORD_MAP: Record<string, string> = {
 };
 
 /**
+ * Global-hub route segment → display word. Incident- and release-hub routes
+ * have NO :key segment (e.g. `/incident-hub/dashboard`), so the first segment
+ * after the hub IS the route word. Sentence-case labels (ADS), with explicit
+ * overrides where bare title-case would read wrong (acronyms, multi-word).
+ */
+const GLOBAL_HUB_ROUTE_WORD_MAP: Record<string, string> = {
+  // incident-hub
+  'all-incidents': 'Incidents',
+  board: 'Board',
+  kanban: 'Kanban',
+  filters: 'Filters',
+  timeline: 'Timeline',
+  dashboard: 'Dashboard',
+  work: 'Work',
+  analytics: 'Analytics',
+  insights: 'Insights',
+  reports: 'Reports',
+  'committee-queue': 'Committee queue',
+  backlog: 'Backlog',
+  // release-hub
+  overview: 'Overview',
+  releases: 'Releases',
+  'all-releases': 'Releases',
+  'production-events': 'Production events',
+  calendar: 'Calendar',
+  changes: 'Changes',
+  'sop-templates': 'SOP templates',
+  'sign-off-queue': 'Sign-off queue',
+  'freeze-windows': 'Freeze windows',
+  settings: 'Settings',
+  'command-center': 'Command center',
+  compare: 'Compare',
+  triage: 'Triage',
+};
+
+/** Sentence-case an unknown segment: hyphens → spaces, capitalise first letter only. */
+function sentenceCaseSegment(seg: string): string {
+  const s = seg.replace(/-/g, ' ');
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/**
  * Derive the route word from a hub pathname.
- * Matches `/project-hub/:key/<segment>` and `/product-hub/:key/<segment>`.
+ * Matches `/project-hub/:key/<segment>`, `/product-hub/:key/<segment>`, and the
+ * global hubs `/incident-hub/<segment>` + `/release-hub/<segment>` (no :key).
  * Product-hub routes use bare nouns (same map shape as project-hub).
  * Returns null when the pathname is not a hub route or has no segment
- * after the key (the bare `/project-hub/:key`).
+ * after the key/hub (e.g. the bare `/project-hub/:key` or `/incident-hub`).
  */
 export function deriveRouteWord(pathname: string): string | null {
+  // Global hubs first — no :key segment between hub and route word.
+  const g = pathname.match(/\/(incident|release)-hub\/([^/?#]+)/);
+  if (g) {
+    const seg = g[2].toLowerCase();
+    return GLOBAL_HUB_ROUTE_WORD_MAP[seg] ?? sentenceCaseSegment(seg);
+  }
   const m = pathname.match(/\/(project|product)-hub\/[^/]+\/([^/?#]+)/);
   if (!m) return null;
   const [, hubType, rawSeg] = m;
   const seg = rawSeg.toLowerCase();
   if (hubType === 'product') {
-    return PRODUCT_ROUTE_WORD_MAP[seg] ?? (seg.charAt(0).toUpperCase() + seg.slice(1));
+    return PRODUCT_ROUTE_WORD_MAP[seg] ?? sentenceCaseSegment(seg);
   }
-  return PROJECT_ROUTE_WORD_MAP[seg] ?? (seg.charAt(0).toUpperCase() + seg.slice(1));
+  return PROJECT_ROUTE_WORD_MAP[seg] ?? sentenceCaseSegment(seg);
 }
 
 /**

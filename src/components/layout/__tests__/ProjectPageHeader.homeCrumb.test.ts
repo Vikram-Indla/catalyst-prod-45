@@ -36,3 +36,26 @@ describe('ProjectPageHeader — breadcrumb roots at Home', () => {
     expect(homeIdx).toBeLessThan(rootIdx);
   });
 });
+
+describe('ProjectPageHeader — global-hub mode (incident/release)', () => {
+  it('accepts incident + release as hubType', () => {
+    expect(SRC).toMatch(/hubType\?:\s*'project'\s*\|\s*'product'\s*\|\s*'incident'\s*\|\s*'release'/);
+  });
+
+  it('declares Incidents + Releases roots with global-hub hrefs', () => {
+    expect(SRC).toMatch(/incident:\s*\{\s*label:\s*'Incidents',\s*href:\s*'\/incident-hub'/);
+    expect(SRC).toMatch(/release:\s*\{\s*label:\s*'Releases',\s*href:\s*'\/release-hub\/overview'/);
+  });
+
+  it('omits the entity crumb for global hubs', () => {
+    expect(SRC).toMatch(/!isGlobalHub\s*&&\s*<BreadcrumbsItem text=\{projectName\}/);
+  });
+
+  it('skips the DB name lookup for global hubs', () => {
+    expect(SRC).toMatch(/enabled:\s*!!projectKey\s*&&\s*!isGlobalHub/);
+  });
+
+  it('shows no star on global hubs', () => {
+    expect(SRC).toMatch(/isGlobalHub\s*\?\s*undefined\s*:\s*surfaceStarType/);
+  });
+});

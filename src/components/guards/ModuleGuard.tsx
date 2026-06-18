@@ -103,7 +103,7 @@ export function ModuleGuard({ moduleCode, children, allowLinking = false }: Modu
           
           {isAdmin || isSuperAdmin ? (
             <p className="text-muted-foreground text-sm">
-              This module is not enabled for your role. Configure access in Administration → Module Access Matrix.
+              This module is not enabled for your role. Configure access in Administration → Module access.
             </p>
           ) : (
             <p className="text-muted-foreground text-sm">
@@ -114,12 +114,12 @@ export function ModuleGuard({ moduleCode, children, allowLinking = false }: Modu
         
         <div className="flex flex-col gap-3">
           {(isAdmin || isSuperAdmin) && (
-            <Button 
-              onClick={() => navigate('/admin/module-matrix')}
+            <Button
+              onClick={() => navigate('/admin/feature-flags')}
               className="w-full bg-brand-primary hover:bg-brand-primary-hover"
             >
               <Settings className="h-4 w-4 mr-2" />
-              Go to Module Access Matrix
+              Go to Module access
             </Button>
           )}
           

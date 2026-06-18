@@ -182,7 +182,7 @@ export function useResourceProfiles() {
   // Set up real-time subscription
   useEffect(() => {
     const channel = supabase
-      .channel('profiles-realtime-capacity')
+      .channel(`profiles-realtime-capacity-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

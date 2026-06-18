@@ -18,7 +18,7 @@ export function useMyTasksRealtime() {
 
     // Subscribe to task changes for current user
     const taskChannel = supabase
-      .channel('my-tasks-changes')
+      .channel(`my-tasks-changes-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {
@@ -37,7 +37,7 @@ export function useMyTasksRealtime() {
 
     // Subscribe to activity log for live feed
     const activityChannel = supabase
-      .channel('my-tasks-activity')
+      .channel(`my-tasks-activity-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         'postgres_changes',
         {

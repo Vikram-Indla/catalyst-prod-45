@@ -190,7 +190,7 @@ export default function ReqAssistLibrary() {
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    const channel1 = supabase.channel('req-assist-queue')
+    const channel1 = supabase.channel(`req-assist-queue-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'brd_processing_queue' }, () => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => {
@@ -199,7 +199,7 @@ export default function ReqAssistLibrary() {
           qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
         }, 2000);
       }).subscribe();
-    const channel2 = supabase.channel('req-assist-docs')
+    const channel2 = supabase.channel(`req-assist-docs-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'brd_documents' }, () => {
         qc.invalidateQueries({ queryKey: RA_KEYS.all });
       }).subscribe();

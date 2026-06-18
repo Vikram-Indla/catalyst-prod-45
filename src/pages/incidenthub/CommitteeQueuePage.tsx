@@ -2,9 +2,9 @@
  * CommitteeQueuePage — V12 Committee Queue
  */
 
-import { useState } from 'react';
-import { Users, Plus } from '@/lib/atlaskit-icons';
+import { Plus } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,15 +23,9 @@ export default function CommitteeQueuePage() {
 
   return (
     <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-      <div className="px-6 pt-6 pb-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#FEF3C7' }}>
-              <Users size={18} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
-            </div>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>Committee Queue</h1>
-          </div>
+      <ProjectPageHeader projectKey="INCIDENTS" hubType="incident" />
+      <div className="px-6 pt-2 pb-4">
+        <div className="flex items-center justify-end mb-4">
           <Button size="sm" className="gap-1.5" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }}>
             <Plus size={14} /> New Committee
           </Button>
