@@ -19,7 +19,7 @@ import VideoPlayIcon from '@atlaskit/icon/core/video-play';
 import VideoStopIcon from '@atlaskit/icon/core/video-stop';
 // eslint-disable-next-line no-restricted-imports
 import CloseIcon from '@atlaskit/icon/core/close';
-import catyHeadUrl from '@/assets/caty-head.svg?url';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import type { MicPhase } from '../../hooks/useMicVoiceRecorder';
 
 interface Props {
@@ -107,13 +107,7 @@ export function MicRecordingBar({
               transition: 'opacity 150ms ease',
             }}
           >
-            <img
-              src={catyHeadUrl}
-              alt=""
-              width={22}
-              height={22}
-              style={{ display: 'block' }}
-            />
+            <CatyPulseIcon size={22} />
           </span>
 
           {/* Label + preview text */}

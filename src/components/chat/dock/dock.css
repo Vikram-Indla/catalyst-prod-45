@@ -400,23 +400,6 @@
   transform: scale(0.96);
 }
 
-.cc-fab__badge {
-  position: absolute;
-  top: -6px;
-  left: -6px;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
-  border-radius: 10px;
-  background: var(--ds-background-danger-bold, #E34935);
-  color: var(--ds-text-inverse, #FFFFFF);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 20px;
-  text-align: center;
-  border: 2px solid var(--ds-surface, #FFFFFF);
-}
-
 /* Caty SIGNAL gestures — single-shot, calm-tech (fire once on a new unseen event). */
 .cc-fab.cmf-perk .cmf-body { animation: cmfPerk 0.5s ease 1; }
 .cc-fab.cmf-glance .cmf-body { animation: cmfGlance 0.5s ease 1; }
@@ -442,6 +425,40 @@
   border-radius: 50%;
   background: var(--ds-icon-success, #22A06B);
   border: 2px solid var(--ds-surface, #FFFFFF);
+}
+
+/* minimized "Wake Caty" mark — pulse glyph gets a disc body so the
+   single green presence/count badge anchors to the disc edge instead of
+   floating in empty space. One green badge signifies online AND holds the
+   unread count; when 0 it shrinks to the plain .cc-fab__presence dot. */
+.cc-wake-disc {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--ds-surface-overlay, #FFFFFF);
+  border: 1px solid var(--ds-border, #DFE1E6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-wake-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: var(--ds-icon-success, #22A06B);
+  color: var(--ds-text-inverse, #FFFFFF);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  border: 2px solid var(--ds-surface, #FFFFFF);
+  box-sizing: border-box;
 }
 
 /* ── Caty sidebar mode (Rovo parity) ─────────────────────────
