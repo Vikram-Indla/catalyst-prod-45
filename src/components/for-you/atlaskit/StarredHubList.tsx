@@ -22,6 +22,7 @@ import BacklogIcon from '@atlaskit/icon/core/backlog';
 import DashboardIcon from '@atlaskit/icon/core/dashboard';
 import FilterIcon from '@atlaskit/icon/core/filter';
 import RoadmapIcon from '@atlaskit/icon/core/roadmap';
+import PageIcon from '@atlaskit/icon/core/page';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { JiraForYouLozenge } from './ForYouRow';
@@ -45,6 +46,7 @@ const SURFACE_GLYPH: Partial<Record<StarredItemType, React.ComponentType<{ label
   dashboard: DashboardIcon,
   filter: FilterIcon,
   roadmap: RoadmapIcon,
+  page: PageIcon,
 };
 
 // Internal work-item type → locked JiraIssueTypeIcon registry string.
@@ -63,6 +65,7 @@ const GROUPS: { title: string; match: (r: StarredHubRow) => boolean }[] = [
   { title: 'Filters', match: r => r.type === 'filter' },
   { title: 'Dashboards', match: r => r.type === 'dashboard' },
   { title: 'Roadmaps', match: r => r.type === 'roadmap' },
+  { title: 'Pages', match: r => r.type === 'page' },
   { title: 'Projects', match: r => r.type === 'project' },
   { title: 'Products', match: r => r.type === 'product' },
   { title: 'Documents', match: r => r.type === 'document' },

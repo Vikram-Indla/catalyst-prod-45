@@ -27,6 +27,7 @@ export const STAR_CATEGORY: Record<StarredItemType, StarCategory> = {
   project: 'container', product: 'container',
   // surfaces
   board: 'surface', backlog: 'surface', dashboard: 'surface', filter: 'surface', roadmap: 'surface',
+  page: 'surface',
   // knowledge
   document: 'knowledge', theme: 'knowledge', objective: 'knowledge',
   dependency: 'knowledge', risk: 'knowledge',

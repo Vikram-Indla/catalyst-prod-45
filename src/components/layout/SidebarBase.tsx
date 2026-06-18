@@ -27,7 +27,9 @@ import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import BookIcon from '@atlaskit/icon/glyph/book';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
-import { useFavorites } from '@/hooks/useFavorites';
+import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
+import { useMigrateLegacyFavorites } from '@/hooks/useMigrateLegacyFavorites';
+import { sidebarStarType } from '@/lib/starType';
 import { useTheme } from '@/hooks/useTheme';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
@@ -99,14 +101,12 @@ export interface SidebarMenuItem {
    */
   onClick?: () => void;
   /**
-   * Optional handler for the row's star button. When provided, overrides
-   * the built-in path-based `toggleFavorite` (which writes to the
-   * SidebarBase favorites store / localStorage). Added April 2026 so
-   * HomeSidebar's "Pinned" rows — which represent rows in the
-   * `user_starred_items` Supabase table, NOT the path-based favorite
-   * system — can call `useToggleStar.mutate` to unpin themselves. Other
-   * consumers ignore this prop and keep their existing toggleFavorite
-   * behaviour.
+   * Optional handler for the row's star button. When provided, overrides the
+   * built-in star toggle. The built-in default now writes `user_starred_items`
+   * (the same store the For You "Starred" tab reads) via `useToggleStar` —
+   * item_id = the row's path, item_type = `sidebarStarType(path)`. Provide this
+   * only when a row needs custom toggle behaviour (e.g. HomeSidebar "Pinned"
+   * rows that resolve their own typed star, or openDetail-backed rows).
    */
   onStarClick?: () => void;
   /**
@@ -218,7 +218,31 @@ export function SidebarBase({
 }: SidebarBaseProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  // Sidebar row stars are backed by `user_starred_items` (the SAME store the
+  // For You "Starred" tab reads), NOT localStorage. A row starred here surfaces
+  // in the Starred hub and vice-versa — single source of truth (2026-06-18).
+  const { data: starredIds } = useStarredItemIds();
+  const toggleStar = useToggleStar();
+  // One-time bridge of legacy localStorage favorites → user_starred_items.
+  useMigrateLegacyFavorites();
+  const isStarred = React.useCallback(
+    (path: string) => !!starredIds?.has(path),
+    [starredIds],
+  );
+  const onStarToggle = React.useCallback(
+    (item: SidebarMenuItem) => {
+      // Consumer override wins (e.g. HomeSidebar "Pinned" rows that toggle
+      // their own user_starred_items row, or openDetail-backed rows).
+      if (item.onStarClick) { item.onStarClick(); return; }
+      toggleStar.mutate({
+        itemId: item.path,
+        itemType: sidebarStarType(item.path),
+        isCurrentlyStarred: !!starredIds?.has(item.path),
+        metadata: { label: plainSidebarLabel(item), route: item.path },
+      });
+    },
+    [starredIds, toggleStar],
+  );
   const { isDark } = useTheme();
 
   // Dark mode token helpers — ADS Side-Nav Canonical Parity (2026-04-29)
@@ -279,7 +303,7 @@ export function SidebarBase({
     ? config.sections.flatMap(s => s.items)
     : config.items || [];
 
-  const favoritedItems = allItems.filter(item => favorites.includes(item.path));
+  const favoritedItems = allItems.filter(item => item.alwaysStarred || isStarred(item.path));
 
   return (
     <aside
@@ -462,7 +486,7 @@ export function SidebarBase({
               <div>
                 {favoritedItems.map((item) => renderMenuItem(
                   item, isActive, iconResolver, expanded, handleNavigation, 
-                  false, isFavorite, toggleFavorite, tokens
+                  false, isStarred, onStarToggle, tokens
                 ))}
               </div>
             </div>
@@ -532,7 +556,7 @@ export function SidebarBase({
                   ) : null}
                   {section.items.map((item) => renderMenuItem(
                     item, isActive, iconResolver, expanded, handleNavigation, 
-                    false, isFavorite, toggleFavorite, tokens
+                    false, isStarred, onStarToggle, tokens
                   ))}
                 </div>
               );
@@ -540,7 +564,7 @@ export function SidebarBase({
           ) : (
             config.items?.map((item) => renderMenuItem(
               item, isActive, iconResolver, expanded, handleNavigation, 
-              false, isFavorite, toggleFavorite, tokens
+              false, isStarred, onStarToggle, tokens
             ))
           )}
 
@@ -559,7 +583,7 @@ export function SidebarBase({
           >
             {renderMenuItem(
               config.footerItem, isActive, iconResolver, expanded, handleNavigation,
-              true, isFavorite, toggleFavorite, tokens
+              true, isStarred, onStarToggle, tokens
             )}
           </div>
         )}
@@ -581,6 +605,18 @@ export function SidebarBase({
   );
 }
 
+// Plain display label for a star written from a sidebar row. The Starred hub
+// renders metadata.label, so derive a real string: prefer the row's plain-text
+// tooltip, then a string title, else humanise the path tail. Never a guessed
+// domain value — just the literal nav label.
+function plainSidebarLabel(item: SidebarMenuItem): string {
+  if (item.tooltip) return item.tooltip;
+  if (typeof item.title === 'string') return item.title;
+  const tail = item.path.split('?')[0].replace(/\/+$/, '').split('/').filter(Boolean).pop();
+  if (!tail) return item.path;
+  return tail.charAt(0).toUpperCase() + tail.slice(1);
+}
+
 // Helper function to render a menu item — now receives DarkTokens
 function renderMenuItem(
   item: SidebarMenuItem,
@@ -589,13 +625,13 @@ function renderMenuItem(
   expanded: boolean,
   handleNavigation: (path: string) => void,
   isFooter: boolean = false,
-  isFavorite: (path: string) => boolean,
-  toggleFavorite: (path: string) => void,
+  isStarred: (path: string) => boolean,
+  onStarToggle: (item: SidebarMenuItem) => void,
   tk: DarkTokens
 ) {
   const active = isActive(item.path, item.exact, item.activeMatchPaths);
   const CustomIcon = iconResolver?.(item.id) || item.icon;
-  const starred = item.alwaysStarred || isFavorite(item.path);
+  const starred = item.alwaysStarred || isStarred(item.path);
 
   const menuButton = (
     <button
@@ -774,21 +810,13 @@ function renderMenuItem(
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (item.onStarClick) {
-              item.onStarClick();
-            } else {
-              toggleFavorite(item.path);
-            }
+            onStarToggle(item);
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               e.stopPropagation();
-              if (item.onStarClick) {
-                item.onStarClick();
-              } else {
-                toggleFavorite(item.path);
-              }
+              onStarToggle(item);
             }
           }}
           className={cn(

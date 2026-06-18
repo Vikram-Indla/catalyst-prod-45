@@ -43,6 +43,15 @@ describe('StarredHubList', () => {
     expect(screen.getByTestId('project-icon')).toHaveTextContent('Investor Journey');
   });
 
+  it('renders a "Pages" group for generic page stars (e.g. Capacity Planner)', () => {
+    const pageRows: StarredHubRow[] = [
+      { id: '/planhub/capacity', type: 'page', category: 'surface', label: 'Capacity Planner', subtitle: 'Plan', route: '/planhub/capacity', starredAt: new Date().toISOString() },
+    ];
+    render(<StarredHubList rows={pageRows} onOpenRow={vi.fn()} onUnstar={vi.fn()} />);
+    expect(screen.getByText('Pages')).toBeInTheDocument();
+    expect(screen.getByText('Capacity Planner')).toBeInTheDocument();
+  });
+
   it('fires onOpenRow on row click and onUnstar on the star button', () => {
     const onOpenRow = vi.fn();
     const onUnstar = vi.fn();

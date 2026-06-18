@@ -18,3 +18,24 @@ export function workItemStarType(entityType: string | null | undefined): Starred
   if (t === 'task' || t === 'sub-task' || t === 'subtask' || t === 'brd task') return 'task';
   return 'ph_issue';
 }
+
+// Map a sidebar/nav row's route to a canonical StarredItemType, so a star
+// created from any sidebar row lands in user_starred_items. Known surface route
+// words map to their specific type (so a backlog/dashboard starred from the
+// sidebar shares the SAME (item_id, item_type) as one starred from
+// ProjectPageHeader — no duplicate rows). Everything else falls back to the
+// generic 'page' — never a guessed surface type (zero-assumption).
+const SIDEBAR_SURFACE_TYPE: Record<string, StarredItemType> = {
+  backlog: 'backlog',
+  dashboard: 'dashboard',
+  board: 'board',
+  roadmap: 'roadmap',
+  filter: 'filter',
+  filters: 'filter',
+};
+
+export function sidebarStarType(path: string | null | undefined): StarredItemType {
+  const clean = (path || '').split('?')[0].replace(/\/+$/, '');
+  const routeWord = clean.split('/').filter(Boolean).pop()?.toLowerCase() ?? '';
+  return SIDEBAR_SURFACE_TYPE[routeWord] ?? 'page';
+}

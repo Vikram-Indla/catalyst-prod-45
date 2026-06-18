@@ -16,6 +16,9 @@ export type StarredItemType =
   | 'project' | 'product'
   // surfaces (navigable)
   | 'board' | 'backlog' | 'dashboard' | 'filter' | 'roadmap'
+  // generic navigable nav/sidebar surface (Capacity, Library, Reports, …) —
+  // anything starrable from a sidebar row that has no specific surface type.
+  | 'page'
   // knowledge
   | 'document' | 'theme' | 'objective' | 'dependency' | 'risk';
 
