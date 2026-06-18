@@ -390,10 +390,10 @@ export function WorkListPanel({
                     textUnderlineOffset: 2,
                   }}
                 >
-                  {item.jiraKey}
+                  {/-LOCAL-\d/.test(item.jiraKey) ? 'Draft' : item.jiraKey}
                 </button>
               ) : (
-                item.jiraKey
+                /-LOCAL-\d/.test(item.jiraKey) ? 'Draft' : item.jiraKey
               )}
             </span>
 
