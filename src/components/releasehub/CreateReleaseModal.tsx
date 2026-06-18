@@ -20,13 +20,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCreateRelease, useUpdateRelease } from '@/hooks/useReleaseHub';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
+import { useConfigOptions } from '@/hooks/releases/useReleaseConfig';
 
 /** When `release` is passed the modal is in EDIT mode (prefill + update);
  *  otherwise it creates a new release. */
 interface Props { onClose: () => void; release?: any }
 interface Opt { label: string; value: string }
 
-const RELEASE_TYPES: Opt[] = [
+// Fallback option sets — used only if the admin config (rh_config_options)
+// has not loaded yet. The canonical lists are managed at /admin/release-ops.
+const FALLBACK_RELEASE_TYPES: Opt[] = [
   { label: 'Regular', value: 'regular' },
   { label: 'Minor', value: 'minor' },
   { label: 'Major', value: 'major' },
@@ -34,7 +37,7 @@ const RELEASE_TYPES: Opt[] = [
   { label: 'Emergency', value: 'emergency' },
 ];
 
-const TARGET_ENVS: Opt[] = [
+const FALLBACK_TARGET_ENVS: Opt[] = [
   { label: 'QA', value: 'qa' },
   { label: 'Beta', value: 'beta' },
   { label: 'Staging', value: 'staging' },
@@ -56,8 +59,9 @@ export function CreateReleaseModal({ onClose, release }: Props) {
 
   const [name, setName] = useState(release?.name ?? '');
   const [version, setVersion] = useState(release?.version ?? '');
-  const [releaseType, setReleaseType] = useState<Opt | null>(() => RELEASE_TYPES.find((t) => t.value === release?.release_type) ?? null);
-  const [targetEnv, setTargetEnv] = useState<Opt | null>(() => TARGET_ENVS.find((t) => t.value === release?.target_env) ?? null);
+  const humanize = (v: string) => v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const [releaseType, setReleaseType] = useState<Opt | null>(() => release?.release_type ? { label: humanize(release.release_type), value: release.release_type } : null);
+  const [targetEnv, setTargetEnv] = useState<Opt | null>(() => release?.target_env ? { label: humanize(release.target_env), value: release.target_env } : null);
   const [productId, setProductId] = useState<Opt | null>(null);
   const [plannedStart, setPlannedStart] = useState(release?.planned_start_date ?? '');
   const [plannedRelease, setPlannedRelease] = useState(release?.planned_release_date ?? release?.target_date ?? '');
@@ -83,6 +87,12 @@ export function CreateReleaseModal({ onClose, release }: Props) {
 
   const productOpts: Opt[] = useMemo(() => products.map((p) => ({ label: p.code ? `${p.name} (${p.code})` : p.name, value: p.id })), [products]);
   const userOpts: Opt[] = useMemo(() => users.map((u) => ({ label: u.full_name ?? 'Unknown', value: u.id })), [users]);
+
+  // Admin-managed option lists (rh_config_options) with static fallback.
+  const releaseTypeCfg = useConfigOptions('release_type');
+  const targetEnvCfg = useConfigOptions('target_env');
+  const releaseTypeOpts: Opt[] = useMemo(() => releaseTypeCfg.length ? releaseTypeCfg.map((o) => ({ label: o.label, value: o.value })) : FALLBACK_RELEASE_TYPES, [releaseTypeCfg]);
+  const targetEnvOpts: Opt[] = useMemo(() => targetEnvCfg.length ? targetEnvCfg.map((o) => ({ label: o.label, value: o.value })) : FALLBACK_TARGET_ENVS, [targetEnvCfg]);
 
   // Edit mode: resolve product/manager/owner ids → select options once loaded.
   useEffect(() => {
@@ -174,12 +184,12 @@ export function CreateReleaseModal({ onClose, release }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16 }}>
             <div>
               <label style={labelStyle}>Release type *</label>
-              <Select inputId="rel-type" options={RELEASE_TYPES} value={releaseType} onChange={(v) => setReleaseType(v as Opt)} placeholder="Select type" spacing="compact" menuPosition="fixed" />
+              <Select inputId="rel-type" options={releaseTypeOpts} value={releaseType} onChange={(v) => setReleaseType(v as Opt)} placeholder="Select type" spacing="compact" menuPosition="fixed" />
               {submitted && errors.releaseType && <div style={errStyle}>{errors.releaseType}</div>}
             </div>
             <div>
               <label style={labelStyle}>Target environment *</label>
-              <Select inputId="rel-env" options={TARGET_ENVS} value={targetEnv} onChange={(v) => setTargetEnv(v as Opt)} placeholder="Select environment" spacing="compact" menuPosition="fixed" />
+              <Select inputId="rel-env" options={targetEnvOpts} value={targetEnv} onChange={(v) => setTargetEnv(v as Opt)} placeholder="Select environment" spacing="compact" menuPosition="fixed" />
               {submitted && errors.targetEnv && <div style={errStyle}>{errors.targetEnv}</div>}
             </div>
           </div>

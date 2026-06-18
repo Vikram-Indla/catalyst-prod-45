@@ -288,6 +288,7 @@ const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
 const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
 const UserAccessPage = lazy(() => import("../pages/admin/UserAccessPage"));
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
+const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
 // Admin v2 deprecated 2026-05-09 — all /admin/v2/* redirect to /admin/overview
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
@@ -955,6 +956,7 @@ export default function FullAppRoutes() {
           <Route path="jira-user-sync" element={<Navigate to="/admin/workhub/user-mapping" replace />} />
           <Route path="business-owners" element={<S><BusinessOwnersAdmin /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
+          <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
           <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub/jira-connection" element={<S><WorkHubAdminPage /></S>} />

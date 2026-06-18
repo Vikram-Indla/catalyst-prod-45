@@ -1,16 +1,17 @@
 /**
  * Release Operations — Settings (route /release-hub/settings)
  *
- * Phase 14: a read-only reference of the module's current configuration —
- * release/change types, environments, deployment categories, risk levels,
- * approval roles, SOP step types, lifecycle stages, change numbering, and
- * notification policy. These values are currently fixed enums consumed by the
- * create modals + lifecycle trackers; making them editable requires config
- * tables + sourcing every consumer from the DB (a future phase). This page
- * documents what is in effect so admins can see the contract.
+ * Read-only reference of the module's current configuration, now sourced LIVE
+ * from public.rh_config_options + public.rh_config_settings (was hardcoded enum
+ * arrays). Editing happens in the admin panel at /admin/release-ops; this page
+ * shows what is currently in effect across the create modals + lifecycle
+ * trackers. Lifecycle transition RULES remain enforced in lifecycle.ts.
  */
 import React from 'react';
+import { Link } from 'react-router-dom';
+import Spinner from '@atlaskit/spinner';
 import { RH } from '@/constants/releasehub.design';
+import { useReleaseConfig } from '@/hooks/releases/useReleaseConfig';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -22,15 +23,12 @@ const T = {
   subtlest: 'var(--ds-text-subtlest, #626F86)',
 };
 
-function label(v: string) {
-  return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
-}
-
-function ChipList({ values }: { values: string[] }) {
+function ChipList({ labels }: { labels: string[] }) {
+  if (labels.length === 0) return <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>—</span>;
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-      {values.map((v) => (
-        <span key={v} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.subtle, background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 12, padding: '0 8px', lineHeight: '24px' }}>{label(v)}</span>
+      {labels.map((l) => (
+        <span key={l} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.subtle, background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 12, padding: '0 8px', lineHeight: '24px' }}>{l}</span>
       ))}
     </div>
   );
@@ -47,17 +45,18 @@ function Section({ title, description, children }: { title: string; description?
   );
 }
 
-const RELEASE_TYPES = ['regular', 'minor', 'major', 'hotfix', 'emergency'];
-const CHANGE_TYPES = ['standard', 'normal', 'emergency', 'hotfix'];
-const ENVIRONMENTS = ['qa', 'beta', 'staging', 'production'];
-const DEPLOY_CATEGORIES = ['frontend', 'backend', 'integration', 'database', 'full_stack', 'configuration'];
-const RISK_LEVELS = ['low', 'medium', 'high', 'critical'];
-const APPROVAL_ROLES = ['qa', 'uat', 'product_owner', 'project_manager', 'change_manager'];
-const SOP_STEP_TYPES = ['manual', 'script', 'deployment', 'validation', 'communication', 'rollback'];
-const RELEASE_STAGES = ['draft', 'planned', 'in_readiness', 'ready_for_signoff', 'approved', 'scheduled', 'deploying', 'monitoring', 'completed'];
-const CHANGE_STAGES = ['draft', 'assessing', 'ready_for_approval', 'approved', 'scheduled', 'implementing', 'validating', 'implemented', 'closed'];
-
 export default function ReleaseSettingsPage() {
+  const { data, isLoading } = useReleaseConfig();
+
+  const labelsFor = (key: string): string[] =>
+    (data?.options[key] || []).filter((o) => o.is_active).map((o) => o.label);
+
+  const prefix = String(data?.settings?.change_number_prefix ?? 'CAT-CHG-');
+  const pad = Math.max(1, Math.min(8, parseInt(String(data?.settings?.change_number_padding ?? 4), 10) || 4));
+  const sample = `${prefix}${'1'.padStart(pad, '0')}`;
+  const notifyCreate = data?.settings?.notify_on_create === true;
+  const notifyStatus = data?.settings?.notify_on_status_change === true;
+
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
       <div style={{ marginBottom: 16 }}>
@@ -67,29 +66,36 @@ export default function ReleaseSettingsPage() {
 
       <div style={{ background: 'var(--ds-background-information, #E9F2FE)', border: '1px solid var(--ds-border-information, #8FB8F6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
         <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: 'var(--ds-text-information, #0055CC)', margin: 0 }}>
-          These values are the configuration currently in effect across the create modals and lifecycle trackers. Editable settings (backed by config tables) are a future enhancement.
+          These values are live from the module configuration. Edit them in the{' '}
+          <Link to="/admin/release-ops" style={{ color: 'var(--ds-link, #0C66E4)', fontWeight: 600 }}>Release Operations admin panel</Link>.
         </p>
       </div>
 
-      <Section title="Release types"><ChipList values={RELEASE_TYPES} /></Section>
-      <Section title="Change types"><ChipList values={CHANGE_TYPES} /></Section>
-      <Section title="Environments"><ChipList values={ENVIRONMENTS} /></Section>
-      <Section title="Deployment categories"><ChipList values={DEPLOY_CATEGORIES} /></Section>
-      <Section title="Risk levels"><ChipList values={RISK_LEVELS} /></Section>
-      <Section title="Approval roles" description="Sign-off roles available when adding approvers to a change."><ChipList values={APPROVAL_ROLES} /></Section>
-      <Section title="SOP step types"><ChipList values={SOP_STEP_TYPES} /></Section>
-      <Section title="Release lifecycle" description="The 9 release stages, in order."><ChipList values={RELEASE_STAGES} /></Section>
-      <Section title="Change lifecycle" description="The 9 change stages, in order."><ChipList values={CHANGE_STAGES} /></Section>
+      {isLoading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spinner size="large" /></div>
+      ) : (
+        <>
+          <Section title="Release types"><ChipList labels={labelsFor('release_type')} /></Section>
+          <Section title="Change types"><ChipList labels={labelsFor('change_type')} /></Section>
+          <Section title="Environments"><ChipList labels={labelsFor('target_env')} /></Section>
+          <Section title="Deployment categories"><ChipList labels={labelsFor('deployment_category')} /></Section>
+          <Section title="Risk levels"><ChipList labels={labelsFor('risk_level')} /></Section>
+          <Section title="Approval roles" description="Sign-off roles available when adding approvers to a change."><ChipList labels={labelsFor('approval_role')} /></Section>
+          <Section title="SOP step types"><ChipList labels={labelsFor('sop_step_type')} /></Section>
+          <Section title="Release lifecycle" description="Release stages, in order."><ChipList labels={labelsFor('release_status')} /></Section>
+          <Section title="Change lifecycle" description="Change stages, in order."><ChipList labels={labelsFor('change_status')} /></Section>
 
-      <Section title="Change numbering" description="Catalyst-created change records are numbered sequentially.">
-        <p style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 14, color: T.text, margin: 0 }}>CAT-CHG-0001, CAT-CHG-0002, …</p>
-      </Section>
+          <Section title="Change numbering" description="Catalyst-created change records are numbered sequentially.">
+            <p style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 14, color: T.text, margin: 0 }}>{sample}, {prefix}{'2'.padStart(pad, '0')}, …</p>
+          </Section>
 
-      <Section title="Notification policy" description="How subscribers are notified.">
-        <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle, margin: 0, lineHeight: 1.5 }}>
-          Every release and change carries an editable Notify list. Subscribers are notified on change creation and on every lifecycle status transition, through the Notifications module and Caty chat. (Delivery wiring lands in Phase 16.)
-        </p>
-      </Section>
+          <Section title="Notification policy" description="How subscribers are notified.">
+            <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle, margin: 0, lineHeight: 1.5 }}>
+              Notify on create: <strong>{notifyCreate ? 'On' : 'Off'}</strong>. Notify on status change: <strong>{notifyStatus ? 'On' : 'Off'}</strong>. Subscribers are reached through the Notifications module and Caty chat.
+            </p>
+          </Section>
+        </>
+      )}
     </div>
   );
 }

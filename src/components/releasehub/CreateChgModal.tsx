@@ -21,23 +21,26 @@ import { useCreateChange } from '@/hooks/useReleaseHub';
 import { catalystToast } from '@/lib/catalystToast';
 import { X, Plus } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
+import { useConfigOptions, useReleaseConfig } from '@/hooks/releases/useReleaseConfig';
 
 interface Props { onClose: () => void; initialSource?: 'catalyst' | 'external' }
 interface Opt { label: string; value: string }
 
-const CHANGE_TYPES: Opt[] = [
+// Fallback option sets — used only until admin config (rh_config_options)
+// loads. Canonical lists managed at /admin/release-ops.
+const FALLBACK_CHANGE_TYPES: Opt[] = [
   { label: 'Standard', value: 'standard' },
   { label: 'Normal', value: 'normal' },
   { label: 'Emergency', value: 'emergency' },
   { label: 'Hotfix', value: 'hotfix' },
 ];
-const TARGET_ENVS: Opt[] = [
+const FALLBACK_TARGET_ENVS: Opt[] = [
   { label: 'QA', value: 'qa' },
   { label: 'Beta', value: 'beta' },
   { label: 'Staging', value: 'staging' },
   { label: 'Production', value: 'production' },
 ];
-const DEPLOY_CATEGORIES: Opt[] = [
+const FALLBACK_DEPLOY_CATEGORIES: Opt[] = [
   { label: 'Frontend', value: 'frontend' },
   { label: 'Backend', value: 'backend' },
   { label: 'Integration', value: 'integration' },
@@ -45,13 +48,13 @@ const DEPLOY_CATEGORIES: Opt[] = [
   { label: 'Full stack', value: 'full_stack' },
   { label: 'Configuration', value: 'configuration' },
 ];
-const RISKS: Opt[] = [
+const FALLBACK_RISKS: Opt[] = [
   { label: 'Low', value: 'low' },
   { label: 'Medium', value: 'medium' },
   { label: 'High', value: 'high' },
   { label: 'Critical', value: 'critical' },
 ];
-const APPROVAL_ROLES: Opt[] = [
+const FALLBACK_APPROVAL_ROLES: Opt[] = [
   { label: 'QA', value: 'qa' },
   { label: 'UAT', value: 'uat' },
   { label: 'Product owner', value: 'product_owner' },
@@ -103,6 +106,20 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
   const releaseOpts: Opt[] = useMemo(() => releases.map((r) => ({ label: r.name, value: r.id })), [releases]);
   const userOpts: Opt[] = useMemo(() => users.map((u) => ({ label: u.full_name ?? 'Unknown', value: u.id })), [users]);
 
+  // Admin-managed option lists (rh_config_options) with static fallback.
+  const { data: config } = useReleaseConfig();
+  const changeTypeCfg = useConfigOptions('change_type');
+  const targetEnvCfg = useConfigOptions('target_env');
+  const deployCatCfg = useConfigOptions('deployment_category');
+  const riskCfg = useConfigOptions('risk_level');
+  const roleCfg = useConfigOptions('approval_role');
+  const toOpts = (cfg: { label: string; value: string }[], fallback: Opt[]): Opt[] => cfg.length ? cfg.map((o) => ({ label: o.label, value: o.value })) : fallback;
+  const CHANGE_TYPES = useMemo(() => toOpts(changeTypeCfg, FALLBACK_CHANGE_TYPES), [changeTypeCfg]);
+  const TARGET_ENVS = useMemo(() => toOpts(targetEnvCfg, FALLBACK_TARGET_ENVS), [targetEnvCfg]);
+  const DEPLOY_CATEGORIES = useMemo(() => toOpts(deployCatCfg, FALLBACK_DEPLOY_CATEGORIES), [deployCatCfg]);
+  const RISKS = useMemo(() => toOpts(riskCfg, FALLBACK_RISKS), [riskCfg]);
+  const APPROVAL_ROLES = useMemo(() => toOpts(roleCfg, FALLBACK_APPROVAL_ROLES), [roleCfg]);
+
   const isExternal = source === 'external';
   const errors = {
     title: !title.trim() ? 'Title is required' : '',
@@ -128,9 +145,12 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
       if (isExternal) {
         chgNumber = externalNumber.trim();
       } else {
-        // Sequential Catalyst change number: CAT-CHG-<nnnn>.
+        // Sequential Catalyst change number. Prefix + padding are admin-configurable
+        // (rh_config_settings); fall back to CAT-CHG- / 4 if config not loaded.
+        const prefix = String(config?.settings?.change_number_prefix ?? 'CAT-CHG-');
+        const pad = Math.max(1, Math.min(8, parseInt(String(config?.settings?.change_number_padding ?? 4), 10) || 4));
         const { count } = await supabase.from('rh_changes').select('*', { count: 'exact', head: true }).eq('source', 'catalyst');
-        chgNumber = `CAT-CHG-${String((count ?? 0) + 1).padStart(4, '0')}`;
+        chgNumber = `${prefix}${String((count ?? 0) + 1).padStart(pad, '0')}`;
       }
 
       const change = await createChange.mutateAsync({
