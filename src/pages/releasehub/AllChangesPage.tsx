@@ -58,8 +58,10 @@ export default function AllChangesPage() {
   const [search, setSearch] = useState('');
   const [facetValue, setFacetValue] = useState<Record<string, string[]>>({});
   const [showCreate, setShowCreate] = useState(false);
+  const [createSource, setCreateSource] = useState<'catalyst' | 'external'>('catalyst');
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const { canManage } = useReleaseOpsPermissions();
+  const openCreate = (src: 'catalyst' | 'external') => { setCreateSource(src); setShowCreate(true); };
 
   // Artifact Change Records facets: Status · Type · Risk · Environment · Source.
   const facets: Facet[] = useMemo(() => {
@@ -108,6 +110,17 @@ export default function AllChangesPage() {
         </div>
       ),
     },
+    {
+      id: 'source', label: 'Source', width: 9,
+      cell: ({ row }) => {
+        const external = row.source === 'external';
+        return (
+          <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: external ? 'var(--ds-text-information, #0055CC)' : T.subtle, background: external ? 'var(--ds-background-information, #E9F2FE)' : T.sunken, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>
+            {external ? 'External' : 'Catalyst'}
+          </span>
+        );
+      },
+    },
     { id: 'status', label: 'Status', width: 12, sortable: true, cell: ({ row }) => <StatusLozenge status={row.status} /> },
     { id: 'risk', label: 'Risk', width: 9, cell: ({ row }) => <RiskPill risk={row.risk_level} /> },
     { id: 'change_type', label: 'Type', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.change_type)}</span> },
@@ -136,14 +149,24 @@ export default function AllChangesPage() {
           <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Change Records</h1>
           <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Track and govern deployment changes</p>
         </div>
-        <button
-          onClick={() => canManage && setShowCreate(true)}
-          disabled={!canManage}
-          title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
-        >
-          <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New change
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={() => canManage && openCreate('external')}
+            disabled={!canManage}
+            title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: T.card, color: T.text, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          >
+            Map external change
+          </button>
+          <button
+            onClick={() => canManage && openCreate('catalyst')}
+            disabled={!canManage}
+            title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          >
+            <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New change
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 8 }}>
@@ -183,7 +206,7 @@ export default function AllChangesPage() {
         />
       )}
 
-      {showCreate && <CreateChgModal onClose={() => setShowCreate(false)} />}
+      {showCreate && <CreateChgModal onClose={() => setShowCreate(false)} initialSource={createSource} />}
     </div>
   );
 }

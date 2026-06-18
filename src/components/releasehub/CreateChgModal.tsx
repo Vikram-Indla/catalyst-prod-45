@@ -22,7 +22,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import { X, Plus } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 
-interface Props { onClose: () => void }
+interface Props { onClose: () => void; initialSource?: 'catalyst' | 'external' }
 interface Opt { label: string; value: string }
 
 const CHANGE_TYPES: Opt[] = [
@@ -64,9 +64,12 @@ const errStyle: React.CSSProperties = { fontFamily: RH.fontBody, fontSize: 11, c
 
 interface Approver { userId: string; role: string }
 
-export function CreateChgModal({ onClose }: Props) {
+export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
   const createChange = useCreateChange();
 
+  const [source, setSource] = useState<'catalyst' | 'external'>(initialSource);
+  const [externalSystem, setExternalSystem] = useState('');
+  const [externalNumber, setExternalNumber] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [changeType, setChangeType] = useState<Opt | null>(null);
@@ -100,13 +103,16 @@ export function CreateChgModal({ onClose }: Props) {
   const releaseOpts: Opt[] = useMemo(() => releases.map((r) => ({ label: r.name, value: r.id })), [releases]);
   const userOpts: Opt[] = useMemo(() => users.map((u) => ({ label: u.full_name ?? 'Unknown', value: u.id })), [users]);
 
+  const isExternal = source === 'external';
   const errors = {
     title: !title.trim() ? 'Title is required' : '',
     changeType: !changeType ? 'Change type is required' : '',
     targetEnv: !targetEnv ? 'Target environment is required' : '',
     risk: !risk ? 'Risk is required' : '',
+    externalSystem: isExternal && !externalSystem.trim() ? 'External system is required' : '',
+    externalNumber: isExternal && !externalNumber.trim() ? 'External change number is required' : '',
   };
-  const isValid = !errors.title && !errors.changeType && !errors.targetEnv && !errors.risk;
+  const isValid = !errors.title && !errors.changeType && !errors.targetEnv && !errors.risk && !errors.externalSystem && !errors.externalNumber;
 
   const addApprover = () => setApprovers((a) => [...a, { userId: '', role: '' }]);
   const updateApprover = (i: number, patch: Partial<Approver>) => setApprovers((a) => a.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
@@ -118,9 +124,14 @@ export function CreateChgModal({ onClose }: Props) {
     if (!isValid) return;
     setSaving(true);
     try {
-      // Sequential Catalyst change number: CAT-CHG-<nnnn>.
-      const { count } = await supabase.from('rh_changes').select('*', { count: 'exact', head: true }).eq('source', 'catalyst');
-      const chgNumber = `CAT-CHG-${String((count ?? 0) + 1).padStart(4, '0')}`;
+      let chgNumber: string;
+      if (isExternal) {
+        chgNumber = externalNumber.trim();
+      } else {
+        // Sequential Catalyst change number: CAT-CHG-<nnnn>.
+        const { count } = await supabase.from('rh_changes').select('*', { count: 'exact', head: true }).eq('source', 'catalyst');
+        chgNumber = `CAT-CHG-${String((count ?? 0) + 1).padStart(4, '0')}`;
+      }
 
       const change = await createChange.mutateAsync({
         chg_number: chgNumber,
@@ -134,8 +145,9 @@ export function CreateChgModal({ onClose }: Props) {
         window_start: windowStart || undefined,
         window_end: windowEnd || undefined,
         release_id: releaseId?.value || undefined,
-        source: 'catalyst',
-      });
+        source,
+        external_system: isExternal ? externalSystem.trim() : undefined,
+      } as any);
 
       const changeId = (change as any)?.id as string | undefined;
       if (changeId) {
@@ -165,12 +177,57 @@ export function CreateChgModal({ onClose }: Props) {
     <ModalTransition>
       <Modal onClose={onClose} width="large">
         <ModalHeader hasCloseButton>
-          <ModalTitle>New change</ModalTitle>
+          <ModalTitle>Create / map change record</ModalTitle>
         </ModalHeader>
         <ModalBody>
           {formError && (
             <div style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: 8, borderRadius: 4, marginBottom: 16 }}>{formError}</div>
           )}
+
+          {/* Change source toggle (Catalyst-generated vs external system) */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>Change source *</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+              {([['catalyst', 'Catalyst change number'], ['external', 'External change number']] as const).map(([val, lbl]) => {
+                const active = source === val;
+                return (
+                  <button
+                    key={val}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => setSource(val)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, borderRadius: 6, cursor: 'pointer', textAlign: 'left', fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`, background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)' }}
+                  >
+                    <span style={{ width: 16, height: 16, borderRadius: 8, flexShrink: 0, border: `2px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`, background: active ? 'var(--ds-background-selected-bold, #0C66E4)' : 'transparent' }} />
+                    {lbl}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16 }}>
+            <div>
+              <label style={labelStyle} htmlFor="chg-number">{isExternal ? 'External change number *' : 'Catalyst change key'}</label>
+              {isExternal ? (
+                <>
+                  <Textfield id="chg-number" value={externalNumber} onChange={(e) => setExternalNumber((e.target as HTMLInputElement).value)} placeholder="e.g. CHG8841" />
+                  {submitted && errors.externalNumber && <div style={errStyle}>{errors.externalNumber}</div>}
+                </>
+              ) : (
+                <>
+                  <Textfield id="chg-number" value="" isDisabled placeholder="Auto-generated (CAT-CHG-…)" />
+                  <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', marginTop: 4 }}>Auto-generated</div>
+                </>
+              )}
+            </div>
+            <div>
+              <label style={labelStyle} htmlFor="chg-extsys">{isExternal ? 'External system *' : 'External system'}</label>
+              <Textfield id="chg-extsys" value={externalSystem} onChange={(e) => setExternalSystem((e.target as HTMLInputElement).value)} placeholder="e.g. ServiceNow" isDisabled={!isExternal} />
+              {submitted && errors.externalSystem && <div style={errStyle}>{errors.externalSystem}</div>}
+            </div>
+          </div>
 
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle} htmlFor="chg-title">Title *</label>
