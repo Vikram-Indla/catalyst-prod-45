@@ -489,6 +489,7 @@ export function makeSummaryInlineEditCell<T>({
       const readOnlyTooltip = getReadOnlyTooltip?.(row) ?? null;
       const display = (
         <span
+          dir="auto"
           style={{
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -568,6 +569,7 @@ export function makeSummaryInlineEditCell<T>({
             readView={() => (
               <span
                 title={summary || undefined}
+                dir="auto"
                 style={{
                   display: 'block',
                   padding: '0 2px',

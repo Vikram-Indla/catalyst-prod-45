@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import EditorUndoIcon from "@atlaskit/icon/glyph/editor/undo";
 import { cn } from "@/lib/utils";
 import { CatyPulseIcon } from "@/components/ui/CatyPulseIcon";
-import { catalystToast } from "@/lib/catalystToast";
 import { containsArabic } from "@/lib/detectArabic";
 import { useTranslation } from "@/hooks/useTranslation";
 import "./title-translate.css";
@@ -33,6 +32,7 @@ export function TitleTranslateWrapper({
   onTranslated,
 }: TitleTranslateWrapperProps) {
   const [showingTranslation, setShowingTranslation] = useState(false);
+  const [failed, setFailed] = useState(false);
   const originalRef = useRef<string>("");
 
   const { translate, isTranslating } = useTranslation();
@@ -44,6 +44,7 @@ export function TitleTranslateWrapper({
   const handleTranslate = useCallback(async () => {
     const text = value.trim();
     if (!text || isTranslating) return;
+    setFailed(false);
     originalRef.current = text;
     const result = await translate(text, { issueKey, field, target });
     if (result) {
@@ -55,7 +56,9 @@ export function TitleTranslateWrapper({
       onValueChange(result);
       setShowingTranslation(true);
     } else {
-      catalystToast.error("Translation failed");
+      // Quiet inline failure — no toast (Vikram 2026-06-18). The retry chip
+      // below lets the user re-run without losing context.
+      setFailed(true);
     }
   }, [value, target, isTranslating, translate, issueKey, field, onValueChange, onTranslated]);
 
@@ -90,6 +93,22 @@ export function TitleTranslateWrapper({
             >
               <span className="ttw-caty-pulse"><CatyPulseIcon size={16} /></span>
               <span>Translating…</span>
+            </span>
+          ) : failed ? (
+            <span className="ttw-error-chip" role="alert">
+              <CatyPulseIcon size={14} />
+              <span>Couldn't translate</span>
+              <button
+                type="button"
+                className="ttw-error-chip__retry"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleTranslate();
+                }}
+              >
+                Retry
+              </button>
             </span>
           ) : isArabic && !showingTranslation ? (
             <button

@@ -76,6 +76,7 @@ export const WorkListItem = memo(function WorkListItem({
           {item.key}
         </div>
         <div
+          dir="auto"
           style={{
             fontSize: '13px',
             fontWeight: 400,

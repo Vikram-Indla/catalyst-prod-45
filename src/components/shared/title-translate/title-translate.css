@@ -27,16 +27,29 @@
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
+  /* Force LTR so the magenta CatyPulse signature icon stays leading and
+     the label reads correctly even when the parent title is RTL. */
+  direction: ltr;
   background: var(--ds-surface, #FFFFFF);
   border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 4px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: var(--ds-text-subtle, #44546F);
+  /* Signature CTA — primary text, never muted/subtle (Vikram 2026-06-18). */
+  color: var(--ds-text, #172B4D);
   cursor: pointer;
   user-select: none;
-  transition: background 100ms ease, border-color 100ms ease;
+  /* Hover-reveal: hidden by default, shown only when the title region is
+     hovered or keyboard-focused (global rule, Vikram 2026-06-18).
+     opacity (not display) keeps the button focusable and reserves layout
+     so the title never shifts. */
+  opacity: 0;
+  transition: opacity 120ms ease, background 100ms ease, border-color 100ms ease;
+}
+.ttw-root:hover .ttw-translate-chip,
+.ttw-root:focus-within .ttw-translate-chip {
+  opacity: 1;
 }
 .ttw-translate-chip:hover:not(:disabled) {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
@@ -63,7 +76,40 @@
 }
 .ttw-translate-chip__arrow {
   font-size: 10px;
-  color: var(--ds-text-subtlest, #8590A2);
+  color: var(--ds-icon-accent-magenta, #CD519D);
+}
+/* In an RTL title the result reads toward the start of the line, so the
+   arrow mirrors to point that way. scaleX flips → into ← with no markup
+   change (button is forced LTR above, so this is a clean visual mirror). */
+.ttw-root[data-dir="rtl"] .ttw-translate-chip__arrow {
+  transform: scaleX(-1);
+}
+
+/* Failure — quiet inline retry chip (replaces the red flag, Vikram 2026-06-18). */
+.ttw-error-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  direction: ltr;
+  padding: 4px 8px;
+  background: var(--ds-background-warning, #FFF7D6);
+  border: 1px solid var(--ds-border-warning, #F5CD47);
+  border-radius: 4px;
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ds-text-warning-inverse, #533F04);
+  user-select: none;
+}
+.ttw-error-chip__retry {
+  background: none;
+  border: none;
+  padding: 0 2px;
+  font: inherit;
+  font-weight: 500;
+  color: var(--ds-link, #0c66e4);
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .ttw-translating-chip {

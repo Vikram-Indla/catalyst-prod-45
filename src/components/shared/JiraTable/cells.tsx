@@ -394,6 +394,10 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
     return (
       <span
         title={summary}
+        // dir="auto" — Arabic summaries render RTL, English LTR, mixed rows
+        // pick direction from the first strong char. App-wide RTL fix
+        // (Vikram 2026-06-18); no-op for Latin text.
+        dir="auto"
         style={{
           overflow: "hidden",
           textOverflow: "ellipsis",

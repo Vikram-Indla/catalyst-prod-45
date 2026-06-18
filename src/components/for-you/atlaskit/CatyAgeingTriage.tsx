@@ -121,7 +121,7 @@ export function CatyAgeingTriage({ items, onOpenDetail }: CatyAgeingTriageProps)
                   {r.daysOpen} days
                 </span>
                 <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', '#0052CC') }}>{r.issueKey}</span>
-                <span style={{ font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.summary}</span>
+                <span dir="auto" style={{ font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.summary}</span>
               </div>
               <svg width="16" height="16" viewBox="0 0 24 24" fill={token('color.text.subtle', '#44546F')} style={{ transform: expanded.has(r.issueKey) ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}><path d="M7 10l5 5 5-5z" /></svg>
             </div>

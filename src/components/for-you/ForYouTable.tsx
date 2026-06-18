@@ -278,6 +278,7 @@ export function CatalystTable({
 
                     {/* Row 2: summary (2-line clamp) */}
                     <div
+                      dir="auto"
                       style={{
                         fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', lineHeight: 1.3,
                         display: '-webkit-box',
@@ -369,7 +370,7 @@ export function CatalystTable({
         );
       case 'summary':
         return (
-          <td key={colKey} style={{ fontWeight: 500, width: columnWidths.summary, maxWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <td key={colKey} dir="auto" style={{ fontWeight: 500, width: columnWidths.summary, maxWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {item.summary}
           </td>
         );

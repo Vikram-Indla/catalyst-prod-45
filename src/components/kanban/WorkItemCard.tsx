@@ -315,6 +315,7 @@ export function WorkItemCard({
                 value={editValue}
                 onChange={e => setEditValue(e.target.value)}
                 onKeyDown={handleKeyDown}
+                dir="auto"
                 style={{
                   width: '100%',
                   fontSize: d.titleSize,
@@ -360,7 +361,7 @@ export function WorkItemCard({
               </div>
             </div>
           ) : (
-            <div style={{
+            <div dir="auto" style={{
               fontSize: d.titleSize,
               lineHeight: `${d.titleSize + 6}px`,
               color: tk.textPrimary,

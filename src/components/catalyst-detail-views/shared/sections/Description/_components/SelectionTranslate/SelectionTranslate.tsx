@@ -31,6 +31,7 @@ import { TextSelection } from '@tiptap/pm/state';
 import { Fragment, type Node as PMNode } from '@tiptap/pm/model';
 import { useTranslation } from '@/hooks/useTranslation';
 import { containsArabic } from '@/lib/detectArabic';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 
 interface Props {
   editor: Editor;
@@ -292,16 +293,17 @@ export function SelectionTranslate({
             top: anchor.top,
             left: anchor.left,
             zIndex: 20,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
             background: 'var(--ds-surface, #FFFFFF)',
-            border: 'none',
-            color: 'var(--ds-link, #0C66E4)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            color: 'var(--ds-text, #172B4D)',
             fontSize: 12,
             fontWeight: 500,
             cursor: 'pointer',
-            padding: '2px 8px',
-            textDecoration: 'underline',
-            textUnderlineOffset: 2,
-            borderRadius: 3,
+            padding: '4px 10px',
+            borderRadius: 4,
             boxShadow: '0 1px 3px rgba(9,30,66,0.12)',
           }}
           aria-label={
@@ -310,6 +312,7 @@ export function SelectionTranslate({
               : 'Translate to English'
           }
         >
+          <CatyPulseIcon size={14} />
           {anchor.target === 'ar'
             ? 'Translate to Arabic'
             : 'Translate to English'}

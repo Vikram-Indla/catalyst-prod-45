@@ -217,7 +217,7 @@ function ArchivedRow({ item }: {
         }}>
           {item.issue_key}
         </span>
-        <span style={{
+        <span dir="auto" style={{
           fontSize: 14, color: token('color.text', '#292A2E'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           flex: 1, minWidth: 0,

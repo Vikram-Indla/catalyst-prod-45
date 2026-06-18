@@ -205,7 +205,7 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
                 the untruncated string. */}
             <Heading size="xsmall">
               <Box as="span" xcss={summaryStyles} title={row.summary}>
-                {row.summary}
+                <span dir="auto">{row.summary}</span>
               </Box>
             </Heading>
           </Stack>
