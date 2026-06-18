@@ -46,6 +46,10 @@ export interface StarredHubRow {
   subtitle?: string;
   /** Work-item issue_type for JiraIssueTypeIcon (work_item rows only). */
   issueType?: string;
+  /** Work-item status label (e.g. "In QA") — drives the status lozenge. */
+  status?: string;
+  /** Work-item status_category (todo|inprogress|done) — drives lozenge colour. */
+  statusCategory?: string;
   /** metadata.route for surface stars; work items route via openDetail(id). */
   route?: string;
   starredAt: string;
@@ -84,14 +88,14 @@ export function useStarredHub() {
       const issueKeys = rows
         .filter(r => categorizeStar(r.item_type) === WORK_ITEM_CATEGORY)
         .map(r => r.item_id);
-      const issueMap = new Map<string, { summary: string | null; issue_type: string | null }>();
+      const issueMap = new Map<string, { summary: string | null; issue_type: string | null; status: string | null; status_category: string | null }>();
       if (issueKeys.length > 0) {
         const { data: issues } = await supabase
           .from('ph_issues')
-          .select('issue_key, summary, issue_type')
+          .select('issue_key, summary, issue_type, status, status_category')
           .in('issue_key', issueKeys);
-        (issues || []).forEach((i: { issue_key: string; summary: string | null; issue_type: string | null }) =>
-          issueMap.set(i.issue_key, { summary: i.summary, issue_type: i.issue_type }),
+        (issues || []).forEach((i: { issue_key: string; summary: string | null; issue_type: string | null; status: string | null; status_category: string | null }) =>
+          issueMap.set(i.issue_key, { summary: i.summary, issue_type: i.issue_type, status: i.status, status_category: i.status_category }),
         );
       }
 
@@ -108,6 +112,8 @@ export function useStarredHub() {
             // Prefer the live issue_type; fall back to nothing (icon resolver
             // renders no icon rather than a wrong one — zero-assumption).
             issueType: hit?.issue_type ?? undefined,
+            status: hit?.status ?? undefined,
+            statusCategory: hit?.status_category ?? undefined,
             starredAt: r.starred_at,
           };
         }

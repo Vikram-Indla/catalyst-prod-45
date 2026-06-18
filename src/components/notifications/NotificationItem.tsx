@@ -9,6 +9,26 @@ import ReactionBar from "./ReactionBar";
 import { Clock, UserCheck } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
+import type { StarredItemType } from '@/hooks/home/useStarredItems';
+
+// Map a notification entity type to a star type so notification stars are
+// consistent with stars created from the work item's own surfaces. Unknown
+// types fall back to the generic 'ph_issue' (still categorised as a work item;
+// the Starred hub resolves the real icon from ph_issues).
+function notifStarType(entityType: string | null | undefined): StarredItemType {
+  const t = (entityType || '').toLowerCase().trim();
+  if (t === 'epic') return 'epic';
+  if (t === 'feature') return 'feature';
+  if (t === 'story') return 'story';
+  if (t === 'bug' || t === 'defect' || t === 'qa bug') return 'defect';
+  if (t === 'incident' || t === 'production incident') return 'production_incident';
+  if (t === 'business request') return 'business_request';
+  if (t === 'business gap') return 'business_gap';
+  if (t === 'change request') return 'change_request';
+  if (t === 'task' || t === 'sub-task' || t === 'subtask') return 'task';
+  return 'ph_issue';
+}
 
 interface NotificationItemProps {
   notification: Notification;
@@ -306,6 +326,21 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
                 <span style={{ color: T.text3, fontSize: 10 }}>•</span>
                 <AdsStatusLozenge status={TYPE_TO_CATEGORY[statusProps.type]}>{statusProps.label}</AdsStatusLozenge>
               </>
+            )}
+            {/* Star this work item into the unified Starred hub. Hover-revealed
+                (stays visible once starred). Resolved label/icon comes from
+                ph_issues, so no metadata needed here. */}
+            {!isDeleted && notification.entity_key && (
+              <span style={{ marginLeft: 'auto', display: 'inline-flex' }} onClick={(e) => e.stopPropagation()}>
+                <WorkItemStarButton
+                  itemId={notification.entity_key}
+                  itemType={notifStarType(notification.entity_icon_type || notification.entity_type)}
+                  size="sm"
+                  showTooltip
+                  alwaysVisibleWhenStarred
+                  isHovered={isHovered}
+                />
+              </span>
             )}
           </div>
 
