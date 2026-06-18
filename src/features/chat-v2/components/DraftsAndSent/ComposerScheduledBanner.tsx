@@ -1,37 +1,28 @@
 /**
  * ComposerScheduledBanner — passive indicator above the composer that
- * surfaces "you have N scheduled message(s) pending in this
- * conversation" with a link to the Scheduled tab.
+ * surfaces "N message(s) scheduled to be sent" with a link to the
+ * Scheduled tab. Text intentionally omits the specific send time;
+ * the detail lives on the Scheduled tab one click away.
  *
  * Mounted by MessagePanel only when there is NO active edit-target.
  * The ScheduledEditBanner takes over while editing.
  */
-import React, { useEffect, useState } from 'react';
-import { formatRelativeSend } from './ScheduledRow';
+import React from 'react';
 
 interface ComposerScheduledBannerProps {
   count: number;
-  nextSendAt: string;
+  /** Kept for API compatibility; not rendered. The banner deliberately
+   *  does NOT show the specific send time — that lives on the
+   *  Scheduled tab. */
+  nextSendAt?: string;
   onSeeAll: () => void;
 }
 
-export function ComposerScheduledBanner({
-  count,
-  nextSendAt,
-  onSeeAll,
-}: ComposerScheduledBannerProps) {
-  // Tick once a minute so relative day labels stay accurate across
-  // midnight rollover without a page reload.
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const id = window.setInterval(() => setTick(t => t + 1), 60_000);
-    return () => window.clearInterval(id);
-  }, []);
-
+export function ComposerScheduledBanner({ count, onSeeAll }: ComposerScheduledBannerProps) {
   const message =
-    count > 1
-      ? `${count} messages scheduled to be sent.`
-      : `Your message will be sent ${formatRelativeSend(nextSendAt)}.`;
+    count === 1
+      ? '1 message scheduled to be sent.'
+      : `${count} messages scheduled to be sent.`;
 
   return (
     <div
