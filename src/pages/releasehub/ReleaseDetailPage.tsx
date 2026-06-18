@@ -20,6 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useRelease } from '@/hooks/useReleaseHub';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { ScopeTab, ChangesTab, SignoffsTab, NotifyList } from '@/components/releasehub/detail/ReleaseDetailTabs';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -214,10 +215,10 @@ export default function ReleaseDetailPage() {
             )}
           </div>
         </TabPanel>
-        <TabPanel><PlaceholderTab name="Scope (linked BRs, sprints, work items)" /></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><ScopeTab releaseId={r.id} /></div></TabPanel>
         <TabPanel><PlaceholderTab name="Readiness checks" /></TabPanel>
-        <TabPanel><PlaceholderTab name="Changes" /></TabPanel>
-        <TabPanel><PlaceholderTab name="Sign-offs" /></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><ChangesTab releaseId={r.id} /></div></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><SignoffsTab releaseId={r.id} /></div></TabPanel>
         <TabPanel><PlaceholderTab name="Release Notes" /></TabPanel>
         <TabPanel><PlaceholderTab name="Production Events" /></TabPanel>
         <TabPanel><PlaceholderTab name="Audit" /></TabPanel>
