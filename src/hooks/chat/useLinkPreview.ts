@@ -1,11 +1,11 @@
 /**
- * useLinkPreview — extracts URLs from a message body and renders compact
- * preview cards. Cache-first read of chat_link_previews; on miss, returns
- * a domain-only stub so the UI always shows SOMETHING. A future edge
- * function (chat-unfurl) can populate full OG metadata server-side; the
- * cache table is already in place.
+ * useLinkPreview — extracts URLs from a message body and reads OG metadata
+ * from chat_link_previews. On cache miss (or stub-only rows), invokes the
+ * chat-unfurl edge function once per URL set to populate the cache, then
+ * the query refetches.
  */
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 const URL_RE = /https?:\/\/[^\s<>"']+/g;
@@ -34,26 +34,43 @@ export interface LinkPreviewRow {
 
 const db = supabase as unknown as { from: (table: string) => any };
 
+// Session-level flag — the chat_link_previews table is part of an unapplied
+// migration on some environments. If the cache read errors with "relation
+// does not exist", we skip the unfurl path entirely for the rest of the
+// session so failed queries don't spam the console.
+let linkPreviewBackendAvailable: boolean | null = null;
+
 export function useLinkPreviews(urls: string[]) {
-  return useQuery({
+  const queryClient = useQueryClient();
+  const unfurledRef = useRef<Set<string>>(new Set());
+
+  const query = useQuery({
     queryKey: ['chat', 'link-previews', urls.join('|')],
     enabled: urls.length > 0,
     queryFn: async (): Promise<LinkPreviewRow[]> => {
-      const { data } = await db
-        .from('chat_link_previews')
-        .select('url, domain, title, description, image_url')
-        .in('url', urls);
       const cached = new Map<string, LinkPreviewRow>();
-      (data ?? []).forEach((r: any) => {
-        cached.set(r.url, {
-          url: r.url,
-          domain: r.domain ?? domainOf(r.url),
-          title: r.title,
-          description: r.description,
-          imageUrl: r.image_url,
-        });
-      });
-      // Fill in cache-miss with domain-only stubs so callers always render.
+      if (linkPreviewBackendAvailable !== false) {
+        const { data, error } = await db
+          .from('chat_link_previews')
+          .select('url, domain, title, description, image_url')
+          .in('url', urls);
+        if (error) {
+          if (error.code === '42P01' || /chat_link_previews/i.test(error.message ?? '')) {
+            linkPreviewBackendAvailable = false;
+          }
+        } else {
+          linkPreviewBackendAvailable = true;
+          (data ?? []).forEach((r: any) => {
+            cached.set(r.url, {
+              url: r.url,
+              domain: r.domain ?? domainOf(r.url),
+              title: r.title,
+              description: r.description,
+              imageUrl: r.image_url,
+            });
+          });
+        }
+      }
       return urls.map(
         (u) =>
           cached.get(u) ?? {
@@ -67,4 +84,35 @@ export function useLinkPreviews(urls: string[]) {
     },
     staleTime: 60_000,
   });
+
+  // Trigger the chat-unfurl edge function for URLs that don't yet have any
+  // OG metadata (title/description/image all null). Runs once per URL.
+  useEffect(() => {
+    if (urls.length === 0 || !query.data) return;
+    if (linkPreviewBackendAvailable === false) return;
+    const missing = query.data
+      .filter(row => !row.title && !row.description && !row.imageUrl)
+      .map(row => row.url)
+      .filter(url => !unfurledRef.current.has(url));
+    if (missing.length === 0) return;
+    missing.forEach(url => unfurledRef.current.add(url));
+    void (async () => {
+      try {
+        const { error } = await supabase.functions.invoke('chat-unfurl', {
+          body: { urls: missing },
+        });
+        if (error) {
+          console.warn('[chat-v2] unfurl invoke failed', error);
+          return;
+        }
+        await queryClient.invalidateQueries({
+          queryKey: ['chat', 'link-previews', urls.join('|')],
+        });
+      } catch (e) {
+        console.warn('[chat-v2] unfurl threw', e);
+      }
+    })();
+  }, [query.data, urls, queryClient]);
+
+  return query;
 }

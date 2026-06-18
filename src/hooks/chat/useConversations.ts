@@ -32,7 +32,9 @@ interface ConversationRow {
   ticket_key: string | null;
   project_key: string | null;
   title: string | null;
+  description: string | null;
   is_archived: boolean | null;
+  is_private?: boolean | null;
   last_message_at: string | null;
   last_message_preview: string | null;
 }
@@ -47,44 +49,85 @@ function pickConversation(
 interface DmMemberRow {
   conversation_id: string;
   user_id: string;
-  profiles: { full_name: string | null } | { full_name: string | null }[] | null;
+  profiles:
+    | { full_name: string | null; avatar_url: string | null }
+    | { full_name: string | null; avatar_url: string | null }[]
+    | null;
 }
 
-function pickProfileName(
+function pickProfile(
   p: DmMemberRow['profiles'],
-): string | null {
+): { name: string | null; avatar: string | null } | null {
   if (!p) return null;
   const row = Array.isArray(p) ? p[0] ?? null : p;
-  return row?.full_name ?? null;
+  if (!row) return null;
+  return { name: row.full_name ?? null, avatar: row.avatar_url ?? null };
 }
 
 /**
  * For DM conversations, derive a display title from the OTHER member's profile
  * name (DMs are stored with title=null). Batched: one query across all dm ids,
  * excluding the current user, mapping the first other member's full_name.
+ *
+ * For group_dm conversations, collect ALL other members' first names into a
+ * comma-separated string ("Vikram, Waseem, Yazeed"). Group DMs are stored
+ * with title=null and rely on this derivation in the same way 1:1 DMs do.
  */
 async function fetchDmTitles(
-  dmIds: string[],
+  convIds: string[],
   userId: string,
-): Promise<Map<string, string>> {
-  const titles = new Map<string, string>();
-  if (dmIds.length === 0) return titles;
+): Promise<{
+  dmTitles: Map<string, string>;
+  groupTitles: Map<string, string>;
+  groupCounts: Map<string, number>;
+  avatars: Map<string, string[]>;
+  fullNames: Map<string, string[]>;
+}> {
+  const dmTitles = new Map<string, string>();
+  const groupNames = new Map<string, string[]>();
+  const groupCounts = new Map<string, number>();
+  const groupTitles = new Map<string, string>();
+  const avatars = new Map<string, string[]>();
+  const fullNames = new Map<string, string[]>();
+  if (convIds.length === 0) return { dmTitles, groupTitles, groupCounts, avatars, fullNames };
   try {
     const { data, error } = await db
       .from('chat_conversation_members')
-      .select('conversation_id, user_id, profiles:user_id ( full_name )')
-      .in('conversation_id', dmIds)
+      .select('conversation_id, user_id, profiles:user_id ( full_name, avatar_url )')
+      .in('conversation_id', convIds)
       .neq('user_id', userId);
-    if (error || !data) return titles;
+    if (error || !data) return { dmTitles, groupTitles, groupCounts, avatars, fullNames };
     for (const m of data as DmMemberRow[]) {
-      if (titles.has(m.conversation_id)) continue; // first other member wins
-      const name = pickProfileName(m.profiles);
-      if (name) titles.set(m.conversation_id, name);
+      const p = pickProfile(m.profiles);
+      const name = p?.name ?? null;
+      const avatar = p?.avatar ?? null;
+      if (!name) continue;
+      // 1:1 DM bucket — first other member wins.
+      if (!dmTitles.has(m.conversation_id)) {
+        dmTitles.set(m.conversation_id, name);
+      }
+      // Group DM bucket — collect first names (drop everything after the
+      // first space) to keep the sidebar title compact.
+      const firstName = name.split(' ')[0] ?? name;
+      const list = groupNames.get(m.conversation_id) ?? [];
+      list.push(firstName);
+      groupNames.set(m.conversation_id, list);
+      // Full-name + avatar lists for the DM tab list view.
+      const fnList = fullNames.get(m.conversation_id) ?? [];
+      fnList.push(name);
+      fullNames.set(m.conversation_id, fnList);
+      const aList = avatars.get(m.conversation_id) ?? [];
+      if (avatar) aList.push(avatar);
+      avatars.set(m.conversation_id, aList);
+    }
+    for (const [id, names] of groupNames.entries()) {
+      groupCounts.set(id, names.length);
+      groupTitles.set(id, names.join(', '));
     }
   } catch {
     // leave empty — DMs fall back to their stored title
   }
-  return titles;
+  return { dmTitles, groupTitles, groupCounts, avatars, fullNames };
 }
 
 async function fetchConversations(userId: string): Promise<ChatConversation[]> {
@@ -94,7 +137,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
       .select(
         `conversation_id, last_read_at, is_pinned, is_starred,
          chat_conversations:conversation_id (
-           id, kind, ticket_key, project_key, title, is_archived,
+           id, kind, ticket_key, project_key, title, description, is_archived, is_private,
            last_message_at, last_message_preview
          )`,
       )
@@ -165,7 +208,9 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
           title: conv.kind === 'channel' && conv.project_key
             ? (projectNameMap[conv.project_key] ?? conv.title ?? '')
             : (conv.title ?? ''),
+          description: (conv as any).description ?? null,
           isArchived: !!conv.is_archived,
+          isPrivate: !!conv.is_private,
           isPinned: !!member.is_pinned,
           isStarred: !!member.is_starred,
           lastMessageAt: conv.last_message_at ?? null,
@@ -176,14 +221,26 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
       }),
     );
 
-    // Resolve DM display titles from the other member's profile name (DMs are
-    // stored with title=null and otherwise render blank).
-    const dmIds = conversations.filter((c) => c.kind === 'dm').map((c) => c.id);
-    if (dmIds.length > 0) {
-      const dmTitles = await fetchDmTitles(dmIds, userId);
+    // Resolve DM + group_dm display titles from member profile names (both
+    // are stored with title=null and otherwise render blank).
+    const titleIds = conversations
+      .filter((c) => c.kind === 'dm' || c.kind === 'group_dm')
+      .map((c) => c.id);
+    if (titleIds.length > 0) {
+      const { dmTitles, groupTitles, groupCounts, avatars, fullNames } = await fetchDmTitles(titleIds, userId);
       for (const c of conversations) {
-        if (c.kind === 'dm' && !c.title) {
+        if (c.kind === 'group_dm') {
+          c.memberCount = groupCounts.get(c.id) ?? 0;
+        }
+        if (c.kind === 'dm' || c.kind === 'group_dm') {
+          c.dmAvatarUrls = avatars.get(c.id) ?? [];
+          c.dmMemberNames = fullNames.get(c.id) ?? [];
+        }
+        if (c.title) continue;
+        if (c.kind === 'dm') {
           c.title = dmTitles.get(c.id) ?? c.title;
+        } else if (c.kind === 'group_dm') {
+          c.title = groupTitles.get(c.id) ?? c.title;
         }
       }
     }

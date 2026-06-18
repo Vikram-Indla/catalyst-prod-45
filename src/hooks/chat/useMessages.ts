@@ -21,6 +21,14 @@ const PAGE_SIZE = 50;
 
 const db = supabase as unknown as { from: (table: string) => any };
 
+const MESSAGE_FIELDS_BASE =
+  'id, conversation_id, parent_id, author_id, body_text, body_adf, created_at, edited_at, deleted_at, reply_count, last_reply_at, is_also_in_channel';
+const MESSAGE_FIELDS_WITH_SCHEDULE = `${MESSAGE_FIELDS_BASE}, scheduled_for, delivered_at`;
+// Session-level flag — when the schedule_send migration hasn't been applied
+// yet, the columns 'scheduled_for' / 'delivered_at' don't exist. We probe on
+// first call and fall back so the chat keeps loading.
+let scheduleColumnsAvailable: boolean | null = null;
+
 interface MessageRow {
   id: string;
   conversation_id: string;
@@ -31,6 +39,8 @@ interface MessageRow {
   created_at: string;
   edited_at: string | null;
   deleted_at: string | null;
+  scheduled_for: string | null;
+  delivered_at: string | null;
   reply_count: number;
   last_reply_at: string | null;
   is_also_in_channel: boolean;
@@ -89,18 +99,56 @@ async function fetchPage(
     const from = pageParam * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
 
-    const { data: rows, error } = await db
+    const fieldList =
+      scheduleColumnsAvailable === false
+        ? MESSAGE_FIELDS_BASE
+        : MESSAGE_FIELDS_WITH_SCHEDULE;
+
+    // Exclude thread replies from main feed unless explicitly "Also send to channel".
+    const mainFeedFilter = 'parent_id.is.null,is_also_in_channel.eq.true';
+
+    let queryRes = await db
       .from('chat_messages')
-      .select('id, conversation_id, parent_id, author_id, body_text, body_adf, created_at, edited_at, deleted_at, reply_count, last_reply_at, is_also_in_channel')
+      .select(fieldList)
       .eq('conversation_id', conversationId)
       .is('deleted_at', null)
+      .or(mainFeedFilter)
       .order('created_at', { ascending: false })
       .range(from, to);
 
+    // First-call fallback: schedule columns missing (migration not applied).
+    if (
+      queryRes.error &&
+      scheduleColumnsAvailable !== false &&
+      (queryRes.error.code === '42703' ||
+        /scheduled_for|delivered_at/i.test(queryRes.error.message ?? ''))
+    ) {
+      scheduleColumnsAvailable = false;
+      queryRes = await db
+        .from('chat_messages')
+        .select(MESSAGE_FIELDS_BASE)
+        .eq('conversation_id', conversationId)
+        .is('deleted_at', null)
+        .or(mainFeedFilter)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+    } else if (!queryRes.error && scheduleColumnsAvailable === null) {
+      scheduleColumnsAvailable = true;
+    }
+
+    const { data: rows, error } = queryRes;
     if (error || !rows) return { messages: [], hasMore: false };
 
-    const msgRows = rows as MessageRow[];
-    const hasMore = msgRows.length === PAGE_SIZE;
+    const allRows = rows as MessageRow[];
+    const hasMore = allRows.length === PAGE_SIZE;
+    // Hide pending scheduled-send rows from the chat message list — they
+    // belong on the Drafts & sent → Scheduled tab until the cron worker
+    // flips delivered_at. Applies to the author as well; the message
+    // becomes visible to everyone (including the author's chat view) once
+    // delivered_at is set.
+    const msgRows = allRows.filter(
+      m => !(m.scheduled_for && !m.delivered_at),
+    );
     const ids = msgRows.map((m) => m.id);
     const authorIds = Array.from(new Set(msgRows.map((m) => m.author_id))).filter(Boolean);
 
@@ -147,6 +195,8 @@ async function fetchPage(
         createdAt: m.created_at,
         editedAt: m.edited_at ?? null,
         deletedAt: m.deleted_at ?? null,
+        scheduledFor: m.scheduled_for ?? null,
+        deliveredAt: m.delivered_at ?? null,
         reactions: reactionsByMessage.get(m.id) ?? [],
         replyCount: m.reply_count,
         lastReplyAt: m.last_reply_at ?? null,
@@ -169,7 +219,7 @@ export function useMessages(conversationId: string | null): {
   loadMore: () => void;
   sendMessage: (
     bodyText: string,
-    opts?: { parentId?: string; adf?: unknown | null },
+    opts?: { parentId?: string; adf?: unknown | null; scheduledFor?: string },
   ) => Promise<void>;
   editMessage: (messageId: string, bodyText: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
@@ -209,19 +259,28 @@ export function useMessages(conversationId: string | null): {
   const sendMessage = useCallback(
     async (
       bodyText: string,
-      opts?: { parentId?: string; adf?: unknown | null },
+      opts?: { parentId?: string; adf?: unknown | null; scheduledFor?: string },
     ) => {
       const parentId = opts?.parentId;
       const adf = opts?.adf ?? null;
+      const scheduledFor = opts?.scheduledFor;
       if (!conversationId || !myId || !bodyText.trim()) return;
       try {
-        const { error: insertErr } = await db.from('chat_messages').insert({
+        // For scheduled messages, set created_at = scheduled_for so the row
+        // sorts at the delivery position for the author's view. delivered_at
+        // stays null until the chat-deliver-scheduled-messages cron runs.
+        const row: Record<string, unknown> = {
           conversation_id: conversationId,
           parent_id: parentId ?? null,
           author_id: myId,
           body_text: bodyText,
           body_adf: adf,
-        });
+        };
+        if (scheduledFor && scheduleColumnsAvailable !== false) {
+          row.scheduled_for = scheduledFor;
+          row.created_at = scheduledFor;
+        }
+        const { error: insertErr } = await db.from('chat_messages').insert(row);
         if (insertErr) {
           setError(insertErr);
           return;

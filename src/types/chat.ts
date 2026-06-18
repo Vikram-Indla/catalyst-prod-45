@@ -9,13 +9,24 @@ export interface ChatConversation {
   projectKey: string | null;
   projectName: string | null;
   title: string;
+  description?: string | null;
   isArchived: boolean;
   isMuted?: boolean;
   isStarred?: boolean;
   isPinned?: boolean;
+  isPrivate?: boolean;
   lastMessageAt: string | null;
   lastMessagePreview: string | null;
   unreadCount: number;
+  /** Number of other members in a group DM. Only populated for kind === 'group_dm'. */
+  memberCount?: number;
+  /** Avatar URLs of OTHER members. Populated for `dm` and `group_dm` kinds. */
+  dmAvatarUrls?: string[];
+  /** Display names of OTHER members in their original (full) form.
+   *  Populated for `dm` and `group_dm` kinds; used by the DM tab list to
+   *  show full names ("Adnan Ali, Mazen Yehia") instead of the compact
+   *  comma-joined first-names that appear in the sidebar title. */
+  dmMemberNames?: string[];
 }
 
 export interface ChatReaction {
@@ -36,6 +47,10 @@ export interface ChatMessage {
   createdAt: string;
   editedAt: string | null;
   deletedAt: string | null;
+  /** When this message should be delivered. null = sent immediately. */
+  scheduledFor: string | null;
+  /** When this message became visible to non-authors. null = pending. */
+  deliveredAt: string | null;
   reactions: ChatReaction[];
   replyCount: number;
   lastReplyAt: string | null;

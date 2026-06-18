@@ -1,13 +1,15 @@
 import { useState, useCallback, useEffect } from 'react';
 
-export type ChatView = 'chat' | 'dms' | 'activity' | 'later' | 'people';
+export type ChatView = 'chat' | 'dms' | 'activity' | 'later' | 'people' | 'drafts';
 export type ThreadMode = 'closed' | 'overlay' | 'docked-md' | 'docked-lg';
+export type DraftsTab = 'drafts' | 'scheduled' | 'sent';
 
 export interface ShellState {
   sidebarCollapsed: boolean;
   threadMode: ThreadMode;
   activeView: ChatView;
   threadMessageId: string | null;
+  draftsActiveTab: DraftsTab;
 }
 
 export interface ShellActions {
@@ -15,6 +17,7 @@ export interface ShellActions {
   setActiveView: (view: ChatView) => void;
   openThread: (messageId: string) => void;
   closeThread: () => void;
+  setDraftsActiveTab: (tab: DraftsTab) => void;
 }
 
 function resolveThreadMode(vw: number, hasThread: boolean): ThreadMode {
@@ -29,6 +32,7 @@ export function useShellState(): ShellState & ShellActions {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeView, setActiveView] = useState<ChatView>('chat');
   const [threadMessageId, setThreadMessageId] = useState<string | null>(null);
+  const [draftsActiveTab, setDraftsActiveTab] = useState<DraftsTab>('drafts');
   const [viewportW, setViewportW] = useState(() => window.innerWidth);
 
   useEffect(() => {
@@ -50,9 +54,11 @@ export function useShellState(): ShellState & ShellActions {
     threadMode,
     activeView,
     threadMessageId,
+    draftsActiveTab,
     toggleSidebar,
     setActiveView,
     openThread,
     closeThread,
+    setDraftsActiveTab,
   };
 }

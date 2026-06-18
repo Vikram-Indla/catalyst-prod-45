@@ -91,6 +91,7 @@ export function useToggleBookmark() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['chat', 'bookmarks'] });
+      qc.invalidateQueries({ queryKey: ['chat-v2', 'later'] });
     },
   });
 }
