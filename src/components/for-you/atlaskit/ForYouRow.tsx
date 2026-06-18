@@ -200,11 +200,13 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
-          <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
+          {/* Zero-assumption: render no icon when the type is unknown rather
+              than lying with a default 'Task' (CLAUDE.md lie-vs-silence). */}
+          {item.issueType ? <JiraIssueTypeIcon type={item.issueType} size={20} /> : null}
         </div>
       ) : (
         <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
+          {item.issueType ? <JiraIssueTypeIcon type={item.issueType} size={20} /> : null}
         </div>
       )}
 
