@@ -547,3 +547,75 @@ export const useRemoveNotifySubscriber = () => {
     onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ['release-hub', 'notify', v.itemType, v.itemId] }),
   });
 };
+
+// ── Release detail: Readiness / Notes / Prod events / Audit (Phase 5c) ─
+export interface ReadinessCheck {
+  id: string; checkKey: string; label: string | null; status: string; detail: string | null;
+}
+export const useReadinessChecks = (releaseId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'releases', releaseId, 'readiness'],
+    enabled: !!releaseId,
+    queryFn: async (): Promise<ReadinessCheck[]> => {
+      const { data } = await supabase
+        .from('rh_readiness_checks')
+        .select('id, check_key, label, status, detail')
+        .eq('release_id', releaseId)
+        .order('check_key');
+      return (data ?? []).map((c: any) => ({ id: c.id, checkKey: c.check_key, label: c.label, status: c.status, detail: c.detail }));
+    },
+  });
+
+export interface ReleaseNote {
+  id: string; contentMd: string | null; generatedByAi: boolean; updatedAt: string | null;
+}
+export const useReleaseNotes = (releaseId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'releases', releaseId, 'notes'],
+    enabled: !!releaseId,
+    queryFn: async (): Promise<ReleaseNote | null> => {
+      const { data } = await supabase
+        .from('rh_release_notes')
+        .select('id, content_md, generated_by_ai, updated_at')
+        .eq('release_id', releaseId)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!data) return null;
+      return { id: data.id, contentMd: data.content_md, generatedByAi: !!data.generated_by_ai, updatedAt: data.updated_at };
+    },
+  });
+
+export interface ReleaseProdEvent {
+  id: string; title: string; deployedAt: string | null; result: string | null;
+}
+export const useReleaseProductionEvents = (releaseId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'releases', releaseId, 'prod-events'],
+    enabled: !!releaseId,
+    queryFn: async (): Promise<ReleaseProdEvent[]> => {
+      const { data } = await supabase
+        .from('rh_production_events')
+        .select('id, title, deployed_at, deployment_result, deployment_status')
+        .eq('release_id', releaseId)
+        .order('deployed_at', { ascending: false });
+      return (data ?? []).map((e: any) => ({ id: e.id, title: e.title, deployedAt: e.deployed_at, result: e.deployment_result ?? e.deployment_status ?? null }));
+    },
+  });
+
+export interface ReleaseAuditEntry {
+  id: string; action: string; actorName: string; detail: string | null; createdAt: string | null; isAi: boolean;
+}
+export const useReleaseAudit = (releaseId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'releases', releaseId, 'audit'],
+    enabled: !!releaseId,
+    queryFn: async (): Promise<ReleaseAuditEntry[]> => {
+      const { data } = await supabase
+        .from('rh_release_activity_log')
+        .select('id, action, actor_name, detail, created_at, is_ai')
+        .eq('release_id', releaseId)
+        .order('created_at', { ascending: false });
+      return (data ?? []).map((a: any) => ({ id: a.id, action: a.action, actorName: a.actor_name, detail: a.detail, createdAt: a.created_at, isAi: !!a.is_ai }));
+    },
+  });

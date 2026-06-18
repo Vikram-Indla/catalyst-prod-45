@@ -20,7 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useRelease } from '@/hooks/useReleaseHub';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
-import { ScopeTab, ChangesTab, SignoffsTab, NotifyList } from '@/components/releasehub/detail/ReleaseDetailTabs';
+import { ScopeTab, ChangesTab, SignoffsTab, NotifyList, ReadinessTab, ReleaseNotesTab, ProductionEventsTab, AuditTab } from '@/components/releasehub/detail/ReleaseDetailTabs';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -108,14 +108,6 @@ function MetaItem({ label, value }: { label: string; value: React.ReactNode }) {
 function titleCase(v: string | null | undefined) {
   if (!v) return '—';
   return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
-}
-
-function PlaceholderTab({ name }: { name: string }) {
-  return (
-    <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>
-      {name} — coming in a later sub-phase.
-    </div>
-  );
 }
 
 export default function ReleaseDetailPage() {
@@ -221,12 +213,12 @@ export default function ReleaseDetailPage() {
           </div>
         </TabPanel>
         <TabPanel><div style={{ width: '100%' }}><ScopeTab releaseId={r.id} /></div></TabPanel>
-        <TabPanel><PlaceholderTab name="Readiness checks" /></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><ReadinessTab releaseId={r.id} /></div></TabPanel>
         <TabPanel><div style={{ width: '100%' }}><ChangesTab releaseId={r.id} /></div></TabPanel>
         <TabPanel><div style={{ width: '100%' }}><SignoffsTab releaseId={r.id} /></div></TabPanel>
-        <TabPanel><PlaceholderTab name="Release Notes" /></TabPanel>
-        <TabPanel><PlaceholderTab name="Production Events" /></TabPanel>
-        <TabPanel><PlaceholderTab name="Audit" /></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><ReleaseNotesTab releaseId={r.id} /></div></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><ProductionEventsTab releaseId={r.id} /></div></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><AuditTab releaseId={r.id} /></div></TabPanel>
       </Tabs>
     </div>
   );

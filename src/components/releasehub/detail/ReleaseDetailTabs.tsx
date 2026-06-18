@@ -7,6 +7,7 @@ import React, { useMemo, useState } from 'react';
 import Select from '@atlaskit/select';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { format, formatDistanceToNowStrict } from 'date-fns';
 import {
   useReleaseScope,
   useReleaseChanges,
@@ -14,6 +15,10 @@ import {
   useNotifySubscribers,
   useAddNotifySubscriber,
   useRemoveNotifySubscriber,
+  useReadinessChecks,
+  useReleaseNotes,
+  useReleaseProductionEvents,
+  useReleaseAudit,
 } from '@/hooks/useReleaseHub';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { Avatar } from '@/components/ads/Avatar';
@@ -177,6 +182,105 @@ export function NotifyList({ itemType, itemId }: { itemType: 'release' | 'change
           <Plus size={12} style={{ color: T.link }} /> Add
         </button>
       )}
+    </div>
+  );
+}
+
+function ReadinessPill({ status }: { status: string }) {
+  const map: Record<string, { label: string; fg: string; bg: string }> = {
+    pass: { label: 'Pass', fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+    fail: { label: 'Fail', fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    pending: { label: 'Pending', fg: 'var(--ds-text-subtle, #44546F)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
+    na: { label: 'N/A', fg: 'var(--ds-text-subtlest, #626F86)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
+  };
+  const m = map[status] ?? { label: status, fg: T.subtle, bg: T.sunken };
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', minWidth: 56, textAlign: 'center' }}>{m.label}</span>;
+}
+
+export function ReadinessTab({ releaseId }: { releaseId: string }) {
+  const { data: checks = [], isLoading } = useReadinessChecks(releaseId);
+  if (isLoading) return <Loading />;
+  if (checks.length === 0) return <Empty text="No readiness checks defined for this release yet." />;
+  return (
+    <div style={{ padding: '8px 0' }}>
+      {checks.map((c) => (
+        <div key={c.id} style={rowStyle}>
+          <ReadinessPill status={c.status} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0 }}>{c.label ?? c.checkKey}</p>
+            {c.detail && <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{c.detail}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function ReleaseNotesTab({ releaseId }: { releaseId: string }) {
+  const { data: note, isLoading } = useReleaseNotes(releaseId);
+  if (isLoading) return <Loading />;
+  if (!note || !note.contentMd) return <Empty text="No release notes yet." />;
+  return (
+    <div style={{ padding: '16px 0' }}>
+      {note.generatedByAi && (
+        <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', padding: '0 8px', borderRadius: 3 }}>AI drafted</span>
+      )}
+      <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: '8px 0 0', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.contentMd}</p>
+    </div>
+  );
+}
+
+function ResultBadge({ result }: { result: string | null }) {
+  if (!result) return null;
+  const norm = result.toLowerCase();
+  const map: Record<string, { fg: string; bg: string }> = {
+    success: { fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+    partial: { fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' },
+    failed: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    rolled_back: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+  };
+  const m = map[norm] ?? { fg: T.subtle, bg: T.sunken };
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{result.replace(/_/g, ' ')}</span>;
+}
+
+export function ProductionEventsTab({ releaseId }: { releaseId: string }) {
+  const { data: events = [], isLoading } = useReleaseProductionEvents(releaseId);
+  if (isLoading) return <Loading />;
+  if (events.length === 0) return <Empty text="No production events for this release yet." />;
+  return (
+    <div style={{ padding: '8px 0' }}>
+      {events.map((e) => (
+        <div key={e.id} style={rowStyle}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0 }}>{e.title}</p>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{e.deployedAt ? format(new Date(e.deployedAt), 'MMM d, yyyy HH:mm') : '—'}</p>
+          </div>
+          <ResultBadge result={e.result} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function AuditTab({ releaseId }: { releaseId: string }) {
+  const { data: entries = [], isLoading } = useReleaseAudit(releaseId);
+  if (isLoading) return <Loading />;
+  if (entries.length === 0) return <Empty text="No audit activity recorded yet." />;
+  return (
+    <div style={{ padding: '8px 0' }}>
+      {entries.map((a) => (
+        <div key={a.id} style={rowStyle}>
+          <Avatar name={a.actorName || 'System'} size="small" />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0 }}>
+              <span style={{ fontWeight: 600 }}>{a.actorName || 'System'}</span> {a.action}{a.detail ? ` — ${a.detail}` : ''}
+            </p>
+          </div>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap' }}>
+            {a.createdAt ? `${formatDistanceToNowStrict(new Date(a.createdAt))} ago` : '—'}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
