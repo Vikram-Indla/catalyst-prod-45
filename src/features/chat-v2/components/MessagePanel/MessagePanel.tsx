@@ -129,39 +129,6 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
     [user?.id, editScheduledMessage, invalidateScheduledQueries, onDismissEditScheduled],
   );
 
-  const handleScheduledSendNow = useCallback(async () => {
-    if (!user?.id || !editScheduledMessage) return;
-    const db = supabase as unknown as { from: (t: string) => any };
-    try {
-      const now = new Date().toISOString();
-      await db
-        .from('chat_messages')
-        .update({ scheduled_for: null, delivered_at: now })
-        .eq('id', editScheduledMessage.id)
-        .eq('author_id', user.id);
-    } catch (err) {
-      console.warn('[chat-v2] scheduled send-now failed', err);
-    }
-    invalidateScheduledQueries();
-    onDismissEditScheduled?.();
-  }, [user?.id, editScheduledMessage, invalidateScheduledQueries, onDismissEditScheduled]);
-
-  const handleScheduledDelete = useCallback(async () => {
-    if (!user?.id || !editScheduledMessage) return;
-    const db = supabase as unknown as { from: (t: string) => any };
-    try {
-      await db
-        .from('chat_messages')
-        .delete()
-        .eq('id', editScheduledMessage.id)
-        .eq('author_id', user.id)
-        .is('delivered_at', null);
-    } catch (err) {
-      console.warn('[chat-v2] scheduled delete failed', err);
-    }
-    invalidateScheduledQueries();
-    onDismissEditScheduled?.();
-  }, [user?.id, editScheduledMessage, invalidateScheduledQueries, onDismissEditScheduled]);
   const [dragDepth, setDragDepth] = useState(0);
   const isDragging = dragDepth > 0;
   const dragDepthRef = useRef(0);
@@ -600,9 +567,7 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
           inScheduledEdit ? (
             <ScheduledEditBanner
               scheduledFor={editScheduledMessage!.scheduledFor}
-              onSendNow={() => { void handleScheduledSendNow(); }}
-              onDelete={() => { void handleScheduledDelete(); }}
-              onDismiss={() => onDismissEditScheduled?.()}
+              onSeeAll={() => onSeeAllScheduled?.()}
             />
           ) : scheduledForThisConv ? (
             <ComposerScheduledBanner

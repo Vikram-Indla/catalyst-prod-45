@@ -1,29 +1,22 @@
 /**
  * ScheduledEditBanner — slim banner mounted ABOVE the composer when the
  * user is actively editing a scheduled message. The composer footer
- * stays at its default (send + chevron) — the chevron lets the user
- * reschedule via ScheduleSendMenu, and the send button saves the body
- * edit. This banner only carries the schedule-time label plus the
- * destructive "Send now" and "Delete" actions that don't belong in the
- * composer footer.
+ * stays at its default (Send + chevron). Banner content:
+ *
+ *   Scheduled to send <when>  See all scheduled messages
+ *
+ * The "See all scheduled messages" link opens the Drafts & sent panel
+ * on the Scheduled tab.
  */
 import React from 'react';
-import { XIcon } from '../shared/Icon';
 import { formatRelativeSend } from './ScheduledRow';
 
 interface ScheduledEditBannerProps {
   scheduledFor: string;
-  onSendNow: () => void;
-  onDelete: () => void;
-  onDismiss: () => void;
+  onSeeAll: () => void;
 }
 
-export function ScheduledEditBanner({
-  scheduledFor,
-  onSendNow,
-  onDelete,
-  onDismiss,
-}: ScheduledEditBannerProps) {
+export function ScheduledEditBanner({ scheduledFor, onSeeAll }: ScheduledEditBannerProps) {
   return (
     <div
       role="region"
@@ -31,7 +24,7 @@ export function ScheduledEditBanner({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 12,
+        gap: 8,
         padding: '8px 12px',
         background: 'var(--cv2-bg-row-hover)',
         borderRadius: '8px 8px 0 0',
@@ -42,38 +35,32 @@ export function ScheduledEditBanner({
     >
       <ClockGlyph />
       <span style={{ flex: 1, minWidth: 0 }}>
-        Scheduled to send {formatRelativeSend(scheduledFor)}
+        Scheduled to send {formatRelativeSend(scheduledFor)}.{' '}
+        <button
+          type="button"
+          onClick={onSeeAll}
+          style={{
+            display: 'inline',
+            padding: 0,
+            margin: 0,
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--cv2-accent)',
+            fontFamily: 'inherit',
+            fontSize: 'inherit',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.textDecoration = 'underline';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.textDecoration = 'none';
+          }}
+        >
+          See all scheduled messages
+        </button>
       </span>
-      <button type="button" onClick={onSendNow} style={linkBtn} aria-label="Send now">
-        Send now
-      </button>
-      <span style={{ color: 'var(--cv2-border)' }} aria-hidden="true">
-        ·
-      </span>
-      <button type="button" onClick={onDelete} style={dangerLinkBtn} aria-label="Delete scheduled message">
-        Delete
-      </button>
-      <button
-        type="button"
-        onClick={onDismiss}
-        aria-label="Dismiss"
-        style={{
-          width: 22,
-          height: 22,
-          padding: 0,
-          background: 'transparent',
-          border: 'none',
-          color: 'var(--cv2-text-subtle)',
-          cursor: 'pointer',
-          borderRadius: 4,
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flex: '0 0 auto',
-        }}
-      >
-        <XIcon size={12} />
-      </button>
     </div>
   );
 }
@@ -98,24 +85,3 @@ function ClockGlyph() {
   );
 }
 
-const linkBtn: React.CSSProperties = {
-  padding: 0,
-  background: 'transparent',
-  border: 'none',
-  color: 'var(--cv2-accent)',
-  fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
-  fontWeight: 600,
-  cursor: 'pointer',
-};
-
-const dangerLinkBtn: React.CSSProperties = {
-  padding: 0,
-  background: 'transparent',
-  border: 'none',
-  color: 'var(--cv2-danger, #E01E5A)',
-  fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
-  fontWeight: 600,
-  cursor: 'pointer',
-};
