@@ -18,9 +18,11 @@ import Spinner from '@atlaskit/spinner';
 import { ArrowLeft, Check, Sparkles } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useRelease } from '@/hooks/useReleaseHub';
+import { useRelease, useUpdateReleaseStatus } from '@/hooks/useReleaseHub';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { ScopeTab, ChangesTab, SignoffsTab, NotifyList, ReadinessTab, ReleaseNotesTab, ProductionEventsTab, AuditTab } from '@/components/releasehub/detail/ReleaseDetailTabs';
+import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
+import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -142,8 +144,20 @@ export default function ReleaseDetailPage() {
     },
   });
 
+  const updateStatus = useUpdateReleaseStatus();
+  const { canManage } = useReleaseOpsPermissions();
+
   const r = release as any;
   const statusLabel = useMemo(() => (r?.status && TERMINAL[r.status] ? TERMINAL[r.status] : null), [r?.status]);
+
+  const transition = async (status: string, okMsg: string) => {
+    try {
+      await updateStatus.mutateAsync({ id: r.id, status });
+      catalystToast.success(okMsg);
+    } catch (err: any) {
+      catalystToast.error(err?.message || 'Transition blocked');
+    }
+  };
 
   if (isLoading) {
     return <div style={{ padding: 48, display: 'flex', justifyContent: 'center', background: T.surface, minHeight: '100%' }}><Spinner size="large" /></div>;
@@ -168,18 +182,37 @@ export default function ReleaseDetailPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 8 }}>
         <div>
-          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>
-            {r.name}{r.version ? <span style={{ color: T.subtlest, fontWeight: 400 }}> · {r.version}</span> : null}
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>
+              {r.name}{r.version ? <span style={{ color: T.subtlest, fontWeight: 400 }}> · {r.version}</span> : null}
+            </h1>
+            {statusLabel ? (
+              <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
+            ) : (
+              <StatusLozenge status={r.status} />
+            )}
+            <HealthPill health={r.health} />
+          </div>
           {r.jira_key && <span style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12, color: T.subtlest }}>{r.jira_key}</span>}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {statusLabel ? (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
-          ) : (
-            <StatusLozenge status={r.status} />
-          )}
-          <HealthPill health={r.health} />
+        {/* Action buttons (role-gated). Schedule / Request sign-off run real,
+            lifecycle-guarded transitions; Link change routes to Change Records. */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          {([
+            { key: 'signoff', label: 'Request sign-off', primary: false, onClick: () => transition('ready_for_signoff', 'Sign-off requested') },
+            { key: 'link', label: 'Link change', primary: false, onClick: () => navigate('/release-hub/changes') },
+            { key: 'schedule', label: 'Schedule', primary: true, onClick: () => transition('scheduled', 'Release scheduled') },
+          ] as const).map((a) => (
+            <button
+              key={a.key}
+              onClick={() => canManage && a.onClick()}
+              disabled={!canManage || updateStatus.isPending}
+              title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
+              style={{ height: 32, padding: '0 12px', borderRadius: 6, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500, cursor: canManage && !updateStatus.isPending ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, border: a.primary ? 'none' : `1px solid ${T.border}`, background: a.primary ? T.brand : T.card, color: a.primary ? T.inverse : T.text }}
+            >
+              {a.label}
+            </button>
+          ))}
         </div>
       </div>
 
