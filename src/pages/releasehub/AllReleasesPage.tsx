@@ -149,6 +149,11 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: row.productName ? T.text : T.subtlest }}>{row.productName ?? '—'}</span>,
     },
     {
+      id: 'items', label: 'Items', width: 6, align: 'end', sortable: true,
+      accessor: (row) => row.workItemsCount,
+      cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: row.workItemsCount > 0 ? T.text : T.subtlest }}>{row.workItemsCount}</span>,
+    },
+    {
       id: 'status', label: 'Status', width: 12, sortable: true,
       cell: ({ row }) => <StatusLozenge status={row.status} />,
     },

@@ -16,6 +16,7 @@ import { useChangesList, type ChangeListRow } from '@/hooks/useReleaseHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { Avatar } from '@/components/ads/Avatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
 import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterBar';
@@ -135,6 +136,23 @@ export default function AllChangesPage() {
       },
     },
     { id: 'release', label: 'Release', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: row.releaseName ? T.text : T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.releaseName ?? 'Unassigned'}</span> },
+    {
+      id: 'sop', label: 'SOP', width: 8, align: 'end',
+      cell: ({ row }) => row.sopProgress ? <span style={{ fontFamily: T.mono, fontSize: 13, color: T.subtle }}>{row.sopProgress.done}/{row.sopProgress.total}</span> : <span style={{ color: T.subtlest }}>—</span>,
+    },
+    {
+      id: 'appr', label: 'APPR', width: 8, align: 'end',
+      cell: ({ row }) => row.apprProgress ? <span style={{ fontFamily: T.mono, fontSize: 13, color: T.subtle }}>{row.apprProgress.approved}/{row.apprProgress.total}</span> : <span style={{ color: T.subtlest }}>—</span>,
+    },
+    {
+      id: 'manager', label: 'Manager', width: 11,
+      cell: ({ row }) => row.manager ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <Avatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
+          <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.manager.name}</span>
+        </div>
+      ) : <span style={{ color: T.subtlest }}>—</span>,
+    },
     {
       id: 'updated', label: 'Updated', width: 10, sortable: true,
       accessor: (row) => row.updated_at,
