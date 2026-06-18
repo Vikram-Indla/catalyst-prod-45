@@ -144,7 +144,7 @@ export function NotifyList({ itemType, itemId }: { itemType: 'release' | 'change
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
       <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest }}>Notify</span>
       {subscribers.map((s) => (
-        <span key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: T.sunken, borderRadius: 12, padding: '2px 8px 2px 2px' }}>
+        <span key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: T.sunken, borderRadius: 12, padding: '0 8px 0 0' }}>
           <Avatar name={s.name ?? 'Unknown'} src={s.avatarUrl ?? undefined} size="xsmall" />
           <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.text }}>{s.name ?? 'Unknown'}</span>
           <button
@@ -172,7 +172,7 @@ export function NotifyList({ itemType, itemId }: { itemType: 'release' | 'change
       ) : (
         <button
           onClick={() => setAdding(true)}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.link, background: 'transparent', border: `1px dashed ${T.border}`, borderRadius: 12, padding: '2px 8px', cursor: 'pointer' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.link, background: 'transparent', border: `1px dashed ${T.border}`, borderRadius: 12, padding: '4px 8px', cursor: 'pointer' }}
         >
           <Plus size={12} style={{ color: T.link }} /> Add
         </button>

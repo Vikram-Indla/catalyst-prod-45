@@ -182,6 +182,11 @@ export default function ReleaseDetailPage() {
         <MetaItem label="Readiness" value={r.readiness_pct != null ? `${r.readiness_pct}%` : '—'} />
       </div>
 
+      {/* Notify list */}
+      <div style={{ padding: '12px 0', borderBottom: `1px solid ${T.border}` }}>
+        <NotifyList itemType="release" itemId={r.id} />
+      </div>
+
       {/* Lifecycle tracker */}
       <Tracker status={r.status} />
 
