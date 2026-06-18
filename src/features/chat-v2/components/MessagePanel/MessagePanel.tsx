@@ -20,7 +20,9 @@ import { useStartGroupDm } from '@/hooks/chat/useStartGroupDm';
 import { useStagedAttachments } from '../../hooks/useStagedAttachments';
 import { useMessageAttachments } from '../../hooks/useMessageAttachments';
 import { useConversationDraft } from '../../hooks/useConversationDraft';
+import { useMyScheduledCountByConversation } from '../../hooks/useMyScheduledMessages';
 import { ScheduledEditBanner } from '../DraftsAndSent/ScheduledEditBanner';
+import { ComposerScheduledBanner } from '../DraftsAndSent/ComposerScheduledBanner';
 import type { ScheduledMessage } from '../../hooks/useMyScheduledMessages';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -42,13 +44,18 @@ interface MessagePanelProps {
    *  id to route to (single DM, group DM, or first channel). */
   onForwardCompleted?: (conversationId: string) => void;
   /** When set, the composer seeds with this scheduled message's body
-   *  and shows the scheduled-edit-mode footer + a slim banner above.
-   *  Cleared via onDismissEditScheduled. */
+   *  and shows the scheduled-edit banner above. The composer's normal
+   *  send + chevron remain — Send saves the body edit, chevron lets
+   *  the user reschedule (all against the same id). Cleared via
+   *  onDismissEditScheduled. */
   editScheduledMessage?: ScheduledMessage | null;
   onDismissEditScheduled?: () => void;
+  /** Called when the user clicks "See all scheduled messages" on the
+   *  passive (non-edit) scheduled banner. */
+  onSeeAllScheduled?: () => void;
 }
 
-export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpMessageId, onSummarize, onOpenForwardSource, onForwardCompleted, editScheduledMessage, onDismissEditScheduled }: MessagePanelProps) {
+export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpMessageId, onSummarize, onOpenForwardSource, onForwardCompleted, editScheduledMessage, onDismissEditScheduled, onSeeAllScheduled }: MessagePanelProps) {
   const { user } = useAuth();
   const { messages, isLoading, sendMessage } = useMessages(conversation.id);
   const { toggleReaction, editMessage, deleteMessage } = useChatMessageActions(conversation.id);
@@ -75,7 +82,9 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
   const staged = useStagedAttachments(conversation.id);
   const { byMessage: attachmentsByMessage } = useMessageAttachments(conversation.id);
   const draftState = useConversationDraft(conversation.id);
+  const scheduledByConv = useMyScheduledCountByConversation();
   const inScheduledEdit = !!editScheduledMessage;
+  const scheduledForThisConv = scheduledByConv.get(conversation.id);
   // When editing a scheduled message, seed the composer with that
   // message's body instead of the persisted draft. Disabling
   // onDraftChange in this mode prevents the in-flight edits from
@@ -95,19 +104,24 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
     queryClient.invalidateQueries({ queryKey: ['chat-v2', 'my-sent', user.id] });
   }, [queryClient, user?.id, conversation.id]);
 
-  const handleScheduledEditSave = useCallback(
-    async (newBody: string) => {
+  const handleScheduledUpdate = useCallback(
+    async (newBody: string, newScheduledFor?: string) => {
       if (!user?.id || !editScheduledMessage) return;
       const db = supabase as unknown as { from: (t: string) => any };
       try {
+        const update: Record<string, unknown> = { body_text: newBody };
+        if (newScheduledFor) {
+          update.scheduled_for = newScheduledFor;
+          update.created_at = newScheduledFor;
+        }
         await db
           .from('chat_messages')
-          .update({ body_text: newBody })
+          .update(update)
           .eq('id', editScheduledMessage.id)
           .eq('author_id', user.id)
           .is('delivered_at', null);
       } catch (err) {
-        console.warn('[chat-v2] scheduled edit-save failed', err);
+        console.warn('[chat-v2] scheduled update failed', err);
       }
       invalidateScheduledQueries();
       onDismissEditScheduled?.();
@@ -115,7 +129,7 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
     [user?.id, editScheduledMessage, invalidateScheduledQueries, onDismissEditScheduled],
   );
 
-  const handleScheduledEditSendNow = useCallback(async () => {
+  const handleScheduledSendNow = useCallback(async () => {
     if (!user?.id || !editScheduledMessage) return;
     const db = supabase as unknown as { from: (t: string) => any };
     try {
@@ -132,7 +146,7 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
     onDismissEditScheduled?.();
   }, [user?.id, editScheduledMessage, invalidateScheduledQueries, onDismissEditScheduled]);
 
-  const handleScheduledEditDelete = useCallback(async () => {
+  const handleScheduledDelete = useCallback(async () => {
     if (!user?.id || !editScheduledMessage) return;
     const db = supabase as unknown as { from: (t: string) => any };
     try {
@@ -581,23 +595,36 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
         isUploading={staged.isUploading}
         initialDraft={initialComposerBody}
         onDraftChange={inScheduledEdit ? undefined : draftState.setDraft}
+        bannerAttached={inScheduledEdit || !!scheduledForThisConv}
         notificationBanner={
           inScheduledEdit ? (
             <ScheduledEditBanner
               scheduledFor={editScheduledMessage!.scheduledFor}
+              onSendNow={() => { void handleScheduledSendNow(); }}
+              onDelete={() => { void handleScheduledDelete(); }}
               onDismiss={() => onDismissEditScheduled?.()}
+            />
+          ) : scheduledForThisConv ? (
+            <ComposerScheduledBanner
+              count={scheduledForThisConv.count}
+              nextSendAt={scheduledForThisConv.nextSendAt}
+              onSeeAll={() => onSeeAllScheduled?.()}
             />
           ) : undefined
         }
-        scheduledEditMode={inScheduledEdit}
-        onScheduledEditSave={md => { void handleScheduledEditSave(md); }}
-        onScheduledEditSendNow={() => { void handleScheduledEditSendNow(); }}
-        onScheduledEditDelete={() => { void handleScheduledEditDelete(); }}
         onSend={text => {
-          void handleSend(text);
+          if (inScheduledEdit) {
+            void handleScheduledUpdate(text);
+          } else {
+            void handleSend(text);
+          }
         }}
         onScheduleSend={(text, whenIso) => {
-          void handleSend(text, whenIso);
+          if (inScheduledEdit) {
+            void handleScheduledUpdate(text, whenIso);
+          } else {
+            void handleSend(text, whenIso);
+          }
         }}
       />
       )}

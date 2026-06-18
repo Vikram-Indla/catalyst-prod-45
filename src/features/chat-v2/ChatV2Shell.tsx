@@ -755,6 +755,10 @@ function ChatV2Inner() {
                 : null
             }
             onDismissEditScheduled={() => setEditScheduledMessage(null)}
+            onSeeAllScheduled={() => {
+              shell.setActiveView('drafts');
+              shell.setDraftsActiveTab('scheduled');
+            }}
           />
         ) : (
           <EmptyPanel />

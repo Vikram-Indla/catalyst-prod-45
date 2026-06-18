@@ -33,13 +33,11 @@ interface ComposerProps {
   /** Fires on every keystroke after the user has edited — consumer
    *  is expected to debounce-persist this. */
   onDraftChange?: (markdown: string) => void;
-  /** Scheduled-edit mode — when set, the composer footer swaps to
-   *  [Edit] [Send now] [Delete] buttons targeting the same scheduled
-   *  message id; the normal send + schedule chevron are hidden. */
-  scheduledEditMode?: boolean;
-  onScheduledEditSave?: (markdown: string) => void;
-  onScheduledEditSendNow?: () => void;
-  onScheduledEditDelete?: () => void;
+  /** When true, removes the bottom padding/border-radius between the
+   *  notification banner and the editor so they read as one stacked
+   *  surface. Use when a banner (e.g. scheduled-edit) is visually
+   *  attached to the composer. */
+  bannerAttached?: boolean;
 }
 
 export function Composer({
@@ -55,10 +53,7 @@ export function Composer({
   isUploading = false,
   initialDraft,
   onDraftChange,
-  scheduledEditMode = false,
-  onScheduledEditSave,
-  onScheduledEditSendNow,
-  onScheduledEditDelete,
+  bannerAttached = false,
 }: ComposerProps) {
   const editorRef = useRef<ComposerEditorHandle>(null);
   const editorRootRef = useRef<HTMLDivElement | null>(null);
@@ -135,14 +130,6 @@ export function Composer({
   }, [mic]);
 
   const submit = () => {
-    if (scheduledEditMode) {
-      // In edit-scheduled mode, Enter saves the edit against the same id.
-      const html = editorRef.current?.getHtml() ?? '';
-      const md = replaceEmojiShortcodes(htmlToMarkdown(html)).trim();
-      if (!md) return;
-      onScheduledEditSave?.(md);
-      return;
-    }
     if (!canSend) return;
     const html = editorRef.current?.getHtml() ?? '';
     const md = replaceEmojiShortcodes(htmlToMarkdown(html)).trim();
@@ -151,13 +138,6 @@ export function Composer({
     setValue('');
     editorRef.current?.setMarkdown('');
     requestAnimationFrame(() => editorRef.current?.focus());
-  };
-
-  const handleScheduledEditSave = () => {
-    const html = editorRef.current?.getHtml() ?? '';
-    const md = replaceEmojiShortcodes(htmlToMarkdown(html)).trim();
-    if (!md) return;
-    onScheduledEditSave?.(md);
   };
 
   const schedule = (iso: string) => {
@@ -219,7 +199,7 @@ export function Composer({
       }}
     >
       {notificationBanner && (
-        <div style={{ marginBottom: 8 }}>
+        <div style={{ marginBottom: bannerAttached ? 0 : 8 }}>
           {typeof notificationBanner === 'string' ? (
             <NotificationBanner message={notificationBanner} />
           ) : (
@@ -232,7 +212,10 @@ export function Composer({
         onPaste={handlePaste}
         style={{
           border: '1px solid var(--cv2-bg-composer-border)',
-          borderRadius: 'var(--cv2-radius-md)',
+          borderRadius: bannerAttached
+            ? `0 0 var(--cv2-radius-md) var(--cv2-radius-md)`
+            : 'var(--cv2-radius-md)',
+          borderTopWidth: bannerAttached ? 0 : 1,
           background: 'var(--cv2-bg-composer)',
           display: 'flex',
           flexDirection: 'column',
@@ -296,29 +279,21 @@ export function Composer({
           </div>
         )}
         <div ref={emojiBtnRef}>
-          {scheduledEditMode ? (
-            <ScheduledEditActions
-              onSave={handleScheduledEditSave}
-              onSendNow={() => onScheduledEditSendNow?.()}
-              onDelete={() => onScheduledEditDelete?.()}
-            />
-          ) : (
-            <ComposerFooter
-              canSend={canSend}
-              showFormatToolbar={showToolbar}
-              onToggleFormatToolbar={() => setShowToolbar(v => !v)}
-              onAttach={handleAttachClick}
-              onPickEmoji={() => setEmojiOpen(true)}
-              onMention={() => editorRef.current?.insertText('@')}
-              onSend={submit}
-              onSchedule={schedule}
-              micSupported={mic.isSupported}
-              micActive={mic.isActive}
-              onMicToggle={handleMicToggle}
-              voiceMode={voiceMode}
-              onVoiceModeChange={setVoiceMode}
-            />
-          )}
+          <ComposerFooter
+            canSend={canSend}
+            showFormatToolbar={showToolbar}
+            onToggleFormatToolbar={() => setShowToolbar(v => !v)}
+            onAttach={handleAttachClick}
+            onPickEmoji={() => setEmojiOpen(true)}
+            onMention={() => editorRef.current?.insertText('@')}
+            onSend={submit}
+            onSchedule={schedule}
+            micSupported={mic.isSupported}
+            micActive={mic.isActive}
+            onMicToggle={handleMicToggle}
+            voiceMode={voiceMode}
+            onVoiceModeChange={setVoiceMode}
+          />
         </div>
         <input
           ref={fileInputRef}
@@ -354,68 +329,3 @@ export function Composer({
   );
 }
 
-interface ScheduledEditActionsProps {
-  onSave: () => void;
-  onSendNow: () => void;
-  onDelete: () => void;
-}
-
-function ScheduledEditActions({ onSave, onSendNow, onDelete }: ScheduledEditActionsProps) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        padding: '8px 10px',
-        borderTop: '1px solid var(--cv2-border)',
-      }}
-    >
-      <button type="button" onClick={onSave} style={primaryActionStyle}>
-        Edit
-      </button>
-      <button type="button" onClick={onSendNow} style={subtleActionStyle}>
-        Send now
-      </button>
-      <button type="button" onClick={onDelete} style={dangerActionStyle}>
-        Delete
-      </button>
-    </div>
-  );
-}
-
-const primaryActionStyle: React.CSSProperties = {
-  padding: '6px 14px',
-  borderRadius: 6,
-  border: '1px solid var(--cv2-accent)',
-  background: 'var(--cv2-accent)',
-  color: '#FFFFFF',
-  fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
-  fontWeight: 500,
-  cursor: 'pointer',
-};
-
-const subtleActionStyle: React.CSSProperties = {
-  padding: '6px 14px',
-  borderRadius: 6,
-  border: '1px solid var(--cv2-border)',
-  background: 'transparent',
-  color: 'var(--cv2-text)',
-  fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
-  fontWeight: 500,
-  cursor: 'pointer',
-};
-
-const dangerActionStyle: React.CSSProperties = {
-  padding: '6px 14px',
-  borderRadius: 6,
-  border: '1px solid var(--cv2-border)',
-  background: 'transparent',
-  color: 'var(--cv2-danger, #E01E5A)',
-  fontFamily: 'var(--cv2-font)',
-  fontSize: 13,
-  fontWeight: 500,
-  cursor: 'pointer',
-};
