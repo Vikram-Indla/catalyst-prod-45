@@ -22,20 +22,12 @@ import { CatyPulseIcon } from "@/components/ui/CatyPulseIcon";
 import { useConversations } from "@/hooks/chat/useConversations";
 import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
-import { CatyWhyCard } from "../caty-mood/CatyWhyCard";
-import { useCatyMood } from "../caty-mood/useCatyMood";
-import { useCatyEvents } from "../caty-mood/useCatyEvents";
-import { buildEventLine, gestureFor } from "../caty-mood/catyEvents";
-import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
-import { catalystToast } from "@/lib/catalystToast";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
-
-const FAB_SIZE = 77;
 
 type DockMode = "messages" | "caty";
 type CatyView = "floating" | "sidebar";
@@ -206,232 +198,39 @@ export function ChatDock({
     [conversations],
   );
 
-  // Caty STATE layer (mood) + SIGNAL layer (events). Both glass-box, both from data.
-  const { displayState, liveMood, evidence, byType, trend, fetchSucceeded } = useCatyMood();
-  const { events, unseenCount: eventUnseen } = useCatyEvents();
   const fabRef = React.useRef<HTMLButtonElement>(null);
-  const [whyOpen, setWhyOpen] = React.useState(false);
-  const [gesture, setGesture] = React.useState("");
-  const [catyHidden, setCatyHidden] = React.useState(() =>
-    localStorage.getItem('caty.fab.hidden') !== 'false'
-  );
-  const prevUnseen = React.useRef(eventUnseen);
-  const hoverTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hideHoverTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const autoCloseTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastWake = React.useRef(0);
-  const [fabHover, setFabHover] = React.useState(false);
-  const [catyQuiet, setCatyQuiet] = React.useState(false);
-  const quietTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Idle → Quiet (5 min). Caty stays on screen but dims and stops
-  // surfacing proactive cards. Any user activity wakes it. NEVER hides
-  // automatically — full hide is a manual choice only.
-  React.useEffect(() => {
-    const QUIET_MS = 5 * 60 * 1000;
-    const arm = () => {
-      if (quietTimer.current) clearTimeout(quietTimer.current);
-      quietTimer.current = setTimeout(() => setCatyQuiet(true), QUIET_MS);
-    };
-    const wake = () => {
-      setCatyQuiet((q) => (q ? false : q));
-      const now = performance.now();
-      if (now - lastWake.current < 1000) return; // throttle re-arming
-      lastWake.current = now;
-      arm();
-    };
-    arm();
-    const opts = { passive: true } as AddEventListenerOptions;
-    window.addEventListener('pointerdown', wake, opts);
-    window.addEventListener('keydown', wake, opts);
-    window.addEventListener('mousemove', wake, opts);
-    return () => {
-      if (quietTimer.current) clearTimeout(quietTimer.current);
-      window.removeEventListener('pointerdown', wake, opts);
-      window.removeEventListener('keydown', wake, opts);
-      window.removeEventListener('mousemove', wake, opts);
-    };
-  }, []);
-
-  // FAB hover/focus reveals the dismiss X; small delay so moving the
-  // cursor from the FAB onto the X doesn't flicker it away.
-  const showHideX = () => {
-    if (hideHoverTimer.current) clearTimeout(hideHoverTimer.current);
-    setFabHover(true);
-  };
-  const hideHideX = () => {
-    if (hideHoverTimer.current) clearTimeout(hideHoverTimer.current);
-    hideHoverTimer.current = setTimeout(() => setFabHover(false), 320);
-  };
-
-  // One-time gesture when a NEW unseen event arrives, then silent (calm tech, no nag).
-  React.useEffect(() => {
-    if (eventUnseen > prevUnseen.current) {
-      const newest = events.find((e) => !e.seen);
-      setGesture(newest ? gestureFor(newest.kind) : "");
-      const t = setTimeout(() => setGesture(""), 1600);
-      // New event = intent to surface. Wake from Quiet and open the power
-      // card once; auto-close after 8s unless the user hovers it (openHover
-      // clears autoCloseTimer). Replaces passive-hover opening.
-      setCatyQuiet(false);
-      setWhyOpen(true);
-      if (autoCloseTimer.current) clearTimeout(autoCloseTimer.current);
-      autoCloseTimer.current = setTimeout(() => setWhyOpen(false), 8000);
-      prevUnseen.current = eventUnseen;
-      return () => clearTimeout(t);
-    }
-    prevUnseen.current = eventUnseen;
-  }, [eventUnseen, events]);
-
-  // Listen for Caty visibility changes from nav icon
-  React.useEffect(() => {
-    const handler = () => {
-      const isHidden = localStorage.getItem('caty.fab.hidden') === 'true';
-      console.log('[ChatDock] caty-visibility-changed event fired, isHidden:', isHidden);
-      setCatyHidden(isHidden);
-    };
-    window.addEventListener('caty-visibility-changed', handler);
-    return () => window.removeEventListener('caty-visibility-changed', handler);
-  }, []);
-
-  const eventLine = React.useMemo(() => buildEventLine(events), [events]);
-  const openHover = () => {
-    if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    if (autoCloseTimer.current) clearTimeout(autoCloseTimer.current);
-    setWhyOpen(true);
-  };
-  const closeHoverSoon = () => {
-    if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    hoverTimer.current = setTimeout(() => setWhyOpen(false), 220);
-  };
-  const openTicket = (key: string) => {
-    setWhyOpen(false);
-    useGlobalSearchStore.getState().openDetail({ id: key });
-  };
 
   if (collapsed) {
     return (
-      <>
-        {!catyHidden ? (
-          <>
-            <button
-              ref={fabRef}
-              type="button"
-              className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}${gesture ? ' ' + gesture : ''}`}
-              style={{ top: pos.y, left: pos.x, opacity: catyQuiet ? 0.55 : 1, transition: 'opacity 200ms ease' }}
-              aria-label={`Caty — ${displayState}. ${liveMood.message} Open messages.`}
-              onClick={onToggleCollapsed}
-              onMouseEnter={showHideX}
-              onMouseLeave={hideHideX}
-              onFocus={showHideX}
-              onBlur={hideHideX}
-              onClickCapture={dragHandlers.onClickCapture}
-              onPointerDown={dragHandlers.onPointerDown}
-              onPointerMove={dragHandlers.onPointerMove}
-              onPointerUp={dragHandlers.onPointerUp}
+      <button
+        ref={fabRef}
+        type="button"
+        className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}`}
+        style={{ top: pos.y, left: pos.x }}
+        onClick={onToggleCollapsed}
+        onClickCapture={dragHandlers.onClickCapture}
+        onPointerDown={dragHandlers.onPointerDown}
+        onPointerMove={dragHandlers.onPointerMove}
+        onPointerUp={dragHandlers.onPointerUp}
+        aria-label={totalUnread > 0
+          ? `Caty — online, ${totalUnread > 99 ? '99+' : totalUnread} unread. Open messages.`
+          : 'Caty — online. Open messages.'}
+        title="Open messages"
+      >
+        <span className="cc-wake-disc">
+          <CatyPulseIcon size={28} />
+          {totalUnread > 0 ? (
+            <span
+              className="cc-wake-count"
+              aria-label={`${totalUnread > 99 ? '99+' : totalUnread} unread messages`}
             >
-              {/* One stable component across the whole gesture — never swap on isDragging,
-                  or the pointer-down target unmounts mid-drag and capture is lost (drag dies). */}
-              <CatyMoodFace state={displayState} size={FAB_SIZE} title={`Caty — ${displayState}`} />
-              {totalUnread > 0 && (
-                <span
-                  className="cc-fab__badge"
-                  aria-label={`${totalUnread > 99 ? "99+" : totalUnread} unread messages`}
-                >
-                  {totalUnread > 99 ? "99+" : totalUnread}
-                </span>
-              )}
-              <span className="cc-fab__presence" />
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                localStorage.setItem('caty.fab.hidden', 'true');
-                window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
-                catalystToast.success('Caty hidden — bring it back from the Caty nav icon');
-              }}
-              onMouseEnter={showHideX}
-              onMouseLeave={hideHideX}
-              onFocus={showHideX}
-              onBlur={hideHideX}
-              style={{
-                position: 'fixed',
-                // Overlap the cat's top-right corner (no dead-zone gap) so the
-                // cursor never crosses empty space cat→X and the reveal can't
-                // time out mid-travel (Fitts' law — 2026-06-17).
-                top: pos.y - 2,
-                left: pos.x + FAB_SIZE - 18,
-                width: '24px',
-                height: '24px',
-                borderRadius: '50%',
-                background: 'var(--ds-background-neutral, #F1F2F4)',
-                border: '2px solid var(--ds-surface-overlay, #FFFFFF)',
-                color: 'var(--ds-text, #172B4D)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 0,
-                zIndex: 601,
-                opacity: fabHover ? 1 : 0,
-                transform: fabHover ? 'scale(1)' : 'scale(0.8)',
-                pointerEvents: fabHover ? 'auto' : 'none',
-                transition: 'opacity 140ms ease, transform 140ms ease',
-              }}
-              aria-label="Hide Caty"
-              title="Hide Caty"
-            >
-              <CloseIcon label="" size="small" />
-            </button>
-          </>
-        ) : (
-          <button
-            ref={fabRef}
-            type="button"
-            onClick={() => {
-              localStorage.setItem('caty.fab.hidden', 'false');
-              window.dispatchEvent(new CustomEvent('caty-visibility-changed'));
-              catalystToast.success('Caty is awake!');
-            }}
-            style={{
-              position: 'fixed',
-              bottom: '24px',
-              right: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 56,
-              height: 56,
-              borderRadius: '6px',
-              border: 'none',
-              background: 'transparent',
-              color: 'var(--ds-icon, #44546F)',
-              cursor: 'pointer',
-              padding: 0,
-              zIndex: 500,
-            }}
-            aria-label="Wake Caty"
-            title="Wake Caty"
-          >
-            <CatyPulseIcon size={28} />
-          </button>
-        )}
-        {!isDragging && !catyHidden && (
-          <CatyWhyCard
-            open={whyOpen}
-            anchorRef={fabRef}
-            mood={liveMood}
-            state={displayState}
-            evidence={evidence}
-            byType={byType}
-            trend={trend}
-            onClose={() => setWhyOpen(false)}
-            onOpenTicket={openTicket}
-            onHoverIn={openHover}
-            onHoverOut={closeHoverSoon}
-          />
-        )}
-      </>
+              {totalUnread > 99 ? '99+' : totalUnread}
+            </span>
+          ) : (
+            <span className="cc-fab__presence" />
+          )}
+        </span>
+      </button>
     );
   }
 

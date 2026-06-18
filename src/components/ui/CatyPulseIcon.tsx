@@ -9,9 +9,19 @@
 import React from 'react';
 import { token } from '@atlaskit/tokens';
 
-export function CatyPulseIcon({ size = 16 }: { size?: number }) {
+export function CatyPulseIcon({ size = 16, title }: { size?: number; title?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      role={title ? 'img' : undefined}
+      aria-label={title}
+      aria-hidden={title ? undefined : true}
+      style={{ flexShrink: 0 }}
+    >
+      {title ? <title>{title}</title> : null}
       <path
         d="M1 8h3l2-5 3 10 2-5h4"
         stroke={token('color.icon.accent.magenta', '#CD519D')}
