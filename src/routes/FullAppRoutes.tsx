@@ -269,7 +269,7 @@ const Sprints = lazy(() => import("../pages/Sprints"));
 const Stories = lazy(() => import("../pages/Stories"));
 const Subtasks = lazy(() => import("../pages/Subtasks"));
 const EnterpriseComingSoon = lazy(() => import("../pages/enterprise/ComingSoon"));
-const ReleaseDashboardV5Page = lazy(() => import("../pages/releases/ReleaseDashboardV5Page"));
+const ReleaseDetailPage = lazy(() => import("../pages/releasehub/ReleaseDetailPage"));
 
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 // AdminGuard was used by /admin/v2 shell (deprecated 2026-05-09) — removed
@@ -768,7 +768,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/compare" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/release-hub/triage" element={<Navigate to="/release-hub/overview" replace />} />
 
-        <Route path="/release-hub/:releaseId" element={<S><ReleaseDashboardV5Page /></S>} />
+        <Route path="/release-hub/:releaseId" element={<S><ReleaseDetailPage /></S>} />
 
         {/* Legacy releasehub redirects */}
         <Route path="/releasehub" element={<Navigate to="/release-hub/overview" replace />} />
