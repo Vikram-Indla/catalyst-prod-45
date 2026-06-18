@@ -29,6 +29,7 @@
  */
 import React from 'react';
 import { token } from '@atlaskit/tokens';
+import { useTheme } from '@/hooks/useTheme';
 import type { TabType } from '@/hooks/useForYouData';
 import { useAgeingCount } from '@/components/notifications/AgeingTab';
 
@@ -141,6 +142,7 @@ function TabButton({
   onClick: () => void;
 }) {
   const [hover, setHover] = React.useState(false);
+  const { isDark } = useTheme();
   const showCounter = tab.showCount && count > 0;
   // 2026-05-31: showSparkle (ai-theme rainbow sparkle) removed alongside
   // the Caty Focus tab. The rainbow sparkle SVG block is gone too.
@@ -154,8 +156,12 @@ function TabButton({
   // Selected: elevated-white pill. Hover (only when not selected): faint
   // neutral bg. Rest: transparent.
   // Phase 12 (2026-04-29): reverted to token(). Atlaskit theme handles flip.
+  // Selected fill: LIGHT keeps Jira's white-pill + shadow elevation. DARK can't
+  // use shadow elevation (invisible on dark canvas) and elevation.surface (#22272B)
+  // matches the container -> no contrast. Use color.background.selected (#1C2B41)
+  // so the active tab is clearly distinct in dark. (RCA 2026-06-18)
   const background = isActive
-    ? token('elevation.surface', '#FFFFFF')
+    ? (isDark ? token('color.background.selected', '#1C2B41') : token('elevation.surface', '#FFFFFF'))
     : hover
       ? token('color.background.neutral.hovered', 'rgba(11,18,14,0.14)')
       : 'transparent';
@@ -189,7 +195,7 @@ function TabButton({
         color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         outline: 'none',
-        boxShadow: isActive
+        boxShadow: isActive && !isDark
           ? token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.12), 0 0 1px rgba(9,30,66,0.16)')
           : 'none',
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.15, 1, 0.3, 1)',
