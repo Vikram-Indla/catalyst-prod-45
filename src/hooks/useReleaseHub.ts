@@ -942,3 +942,49 @@ export const useFreezeWindowsList = () =>
       });
     },
   });
+
+// ── Work-item Release & Change Traceability (Phase 16) ───────────────
+export interface WorkItemTraceability {
+  changes: { id: string; chgNumber: string; title: string; status: string }[];
+  releases: { id: string; name: string; status: string }[];
+}
+
+/** Releases + changes that reference a given work item key (for the
+ *  Release & Change Traceability panel in the work-item detail view). */
+export const useWorkItemTraceability = (workItemKey: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'traceability', workItemKey],
+    enabled: !!workItemKey,
+    staleTime: 30_000,
+    queryFn: async (): Promise<WorkItemTraceability> => {
+      // Changes linking this work item.
+      const { data: links } = await supabase
+        .from('rh_change_work_items')
+        .select('change_id, rh_changes(id, chg_number, title, status, release_id)')
+        .eq('work_item_key', workItemKey);
+      const changes = (links ?? [])
+        .map((l: any) => l.rh_changes)
+        .filter(Boolean)
+        .map((c: any) => ({ id: c.id, chgNumber: c.chg_number, title: c.title, status: c.status, releaseId: c.release_id }));
+
+      // Release ids: from those changes + direct rh_release_work_items membership.
+      const relIds = new Set<string>();
+      changes.forEach((c: any) => { if (c.releaseId) relIds.add(c.releaseId); });
+      const { data: rwi } = await supabase
+        .from('rh_release_work_items')
+        .select('release_id')
+        .eq('work_item_key', workItemKey)
+        .neq('inclusion_source', 'excluded');
+      (rwi ?? []).forEach((r: any) => { if (r.release_id) relIds.add(r.release_id); });
+
+      let releases: { id: string; name: string; status: string }[] = [];
+      if (relIds.size > 0) {
+        const { data: rels } = await supabase.from('rh_releases').select('id, name, status').in('id', [...relIds]);
+        releases = (rels ?? []).map((r: any) => ({ id: r.id, name: r.name, status: r.status }));
+      }
+      return {
+        changes: changes.map((c: any) => ({ id: c.id, chgNumber: c.chgNumber, title: c.title, status: c.status })),
+        releases,
+      };
+    },
+  });
