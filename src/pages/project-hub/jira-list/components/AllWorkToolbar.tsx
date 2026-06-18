@@ -82,7 +82,6 @@ import ThumbsUpIconCore from "@atlaskit/icon/core/thumbs-up";
 import ThumbsDownIconCore from "@atlaskit/icon/core/thumbs-down";
 import InfoIconCore from "@atlaskit/icon/core/information";
 // ListIconCore and SplitIconCore removed — view toggle removed 2026-05-04
-import SparkIconCore from "@atlaskit/icon/core/ai-chat";
 import { AIIntelligenceButton } from "@/components/ui/AIIntelligenceButton";
 /* jira-compare 2026-05-03 cycle 4 (Vikram caught ADS drift): chevron-down
    is glyph-only in this Atlaskit version (CLAUDE.md canonical replacement
@@ -90,11 +89,9 @@ import { AIIntelligenceButton } from "@/components/ui/AIIntelligenceButton";
 import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import type { WorkItem } from "@/types/workItem.types";
 import "./ask-caty-input.css";
-import { useCatySearch } from "@/components/caty/catySearchStore";
 import { AskCatyInlineBar } from "@/components/caty/AskCatyInlineBar";
 import { CatyAiSearch } from "@/components/caty/CatyAiSearch";
 import { FilterSaveModal } from "@/components/filters/FilterSaveModal";
-import { useAuth } from "@/lib/auth";
 import { JiraBasicFilter } from "@/components/shared/JiraBasicFilter";
 import type { FilterCategory as JiraFilterCategory } from "@/components/shared/JiraBasicFilter";
 
@@ -159,38 +156,6 @@ const FACET_ORDER: FilterFacet[] = [
   "severity",
 ];
 
-/**
- * Ask Caty rotating placeholder samples — typed out one at a time
- * with a typewriter animation, then erased and the next one starts.
- *
- * `${project}` is interpolated to the active project key at render
- * time. Phrasings deliberately span the structured-filter shapes the
- * Layer 2 AI parser will support (assignee, status, priority, type,
- * is_unassigned, is_watching, date ranges, free-text), so users see
- * the kind of queries that will actually work once the AI lands.
- *
- * Longer, more conversational phrasings work better here — they
- * teach the user that Caty handles natural language, not just keyword
- * search. Aim for ~50–90 chars each; mix imperative ("Show me…") and
- * interrogative ("Which…?") forms so the animation doesn't feel
- * repetitive across cycles.
- */
-const ASK_CATY_PLACEHOLDER_SAMPLES: string[] = [
-  "Show me high-priority bugs assigned to me in ${project} that are still open",
-  "Which work items in ${project} have been blocked for more than three days?",
-  "Find stories I'm watching in ${project} that haven't moved in over a week",
-  "List all critical incidents in ${project} reported in the last seven days",
-  "Show unassigned bugs in ${project} that need triage",
-  "Which tasks in ${project} are due before the end of this week?",
-  "Find work items in ${project} that are currently in code review",
-  "Show me everything in ${project} created this week but not started",
-  "Which stories in ${project} have no estimate and no acceptance criteria?",
-  "List incidents in ${project} that are still open from last sprint",
-  "Show work items in ${project} blocked by another ticket I own",
-  "Find issues in ${project} that haven't been updated in two weeks",
-  "What's assigned to me in ${project} with no due date set?",
-  "Show me all QA bugs reported against ${project} this month",
-];
 
 /* jira-compare 2026-05-03 Round 8 — chip-bar refactor.
    Jira's Basic-mode refinement bar exposes a few common facets as
@@ -457,7 +422,6 @@ interface Member {
 const SUBTLE = "var(--ds-text-subtle, #505258)";
 const SearchIcon = () => <SearchIconCore label="" color={SUBTLE} />;
 const FilterIcon = () => <FilterIconCore label="" color={SUBTLE} />;
-const SparkIcon = () => <SparkIconCore label="" color={SUBTLE} />;
 // ListIcon + SplitIcon removed with view toggle (2026-05-04)
 
 /**
@@ -1190,99 +1154,6 @@ export function AllWorkToolbar({
   /* Ask Caty inline bar — mirrors Jira's "Ask AI" full-width query bar.
      When open, the entire toolbar row is replaced by the AI input. */
   const [askCatyOpen, setAskCatyOpen] = useState(false);
-  const [askCatyQuery, setAskCatyQuery] = useState("");
-  const askCatyInputRef = useRef<HTMLInputElement>(null);
-
-  // Caty AI search — store drives the AI call; the toolbar just dispatches
-  // the user query and reads back loading status for the gradient
-  // rotation. ProjectAllWorkView consumes the resulting filter spec.
-  const catySubmit = useCatySearch((s) => s.submit);
-  const catyClear = useCatySearch((s) => s.clear);
-  const catyStatus = useCatySearch((s) => s.status);
-  const catyStoreProjectKey = useCatySearch((s) => s.projectKey);
-  const catyReason = useCatySearch((s) => s.reason);
-  const catyErrorMessage = useCatySearch((s) => s.errorMessage);
-  const catyStoredQuery = useCatySearch((s) => s.query);
-  const catySecondaryQuery = useCatySearch((s) => s.secondaryQuery);
-  const catySetSecondaryQuery = useCatySearch((s) => s.setSecondaryQuery);
-  const askCatyLoading =
-    catyStatus === "loading" && catyStoreProjectKey === projectKey;
-  const askCatyHasResults =
-    catyStatus === "ready" && catyStoreProjectKey === projectKey;
-  const askCatyHasError =
-    catyStatus === "errored" && catyStoreProjectKey === projectKey;
-  const [askCatyFeedback, setAskCatyFeedback] = useState<"up" | "down" | null>(
-    null,
-  );
-  // Reset thumbs-up/down state whenever a new query is issued.
-  useEffect(() => {
-    if (catyStatus === "loading") setAskCatyFeedback(null);
-  }, [catyStatus]);
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (askCatyOpen) {
-      const t = setTimeout(() => askCatyInputRef.current?.focus(), 30);
-      return () => clearTimeout(t);
-    }
-  }, [askCatyOpen]);
-
-  /* ── Ask Caty rotating typewriter placeholder ──
-     Four-phase state machine drives one transition per render:
-       type      → add chars one at a time (~50ms with jitter)
-       pauseAfter → 1.5s pause to let the user read the full sentence
-       erase     → backspace one char at a time (~25ms — faster than typing,
-                   matches the Jira / GitHub Copilot / Linear pattern)
-       pauseBefore → 0.5s gap before the next sample starts typing
-
-     Auto-pauses while askCatyQuery is non-empty (the moment the user
-     types) and resumes when the input is cleared. Token-aware: stops
-     entirely when the bar is closed so we don't run timers in the
-     background. */
-  type PhMode = "type" | "pauseAfter" | "erase" | "pauseBefore";
-  const [phIdx, setPhIdx] = useState(0);
-  const [phText, setPhText] = useState("");
-  const [phMode, setPhMode] = useState<PhMode>("type");
-
-  useEffect(() => {
-    if (!askCatyOpen) return;
-    if (askCatyQuery !== "") return; // user is typing — pause animation
-
-    const sample = (ASK_CATY_PLACEHOLDER_SAMPLES[phIdx] ?? "").replace(
-      "${project}",
-      projectKey ?? "this project",
-    );
-
-    let timeoutId: ReturnType<typeof setTimeout>;
-    if (phMode === "type") {
-      if (phText.length < sample.length) {
-        // Slight jitter so the cadence feels human, not metronomic.
-        const delay = 45 + Math.random() * 30;
-        timeoutId = setTimeout(() => {
-          setPhText(sample.slice(0, phText.length + 1));
-        }, delay);
-      } else {
-        timeoutId = setTimeout(() => setPhMode("pauseAfter"), 1500);
-      }
-    } else if (phMode === "pauseAfter") {
-      timeoutId = setTimeout(() => setPhMode("erase"), 0);
-    } else if (phMode === "erase") {
-      if (phText.length > 0) {
-        timeoutId = setTimeout(() => {
-          setPhText(phText.slice(0, -1));
-        }, 22);
-      } else {
-        timeoutId = setTimeout(() => setPhMode("pauseBefore"), 0);
-      }
-    } else if (phMode === "pauseBefore") {
-      timeoutId = setTimeout(() => {
-        setPhIdx((i) => (i + 1) % ASK_CATY_PLACEHOLDER_SAMPLES.length);
-        setPhMode("type");
-      }, 500);
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, [askCatyOpen, askCatyQuery, phIdx, phText, phMode, projectKey]);
 
   /* Controlled-or-uncontrolled filter popup open state. */
   const [filterOpenLocal, setFilterOpenLocal] = useState(false);
@@ -1405,42 +1276,9 @@ export function AllWorkToolbar({
     src: m.src ?? undefined,
   }));
 
-  const handleAskCatySubmit = () => {
-    const q = askCatyQuery.trim();
-    if (!q || askCatyLoading) return;
-    // Layer 2 wired — fires the AI parser via the store. The view
-    // component (ProjectAllWorkView) subscribes to the same store
-    // and renders the filtered list when the response lands.
-    catySubmit({
-      query: q,
-      projectKey: projectKey ?? "",
-      currentUser:
-        user && (user as { id?: string }).id
-          ? {
-              id: (user as { id: string }).id,
-              name:
-                (
-                  user as {
-                    user_metadata?: { full_name?: string };
-                    email?: string;
-                  }
-                ).user_metadata?.full_name ??
-                (user as { email?: string }).email ??
-                "me",
-            }
-          : null,
-    });
-    // Also broadcast the legacy event so any external listeners (e.g.
-    // analytics) still fire.
-    window.dispatchEvent(
-      new CustomEvent("catalyst:ask-caty", {
-        detail: { query: q, projectKey },
-      }),
-    );
-  };
 
-  /* Ask Caty bar — shown when askCatyOpen is true; replaces entire toolbar row.
-     Hooks-safe: all state is declared above; no early return. */
+  /* Ask Caty bar — when open, the canonical AskCatyInlineBar replaces the
+     entire toolbar row. All hooks above run unconditionally before this. */
   if (askCatyOpen) {
     return (
       <AskCatyInlineBar
