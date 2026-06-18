@@ -448,17 +448,34 @@ export default function HomeSidebar({
         title: hub.label,
         tooltip: hub.label,
         path: hub.href,
-        icon: () => (
-          <img
-            src={HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]}
-            alt={hub.label}
-            style={{
-              width: '24px',
-              height: '24px',
-              display: 'block',
-            }}
-          />
-        ),
+        icon: () => {
+          // Mask-fill the outline asset so the icon inherits a theme-aware
+          // ADS token instead of the baked-in #44546F stroke. <img> bakes its
+          // colour into the file and cannot respond to dark mode — the mask
+          // lets `--ds-icon-subtle` flip to a light value on the dark rail
+          // while leaving light mode visually identical (#44546F fallback).
+          const maskUrl = `url(${HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]})`;
+          return (
+            <span
+              role="img"
+              aria-label={hub.label}
+              style={{
+                width: '24px',
+                height: '24px',
+                display: 'block',
+                backgroundColor: 'var(--ds-icon-subtle, #44546F)',
+                WebkitMaskImage: maskUrl,
+                maskImage: maskUrl,
+                WebkitMaskRepeat: 'no-repeat',
+                maskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'center',
+                maskPosition: 'center',
+                WebkitMaskSize: 'contain',
+                maskSize: 'contain',
+              }}
+            />
+          );
+        },
       }));
 
       return {
