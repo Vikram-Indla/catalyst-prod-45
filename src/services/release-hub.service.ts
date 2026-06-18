@@ -31,7 +31,25 @@ export const releaseService = {
     return data ?? [];
   },
 
-  create: async (payload: { name: string; target_date: string; key?: string; description?: string; status?: string; source?: string; version?: string; project_id?: string }) => {
+  create: async (payload: {
+    name: string;
+    target_date: string;
+    key?: string;
+    description?: string;
+    status?: string;
+    source?: string;
+    version?: string;
+    project_id?: string;
+    product_id?: string;
+    release_type?: string;
+    target_env?: string;
+    planned_start_date?: string;
+    planned_release_date?: string;
+    release_manager_id?: string;
+    product_owner_id?: string;
+    qa_lead_id?: string;
+    uat_lead_id?: string;
+  }) => {
     const { data, error } = await supabase.from('rh_releases').insert(payload).select().single();
     if (error) throw error;
     return data;
