@@ -1,164 +1,133 @@
-import React, { useState, useMemo } from 'react';
-import { Search, CheckSquare } from '@/lib/atlaskit-icons';
-import { useTheme } from '@/hooks/useTheme';
-import { usePendingSignOffs, useApproveSignoff, useRejectSignoff } from '@/hooks/useReleaseHub';
-import { RH, SIGNOFF_LOZENGE, LOZENGE } from '@/constants/releasehub.design';
-import { RiskBadge } from '@/components/releasehub/RiskBadge';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
-import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
-import { EmptyState } from '@/components/releasehub/EmptyState';
-import { ChgDrawer } from '@/components/releasehub/ChgDrawer';
+/**
+ * Release Operations — Sign-off Queue (route /release-hub/sign-off-queue)
+ *
+ * Phase 12: aggregates all pending approvals (usePendingApprovals) with the
+ * approver's face avatar, change, role, and wait time. Review opens the
+ * approval window — Approve (with optional comment) or Reject (comment
+ * required). Approve/Reject delegate to useApproveSignoff / useRejectSignoff.
+ */
+import React, { useState } from 'react';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import TextArea from '@atlaskit/textarea';
+import { formatDistanceToNowStrict } from 'date-fns';
+import { CheckSquare, ChevronRight } from '@/lib/atlaskit-icons';
+import { usePendingApprovals, useApproveSignoff, useRejectSignoff, type PendingApproval } from '@/hooks/useReleaseHub';
+import { Avatar } from '@/components/ads/Avatar';
+import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { catalystToast } from '@/lib/catalystToast';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
+import { RH } from '@/constants/releasehub.design';
 
-export default function SignOffQueuePage() {
-  const { isDark } = useTheme();
-  const { data: signoffs = [], isLoading, error } = usePendingSignOffs();
-  const approveSignoff = useApproveSignoff();
-  const rejectSignoff = useRejectSignoff();
-  const [search, setSearch] = useState('');
-  const [selectedChange, setSelectedChange] = useState<any>(null);
-  const [actionModal, setActionModal] = useState<{ signoff: any; action: 'approve' | 'reject' } | null>(null);
+const T = {
+  surface: 'var(--ds-surface, #FFFFFF)',
+  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
+  border: 'var(--ds-border, #DFE1E6)',
+  text: 'var(--ds-text, #172B4D)',
+  subtle: 'var(--ds-text-subtle, #44546F)',
+  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  link: 'var(--ds-link, #0C66E4)',
+  mono: 'var(--ds-font-family-code, monospace)',
+};
+
+function ApprovalWindow({ approval, onClose }: { approval: PendingApproval; onClose: () => void }) {
+  const approve = useApproveSignoff();
+  const reject = useRejectSignoff();
   const [comment, setComment] = useState('');
+  const [error, setError] = useState('');
+  const busy = approve.isPending || reject.isPending;
 
-  const filtered = useMemo(() => {
-    if (!search) return signoffs;
-    const q = search.toLowerCase();
-    return signoffs.filter((so: any) =>
-      so.rh_changes?.chg_number?.toLowerCase().includes(q) ||
-      so.rh_changes?.title?.toLowerCase().includes(q) ||
-      so.signoff_role?.toLowerCase().includes(q) ||
-      so.assigned_to?.toLowerCase().includes(q)
-    );
-  }, [signoffs, search]);
-
-  const handleAction = () => {
-    if (!actionModal) return;
-    const { signoff, action } = actionModal;
-    if (action === 'approve') {
-      approveSignoff.mutate({ signoffId: signoff.id, comment }, {
-        onSuccess: () => { catalystToast.success('Sign-off approved'); setActionModal(null); setComment(''); },
-        onError: () => catalystToast.error('Failed to approve'),
-      });
-    } else {
-      if (!comment.trim()) { catalystToast.error('Comment is required for rejection'); return; }
-      rejectSignoff.mutate({ signoffId: signoff.id, comment }, {
-        onSuccess: () => { catalystToast.success('Sign-off rejected'); setActionModal(null); setComment(''); },
-        onError: () => catalystToast.error('Failed to reject'),
-      });
-    }
+  const doApprove = () => {
+    setError('');
+    approve.mutate({ signoffId: approval.id, comment: comment.trim() || undefined }, {
+      onSuccess: () => { catalystToast.success('Sign-off approved'); onClose(); },
+      onError: (e: any) => { setError(e?.message || 'Failed to approve'); },
+    });
+  };
+  const doReject = () => {
+    if (!comment.trim()) { setError('A comment is required to reject'); return; }
+    setError('');
+    reject.mutate({ signoffId: approval.id, comment: comment.trim() }, {
+      onSuccess: () => { catalystToast.success('Sign-off rejected'); onClose(); },
+      onError: (e: any) => { setError(e?.message || 'Failed to reject'); },
+    });
   };
 
   return (
-    <div className="p-6" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-      <div className="mb-5">
-        <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>Signoff Queue</h1>
-        <p className="text-[13px] mt-1" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>All pending approvals — notifications sent to approver's For You homepage</p>
+    <ModalTransition>
+      <Modal onClose={onClose} width="small">
+        <ModalHeader hasCloseButton><ModalTitle>Review sign-off</ModalTitle></ModalHeader>
+        <ModalBody>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.link }}>{approval.chgNumber ?? '—'}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text }}>{approval.changeTitle ?? ''}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {approval.role && <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3 }}>{approval.role}</span>}
+              <Avatar name={approval.approverName ?? 'Unassigned'} src={approval.approverAvatarUrl ?? undefined} size="small" />
+              <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{approval.approverName ?? 'Unassigned'}</span>
+            </div>
+          </div>
+          <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtle, marginBottom: 4 }} htmlFor="signoff-comment">Comment</label>
+          <TextArea id="signoff-comment" value={comment} onChange={(e) => setComment((e.target as HTMLTextAreaElement).value)} placeholder="Optional for approve, required for reject" minimumRows={3} />
+          {error && <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>{error}</div>}
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+          <Button appearance="warning" onClick={doReject} isDisabled={busy}>Reject</Button>
+          <Button appearance="primary" onClick={doApprove} isDisabled={busy} isLoading={approve.isPending}>Approve</Button>
+        </ModalFooter>
+      </Modal>
+    </ModalTransition>
+  );
+}
+
+function waitLabel(iso: string | null): string {
+  if (!iso) return '—';
+  try { return `${formatDistanceToNowStrict(new Date(iso))} waiting`; } catch { return '—'; }
+}
+
+export default function SignOffQueuePage() {
+  const { data: approvals = [], isLoading, error, refetch } = usePendingApprovals();
+  const [selected, setSelected] = useState<PendingApproval | null>(null);
+
+  return (
+    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+      <div style={{ marginBottom: 16 }}>
+        <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Sign-off Queue</h1>
+        <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Pending approvals awaiting your review</p>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-          <input type="text" placeholder="Search changes or approvers..." value={search} onChange={e => setSearch(e.target.value)}
-            className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20"
-            style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }} />
-        </div>
-      </div>
-
-      {/* Table */}
-      {isLoading ? (
-        <SkeletonRows count={5} />
-      ) : signoffs.length === 0 ? (
-        <EmptyState icon={CheckSquare} title="No pending sign-offs" subtitle="All approvals are up to date" />
+      {error ? (
+        <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
+      ) : isLoading ? (
+        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading…</div>
+      ) : approvals.length === 0 ? (
+        <EmptyState icon={CheckSquare} title="No pending sign-offs" subtitle="Approvals requested on changes will appear here for review." />
       ) : (
-        <div className="rounded-[6px] overflow-hidden" style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-          <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
-            <thead>
-              <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
-                {['CHANGE', 'TITLE', 'GATE', 'APPROVER', 'RISK', 'STATUS', 'ACTIONS'].map(h => (
-                  <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((so: any) => {
-                const isWaiting = so.status === 'waiting';
-                const isPending = so.status === 'pending';
-                return (
-                  <tr key={so.id}
-                    onClick={() => setSelectedChange(so.rh_changes)}
-                    className="cursor-pointer group"
-                    style={{ height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : undefined }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'rgba(15,23,42,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : '')}
-                  >
-                    <td className="px-3" style={{ fontFamily: RH.fontMono, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
-                    <td className="px-3 truncate max-w-[240px]" style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : RH.ink2 }}>{so.rh_changes?.title || '—'}</td>
-                    <td className="px-3" style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : RH.ink2 }}>{so.signoff_role || so.stage || '—'}</td>
-                    <td className="px-3" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{so.assigned_to || '—'}</td>
-                    <td className="px-3"><RiskBadge risk={so.rh_changes?.risk_level || 'standard'} /></td>
-                    <td className="px-3"><StatusLozenge status={so.status} /></td>
-                    <td className="px-3">
-                      {isWaiting ? (
-                        <div className="flex items-center gap-1.5">
-                          <button onClick={e => { e.stopPropagation(); setActionModal({ signoff: so, action: 'approve' }); }}
-                            className="h-7 px-2.5 rounded-[4px] bg-[var(--ds-text-success,var(--cp-success, #16A34A))] text-white text-[11px] font-bold hover:bg-[#15803D]">Approve</button>
-                          <button onClick={e => { e.stopPropagation(); setActionModal({ signoff: so, action: 'reject' }); }}
-                            className="h-7 px-2.5 rounded-[4px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]" style={{ border: '0.75px solid #FCA5A5' }}>Reject</button>
-                        </div>
-                      ) : isPending ? (
-                        <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" title="Requires previous gate approval">Locked</span>
-                      ) : null}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
+          {approvals.map((a) => (
+            <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
+              <Avatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="medium" />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>{a.approverName ?? 'Unassigned'}</span>
+                  {a.role && <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3 }}>{a.role}</span>}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  {a.chgNumber && <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{a.chgNumber}</span>}
+                  <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.changeTitle ?? '—'} · {waitLabel(a.waitStartedAt)}</span>
+                </div>
+              </div>
+              <button onClick={() => setSelected(a)} style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                Review <ChevronRight size={14} style={{ color: T.link }} />
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Approve/Reject Modal */}
-      <Dialog open={!!actionModal} onOpenChange={() => { setActionModal(null); setComment(''); }}>
-        <DialogContent className="sm:max-w-[520px]" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-          <DialogHeader>
-            <DialogTitle style={{ fontFamily: RH.fontDisplay, fontWeight: 650 }}>
-              {actionModal?.action === 'approve' ? 'Approve Sign-off' : 'Reject Sign-off'}
-            </DialogTitle>
-          </DialogHeader>
-          {actionModal && (
-            <div className="space-y-4">
-              <div className="rounded-[6px] p-3" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
-                <p className="text-[12px] mb-1" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Gate: <span className="font-bold" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
-                <p className="text-[12px]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
-                {actionModal.signoff.rh_changes?.risk_level && <div className="mt-2"><RiskBadge risk={actionModal.signoff.rh_changes.risk_level} /></div>}
-              </div>
-              <div>
-                <label className="block text-[12px] font-semibold mb-1" style={{ color: 'var(--cp-text-secondary, #475569)' }}>Comment {actionModal.action === 'reject' && '*'}</label>
-                <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a comment..."
-                  className="w-full h-24 px-3 py-2 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 resize-none"
-                  style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : undefined, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }} />
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: 'var(--cp-text-secondary, #475569)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : undefined }}>Cancel</button>
-            <button onClick={handleAction} disabled={approveSignoff.isPending || rejectSignoff.isPending}
-              className={`h-9 px-4 rounded-[6px] text-[13px] font-semibold text-white disabled:opacity-50 ${actionModal?.action === 'approve' ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))] hover:bg-[#15803D]' : 'bg-[var(--ds-text-danger,var(--cp-danger, #DC2626))] hover:bg-[#B91C1C]'}`}>
-              {actionModal?.action === 'approve' ? 'Approve' : 'Reject'}
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {selectedChange && <ChgDrawer change={selectedChange} onClose={() => setSelectedChange(null)} />}
+      {selected && <ApprovalWindow approval={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }

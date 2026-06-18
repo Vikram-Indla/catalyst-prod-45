@@ -528,6 +528,9 @@ function AllTabFeed({
         <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
           No activity yet
         </p>
+        <p className="mt-1 text-[12px] text-[var(--ds-text-subtlest,#8590A2)] dark:text-[var(--ds-text-subtlest,#6B6E76)]">
+          Comments and updates will show up here. Switch to the Comments tab to start the conversation.
+        </p>
       </div>
     );
   }

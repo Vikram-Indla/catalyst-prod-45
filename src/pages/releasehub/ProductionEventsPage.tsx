@@ -1,198 +1,143 @@
-import React, { useState, useMemo } from 'react';
-import { Clock, Filter, Check } from '@/lib/atlaskit-icons';
-import { useTheme } from '@/hooks/useTheme';
-import { useProductionEvents } from '@/hooks/useReleaseHub';
-import { RH } from '@/constants/releasehub.design';
-import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
-import { EmptyState } from '@/components/releasehub/EmptyState';
+/**
+ * Release Operations — Production Events (route /release-hub/production-events)
+ *
+ * Phase 10: JiraTable list of rh_production_events + a detail modal with the
+ * immutable deployment snapshots. Events auto-generate when a production-
+ * targeted release reaches `completed` (see useUpdateReleaseStatus).
+ */
+import React, { useMemo, useState } from 'react';
 import { format } from 'date-fns';
+import Modal, { ModalBody, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import { Clock } from '@/lib/atlaskit-icons';
+import { useProductionEventsList, type ProductionEventRow } from '@/hooks/useReleaseHub';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
+import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
+import { RH } from '@/constants/releasehub.design';
 
-const EVENT_TYPE_LOZENGE: Record<string, { bg: string; color: string; label: string }> = {
-  DEPLOYMENT: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'DEPLOYMENT' },
-  HOTFIX: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: 'HOTFIX' },
-  ROLLBACK: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #991B1B)', label: 'ROLLBACK' },
+const T = {
+  surface: 'var(--ds-surface, #FFFFFF)',
+  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
+  border: 'var(--ds-border, #DFE1E6)',
+  text: 'var(--ds-text, #172B4D)',
+  subtle: 'var(--ds-text-subtle, #44546F)',
+  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  mono: 'var(--ds-font-family-code, monospace)',
 };
 
-const RESULT_BADGE: Record<string, { bg: string; color: string; label: string; icon?: boolean }> = {
-  SUCCESS: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'SUCCESS', icon: true },
-  ROLLED_BACK: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #991B1B)', label: 'ROLLED BACK' },
-  MONITORING: { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'MONITORING' },
-};
+function titleCase(v: string | null) {
+  if (!v) return '—';
+  return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
+}
 
-function Lozenge({ bg, color, label, icon }: { bg: string; color: string; label: string; icon?: boolean }) {
+function ResultBadge({ result }: { result: string | null }) {
+  if (!result) return <span style={{ color: T.subtlest }}>—</span>;
+  const norm = result.toLowerCase();
+  const map: Record<string, { fg: string; bg: string }> = {
+    success: { fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+    partial: { fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' },
+    failed: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    rolled_back: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+  };
+  const m = map[norm] ?? { fg: T.subtle, bg: T.sunken };
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{result.replace(/_/g, ' ')}</span>;
+}
+
+function snapCount(snap: any): number | null {
+  if (Array.isArray(snap)) return snap.length;
+  if (snap && typeof snap === 'object') return Object.keys(snap).length;
+  return null;
+}
+
+function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <span style={{
-      height: 20, padding: '0 8px', borderRadius: 4,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-      letterSpacing: '0.03em', display: 'inline-flex', alignItems: 'center', gap: 4,
-      background: bg, color,
-    }}>
-      {icon && <Check style={{ width: 10, height: 10 }} />}
-      {label}
-    </span>
+    <div style={{ display: 'flex', gap: 12, padding: '8px 0', borderBottom: `1px solid ${T.border}` }}>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtlest, minWidth: 160 }}>{label}</span>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>{value ?? '—'}</span>
+    </div>
   );
 }
 
-function getDotStyle(event: any) {
-  const type = event.event_type?.toUpperCase() || 'DEPLOYMENT';
-  const result = event.deployment_result?.toUpperCase();
-
-  let borderColor = 'var(--ds-text-success, var(--cp-success, #16A34A))';
-  let size = 16;
-
-  if (type === 'ROLLBACK' || result === 'ROLLED_BACK') {
-    borderColor = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-    size = 14;
-  } else if (type === 'HOTFIX') {
-    borderColor = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
-    size = 12;
-  }
-
-  return { borderColor, size };
-}
-
-function formatDateTime(dateStr: string) {
-  try {
-    return format(new Date(dateStr), "d MMM yyyy, HH:mm");
-  } catch {
-    return dateStr;
-  }
+function EventDetailModal({ event, onClose }: { event: ProductionEventRow; onClose: () => void }) {
+  return (
+    <ModalTransition>
+      <Modal onClose={onClose} width="medium">
+        <ModalHeader hasCloseButton><ModalTitle>{event.title}</ModalTitle></ModalHeader>
+        <ModalBody>
+          <DetailRow label="Type" value={titleCase(event.eventType)} />
+          <DetailRow label="Environment" value={titleCase(event.targetEnv)} />
+          <DetailRow label="Result" value={<ResultBadge result={event.result ?? event.deploymentStatus} />} />
+          <DetailRow label="Release" value={event.releaseKey ?? '—'} />
+          <DetailRow label="Change" value={event.changeKey ?? '—'} />
+          <DetailRow label="Deployed" value={event.deployedAt ? format(new Date(event.deployedAt), 'MMM d, yyyy HH:mm') : '—'} />
+          <DetailRow label="Deployed by" value={event.deployedBy} />
+          <DetailRow label="Duration" value={event.durationMinutes != null ? `${event.durationMinutes} min` : '—'} />
+          <DetailRow label="Work items snapshot" value={snapCount(event.workItemsSnapshot) != null ? `${snapCount(event.workItemsSnapshot)} items` : '—'} />
+          <DetailRow label="Business requests" value={snapCount(event.businessRequestsSnapshot) != null ? `${snapCount(event.businessRequestsSnapshot)} items` : '—'} />
+          <DetailRow label="Commits" value={snapCount(event.commitsSnapshot) != null ? `${snapCount(event.commitsSnapshot)} commits` : '—'} />
+          <DetailRow label="SOP evidence" value={snapCount(event.sopEvidenceSnapshot) != null ? `${snapCount(event.sopEvidenceSnapshot)} entries` : '—'} />
+          <DetailRow label="Approvers" value={snapCount(event.approversSnapshot) != null ? `${snapCount(event.approversSnapshot)} approvers` : '—'} />
+          {event.notes && <DetailRow label="Notes" value={event.notes} />}
+        </ModalBody>
+      </Modal>
+    </ModalTransition>
+  );
 }
 
 export default function ProductionEventsPage() {
-  const { isDark } = useTheme();
-  const { data: events = [], isLoading } = useProductionEvents();
-  const [resultFilter, setResultFilter] = useState<string>('all');
+  const { data: events = [], isLoading, error, refetch } = useProductionEventsList();
+  const [selected, setSelected] = useState<ProductionEventRow | null>(null);
+  const [selection, setSelection] = useState<Set<string>>(new Set());
 
-  const filtered = useMemo(() => {
-    if (resultFilter === 'all') return events;
-    return events.filter((e: any) => e.deployment_result?.toUpperCase() === resultFilter.toUpperCase());
-  }, [events, resultFilter]);
-
-  const filterChips = [
-    { key: 'all', label: 'All' },
-    { key: 'SUCCESS', label: 'Success' },
-    { key: 'ROLLED_BACK', label: 'Rolled Back' },
-    { key: 'MONITORING', label: 'Monitoring' },
-  ];
+  const columns: Column<ProductionEventRow>[] = useMemo(() => [
+    {
+      id: 'title', label: 'Event', flex: true, sortable: true,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>{row.title}</span>
+          {(row.releaseKey || row.changeKey) && <span style={{ fontFamily: T.mono, fontSize: 11, color: T.subtlest }}>{row.releaseKey ?? row.changeKey}</span>}
+        </div>
+      ),
+    },
+    { id: 'eventType', label: 'Type', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.eventType)}</span> },
+    { id: 'targetEnv', label: 'Env', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.targetEnv)}</span> },
+    { id: 'result', label: 'Result', width: 12, cell: ({ row }) => <ResultBadge result={row.result ?? row.deploymentStatus} /> },
+    {
+      id: 'deployedAt', label: 'Deployed', width: 16, sortable: true, accessor: (r) => r.deployedAt,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{row.deployedAt ? format(new Date(row.deployedAt), 'MMM d, yyyy HH:mm') : '—'}</span>,
+    },
+    { id: 'deployedBy', label: 'By', width: 14, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.deployedBy}</span> },
+  ], []);
 
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%', padding: 24 }}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 style={{
-            fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 650,
-            lineHeight: 1.2, color: RH.ink1,
-          }}>
-            Production Events
-          </h1>
-          <p style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 2 }}>
-            Post-deployment monitoring & event log
-          </p>
-        </div>
-        <button
-          className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5"
-          style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #475569)' }}
-          onClick={() => {
-            const next = resultFilter === 'all' ? 'SUCCESS' : 'all';
-            setResultFilter(next);
-          }}
-        >
-          <Filter style={{ width: 14, height: 14 }} />
-          Filter
-        </button>
+    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+      <div style={{ marginBottom: 16 }}>
+        <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Production Events</h1>
+        <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Immutable record of production deployments</p>
       </div>
 
-      {/* Filter chips (shown below header) */}
-      <div className="flex items-center gap-2 mb-5">
-        {filterChips.map(chip => (
-          <button key={chip.key} onClick={() => setResultFilter(chip.key)}
-            className="h-8 px-3 rounded-[6px] text-[12px] transition-colors"
-            style={{
-              fontWeight: 600,
-              border: `0.75px solid ${resultFilter === chip.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
-              background: resultFilter === chip.key ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
-              color: resultFilter === chip.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
-            }}
-          >
-            {chip.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Timeline */}
-      {isLoading ? (
-        <SkeletonRows count={5} />
-      ) : events.length === 0 ? (
-        <EmptyState icon={Clock} title="No production events yet" subtitle="Production deployments will be recorded here" />
-      ) : filtered.length === 0 ? (
-        <EmptyState icon={Clock} title="No events match your filter" subtitle="Try a different filter" />
+      {error ? (
+        <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
+      ) : !isLoading && events.length === 0 ? (
+        <EmptyState icon={Clock} title="No production events yet" subtitle="A production event is recorded automatically when a production-targeted release completes." />
       ) : (
-        <div className="relative" style={{ paddingLeft: 28 }}>
-          {/* Vertical line */}
-          <div className="absolute top-0 bottom-0" style={{
-            left: 10, width: 2, background: 'rgba(15,23,42,0.12)',
-          }} />
-
-          {filtered.map((ev: any, idx: number) => {
-            const { borderColor, size } = getDotStyle(ev);
-            const typeKey = ev.event_type?.toUpperCase() || 'DEPLOYMENT';
-            const resultKey = ev.deployment_result?.toUpperCase();
-            const typeLoz = EVENT_TYPE_LOZENGE[typeKey];
-            // Skip result badge when redundant with event type (ROLLBACK + ROLLED_BACK)
-            const resultBadge = (resultKey && !(typeKey === 'ROLLBACK' && resultKey === 'ROLLED_BACK')) ? RESULT_BADGE[resultKey] : null;
-
-            return (
-              <div key={ev.id} className="relative" style={{ paddingBottom: idx === filtered.length - 1 ? 0 : 24 }}>
-                {/* Timeline dot */}
-                <div
-                  className="absolute rounded-full"
-                  style={{
-                    left: -(18 + size / 2),
-                    top: 4,
-                    width: size,
-                    height: size,
-                    border: `2px solid ${borderColor}`,
-                    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  }}
-                />
-
-                {/* Event card */}
-                <div
-                  style={{
-                    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                    borderRadius: 4,
-                    padding: '14px 16px',
-                    border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)',
-                  }}
-                >
-                  {/* Card header */}
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span style={{ fontSize: 14, fontWeight: 650, color: RH.ink1 }}>{ev.title}</span>
-                    {typeLoz && <Lozenge bg={typeLoz.bg} color={typeLoz.color} label={typeLoz.label} />}
-                    {resultBadge && <Lozenge bg={resultBadge.bg} color={resultBadge.color} label={resultBadge.label} icon={resultBadge.icon} />}
-                  </div>
-
-                  {/* Meta row */}
-                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
-                    {ev.change_key && <span style={{ fontFamily: RH.fontMono }}>{ev.change_key}</span>}
-                    {ev.release_key && <span style={{ fontFamily: RH.fontMono }}>{ev.release_key}</span>}
-                    {ev.deployed_at && <span>{formatDateTime(ev.deployed_at)}</span>}
-                    {ev.deployed_by && <span>{ev.deployed_by}</span>}
-                    {ev.duration_minutes != null && <span>{ev.duration_minutes} min</span>}
-                  </div>
-
-                  {/* Notes (if any) */}
-                  {ev.notes && (
-                    <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 6 }}>{ev.notes}</p>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <JiraTable<ProductionEventRow>
+          columns={columns}
+          data={events}
+          getRowId={(r) => r.id}
+          onRowClick={(r) => setSelected(r)}
+          selectable
+          selection={selection}
+          onSelectionChange={setSelection}
+          isLoading={isLoading}
+          rowsPerPage={25}
+          showRowCount
+          totalRowCount={events.length}
+          ariaLabel="Production events"
+        />
       )}
+
+      {selected && <EventDetailModal event={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }

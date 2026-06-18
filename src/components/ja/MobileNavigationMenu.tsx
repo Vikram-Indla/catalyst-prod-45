@@ -21,7 +21,7 @@ const HUB_ITEMS = [
   { label: "Strategy", path: "/strategyhub", moduleKey: "enterprise", featureFlagKey: "strategy_hub", requiresEnterpriseAccess: true, visibleToProductOwner: true },
   { label: "Products", path: "/producthub", moduleKey: "product", featureFlagKey: "product_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
   { label: "Projects", path: "/project-hub", moduleKey: "workhub", featureFlagKey: "project_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
-  { label: "Releases", path: "/release-hub/command-center", moduleKey: "releases", featureFlagKey: "release_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
+  { label: "Releases", path: "/release-hub/overview", moduleKey: "releases", featureFlagKey: "release_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
   { label: "Testing", path: "/testhub/dashboard", moduleKey: "testhub", featureFlagKey: "test_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
   { label: "Incidents", path: "/incident-hub", moduleKey: "operations", featureFlagKey: "incident_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
   { label: "Tasks", path: "/tasks/overview", moduleKey: "planner", featureFlagKey: "task_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },

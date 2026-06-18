@@ -31,7 +31,25 @@ export const releaseService = {
     return data ?? [];
   },
 
-  create: async (payload: { name: string; target_date: string; key?: string; description?: string; status?: string; source?: string; version?: string; project_id?: string }) => {
+  create: async (payload: {
+    name: string;
+    target_date: string;
+    key?: string;
+    description?: string;
+    status?: string;
+    source?: string;
+    version?: string;
+    project_id?: string;
+    product_id?: string;
+    release_type?: string;
+    target_env?: string;
+    planned_start_date?: string;
+    planned_release_date?: string;
+    release_manager_id?: string;
+    product_owner_id?: string;
+    qa_lead_id?: string;
+    uat_lead_id?: string;
+  }) => {
     const { data, error } = await supabase.from('rh_releases').insert(payload).select().single();
     if (error) throw error;
     return data;
@@ -78,7 +96,24 @@ export const changeService = {
     return data;
   },
 
-  create: async (payload: { chg_number: string; title: string; description?: string; status?: string; risk_level?: string; source?: string; category?: string; deployment_date?: string; planned_date?: string }) => {
+  create: async (payload: {
+    chg_number: string;
+    title: string;
+    description?: string;
+    status?: string;
+    risk_level?: string;
+    source?: string;
+    category?: string;
+    deployment_date?: string;
+    planned_date?: string;
+    change_type?: string;
+    target_env?: string;
+    deployment_category?: string;
+    window_start?: string;
+    window_end?: string;
+    change_manager_id?: string;
+    release_id?: string;
+  }) => {
     const userId = (await supabase.auth.getUser()).data.user?.id;
     const { data, error } = await supabase.from('rh_changes').insert({ ...payload, created_by: userId ?? undefined }).select().single();
     if (error) throw error;

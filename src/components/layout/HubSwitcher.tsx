@@ -64,7 +64,7 @@ const HUBS: HubEntry[] = [
   { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3' },
   { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4' },
   { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5' },
-  { key: 'release',  label: 'Release',  href: '/release-hub/command-center', section: 'build_ship', tone: 'magenta', shortcut: '6' },
+  { key: 'release',  label: 'Release',  href: '/release-hub/overview', section: 'build_ship', tone: 'magenta', shortcut: '6' },
   { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7' },
   { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8' },
   { key: 'task',     label: 'Tasks',    href: '/tasks/overview',             section: 'build_ship', tone: 'yellow',  shortcut: '9' },

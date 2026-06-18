@@ -83,8 +83,6 @@ function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
 const ProductionEventsPageLazy = lazy(() => import("../pages/releasehub/ProductionEventsPage"));
 const RH21CommandCenterPage = lazy(() => import("../pages/releasehub/CommandCenterPage"));
 const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPage"));
-const RH21ReleaseComparePage = lazy(() => import("../pages/releasehub/ReleaseComparePage"));
-const RH21TriageQueuePage = lazy(() => import("../pages/releasehub/TriageQueuePage"));
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
 const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
@@ -232,7 +230,7 @@ const TestHubSettingsPage = lazy(() => import("../modules-dormant/testhub/Settin
 const ActivityFeedPage = lazy(() => import("../modules-dormant/testhub/ActivityFeedPage"));
 const ImportExportPage = lazy(() => import("../modules-dormant/testhub/ImportExportPage"));
 const ReleasesListPage = lazy(() => import("../modules-dormant/testhub/ReleasesListPage"));
-const ReleaseDetailPage = lazy(() => import("../modules-dormant/testhub/ReleaseDetailPage"));
+const TestHubReleaseDetailPage = lazy(() => import("../modules-dormant/testhub/ReleaseDetailPage"));
 const CommandCenterPage = lazy(() => import("../modules-dormant/testhub/CommandCenterPage"));
 const CatyAIPage = ENABLE_AI ? lazy(() => import("../modules-dormant/testhub/CatyAIPage")) : () => <FeatureComingSoon title="Caty AI" />;
 const TestHubDocsPage = lazy(() => import("../modules-dormant/testhub/TestHubDocsPage"));
@@ -270,7 +268,11 @@ const Sprints = lazy(() => import("../pages/Sprints"));
 const Stories = lazy(() => import("../pages/Stories"));
 const Subtasks = lazy(() => import("../pages/Subtasks"));
 const EnterpriseComingSoon = lazy(() => import("../pages/enterprise/ComingSoon"));
-const ReleaseDashboardV5Page = lazy(() => import("../pages/releases/ReleaseDashboardV5Page"));
+const ReleaseDetailPage = lazy(() => import("../pages/releasehub/ReleaseDetailPage"));
+const ChangeDetailPage = lazy(() => import("../pages/releasehub/ChangeDetailPage"));
+const SopTemplatesPage = lazy(() => import("../pages/releasehub/SopTemplatesPage"));
+const ReleaseCalendarPage = lazy(() => import("../pages/releasehub/ReleaseCalendarPage"));
+const ReleaseSettingsPage = lazy(() => import("../pages/releasehub/ReleaseSettingsPage"));
 
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 // AdminGuard was used by /admin/v2 shell (deprecated 2026-05-09) — removed
@@ -699,7 +701,7 @@ export default function FullAppRoutes() {
           <Route path="releases" element={<S><ReleasesListPage /></S>} />
           <Route path="releases/command-center" element={<S><CommandCenterPage /></S>} />
           <Route path="releases/quality-gates" element={<S><QualityGatesPage /></S>} />
-          <Route path="releases/:releaseId" element={<S><ReleaseDetailPage /></S>} />
+          <Route path="releases/:releaseId" element={<S><TestHubReleaseDetailPage /></S>} />
           <Route path="caty" element={<MG k="ai_features" t="Caty AI"><S><CatyAIPage /></S></MG>} />
           <Route path="docs" element={<S><TestHubDocsPage /></S>} />
           <Route path="verify" element={<S><TestHubVerifyPage /></S>} />
@@ -752,27 +754,35 @@ export default function FullAppRoutes() {
             on the real detail page instead of an empty router slot. */}
         <Route path="/incident-hub/backlog/:key" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentBacklogKeyRedirect /></S></MG>} />
 
-        <Route path="/release-hub" element={<Navigate to="/release-hub/command-center" replace />} />
-        <Route path="/release-hub/command-center" element={<S><RH21CommandCenterPage /></S>} />
+        {/* Release Operations — sections per handoff §6 (2026-06-18). */}
+        <Route path="/release-hub" element={<Navigate to="/release-hub/overview" replace />} />
+        <Route path="/release-hub/overview" element={<S><RH21CommandCenterPage /></S>} />
         <Route path="/release-hub/releases" element={<S><RH21AllReleasesPage /></S>} />
-        <Route path="/release-hub/compare" element={<S><RH21ReleaseComparePage /></S>} />
-        <Route path="/release-hub/triage" element={<S><RH21TriageQueuePage /></S>} />
-        <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
-        <Route path="/release-hub/sign-off-queue" element={<S><RH21SignOffQueuePage /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
+        <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
+        <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
+        <Route path="/release-hub/changes/:changeId" element={<S><ChangeDetailPage /></S>} />
+        <Route path="/release-hub/sop-templates" element={<S><SopTemplatesPage /></S>} />
+        <Route path="/release-hub/sign-off-queue" element={<S><RH21SignOffQueuePage /></S>} />
         <Route path="/release-hub/freeze-windows" element={<S><RH21FreezeWindowsPage /></S>} />
-        
-        <Route path="/release-hub/:releaseId" element={<S><ReleaseDashboardV5Page /></S>} />
+        <Route path="/release-hub/settings" element={<S><ReleaseSettingsPage /></S>} />
+
+        {/* Retired this phase — redirect to Overview. */}
+        <Route path="/release-hub/command-center" element={<Navigate to="/release-hub/overview" replace />} />
+        <Route path="/release-hub/compare" element={<Navigate to="/release-hub/overview" replace />} />
+        <Route path="/release-hub/triage" element={<Navigate to="/release-hub/overview" replace />} />
+
+        <Route path="/release-hub/:releaseId" element={<S><ReleaseDetailPage /></S>} />
 
         {/* Legacy releasehub redirects */}
-        <Route path="/releasehub" element={<Navigate to="/release-hub/command-center" replace />} />
-        <Route path="/releasehub/command-center" element={<Navigate to="/release-hub/command-center" replace />} />
+        <Route path="/releasehub" element={<Navigate to="/release-hub/overview" replace />} />
+        <Route path="/releasehub/command-center" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/releasehub/all-releases" element={<Navigate to="/release-hub/releases" replace />} />
-        <Route path="/releasehub/compare" element={<Navigate to="/release-hub/compare" replace />} />
-        <Route path="/releasehub/triage" element={<Navigate to="/release-hub/triage" replace />} />
+        <Route path="/releasehub/compare" element={<Navigate to="/release-hub/overview" replace />} />
+        <Route path="/releasehub/triage" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/releasehub/changes" element={<Navigate to="/release-hub/changes" replace />} />
         <Route path="/releasehub/production-events" element={<Navigate to="/release-hub/production-events" replace />} />
-        <Route path="/releasehub/dashboard" element={<Navigate to="/release-hub/command-center" replace />} />
+        <Route path="/releasehub/dashboard" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/releasehub/all" element={<Navigate to="/release-hub/releases" replace />} />
 
         {/* Deprecated 2026-06-17: Priorities (Task10) module removed. Subtree → 404. */}
@@ -899,7 +909,7 @@ export default function FullAppRoutes() {
         <Route path="/stories" element={<S><Stories /></S>} />
         <Route path="/work-items/stories" element={<S><Stories /></S>} />
         <Route path="/work-items/subtasks" element={<S><Subtasks /></S>} />
-        <Route path="/releases/*" element={<Navigate to="/release-hub/command-center" replace />} />
+        <Route path="/releases/*" element={<Navigate to="/release-hub/overview" replace />} />
 
         <Route path="/unauthorized" element={<S><UnauthorizedPage /></S>} />
 

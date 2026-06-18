@@ -89,7 +89,7 @@ const HUB_NAV_ITEMS = [
   { key: 'ideation', label: 'Ideation', href: '/ideation/backlog' },
   { key: 'product', label: 'Product Hub', href: '/product-hub' },
   { key: 'project', label: 'Project Hub', href: '/project-hub' },
-  { key: 'release', label: 'Release Hub', href: '/release-hub/command-center' },
+  { key: 'release', label: 'Release Hub', href: '/release-hub/overview' },
   { key: 'test', label: 'Test Hub', href: '/testhub/dashboard' },
   { key: 'incident', label: 'Incident Hub', href: '/incident-hub' },
   { key: 'task', label: 'Tasks', href: '/tasks/overview' },

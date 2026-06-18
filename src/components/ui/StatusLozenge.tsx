@@ -29,9 +29,30 @@ function getDisplayName(status: string): string {
     in_production: "In Production",
     ready_for_qa: "Ready for QA",
     on_hold: "On Hold",
+    // Release Operations lifecycle (release 9-stage)
+    draft: "Draft",
+    planned: "Planned",
+    in_readiness: "In Readiness",
+    ready_for_signoff: "Ready for Sign-off",
+    approved: "Approved",
+    scheduled: "Scheduled",
+    deploying: "Deploying",
+    monitoring: "Monitoring",
+    completed: "Completed",
+    rolled_back: "Rolled Back",
+    cancelled: "Cancelled",
+    // Change 9-stage lifecycle
+    assessing: "Assessing",
+    ready_for_approval: "Ready for Approval",
+    implementing: "Implementing",
+    validating: "Validating",
+    implemented: "Implemented",
+    closed: "Closed",
+    failed: "Failed",
   };
   if (snakeToJira[status]) return snakeToJira[status];
-  return status;
+  // Humanize any remaining snake_case so we never show raw "IN_READINESS".
+  return status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export function StatusLozenge({ status }: { status: string }) {

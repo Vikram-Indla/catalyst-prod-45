@@ -1,115 +1,257 @@
-import React, { useState } from 'react';
-import { X, ChevronDown, CalendarIcon } from '@/lib/atlaskit-icons';
-import { RH, CATEGORIES } from '@/constants/releasehub.design';
-import { useCreateChange, useReleases } from '@/hooks/useReleaseHub';
+/**
+ * CreateChgModal — Create / Map Change (Release Operations, Phase 7b)
+ *
+ * Rebuilt 2026-06-18 on @atlaskit/modal-dialog + select + datetime-picker +
+ * textfield + button/new (was a hand-rolled overlay + shadcn + --cp-*).
+ * Captures the richer change fields plus the two product-owner-flagged
+ * surfaces: **Approvers** (each becomes a pending rh_change_signoffs row) and
+ * **Notify** subscribers (rh_notify_subscribers). Optionally maps the change
+ * to a release on create.
+ */
+import React, { useMemo, useState } from 'react';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
+import { DatePicker } from '@atlaskit/datetime-picker';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useCreateChange } from '@/hooks/useReleaseHub';
 import { catalystToast } from '@/lib/catalystToast';
-import { format } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { X, Plus } from '@/lib/atlaskit-icons';
+import { RH } from '@/constants/releasehub.design';
 
 interface Props { onClose: () => void }
+interface Opt { label: string; value: string }
+
+const CHANGE_TYPES: Opt[] = [
+  { label: 'Standard', value: 'standard' },
+  { label: 'Normal', value: 'normal' },
+  { label: 'Emergency', value: 'emergency' },
+  { label: 'Hotfix', value: 'hotfix' },
+];
+const TARGET_ENVS: Opt[] = [
+  { label: 'QA', value: 'qa' },
+  { label: 'Beta', value: 'beta' },
+  { label: 'Staging', value: 'staging' },
+  { label: 'Production', value: 'production' },
+];
+const DEPLOY_CATEGORIES: Opt[] = [
+  { label: 'Frontend', value: 'frontend' },
+  { label: 'Backend', value: 'backend' },
+  { label: 'Integration', value: 'integration' },
+  { label: 'Database', value: 'database' },
+  { label: 'Full stack', value: 'full_stack' },
+  { label: 'Configuration', value: 'configuration' },
+];
+const RISKS: Opt[] = [
+  { label: 'Low', value: 'low' },
+  { label: 'Medium', value: 'medium' },
+  { label: 'High', value: 'high' },
+  { label: 'Critical', value: 'critical' },
+];
+const APPROVAL_ROLES: Opt[] = [
+  { label: 'QA', value: 'qa' },
+  { label: 'UAT', value: 'uat' },
+  { label: 'Product owner', value: 'product_owner' },
+  { label: 'Project manager', value: 'project_manager' },
+  { label: 'Change manager', value: 'change_manager' },
+];
+
+const labelStyle: React.CSSProperties = { display: 'block', fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4 };
+const errStyle: React.CSSProperties = { fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 };
+
+interface Approver { userId: string; role: string }
 
 export function CreateChgModal({ onClose }: Props) {
-  const { data: releases = [] } = useReleases();
   const createChange = useCreateChange();
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('');
-  const [deployDate, setDeployDate] = useState<Date | undefined>();
-  const [releaseId, setReleaseId] = useState('');
-  const [catOpen, setCatOpen] = useState(false);
-  const [relOpen, setRelOpen] = useState(false);
-  const [error, setError] = useState('');
 
-  const handleSubmit = () => {
-    if (!title || !deployDate) return;
-    setError('');
-    createChange.mutate({
-      chg_number: `CHG-${Date.now().toString().slice(-7)}`,
-      title,
-      category: category || undefined,
-      deployment_date: format(deployDate, 'yyyy-MM-dd'),
-      status: 'new',
-      risk_level: 'standard',
-      source: 'catalyst',
-    }, {
-      onSuccess: () => { catalystToast.success('Change created'); onClose(); },
-      onError: (err: any) => { setError(err.message || 'Failed to create change'); catalystToast.error('Failed to create change'); },
-    });
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [changeType, setChangeType] = useState<Opt | null>(null);
+  const [targetEnv, setTargetEnv] = useState<Opt | null>(null);
+  const [deployCategory, setDeployCategory] = useState<Opt | null>(null);
+  const [risk, setRisk] = useState<Opt | null>(null);
+  const [windowStart, setWindowStart] = useState('');
+  const [windowEnd, setWindowEnd] = useState('');
+  const [releaseId, setReleaseId] = useState<Opt | null>(null);
+  const [approvers, setApprovers] = useState<Approver[]>([]);
+  const [notifyIds, setNotifyIds] = useState<Opt[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const { data: releases = [] } = useQuery({
+    queryKey: ['release-hub', 'create-chg', 'releases'],
+    queryFn: async () => {
+      const { data } = await supabase.from('rh_releases').select('id, name').order('name');
+      return (data ?? []) as { id: string; name: string }[];
+    },
+  });
+  const { data: users = [] } = useQuery({
+    queryKey: ['release-hub', 'create-chg', 'users'],
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('id, full_name').not('full_name', 'is', null).order('full_name');
+      return (data ?? []) as { id: string; full_name: string | null }[];
+    },
+  });
+
+  const releaseOpts: Opt[] = useMemo(() => releases.map((r) => ({ label: r.name, value: r.id })), [releases]);
+  const userOpts: Opt[] = useMemo(() => users.map((u) => ({ label: u.full_name ?? 'Unknown', value: u.id })), [users]);
+
+  const errors = {
+    title: !title.trim() ? 'Title is required' : '',
+    changeType: !changeType ? 'Change type is required' : '',
+    targetEnv: !targetEnv ? 'Target environment is required' : '',
+    risk: !risk ? 'Risk is required' : '',
+  };
+  const isValid = !errors.title && !errors.changeType && !errors.targetEnv && !errors.risk;
+
+  const addApprover = () => setApprovers((a) => [...a, { userId: '', role: '' }]);
+  const updateApprover = (i: number, patch: Partial<Approver>) => setApprovers((a) => a.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
+  const removeApprover = (i: number) => setApprovers((a) => a.filter((_, idx) => idx !== i));
+
+  const handleSubmit = async () => {
+    setSubmitted(true);
+    setFormError('');
+    if (!isValid) return;
+    setSaving(true);
+    try {
+      // Sequential Catalyst change number: CAT-CHG-<nnnn>.
+      const { count } = await supabase.from('rh_changes').select('*', { count: 'exact', head: true }).eq('source', 'catalyst');
+      const chgNumber = `CAT-CHG-${String((count ?? 0) + 1).padStart(4, '0')}`;
+
+      const change = await createChange.mutateAsync({
+        chg_number: chgNumber,
+        title: title.trim(),
+        description: description.trim() || undefined,
+        status: 'new',
+        risk_level: risk!.value,
+        change_type: changeType!.value,
+        target_env: targetEnv!.value,
+        deployment_category: deployCategory?.value || undefined,
+        window_start: windowStart || undefined,
+        window_end: windowEnd || undefined,
+        release_id: releaseId?.value || undefined,
+        source: 'catalyst',
+      });
+
+      const changeId = (change as any)?.id as string | undefined;
+      if (changeId) {
+        const validApprovers = approvers.filter((a) => a.userId && a.role);
+        if (validApprovers.length > 0) {
+          await supabase.from('rh_change_signoffs').insert(
+            validApprovers.map((a) => ({ change_id: changeId, signoff_role: a.role, stage: a.role, assigned_to: a.userId, status: 'pending' })),
+          );
+        }
+        if (notifyIds.length > 0) {
+          await supabase.from('rh_notify_subscribers').insert(
+            notifyIds.map((n) => ({ item_type: 'change', item_id: changeId, user_id: n.value })),
+          );
+        }
+      }
+      catalystToast.success('Change created');
+      onClose();
+    } catch (err: any) {
+      setFormError(err?.message || 'Failed to create change');
+      catalystToast.error('Failed to create change');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
-      <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
-      <div className="relative bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl shadow-2xl w-[520px] max-h-[85vh] overflow-y-auto" style={{ borderRadius: 8 }} onClick={e => e.stopPropagation()}>
-        <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] z-10 flex items-center justify-between px-6 py-4 border-b border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-          <h2 className="text-[16px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>New Change</h2>
-          <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><X size={14} /></button>
-        </div>
-        <div className="p-6 space-y-4">
-          {error && <div className="px-3 py-2 rounded-md bg-[var(--ds-background-danger,#FEF2F2)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[12px] font-medium">{error}</div>}
-          <div>
-            <label className="block text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] mb-1">Category</label>
-            <div className="relative">
-              <button onClick={() => setCatOpen(!catOpen)} className="w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-[13px] text-left flex items-center justify-between hover:bg-[var(--ds-surface-sunken,#F8FAFC)] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
-                <span className={category ? 'text-[#1E293B]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'}>{category || 'Select category...'}</span>
-                <ChevronDown size={12} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
-              </button>
-              {catOpen && (
-                <div className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-md shadow-lg border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] z-50 py-1">
-                  {CATEGORIES.map(c => (
-                    <button key={c} onClick={() => { setCategory(c); setCatOpen(false); }}
-                      className="w-full px-3 h-9 text-left text-[13px] font-medium hover:bg-[var(--ds-surface-sunken,#F8FAFC)] text-[var(--ds-text-subtle,#475569)]">{c}</button>
-                  ))}
-                </div>
-              )}
+    <ModalTransition>
+      <Modal onClose={onClose} width="large">
+        <ModalHeader hasCloseButton>
+          <ModalTitle>New change</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          {formError && (
+            <div style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: 8, borderRadius: 4, marginBottom: 16 }}>{formError}</div>
+          )}
+
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle} htmlFor="chg-title">Title *</label>
+            <Textfield id="chg-title" value={title} onChange={(e) => setTitle((e.target as HTMLInputElement).value)} placeholder="Describe the change" />
+            {submitted && errors.title && <div style={errStyle}>{errors.title}</div>}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16 }}>
+            <div>
+              <label style={labelStyle}>Change type *</label>
+              <Select inputId="chg-type" options={CHANGE_TYPES} value={changeType} onChange={(v) => setChangeType(v as Opt)} placeholder="Select type" spacing="compact" menuPosition="fixed" />
+              {submitted && errors.changeType && <div style={errStyle}>{errors.changeType}</div>}
+            </div>
+            <div>
+              <label style={labelStyle}>Risk *</label>
+              <Select inputId="chg-risk" options={RISKS} value={risk} onChange={(v) => setRisk(v as Opt)} placeholder="Select risk" spacing="compact" menuPosition="fixed" />
+              {submitted && errors.risk && <div style={errStyle}>{errors.risk}</div>}
             </div>
           </div>
-          <div>
-            <label className="block text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] mb-1">Title *</label>
-            <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Describe the change..."
-              className="w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
-          </div>
-          <div>
-            <label className="block text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] mb-1">Planned Date *</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className={`w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] text-[13px] text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] ${deployDate ? 'text-[#1E293B]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'}`}>
-                  {deployDate ? format(deployDate, 'MMM d, yyyy') : 'Select date...'}
-                  <CalendarIcon size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={deployDate} onSelect={setDeployDate} initialFocus className="p-3 pointer-events-auto" />
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div>
-            <label className="block text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] mb-1">Linked Release</label>
-            <div className="relative">
-              <button onClick={() => setRelOpen(!relOpen)} className="w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-[13px] text-left flex items-center justify-between hover:bg-[var(--ds-surface-sunken,#F8FAFC)] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
-                <span className={releaseId ? 'text-[#1E293B]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'}>{releases.find((r: any) => r.id === releaseId)?.name || 'Select release...'}</span>
-                <ChevronDown size={12} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
-              </button>
-              {relOpen && (
-                <div className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-md shadow-lg border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] z-50 py-1 max-h-48 overflow-y-auto">
-                  <button onClick={() => { setReleaseId(''); setRelOpen(false); }} className="w-full px-3 h-9 text-left text-[13px] font-medium hover:bg-[var(--ds-surface-sunken,#F8FAFC)] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">None</button>
-                  {releases.map((r: any) => (
-                    <button key={r.id} onClick={() => { setReleaseId(r.id); setRelOpen(false); }}
-                      className="w-full px-3 h-9 text-left text-[13px] font-medium hover:bg-[var(--ds-surface-sunken,#F8FAFC)] text-[var(--ds-text-subtle,#475569)]">{r.name}</button>
-                  ))}
-                </div>
-              )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16 }}>
+            <div>
+              <label style={labelStyle}>Target environment *</label>
+              <Select inputId="chg-env" options={TARGET_ENVS} value={targetEnv} onChange={(v) => setTargetEnv(v as Opt)} placeholder="Select environment" spacing="compact" menuPosition="fixed" />
+              {submitted && errors.targetEnv && <div style={errStyle}>{errors.targetEnv}</div>}
+            </div>
+            <div>
+              <label style={labelStyle}>Deployment category</label>
+              <Select inputId="chg-cat" options={DEPLOY_CATEGORIES} value={deployCategory} onChange={(v) => setDeployCategory(v as Opt)} placeholder="Select category" isClearable spacing="compact" menuPosition="fixed" />
             </div>
           </div>
-        </div>
-        <div className="sticky bottom-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-t border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] px-6 py-3 flex justify-end gap-2">
-          <button onClick={onClose} className="h-9 px-4 rounded-md border border-[rgba(15,23,42,0.12)] text-[13px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">Cancel</button>
-          <button onClick={handleSubmit} disabled={!title || !deployDate || createChange.isPending}
-            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[13px] font-semibold hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] disabled:opacity-50">
-            {createChange.isPending ? 'Creating...' : 'Create Change'}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16 }}>
+            <div>
+              <label style={labelStyle}>Window start</label>
+              <DatePicker value={windowStart} onChange={setWindowStart} placeholder="Select date" />
+            </div>
+            <div>
+              <label style={labelStyle}>Window end</label>
+              <DatePicker value={windowEnd} onChange={setWindowEnd} placeholder="Select date" />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>Map to release</label>
+            <Select inputId="chg-release" options={releaseOpts} value={releaseId} onChange={(v) => setReleaseId(v as Opt)} placeholder="Unassigned" isClearable spacing="compact" menuPosition="fixed" />
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle} htmlFor="chg-desc">Description</label>
+            <TextArea id="chg-desc" value={description} onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)} placeholder="Optional details" minimumRows={2} />
+          </div>
+
+          {/* Approvers */}
+          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '8px 0' }}>Approvers</h3>
+          {approvers.map((a, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <div style={{ flex: 1 }}>
+                <Select inputId={`appr-user-${i}`} options={userOpts} value={userOpts.find((o) => o.value === a.userId) ?? null} onChange={(v) => updateApprover(i, { userId: (v as Opt)?.value ?? '' })} placeholder="Approver" spacing="compact" menuPosition="fixed" />
+              </div>
+              <div style={{ width: 180 }}>
+                <Select inputId={`appr-role-${i}`} options={APPROVAL_ROLES} value={APPROVAL_ROLES.find((o) => o.value === a.role) ?? null} onChange={(v) => updateApprover(i, { role: (v as Opt)?.value ?? '' })} placeholder="Role" spacing="compact" menuPosition="fixed" />
+              </div>
+              <button onClick={() => removeApprover(i)} aria-label="Remove approver" style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #626F86)', padding: 4 }}>
+                <X size={14} style={{ color: 'var(--ds-text-subtlest, #626F86)' }} />
+              </button>
+            </div>
+          ))}
+          <button onClick={addApprover} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: 'var(--ds-link, #0C66E4)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 16 }}>
+            <Plus size={14} style={{ color: 'var(--ds-link, #0C66E4)' }} /> Add approver
           </button>
-        </div>
-      </div>
-    </div>
+
+          {/* Notify */}
+          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '8px 0' }}>Notify</h3>
+          <Select inputId="chg-notify" isMulti options={userOpts} value={notifyIds} onChange={(v) => setNotifyIds((v as Opt[]) ?? [])} placeholder="Add users to notify" spacing="compact" menuPosition="fixed" />
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+          <Button appearance="primary" onClick={handleSubmit} isDisabled={saving} isLoading={saving}>Create change</Button>
+        </ModalFooter>
+      </Modal>
+    </ModalTransition>
   );
 }

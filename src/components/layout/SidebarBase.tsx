@@ -43,7 +43,7 @@ const HUB_ITEMS = [
   { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: 'var(--ds-icon-accent-purple, #8270DB)' },
   { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--ds-icon-brand, #0052CC)' },
   { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: 'var(--ds-icon-accent-teal, #00A3BF)' },
-  { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange, #FF8B00)' },
+  { label: 'Release Hub',  href: '/release-hub/overview', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange, #FF8B00)' },
   { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: 'var(--ds-icon-accent-green, #36B37E)' },
   { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red, #DE350B)' },
   { label: 'Tasks',     href: '/tasks/overview',          Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow, #FFAB00)' },
