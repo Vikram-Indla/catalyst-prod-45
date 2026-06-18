@@ -87,6 +87,7 @@ function EventDetailModal({ event, onClose }: { event: ProductionEventRow; onClo
 export default function ProductionEventsPage() {
   const { data: events = [], isLoading, error, refetch } = useProductionEventsList();
   const [selected, setSelected] = useState<ProductionEventRow | null>(null);
+  const [selection, setSelection] = useState<Set<string>>(new Set());
 
   const columns: Column<ProductionEventRow>[] = useMemo(() => [
     {
@@ -125,6 +126,9 @@ export default function ProductionEventsPage() {
           data={events}
           getRowId={(r) => r.id}
           onRowClick={(r) => setSelected(r)}
+          selectable
+          selection={selection}
+          onSelectionChange={setSelection}
           isLoading={isLoading}
           rowsPerPage={25}
           showRowCount

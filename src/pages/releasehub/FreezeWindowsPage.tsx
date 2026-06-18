@@ -37,6 +37,7 @@ export default function FreezeWindowsPage() {
   const { data: windows = [], isLoading, error, refetch } = useFreezeWindowsList();
   const del = useDeleteFreezeWindow();
   const [showCreate, setShowCreate] = useState(false);
+  const [selection, setSelection] = useState<Set<string>>(new Set());
 
   const handleDelete = (id: string, name: string) => {
     if (!window.confirm(`Delete freeze window "${name}"?`)) return;
@@ -104,6 +105,9 @@ export default function FreezeWindowsPage() {
           columns={columns}
           data={windows}
           getRowId={(r) => r.id}
+          selectable
+          selection={selection}
+          onSelectionChange={setSelection}
           isLoading={isLoading}
           rowsPerPage={25}
           showRowCount

@@ -31,6 +31,7 @@ function titleCase(v: string | null) {
 export default function SopTemplatesPage() {
   const { data: templates = [], isLoading, error, refetch } = useSopTemplates();
   const [showCreate, setShowCreate] = useState(false);
+  const [selection, setSelection] = useState<Set<string>>(new Set());
 
   const columns: Column<SopTemplateRow>[] = useMemo(() => [
     {
@@ -72,6 +73,9 @@ export default function SopTemplatesPage() {
           columns={columns}
           data={templates}
           getRowId={(r) => r.id}
+          selectable
+          selection={selection}
+          onSelectionChange={setSelection}
           isLoading={isLoading}
           rowsPerPage={25}
           showRowCount

@@ -79,6 +79,7 @@ export default function AllReleasesPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [showCreate, setShowCreate] = useState(false);
   const [view, setView] = useState<'table' | 'board'>('table');
+  const [selection, setSelection] = useState<Set<string>>(new Set());
   const updateStatus = useUpdateReleaseStatus();
 
   const boardAdapter = useMemo(
@@ -266,6 +267,9 @@ export default function AllReleasesPage() {
           data={filtered}
           getRowId={(r) => r.id}
           onRowClick={(r) => navigate(`/release-hub/${r.id}`)}
+          selectable
+          selection={selection}
+          onSelectionChange={setSelection}
           isLoading={isLoading}
           rowsPerPage={25}
           showRowCount

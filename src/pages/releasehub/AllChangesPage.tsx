@@ -35,11 +35,19 @@ const T = {
 
 const STATUS_FILTERS = [
   { key: 'all', label: 'All' },
-  { key: 'new', label: 'New' },
-  { key: 'in_uat', label: 'In UAT' },
-  { key: 'in_beta', label: 'In Beta' },
-  { key: 'in_production', label: 'In Production' },
+  { key: 'draft', label: 'Draft' },
+  { key: 'active', label: 'Active' },
+  { key: 'in_progress', label: 'In progress' },
+  { key: 'closed', label: 'Closed' },
 ];
+
+// Bucket a (new-lifecycle or legacy) change status into a filter tab.
+function changeBucket(status: string): string {
+  if (status === 'draft') return 'draft';
+  if (['closed', 'implemented', 'in_production', 'cancelled', 'failed', 'rolled_back'].includes(status)) return 'closed';
+  if (['implementing', 'validating', 'in_uat', 'in_beta'].includes(status)) return 'in_progress';
+  return 'active';
+}
 
 function RiskPill({ risk }: { risk: string | null }) {
   if (!risk) return <span style={{ color: T.subtlest }}>—</span>;
@@ -64,9 +72,10 @@ export default function AllChangesPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showCreate, setShowCreate] = useState(false);
+  const [selection, setSelection] = useState<Set<string>>(new Set());
 
   const filtered = useMemo(() => changes.filter((c) => {
-    if (statusFilter !== 'all' && c.status !== statusFilter) return false;
+    if (statusFilter !== 'all' && changeBucket(c.status) !== statusFilter) return false;
     if (search) {
       const q = search.toLowerCase();
       if (!`${c.chg_number} ${c.title}`.toLowerCase().includes(q)) return false;
@@ -76,7 +85,7 @@ export default function AllChangesPage() {
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: changes.length };
-    STATUS_FILTERS.slice(1).forEach((s) => { c[s.key] = changes.filter((x) => x.status === s.key).length; });
+    STATUS_FILTERS.slice(1).forEach((s) => { c[s.key] = changes.filter((x) => changeBucket(x.status) === s.key).length; });
     return c;
   }, [changes]);
 
@@ -166,6 +175,9 @@ export default function AllChangesPage() {
           data={filtered}
           getRowId={(r) => r.id}
           onRowClick={(r) => navigate(`/release-hub/changes/${r.id}`)}
+          selectable
+          selection={selection}
+          onSelectionChange={setSelection}
           isLoading={isLoading}
           rowsPerPage={25}
           showRowCount
