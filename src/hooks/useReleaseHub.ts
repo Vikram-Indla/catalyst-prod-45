@@ -73,6 +73,8 @@ export const useReleasesList = () =>
   useQuery({
     queryKey: [...KEYS.releases, 'list'],
     staleTime: 30_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<ReleaseListRow[]> => {
       const { data: rels, error } = await supabase
         .from('rh_releases')
@@ -281,6 +283,8 @@ export const usePendingApprovals = () =>
   useQuery({
     queryKey: KEYS.pendingApprovals,
     staleTime: 15_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<PendingApproval[]> => {
       const { data: rows, error } = await supabase
         .from('rh_change_signoffs')
@@ -743,6 +747,8 @@ export const useChangesList = () =>
   useQuery({
     queryKey: [...KEYS.changes, 'list'],
     staleTime: 15_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<ChangeListRow[]> => {
       const { data: rows, error } = await supabase
         .from('rh_changes')
@@ -945,6 +951,8 @@ export const useProductionEventsList = () =>
   useQuery({
     queryKey: [...KEYS.productionEvents, 'list'],
     staleTime: 30_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<ProductionEventRow[]> => {
       const { data, error } = await supabase
         .from('rh_production_events')
@@ -1009,6 +1017,8 @@ export const useFreezeWindowsList = () =>
   useQuery({
     queryKey: ['release-hub', 'freeze-windows', 'list'],
     staleTime: 30_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<FreezeWindowRow[]> => {
       const [fwRes, relRes, chgRes] = await Promise.all([
         supabase.from('rh_freeze_windows').select('id, name, start_date, end_date, reason, target_env, applicability, status').order('start_date', { ascending: false }),
