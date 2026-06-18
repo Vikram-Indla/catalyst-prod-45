@@ -14,11 +14,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  isDraftsTableAvailable,
-  isMissingTableError,
-  markDraftsTableMissing,
-} from '../lib/chatDraftsFlags';
+import { isMissingTableError } from '../lib/chatDraftsFlags';
 
 const db = supabase as unknown as { from: (t: string) => any };
 const DEBOUNCE_MS = 600;
@@ -42,7 +38,6 @@ export function useConversationDraft(conversationId: string | null | undefined) 
     queryKey,
     queryFn: async () => {
       if (!userId || !conversationId) return null;
-      if (!isDraftsTableAvailable()) return null;
       const { data, error } = await db
         .from('chat_message_drafts')
         .select('body_md, updated_at')
@@ -50,7 +45,11 @@ export function useConversationDraft(conversationId: string | null | undefined) 
         .eq('conversation_id', conversationId)
         .maybeSingle();
       if (error) {
-        if (isMissingTableError(error)) markDraftsTableMissing();
+        if (isMissingTableError(error)) {
+          console.warn(
+            '[chat-v2] draft read skipped — chat_message_drafts table is missing. Apply migration 20260618000300_chat_message_drafts.sql.',
+          );
+        }
         return null;
       }
       return (data as DraftRow | null) ?? null;
@@ -68,18 +67,19 @@ export function useConversationDraft(conversationId: string | null | undefined) 
   const writeNow = useCallback(
     async (md: string) => {
       if (!userId || !conversationId) return;
-      if (!isDraftsTableAvailable()) return;
       try {
+        let writeErr: unknown = null;
         if (md.length === 0) {
           // Empty draft -> delete the row so the global drafts list does
           // not show an empty entry.
-          await db
+          const { error } = await db
             .from('chat_message_drafts')
             .delete()
             .eq('user_id', userId)
             .eq('conversation_id', conversationId);
+          writeErr = error ?? null;
         } else {
-          await db.from('chat_message_drafts').upsert(
+          const { error } = await db.from('chat_message_drafts').upsert(
             {
               user_id: userId,
               conversation_id: conversationId,
@@ -88,16 +88,29 @@ export function useConversationDraft(conversationId: string | null | undefined) 
             },
             { onConflict: 'user_id,conversation_id' },
           );
+          writeErr = error ?? null;
+        }
+        if (writeErr) {
+          if (isMissingTableError(writeErr)) {
+            console.warn(
+              '[chat-v2] draft write skipped — chat_message_drafts table is missing. Apply migration 20260618000300_chat_message_drafts.sql.',
+            );
+          } else {
+            console.warn('[chat-v2] draft write failed', writeErr);
+          }
+          return;
         }
         // Invalidate the all-drafts list so the Drafts tab updates.
         queryClient.invalidateQueries({ queryKey: ['chat-v2', 'all-drafts', userId] });
         // Update our own cache so a remount returns the latest value.
-        queryClient.setQueryData<DraftRow | null>(queryKey, {
-          body_md: md,
-          updated_at: new Date().toISOString(),
-        });
+        queryClient.setQueryData<DraftRow | null>(
+          queryKey,
+          md.length === 0
+            ? null
+            : { body_md: md, updated_at: new Date().toISOString() },
+        );
       } catch (err) {
-        if (isMissingTableError(err)) markDraftsTableMissing();
+        console.warn('[chat-v2] draft write threw', err);
       }
     },
     [userId, conversationId, queryClient, queryKey],
@@ -136,17 +149,22 @@ export function useConversationDraft(conversationId: string | null | undefined) 
     }
     pendingRef.current = null;
     if (!userId || !conversationId) return;
-    if (!isDraftsTableAvailable()) return;
     try {
-      await db
+      const { error } = await db
         .from('chat_message_drafts')
         .delete()
         .eq('user_id', userId)
         .eq('conversation_id', conversationId);
+      if (error) {
+        if (!isMissingTableError(error)) {
+          console.warn('[chat-v2] draft clear failed', error);
+        }
+        return;
+      }
       queryClient.setQueryData<DraftRow | null>(queryKey, null);
       queryClient.invalidateQueries({ queryKey: ['chat-v2', 'all-drafts', userId] });
     } catch (err) {
-      if (isMissingTableError(err)) markDraftsTableMissing();
+      console.warn('[chat-v2] draft clear threw', err);
     }
   }, [userId, conversationId, queryClient, queryKey]);
 

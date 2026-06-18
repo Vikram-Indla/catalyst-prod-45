@@ -23,11 +23,7 @@ import { useMyScheduledCount } from '../../hooks/useMyScheduledCount';
 import type { DraftListItem } from '../../hooks/useAllDrafts';
 import type { ScheduledMessage } from '../../hooks/useMyScheduledMessages';
 import type { SentMessage } from '../../hooks/useMySentMessages';
-import {
-  isDraftsTableAvailable,
-  isMissingTableError,
-  markDraftsTableMissing,
-} from '../../lib/chatDraftsFlags';
+import { isMissingTableError } from '../../lib/chatDraftsFlags';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -96,25 +92,25 @@ export function DraftsAndSentPanel({
   const handleDelete = useCallback(async () => {
     if (!user?.id) return;
     if (selectedIds.size === 0) return;
-    if (!isDraftsTableAvailable()) {
-      exitSelectMode();
-      return;
-    }
     const ids = Array.from(selectedIds);
     try {
-      await db
+      const { error } = await db
         .from('chat_message_drafts')
         .delete()
         .eq('user_id', user.id)
         .in('conversation_id', ids);
-      queryClient.invalidateQueries({ queryKey: ['chat-v2', 'all-drafts', user.id] });
-      // Also clear any per-conv draft cache for the deleted conversations.
-      ids.forEach(convId => {
-        queryClient.setQueryData(['chat-v2', 'draft', user.id, convId], null);
-      });
+      if (error) {
+        if (!isMissingTableError(error)) {
+          console.warn('[chat-v2] bulk draft delete failed', error);
+        }
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['chat-v2', 'all-drafts', user.id] });
+        ids.forEach(convId => {
+          queryClient.setQueryData(['chat-v2', 'draft', user.id, convId], null);
+        });
+      }
     } catch (err) {
-      if (isMissingTableError(err)) markDraftsTableMissing();
-      console.warn('[chat-v2] bulk draft delete failed', err);
+      console.warn('[chat-v2] bulk draft delete threw', err);
     }
     exitSelectMode();
   }, [user?.id, selectedIds, queryClient, exitSelectMode]);

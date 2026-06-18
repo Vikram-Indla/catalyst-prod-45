@@ -372,6 +372,13 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
       void draftState.clearDraft();
       if (!hasDoneAttachments) {
         await sendMessage(markdown, scheduledFor ? { scheduledFor } : undefined);
+        if (scheduledFor) {
+          // Re-fetch scheduled list + count so the composer banner above
+          // updates from "1 message scheduled" -> "2 messages scheduled"
+          // immediately.
+          await queryClient.invalidateQueries({ queryKey: ['chat-v2', 'my-scheduled', user.id] });
+          await queryClient.invalidateQueries({ queryKey: ['chat-v2', 'my-scheduled-count', user.id] });
+        }
         return;
       }
       const db = supabase as unknown as { from: (table: string) => any };
@@ -406,6 +413,10 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
       await queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversation.id] });
       await queryClient.invalidateQueries({ queryKey: ['chat', 'attachments', conversation.id] });
       await queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] });
+      if (scheduledFor) {
+        await queryClient.invalidateQueries({ queryKey: ['chat-v2', 'my-scheduled', user.id] });
+        await queryClient.invalidateQueries({ queryKey: ['chat-v2', 'my-scheduled-count', user.id] });
+      }
     },
     [user?.id, staged, conversation.id, sendMessage, queryClient, draftState],
   );

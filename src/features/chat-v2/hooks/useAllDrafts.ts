@@ -9,11 +9,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  isDraftsTableAvailable,
-  isMissingTableError,
-  markDraftsTableMissing,
-} from '../lib/chatDraftsFlags';
+import { isMissingTableError } from '../lib/chatDraftsFlags';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -47,7 +43,6 @@ export function useAllDrafts() {
     queryKey: ['chat-v2', 'all-drafts', userId],
     queryFn: async () => {
       if (!userId) return [];
-      if (!isDraftsTableAvailable()) return [];
       const { data, error } = await db
         .from('chat_message_drafts')
         .select(
@@ -57,7 +52,9 @@ export function useAllDrafts() {
         .neq('body_md', '')
         .order('updated_at', { ascending: false });
       if (error) {
-        if (isMissingTableError(error)) markDraftsTableMissing();
+        if (!isMissingTableError(error)) {
+          console.warn('[chat-v2] all-drafts fetch failed', error);
+        }
         return [];
       }
       const rows = (data ?? []) as RawDraftRow[];
