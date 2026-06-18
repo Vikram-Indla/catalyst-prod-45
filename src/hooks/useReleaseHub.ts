@@ -22,6 +22,7 @@ const KEYS = {
   change: (id: string) => ['release-hub', 'changes', id] as const,
   signoffs: (changeId: string) => ['release-hub', 'signoffs', changeId] as const,
   pendingSignoffs: ['release-hub', 'signoffs', 'pending'] as const,
+  pendingApprovals: ['release-hub', 'signoffs', 'pending-approvals'] as const,
   testCycles: (changeId: string) => ['release-hub', 'test-cycles', changeId] as const,
   triage: ['release-hub', 'triage'] as const,
   triageCount: ['release-hub', 'triage-count'] as const,
@@ -113,6 +114,62 @@ export const useChangeSignoffs = (changeId: string) =>
 
 export const usePendingSignOffs = () =>
   useQuery({ queryKey: KEYS.pendingSignoffs, queryFn: signOffService.getAllPending, staleTime: 15_000 });
+
+export interface PendingApproval {
+  id: string;
+  changeId: string | null;
+  chgNumber: string | null;
+  changeTitle: string | null;
+  riskLevel: string | null;
+  role: string | null;
+  status: string;
+  waitStartedAt: string | null;
+  approverId: string | null;
+  approverName: string | null;
+  approverAvatarUrl: string | null;
+}
+
+/**
+ * Pending approvals enriched with the approver's profile (name + avatar) so the
+ * Overview "Pending Approvals" panel can render face avatars. assigned_to may be
+ * null (unassigned gate) — approverName/avatar stay null; render "Unassigned".
+ */
+export const usePendingApprovals = () =>
+  useQuery({
+    queryKey: KEYS.pendingApprovals,
+    staleTime: 15_000,
+    queryFn: async (): Promise<PendingApproval[]> => {
+      const { data: rows, error } = await supabase
+        .from('rh_change_signoffs')
+        .select('id, change_id, signoff_role, stage, status, wait_started_at, assigned_to, rh_changes(chg_number, title, risk_level)')
+        .in('status', ['pending', 'waiting'])
+        .order('wait_started_at', { ascending: true });
+      if (error) throw error;
+      const signoffs = rows ?? [];
+      const approverIds = [...new Set(signoffs.map((s: any) => s.assigned_to).filter(Boolean))] as string[];
+      const profileMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
+      if (approverIds.length > 0) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', approverIds);
+        (profs ?? []).forEach((p: any) => { profileMap[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }; });
+      }
+      return signoffs.map((s: any) => ({
+        id: s.id,
+        changeId: s.change_id ?? null,
+        chgNumber: s.rh_changes?.chg_number ?? null,
+        changeTitle: s.rh_changes?.title ?? null,
+        riskLevel: s.rh_changes?.risk_level ?? null,
+        role: s.signoff_role ?? s.stage ?? null,
+        status: s.status,
+        waitStartedAt: s.wait_started_at ?? null,
+        approverId: s.assigned_to ?? null,
+        approverName: s.assigned_to ? (profileMap[s.assigned_to]?.full_name ?? null) : null,
+        approverAvatarUrl: s.assigned_to ? (profileMap[s.assigned_to]?.avatar_url ?? null) : null,
+      }));
+    },
+  });
 
 export const useApproveSignoff = () => {
   const qc = useQueryClient();
