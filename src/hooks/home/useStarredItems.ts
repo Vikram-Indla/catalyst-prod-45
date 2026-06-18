@@ -131,6 +131,7 @@ export function useToggleStar() {
     },
     onSuccess: () => {
       // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ['starred-hub'] });
       queryClient.invalidateQueries({ queryKey: ['starred-item-ids'] });
       queryClient.invalidateQueries({ queryKey: ['starred-items-count'] });
       queryClient.invalidateQueries({ queryKey: ['starred-delivery-items'] });

@@ -7,6 +7,9 @@ import { token } from '@atlaskit/tokens';
 import type { DirectNotification } from '../types';
 import DirectWorkItemIcon from './DirectWorkItemIcon';
 import { formatRelativeTime, getVerbText } from '../utils/date';
+import { Star } from '@/lib/atlaskit-icons';
+import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
+import { workItemStarType } from '@/lib/starType';
 
 interface Props {
   notification: DirectNotification;
@@ -42,6 +45,19 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const verbText  = getVerbText(notification.verb, actorName);
   const relTime   = formatRelativeTime(notification.createdAt);
   const { target, aggregation, thread } = notification;
+
+  // Hover-revealed star → unified user_starred_items store. The row is a
+  // <button>, so the star is a role="button" span (a nested <button> would be
+  // invalid HTML). Visible on row hover/focus and stays gold once starred.
+  const { data: starredIds } = useStarredItemIds();
+  const toggleStar = useToggleStar();
+  const isStarred = !!target.key && (starredIds?.has(target.key) ?? false);
+  const handleToggleStar = useCallback((e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+    if (!target.key) return;
+    toggleStar.mutate({ itemId: target.key, itemType: workItemStarType(target.iconType), isCurrentlyStarred: isStarred });
+  }, [target.key, target.iconType, isStarred, toggleStar]);
+  const STAR_GOLD = 'var(--ds-icon-accent-yellow, #FFAB00)';
 
   const hoverBg  = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)');
   const pressBg  = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
@@ -232,6 +248,29 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           >
             {target.statusLabel}
           </span>
+
+          {/* Hover-revealed star — pinned right. role="button" span (the row
+              itself is a <button>). Gold + visible when starred. */}
+          {target.key && (
+            <span
+              role="button"
+              tabIndex={0}
+              aria-label={isStarred ? 'Remove from starred' : 'Add to starred'}
+              onClick={handleToggleStar}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleToggleStar(e); }}
+              style={{
+                marginLeft: 'auto',
+                display: 'inline-flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+                flexShrink: 0,
+                opacity: isStarred || hovered ? 1 : 0,
+                transition: 'opacity 120ms ease',
+              }}
+            >
+              <Star size={16} color={STAR_GOLD} fill={isStarred ? STAR_GOLD : 'none'} />
+            </span>
+          )}
         </Box>
 
         {/* Thread preview card — shown when notification has a comment thread */}
