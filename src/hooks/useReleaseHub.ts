@@ -11,6 +11,8 @@ import {
   workItemService,
 } from '@/services/release-hub.service';
 import { supabase } from '@/integrations/supabase/client';
+import { validateReleaseTransition, validateChangeTransition } from '@/lib/release-ops/lifecycle';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ── Query Key Family ─────────────────────────────────────────────
 const KEYS = {
@@ -108,6 +110,8 @@ export const useUpdateReleaseStatus = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const guard = await validateReleaseTransition(id, status);
+      if (!guard.ok) throw new Error(guard.reason ?? 'Transition not allowed');
       await releaseService.updateStatus(id, status);
       // Auto-generate a production event when a production-targeted release
       // reaches `completed` (idempotent — skips if one already exists).
@@ -146,6 +150,7 @@ export const useUpdateReleaseStatus = () => {
       qc.invalidateQueries({ queryKey: KEYS.release(id) });
       qc.invalidateQueries({ queryKey: KEYS.productionEvents });
     },
+    onError: (err: any) => { catalystToast.error(err?.message ?? 'Could not change release status'); },
   });
 };
 
@@ -182,13 +187,17 @@ export const useCreateChange = () => {
 export const useUpdateChangeStatus = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, status, deploymentResult, comment }: { id: string; status: string; deploymentResult?: string | null; comment?: string }) =>
-      changeService.updateStatus(id, status, deploymentResult, comment),
+    mutationFn: async ({ id, status, deploymentResult, comment }: { id: string; status: string; deploymentResult?: string | null; comment?: string }) => {
+      const guard = await validateChangeTransition(id, status);
+      if (!guard.ok) throw new Error(guard.reason ?? 'Transition not allowed');
+      return changeService.updateStatus(id, status, deploymentResult, comment);
+    },
     onSuccess: (_, { id }) => {
       qc.invalidateQueries({ queryKey: KEYS.changes });
       qc.invalidateQueries({ queryKey: KEYS.change(id) });
       qc.invalidateQueries({ queryKey: KEYS.kpis });
     },
+    onError: (err: any) => { catalystToast.error(err?.message ?? 'Could not change status'); },
   });
 };
 

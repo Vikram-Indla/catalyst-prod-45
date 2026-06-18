@@ -85,7 +85,7 @@ export default function AllReleasesPage() {
       onSearchChange: setSearch,
       onCardClick: (id) => navigate(`/release-hub/${id}`),
       onCreate: () => setShowCreate(true),
-      onStatusChange: (id, status) => updateStatus.mutate({ id, status }),
+      onStatusChange: (id, status) => updateStatus.mutateAsync({ id, status }),
     }),
     [releases, search, navigate, updateStatus],
   );

@@ -132,7 +132,8 @@ export function buildReleaseBoardAdapter(args: BuildReleaseBoardAdapterArgs): Bo
     onDrop: (event) => {
       if (event.destColId !== event.sourceColId) {
         const next = releaseColumnIdToStatus(event.destColId);
-        if (next && onStatusChange) onStatusChange(event.cardId, next);
+        // Return the promise so a guard rejection rolls the card back.
+        if (next && onStatusChange) return onStatusChange(event.cardId, next);
       }
     },
   };
