@@ -44,7 +44,7 @@ import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './Sidebar
 import SidebarClock from './SidebarClock';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import { HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
+import { HUB_ICON_OUTLINE_REGISTRY, HUB_ICON_REGISTRY } from '@/components/icons';
 import { sliceVisible } from '@/lib/home-recents';
 
 const RECENT_LIMIT = 16;
@@ -221,8 +221,10 @@ function SpaceGroupHeader({
   // Space-scoped hubs (project/product) carry a per-space KEY → show "KEY · Type".
   // Global single hubs (task/incident/release/plan) have no key → type word only.
   const isSpaceScoped = head.hub === 'project' || head.hub === 'product';
+  // Full-color gradient hub tile (same asset as the module launcher), not the
+  // monochrome outline glyph — Plan/Release/Incident now read with launcher parity.
   const globalHubIcon =
-    HUB_ICON_OUTLINE_REGISTRY[head.hub as keyof typeof HUB_ICON_OUTLINE_REGISTRY];
+    HUB_ICON_REGISTRY[head.hub as keyof typeof HUB_ICON_REGISTRY];
 
   // Whole header is the collapse affordance. The chevron sits left of the
   // avatar (Jira "Recent" group-header pattern) and rotates open→down /
@@ -273,21 +275,12 @@ function SpaceGroupHeader({
           <TaskIcon label="" size="small" primaryColor="var(--ds-icon-accent-yellow, #946F00)" />
         </span>
       ) : !isSpaceScoped ? (
-        <span
+        <img
+          src={globalHubIcon}
+          alt=""
           aria-hidden="true"
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 3,
-            flexShrink: 0,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'var(--ds-background-neutral, #F1F2F4)',
-          }}
-        >
-          <img src={globalHubIcon} alt="" style={{ width: 16, height: 16, display: 'block' }} />
-        </span>
+          style={{ width: 20, height: 20, borderRadius: 4, flexShrink: 0, display: 'block' }}
+        />
       ) : (
         <ProjectIcon
           projectKey={head.projectKey}
@@ -416,10 +409,9 @@ export default function HomeSidebar({
   const navigate = useNavigate();
   const { recentLocations, loading } = useRecentProjects(RECENT_LIMIT);
 
-  // Per-space display state. `collapsed` (persisted) hides a group's rows;
-  // `showAll` (session) unfolds a group past the 3-row cap.
+  // Per-space display state. `collapsed` (persisted) hides a group's rows.
+  // Rows are hard-capped at 3 per group (no expand fold) — see slice below.
   const [collapsed, setCollapsed] = useState<Set<string>>(() => loadCollapsed());
-  const [showAll, setShowAll] = useState<Set<string>>(() => new Set());
 
   const toggleCollapsed = useCallback((key: string) => {
     setCollapsed((prev) => {
@@ -427,15 +419,6 @@ export default function HomeSidebar({
       if (next.has(key)) next.delete(key);
       else next.add(key);
       saveCollapsed(next);
-      return next;
-    });
-  }, []);
-
-  const toggleShowAll = useCallback((key: string) => {
-    setShowAll((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
       return next;
     });
   }, []);
@@ -548,41 +531,10 @@ export default function HomeSidebar({
         return { title: group.head.projectName, titleNode: header, items: [] };
       }
 
-      const { visible, hiddenCount } = sliceVisible(group.items, showAll.has(group.key));
+      // Hard cap of 3 rows per space — no "+N more" fold. Vikram 2026-06-18:
+      // each module shows at most its 3 most-recent rooms, no expand chip.
+      const { visible } = sliceVisible(group.items, false);
       const items: SidebarMenuItem[] = visible.map(toItem);
-
-      // "+N more" / "Show less" fold toggle — non-navigating synthetic row.
-      // The hash path never matches a route, so it never reads as active.
-      if (group.items.length > visible.length || showAll.has(group.key)) {
-        const expanded = showAll.has(group.key);
-        items.push({
-          id: `recent-more-${group.key}`,
-          title: (
-            <span
-              style={{
-                color: token('color.link', '#0C66E4'),
-                fontWeight: 500,
-                fontSize: token('font.size.075', '12px'),
-                lineHeight: '20px',
-              }}
-            >
-              {expanded ? 'Show less' : `+${hiddenCount} more`}
-            </span>
-          ),
-          tooltip: expanded ? 'Show less' : `Show ${hiddenCount} more`,
-          path: `#recent-more-${group.key}`,
-          icon: () => (
-            <span aria-hidden="true" style={{ display: 'inline-flex' }}>
-              {expanded ? (
-                <ChevronDownIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
-              ) : (
-                <ChevronRightIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
-              )}
-            </span>
-          ),
-          onClick: () => toggleShowAll(group.key),
-        });
-      }
 
       return { title: group.head.projectName, titleNode: header, items };
     });
@@ -595,7 +547,7 @@ export default function HomeSidebar({
       sectionsHeading: 'Recent',
       sections,
     };
-  }, [recentLocations, loading, expanded, collapsed, showAll, toggleCollapsed, toggleShowAll]);
+  }, [recentLocations, loading, expanded, collapsed, toggleCollapsed]);
 
   return (
     <SidebarBase
