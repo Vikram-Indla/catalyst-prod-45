@@ -376,6 +376,11 @@ export function useCreateFreezeWindow() {
       start_date: string;
       end_date: string;
       reason?: string;
+      target_env?: string;
+      applicability?: string;
+      product_id?: string;
+      status?: string;
+      override_policy?: string;
     }) => {
       const { data, error } = await supabase
         .from('rh_freeze_windows')
@@ -891,5 +896,40 @@ export const useReleaseCalendar = () =>
         if (p.deployed_at) events.push({ id: `prd-${p.id}`, lane: 'prod', label: p.title, date: p.deployed_at.slice(0, 10), endDate: null, link: '/release-hub/production-events', env: p.target_env ?? null });
       });
       return events;
+    },
+  });
+
+// ── Freeze Windows list + conflict detection (Phase 13) ──────────────
+export interface FreezeWindowRow {
+  id: string; name: string; startDate: string; endDate: string; reason: string | null;
+  targetEnv: string | null; applicability: string | null; status: string | null; conflicts: number;
+}
+
+export const useFreezeWindowsList = () =>
+  useQuery({
+    queryKey: ['release-hub', 'freeze-windows', 'list'],
+    staleTime: 30_000,
+    queryFn: async (): Promise<FreezeWindowRow[]> => {
+      const [fwRes, relRes, chgRes] = await Promise.all([
+        supabase.from('rh_freeze_windows').select('id, name, start_date, end_date, reason, target_env, applicability, status').order('start_date', { ascending: false }),
+        supabase.from('rh_releases').select('id, target_env, target_date, planned_release_date').not('status', 'in', '("completed","cancelled","rolled_back")'),
+        supabase.from('rh_changes').select('id, target_env, deployment_date, window_start').not('status', 'in', '("in_production","closed","cancelled")'),
+      ]);
+      const windows = (fwRes.data ?? []) as any[];
+      const releases = (relRes.data ?? []) as any[];
+      const changes = (chgRes.data ?? []) as any[];
+      const envMatch = (winEnv: string | null, itemEnv: string | null) => !winEnv || winEnv === 'all' || winEnv === itemEnv;
+      return windows.map((w) => {
+        const start = new Date(w.start_date).getTime();
+        const end = new Date(w.end_date).getTime();
+        const within = (d: string | null) => { if (!d) return false; const t = new Date(d).getTime(); return t >= start && t <= end; };
+        const relConflicts = releases.filter((r) => envMatch(w.target_env, r.target_env) && within(r.planned_release_date ?? r.target_date)).length;
+        const chgConflicts = changes.filter((c) => envMatch(w.target_env, c.target_env) && within(c.window_start ?? c.deployment_date)).length;
+        return {
+          id: w.id, name: w.name, startDate: w.start_date, endDate: w.end_date, reason: w.reason,
+          targetEnv: w.target_env ?? null, applicability: w.applicability ?? null, status: w.status ?? null,
+          conflicts: relConflicts + chgConflicts,
+        };
+      });
     },
   });
