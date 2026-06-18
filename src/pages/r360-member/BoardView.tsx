@@ -21,12 +21,11 @@ import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
 import type { R360WorkItem } from '@/types/r360';
 import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight';
-// 2026-06-17 — Adopt the backlog search pattern: a standalone Caty icon
-// beside a plain search field (image-1 parity). Deprecates the combined
-// CatalystAiSearch box with its embedded "Ask" pill on this board.
-import { CatyIconCTA } from '@/components/ui/CatyIconCTA';
+// 2026-06-19 — Canonical CatyAiSearch: one clubbed box (CatyPulseIcon mark
+// INSIDE a plain search field) that expands to AskCatyInlineBar on click/⌘K.
+// Replaces the standalone CatyIconCTA + QuickSearchInput pair.
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
-import { QuickSearchInput } from './QuickSearchInput';
+import { CatyAiSearch } from '@/components/caty/CatyAiSearch';
 
 // ── Subtask types that should surface their parent instead ──────────
 const SUBTASK_TYPES = new Set(['sub-task', 'backend', 'frontend']);
@@ -386,18 +385,16 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
           display: 'flex', alignItems: 'center', gap: 16,
           marginBottom: 16,
         }}>
-          <CatyIconCTA
-            tooltip="Ask Caty about this board"
-            onClick={() => setAskCatyOpen(true)}
-            size={20}
-          />
-          {/* QuickSearchInput bakes a 12px bottom margin for stacked-above-list
-              use; cancel it so it baselines with the toolbar row siblings. */}
-          <div style={{ marginBottom: -12, display: 'flex', alignItems: 'center', flex: 1 }}>
-            <QuickSearchInput
-              value={quickSearch}
-              onChange={setQuickSearch}
-              totalCount={boardItems.length}
+          {/* 2026-06-19 — canonical clubbed unit. CatyPulseIcon mark inside
+              the box; click it (or ⌘K) opens AskCatyInlineBar above. Plain
+              typing filters the board via quickSearch. Replaces the separate
+              CatyIconCTA + QuickSearchInput pair. */}
+          <div style={{ flex: 1, maxWidth: 420 }}>
+            <CatyAiSearch
+              query={quickSearch}
+              onQueryChange={setQuickSearch}
+              onAskCaty={() => setAskCatyOpen(true)}
+              placeholder="Search by key or title…"
             />
           </div>
           <span style={{
