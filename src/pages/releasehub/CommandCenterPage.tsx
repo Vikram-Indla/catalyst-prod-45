@@ -31,6 +31,7 @@ import { Avatar } from '@/components/ads/Avatar';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
 import { catalystToast } from '@/lib/catalystToast';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -179,17 +180,14 @@ export default function CommandCenterPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
-        <div>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: 0 }}>Release Operations / Overview</p>
-          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: '4px 0 0' }}>Release Operations</h1>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Manage release readiness, change execution, sign-offs, and production events.</p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={() => canManage && setShowCreateChg(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create change</button>
-          <button onClick={() => canManage && setShowCreateRel(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: T.brand, color: T.inverse, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create release</button>
-        </div>
+      {/* Canonical breadcrumb header — pulled to the page edge to cancel the
+          24px container padding so it aligns with every other hub header. */}
+      <div style={{ margin: '-24px -24px 0' }}>
+        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginBottom: 16 }}>
+        <button onClick={() => canManage && setShowCreateChg(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create change</button>
+        <button onClick={() => canManage && setShowCreateRel(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: T.brand, color: T.inverse, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create release</button>
       </div>
 
       {/* 8 KPI cards */}

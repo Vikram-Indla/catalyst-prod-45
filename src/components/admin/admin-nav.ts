@@ -42,6 +42,7 @@ export const adminPockets: AdminNavPocket[] = [
       { label: 'Resource Roster', path: '/admin/user-access' },
       { label: 'Resource Names', path: '/admin/users' },
       { label: 'Resource Roles', path: '/admin/roles-permissions' },
+      { label: 'Module access', path: '/admin/feature-flags' },
       // 'Jira User Sync' DEPRECATED 2026-05-19 — superseded by
       // /admin/jira/user-mapping (canonical). The /admin/jira-user-sync
       // route still exists temporarily and 301-redirects there.
@@ -123,15 +124,6 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/ai-governance',
     children: [
       { label: 'Translation logs', path: '/admin/ai-governance/translations' },
-    ],
-  },
-  {
-    id: 'developer',
-    label: 'Developer',
-    iconName: 'Code2',
-    path: '/admin/feature-flags',
-    children: [
-      { label: 'Module access', path: '/admin/feature-flags' },
     ],
   },
 ];

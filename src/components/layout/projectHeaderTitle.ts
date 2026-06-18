@@ -63,8 +63,9 @@ const GLOBAL_HUB_ROUTE_WORD_MAP: Record<string, string> = {
   'committee-queue': 'Committee queue',
   backlog: 'Backlog',
   // release-hub
-  overview: 'Overview',
+  overview: 'Dashboard',
   releases: 'Releases',
+  'release-kanban': 'Board',
   'all-releases': 'Releases',
   'production-events': 'Production events',
   calendar: 'Calendar',

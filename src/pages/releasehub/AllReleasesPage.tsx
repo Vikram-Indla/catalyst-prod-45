@@ -27,6 +27,7 @@ import { buildReleaseBoardAdapter } from '@/components/kanban/adapters/releaseBo
 import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterBar';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { RH } from '@/constants/releasehub.design';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -229,23 +230,19 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
   ], []);
 
   return (
-    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <div>
-          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>{isKanban ? 'Release Kanban' : 'Backlog'}</h1>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>{isKanban ? 'Releases by lifecycle stage. Drag a card to advance its stage.' : 'Plan, track, and ship releases'}</p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button
-            onClick={() => canManage && setShowCreate(true)}
-            disabled={!canManage}
-            title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
-          >
-            <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New release
-          </button>
-        </div>
+    <div style={{ background: T.surface, minHeight: '100%' }}>
+      <ProjectPageHeader projectKey="RELEASES" hubType="release" />
+      <div style={{ padding: '8px 24px 24px' }}>
+      {/* Create action (page title now lives in the canonical breadcrumb header) */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 16 }}>
+        <button
+          onClick={() => canManage && setShowCreate(true)}
+          disabled={!canManage}
+          title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+        >
+          <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New release
+        </button>
       </div>
 
       {/* Faceted filter row + search (table view only; board has its own toolbar) */}
@@ -304,6 +301,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       )}
 
       {showCreate && <CreateReleaseModal onClose={() => setShowCreate(false)} />}
+      </div>
     </div>
   );
 }

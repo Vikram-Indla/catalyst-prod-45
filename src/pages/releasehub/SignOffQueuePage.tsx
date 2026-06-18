@@ -18,6 +18,7 @@ import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { catalystToast } from '@/lib/catalystToast';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { RH } from '@/constants/releasehub.design';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -95,9 +96,8 @@ export default function SignOffQueuePage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ marginBottom: 16 }}>
-        <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Sign-off Queue</h1>
-        <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Pending approvals awaiting your review</p>
+      <div style={{ margin: '-24px -24px 16px' }}>
+        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
       </div>
 
       {error ? (

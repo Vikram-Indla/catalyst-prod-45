@@ -11,6 +11,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import { RH } from '@/constants/releasehub.design';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useReleaseConfig } from '@/hooks/releases/useReleaseConfig';
 
 const T = {
@@ -59,9 +60,8 @@ export default function ReleaseSettingsPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ marginBottom: 16 }}>
-        <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Settings</h1>
-        <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Release Operations configuration (read-only reference)</p>
+      <div style={{ margin: '-24px -24px 16px' }}>
+        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
       </div>
 
       <div style={{ background: 'var(--ds-background-information, #E9F2FE)', border: '1px solid var(--ds-border-information, #8FB8F6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>

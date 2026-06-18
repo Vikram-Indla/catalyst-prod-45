@@ -14,6 +14,7 @@ import type { Column } from '@/components/shared/JiraTable';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateSopTemplateModal } from '@/components/releasehub/CreateSopTemplateModal';
 import { RH } from '@/constants/releasehub.design';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -51,11 +52,10 @@ export default function SopTemplatesPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <div>
-          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>SOP Templates</h1>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Reusable deployment procedures applied to changes</p>
-        </div>
+      <div style={{ margin: '-24px -24px 0' }}>
+        <ProjectPageHeader projectKey="RELEASES" hubType="release" />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 16 }}>
         <button
           onClick={() => setShowCreate(true)}
           style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
