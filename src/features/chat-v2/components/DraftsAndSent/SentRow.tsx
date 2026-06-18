@@ -1,5 +1,5 @@
 import React from 'react';
-import { PresenceAvatar } from '../shared/PresenceAvatar';
+import { ConversationAvatar, ConversationTitle } from './ConversationAvatar';
 import type { SentMessage } from '../../hooks/useMySentMessages';
 import type { ChatConversation } from '@/types/chat';
 
@@ -13,8 +13,6 @@ interface SentRowProps {
 }
 
 export function SentRow({ message, conversation, onClick, isLastInGroup = false }: SentRowProps) {
-  const isChannel =
-    message.conversationKind === 'channel' || message.conversationKind === 'custom_channel';
   const avatar = resolveAvatar(message, conversation);
   return (
     <button
@@ -43,25 +41,20 @@ export function SentRow({ message, conversation, onClick, isLastInGroup = false 
         (e.currentTarget as HTMLElement).style.background = 'transparent';
       }}
     >
-      <PresenceAvatar
-        src={avatar.src}
+      <ConversationAvatar
+        kind={conversation?.kind ?? message.conversationKind}
+        isPrivate={conversation?.isPrivate ?? message.conversationIsPrivate}
         name={avatar.name}
-        size={36}
+        src={avatar.src}
         displayLabel={avatar.displayLabel}
+        size={36}
       />
       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-        <span
-          style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: 'var(--cv2-text)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {isChannel ? `# ${message.conversationTitle}` : message.conversationTitle}
-        </span>
+        <ConversationTitle
+          kind={conversation?.kind ?? message.conversationKind}
+          isPrivate={conversation?.isPrivate ?? message.conversationIsPrivate}
+          title={conversation?.title ?? message.conversationTitle}
+        />
         <span
           style={{
             fontSize: 13,
@@ -107,9 +100,6 @@ function resolveAvatar(
       name: conversation?.title ?? message.conversationTitle,
       displayLabel: count > 0 ? String(count) : undefined,
     };
-  }
-  if (kind === 'channel' || kind === 'custom_channel') {
-    return { src: null, name: conversation?.title ?? message.conversationTitle, displayLabel: '#' };
   }
   return { src: null, name: conversation?.title ?? message.conversationTitle };
 }

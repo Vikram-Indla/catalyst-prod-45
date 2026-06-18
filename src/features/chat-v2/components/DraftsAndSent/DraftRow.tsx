@@ -1,6 +1,6 @@
 import React from 'react';
 import { formatRowTimestamp } from '../../lib/formatTimestamp';
-import { PresenceAvatar } from '../shared/PresenceAvatar';
+import { ConversationAvatar, ConversationTitle } from './ConversationAvatar';
 import type { DraftListItem } from '../../hooks/useAllDrafts';
 import type { ChatConversation } from '@/types/chat';
 
@@ -79,25 +79,20 @@ export function DraftRow({
           )}
         </span>
       )}
-      <PresenceAvatar
-        src={avatar.src}
+      <ConversationAvatar
+        kind={conversation?.kind ?? draft.conversationKind}
+        isPrivate={conversation?.isPrivate ?? draft.conversationIsPrivate}
         name={avatar.name}
-        size={36}
+        src={avatar.src}
         displayLabel={avatar.displayLabel}
+        size={36}
       />
       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-        <span
-          style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: 'var(--cv2-text)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {draft.conversationTitle}
-        </span>
+        <ConversationTitle
+          kind={conversation?.kind ?? draft.conversationKind}
+          isPrivate={conversation?.isPrivate ?? draft.conversationIsPrivate}
+          title={conversation?.title ?? draft.conversationTitle}
+        />
         <span
           style={{
             fontSize: 13,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { PresenceAvatar } from '../shared/PresenceAvatar';
+import { ConversationAvatar, ConversationTitle } from './ConversationAvatar';
 import type { ScheduledMessage } from '../../hooks/useMyScheduledMessages';
 import type { ChatConversation } from '@/types/chat';
 
@@ -37,25 +37,20 @@ export function ScheduledRow({ scheduled, conversation, onClick }: ScheduledRowP
         (e.currentTarget as HTMLElement).style.background = 'transparent';
       }}
     >
-      <PresenceAvatar
-        src={avatar.src}
+      <ConversationAvatar
+        kind={conversation?.kind ?? scheduled.conversationKind}
+        isPrivate={conversation?.isPrivate ?? scheduled.conversationIsPrivate}
         name={avatar.name}
-        size={36}
+        src={avatar.src}
         displayLabel={avatar.displayLabel}
+        size={36}
       />
       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-        <span
-          style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: 'var(--cv2-text)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {scheduled.conversationTitle}
-        </span>
+        <ConversationTitle
+          kind={conversation?.kind ?? scheduled.conversationKind}
+          isPrivate={conversation?.isPrivate ?? scheduled.conversationIsPrivate}
+          title={conversation?.title ?? scheduled.conversationTitle}
+        />
         <span
           style={{
             fontSize: 13,
