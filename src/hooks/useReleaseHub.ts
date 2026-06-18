@@ -414,3 +414,136 @@ export const useUpdateReleaseTargetDate = () => {
     },
   });
 };
+
+// ── Release detail: Scope / Changes / Sign-offs (Phase 5b) ───────────
+export interface ReleaseScope {
+  brs: { id: string; businessRequestId: string; title: string | null }[];
+  sprints: { id: string; sprintId: string; code: string | null; name: string | null }[];
+  workItems: { id: string; workItemKey: string; inclusionSource: string }[];
+}
+
+export const useReleaseScope = (releaseId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'releases', releaseId, 'scope'],
+    enabled: !!releaseId,
+    queryFn: async (): Promise<ReleaseScope> => {
+      const [brsRes, sprintsRes, wiRes] = await Promise.all([
+        supabase.from('rh_release_brs').select('id, business_request_id, business_requests(id, title)').eq('release_id', releaseId),
+        supabase.from('rh_release_sprints').select('id, sprint_id, anchor_sprints(id, code, name)').eq('release_id', releaseId),
+        supabase.from('rh_release_work_items').select('id, work_item_key, inclusion_source').eq('release_id', releaseId).neq('inclusion_source', 'excluded'),
+      ]);
+      return {
+        brs: (brsRes.data ?? []).map((b: any) => ({ id: b.id, businessRequestId: b.business_request_id, title: b.business_requests?.title ?? null })),
+        sprints: (sprintsRes.data ?? []).map((s: any) => ({ id: s.id, sprintId: s.sprint_id, code: s.anchor_sprints?.code ?? null, name: s.anchor_sprints?.name ?? null })),
+        workItems: (wiRes.data ?? []).map((w: any) => ({ id: w.id, workItemKey: w.work_item_key, inclusionSource: w.inclusion_source })),
+      };
+    },
+  });
+
+export interface ReleaseLinkedChange {
+  id: string; chgNumber: string; title: string; status: string; riskLevel: string | null;
+}
+
+export const useReleaseChanges = (releaseId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'releases', releaseId, 'changes'],
+    enabled: !!releaseId,
+    queryFn: async (): Promise<ReleaseLinkedChange[]> => {
+      // Legacy 1:1 link (rh_changes.release_id). M:N rh_change_release_links is
+      // populated from Phase 7 onward — union when present.
+      const { data: legacy } = await supabase
+        .from('rh_changes')
+        .select('id, chg_number, title, status, risk_level')
+        .eq('release_id', releaseId);
+      const { data: links } = await supabase
+        .from('rh_change_release_links')
+        .select('rh_changes(id, chg_number, title, status, risk_level)')
+        .eq('release_id', releaseId)
+        .is('unlinked_at', null);
+      const byId: Record<string, ReleaseLinkedChange> = {};
+      (legacy ?? []).forEach((c: any) => { byId[c.id] = { id: c.id, chgNumber: c.chg_number, title: c.title, status: c.status, riskLevel: c.risk_level }; });
+      (links ?? []).forEach((l: any) => { const c = l.rh_changes; if (c) byId[c.id] = { id: c.id, chgNumber: c.chg_number, title: c.title, status: c.status, riskLevel: c.risk_level }; });
+      return Object.values(byId);
+    },
+  });
+
+export interface ReleaseSignoff {
+  id: string; changeId: string; chgNumber: string | null; role: string | null; status: string;
+  approverId: string | null; approverName: string | null;
+}
+
+export const useReleaseSignoffs = (releaseId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'releases', releaseId, 'signoffs'],
+    enabled: !!releaseId,
+    queryFn: async (): Promise<ReleaseSignoff[]> => {
+      const { data: chgs } = await supabase.from('rh_changes').select('id').eq('release_id', releaseId);
+      const changeIds = (chgs ?? []).map((c: any) => c.id);
+      if (changeIds.length === 0) return [];
+      const { data: rows } = await supabase
+        .from('rh_change_signoffs')
+        .select('id, change_id, signoff_role, stage, status, assigned_to, rh_changes(chg_number)')
+        .in('change_id', changeIds);
+      const signoffs = rows ?? [];
+      const approverIds = [...new Set(signoffs.map((s: any) => s.assigned_to).filter(Boolean))] as string[];
+      const profileMap: Record<string, string | null> = {};
+      if (approverIds.length > 0) {
+        const { data: profs } = await supabase.from('profiles').select('id, full_name').in('id', approverIds);
+        (profs ?? []).forEach((p: any) => { profileMap[p.id] = p.full_name; });
+      }
+      return signoffs.map((s: any) => ({
+        id: s.id, changeId: s.change_id, chgNumber: s.rh_changes?.chg_number ?? null,
+        role: s.signoff_role ?? s.stage ?? null, status: s.status,
+        approverId: s.assigned_to ?? null,
+        approverName: s.assigned_to ? (profileMap[s.assigned_to] ?? null) : null,
+      }));
+    },
+  });
+
+// ── Notify subscribers (Phase 5b) ────────────────────────────────────
+export interface NotifySubscriber {
+  id: string; userId: string; name: string | null; avatarUrl: string | null;
+}
+
+export const useNotifySubscribers = (itemType: 'release' | 'change', itemId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'notify', itemType, itemId],
+    enabled: !!itemId,
+    queryFn: async (): Promise<NotifySubscriber[]> => {
+      const { data: subs } = await supabase
+        .from('rh_notify_subscribers')
+        .select('id, user_id')
+        .eq('item_type', itemType)
+        .eq('item_id', itemId);
+      const rows = subs ?? [];
+      const ids = [...new Set(rows.map((s: any) => s.user_id))] as string[];
+      const profileMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
+      if (ids.length > 0) {
+        const { data: profs } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', ids);
+        (profs ?? []).forEach((p: any) => { profileMap[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }; });
+      }
+      return rows.map((s: any) => ({ id: s.id, userId: s.user_id, name: profileMap[s.user_id]?.full_name ?? null, avatarUrl: profileMap[s.user_id]?.avatar_url ?? null }));
+    },
+  });
+
+export const useAddNotifySubscriber = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ itemType, itemId, userId }: { itemType: 'release' | 'change'; itemId: string; userId: string }) => {
+      const { error } = await supabase.from('rh_notify_subscribers').insert({ item_type: itemType, item_id: itemId, user_id: userId });
+      if (error) throw error;
+    },
+    onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ['release-hub', 'notify', v.itemType, v.itemId] }),
+  });
+};
+
+export const useRemoveNotifySubscriber = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id }: { id: string; itemType: 'release' | 'change'; itemId: string }) => {
+      const { error } = await supabase.from('rh_notify_subscribers').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ['release-hub', 'notify', v.itemType, v.itemId] }),
+  });
+};
