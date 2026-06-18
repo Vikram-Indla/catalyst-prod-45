@@ -83,10 +83,6 @@ export const MicIcon = makeIcon(
 );
 export const SlashIcon = makeIcon(<><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M15 8l-6 8" /></>);
 export const SendIcon = makeIcon(<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z" />);
-export const LockIcon = makeIcon(
-  <><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></>,
-);
-export const HashIcon = makeIcon(<path d="M4 9h16M4 15h16M10 3L8 21M16 3l-2 18" />);
 /** Paper plane with a clock badge — rail icon for Drafts & sent. */
 export const DraftsClockIcon = makeIcon(
   <>
