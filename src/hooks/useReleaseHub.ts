@@ -40,6 +40,56 @@ export const useReleases = () =>
 export const useReleaseSummary = () =>
   useQuery({ queryKey: [...KEYS.releases, 'summary'], queryFn: releaseService.getSummary, staleTime: 30_000 });
 
+export interface ReleaseListRow {
+  id: string;
+  name: string;
+  version: string | null;
+  status: string;
+  health: string | null;
+  release_type: string | null;
+  target_env: string | null;
+  target_date: string | null;
+  planned_release_date: string | null;
+  readiness_pct: number | null;
+  source: string;
+  jira_key: string | null;
+  updated_at: string | null;
+  changeCount: number;
+}
+
+/**
+ * Releases list for the JiraTable surface — queries rh_releases directly so the
+ * richer lifecycle columns (health, release_type, target_env, readiness_pct …)
+ * are available (the rh_release_summary view predates them). changeCount comes
+ * from the legacy rh_changes.release_id link (M:N rh_change_release_links is
+ * populated from Phase 7 onward).
+ */
+export const useReleasesList = () =>
+  useQuery({
+    queryKey: [...KEYS.releases, 'list'],
+    staleTime: 30_000,
+    queryFn: async (): Promise<ReleaseListRow[]> => {
+      const { data: rels, error } = await supabase
+        .from('rh_releases')
+        .select('id, name, version, status, health, release_type, target_env, target_date, planned_release_date, readiness_pct, source, jira_key, updated_at')
+        .order('updated_at', { ascending: false });
+      if (error) throw error;
+      const releases = (rels ?? []) as any[];
+      const ids = releases.map((r) => r.id);
+      const counts: Record<string, number> = {};
+      if (ids.length > 0) {
+        const { data: chgs } = await supabase
+          .from('rh_changes')
+          .select('release_id')
+          .in('release_id', ids);
+        (chgs ?? []).forEach((c: any) => {
+          if (c.release_id) counts[c.release_id] = (counts[c.release_id] ?? 0) + 1;
+        });
+      }
+      return releases.map((r) => ({ ...r, changeCount: counts[r.id] ?? 0 })) as ReleaseListRow[];
+    },
+  });
+
 export const useRelease = (id: string) =>
   useQuery({ queryKey: KEYS.release(id), queryFn: () => releaseService.getById(id), enabled: !!id });
 
