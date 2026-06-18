@@ -1,248 +1,177 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Plus, List, Columns, RefreshCw } from '@/lib/atlaskit-icons';
-import { useChanges, useReleases } from '@/hooks/useReleaseHub';
-import { RH, CHG_STATUS_LABELS } from '@/constants/releasehub.design';
-import { useTheme } from '@/hooks/useTheme';
+/**
+ * Release Operations — Change Records list (route /release-hub/changes)
+ *
+ * Rebuilt 2026-06-18 (Phase 7a) on the canonical JiraTable + ADS tokens
+ * (mirrors the Releases list). Columns: Change, Status, Risk, Type, Env,
+ * Category, Window, Release, Updated. Search + status filter + states.
+ * Rows are not yet clickable — change detail arrives in Phase 8. Create/Map
+ * Change modal is the existing CreateChgModal for now; an ADS-clean rebuild
+ * with Approvers + Notify fields lands in Phase 7b.
+ */
+import React, { useMemo, useState } from 'react';
+import { format, formatDistanceToNowStrict } from 'date-fns';
+import { Plus, Search, Package } from '@/lib/atlaskit-icons';
+import { useChangesList, type ChangeListRow } from '@/hooks/useReleaseHub';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
-import { SourceBadge } from '@/components/releasehub/SourceBadge';
-import { RiskBadge } from '@/components/releasehub/RiskBadge';
-import { DeployResultBadge } from '@/components/releasehub/DeployResultBadge';
-import { ChgDrawer } from '@/components/releasehub/ChgDrawer';
-import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
-import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
-import { useSearchParams } from 'react-router-dom';
+import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
+import { RH } from '@/constants/releasehub.design';
 
-function mapRisk(risk: string) {
-  const r = risk?.toLowerCase() || 'standard';
-  if (r === 'low' || r === 'medium') return 'standard';
-  if (r === 'critical') return 'emergency';
-  return r;
+const T = {
+  surface: 'var(--ds-surface, #FFFFFF)',
+  card: 'var(--ds-surface-raised, #FFFFFF)',
+  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
+  border: 'var(--ds-border, #DFE1E6)',
+  text: 'var(--ds-text, #172B4D)',
+  subtle: 'var(--ds-text-subtle, #44546F)',
+  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  link: 'var(--ds-link, #0C66E4)',
+  selectedBg: 'var(--ds-background-selected, #E9F2FE)',
+  mono: 'var(--ds-font-family-code, monospace)',
+};
+
+const STATUS_FILTERS = [
+  { key: 'all', label: 'All' },
+  { key: 'new', label: 'New' },
+  { key: 'in_uat', label: 'In UAT' },
+  { key: 'in_beta', label: 'In Beta' },
+  { key: 'in_production', label: 'In Production' },
+];
+
+function RiskPill({ risk }: { risk: string | null }) {
+  if (!risk) return <span style={{ color: T.subtlest }}>—</span>;
+  const map: Record<string, { fg: string; bg: string }> = {
+    low: { fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+    medium: { fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' },
+    high: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    critical: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+  };
+  const m = map[risk.toLowerCase()] ?? { fg: T.subtle, bg: T.sunken };
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{risk}</span>;
 }
 
-function CustomDropdown({ label, value, options, onChange, isDark }: { label: string; value: string; options: { value: string; label: string }[]; onChange: (v: string) => void; isDark?: boolean }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="relative">
-      <button onClick={() => setOpen(!open)} className="h-9 px-3 rounded-md text-[13px] font-medium flex items-center gap-1.5 min-w-[140px]"
-        style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #475569)' }}>
-        {options.find(o => o.value === value)?.label || label}
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 w-48 rounded-md shadow-lg z-50 py-1 max-h-60 overflow-y-auto"
-            style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
-            {options.map(o => (
-              <button key={o.value} onClick={() => { onChange(o.value); setOpen(false); }}
-                className="w-full px-3 h-9 text-left text-[13px] font-medium"
-                style={{ color: value === o.value ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-secondary, #475569)') }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                {o.label}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
+function titleCase(v: string | null) {
+  if (!v) return '—';
+  return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
 }
 
 export default function AllChangesPage() {
-  const { isDark } = useTheme();
-  const { data: changes = [], isLoading, error, refetch } = useChanges();
-  const { data: releases = [] } = useReleases();
-  const [params, setParams] = useSearchParams();
+  const { data: changes = [], isLoading, error, refetch } = useChangesList();
   const [search, setSearch] = useState('');
-  const statusFilter = params.get('status') || 'all';
-  const releaseFilter = params.get('release') || 'all';
-  const view = (params.get('view') || 'list') as 'list' | 'kanban';
-  const [selectedChg, setSelectedChg] = useState<any>(null);
-  const [showCreateChg, setShowCreateChg] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [showCreate, setShowCreate] = useState(false);
 
-  const setParam = (key: string, value: string) => {
-    const next = new URLSearchParams(params);
-    if (value === 'all' || value === 'list') next.delete(key);
-    else next.set(key, value);
-    setParams(next, { replace: true });
-  };
+  const filtered = useMemo(() => changes.filter((c) => {
+    if (statusFilter !== 'all' && c.status !== statusFilter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      if (!`${c.chg_number} ${c.title}`.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }), [changes, statusFilter, search]);
 
-  const filtered = useMemo(() => {
-    return changes.filter((c: any) => {
-      if (search && !c.chg_number?.toLowerCase().includes(search.toLowerCase()) && !c.title?.toLowerCase().includes(search.toLowerCase())) return false;
-      if (statusFilter !== 'all' && c.status !== statusFilter) return false;
-      if (releaseFilter !== 'all' && c.release_id !== releaseFilter) return false;
-      return true;
-    });
-  }, [changes, search, statusFilter, releaseFilter]);
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: changes.length };
+    STATUS_FILTERS.slice(1).forEach((s) => { c[s.key] = changes.filter((x) => x.status === s.key).length; });
+    return c;
+  }, [changes]);
 
-  const statusOptions = [{ value: 'all', label: 'All Statuses' }, ...Object.entries(CHG_STATUS_LABELS).map(([k, v]) => ({ value: k, label: v }))];
-  const releaseOptions = [{ value: 'all', label: 'All Releases' }, ...releases.map((r: any) => ({ value: r.id, label: r.name }))];
-
-  const hasFilters = search || statusFilter !== 'all' || releaseFilter !== 'all';
-
-  const toggleSelect = (id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const toggleAll = () => {
-    if (selectedIds.size === filtered.length) setSelectedIds(new Set());
-    else setSelectedIds(new Set(filtered.map((c: any) => c.id)));
-  };
+  const columns: Column<ChangeListRow>[] = useMemo(() => [
+    {
+      id: 'change', label: 'Change', flex: true, sortable: true,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{row.chg_number}</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.title}</span>
+        </div>
+      ),
+    },
+    { id: 'status', label: 'Status', width: 12, sortable: true, cell: ({ row }) => <StatusLozenge status={row.status} /> },
+    { id: 'risk', label: 'Risk', width: 9, cell: ({ row }) => <RiskPill risk={row.risk_level} /> },
+    { id: 'change_type', label: 'Type', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.change_type)}</span> },
+    { id: 'target_env', label: 'Env', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.target_env)}</span> },
+    { id: 'deployment_category', label: 'Category', width: 11, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.deployment_category)}</span> },
+    {
+      id: 'window', label: 'Window', width: 10, sortable: true,
+      accessor: (row) => row.window_start ?? row.deployment_date,
+      cell: ({ row }) => {
+        const d = row.window_start ?? row.deployment_date;
+        return <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{d ? format(new Date(d), 'MMM d, yyyy') : '—'}</span>;
+      },
+    },
+    { id: 'release', label: 'Release', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: row.releaseName ? T.text : T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.releaseName ?? 'Unassigned'}</span> },
+    {
+      id: 'updated', label: 'Updated', width: 10, sortable: true,
+      accessor: (row) => row.updated_at,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>{row.updated_at ? `${formatDistanceToNowStrict(new Date(row.updated_at))} ago` : '—'}</span>,
+    },
+  ], []);
 
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%', padding: '24px' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div>
-          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>All Changes</h1>
-          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Every deployment change — past, present & future</p>
+          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Change Records</h1>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Track and govern deployment changes</p>
         </div>
-        <button onClick={() => setShowCreateChg(true)}
-          className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
-          style={{ background: 'linear-gradient(to bottom, var(--ds-text-brand, #3B82F6), var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)))', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
-          <Plus size={14} /> New Change
+        <button
+          onClick={() => setShowCreate(true)}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+        >
+          <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New change
         </button>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-            <input type="text" placeholder="Search changes..." value={search} onChange={e => setSearch(e.target.value)}
-              className="h-9 w-[280px] pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
-              style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }} />
-          </div>
-          <CustomDropdown label="Status" value={statusFilter} options={statusOptions} onChange={v => setParam('status', v)} isDark={isDark} />
-          <CustomDropdown label="Release" value={releaseFilter} options={releaseOptions} onChange={v => setParam('release', v)} isDark={isDark} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {STATUS_FILTERS.map((s) => {
+            const active = statusFilter === s.key;
+            return (
+              <button
+                key={s.key}
+                onClick={() => setStatusFilter(s.key)}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px', borderRadius: 6, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, border: `1px solid ${active ? T.link : T.border}`, background: active ? T.selectedBg : T.card, color: active ? T.link : T.subtle }}
+              >
+                {s.label}
+                <span style={{ fontSize: 11, fontWeight: 700, color: T.subtlest }}>{counts[s.key] ?? 0}</span>
+              </button>
+            );
+          })}
         </div>
-        <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-          <button onClick={() => setParam('view', 'list')}
-            className="h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium"
-            style={view === 'list' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
-            <List size={12} /> List
-          </button>
-          <button onClick={() => setParam('view', 'kanban')}
-            className="h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium"
-            style={view === 'kanban' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
-            <Columns size={12} /> Kanban
-          </button>
+        <div style={{ position: 'relative' }}>
+          <Search size={14} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: T.subtlest }} />
+          <input
+            type="text"
+            placeholder="Search changes…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ height: 32, width: 240, padding: '0 8px 0 32px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, fontFamily: RH.fontBody, fontSize: 13, outline: 'none' }}
+          />
         </div>
       </div>
 
-      {/* Content */}
-      {isLoading ? (
-        <SkeletonRows count={5} />
-      ) : error ? (
+      {error ? (
         <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
-      ) : changes.length === 0 ? (
-        <EmptyState icon={RefreshCw} title="No changes yet" subtitle="Changes will appear here once created."
-          actions={[{ label: '+ New Change', onClick: () => setShowCreateChg(true), variant: 'primary' }]} />
-      ) : filtered.length === 0 && hasFilters ? (
-        <EmptyState icon={Search} title="No changes match your filters" subtitle="Try adjusting your search or filter criteria."
-          actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); setParams({}); }, variant: 'ghost' }]} />
-      ) : view === 'kanban' ? (
-        <KanbanView changes={filtered} onSelect={setSelectedChg} isDark={isDark} />
+      ) : !isLoading && changes.length === 0 ? (
+        <EmptyState icon={Package} title="No change records yet" subtitle="Changes capture what ships, how, and who approves it." actions={[{ label: '+ New change', onClick: () => setShowCreate(true), variant: 'primary' }]} />
+      ) : !isLoading && filtered.length === 0 ? (
+        <EmptyState icon={Search} title="No changes match your filters" subtitle="Try adjusting your search or status filter." actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); setStatusFilter('all'); }, variant: 'ghost' }]} />
       ) : (
-        /* V12 Table */
-        <div className="rounded overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
-          <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
-            <thead>
-              <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
-                <th className="w-[40px] px-3 py-0 h-[50px] text-center">
-                  <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleAll} className="rounded" />
-                </th>
-                {['KEY', 'TITLE', 'STATUS', 'RISK', 'RELEASE', 'SOURCE', 'SIGN-OFFS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((c: any) => {
-                const relName = c.release_name || releases.find((r: any) => r.id === c.release_id)?.name;
-                return (
-                  <tr key={c.id} onClick={() => setSelectedChg(c)}
-                    className="cursor-pointer"
-                    style={{ height: 50, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 120ms', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'rgba(15,23,42,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}>
-                    <td className="px-3 py-0 text-center" onClick={e => e.stopPropagation()}>
-                      <input type="checkbox" checked={selectedIds.has(c.id)} onChange={() => toggleSelect(c.id)} className="rounded" />
-                    </td>
-                    <td className="px-3 py-0">
-                      <span className="text-[13px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:underline" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
-                    </td>
-                    <td className="px-3 py-0 max-w-[300px]">
-                      <span className="text-[13px] font-medium truncate block" style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{c.title}</span>
-                    </td>
-                    <td className="px-3 py-0"><StatusLozenge status={c.status} /></td>
-                    <td className="px-3 py-0"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
-                    <td className="px-3 py-0">
-                      {relName ? <span className="text-[12px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]">{relName}</span> : <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>}
-                    </td>
-                    <td className="px-3 py-0"><SourceBadge source={c.source} /></td>
-                    <td className="px-3 py-0">
-                      <span className="text-[12px]" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
-                        {c.pending_signoffs > 0 ? `${c.pending_signoffs} pending` : '—'}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <JiraTable<ChangeListRow>
+          columns={columns}
+          data={filtered}
+          getRowId={(r) => r.id}
+          isLoading={isLoading}
+          rowsPerPage={25}
+          showRowCount
+          totalRowCount={changes.length}
+          ariaLabel="Change records"
+        />
       )}
 
-      {selectedChg && <ChgDrawer change={selectedChg} onClose={() => setSelectedChg(null)} />}
-      {showCreateChg && <CreateChgModal onClose={() => setShowCreateChg(false)} />}
-    </div>
-  );
-}
-
-function KanbanView({ changes, onSelect, isDark }: { changes: any[]; onSelect: (c: any) => void; isDark?: boolean }) {
-  const columns = [
-    { key: 'new', label: 'NEW' },
-    { key: 'in_uat', label: 'IN UAT' },
-    { key: 'in_beta', label: 'IN BETA' },
-    { key: 'in_production', label: 'IN PRODUCTION' },
-  ];
-
-  return (
-    <div className="grid grid-cols-4 gap-3">
-      {columns.map(col => {
-        const items = changes.filter((c: any) => c.status === col.key);
-        return (
-          <div key={col.key} className="rounded-lg" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', minHeight: 200 }}>
-            <div className="px-3 py-2 flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{col.label}</span>
-              <span className="text-[10px] font-bold rounded-full px-1.5" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{items.length}</span>
-            </div>
-            <div className="px-2 pb-2 space-y-2">
-              {items.map((c: any) => (
-                <button key={c.id} onClick={() => onSelect(c)}
-                  className="w-full rounded-md p-3 text-left hover:shadow-sm transition-shadow"
-                  style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
-                  <span className="text-[11px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] block mb-1" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
-                  <span className="text-[13px] font-medium block truncate" style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{c.title}</span>
-                  <div className="flex items-center gap-2 mt-2">
-                    <RiskBadge risk={c.risk_level?.toLowerCase() === 'low' || c.risk_level?.toLowerCase() === 'medium' ? 'standard' : c.risk_level} />
-                    <SourceBadge source={c.source} />
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        );
-      })}
+      {showCreate && <CreateChgModal onClose={() => setShowCreate(false)} />}
     </div>
   );
 }

@@ -619,3 +619,42 @@ export const useReleaseAudit = (releaseId: string) =>
       return (data ?? []).map((a: any) => ({ id: a.id, action: a.action, actorName: a.actor_name, detail: a.detail, createdAt: a.created_at, isAi: !!a.is_ai }));
     },
   });
+
+// ── Change Records list (Phase 7a) ───────────────────────────────────
+export interface ChangeListRow {
+  id: string;
+  chg_number: string;
+  title: string;
+  status: string;
+  risk_level: string | null;
+  change_type: string | null;
+  target_env: string | null;
+  deployment_category: string | null;
+  deployment_date: string | null;
+  window_start: string | null;
+  release_id: string | null;
+  releaseName: string | null;
+  source: string;
+  updated_at: string | null;
+}
+
+export const useChangesList = () =>
+  useQuery({
+    queryKey: [...KEYS.changes, 'list'],
+    staleTime: 15_000,
+    queryFn: async (): Promise<ChangeListRow[]> => {
+      const { data: rows, error } = await supabase
+        .from('rh_changes')
+        .select('id, chg_number, title, status, risk_level, change_type, target_env, deployment_category, deployment_date, window_start, release_id, source, updated_at')
+        .order('updated_at', { ascending: false });
+      if (error) throw error;
+      const changes = (rows ?? []) as any[];
+      const relIds = [...new Set(changes.map((c) => c.release_id).filter(Boolean))] as string[];
+      const relMap: Record<string, string> = {};
+      if (relIds.length > 0) {
+        const { data: rels } = await supabase.from('rh_releases').select('id, name').in('id', relIds);
+        (rels ?? []).forEach((r: any) => { relMap[r.id] = r.name; });
+      }
+      return changes.map((c) => ({ ...c, releaseName: c.release_id ? (relMap[c.release_id] ?? null) : null })) as ChangeListRow[];
+    },
+  });
