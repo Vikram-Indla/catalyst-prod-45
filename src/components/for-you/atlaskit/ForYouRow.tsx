@@ -192,7 +192,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           probe: tile bg `rgba(5,21,36,0.06)`, dimensions 32px square.
           Default variant: 20px naked icon (legacy compact rail layout). */}
       {isJiraAssigned ? (
-        <div style={{
+        <div className="cp-feed-type-tile" style={{
           width: 32,
           height: 32,
           borderRadius: '25%',
@@ -200,11 +200,13 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
-          <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
+          {/* Zero-assumption: render no icon when the type is unknown rather
+              than lying with a default 'Task' (CLAUDE.md lie-vs-silence). */}
+          {item.issueType ? <JiraIssueTypeIcon type={item.issueType} size={20} /> : null}
         </div>
       ) : (
         <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
+          {item.issueType ? <JiraIssueTypeIcon type={item.issueType} size={20} /> : null}
         </div>
       )}
 
@@ -520,7 +522,7 @@ export default memo(ForYouRowImpl);
 // shared canonical palette (statusPalette.ts) so the done-green matches the
 // #94C748 used by Recommended/detail/table surfaces. Inner text is Jira's
 // `653 11px/16px Atlassian Sans` UPPERCASE, ls 0.165px two-span structure.
-function JiraForYouLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
+export function JiraForYouLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
   const ap = statusToAppearance(status, statusCategory);
   // Canonical palette — single source of truth (statusPalette.ts). The local
   // pale done-green drifted from the canonical #94C748 that Recommended/detail/

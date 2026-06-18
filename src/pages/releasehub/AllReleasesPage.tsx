@@ -1,314 +1,283 @@
-import React, { useState, useMemo } from 'react';
-import { Search, LayoutGrid, List, Plus, Package, Download, Clock, AlertTriangle } from '@/lib/atlaskit-icons';
-import { useReleaseSummary, useFreezeWindows } from '@/hooks/useReleaseHub';
-import { RH } from '@/constants/releasehub.design';
-import { useTheme } from '@/hooks/useTheme';
+/**
+ * Release Operations — Releases list (route /release-hub/releases)
+ *
+ * Rebuilt 2026-06-18 (Phase 4a) on the canonical JiraTable + ADS tokens
+ * (was a hand-rolled <table> + cards + --cp-* tokens). Columns: Release,
+ * Status, Health, Env, Type, Target, Changes, Updated. Search + status
+ * filter + loading/empty/error states. Board view → Phase 6.
+ *
+ * Create Release modal is the existing CreateReleaseModal for now; an
+ * ADS-clean rebuild with the richer fields (release_type, target_env,
+ * managers, planned dates) lands in Phase 4b.
+ */
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { format, formatDistanceToNowStrict } from 'date-fns';
+import { Plus, LayoutGrid, List } from '@/lib/atlaskit-icons';
+import { useReleasesList, useUpdateReleaseStatus, type ReleaseListRow } from '@/hooks/useReleaseHub';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
-import { SourceBadge } from '@/components/releasehub/SourceBadge';
-import { ReleaseDrawer } from '@/components/releasehub/ReleaseDrawer';
-import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
-import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
-import { supabase } from '@/integrations/supabase/client';
-import { catalystToast } from '@/lib/catalystToast';
-import { Tooltip } from '@/components/ads';
+import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
+import { Package, Search } from '@/lib/atlaskit-icons';
+import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
+import { buildReleaseBoardAdapter } from '@/components/kanban/adapters/releaseBoardAdapter';
+import { RH } from '@/constants/releasehub.design';
 
-function mapStatus(status: string) {
-  if (status === 'todo') return 'planning';
-  if (status === 'done') return 'released';
-  return status;
+const T = {
+  surface: 'var(--ds-surface, #FFFFFF)',
+  card: 'var(--ds-surface-raised, #FFFFFF)',
+  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
+  border: 'var(--ds-border, #DFE1E6)',
+  text: 'var(--ds-text, #172B4D)',
+  subtle: 'var(--ds-text-subtle, #44546F)',
+  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  link: 'var(--ds-link, #0C66E4)',
+  selectedBg: 'var(--ds-background-selected, #E9F2FE)',
+  mono: 'var(--ds-font-family-code, monospace)',
+};
+
+const STATUS_FILTERS = [
+  { key: 'all', label: 'All' },
+  { key: 'draft', label: 'Draft' },
+  { key: 'active', label: 'Active' },
+  { key: 'scheduled', label: 'Scheduled' },
+  { key: 'completed', label: 'Completed' },
+];
+
+// Bucket a (new-lifecycle or legacy) release status into a filter tab.
+function statusBucket(status: string): string {
+  if (status === 'draft' || status === 'todo') return 'draft';
+  if (status === 'scheduled') return 'scheduled';
+  if (['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived'].includes(status)) return 'completed';
+  return 'active';
 }
 
-function relativeTime(dateStr: string | null | undefined): string {
-  if (!dateStr) return '';
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
+function HealthPill({ health }: { health: string | null }) {
+  if (!health) return <span style={{ color: T.subtlest }}>—</span>;
+  const map: Record<string, { label: string; fg: string; bg: string }> = {
+    at_risk: { label: 'At risk', fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    on_track: { label: 'On track', fg: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FE)' },
+    done: { label: 'Done', fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+  };
+  const m = map[health] ?? { label: health, fg: T.subtle, bg: T.sunken };
+  return (
+    <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{m.label}</span>
+  );
+}
+
+function titleCase(v: string | null) {
+  if (!v) return '—';
+  return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
 }
 
 export default function AllReleasesPage() {
-  const { isDark } = useTheme();
-  const { data: releases = [], isLoading, error, refetch } = useReleaseSummary();
-  const { data: freezeWindows = [] } = useFreezeWindows();
+  const navigate = useNavigate();
+  const { data: releases = [], isLoading, error, refetch } = useReleasesList();
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<string>('all');
-  const [view, setView] = useState<'cards' | 'table'>('cards');
-  const [selectedRelease, setSelectedRelease] = useState<any>(null);
+  const [statusFilter, setStatusFilter] = useState('all');
   const [showCreate, setShowCreate] = useState(false);
-  const [importing, setImporting] = useState(false);
+  const [view, setView] = useState<'table' | 'board'>('table');
+  const [selection, setSelection] = useState<Set<string>>(new Set());
+  const updateStatus = useUpdateReleaseStatus();
 
-  const freezeConflicts = useMemo(() => {
-    if (!freezeWindows.length || !releases.length) return [];
-    return releases.filter((r: any) => {
-      if (!r.target_date) return false;
-      const t = new Date(r.target_date);
-      return freezeWindows.some((fw: any) => {
-        const s = new Date(fw.start_date);
-        const e = new Date(fw.end_date);
-        return t >= s && t <= e;
-      });
-    });
-  }, [releases, freezeWindows]);
+  const boardAdapter = useMemo(
+    () => buildReleaseBoardAdapter({
+      releases,
+      search,
+      onSearchChange: setSearch,
+      onCardClick: (id) => navigate(`/release-hub/${id}`),
+      onCreate: () => setShowCreate(true),
+      onStatusChange: (id, status) => updateStatus.mutateAsync({ id, status }),
+    }),
+    [releases, search, navigate, updateStatus],
+  );
 
-  const filtered = releases.filter((r: any) => {
-    const mapped = mapStatus(r.status);
-    if (filter !== 'all' && mapped !== filter) return false;
-    if (search && !r.name?.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
-
-  const counts = {
-    all: releases.length,
-    planning: releases.filter((r: any) => mapStatus(r.status) === 'planning').length,
-    in_progress: releases.filter((r: any) => mapStatus(r.status) === 'in_progress').length,
-    released: releases.filter((r: any) => mapStatus(r.status) === 'released').length,
-  };
-
-  const accentColor = (status: string) => {
-    const s = mapStatus(status);
-    if (s === 'in_progress') return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
-    if (s === 'released') return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-    if (s === 'planning') return 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-    return 'rgba(15,23,42,0.12)';
-  };
-
-  const getProgress = (r: any) => {
-    const total = Number(r.change_count) || 0;
-    const completed = Number(r.completed_change_count) || 0;
-    if (total === 0) return { pct: 0, total, completed, empty: true };
-    const pct = Math.min(Math.round((completed / total) * 100), 100);
-    return { pct, total, completed, empty: false };
-  };
-
-  const handleImport = async () => {
-    setImporting(true);
-    try {
-      const { data, error: rpcErr } = await supabase.rpc('rh_import_jira_versions', { p_project_key: 'CATALYST' });
-      if (rpcErr) throw rpcErr;
-      const result = data as any;
-      if (result?.queued) {
-        catalystToast.success('Import queued. Jira versions will sync shortly.');
-      } else {
-        catalystToast.info(result?.reason || 'Import already requested recently.');
+  const filtered = useMemo(() => {
+    return releases.filter((r) => {
+      if (statusFilter !== 'all' && statusBucket(r.status) !== statusFilter) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        const hay = `${r.name} ${r.version ?? ''} ${r.jira_key ?? ''}`.toLowerCase();
+        if (!hay.includes(q)) return false;
       }
-    } catch (err) {
-      catalystToast.error('Failed to queue import: ' + String(err));
-    } finally {
-      setTimeout(() => setImporting(false), 3000);
-    }
-  };
+      return true;
+    });
+  }, [releases, statusFilter, search]);
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: releases.length };
+    STATUS_FILTERS.slice(1).forEach((s) => {
+      c[s.key] = releases.filter((r) => statusBucket(r.status) === s.key).length;
+    });
+    return c;
+  }, [releases]);
+
+  const columns: Column<ReleaseListRow>[] = useMemo(() => [
+    {
+      id: 'name', label: 'Release', flex: true, sortable: true,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>
+            {row.name}{row.version ? <span style={{ color: T.subtlest, fontWeight: 400 }}> · {row.version}</span> : null}
+          </span>
+          {row.jira_key && (
+            <span style={{ fontFamily: T.mono, fontSize: 11, color: T.subtlest }}>{row.jira_key}</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      id: 'status', label: 'Status', width: 12, sortable: true,
+      cell: ({ row }) => <StatusLozenge status={row.status} />,
+    },
+    {
+      id: 'health', label: 'Health', width: 10,
+      cell: ({ row }) => <HealthPill health={row.health} />,
+    },
+    {
+      id: 'target_env', label: 'Env', width: 10,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.target_env)}</span>,
+    },
+    {
+      id: 'release_type', label: 'Type', width: 10,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.release_type)}</span>,
+    },
+    {
+      id: 'target_date', label: 'Target', width: 10, sortable: true,
+      accessor: (row) => row.planned_release_date ?? row.target_date,
+      cell: ({ row }) => {
+        const d = row.planned_release_date ?? row.target_date;
+        return <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{d ? format(new Date(d), 'MMM d, yyyy') : '—'}</span>;
+      },
+    },
+    {
+      id: 'changes', label: 'Changes', width: 8, align: 'end', sortable: true,
+      accessor: (row) => row.changeCount,
+      cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.text }}>{row.changeCount}</span>,
+    },
+    {
+      id: 'updated', label: 'Updated', width: 10, sortable: true,
+      accessor: (row) => row.updated_at,
+      cell: ({ row }) => (
+        <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>
+          {row.updated_at ? `${formatDistanceToNowStrict(new Date(row.updated_at))} ago` : '—'}
+        </span>
+      ),
+    },
+  ], []);
 
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%', padding: '24px' }}>
-      <div className="flex items-center justify-between mb-5">
+    <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div>
-          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>All Releases</h1>
-          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Manage and track all releases</p>
+          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Releases</h1>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Plan, track, and ship releases</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={handleImport} disabled={importing}
-            className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            style={{ border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #475569)' }}>
-            <Download size={14} /> Import from Jira
-          </button>
-          <button onClick={() => setShowCreate(true)}
-            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
-            <Plus size={14} /> New Release
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* View toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, border: `1px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
+            <button
+              onClick={() => setView('table')}
+              aria-label="Table view"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, border: 'none', cursor: 'pointer', background: view === 'table' ? T.selectedBg : T.card, color: view === 'table' ? T.link : T.subtle }}
+            >
+              <List size={16} style={{ color: view === 'table' ? T.link : T.subtle }} />
+            </button>
+            <button
+              onClick={() => setView('board')}
+              aria-label="Board view"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, border: 'none', borderLeft: `1px solid ${T.border}`, cursor: 'pointer', background: view === 'board' ? T.selectedBg : T.card, color: view === 'board' ? T.link : T.subtle }}
+            >
+              <LayoutGrid size={16} style={{ color: view === 'board' ? T.link : T.subtle }} />
+            </button>
+          </div>
+          <button
+            onClick={() => setShowCreate(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          >
+            <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New release
           </button>
         </div>
       </div>
 
-      {/* Freeze conflict banner */}
-      {freezeConflicts.length > 0 && (
-        <div style={{
-          background: '#FEF3C7',
-          border: '1px solid #FCD34D',
-          borderRadius: '6px',
-          padding: '10px 14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          marginBottom: '12px',
-        }}>
-          <AlertTriangle size={16} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />
-          <span style={{ fontSize: '13px', color: '#92400E' }}>
-            {freezeConflicts.length === 1
-              ? `"${freezeConflicts[0].name}" targets a date within a freeze window.`
-              : `${freezeConflicts.length} releases target dates within freeze windows.`}
-            {' '}
-            <a href="/release-hub/freeze-windows"
-               style={{ color: '#B45309', textDecoration: 'underline', fontWeight: 600 }}>
-              View freeze windows →
-            </a>
-          </span>
-        </div>
-      )}
-
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 mb-4">
-        {[
-          { key: 'all', label: 'All', count: counts.all },
-          { key: 'planning', label: 'Planning', count: counts.planning },
-          { key: 'in_progress', label: 'In Progress', count: counts.in_progress },
-          { key: 'released', label: 'Released', count: counts.released },
-        ].map(s => (
-          <button key={s.key} onClick={() => setFilter(s.key)}
-            className="h-8 px-3 rounded-md text-[12px] font-semibold flex items-center gap-1.5 border transition-colors"
-            style={filter === s.key
-              ? { borderColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }
-              : { borderColor: 'var(--cp-border-default, rgba(15,23,42,0.12))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #475569)' }
-            }>
-            {s.label}
-            <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold"
-              style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--cp-text-secondary, #475569)' }}>{s.count}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Search + View Toggle */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-          <input type="text" placeholder="Search releases..." value={search} onChange={e => setSearch(e.target.value)}
-            className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
-            style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }} />
-        </div>
-        <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}><LayoutGrid size={14} /></button>
-          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}><List size={14} /></button>
-        </div>
-      </div>
-
-      {/* Content */}
-      {isLoading ? (
-        view === 'cards' ? <SkeletonRows variant="card" count={6} /> : <SkeletonRows count={6} />
-      ) : error ? (
-        <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
-      ) : releases.length === 0 ? (
-        <EmptyState icon={Package} title="No releases created yet" subtitle="Releases help you group and track deployment changes across your products."
-          actions={[{ label: '+ New Release', onClick: () => setShowCreate(true), variant: 'primary' }]} />
-      ) : filtered.length === 0 ? (
-        <EmptyState icon={Search} title="No releases match your filters" subtitle="Try adjusting your search or filter criteria."
-          actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); setFilter('all'); }, variant: 'ghost' }]} />
-      ) : view === 'cards' ? (
-        <div className="grid grid-cols-3 gap-3.5">
-          {filtered.map((r: any) => {
-            const progress = getProgress(r);
+      {/* Filter tabs + search (table view only; board has its own toolbar) */}
+      {view === 'table' && (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {STATUS_FILTERS.map((s) => {
+            const active = statusFilter === s.key;
             return (
-              <button key={r.id} onClick={() => setSelectedRelease(r)}
-                className="rounded-md overflow-hidden text-left hover:-translate-y-0.5 transition-all relative group"
-                style={{ borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
-                <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
-                <div className="p-4 pl-5">
-                  <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1, fontWeight: 650 }}>{r.name}</h3>
-                  {r.jira_key && <span className="text-[11px] block mb-2" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{r.jira_key}</span>}
-
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <StatusLozenge status={mapStatus(r.status)} />
-                    <SourceBadge source={r.source || 'catalyst'} />
-                    {(r.source === 'jira') && relativeTime(r.synced_at || r.updated_at) && (
-                      <Tooltip
-                        position="top"
-                        content={`Last synced: ${new Date(r.synced_at || r.updated_at).toLocaleString()}`}
-                      >
-                        <span className="inline-flex items-center gap-1 text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] cursor-default">
-                          <Clock size={12} />
-                          Synced {relativeTime(r.synced_at || r.updated_at)}
-                        </span>
-                      </Tooltip>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-3 text-[12px] mb-3" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
-                    <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
-                    <span>·</span>
-                    <span>{progress.total} {progress.total === 1 ? 'change' : 'changes'}</span>
-                  </div>
-
-                  {progress.empty ? (
-                    <p className="text-[11px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No changes yet</p>
-                  ) : (
-                    <>
-                      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
-                        <div className="h-full rounded-full transition-all" style={{
-                          width: progress.pct + '%',
-                          background: accentColor(r.status)
-                        }} />
-                      </div>
-                      <p className="text-[11px] mt-1" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
-                        {progress.pct}% · {progress.completed} of {progress.total} {progress.total === 1 ? 'change' : 'changes'} deployed
-                      </p>
-                    </>
-                  )}
-                </div>
+              <button
+                key={s.key}
+                onClick={() => setStatusFilter(s.key)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px', borderRadius: 6, cursor: 'pointer',
+                  fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600,
+                  border: `1px solid ${active ? T.link : T.border}`,
+                  background: active ? T.selectedBg : T.card,
+                  color: active ? T.link : T.subtle,
+                }}
+              >
+                {s.label}
+                <span style={{ fontSize: 11, fontWeight: 700, color: T.subtlest }}>{counts[s.key] ?? 0}</span>
               </button>
             );
           })}
         </div>
-      ) : (
-        <div className="rounded overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
-          <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
-            <thead>
-              <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
-                {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'PROGRESS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((r: any) => {
-                const progress = getProgress(r);
-                return (
-                  <tr key={r.id} onClick={() => setSelectedRelease(r)}
-                    className="cursor-pointer"
-                    style={{ height: 50, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 120ms', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'rgba(15,23,42,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}>
-                    <td className="px-3 py-0 font-medium" style={{ color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>
-                      <div className="flex items-center gap-2">
-                        {r.name}
-                        {r.source === 'jira' && relativeTime(r.synced_at || r.updated_at) && (
-                          <Tooltip
-                            position="top"
-                            content={`Synced ${relativeTime(r.synced_at || r.updated_at)}`}
-                          >
-                            <span className="inline-flex items-center gap-0.5 text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] cursor-default">
-                              <Clock size={12} />
-                            </span>
-                          </Tooltip>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-3 py-0"><SourceBadge source={r.source || 'catalyst'} /></td>
-                    <td className="px-3 py-0"><StatusLozenge status={mapStatus(r.status)} /></td>
-                    <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: 'var(--cp-text-secondary, #475569)' }}>
-                      {r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
-                    </td>
-                    <td className="px-3 py-0"><span className="font-bold" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{progress.total}</span></td>
-                    <td className="px-3 py-0">
-                      {progress.empty ? (
-                        <span className="text-[11px]" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No changes yet</span>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
-                            <div className="h-full rounded-full" style={{ width: progress.pct + '%', background: accentColor(r.status) }} />
-                          </div>
-                          <span className="text-[11px]" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{progress.pct}%</span>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div style={{ position: 'relative' }}>
+          <Search size={14} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: T.subtlest }} />
+          <input
+            type="text"
+            placeholder="Search releases…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ height: 32, width: 240, padding: '0 8px 0 32px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, fontFamily: RH.fontBody, fontSize: 13, outline: 'none' }}
+          />
         </div>
+      </div>
       )}
 
-      {selectedRelease && <ReleaseDrawer release={selectedRelease} onClose={() => setSelectedRelease(null)} />}
+      {/* Content */}
+      {view === 'board' ? (
+        <div style={{ height: 'calc(100vh - 220px)', minHeight: 480 }}>
+          <KanbanBoardShell adapter={boardAdapter} title="Releases" hideTitleHeader />
+        </div>
+      ) : error ? (
+        <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
+      ) : !isLoading && releases.length === 0 ? (
+        <EmptyState
+          icon={Package}
+          title="No releases yet"
+          subtitle="Releases group and track deployment changes across your products."
+          actions={[{ label: '+ New release', onClick: () => setShowCreate(true), variant: 'primary' }]}
+        />
+      ) : !isLoading && filtered.length === 0 ? (
+        <EmptyState
+          icon={Search}
+          title="No releases match your filters"
+          subtitle="Try adjusting your search or status filter."
+          actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); setStatusFilter('all'); }, variant: 'ghost' }]}
+        />
+      ) : (
+        <JiraTable<ReleaseListRow>
+          columns={columns}
+          data={filtered}
+          getRowId={(r) => r.id}
+          onRowClick={(r) => navigate(`/release-hub/${r.id}`)}
+          selectable
+          selection={selection}
+          onSelectionChange={setSelection}
+          isLoading={isLoading}
+          rowsPerPage={25}
+          showRowCount
+          totalRowCount={releases.length}
+          ariaLabel="Releases"
+        />
+      )}
+
       {showCreate && <CreateReleaseModal onClose={() => setShowCreate(false)} />}
     </div>
   );

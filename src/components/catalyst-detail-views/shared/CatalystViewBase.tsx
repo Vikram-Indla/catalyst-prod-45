@@ -26,6 +26,7 @@ import Tooltip from '@atlaskit/tooltip';
 import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
+import { WorkItemTraceabilityPanel } from '@/components/releasehub/WorkItemTraceabilityPanel';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { useStartTicketThread } from '@/hooks/chat/useStartTicketThread';
 import { openConversationInDock } from '@/lib/chat-dock-bridge';
@@ -671,7 +672,12 @@ export function CatalystViewBase({
                 <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Issue not found</div>
                 <div style={{ fontSize: 14 }}>This issue may have been deleted or the key is invalid.</div>
               </div>
-            ) : leftContent}
+            ) : (
+              <>
+                {leftContent}
+                {itemKey && <WorkItemTraceabilityPanel workItemKey={itemKey} />}
+              </>
+            )}
           </div>
 
           {/* RESIZABLE SPLITTER */}

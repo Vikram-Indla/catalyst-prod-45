@@ -43,7 +43,7 @@ const HUB_ITEMS = [
   { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: 'var(--ds-icon-accent-purple, #8270DB)' },
   { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--ds-icon-brand, #0052CC)' },
   { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: 'var(--ds-icon-accent-teal, #00A3BF)' },
-  { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange, #FF8B00)' },
+  { label: 'Release Hub',  href: '/release-hub/overview', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange, #FF8B00)' },
   { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: 'var(--ds-icon-accent-green, #36B37E)' },
   { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red, #DE350B)' },
   { label: 'Tasks',     href: '/tasks/overview',          Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow, #FFAB00)' },
@@ -154,6 +154,13 @@ export interface SidebarConfig {
    * consumers omit this and keep the divider. Added 2026-06-17.
    */
   hideSectionDividers?: boolean;
+  /**
+   * Optional overline rendered once above ALL sections (expanded only). Used by
+   * HomeSidebar to label the space-grouped Recents as "Recent" so they read as
+   * recently-visited pages, not nav items. 11px/600/subtlest — the ADS section-
+   * label spec. Added 2026-06-18.
+   */
+  sectionsHeading?: string;
   /** Collapsed-rail icon — pass projectKey so ProjectIcon resolves the bundled avatar */
   badgeProjectKey?: string | null;
   badgeProjectColor?: string | null;
@@ -177,6 +184,13 @@ interface SidebarBaseProps {
    * the context switcher in the sidebar header instead of the top nav.
    */
   renderHeaderSwitcher?: (expanded: boolean) => React.ReactNode;
+  /**
+   * Optional custom node pinned to the very bottom of the rail (below the
+   * scrollable nav and any footerItem). Unlike footerItem this is free-form,
+   * not a nav link — used by HomeSidebar for the dual-zone clock. Other
+   * consumers omit it (undefined = nothing rendered). Added 2026-06-18.
+   */
+  footerSlot?: React.ReactNode;
 }
 
 /** Dark mode token set — passed to renderMenuItem */
@@ -200,6 +214,7 @@ export function SidebarBase({
   children,
   onHeaderClick,
   renderHeaderSwitcher,
+  footerSlot,
 }: SidebarBaseProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -453,9 +468,32 @@ export function SidebarBase({
             </div>
           )}
 
+          {/* Sections overline — labels the group list (e.g. "Recent") once,
+              above all space groups. */}
+          {expanded && config.sectionsHeading && config.sections && config.sections.length > 0 && (
+            <div style={{ padding: '4px 12px 2px 12px', lineHeight: 1 }}>
+              <span
+                style={{
+                  fontFamily: 'var(--cp-font-body)',
+                  color: 'var(--ds-text-subtlest, #626F86)',
+                  fontSize: token('font.size.050', '11px'),
+                  fontWeight: 600,
+                  letterSpacing: '0',
+                  textTransform: 'none' as const,
+                  lineHeight: '16px',
+                }}
+              >
+                {config.sectionsHeading}
+              </span>
+            </div>
+          )}
+
           {config.sections ? (
             config.sections.map((section, sectionIndex) => {
-              if (section.items.length === 0) return null;
+              // A collapsed space group (HomeSidebar) has 0 items but a rich
+              // titleNode header that must stay visible so the user can re-expand
+              // it. Only drop a section when it has neither rows nor a header.
+              if (section.items.length === 0 && !section.titleNode) return null;
               
               return (
                 <div key={section.title}>
@@ -520,9 +558,23 @@ export function SidebarBase({
             }}
           >
             {renderMenuItem(
-              config.footerItem, isActive, iconResolver, expanded, handleNavigation, 
+              config.footerItem, isActive, iconResolver, expanded, handleNavigation,
               true, isFavorite, toggleFavorite, tokens
             )}
+          </div>
+        )}
+
+        {/* Footer slot — free-form pinned node (e.g. HomeSidebar dual-zone
+            clock). Sits below the scrollable nav and footerItem. */}
+        {footerSlot && (
+          <div
+            style={{
+              flexShrink: 0,
+              borderTop: `1px solid ${dividerColor}`,
+              padding: '8px 0',
+            }}
+          >
+            {footerSlot}
           </div>
         )}
       </aside>

@@ -10,6 +10,9 @@ import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { parseMentions } from '@/lib/mentions/parseMentions';
 import { CatalystMention } from '@/components/shared/rich-text/mentions/CatalystMention';
 import { useAuth } from '@/hooks/useAuth';
+import { Star } from '@/lib/atlaskit-icons';
+import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
+import { workItemStarType } from '@/lib/starType';
 
 // ─── Section header icon ─────────────────────────────────────────────────────
 
@@ -200,6 +203,17 @@ export default function MentionActivityCard({
 
   const { actor, verb, target, thread, createdAt } = notification;
 
+  // Star this work item into the unified store. The card has no row-hover
+  // state, so the star is always present (subtle until starred, gold when on).
+  const { data: starredIds } = useStarredItemIds();
+  const toggleStar = useToggleStar();
+  const isStarred = !!target.key && (starredIds?.has(target.key) ?? false);
+  const handleToggleStar = useCallback((e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+    if (!target.key) return;
+    toggleStar.mutate({ itemId: target.key, itemType: workItemStarType(target.iconType), isCurrentlyStarred: isStarred });
+  }, [target.key, target.iconType, isStarred, toggleStar]);
+
   const actorName = actor?.displayName ?? 'Someone';
   const actorAvatarUrl = actor?.avatarUrl ?? undefined;
 
@@ -334,6 +348,20 @@ export default function MentionActivityCard({
               >
                 {target.statusLabel}
               </Lozenge>
+            )}
+
+            {/* Star → unified store. Pinned right; gold when starred. */}
+            {target.key && (
+              <span
+                role="button"
+                tabIndex={0}
+                aria-label={isStarred ? 'Remove from starred' : 'Add to starred'}
+                onClick={handleToggleStar}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleToggleStar(e); }}
+                style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }}
+              >
+                <Star size={16} color="var(--ds-icon-accent-yellow, #FFAB00)" fill={isStarred ? 'var(--ds-icon-accent-yellow, #FFAB00)' : 'none'} />
+              </span>
             )}
           </div>
 

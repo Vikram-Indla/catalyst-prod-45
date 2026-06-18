@@ -5,12 +5,39 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 
-export type StarredItemType = 'epic' | 'feature' | 'story' | 'task' | 'incident' | 'defect' | 'business_request' | 'theme' | 'objective' | 'dependency' | 'risk' | 'project' | 'product' | 'board';
+// Full Catalyst star taxonomy — mirrors the user_starred_items CHECK constraint
+// (migration 20260618010000). Four families: work items · containers · surfaces
+// · knowledge. Keep in lock-step with the DB CHECK or inserts will 400.
+export type StarredItemType =
+  // work items
+  | 'epic' | 'feature' | 'story' | 'task' | 'incident' | 'defect' | 'ph_issue'
+  | 'business_request' | 'change_request' | 'production_incident' | 'business_gap' | 'idea'
+  // containers
+  | 'project' | 'product'
+  // surfaces (navigable)
+  | 'board' | 'backlog' | 'dashboard' | 'filter' | 'roadmap'
+  // knowledge
+  | 'document' | 'theme' | 'objective' | 'dependency' | 'risk';
+
+// Nav payload for non-issue stars (filter/board/dashboard/backlog/roadmap).
+// Work items leave this undefined and resolve via item_id (issue_key).
+export interface StarredMetadata {
+  label?: string;
+  subtitle?: string;
+  route?: string;
+  icon?: string;
+  // Project/product icon identity → renders the canonical ProjectIcon.
+  projectKey?: string;
+  iconName?: string;
+  color?: string;
+  avatarUrl?: string;
+}
 
 export interface StarredItem {
   id: string;
   item_id: string;
   item_type: StarredItemType;
+  metadata?: StarredMetadata | null;
   starred_at: string;
 }
 
@@ -66,10 +93,12 @@ export function useToggleStar() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async ({ itemId, itemType, isCurrentlyStarred }: { 
-      itemId: string; 
+    mutationFn: async ({ itemId, itemType, isCurrentlyStarred, metadata }: {
+      itemId: string;
       itemType: StarredItemType;
       isCurrentlyStarred: boolean;
+      // Optional nav payload for surface stars. Omitted for work items.
+      metadata?: StarredMetadata;
     }) => {
       const userId = user?.id;
       if (!userId) throw new Error('Not authenticated');
@@ -93,6 +122,7 @@ export function useToggleStar() {
             user_id: userId,
             item_id: itemId,
             item_type: itemType,
+            ...(metadata ? { metadata } : {}),
           });
 
         if (error) throw error;
@@ -101,6 +131,7 @@ export function useToggleStar() {
     },
     onSuccess: () => {
       // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ['starred-hub'] });
       queryClient.invalidateQueries({ queryKey: ['starred-item-ids'] });
       queryClient.invalidateQueries({ queryKey: ['starred-items-count'] });
       queryClient.invalidateQueries({ queryKey: ['starred-delivery-items'] });

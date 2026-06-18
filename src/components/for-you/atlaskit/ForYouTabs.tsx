@@ -97,6 +97,7 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange, tabs }: For
       <div
         role="tablist"
         aria-label="For You tabs"
+        className="cp-feed-type-tile"
         onKeyDown={handleKeyDown}
         style={{
           display: 'inline-flex',

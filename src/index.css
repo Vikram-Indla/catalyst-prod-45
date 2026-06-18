@@ -2814,19 +2814,17 @@ textarea:focus-visible {
    Award-winning tactile feedback for buttons, cards, and checkboxes
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* === BUTTON PRESS FEEDBACK === */
-button:not(:disabled):active,
-[role="button"]:not(:disabled):active,
-.btn:not(:disabled):active {
-  transform: scale(0.97);
-  transition: transform 100ms ease;
-}
-
-/* Ensure transition is set for smooth release */
+/* === BUTTON FEEDBACK === */
+/* Enterprise guardrail (CLAUDE.md): NO scale/transform press animation on
+   buttons or [role="button"]. Scaling a text-containing wrapper is a banned
+   consumer pattern, and `transition: all` animated geometry (width/position)
+   too — so any layout reflow made [role="button"] list rows (For You, Starred,
+   tables) visibly "dance" on click. Animate colour/elevation only; never
+   geometry. */
 button,
 [role="button"],
 .btn {
-  transition: all 150ms ease;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
 /* === CARD HOVER LIFT === */
@@ -5191,20 +5189,72 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: none !important;
 }
 
-/* DARK SURFACE COHERENCE (2026-06-16) — kill neutral-vs-cool seam between
-   nested panels. Atlaskit's setGlobalTheme left --ds-surface at the NEUTRAL
-   #1F1F21 (header / content panels / table cards) and the body backdrop at
-   the NEUTRAL #1A1A1A, while --cp-bg surfaces are cool #1D2125 — producing
-   the "awkward boxes of different darks". Snap them onto the canonical ADS
-   cool dark ramp. #1D2125 IS the canonical ADS elevation.surface dark, so
-   this corrects Atlaskit's override rather than fighting it. Light untouched. */
+/* DARK SURFACE COHERENCE (2026-06-16, revised 2026-06-18 by Vikram) —
+   ONE uniform dark tone for the whole viewport. The 2026-06-16 pass snapped
+   surfaces onto a TWO-tier ramp (base #1D2125 + raised #22272B), but that left
+   a two-tone seam that resolved inconsistently per page (Work #22272B-dominant,
+   Timeline #1D2125-dominant) and made the header search field read darker than
+   the header. Vikram's directive: the dominating grayish #22272B is the single
+   tone — collapse the base surface AND every Catalyst page-canvas alias onto it.
+
+   Color is uniform across EVERY tier — base, sunken, raised AND overlay all
+   land on #22272B. ADS elevation is preserved structurally (box-shadow on
+   floating UI, borders/dividers on panels) — depth comes from shadow + 1px
+   separators, NOT from a tonal background step. This is the highest-specificity
+   dark selector in the app (html + class), so it is the single source of truth
+   — it beats the lower-specificity .dark / [data-theme="dark"] token blocks.
+   Light untouched. */
 html.dark, html[data-color-mode="dark"] {
-  --ds-surface: #1D2125 !important;
+  /* ADS ramp — every tier (sunken/base/raised/overlay) collapses to one tone;
+     elevation stays via shadow + borders, never a color step. */
+  --ds-surface: #22272B !important;
   --ds-surface-raised: #22272B !important;
-  --ds-surface-overlay: #282E33 !important;
+  --ds-surface-sunken: #22272B !important;
+  --ds-surface-overlay: #22272B !important;
+  --cp-bg-overlay: #22272B !important;
+  --cp-float: #22272B !important;
+
+  /* Catalyst --cp page/canvas tier */
+  --cp-bg: #22272B !important;
+  --cp-bg-page: #22272B !important;
+  --cp-bg-hub-page: #22272B !important;
+  --cp-bg-canvas: #22272B !important;
+  --cp-bg-sunken: #22272B !important;
+
+  /* Legacy --surface-* / --bg-* tier (older Catalyst components + inputs) */
+  --surface-page: #22272B !important;
+  --surface-bg: #22272B !important;
+  --surface-subtle: #22272B !important;
+  --bg: #22272B !important;
+  --bg-0: #22272B !important;
+  --bg-1: #22272B !important;
+  --bg-app: #22272B !important;
+  --bg-workspace: #22272B !important;
+  --bg-sidebar: #22272B !important;
+  --bg-cream: #22272B !important;
+  --industry-bg-page: #22272B !important;
+  --table-section-bg: #22272B !important;
+  --table-toolbar-bg: #22272B !important;
+
+  /* shadcn HSL tier — page surfaces (#22272B ≈ hsl(210 13% 15%)) */
+  --background: 210 13% 15% !important;
+  --card: 210 13% 15% !important;
+  --secondary: 210 13% 15% !important;
+  --muted: 210 13% 15% !important;
 }
 .dark body, [data-theme="dark"] body {
-  background: var(--cp-bg, #1D2125) !important;
+  /* 2026-06-18 (Vikram): uniform shell — body matches the elevated #22272B
+     tone used across header/sidebar/canvas so edges/scroll gutter never expose
+     a darker band. Light body stays white (separate rule). */
+  background: var(--cp-bg-elevated, #22272B) !important;
+}
+
+/* 2026-06-18 (Vikram): For You feed type-icon tile. Light keeps the grey
+   Jira-parity tile (color.background.neutral); dark blends to the uniform
+   surface so the icon is not a pale lifted box. !important beats the inline
+   token. Light untouched. */
+html.dark .cp-feed-type-tile, [data-theme="dark"] .cp-feed-type-tile {
+  background-color: var(--cp-bg-elevated, #22272B) !important;
 }
 
 .dark [data-sidebar] [class*="group-label"],
@@ -5351,7 +5401,9 @@ html.dark, html[data-color-mode="dark"] {
 /* NOTIFICATION PANEL — inline style="background: rgb(255,255,255)" override */
 .dark [role="dialog"][aria-label="Notifications"],
 .dark [role="dialog"][aria-label="Notifications"] , [data-theme="dark"] [role="dialog"][aria-label="Notifications"] {
-  background: var(--cp-ink-1, #1A1A1A) !important;
+  /* 2026-06-18 (Vikram): overlay panels must match the main-viewport reference
+     (#22272B), not the separate near-black --cp-ink-1 (#1A1A1A) scheme. */
+  background: var(--cp-bg-elevated, #22272B) !important;
   color: var(--cp-bg-neutral, #EDEDED) !important;
   border-color: var(--cp-ink-1, #2E2E2E) !important;
 }
@@ -5386,7 +5438,9 @@ html.dark, html[data-color-mode="dark"] {
 [data-theme="dark"] [data-radix-popper-content-wrapper] > div,
 [data-theme="dark"] [data-radix-popover-content],
 .dark [role="dialog"] , [data-theme="dark"] [role="dialog"] {
-  background: var(--cp-ink-1, #1A1A1A) !important;
+  /* 2026-06-18 (Vikram): popovers / global search / dialogs match the
+     main-viewport reference (#22272B), not the near-black --cp-ink-1 scheme. */
+  background: var(--cp-bg-elevated, #22272B) !important;
   color: var(--cp-bg-neutral, #EDEDED) !important;
   border-color: var(--cp-ink-1, #2E2E2E) !important;
 }

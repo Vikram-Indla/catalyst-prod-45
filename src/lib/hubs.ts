@@ -45,7 +45,7 @@ export const HUBS: Hub[] = [
   { id: 'enterprise', label: 'Strategy Hub', path: '/strategyhub', tileColor: 'purple', glyph: renderIcon(OfficeBuildingIcon, 'StrategyHub') },
   { id: 'product', label: 'Product Hub', path: '/product-hub', tileColor: 'blue', glyph: renderIcon(PortfolioIcon, 'ProductHub') },
   { id: 'project', label: 'Project Hub', path: '/project-hub', tileColor: 'teal', glyph: renderIcon(FolderIcon, 'ProjectHub') },
-  { id: 'release', label: 'Release Hub', path: '/release-hub/command-center', tileColor: 'orange', glyph: renderIcon(ShipIcon, 'ReleaseHub') },
+  { id: 'release', label: 'Release Hub', path: '/release-hub/overview', tileColor: 'orange', glyph: renderIcon(ShipIcon, 'ReleaseHub') },
   { id: 'test', label: 'Test Hub', path: '/testhub/dashboard', tileColor: 'green', glyph: renderIcon(TaskIcon, 'TestHub') },
   { id: 'incident', label: 'Incident Hub', path: '/incident-hub', tileColor: 'red', glyph: renderIcon(WarningIcon, 'IncidentHub') },
   { id: 'task', label: 'Tasks', path: '/tasks/overview', tileColor: 'yellow', glyph: renderIcon(CheckCircleIcon, 'Tasks') },

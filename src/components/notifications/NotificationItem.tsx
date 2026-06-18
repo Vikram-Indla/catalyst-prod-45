@@ -9,6 +9,8 @@ import ReactionBar from "./ReactionBar";
 import { Clock, UserCheck } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
+import { workItemStarType } from '@/lib/starType';
 
 interface NotificationItemProps {
   notification: Notification;
@@ -306,6 +308,21 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
                 <span style={{ color: T.text3, fontSize: 10 }}>•</span>
                 <AdsStatusLozenge status={TYPE_TO_CATEGORY[statusProps.type]}>{statusProps.label}</AdsStatusLozenge>
               </>
+            )}
+            {/* Star this work item into the unified Starred hub. Hover-revealed
+                (stays visible once starred). Resolved label/icon comes from
+                ph_issues, so no metadata needed here. */}
+            {!isDeleted && notification.entity_key && (
+              <span style={{ marginLeft: 'auto', display: 'inline-flex' }} onClick={(e) => e.stopPropagation()}>
+                <WorkItemStarButton
+                  itemId={notification.entity_key}
+                  itemType={workItemStarType(notification.entity_icon_type || notification.entity_type)}
+                  size="sm"
+                  showTooltip
+                  alwaysVisibleWhenStarred
+                  isHovered={isHovered}
+                />
+              </span>
             )}
           </div>
 

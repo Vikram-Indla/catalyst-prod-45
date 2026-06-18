@@ -14,6 +14,7 @@ import {
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { useCreateKanbanFromFilter } from '@/hooks/workhub/useCreateKanbanFromFilter';
+import { useToggleStar, useStarredItemIds } from '@/hooks/home/useStarredItems';
 import { ENABLE_FILTER_TO_KANBAN, ENABLE_FILTER_TO_ROADMAP, ENABLE_FILTER_TO_DASHBOARD, ENABLE_FILTER_WHATSAPP_AI_SUMMARY } from '@/lib/featureFlags';
 import type { JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useJqlResults } from '@/hooks/workhub/useJqlResults';
@@ -90,6 +91,22 @@ export function FilterKebabMenu({ filter, currentUserId, rows = [], isLoadingRow
   const copyFilter      = useCopyFilter();
   const updateFilter    = useUpdateSavedFilter();
   const deleteFilter    = useDeleteSavedFilter();
+
+  // Star this saved filter into the unified star store. metadata carries the
+  // label + detail route so the Starred hub can render and open it.
+  const toggleStar = useToggleStar();
+  const { data: starredIds } = useStarredItemIds();
+  const isStarred = starredIds?.has(filter.id) ?? false;
+  const hubPrefix = hubType === 'product' ? 'product-hub' : 'project-hub';
+  const filterRoute = projectKey ? `/${hubPrefix}/${projectKey}/filters/${filter.id}` : undefined;
+  function handleToggleStar() {
+    toggleStar.mutate({
+      itemId: filter.id,
+      itemType: 'filter',
+      isCurrentlyStarred: isStarred,
+      ...(isStarred ? {} : { metadata: { label: filter.name, subtitle: 'Filter', ...(filterRoute ? { route: filterRoute } : {}) } }),
+    });
+  }
   const createKanban = useCreateKanbanFromFilter();
   const projectBoards = useBoardsForProject(ENABLE_FILTER_TO_KANBAN ? projectKey : undefined);
   const existingBoard = useExistingBoardForFilter(
@@ -301,6 +318,8 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
             padding: '4px 0',
           }}
         >
+          {menuItem(isStarred ? 'Unstar filter' : 'Star filter', handleToggleStar)}
+          {divider}
           {isOwner && menuItem('Edit filter', () => setEditOpen(true))}
           {menuItem('Copy filter', () => copyFilter.mutate(filter))}
           {isOwner && menuItem('Rename', () => { setRenameValue(filter.name); setRenameOpen(true); })}

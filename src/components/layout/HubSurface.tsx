@@ -32,37 +32,16 @@
  *   2. Delete this file.
  */
 
-import React, { ReactNode, CSSProperties, useSyncExternalStore } from 'react';
+import React, { ReactNode, CSSProperties } from 'react';
 
-/* ─── Light-mode hex (V3 Canonical White Canvas) ──────────────────────────
-   Apr 27, 2026 audit (L36): canvas was '#E9F2FE' (light Jira blue),
-   producing a global page wash that didn't match Jira (which is white).
-   Both canvas and panel are now 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'. Paired with CatalystShell's
-   JIRA_CANVAS_BG which was patched in the same pass.
+/* ─── Uniform surface (2026-06-18, Vikram) ────────────────────────────────
+   Canvas + panel always track --cp-bg-elevated (= var(--ds-surface, #FFFFFF)
+   in light, #22272B in dark), so hub pages match the rest of the shell — one
+   flat tone everywhere. Light: #FFFFFF (no regression). Dark: #22272B (the
+   grayish raised tone, spread uniformly). Replaces the broken
+   data-theme==='dark' check.
    ──────────────────────────────────────────────────────────────────────── */
-const JIRA_CANVAS = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-const JIRA_PANEL  = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-
-/**
- * Observe <html data-theme="..."> so the wrapper flips to Catalyst's dark
- * tokens when the user toggles DARK MODE. Uses useSyncExternalStore so we
- * stay in sync with the actual attribute on document.documentElement
- * without reaching for a theme context.
- */
-function useIsDark(): boolean {
-  return useSyncExternalStore(
-    (onChange) => {
-      if (typeof window === 'undefined') return () => undefined;
-      const obs = new MutationObserver(onChange);
-      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-      return () => obs.disconnect();
-    },
-    () =>
-      typeof document !== 'undefined' &&
-      document.documentElement.getAttribute('data-theme') === 'dark',
-    () => false,
-  );
-}
+const SURFACE_BG = 'var(--cp-bg-elevated)';
 
 interface HubSurfaceProps {
   children: ReactNode;
@@ -89,12 +68,8 @@ export function HubSurface({
   framePadding = 24,
   panelPadding = 24,
 }: HubSurfaceProps) {
-  const isDark = useIsDark();
-
-  // In dark mode, fall back to Catalyst's DARK MODE tokens so this wrapper
-  // doesn't punch a light-blue hole through a black page.
-  const canvasBg = isDark ? 'var(--cp-bg-canvas)' : JIRA_CANVAS;
-  const panelBg  = isDark ? 'var(--cp-bg)'        : JIRA_PANEL;
+  const canvasBg = SURFACE_BG;
+  const panelBg  = SURFACE_BG;
 
   return (
     <div

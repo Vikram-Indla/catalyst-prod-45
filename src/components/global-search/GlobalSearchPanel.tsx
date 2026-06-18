@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { formatWorkItemKey } from '@/lib/formatWorkItemKey';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import SearchIcon from '@atlaskit/icon/glyph/search';
@@ -13,6 +14,9 @@ import { useRecentItems, useInfiniteSearchResults } from '@/hooks/useGlobalSearc
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import ProjectIcon from '@/components/shared/ProjectIcon';
 import { IssueHoverCard } from '@/components/shared/IssueHoverCard';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
+import { workItemStarType } from '@/lib/starType';
+import type { StarredItemType } from '@/hooks/home/useStarredItems';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
 import type { SearchResult } from '@/types/global-search';
 
@@ -269,7 +273,12 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
   };
 
   let rowCursor = 0;
-  const renderRow = (r: Row, content: React.ReactNode, right?: React.ReactNode) => {
+  const renderRow = (
+    r: Row,
+    content: React.ReactNode,
+    right?: React.ReactNode,
+    starProps?: { itemId: string; itemType: StarredItemType },
+  ) => {
     const i = rowCursor++;
     const active = i === activeIndex;
     return (
@@ -284,11 +293,28 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
           {content}
         </div>
-        {right && (
-          <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86'), fontFamily: 'var(--cp-font-body)', flexShrink: 0 }}>
-            {right}
-          </div>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          {/* Hover-revealed star — appears when the row is active (hover or
+              keyboard) and stays gold once starred. Same component as the
+              notification + detail surfaces (one unified star store). */}
+          {starProps && (
+            <span onClick={(e) => e.stopPropagation()} style={{ display: 'inline-flex' }}>
+              <WorkItemStarButton
+                itemId={starProps.itemId}
+                itemType={starProps.itemType}
+                size="sm"
+                showTooltip
+                alwaysVisibleWhenStarred
+                isHovered={active}
+              />
+            </span>
+          )}
+          {right && (
+            <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86'), fontFamily: 'var(--cp-font-body)' }}>
+              {right}
+            </div>
+          )}
+        </div>
       </div>
     );
   };
@@ -388,7 +414,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
                 <div style={{ fontSize: 14, color: token('color.text', '#292A2E'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  <strong style={{ fontWeight: 600 }}>{it.item_key}</strong>
+                  <strong style={{ fontWeight: 600 }}>{formatWorkItemKey(it.item_key)}</strong>
                   {': '}
                   {highlight(it.title, debouncedQuery)}
                 </div>
@@ -402,6 +428,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
               </div>
             </IssueHoverCard>,
             timeAgo(it.viewed_at),
+            it.item_key ? { itemId: it.item_key, itemType: workItemStarType(it.item_type) } : undefined,
           );
         })}
 

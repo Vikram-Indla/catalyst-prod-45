@@ -21,6 +21,8 @@ import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Heading from '@atlaskit/heading';
 import { supabase } from '@/integrations/supabase/client';
 import { deriveRouteWord } from './projectHeaderTitle';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
+import type { StarredItemType } from '@/hooks/home/useStarredItems';
 
 interface Props {
   projectKey: string;
@@ -28,6 +30,17 @@ interface Props {
   paddingX?: number;
   /** 'project' renders "Projects / …" breadcrumb; 'product' renders "Products / …". */
   hubType?: 'project' | 'product';
+}
+
+// Which project/product surfaces are starrable. Only these route words get a
+// star control; anything else returns undefined (no guessed star affordance).
+const SURFACE_STAR_TYPE: Record<string, StarredItemType> = {
+  backlog: 'backlog',
+  dashboard: 'dashboard',
+};
+
+export function surfaceStarType(routeWord: string): StarredItemType | undefined {
+  return SURFACE_STAR_TYPE[routeWord.trim().toLowerCase()];
 }
 
 export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'project' }: Props) {
@@ -69,6 +82,7 @@ export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'projec
 
   const projectName = project?.name ?? projectKey;
   const routeWord = deriveRouteWord(pathname) ?? projectKey;
+  const starType = surfaceStarType(routeWord);
 
   const rootLabel = hubType === 'product' ? 'Products' : 'Projects';
   const rootHref = hubType === 'product' ? '/product-hub' : '/project-hub/projects';
@@ -97,7 +111,20 @@ export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'projec
         <BreadcrumbsItem text={projectName} href={entityHref} />
         <BreadcrumbsItem text={routeWord} />
       </Breadcrumbs>
-      <Heading size="large">{routeWord}</Heading>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Heading size="large">{routeWord}</Heading>
+        {starType && (
+          // Star this surface instance. item_id = pathname (unique per surface);
+          // metadata carries label/route so the Starred hub can render + open it.
+          <WorkItemStarButton
+            itemId={pathname}
+            itemType={starType}
+            metadata={{ label: routeWord, subtitle: projectName, route: pathname }}
+            size="md"
+            showTooltip
+          />
+        )}
+      </div>
     </div>
   );
 }
