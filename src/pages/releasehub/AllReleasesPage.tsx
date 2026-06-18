@@ -23,6 +23,7 @@ import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { Package, Search } from '@/lib/atlaskit-icons';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildReleaseBoardAdapter } from '@/components/kanban/adapters/releaseBoardAdapter';
+import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterBar';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -37,22 +38,6 @@ const T = {
   selectedBg: 'var(--ds-background-selected, #E9F2FE)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
-
-const STATUS_FILTERS = [
-  { key: 'all', label: 'All' },
-  { key: 'draft', label: 'Draft' },
-  { key: 'active', label: 'Active' },
-  { key: 'scheduled', label: 'Scheduled' },
-  { key: 'completed', label: 'Completed' },
-];
-
-// Bucket a (new-lifecycle or legacy) release status into a filter tab.
-function statusBucket(status: string): string {
-  if (status === 'draft' || status === 'todo') return 'draft';
-  if (status === 'scheduled') return 'scheduled';
-  if (['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived'].includes(status)) return 'completed';
-  return 'active';
-}
 
 function HealthPill({ health }: { health: string | null }) {
   if (!health) return <span style={{ color: T.subtlest }}>—</span>;
@@ -84,11 +69,28 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
   const isKanban = variant === 'kanban';
   const { data: releases = [], isLoading, error, refetch } = useReleasesList();
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [facetValue, setFacetValue] = useState<Record<string, string[]>>({});
   const [showCreate, setShowCreate] = useState(false);
   const view: 'table' | 'board' = isKanban ? 'board' : 'table';
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const updateStatus = useUpdateReleaseStatus();
+
+  // Distinct-value facets derived from the loaded rows (artifact: Status ·
+  // Health · Type · Environment dropdowns). Product facet lands with the
+  // richer-columns pass (needs the product join).
+  const facets: Facet[] = useMemo(() => {
+    const distinct = (pick: (r: ReleaseListRow) => string | null) => {
+      const set = new Set<string>();
+      releases.forEach((r) => { const v = pick(r); if (v) set.add(v); });
+      return [...set].sort().map((v) => ({ id: v, label: titleCase(v) }));
+    };
+    return [
+      { id: 'status', label: 'Status', options: distinct((r) => r.status) },
+      { id: 'health', label: 'Health', options: distinct((r) => r.health) },
+      { id: 'release_type', label: 'Type', options: distinct((r) => r.release_type) },
+      { id: 'target_env', label: 'Environment', options: distinct((r) => r.target_env) },
+    ];
+  }, [releases]);
 
   const boardAdapter = useMemo(
     () => buildReleaseBoardAdapter({
@@ -103,8 +105,14 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
   );
 
   const filtered = useMemo(() => {
+    const facetMatch = (r: ReleaseListRow) =>
+      Object.entries(facetValue).every(([fid, ids]) => {
+        if (ids.length === 0) return true;
+        const v = (r as any)[fid] as string | null;
+        return v != null && ids.includes(v);
+      });
     return releases.filter((r) => {
-      if (statusFilter !== 'all' && statusBucket(r.status) !== statusFilter) return false;
+      if (!facetMatch(r)) return false;
       if (search) {
         const q = search.toLowerCase();
         const hay = `${r.name} ${r.version ?? ''} ${r.jira_key ?? ''}`.toLowerCase();
@@ -112,15 +120,11 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       }
       return true;
     });
-  }, [releases, statusFilter, search]);
+  }, [releases, facetValue, search]);
 
-  const counts = useMemo(() => {
-    const c: Record<string, number> = { all: releases.length };
-    STATUS_FILTERS.slice(1).forEach((s) => {
-      c[s.key] = releases.filter((r) => statusBucket(r.status) === s.key).length;
-    });
-    return c;
-  }, [releases]);
+  const handleFacetChange = (facetId: string, ids: string[]) =>
+    setFacetValue((prev) => ({ ...prev, [facetId]: ids }));
+  const clearFacets = () => setFacetValue({});
 
   const columns: Column<ReleaseListRow>[] = useMemo(() => [
     {
@@ -194,30 +198,10 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
         </div>
       </div>
 
-      {/* Filter tabs + search (table view only; board has its own toolbar) */}
+      {/* Faceted filter row + search (table view only; board has its own toolbar) */}
       {view === 'table' && (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {STATUS_FILTERS.map((s) => {
-            const active = statusFilter === s.key;
-            return (
-              <button
-                key={s.key}
-                onClick={() => setStatusFilter(s.key)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px', borderRadius: 6, cursor: 'pointer',
-                  fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600,
-                  border: `1px solid ${active ? T.link : T.border}`,
-                  background: active ? T.selectedBg : T.card,
-                  color: active ? T.link : T.subtle,
-                }}
-              >
-                {s.label}
-                <span style={{ fontSize: 11, fontWeight: 700, color: T.subtlest }}>{counts[s.key] ?? 0}</span>
-              </button>
-            );
-          })}
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 8 }}>
+        <FacetFilterBar facets={facets} value={facetValue} onChange={handleFacetChange} onClear={clearFacets} />
         <div style={{ position: 'relative' }}>
           <Search size={14} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: T.subtlest }} />
           <input
@@ -250,7 +234,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
           icon={Search}
           title="No releases match your filters"
           subtitle="Try adjusting your search or status filter."
-          actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); setStatusFilter('all'); }, variant: 'ghost' }]}
+          actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); clearFacets(); }, variant: 'ghost' }]}
         />
       ) : (
         <JiraTable<ReleaseListRow>

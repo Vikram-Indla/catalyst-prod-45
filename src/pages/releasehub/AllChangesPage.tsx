@@ -18,6 +18,7 @@ import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
+import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterBar';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -32,22 +33,6 @@ const T = {
   selectedBg: 'var(--ds-background-selected, #E9F2FE)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
-
-const STATUS_FILTERS = [
-  { key: 'all', label: 'All' },
-  { key: 'draft', label: 'Draft' },
-  { key: 'active', label: 'Active' },
-  { key: 'in_progress', label: 'In progress' },
-  { key: 'closed', label: 'Closed' },
-];
-
-// Bucket a (new-lifecycle or legacy) change status into a filter tab.
-function changeBucket(status: string): string {
-  if (status === 'draft') return 'draft';
-  if (['closed', 'implemented', 'in_production', 'cancelled', 'failed', 'rolled_back'].includes(status)) return 'closed';
-  if (['implementing', 'validating', 'in_uat', 'in_beta'].includes(status)) return 'in_progress';
-  return 'active';
-}
 
 function RiskPill({ risk }: { risk: string | null }) {
   if (!risk) return <span style={{ color: T.subtlest }}>—</span>;
@@ -70,24 +55,46 @@ export default function AllChangesPage() {
   const navigate = useNavigate();
   const { data: changes = [], isLoading, error, refetch } = useChangesList();
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [facetValue, setFacetValue] = useState<Record<string, string[]>>({});
   const [showCreate, setShowCreate] = useState(false);
   const [selection, setSelection] = useState<Set<string>>(new Set());
 
-  const filtered = useMemo(() => changes.filter((c) => {
-    if (statusFilter !== 'all' && changeBucket(c.status) !== statusFilter) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      if (!`${c.chg_number} ${c.title}`.toLowerCase().includes(q)) return false;
-    }
-    return true;
-  }), [changes, statusFilter, search]);
-
-  const counts = useMemo(() => {
-    const c: Record<string, number> = { all: changes.length };
-    STATUS_FILTERS.slice(1).forEach((s) => { c[s.key] = changes.filter((x) => changeBucket(x.status) === s.key).length; });
-    return c;
+  // Artifact Change Records facets: Status · Type · Risk · Environment · Source.
+  const facets: Facet[] = useMemo(() => {
+    const distinct = (pick: (r: ChangeListRow) => string | null) => {
+      const set = new Set<string>();
+      changes.forEach((c) => { const v = pick(c); if (v) set.add(v); });
+      return [...set].sort().map((v) => ({ id: v, label: titleCase(v) }));
+    };
+    return [
+      { id: 'status', label: 'Status', options: distinct((c) => c.status) },
+      { id: 'change_type', label: 'Type', options: distinct((c) => c.change_type) },
+      { id: 'risk_level', label: 'Risk', options: distinct((c) => c.risk_level) },
+      { id: 'target_env', label: 'Environment', options: distinct((c) => c.target_env) },
+      { id: 'source', label: 'Source', options: distinct((c) => c.source) },
+    ];
   }, [changes]);
+
+  const filtered = useMemo(() => {
+    const facetMatch = (c: ChangeListRow) =>
+      Object.entries(facetValue).every(([fid, ids]) => {
+        if (ids.length === 0) return true;
+        const v = (c as any)[fid] as string | null;
+        return v != null && ids.includes(v);
+      });
+    return changes.filter((c) => {
+      if (!facetMatch(c)) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        if (!`${c.chg_number} ${c.title}`.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [changes, facetValue, search]);
+
+  const handleFacetChange = (facetId: string, ids: string[]) =>
+    setFacetValue((prev) => ({ ...prev, [facetId]: ids }));
+  const clearFacets = () => setFacetValue({});
 
   const columns: Column<ChangeListRow>[] = useMemo(() => [
     {
@@ -135,22 +142,8 @@ export default function AllChangesPage() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {STATUS_FILTERS.map((s) => {
-            const active = statusFilter === s.key;
-            return (
-              <button
-                key={s.key}
-                onClick={() => setStatusFilter(s.key)}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px', borderRadius: 6, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, border: `1px solid ${active ? T.link : T.border}`, background: active ? T.selectedBg : T.card, color: active ? T.link : T.subtle }}
-              >
-                {s.label}
-                <span style={{ fontSize: 11, fontWeight: 700, color: T.subtlest }}>{counts[s.key] ?? 0}</span>
-              </button>
-            );
-          })}
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 8 }}>
+        <FacetFilterBar facets={facets} value={facetValue} onChange={handleFacetChange} onClear={clearFacets} />
         <div style={{ position: 'relative' }}>
           <Search size={14} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: T.subtlest }} />
           <input
@@ -168,7 +161,7 @@ export default function AllChangesPage() {
       ) : !isLoading && changes.length === 0 ? (
         <EmptyState icon={Package} title="No change records yet" subtitle="Changes capture what ships, how, and who approves it." actions={[{ label: '+ New change', onClick: () => setShowCreate(true), variant: 'primary' }]} />
       ) : !isLoading && filtered.length === 0 ? (
-        <EmptyState icon={Search} title="No changes match your filters" subtitle="Try adjusting your search or status filter." actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); setStatusFilter('all'); }, variant: 'ghost' }]} />
+        <EmptyState icon={Search} title="No changes match your filters" subtitle="Try adjusting your search or filters." actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); clearFacets(); }, variant: 'ghost' }]} />
       ) : (
         <JiraTable<ChangeListRow>
           columns={columns}
