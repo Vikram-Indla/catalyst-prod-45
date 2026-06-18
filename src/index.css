@@ -4809,7 +4809,7 @@ input[type="range"]::-moz-range-thumb {
 .dark [class*="SidePanel"],
 .dark [class*="detail-panel"],
 .dark [class*="DetailPanel"] {
-  background-color: var(--cp-ink-1, #1A1A1A) !important;
+  background-color: var(--cp-bg-elevated, #22272B) !important;
   border-color: var(--cp-ink-1, #2E2E2E) !important;
   color: var(--cp-bg-neutral, #EDEDED) !important;
 }
