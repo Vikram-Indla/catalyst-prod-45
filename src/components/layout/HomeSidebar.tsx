@@ -448,12 +448,14 @@ export default function HomeSidebar({
         title: hub.label,
         tooltip: hub.label,
         path: hub.href,
-        icon: () => {
+        icon: ({ style }: { className?: string; style?: React.CSSProperties } = {}) => {
           // Mask-fill the outline asset so the icon inherits a theme-aware
-          // ADS token instead of the baked-in #44546F stroke. <img> bakes its
-          // colour into the file and cannot respond to dark mode — the mask
-          // lets `--ds-icon-subtle` flip to a light value on the dark rail
-          // while leaving light mode visually identical (#44546F fallback).
+          // colour instead of the baked-in #44546F stroke. <img> bakes its
+          // colour into the file and cannot respond to dark mode. SidebarBase's
+          // renderMenuItem passes the active-aware ADS colour via style.color
+          // (var(--ds-icon-brand) when active, var(--ds-icon) when inactive) —
+          // honouring it keeps the rail in step with every other sidebar icon
+          // and gives active hubs the brand-blue fill for free.
           const maskUrl = `url(${HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]})`;
           return (
             <span
@@ -463,7 +465,7 @@ export default function HomeSidebar({
                 width: '24px',
                 height: '24px',
                 display: 'block',
-                backgroundColor: 'var(--ds-icon-subtle, #44546F)',
+                backgroundColor: style?.color ?? 'var(--ds-icon, #172B4D)',
                 WebkitMaskImage: maskUrl,
                 maskImage: maskUrl,
                 WebkitMaskRepeat: 'no-repeat',
