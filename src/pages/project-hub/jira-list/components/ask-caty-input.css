@@ -2,8 +2,9 @@
  * Ask Caty input — typewriter caret + Caty-rainbow gradient frame.
  *
  * Visual states:
- *   - idle / typing → static rainbow border, no animation
- *   - loading       → same border, rotating anticlockwise
+ *   - idle / typing / loading → static magenta-led gradient border, no
+ *     animation ever (CLAUDE.md AI-CTA carve-out). Loading is signalled by
+ *     the disabled input + Go button, not by motion on the border.
  *
  * Implementation mirrors the linked-items overlay: an oversized square
  * conic-gradient layer rotated via `transform`, clipped to the
@@ -58,13 +59,15 @@
   left: 50%;
   transform: translate(-50%, -50%) rotate(0deg);
   z-index: -2;
+  /* 2026-06-18 — magenta-led AI border. Matches the CatyPulseIcon mark
+     (#CD519D). Magenta-pink → magenta → violet so the border reads as the
+     Caty brand colour while keeping a gradient AI signifier. */
   background: conic-gradient(
     from 0deg,
-    #2684ff 0deg,
-    #6554c0 90deg,
-    #ff5630 180deg,
-    #ffab00 270deg,
-    #2684ff 360deg
+    #ff3cac 0deg,
+    #cd519d 120deg,
+    #784ba0 240deg,
+    #ff3cac 360deg
   );
   pointer-events: none;
 }
@@ -81,21 +84,10 @@
   pointer-events: none;
 }
 
-/* Loading variant — rotate the gradient layer anticlockwise. The
-   `translate(-50%, -50%)` stays inside the keyframe so the square
-   keeps its centre point while spinning. */
-.ask-caty-frame.is-loading::before {
-  animation: ask-caty-rotate 3s linear infinite;
-}
-
-@keyframes ask-caty-rotate {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(-360deg);
-  }
-}
+/* Loading variant — the border stays STATIC (CLAUDE.md AI-CTA carve-out:
+   "animation: none — no rotation, no shift, no shimmer, ever"). Loading is
+   signalled by the disabled input + Go button, not a spinning border.
+   (2026-06-18 — removed the rotation that violated the carve-out.) */
 
 /* Stack rows vertically inside the rainbow frame. In the default
    single-row state the frame is one .ask-caty-row tall (40px). Once
