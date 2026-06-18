@@ -4,6 +4,7 @@
  * Features: search, status filter, 25-row pagination, sort by created/updated
  */
 import React, { useMemo, useState, useCallback } from 'react';
+import { formatWorkItemKey } from '@/lib/formatWorkItemKey';
 import { Search } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { WorkItemStatusLozenge } from '@/components/workflow';
@@ -286,7 +287,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
                     fontSize: 13, fontWeight: 500,
                     color: T.keyColor,
                   }}>
-                    {item.jiraKey}
+                    {formatWorkItemKey(item.jiraKey)}
                   </span>
                 </td>
 

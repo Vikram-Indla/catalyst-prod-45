@@ -21,6 +21,7 @@
  *  - Keyboard: Up/Down arrows, J/K vim-style, Home/End, Enter/Space, Escape propagates to parent
  */
 import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
+import { formatWorkItemKey } from '@/lib/formatWorkItemKey';
 import { GroupByPopover, type GroupByOption } from '@/components/shared/GroupByPopover';
 import { IconButton } from '@atlaskit/button/new';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
@@ -390,10 +391,10 @@ export function WorkListPanel({
                     textUnderlineOffset: 2,
                   }}
                 >
-                  {/-LOCAL-\d/.test(item.jiraKey) ? 'Draft' : item.jiraKey}
+                  {formatWorkItemKey(item.jiraKey)}
                 </button>
               ) : (
-                /-LOCAL-\d/.test(item.jiraKey) ? 'Draft' : item.jiraKey
+                formatWorkItemKey(item.jiraKey)
               )}
             </span>
 

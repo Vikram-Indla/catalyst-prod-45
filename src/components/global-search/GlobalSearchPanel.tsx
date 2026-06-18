@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { formatWorkItemKey } from '@/lib/formatWorkItemKey';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import SearchIcon from '@atlaskit/icon/glyph/search';
@@ -413,7 +414,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
                 <div style={{ fontSize: 14, color: token('color.text', '#292A2E'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  <strong style={{ fontWeight: 600 }}>{it.item_key}</strong>
+                  <strong style={{ fontWeight: 600 }}>{formatWorkItemKey(it.item_key)}</strong>
                   {': '}
                   {highlight(it.title, debouncedQuery)}
                 </div>
