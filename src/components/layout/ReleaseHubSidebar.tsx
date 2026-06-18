@@ -1,9 +1,9 @@
 /**
  * ReleaseHubSidebar — Release Operations sidebar
  *
- * Sections (handoff §6, 2026-06-18):
+ * Sections (handoff §6, 2026-06-18; Backlog/Kanban split 2026-06-18 parity):
  *   - Overview (unlabeled top)
- *   - Releases: Releases, Production Events, Calendar
+ *   - Releases: Backlog, Release Kanban, Production Events, Calendar
  *   - Change Management: Change Records, SOP Templates, Sign-off Queue, Freeze Windows
  *   - Settings (footer)
  *
@@ -12,7 +12,8 @@
 
 import {
   LayoutDashboard,
-  Rocket,
+  List,
+  Kanban,
   Clock,
   Calendar,
   ArrowLeftRight,
@@ -30,7 +31,7 @@ interface ReleaseHubSidebarProps {
   pendingSignoffs?: number;
 }
 
-const buildSections = (pendingSignoffs: number): SidebarSection[] => [
+export const buildReleaseHubSections = (pendingSignoffs: number): SidebarSection[] => [
   {
     title: '',
     items: [
@@ -40,7 +41,8 @@ const buildSections = (pendingSignoffs: number): SidebarSection[] => [
   {
     title: 'Releases',
     items: [
-      { id: 'all-releases', title: 'Releases', path: '/release-hub/releases', icon: Rocket, exact: false },
+      { id: 'backlog', title: 'Backlog', path: '/release-hub/releases', icon: List, exact: true },
+      { id: 'release-kanban', title: 'Release Kanban', path: '/release-hub/release-kanban', icon: Kanban, exact: false },
       { id: 'production-events', title: 'Production Events', path: '/release-hub/production-events', icon: Clock, exact: false },
       { id: 'calendar', title: 'Calendar', path: '/release-hub/calendar', icon: Calendar, exact: true },
     ],
@@ -60,7 +62,7 @@ export function ReleaseHubSidebar({ expanded, onToggle, className, pendingSignof
   const config: SidebarConfig = {
     badge: 'RO',
     label: 'Release Operations',
-    sections: buildSections(pendingSignoffs),
+    sections: buildReleaseHubSections(pendingSignoffs),
     footerItem: {
       id: 'settings',
       title: 'Settings',

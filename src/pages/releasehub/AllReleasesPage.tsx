@@ -13,7 +13,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, formatDistanceToNowStrict } from 'date-fns';
-import { Plus, LayoutGrid, List } from '@/lib/atlaskit-icons';
+import { Plus } from '@/lib/atlaskit-icons';
 import { useReleasesList, useUpdateReleaseStatus, type ReleaseListRow } from '@/hooks/useReleaseHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
@@ -72,13 +72,21 @@ function titleCase(v: string | null) {
   return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
 }
 
-export default function AllReleasesPage() {
+/**
+ * `variant` splits this page into two sidebar surfaces (artifact IA parity):
+ *   - 'backlog'  → /release-hub/releases       (table only)
+ *   - 'kanban'   → /release-hub/release-kanban  (board only)
+ * The old in-page list/board toggle is removed; each view is now its own
+ * dedicated nav item.
+ */
+export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'backlog' | 'kanban' }) {
   const navigate = useNavigate();
+  const isKanban = variant === 'kanban';
   const { data: releases = [], isLoading, error, refetch } = useReleasesList();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showCreate, setShowCreate] = useState(false);
-  const [view, setView] = useState<'table' | 'board'>('table');
+  const view: 'table' | 'board' = isKanban ? 'board' : 'table';
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const updateStatus = useUpdateReleaseStatus();
 
@@ -173,27 +181,10 @@ export default function AllReleasesPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div>
-          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Releases</h1>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Plan, track, and ship releases</p>
+          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>{isKanban ? 'Release Kanban' : 'Backlog'}</h1>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>{isKanban ? 'Releases by lifecycle stage. Drag a card to advance its stage.' : 'Plan, track, and ship releases'}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* View toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 0, border: `1px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
-            <button
-              onClick={() => setView('table')}
-              aria-label="Table view"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, border: 'none', cursor: 'pointer', background: view === 'table' ? T.selectedBg : T.card, color: view === 'table' ? T.link : T.subtle }}
-            >
-              <List size={16} style={{ color: view === 'table' ? T.link : T.subtle }} />
-            </button>
-            <button
-              onClick={() => setView('board')}
-              aria-label="Board view"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, border: 'none', borderLeft: `1px solid ${T.border}`, cursor: 'pointer', background: view === 'board' ? T.selectedBg : T.card, color: view === 'board' ? T.link : T.subtle }}
-            >
-              <LayoutGrid size={16} style={{ color: view === 'board' ? T.link : T.subtle }} />
-            </button>
-          </div>
           <button
             onClick={() => setShowCreate(true)}
             style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
