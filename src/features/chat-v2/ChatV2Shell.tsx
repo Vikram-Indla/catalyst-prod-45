@@ -197,7 +197,12 @@ function ChatV2Inner() {
     shell.closeThread();
     setSelectedActivityId(null);
     setActivityJumpMessageId(null);
-    if (shell.activeView === 'activity' || shell.activeView === 'later' || shell.activeView === 'people') {
+    if (
+      shell.activeView === 'activity' ||
+      shell.activeView === 'later' ||
+      shell.activeView === 'people' ||
+      shell.activeView === 'drafts'
+    ) {
       shell.setActiveView('chat');
     }
   };
@@ -218,7 +223,12 @@ function ChatV2Inner() {
     shell.closeThread();
     setSelectedActivityId(null);
     setActivityJumpMessageId(null);
-    if (shell.activeView === 'activity' || shell.activeView === 'later' || shell.activeView === 'people') {
+    if (
+      shell.activeView === 'activity' ||
+      shell.activeView === 'later' ||
+      shell.activeView === 'people' ||
+      shell.activeView === 'drafts'
+    ) {
       shell.setActiveView('chat');
     }
   };
@@ -415,7 +425,7 @@ function ChatV2Inner() {
   // open OR (in non-activity/later mode) a thread is open. Activity + Later
   // both use the same activity gridArea for their panel and let threads
   // replace the panel area rather than opening a 5th column.
-  const wideMode = inActivityMode || inLaterMode || inDraftsMode;
+  const wideMode = inActivityMode || inLaterMode;
   const showRightColumn = searchResultsOpen || summaryOpen || (!wideMode && threadOpen);
 
   // Drafts-tab row click: navigate to that conversation in chat mode.
@@ -640,15 +650,6 @@ function ChatV2Inner() {
             onSelectItem={handleSelectLater}
             showRightBorder={false}
           />
-        ) : inDraftsMode ? (
-          <DraftsAndSentPanel
-            activeTab={shell.draftsActiveTab}
-            onActiveTabChange={shell.setDraftsActiveTab}
-            onSelectDraft={handleSelectDraft}
-            onSelectScheduled={handleSelectScheduled}
-            onSelectSent={handleSelectSent}
-            onNewMessage={handleOpenNewMessagePanel}
-          />
         ) : (
           <Sidebar
             activeView={shell.activeView}
@@ -657,6 +658,7 @@ function ChatV2Inner() {
             onSelectConversation={handleSelect}
             onNewConversation={handleOpenNewMessagePanel}
             onCreateChannel={() => setShowCreateChannelModal(true)}
+            onOpenDrafts={() => shell.setActiveView('drafts')}
           />
         )}
         <ActivitySplitter onMouseDown={sidebarStartResize} isResizing={sidebarIsResizing} />
@@ -719,7 +721,14 @@ function ChatV2Inner() {
             )
           ) : null
         ) : inDraftsMode ? (
-          <EmptyPanel />
+          <DraftsAndSentPanel
+            activeTab={shell.draftsActiveTab}
+            onActiveTabChange={shell.setDraftsActiveTab}
+            onSelectDraft={handleSelectDraft}
+            onSelectScheduled={handleSelectScheduled}
+            onSelectSent={handleSelectSent}
+            onNewMessage={handleOpenNewMessagePanel}
+          />
         ) : showNewMessagePanel ? (
           <NewMessagePanel
             selfId={user?.id ?? null}

@@ -37,6 +37,9 @@ interface DraftsAndSentPanelProps {
   onSelectScheduled: (msg: ScheduledMessage) => void;
   onSelectSent: (msg: SentMessage) => void;
   onNewMessage: () => void;
+  /** Grid area to mount in. Defaults to 'panel' — the main content
+   *  slot to the right of the conversation sidebar. */
+  gridArea?: string;
 }
 
 export function DraftsAndSentPanel({
@@ -46,6 +49,7 @@ export function DraftsAndSentPanel({
   onSelectScheduled,
   onSelectSent,
   onNewMessage,
+  gridArea = 'panel',
 }: DraftsAndSentPanelProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -129,14 +133,13 @@ export function DraftsAndSentPanel({
   }, [activeTab, selectMode, exitSelectMode]);
 
   return (
-    <aside
+    <section
       aria-label="Drafts and sent"
       style={{
-        gridArea: 'sidebar',
+        gridArea,
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--cv2-bg-sidebar)',
-        borderRight: '1px solid var(--cv2-border)',
+        background: 'var(--cv2-bg-panel)',
         overflow: 'hidden',
         minWidth: 0,
       }}
@@ -183,7 +186,7 @@ export function DraftsAndSentPanel({
         )}
         {activeTab === 'sent' && <SentTab onSelectSent={onSelectSent} />}
       </div>
-    </aside>
+    </section>
   );
 }
 

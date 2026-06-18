@@ -6,11 +6,9 @@ import {
   BellIcon,
   BookmarkIcon,
   DmsIcon,
-  DraftsClockIcon,
   HomeIcon,
 } from '../shared/Icon';
 import { useActivityFeed } from '../../hooks/useActivityFeed';
-import { useMyScheduledCount } from '../../hooks/useMyScheduledCount';
 import type { ChatTheme } from '../../hooks/useChatTheme';
 import type { ChatView } from '@/features/chat/hooks/useShellState';
 
@@ -43,7 +41,6 @@ export function WorkspaceRail({
   // there's no extra round trip when the Activity panel is also mounted.
   const isOnActivity = activeView === 'activity';
   const { items: activityItems } = useActivityFeed();
-  const scheduledCount = useMyScheduledCount();
 
   return (
     <aside
@@ -109,13 +106,6 @@ export function WorkspaceRail({
             onMouseLeave={scheduleClose}
           />
         )}
-      />
-      <RailItem
-        icon={<DraftsClockIcon size={20} />}
-        label="Drafts & sent"
-        active={activeView === 'drafts'}
-        badgeCount={scheduledCount}
-        onClick={() => onNavigate('drafts')}
       />
       <RailItem
         icon={<BookmarkIcon size={20} />}
