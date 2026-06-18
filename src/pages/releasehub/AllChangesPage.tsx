@@ -9,6 +9,7 @@
  * with Approvers + Notify fields lands in Phase 7b.
  */
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format, formatDistanceToNowStrict } from 'date-fns';
 import { Plus, Search, Package } from '@/lib/atlaskit-icons';
 import { useChangesList, type ChangeListRow } from '@/hooks/useReleaseHub';
@@ -58,6 +59,7 @@ function titleCase(v: string | null) {
 }
 
 export default function AllChangesPage() {
+  const navigate = useNavigate();
   const { data: changes = [], isLoading, error, refetch } = useChangesList();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -163,6 +165,7 @@ export default function AllChangesPage() {
           columns={columns}
           data={filtered}
           getRowId={(r) => r.id}
+          onRowClick={(r) => navigate(`/release-hub/changes/${r.id}`)}
           isLoading={isLoading}
           rowsPerPage={25}
           showRowCount
