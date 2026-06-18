@@ -13,14 +13,16 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, formatDistanceToNowStrict } from 'date-fns';
-import { Plus } from '@/lib/atlaskit-icons';
-import { useReleasesList, type ReleaseListRow } from '@/hooks/useReleaseHub';
+import { Plus, LayoutGrid, List } from '@/lib/atlaskit-icons';
+import { useReleasesList, useUpdateReleaseStatus, type ReleaseListRow } from '@/hooks/useReleaseHub';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { Package, Search } from '@/lib/atlaskit-icons';
+import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
+import { buildReleaseBoardAdapter } from '@/components/kanban/adapters/releaseBoardAdapter';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -73,6 +75,20 @@ export default function AllReleasesPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showCreate, setShowCreate] = useState(false);
+  const [view, setView] = useState<'table' | 'board'>('table');
+  const updateStatus = useUpdateReleaseStatus();
+
+  const boardAdapter = useMemo(
+    () => buildReleaseBoardAdapter({
+      releases,
+      search,
+      onSearchChange: setSearch,
+      onCardClick: (id) => navigate(`/release-hub/${id}`),
+      onCreate: () => setShowCreate(true),
+      onStatusChange: (id, status) => updateStatus.mutate({ id, status }),
+    }),
+    [releases, search, navigate, updateStatus],
+  );
 
   const filtered = useMemo(() => {
     return releases.filter((r) => {
@@ -156,15 +172,35 @@ export default function AllReleasesPage() {
           <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Releases</h1>
           <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Plan, track, and ship releases</p>
         </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
-        >
-          <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New release
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* View toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, border: `1px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
+            <button
+              onClick={() => setView('table')}
+              aria-label="Table view"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, border: 'none', cursor: 'pointer', background: view === 'table' ? T.selectedBg : T.card, color: view === 'table' ? T.link : T.subtle }}
+            >
+              <List size={16} style={{ color: view === 'table' ? T.link : T.subtle }} />
+            </button>
+            <button
+              onClick={() => setView('board')}
+              aria-label="Board view"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, border: 'none', borderLeft: `1px solid ${T.border}`, cursor: 'pointer', background: view === 'board' ? T.selectedBg : T.card, color: view === 'board' ? T.link : T.subtle }}
+            >
+              <LayoutGrid size={16} style={{ color: view === 'board' ? T.link : T.subtle }} />
+            </button>
+          </div>
+          <button
+            onClick={() => setShowCreate(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          >
+            <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New release
+          </button>
+        </div>
       </div>
 
-      {/* Filter tabs + search */}
+      {/* Filter tabs + search (table view only; board has its own toolbar) */}
+      {view === 'table' && (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {STATUS_FILTERS.map((s) => {
@@ -198,9 +234,14 @@ export default function AllReleasesPage() {
           />
         </div>
       </div>
+      )}
 
       {/* Content */}
-      {error ? (
+      {view === 'board' ? (
+        <div style={{ height: 'calc(100vh - 220px)', minHeight: 480 }}>
+          <KanbanBoardShell adapter={boardAdapter} title="Releases" hideTitleHeader />
+        </div>
+      ) : error ? (
         <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
       ) : !isLoading && releases.length === 0 ? (
         <EmptyState
