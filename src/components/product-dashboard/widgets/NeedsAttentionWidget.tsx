@@ -4,6 +4,7 @@ import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
+import { useTheme } from '@/hooks/useTheme';
 
 const STALLED_DAYS  = 14;
 const OVERDUE_DAYS  = 21;
@@ -28,6 +29,7 @@ function ToggleGroup({
   active: string;
   onChange: (v: string) => void;
 }) {
+  const { isDark } = useTheme();
   return (
     <div
       role="tablist"
@@ -48,14 +50,14 @@ function ToggleGroup({
           onClick={() => onChange(o.value)}
           style={{
             border: 'none',
-            background: o.value === active ? token('elevation.surface', '#FFFFFF') : 'transparent',
+            background: o.value === active ? (isDark ? token('color.background.selected', '#1C2B41') : token('elevation.surface', '#FFFFFF')) : 'transparent',
             padding: '4px 10px',
             fontSize: 11,
             fontWeight: 500,
             color: o.value === active ? token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             cursor: 'pointer',
             borderRadius: 3,
-            boxShadow: o.value === active ? '0 1px 1px rgba(9,30,66,0.15)' : 'none',
+            boxShadow: o.value === active && !isDark ? '0 1px 1px rgba(9,30,66,0.15)' : 'none',
             fontFamily: 'inherit',
           }}
         >
