@@ -200,6 +200,12 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.text }}>{row.changeCount}</span>,
     },
     {
+      id: 'signoff', label: 'Sign-off', width: 9, align: 'end',
+      cell: ({ row }) => row.signoffProgress
+        ? <span style={{ fontFamily: T.mono, fontSize: 13, color: row.signoffProgress.approved === row.signoffProgress.total ? 'var(--ds-text-success, #216E4E)' : T.subtle }}>{row.signoffProgress.approved}/{row.signoffProgress.total}</span>
+        : <span style={{ color: T.subtlest }}>—</span>,
+    },
+    {
       id: 'manager', label: 'Manager', width: 11,
       cell: ({ row }) => {
         if (!row.manager) return <span style={{ color: T.subtlest }}>—</span>;

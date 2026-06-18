@@ -60,6 +60,7 @@ export interface ReleaseListRow {
   workItemsCount: number;
   productName: string | null;
   manager: { name: string; avatarUrl: string | null } | null;
+  signoffProgress: { approved: number; total: number } | null;
 }
 
 /**
@@ -118,12 +119,28 @@ export const useReleasesList = () =>
         (profs ?? []).forEach((p: any) => { managerMap[p.id] = { name: p.full_name, avatarUrl: p.avatar_url ?? null }; });
       }
 
+      // Release sign-off progress (approved/total per release). Degrades to null
+      // (column renders '—') until the rh_release_signoffs migration is applied.
+      const signoffMap: Record<string, { approved: number; total: number }> = {};
+      if (ids.length > 0) {
+        const { data: sos, error: soErr } = await supabase
+          .from('rh_release_signoffs' as any).select('release_id, status').in('release_id', ids);
+        if (!soErr) {
+          (sos ?? []).forEach((s: any) => {
+            const e = (signoffMap[s.release_id] ??= { approved: 0, total: 0 });
+            e.total += 1;
+            if (s.status === 'approved') e.approved += 1;
+          });
+        }
+      }
+
       return releases.map((r) => ({
         ...r,
         changeCount: counts[r.id] ?? 0,
         workItemsCount: itemCounts[r.id] ?? 0,
         productName: r.product_id ? (productMap[r.product_id] ?? null) : null,
         manager: r.release_manager_id ? (managerMap[r.release_manager_id] ?? null) : null,
+        signoffProgress: signoffMap[r.id] ?? null,
       })) as ReleaseListRow[];
     },
   });
