@@ -20,6 +20,10 @@ import { useStartGroupDm } from '@/hooks/chat/useStartGroupDm';
 import { useStagedAttachments } from '../../hooks/useStagedAttachments';
 import { useMessageAttachments } from '../../hooks/useMessageAttachments';
 import { useConversationDraft } from '../../hooks/useConversationDraft';
+import { useMyScheduledCountByConversation } from '../../hooks/useMyScheduledMessages';
+import { ComposerScheduledBanner } from '../DraftsAndSent/ComposerScheduledBanner';
+import { EditScheduledMessagePanel } from '../DraftsAndSent/EditScheduledMessagePanel';
+import type { ScheduledMessage } from '../../hooks/useMyScheduledMessages';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -39,9 +43,16 @@ interface MessagePanelProps {
   /** Called after a forward succeeds — passes the destination conversation
    *  id to route to (single DM, group DM, or first channel). */
   onForwardCompleted?: (conversationId: string) => void;
+  /** When set, the EditScheduledMessagePanel mounts above the composer
+   *  for this message. Cleared via onDismissEditScheduled. */
+  editScheduledMessage?: ScheduledMessage | null;
+  onDismissEditScheduled?: () => void;
+  /** Called when the user clicks "See all scheduled messages" in the
+   *  composer banner — the shell should route to drafts/scheduled. */
+  onSeeAllScheduled?: () => void;
 }
 
-export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpMessageId, onSummarize, onOpenForwardSource, onForwardCompleted }: MessagePanelProps) {
+export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpMessageId, onSummarize, onOpenForwardSource, onForwardCompleted, editScheduledMessage, onDismissEditScheduled, onSeeAllScheduled }: MessagePanelProps) {
   const { user } = useAuth();
   const { messages, isLoading, sendMessage } = useMessages(conversation.id);
   const { toggleReaction, editMessage, deleteMessage } = useChatMessageActions(conversation.id);
@@ -68,6 +79,8 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
   const staged = useStagedAttachments(conversation.id);
   const { byMessage: attachmentsByMessage } = useMessageAttachments(conversation.id);
   const draftState = useConversationDraft(conversation.id);
+  const scheduledByConv = useMyScheduledCountByConversation();
+  const scheduledForThisConv = scheduledByConv.get(conversation.id);
   const [dragDepth, setDragDepth] = useState(0);
   const isDragging = dragDepth > 0;
   const dragDepthRef = useRef(0);
@@ -501,6 +514,20 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
         isUploading={staged.isUploading}
         initialDraft={draftState.draft}
         onDraftChange={draftState.setDraft}
+        notificationBanner={
+          editScheduledMessage ? (
+            <EditScheduledMessagePanel
+              message={editScheduledMessage}
+              onDismiss={() => onDismissEditScheduled?.()}
+            />
+          ) : scheduledForThisConv ? (
+            <ComposerScheduledBanner
+              count={scheduledForThisConv.count}
+              nextSendAt={scheduledForThisConv.nextSendAt}
+              onSeeAll={() => onSeeAllScheduled?.()}
+            />
+          ) : undefined
+        }
         onSend={text => {
           void handleSend(text);
         }}

@@ -31,6 +31,7 @@ import { LaterPanel } from './components/Later/LaterPanel';
 import { DraftsAndSentPanel } from './components/DraftsAndSent/DraftsAndSentPanel';
 import type { LaterItem } from './hooks/useLaterItems';
 import type { DraftListItem } from './hooks/useAllDrafts';
+import type { ScheduledMessage } from './hooks/useMyScheduledMessages';
 import { WorkspaceSearchBar } from './components/Search/WorkspaceSearchBar';
 import { WorkspaceSearchModal } from './components/Search/WorkspaceSearchModal';
 import { WorkspaceSearchResultsPanel } from './components/Search/WorkspaceSearchResultsPanel';
@@ -85,6 +86,7 @@ function ChatV2Inner() {
   const [activityJumpMessageId, setActivityJumpMessageId] = useState<string | null>(null);
   const [threadJumpMessageId, setThreadJumpMessageId] = useState<string | null>(null);
   const [selectedLaterId, setSelectedLaterId] = useState<string | null>(null);
+  const [editScheduledMessage, setEditScheduledMessage] = useState<ScheduledMessage | null>(null);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [searchActiveQuery, setSearchActiveQuery] = useState<string | null>(null);
   const { recents: recentSearches, record: recordRecentSearch } = useRecentSearches();
@@ -425,10 +427,41 @@ function ChatV2Inner() {
       setSelectedActivityId(null);
       setActivityJumpMessageId(null);
       setSelectedLaterId(null);
+      setEditScheduledMessage(null);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [shell.setActiveView, shell.closeThread],
   );
+
+  // Scheduled-tab row click: open the source conversation and mount
+  // the EditScheduledMessagePanel above the composer. Composer stays
+  // empty — user must explicitly choose Edit/Send now/Delete.
+  const handleSelectScheduled = useCallback(
+    (msg: ScheduledMessage) => {
+      shell.setActiveView('chat');
+      setActiveConversationId(msg.conversationId);
+      shell.closeThread();
+      setSelectedActivityId(null);
+      setActivityJumpMessageId(null);
+      setSelectedLaterId(null);
+      setEditScheduledMessage(msg);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [shell.setActiveView, shell.closeThread],
+  );
+
+  // Clear the edit target whenever the user navigates to a different
+  // conversation or leaves chat mode — the panel only makes sense for
+  // the conversation it was queued in.
+  useEffect(() => {
+    if (!editScheduledMessage) return;
+    if (
+      shell.activeView !== 'chat' ||
+      activeConversationId !== editScheduledMessage.conversationId
+    ) {
+      setEditScheduledMessage(null);
+    }
+  }, [shell.activeView, activeConversationId, editScheduledMessage]);
 
   // Layout — every view has a draggable splitter between the left panel and the right pane.
   let gridTemplateColumns: string;
@@ -585,6 +618,7 @@ function ChatV2Inner() {
             activeTab={shell.draftsActiveTab}
             onActiveTabChange={shell.setDraftsActiveTab}
             onSelectDraft={handleSelectDraft}
+            onSelectScheduled={handleSelectScheduled}
             onNewMessage={handleOpenNewMessagePanel}
           />
         ) : (
@@ -677,6 +711,16 @@ function ChatV2Inner() {
               handleSelectSearchHit({ id: messageId, conversationId, parentId: null })
             }
             onForwardCompleted={handleSelect}
+            editScheduledMessage={
+              editScheduledMessage && editScheduledMessage.conversationId === activeConversation.id
+                ? editScheduledMessage
+                : null
+            }
+            onDismissEditScheduled={() => setEditScheduledMessage(null)}
+            onSeeAllScheduled={() => {
+              shell.setActiveView('drafts');
+              shell.setDraftsActiveTab('scheduled');
+            }}
           />
         ) : (
           <EmptyPanel />
