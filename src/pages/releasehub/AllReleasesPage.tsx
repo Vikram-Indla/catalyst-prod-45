@@ -18,6 +18,7 @@ import { useReleasesList, useUpdateReleaseStatus, type ReleaseListRow } from '@/
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { Avatar } from '@/components/ads/Avatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { Package, Search } from '@/lib/atlaskit-icons';
@@ -87,6 +88,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       return [...set].sort().map((v) => ({ id: v, label: titleCase(v) }));
     };
     return [
+      { id: 'productName', label: 'Product', options: distinct((r) => r.productName) },
       { id: 'status', label: 'Status', options: distinct((r) => r.status) },
       { id: 'health', label: 'Health', options: distinct((r) => r.health) },
       { id: 'release_type', label: 'Type', options: distinct((r) => r.release_type) },
@@ -143,12 +145,33 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       ),
     },
     {
+      id: 'productName', label: 'Product', width: 10,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: row.productName ? T.text : T.subtlest }}>{row.productName ?? '—'}</span>,
+    },
+    {
       id: 'status', label: 'Status', width: 12, sortable: true,
       cell: ({ row }) => <StatusLozenge status={row.status} />,
     },
     {
       id: 'health', label: 'Health', width: 10,
       cell: ({ row }) => <HealthPill health={row.health} />,
+    },
+    {
+      id: 'readiness', label: 'Readiness', width: 11,
+      accessor: (row) => row.readiness_pct ?? -1,
+      cell: ({ row }) => {
+        if (row.readiness_pct == null) return <span style={{ color: T.subtlest }}>—</span>;
+        const pct = Math.max(0, Math.min(100, row.readiness_pct));
+        const barColor = row.health === 'at_risk' ? 'var(--ds-background-danger-bold, #C9372C)' : 'var(--ds-background-brand-bold, #0C66E4)';
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ flex: 1, height: 6, borderRadius: 4, background: 'var(--ds-background-neutral, #F1F2F4)', overflow: 'hidden', minWidth: 48 }}>
+              <div style={{ width: `${pct}%`, height: '100%', background: barColor }} />
+            </div>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, minWidth: 28, textAlign: 'right' }}>{pct}%</span>
+          </div>
+        );
+      },
     },
     {
       id: 'target_env', label: 'Env', width: 10,
@@ -170,6 +193,18 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       id: 'changes', label: 'Changes', width: 8, align: 'end', sortable: true,
       accessor: (row) => row.changeCount,
       cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.text }}>{row.changeCount}</span>,
+    },
+    {
+      id: 'manager', label: 'Manager', width: 11,
+      cell: ({ row }) => {
+        if (!row.manager) return <span style={{ color: T.subtlest }}>—</span>;
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <Avatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
+            <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.manager.name}</span>
+          </div>
+        );
+      },
     },
     {
       id: 'updated', label: 'Updated', width: 10, sortable: true,

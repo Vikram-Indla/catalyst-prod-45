@@ -57,6 +57,8 @@ export interface ReleaseListRow {
   jira_key: string | null;
   updated_at: string | null;
   changeCount: number;
+  productName: string | null;
+  manager: { name: string; avatarUrl: string | null } | null;
 }
 
 /**
@@ -73,7 +75,7 @@ export const useReleasesList = () =>
     queryFn: async (): Promise<ReleaseListRow[]> => {
       const { data: rels, error } = await supabase
         .from('rh_releases')
-        .select('id, name, version, status, health, release_type, target_env, target_date, planned_release_date, readiness_pct, source, jira_key, updated_at')
+        .select('id, name, version, status, health, release_type, target_env, target_date, planned_release_date, readiness_pct, source, jira_key, updated_at, product_id, release_manager_id')
         .order('updated_at', { ascending: false });
       if (error) throw error;
       const releases = (rels ?? []) as any[];
@@ -88,7 +90,28 @@ export const useReleasesList = () =>
           if (c.release_id) counts[c.release_id] = (counts[c.release_id] ?? 0) + 1;
         });
       }
-      return releases.map((r) => ({ ...r, changeCount: counts[r.id] ?? 0 })) as ReleaseListRow[];
+
+      // Resolve product names + manager profiles (best-effort; render nothing
+      // when a lookup is absent — no typed-default lies, CLAUDE.md zero-assumption).
+      const productMap: Record<string, string> = {};
+      const productIds = [...new Set(releases.map((r) => r.product_id).filter(Boolean))];
+      if (productIds.length > 0) {
+        const { data: prods } = await supabase.from('products').select('id, name').in('id', productIds);
+        (prods ?? []).forEach((p: any) => { productMap[p.id] = p.name; });
+      }
+      const managerMap: Record<string, { name: string; avatarUrl: string | null }> = {};
+      const managerIds = [...new Set(releases.map((r) => r.release_manager_id).filter(Boolean))];
+      if (managerIds.length > 0) {
+        const { data: profs } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', managerIds);
+        (profs ?? []).forEach((p: any) => { managerMap[p.id] = { name: p.full_name, avatarUrl: p.avatar_url ?? null }; });
+      }
+
+      return releases.map((r) => ({
+        ...r,
+        changeCount: counts[r.id] ?? 0,
+        productName: r.product_id ? (productMap[r.product_id] ?? null) : null,
+        manager: r.release_manager_id ? (managerMap[r.release_manager_id] ?? null) : null,
+      })) as ReleaseListRow[];
     },
   });
 
