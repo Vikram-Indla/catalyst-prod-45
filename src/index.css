@@ -3272,17 +3272,17 @@ input[type="range"]::-moz-range-thumb {
 
 .dark .c-section,
   .dark .c-section , [data-theme="dark"] .c-section {
-  background-color: var(--cp-ink-1, #1A1A1A);
+  background-color: var(--cp-bg-elevated, #22272B);
 }
 
 .dark .c-section-header,
   .dark .c-section-header , [data-theme="dark"] .c-section-header {
-  background-color: #111111;
+  background-color: var(--cp-bg-page, #1D2125);
 }
 
 .dark .c-card-surface,
   .dark .c-card-surface , [data-theme="dark"] .c-card-surface {
-  background-color: var(--cp-ink-1, #1A1A1A);
+  background-color: var(--cp-bg-elevated, #22272B);
 }
 
 .dark .c-divider,
@@ -4799,7 +4799,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-white,
 [data-theme="dark"] [class*="bg-white"],
 .dark .bg-background , [data-theme="dark"] .bg-background {
-  background-color: var(--cp-ink-1, #1A1A1A) !important;
+  background-color: var(--cp-bg-elevated, #22272B) !important;
 }
 
 /* ═══ ECLIPSE — Global admin drawer/panel dark mode catch-all ═══ */
@@ -5328,24 +5328,24 @@ html.dark .cp-feed-type-tile, [data-theme="dark"] .cp-feed-type-tile {
   background: #F5F3FF; color: var(--cp-purple-60, #7C3AED); border: 1px solid rgba(124,58,237,0.25);
 }
 
-/* Dark overrides — Vercel Neutral */
-.dark .jus-page { background-color: #0A0A0A !important; }
+/* Dark overrides — ADS blue-grey (migrated from ECLIPSE neutral 2026-06-18) */
+.dark .jus-page { background-color: var(--cp-bg-page, #1D2125) !important; }
 .dark .jus-surface,
-.dark .admin-content-area { background-color: var(--cp-ink-1, #1A1A1A) !important; border-color: var(--cp-ink-1, #2E2E2E); }
-.dark .jus-surface-sunken { background-color: #0A0A0A !important; border-color: var(--cp-ink-1, #292929); }
-.dark .jus-surface-elevated { background-color: var(--cp-ink-1, #1A1A1A) !important; border-color: var(--cp-ink-1, #2E2E2E); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
-.dark .jus-table-row { border-bottom: 0.75px solid var(--cp-ink-1, #292929); }
-.dark .jus-table-row:hover { background-color: var(--cp-ink-1, #2E2E2E) !important; }
+.dark .admin-content-area { background-color: var(--cp-bg-elevated, #22272B) !important; border-color: var(--cp-border, #2C333A); }
+.dark .jus-surface-sunken { background-color: var(--cp-bg-sunken, #1D2125) !important; border-color: var(--cp-border, #2C333A); }
+.dark .jus-surface-elevated { background-color: var(--cp-bg-elevated, #22272B) !important; border-color: var(--cp-border, #2C333A); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+.dark .jus-table-row { border-bottom: 0.75px solid var(--cp-border, #2C333A); }
+.dark .jus-table-row:hover { background-color: var(--cp-border, #2C333A) !important; }
 .dark .jus-table-row.selected { background-color: rgba(37, 99, 235, 0.12) !important; }
-.dark .jus-table-header { background-color: var(--cp-ink-1, #1A1A1A) !important; border-bottom: 0.75px solid var(--cp-ink-1, #2E2E2E); color: var(--cp-text-secondary, #878787); }
+.dark .jus-table-header { background-color: var(--cp-bg-elevated, #22272B) !important; border-bottom: 0.75px solid var(--cp-border, #2C333A); color: var(--cp-text-secondary, #878787); }
 .dark .jus-text-primary { color: var(--cp-bg-neutral, #EDEDED) !important; }
 .dark .jus-text-secondary { color: #A1A1A1 !important; }
 .dark .jus-text-muted { color: var(--cp-text-secondary, #878787) !important; }
-.dark .jus-stat-card { background-color: var(--cp-ink-1, #1A1A1A) !important; border: 0.75px solid var(--cp-ink-1, #2E2E2E); border-radius: 8px; }
+.dark .jus-stat-card { background-color: var(--cp-bg-elevated, #22272B) !important; border: 0.75px solid var(--cp-border, #2C333A); border-radius: 8px; }
 .dark .jus-stat-value { color: var(--cp-bg-neutral, #EDEDED) !important; font-weight: 650; }
 .dark .jus-stat-label { color: var(--cp-text-secondary, #878787) !important; font-size: 11px; }
-.dark .jus-toolbar { background-color: #0A0A0A !important; border-bottom: 0.75px solid var(--cp-ink-1, #2E2E2E); }
-.dark .jus-search-input { background-color: var(--cp-ink-1, #1A1A1A) !important; border: 0.75px solid var(--cp-ink-1, #2E2E2E); color: var(--cp-bg-neutral, #EDEDED) !important; }
+.dark .jus-toolbar { background-color: var(--cp-bg-page, #1D2125) !important; border-bottom: 0.75px solid var(--cp-border, #2C333A); }
+.dark .jus-search-input { background-color: var(--cp-bg-elevated, #22272B) !important; border: 0.75px solid var(--cp-border, #2C333A); color: var(--cp-bg-neutral, #EDEDED) !important; }
 .dark .jus-search-input::placeholder { color: var(--cp-text-secondary, #878787); }
 .dark .jus-filter-tab { color: #A1A1A1; }
 .dark .jus-filter-tab.active { color: var(--cp-bg-neutral, #EDEDED); border-bottom: 2px solid var(--cp-workstream-catalyst-primary, #2563EB); }
@@ -5355,10 +5355,10 @@ html.dark .cp-feed-type-tile, [data-theme="dark"] .cp-feed-type-tile {
 .dark .badge-jira-proxy { background: rgba(37,99,235,0.18) !important; color: #93C5FD !important; border: 0.75px solid rgba(37,99,235,0.3) !important; }
 .dark .badge-local-auth { background: rgba(124,58,237,0.18) !important; color: #C4B5FD !important; border: 0.75px solid rgba(124,58,237,0.3) !important; }
 .dark .jus-scroll::-webkit-scrollbar { width: 6px; }
-.dark .jus-scroll::-webkit-scrollbar-track { background: #0A0A0A; }
+.dark .jus-scroll::-webkit-scrollbar-track { background: var(--cp-bg-page, #1D2125); }
 .dark .jus-scroll::-webkit-scrollbar-thumb { background: #454545; border-radius: 3px; }
-.dark .jus-pagination { background-color: #0A0A0A !important; border-top: 0.75px solid var(--cp-ink-1, #2E2E2E); }
-.dark .jus-pagination-btn { background-color: var(--cp-ink-1, #1A1A1A) !important; border-color: var(--cp-ink-1, #2E2E2E); color: #A1A1A1; }
+.dark .jus-pagination { background-color: var(--cp-bg-page, #1D2125) !important; border-top: 0.75px solid var(--cp-border, #2C333A); }
+.dark .jus-pagination-btn { background-color: var(--cp-bg-elevated, #22272B) !important; border-color: var(--cp-border, #2C333A); color: #A1A1A1; }
 .dark .jus-pagination-btn.active { background-color: var(--cp-workstream-catalyst-primary, #2563EB) !important; color: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) !important; }
 .dark .jus-selection-bar { background-color: rgba(37, 99, 235, 0.12) !important; border-bottom-color: rgba(37, 99, 235, 0.25); }
 
