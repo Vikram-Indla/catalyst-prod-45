@@ -3,10 +3,11 @@
  * Expandable step rows over rh_sop_steps: step lifecycle status (select),
  * evidence link, branch/commit/command detail on expand. ADS tokens only.
  */
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Select from '@atlaskit/select';
 import { ChevronRight, ChevronDown, ExternalLink } from '@/lib/atlaskit-icons';
-import { useSopSteps, useUpdateSopStep, type SopStep } from '@/hooks/useReleaseHub';
+import { useSopSteps, useUpdateSopStep, useSopTemplates, useApplySopTemplate, type SopStep } from '@/hooks/useReleaseHub';
+import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -111,17 +112,42 @@ function StepRow({ step, changeId }: { step: SopStep; changeId: string }) {
   );
 }
 
+function ApplyTemplateBar({ changeId }: { changeId: string }) {
+  const { data: templates = [] } = useSopTemplates();
+  const apply = useApplySopTemplate();
+  const [sel, setSel] = useState<{ label: string; value: string } | null>(null);
+  const opts = useMemo(() => templates.map((t) => ({ label: `${t.name} (${t.stepCount})`, value: t.id })), [templates]);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+      <div style={{ width: 280 }}>
+        <Select inputId="sop-apply-tmpl" options={opts} value={sel} onChange={(v: any) => setSel(v)} placeholder="Apply SOP template…" spacing="compact" menuPosition="fixed" />
+      </div>
+      <button
+        onClick={() => { if (sel) apply.mutate({ templateId: sel.value, changeId }, { onSuccess: (n) => { catalystToast.success(`Applied ${n} step${n === 1 ? '' : 's'}`); setSel(null); }, onError: () => catalystToast.error('Failed to apply template') }); }}
+        disabled={!sel || apply.isPending}
+        style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: sel ? 'pointer' : 'not-allowed', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500, opacity: sel ? 1 : 0.5 }}
+      >
+        Apply
+      </button>
+    </div>
+  );
+}
+
 export function SopExecutionTab({ changeId }: { changeId: string }) {
   const { data: steps = [], isLoading } = useSopSteps(changeId);
   if (isLoading) return <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading…</div>;
-  if (steps.length === 0) {
-    return <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No SOP steps yet. Apply an SOP template to this change (SOP Templates — Phase 9).</div>;
-  }
   const done = steps.filter((s) => s.status === 'done').length;
   return (
     <div style={{ width: '100%', padding: '8px 0' }}>
-      <p style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>{done} of {steps.length} steps done</p>
-      {steps.map((s) => <StepRow key={s.id} step={s} changeId={changeId} />)}
+      <ApplyTemplateBar changeId={changeId} />
+      {steps.length === 0 ? (
+        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No SOP steps yet. Apply an SOP template above to populate the runbook.</div>
+      ) : (
+        <>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>{done} of {steps.length} steps done</p>
+          {steps.map((s) => <StepRow key={s.id} step={s} changeId={changeId} />)}
+        </>
+      )}
     </div>
   );
 }

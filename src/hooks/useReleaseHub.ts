@@ -707,3 +707,88 @@ export const useUpdateSopStep = () => {
     onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ['release-hub', 'changes', v.changeId, 'sop-steps'] }),
   });
 };
+
+// ── SOP Templates (Phase 9) ──────────────────────────────────────────
+export interface SopTemplateRow {
+  id: string; name: string; description: string | null; deployment_category: string | null;
+  target_env: string | null; updated_at: string | null; stepCount: number;
+}
+
+export const useSopTemplates = () =>
+  useQuery({
+    queryKey: ['release-hub', 'sop-templates'],
+    staleTime: 30_000,
+    queryFn: async (): Promise<SopTemplateRow[]> => {
+      const { data: tmpls, error } = await supabase
+        .from('rh_sop_templates')
+        .select('id, name, description, deployment_category, target_env, updated_at')
+        .order('name');
+      if (error) throw error;
+      const templates = (tmpls ?? []) as any[];
+      const ids = templates.map((t) => t.id);
+      const counts: Record<string, number> = {};
+      if (ids.length > 0) {
+        const { data: steps } = await supabase.from('rh_sop_template_steps').select('template_id').in('template_id', ids);
+        (steps ?? []).forEach((s: any) => { counts[s.template_id] = (counts[s.template_id] ?? 0) + 1; });
+      }
+      return templates.map((t) => ({ ...t, stepCount: counts[t.id] ?? 0 })) as SopTemplateRow[];
+    },
+  });
+
+export interface NewSopTemplateStep { title: string; stepType?: string; environment?: string; isMandatory?: boolean }
+
+export const useCreateSopTemplate = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: { name: string; description?: string; deployment_category?: string; target_env?: string; steps: NewSopTemplateStep[] }) => {
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      const { data: tmpl, error } = await supabase
+        .from('rh_sop_templates')
+        .insert({ name: payload.name, description: payload.description, deployment_category: payload.deployment_category, target_env: payload.target_env, owner_id: userId ?? undefined })
+        .select()
+        .single();
+      if (error) throw error;
+      if (tmpl && payload.steps.length > 0) {
+        const rows = payload.steps.map((s, i) => ({
+          template_id: tmpl.id, step_no: i + 1, title: s.title,
+          step_type: s.stepType ?? undefined, environment: s.environment ?? undefined,
+          is_mandatory: s.isMandatory ?? true,
+        }));
+        const { error: stepErr } = await supabase.from('rh_sop_template_steps').insert(rows);
+        if (stepErr) throw stepErr;
+      }
+      return tmpl;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['release-hub', 'sop-templates'] }),
+  });
+};
+
+/** Copy a template's steps into a change as executable rh_sop_steps. */
+export const useApplySopTemplate = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ templateId, changeId }: { templateId: string; changeId: string }) => {
+      const { data: tSteps, error } = await supabase
+        .from('rh_sop_template_steps')
+        .select('step_no, title, description, step_type, environment, is_mandatory, default_owner_id, external_owner_name')
+        .eq('template_id', templateId)
+        .order('step_no');
+      if (error) throw error;
+      const { count } = await supabase.from('rh_sop_steps').select('*', { count: 'exact', head: true }).eq('change_id', changeId);
+      const base = count ?? 0;
+      const rows = (tSteps ?? []).map((s: any, i: number) => ({
+        change_id: changeId, template_id: templateId, step_no: base + i + 1, title: s.title,
+        description: s.description ?? undefined, step_type: s.step_type ?? undefined,
+        environment: s.environment ?? undefined, is_mandatory: s.is_mandatory ?? true,
+        owner_id: s.default_owner_id ?? undefined, external_owner_name: s.external_owner_name ?? undefined,
+        status: 'pending',
+      }));
+      if (rows.length > 0) {
+        const { error: insErr } = await supabase.from('rh_sop_steps').insert(rows);
+        if (insErr) throw insErr;
+      }
+      return rows.length;
+    },
+    onSuccess: (_n, v) => qc.invalidateQueries({ queryKey: ['release-hub', 'changes', v.changeId, 'sop-steps'] }),
+  });
+};
