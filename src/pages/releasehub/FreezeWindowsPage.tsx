@@ -6,12 +6,10 @@
  * Create modal, and per-row delete. Conflict counts surface where a freeze is
  * being violated by scheduled work.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { CalendarOff, Plus, Trash2, AlertTriangle } from '@/lib/atlaskit-icons';
 import { useFreezeWindowsList, useDeleteFreezeWindow, type FreezeWindowRow } from '@/hooks/useReleaseHub';
-import { JiraTable } from '@/components/shared/JiraTable';
-import type { Column } from '@/components/shared/JiraTable';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateFreezeWindowModal } from '@/components/releasehub/CreateFreezeWindowModal';
 import { catalystToast } from '@/lib/catalystToast';
@@ -34,11 +32,60 @@ function titleCase(v: string | null) {
   return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
 }
 
+/** Freeze status pill — active=blue, scheduled/ended=neutral (3-colour guardrail). */
+function StatusPill({ status }: { status: string }) {
+  const active = status === 'active';
+  return (
+    <span style={{
+      fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
+      padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap',
+      color: active ? 'var(--ds-text-information, #0055CC)' : T.subtle,
+      background: active ? 'var(--ds-background-information, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
+    }}>{status.toUpperCase()}</span>
+  );
+}
+
+/** Artifact card layout: icon · name + status + conflict pill · reason · date range + env. */
+function FreezeCard({ w, canManage, onDelete }: { w: FreezeWindowRow; canManage: boolean; onDelete: () => void }) {
+  const conflict = w.conflicts > 0;
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 16, padding: 16, borderRadius: 8,
+      background: conflict ? T.dangerBg : T.surface,
+      border: `1px solid ${conflict ? 'var(--ds-border-danger, #E2483D)' : T.border}`,
+    }}>
+      <div style={{ width: 48, height: 48, flexShrink: 0, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: T.dangerBg }}>
+        <CalendarOff size={20} style={{ color: T.danger }} />
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>{w.name}</span>
+          <StatusPill status={w.status} />
+          {conflict && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', color: T.danger, background: T.dangerBg, border: `1px solid var(--ds-border-danger, #E2483D)`, padding: '0 8px', borderRadius: 3 }}>
+              <AlertTriangle size={12} style={{ color: T.danger }} /> CONFLICT{w.conflicts > 1 ? ` ×${w.conflicts}` : ''}
+            </span>
+          )}
+        </div>
+        {w.reason && <div style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, marginTop: 4 }}>{w.reason}</div>}
+      </div>
+      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+        <div style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>{format(new Date(w.startDate), 'MMM d')} – {format(new Date(w.endDate), 'MMM d, yyyy')}</div>
+        <div style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, marginTop: 4 }}>{titleCase(w.targetEnv)}</div>
+      </div>
+      {canManage && (
+        <button onClick={onDelete} aria-label="Delete freeze window" style={{ display: 'flex', flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', color: T.subtlest, padding: 4 }}>
+          <Trash2 size={14} style={{ color: T.subtlest }} />
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function FreezeWindowsPage() {
   const { data: windows = [], isLoading, error, refetch } = useFreezeWindowsList();
   const del = useDeleteFreezeWindow();
   const [showCreate, setShowCreate] = useState(false);
-  const [selection, setSelection] = useState<Set<string>>(new Set());
   const { canManage } = useReleaseOpsPermissions();
 
   const handleDelete = (id: string, name: string) => {
@@ -48,40 +95,6 @@ export default function FreezeWindowsPage() {
       onError: () => catalystToast.error('Failed to delete'),
     });
   };
-
-  const columns: Column<FreezeWindowRow>[] = useMemo(() => [
-    {
-      id: 'name', label: 'Freeze window', flex: true, sortable: true,
-      cell: ({ row }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>{row.name}</span>
-          {row.reason && <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.reason}</span>}
-        </div>
-      ),
-    },
-    { id: 'targetEnv', label: 'Env', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.targetEnv)}</span> },
-    {
-      id: 'window', label: 'Window', width: 22, sortable: true, accessor: (r) => r.startDate,
-      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{format(new Date(row.startDate), 'MMM d')} – {format(new Date(row.endDate), 'MMM d, yyyy')}</span>,
-    },
-    { id: 'status', label: 'Status', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.status)}</span> },
-    {
-      id: 'conflicts', label: 'Conflicts', width: 12, align: 'end', accessor: (r) => r.conflicts,
-      cell: ({ row }) => row.conflicts > 0 ? (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.danger, background: T.dangerBg, padding: '0 8px', borderRadius: 3 }}>
-          <AlertTriangle size={12} style={{ color: T.danger }} /> {row.conflicts}
-        </span>
-      ) : <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>0</span>,
-    },
-    {
-      id: '__del', label: '', width: 6, align: 'center',
-      cell: ({ row }) => (
-        <button onClick={(e) => { e.stopPropagation(); handleDelete(row.id, row.name); }} aria-label="Delete freeze window" style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', color: T.subtlest, padding: 4 }}>
-          <Trash2 size={14} style={{ color: T.subtlest }} />
-        </button>
-      ),
-    },
-  ], []);
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
@@ -105,19 +118,11 @@ export default function FreezeWindowsPage() {
       ) : !isLoading && windows.length === 0 ? (
         <EmptyState icon={CalendarOff} title="No freeze windows yet" subtitle="Freeze windows block deployments during sensitive periods like year-end or major events." actions={[{ label: '+ New freeze window', onClick: () => setShowCreate(true), variant: 'primary' }]} />
       ) : (
-        <JiraTable<FreezeWindowRow>
-          columns={columns}
-          data={windows}
-          getRowId={(r) => r.id}
-          selectable
-          selection={selection}
-          onSelectionChange={setSelection}
-          isLoading={isLoading}
-          rowsPerPage={25}
-          showRowCount
-          totalRowCount={windows.length}
-          ariaLabel="Freeze windows"
-        />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {windows.map((w) => (
+            <FreezeCard key={w.id} w={w} canManage={canManage} onDelete={() => handleDelete(w.id, w.name)} />
+          ))}
+        </div>
       )}
 
       {showCreate && <CreateFreezeWindowModal onClose={() => setShowCreate(false)} />}
