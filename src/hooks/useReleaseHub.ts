@@ -658,3 +658,52 @@ export const useChangesList = () =>
       return changes.map((c) => ({ ...c, releaseName: c.release_id ? (relMap[c.release_id] ?? null) : null })) as ChangeListRow[];
     },
   });
+
+// ── SOP execution steps (Phase 8b) ───────────────────────────────────
+export interface SopStep {
+  id: string; stepNo: number; title: string; description: string | null; stepType: string | null;
+  ownerId: string | null; externalOwnerName: string | null; environment: string | null;
+  branch: string | null; frontendCommit: string | null; backendCommit: string | null; integrationCommit: string | null;
+  scriptReference: string | null; commandText: string | null; expectedResult: string | null; actualResult: string | null;
+  evidenceUrl: string | null; status: string; blockerReason: string | null; isMandatory: boolean;
+}
+
+export const useSopSteps = (changeId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'changes', changeId, 'sop-steps'],
+    enabled: !!changeId,
+    queryFn: async (): Promise<SopStep[]> => {
+      const { data, error } = await supabase
+        .from('rh_sop_steps')
+        .select('*')
+        .eq('change_id', changeId)
+        .order('step_no');
+      if (error) throw error;
+      return (data ?? []).map((s: any) => ({
+        id: s.id, stepNo: s.step_no, title: s.title, description: s.description, stepType: s.step_type,
+        ownerId: s.owner_id, externalOwnerName: s.external_owner_name, environment: s.environment,
+        branch: s.branch, frontendCommit: s.frontend_commit, backendCommit: s.backend_commit, integrationCommit: s.integration_commit,
+        scriptReference: s.script_reference, commandText: s.command_text, expectedResult: s.expected_result, actualResult: s.actual_result,
+        evidenceUrl: s.evidence_url, status: s.status, blockerReason: s.blocker_reason, isMandatory: !!s.is_mandatory,
+      }));
+    },
+  });
+
+export const useUpdateSopStep = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, changeId, status, evidenceUrl, actualResult }: { id: string; changeId: string; status?: string; evidenceUrl?: string | null; actualResult?: string | null }) => {
+      const patch: Record<string, unknown> = {};
+      if (status !== undefined) {
+        patch.status = status;
+        if (status === 'in_progress') patch.started_at = new Date().toISOString();
+        if (status === 'done' || status === 'failed' || status === 'skipped') patch.completed_at = new Date().toISOString();
+      }
+      if (evidenceUrl !== undefined) patch.evidence_url = evidenceUrl;
+      if (actualResult !== undefined) patch.actual_result = actualResult;
+      const { error } = await supabase.from('rh_sop_steps').update(patch).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ['release-hub', 'changes', v.changeId, 'sop-steps'] }),
+  });
+};

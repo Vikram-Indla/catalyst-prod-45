@@ -16,6 +16,7 @@ import { ArrowLeft, Check } from '@/lib/atlaskit-icons';
 import { useChange } from '@/hooks/useReleaseHub';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { NotifyList } from '@/components/releasehub/detail/ReleaseDetailTabs';
+import { SopExecutionTab } from '@/components/releasehub/detail/SopExecutionTab';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -189,7 +190,7 @@ export default function ChangeDetailPage() {
           </div>
         </TabPanel>
 
-        <TabPanel><div style={{ width: '100%' }}><Empty text="SOP execution table arrives in Phase 8b." /></div></TabPanel>
+        <TabPanel><div style={{ width: '100%' }}><SopExecutionTab changeId={c.id} /></div></TabPanel>
 
         <TabPanel>
           <div style={{ width: '100%', padding: '8px 0' }}>
