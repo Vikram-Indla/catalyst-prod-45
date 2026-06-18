@@ -988,3 +988,57 @@ export const useWorkItemTraceability = (workItemKey: string) =>
       };
     },
   });
+
+// ── CATY advisory: release-notes draft (Phase 17, advisory only) ─────
+/** Assemble an AI-assisted release-notes draft from the release's linked
+ *  changes + their work items. Deterministic template (input_basis is the live
+ *  linkage); advisory — the user edits and chooses to save. */
+export const useGenerateReleaseNotes = () =>
+  useMutation({
+    mutationFn: async (releaseId: string): Promise<string> => {
+      const { data: rel } = await supabase.from('rh_releases').select('name, version, target_env, planned_release_date, target_date').eq('id', releaseId).maybeSingle();
+      const r = (rel as any) ?? {};
+      const { data: changes } = await supabase.from('rh_changes').select('id, chg_number, title, status').eq('release_id', releaseId);
+      const chgs = (changes ?? []) as any[];
+      const chgIds = chgs.map((c) => c.id);
+      let workItems: any[] = [];
+      if (chgIds.length > 0) {
+        const { data: wi } = await supabase.from('rh_change_work_items').select('work_item_key, work_item_title').in('change_id', chgIds);
+        workItems = wi ?? [];
+      }
+      const date = r.planned_release_date ?? r.target_date;
+      const lines: string[] = [];
+      lines.push(`# ${r.name ?? 'Release'}${r.version ? ` ${r.version}` : ''}`);
+      if (date) lines.push(`_Target: ${new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}${r.target_env ? ` · ${r.target_env}` : ''}_`);
+      lines.push('');
+      lines.push('## Changes');
+      if (chgs.length === 0) lines.push('- No changes linked.');
+      else chgs.forEach((c) => lines.push(`- **${c.chg_number}** ${c.title}`));
+      lines.push('');
+      lines.push('## Work items');
+      if (workItems.length === 0) lines.push('- No work items linked.');
+      else {
+        const seen = new Set<string>();
+        workItems.forEach((w) => { if (!seen.has(w.work_item_key)) { seen.add(w.work_item_key); lines.push(`- ${w.work_item_key} — ${w.work_item_title}`); } });
+      }
+      return lines.join('\n');
+    },
+  });
+
+export const useSaveReleaseNotes = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ releaseId, contentMd, aiGenerated }: { releaseId: string; contentMd: string; aiGenerated: boolean }) => {
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      const { data: existing } = await supabase.from('rh_release_notes').select('id').eq('release_id', releaseId).order('updated_at', { ascending: false }).limit(1).maybeSingle();
+      if (existing) {
+        const { error } = await supabase.from('rh_release_notes').update({ content_md: contentMd, generated_by_ai: aiGenerated }).eq('id', (existing as any).id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('rh_release_notes').insert({ release_id: releaseId, content_md: contentMd, generated_by_ai: aiGenerated, created_by: userId ?? undefined });
+        if (error) throw error;
+      }
+    },
+    onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ['release-hub', 'releases', v.releaseId, 'notes'] }),
+  });
+};

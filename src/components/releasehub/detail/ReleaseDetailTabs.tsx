@@ -19,7 +19,11 @@ import {
   useReleaseNotes,
   useReleaseProductionEvents,
   useReleaseAudit,
+  useGenerateReleaseNotes,
+  useSaveReleaseNotes,
 } from '@/hooks/useReleaseHub';
+import TextArea from '@atlaskit/textarea';
+import { Sparkles } from '@/lib/atlaskit-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { Avatar } from '@/components/ads/Avatar';
 import { X, Plus } from '@/lib/atlaskit-icons';
@@ -218,14 +222,60 @@ export function ReadinessTab({ releaseId }: { releaseId: string }) {
 
 export function ReleaseNotesTab({ releaseId }: { releaseId: string }) {
   const { data: note, isLoading } = useReleaseNotes(releaseId);
+  const generate = useGenerateReleaseNotes();
+  const save = useSaveReleaseNotes();
+  const [draft, setDraft] = useState<string | null>(null);
+  const [aiFlag, setAiFlag] = useState(false);
+
   if (isLoading) return <Loading />;
-  if (!note || !note.contentMd) return <Empty text="No release notes yet." />;
+  const editing = draft !== null;
+
+  const handleGenerate = () => generate.mutate(releaseId, {
+    onSuccess: (md) => { setDraft(md); setAiFlag(true); },
+    onError: () => catalystToast.error('Could not generate draft'),
+  });
+  const handleSave = () => save.mutate({ releaseId, contentMd: draft ?? '', aiGenerated: aiFlag }, {
+    onSuccess: () => { catalystToast.success('Release notes saved'); setDraft(null); },
+    onError: () => catalystToast.error('Could not save'),
+  });
+
+  const aiBtn = (label: string) => (
+    <button onClick={handleGenerate} disabled={generate.isPending} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid var(--ds-border-discovery, #B8ACF6)`, background: 'var(--ds-background-discovery, #F3F0FF)', color: 'var(--ds-text-discovery, #5E4DB2)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, opacity: generate.isPending ? 0.6 : 1 }}>
+      <Sparkles size={14} style={{ color: 'var(--ds-text-discovery, #5E4DB2)' }} /> {generate.isPending ? 'Generating…' : label}
+    </button>
+  );
+
+  if (editing) {
+    return (
+      <div style={{ padding: '16px 0', width: '100%' }}>
+        <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '0 0 8px' }}>AI-assisted draft from linked changes + work items — edit before saving.</p>
+        <TextArea value={draft ?? ''} onChange={(e) => setDraft((e.target as HTMLTextAreaElement).value)} minimumRows={12} />
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <button onClick={handleSave} disabled={save.isPending} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>{save.isPending ? 'Saving…' : 'Save'}</button>
+          <button onClick={() => setDraft(null)} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.subtle, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Cancel</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: '16px 0' }}>
-      {note.generatedByAi && (
-        <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', padding: '0 8px', borderRadius: 3 }}>AI drafted</span>
+    <div style={{ padding: '16px 0', width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        {aiBtn(note?.contentMd ? 'Regenerate draft' : 'Generate draft')}
+        {note?.contentMd && (
+          <button onClick={() => { setDraft(note.contentMd ?? ''); setAiFlag(note.generatedByAi); }} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.subtle, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500 }}>Edit</button>
+        )}
+      </div>
+      {!note || !note.contentMd ? (
+        <Empty text="No release notes yet. Generate an AI-assisted draft from the linked changes and work items." />
+      ) : (
+        <>
+          {note.generatedByAi && (
+            <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', padding: '0 8px', borderRadius: 3 }}>AI drafted</span>
+          )}
+          <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: '8px 0 0', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.contentMd}</p>
+        </>
       )}
-      <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: '8px 0 0', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.contentMd}</p>
     </div>
   );
 }

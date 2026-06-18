@@ -15,7 +15,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Spinner from '@atlaskit/spinner';
-import { ArrowLeft, Check } from '@/lib/atlaskit-icons';
+import { ArrowLeft, Check, Sparkles } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useRelease } from '@/hooks/useReleaseHub';
@@ -110,6 +110,24 @@ function titleCase(v: string | null | undefined) {
   return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
 }
 
+/** Caty advisory: a rule-based release risk read (advisory only). */
+function CatyRiskAdvisory({ r, changeCount }: { r: any; changeCount: number }) {
+  const reasons: string[] = [];
+  if (r.health === 'at_risk') reasons.push('health is at risk');
+  if (r.readiness_pct != null && r.readiness_pct < 50) reasons.push(`readiness is ${r.readiness_pct}%`);
+  if (r.target_env === 'production' && changeCount === 0) reasons.push('no changes linked for a production release');
+  const elevated = reasons.length > 0;
+  const moderate = !elevated && r.readiness_pct != null && r.readiness_pct < 75;
+  const level = elevated ? 'Elevated risk' : moderate ? 'Moderate risk' : 'Low risk';
+  const text = elevated ? `${level} — ${reasons.join('; ')}.` : moderate ? `${level} — readiness is ${r.readiness_pct}%.` : `${level} — no blocking signals detected.`;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 12, color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', border: '1px solid var(--ds-border-discovery, #B8ACF6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
+      <Sparkles size={14} style={{ color: 'var(--ds-text-discovery, #5E4DB2)' }} />
+      Caty: {text}
+    </div>
+  );
+}
+
 export default function ReleaseDetailPage() {
   const { releaseId } = useParams();
   const navigate = useNavigate();
@@ -196,6 +214,7 @@ export default function ReleaseDetailPage() {
         </TabList>
         <TabPanel>
           <div style={{ padding: '16px 0', width: '100%' }}>
+            <CatyRiskAdvisory r={r} changeCount={changeCount} />
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
               <MetaItem label="Status" value={titleCase(r.status)} />
               <MetaItem label="Release manager" value={r.release_manager_id ? 'Assigned' : '—'} />

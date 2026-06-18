@@ -5,7 +5,7 @@
  */
 import React, { useState, useMemo } from 'react';
 import Select from '@atlaskit/select';
-import { ChevronRight, ChevronDown, ExternalLink } from '@/lib/atlaskit-icons';
+import { ChevronRight, ChevronDown, ExternalLink, Sparkles } from '@/lib/atlaskit-icons';
 import { useSopSteps, useUpdateSopStep, useSopTemplates, useApplySopTemplate, type SopStep } from '@/hooks/useReleaseHub';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
@@ -137,6 +137,7 @@ export function SopExecutionTab({ changeId }: { changeId: string }) {
   const { data: steps = [], isLoading } = useSopSteps(changeId);
   if (isLoading) return <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading…</div>;
   const done = steps.filter((s) => s.status === 'done').length;
+  const incompleteMandatory = steps.filter((s) => s.isMandatory && s.status !== 'done' && s.status !== 'skipped').length;
   return (
     <div style={{ width: '100%', padding: '8px 0' }}>
       <ApplyTemplateBar changeId={changeId} />
@@ -144,6 +145,12 @@ export function SopExecutionTab({ changeId }: { changeId: string }) {
         <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No SOP steps yet. Apply an SOP template above to populate the runbook.</div>
       ) : (
         <>
+          {incompleteMandatory > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 12, color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', border: '1px solid var(--ds-border-discovery, #B8ACF6)', borderRadius: 6, padding: '8px 12px', marginBottom: 12 }}>
+              <Sparkles size={14} style={{ color: 'var(--ds-text-discovery, #5E4DB2)' }} />
+              Caty: {incompleteMandatory} mandatory step{incompleteMandatory === 1 ? '' : 's'} still incomplete — this change is not ready to implement.
+            </div>
+          )}
           <p style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>{done} of {steps.length} steps done</p>
           {steps.map((s) => <StepRow key={s.id} step={s} changeId={changeId} />)}
         </>
