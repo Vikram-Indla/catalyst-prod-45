@@ -757,7 +757,8 @@ export default function FullAppRoutes() {
         {/* Release Operations — sections per handoff §6 (2026-06-18). */}
         <Route path="/release-hub" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/release-hub/overview" element={<S><RH21CommandCenterPage /></S>} />
-        <Route path="/release-hub/releases" element={<S><RH21AllReleasesPage /></S>} />
+        <Route path="/release-hub/releases" element={<S><RH21AllReleasesPage variant="backlog" /></S>} />
+        <Route path="/release-hub/release-kanban" element={<S><RH21AllReleasesPage variant="kanban" /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />

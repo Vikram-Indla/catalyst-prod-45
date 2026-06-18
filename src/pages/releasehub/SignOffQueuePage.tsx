@@ -16,6 +16,7 @@ import { usePendingApprovals, useApproveSignoff, useRejectSignoff, type PendingA
 import { Avatar } from '@/components/ads/Avatar';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { catalystToast } from '@/lib/catalystToast';
+import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -32,6 +33,7 @@ const T = {
 function ApprovalWindow({ approval, onClose }: { approval: PendingApproval; onClose: () => void }) {
   const approve = useApproveSignoff();
   const reject = useRejectSignoff();
+  const { canApprove } = useReleaseOpsPermissions();
   const [comment, setComment] = useState('');
   const [error, setError] = useState('');
   const busy = approve.isPending || reject.isPending;
@@ -74,8 +76,8 @@ function ApprovalWindow({ approval, onClose }: { approval: PendingApproval; onCl
         </ModalBody>
         <ModalFooter>
           <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-          <Button appearance="warning" onClick={doReject} isDisabled={busy}>Reject</Button>
-          <Button appearance="primary" onClick={doApprove} isDisabled={busy} isLoading={approve.isPending}>Approve</Button>
+          <Button appearance="warning" onClick={doReject} isDisabled={busy || !canApprove}>Reject</Button>
+          <Button appearance="primary" onClick={doApprove} isDisabled={busy || !canApprove} isLoading={approve.isPending}>Approve</Button>
         </ModalFooter>
       </Modal>
     </ModalTransition>
