@@ -272,6 +272,7 @@ const EnterpriseComingSoon = lazy(() => import("../pages/enterprise/ComingSoon")
 const ReleaseDetailPage = lazy(() => import("../pages/releasehub/ReleaseDetailPage"));
 const ChangeDetailPage = lazy(() => import("../pages/releasehub/ChangeDetailPage"));
 const SopTemplatesPage = lazy(() => import("../pages/releasehub/SopTemplatesPage"));
+const ReleaseCalendarPage = lazy(() => import("../pages/releasehub/ReleaseCalendarPage"));
 
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 // AdminGuard was used by /admin/v2 shell (deprecated 2026-05-09) — removed
@@ -758,7 +759,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/overview" element={<S><RH21CommandCenterPage /></S>} />
         <Route path="/release-hub/releases" element={<S><RH21AllReleasesPage /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
-        <Route path="/release-hub/calendar" element={<S><ReleaseOpsComingSoonPage title="Calendar" /></S>} />
+        <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
         <Route path="/release-hub/changes/:changeId" element={<S><ChangeDetailPage /></S>} />
         <Route path="/release-hub/sop-templates" element={<S><SopTemplatesPage /></S>} />

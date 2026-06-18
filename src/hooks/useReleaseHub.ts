@@ -856,3 +856,40 @@ export const useProductionEventsList = () =>
       }));
     },
   });
+
+// ── Calendar (Phase 11) ──────────────────────────────────────────────
+export type CalendarLane = 'release' | 'change' | 'freeze' | 'prod';
+export interface CalendarEvent {
+  id: string; lane: CalendarLane; label: string; date: string; endDate: string | null;
+  link: string | null; env: string | null;
+}
+
+export const useReleaseCalendar = () =>
+  useQuery({
+    queryKey: ['release-hub', 'calendar'],
+    staleTime: 30_000,
+    queryFn: async (): Promise<CalendarEvent[]> => {
+      const [rels, chgs, freezes, prods] = await Promise.all([
+        supabase.from('rh_releases').select('id, name, target_date, planned_release_date, target_env'),
+        supabase.from('rh_changes').select('id, chg_number, title, deployment_date, window_start, target_env'),
+        supabase.from('rh_freeze_windows').select('id, name, start_date, end_date, target_env'),
+        supabase.from('rh_production_events').select('id, title, deployed_at, target_env'),
+      ]);
+      const events: CalendarEvent[] = [];
+      (rels.data ?? []).forEach((r: any) => {
+        const d = r.planned_release_date ?? r.target_date;
+        if (d) events.push({ id: `rel-${r.id}`, lane: 'release', label: r.name, date: d.slice(0, 10), endDate: null, link: `/release-hub/${r.id}`, env: r.target_env ?? null });
+      });
+      (chgs.data ?? []).forEach((c: any) => {
+        const d = c.window_start ?? c.deployment_date;
+        if (d) events.push({ id: `chg-${c.id}`, lane: 'change', label: `${c.chg_number} ${c.title}`, date: d.slice(0, 10), endDate: null, link: `/release-hub/changes/${c.id}`, env: c.target_env ?? null });
+      });
+      (freezes.data ?? []).forEach((f: any) => {
+        if (f.start_date) events.push({ id: `frz-${f.id}`, lane: 'freeze', label: f.name, date: f.start_date.slice(0, 10), endDate: f.end_date ? f.end_date.slice(0, 10) : null, link: '/release-hub/freeze-windows', env: f.target_env ?? null });
+      });
+      (prods.data ?? []).forEach((p: any) => {
+        if (p.deployed_at) events.push({ id: `prd-${p.id}`, lane: 'prod', label: p.title, date: p.deployed_at.slice(0, 10), endDate: null, link: '/release-hub/production-events', env: p.target_env ?? null });
+      });
+      return events;
+    },
+  });
