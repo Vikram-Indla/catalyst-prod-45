@@ -131,7 +131,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
     expect(hrefByLabel.Ideation).toBe('/ideation/backlog');
     expect(hrefByLabel.Product).toBe('/product-hub');
     expect(hrefByLabel.Project).toBe('/project-hub');
-    expect(hrefByLabel.Release).toBe('/release-hub/command-center');
+    expect(hrefByLabel.Release).toBe('/release-hub/overview');
     expect(hrefByLabel.Test).toBe('/testhub/dashboard');
     expect(hrefByLabel.Incident).toBe('/incident-hub');
     expect(hrefByLabel.Task).toBe('/tasks/overview');
@@ -222,7 +222,7 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
     ['3', '/ideation/backlog'],
     ['4', '/product-hub'],
     ['5', '/project-hub'],
-    ['6', '/release-hub/command-center'],
+    ['6', '/release-hub/overview'],
     ['7', '/testhub/dashboard'],
     ['8', '/incident-hub'],
     ['9', '/tasks/overview'],

@@ -247,7 +247,7 @@ const HUB_ROUTES: Record<string, string> = {
   ideation: '/ideation/backlog',
   product: '/product-hub',
   project: '/project-hub',
-  release: '/release-hub/command-center',
+  release: '/release-hub/overview',
   test: '/testhub/dashboard',
   incident: '/incident-hub',
   task: '/tasks/overview',
