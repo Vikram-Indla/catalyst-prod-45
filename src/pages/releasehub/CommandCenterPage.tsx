@@ -141,12 +141,20 @@ export default function CommandCenterPage() {
 
   const kpiLoad = relLoading || chgLoading || kpiLoading;
 
-  const activeReleases = kpis?.active_releases ?? releases.filter((r: any) => ['in_progress', 'planning'].includes(r.status)).length;
-  const openChanges = kpis?.changes_in_flight ?? changes.filter((c: any) => c.status !== 'in_production').length;
+  // A release is "active" while it is in-flight — i.e. not in a terminal
+  // state. Works for both the new lifecycle (draft→…→completed) and legacy
+  // statuses (released/done).
+  const TERMINAL_RELEASE = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived'];
+  const isActiveRelease = (r: any) => !TERMINAL_RELEASE.includes(r.status);
+
+  // Compute directly from the loaded rows — the rh_command_center_kpis view
+  // pre-dates the new lifecycle vocabulary and reports stale counts.
+  const activeReleases = releases.filter(isActiveRelease).length;
+  const openChanges = changes.filter((c: any) => !['in_production', 'closed', 'cancelled'].includes(c.status)).length;
   const pendingCount = approvals.length;
   const prodCount = prodEvents.length;
 
-  const activeRels = releases.filter((r: any) => ['in_progress', 'planning'].includes(r.status));
+  const activeRels = releases.filter(isActiveRelease);
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>

@@ -40,15 +40,18 @@ const T = {
 
 const STATUS_FILTERS = [
   { key: 'all', label: 'All' },
-  { key: 'planning', label: 'Planning' },
-  { key: 'in_progress', label: 'In progress' },
-  { key: 'released', label: 'Released' },
+  { key: 'draft', label: 'Draft' },
+  { key: 'active', label: 'Active' },
+  { key: 'scheduled', label: 'Scheduled' },
+  { key: 'completed', label: 'Completed' },
 ];
 
-function mapStatus(status: string) {
-  if (status === 'todo') return 'planning';
-  if (status === 'done') return 'released';
-  return status;
+// Bucket a (new-lifecycle or legacy) release status into a filter tab.
+function statusBucket(status: string): string {
+  if (status === 'draft' || status === 'todo') return 'draft';
+  if (status === 'scheduled') return 'scheduled';
+  if (['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived'].includes(status)) return 'completed';
+  return 'active';
 }
 
 function HealthPill({ health }: { health: string | null }) {
@@ -92,7 +95,7 @@ export default function AllReleasesPage() {
 
   const filtered = useMemo(() => {
     return releases.filter((r) => {
-      if (statusFilter !== 'all' && mapStatus(r.status) !== statusFilter) return false;
+      if (statusFilter !== 'all' && statusBucket(r.status) !== statusFilter) return false;
       if (search) {
         const q = search.toLowerCase();
         const hay = `${r.name} ${r.version ?? ''} ${r.jira_key ?? ''}`.toLowerCase();
@@ -105,7 +108,7 @@ export default function AllReleasesPage() {
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: releases.length };
     STATUS_FILTERS.slice(1).forEach((s) => {
-      c[s.key] = releases.filter((r) => mapStatus(r.status) === s.key).length;
+      c[s.key] = releases.filter((r) => statusBucket(r.status) === s.key).length;
     });
     return c;
   }, [releases]);
@@ -126,7 +129,7 @@ export default function AllReleasesPage() {
     },
     {
       id: 'status', label: 'Status', width: 12, sortable: true,
-      cell: ({ row }) => <StatusLozenge status={mapStatus(row.status)} />,
+      cell: ({ row }) => <StatusLozenge status={row.status} />,
     },
     {
       id: 'health', label: 'Health', width: 10,
