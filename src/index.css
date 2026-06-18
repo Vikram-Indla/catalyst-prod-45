@@ -2814,19 +2814,17 @@ textarea:focus-visible {
    Award-winning tactile feedback for buttons, cards, and checkboxes
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* === BUTTON PRESS FEEDBACK === */
-button:not(:disabled):active,
-[role="button"]:not(:disabled):active,
-.btn:not(:disabled):active {
-  transform: scale(0.97);
-  transition: transform 100ms ease;
-}
-
-/* Ensure transition is set for smooth release */
+/* === BUTTON FEEDBACK === */
+/* Enterprise guardrail (CLAUDE.md): NO scale/transform press animation on
+   buttons or [role="button"]. Scaling a text-containing wrapper is a banned
+   consumer pattern, and `transition: all` animated geometry (width/position)
+   too — so any layout reflow made [role="button"] list rows (For You, Starred,
+   tables) visibly "dance" on click. Animate colour/elevation only; never
+   geometry. */
 button,
 [role="button"],
 .btn {
-  transition: all 150ms ease;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
 /* === CARD HOVER LIFT === */
