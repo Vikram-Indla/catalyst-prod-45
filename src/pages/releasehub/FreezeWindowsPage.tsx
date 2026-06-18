@@ -16,6 +16,7 @@ import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateFreezeWindowModal } from '@/components/releasehub/CreateFreezeWindowModal';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
+import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -38,6 +39,7 @@ export default function FreezeWindowsPage() {
   const del = useDeleteFreezeWindow();
   const [showCreate, setShowCreate] = useState(false);
   const [selection, setSelection] = useState<Set<string>>(new Set());
+  const { canManage } = useReleaseOpsPermissions();
 
   const handleDelete = (id: string, name: string) => {
     if (!window.confirm(`Delete freeze window "${name}"?`)) return;
@@ -89,8 +91,10 @@ export default function FreezeWindowsPage() {
           <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Periods when deployments are blocked</p>
         </div>
         <button
-          onClick={() => setShowCreate(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          onClick={() => canManage && setShowCreate(true)}
+          disabled={!canManage}
+          title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
         >
           <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New freeze window
         </button>

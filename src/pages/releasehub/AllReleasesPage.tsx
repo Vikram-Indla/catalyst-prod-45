@@ -24,6 +24,7 @@ import { Package, Search } from '@/lib/atlaskit-icons';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildReleaseBoardAdapter } from '@/components/kanban/adapters/releaseBoardAdapter';
 import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterBar';
+import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -74,6 +75,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
   const view: 'table' | 'board' = isKanban ? 'board' : 'table';
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const updateStatus = useUpdateReleaseStatus();
+  const { canManage } = useReleaseOpsPermissions();
 
   // Distinct-value facets derived from the loaded rows (artifact: Status ·
   // Health · Type · Environment dropdowns). Product facet lands with the
@@ -190,8 +192,10 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
-            onClick={() => setShowCreate(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+            onClick={() => canManage && setShowCreate(true)}
+            disabled={!canManage}
+            title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
           >
             <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New release
           </button>

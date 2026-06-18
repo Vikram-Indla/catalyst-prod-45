@@ -25,6 +25,7 @@ import {
   type ChangeListRow,
 } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
+import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { Avatar } from '@/components/ads/Avatar';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
@@ -128,6 +129,7 @@ export default function CommandCenterPage() {
   const { data: freezes = [] } = useFreezeWindowsList();
   const [showCreateRel, setShowCreateRel] = useState(false);
   const [showCreateChg, setShowCreateChg] = useState(false);
+  const { canManage, canApprove } = useReleaseOpsPermissions();
 
   const activeReleases = releases.filter((r) => !TERMINAL_RELEASE.includes(r.status));
 
@@ -185,8 +187,8 @@ export default function CommandCenterPage() {
           <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Manage release readiness, change execution, sign-offs, and production events.</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={() => setShowCreateChg(true)} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create change</button>
-          <button onClick={() => setShowCreateRel(true)} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: T.brand, color: T.inverse, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create release</button>
+          <button onClick={() => canManage && setShowCreateChg(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create change</button>
+          <button onClick={() => canManage && setShowCreateRel(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: T.brand, color: T.inverse, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create release</button>
         </div>
       </div>
 
@@ -270,7 +272,7 @@ export default function CommandCenterPage() {
                 <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{a.approverName ?? 'Unassigned'} · {a.role ?? '—'}</p>
               </div>
               <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, color: T.warning, background: 'var(--ds-background-warning, #FFF7D6)', padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{a.waitStartedAt ? formatDistanceToNowStrict(new Date(a.waitStartedAt)) : '—'}</span>
-              <button onClick={() => navigate('/release-hub/sign-off-queue')} style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border, #DFE1E6)`, borderRadius: 6, padding: '4px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}>Review</button>
+              <button onClick={() => canApprove && navigate('/release-hub/sign-off-queue')} disabled={!canApprove} title={canApprove ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border, #DFE1E6)`, borderRadius: 6, padding: '4px 12px', cursor: canApprove ? 'pointer' : 'not-allowed', opacity: canApprove ? 1 : 0.5, whiteSpace: 'nowrap' }}>Review</button>
             </div>
           ))}
         </Panel>

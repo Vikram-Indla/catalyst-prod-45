@@ -19,6 +19,7 @@ import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
 import { FacetFilterBar, type Facet } from '@/components/releasehub/FacetFilterBar';
+import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
@@ -58,6 +59,7 @@ export default function AllChangesPage() {
   const [facetValue, setFacetValue] = useState<Record<string, string[]>>({});
   const [showCreate, setShowCreate] = useState(false);
   const [selection, setSelection] = useState<Set<string>>(new Set());
+  const { canManage } = useReleaseOpsPermissions();
 
   // Artifact Change Records facets: Status · Type · Risk · Environment · Source.
   const facets: Facet[] = useMemo(() => {
@@ -135,8 +137,10 @@ export default function AllChangesPage() {
           <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>Track and govern deployment changes</p>
         </div>
         <button
-          onClick={() => setShowCreate(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          onClick={() => canManage && setShowCreate(true)}
+          disabled={!canManage}
+          title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
         >
           <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New change
         </button>
