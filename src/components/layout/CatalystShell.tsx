@@ -5,7 +5,6 @@ import {
   lazy,
   Suspense,
   ComponentType,
-  useSyncExternalStore,
   useCallback,
 } from "react";
 import AkFlag, { FlagGroup } from "@atlaskit/flag";
@@ -231,23 +230,6 @@ import { HubSurface } from "./HubSurface";
 // back a tinted page wash.
 const JIRA_CANVAS_BG =
   "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))";
-function useIsDarkTheme(): boolean {
-  return useSyncExternalStore(
-    (onChange) => {
-      if (typeof window === "undefined") return () => undefined;
-      const obs = new MutationObserver(onChange);
-      obs.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ["data-theme"],
-      });
-      return () => obs.disconnect();
-    },
-    () =>
-      typeof document !== "undefined" &&
-      document.documentElement.getAttribute("data-theme") === "dark",
-    () => false,
-  );
-}
 
 // Apr 28, 2026 (Vikram): SidebarEdgeReveal deprecated. The 8px-wide
 // edge-reveal strip + |> hover-handle tooltip was a redundant third
@@ -602,18 +584,15 @@ function CatalystShellContent() {
 
   const shouldWrapHubSurface =
     isHubSurfaceRoute && !isSelfFramedRoute && !isWhiteCanvasRoute;
-  const isDarkTheme = useIsDarkTheme();
-  // 2026-04-30 Jira parity: in dark mode, route the canvas through the
-  // ADS background.neutral token (one step BELOW elevation.surface).
-  // This produces Jira's exact two-tier shell: canvas dim, sidebar+header
-  // raised. Previously fell back to --cp-bg legacy alias.
-  const mainBg = isWhiteCanvasRoute
-    ? "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))"
-    : isDarkTheme
-      ? "var(--ds-background-neutral, #1D2125)"
-      : isHubSurfaceRoute
-        ? JIRA_CANVAS_BG
-        : "var(--cp-bg)";
+  // 2026-06-18 (Vikram): uniform viewport — the WHOLE shell is one flat tone.
+  // Everything tracks --cp-bg-elevated (= var(--ds-surface, #FFFFFF) in light,
+  // #22272B in dark), so header, sidebar, canvas and content are identical in
+  // both modes — light: #FFFFFF (no regression), dark: #22272B (the grayish
+  // raised tone, spread everywhere). Replaces the old data-theme==='dark'
+  // branch, which never matched (data-theme is the compound ADS string
+  // "dark:dark light:light …") and produced a two-tone band.
+  const mainBg =
+    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))";
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
@@ -830,7 +809,7 @@ function CatalystShellContent() {
   return (
     <div
       className="h-screen flex flex-col text-[var(--cp-t1)]"
-      style={{ background: "var(--cp-bg-canvas)" }}
+      style={{ background: "var(--cp-bg-elevated)" }}
       onClickCapture={handleInternalLinkClickCapture}
     >
       {/* Skip link — WCAG AA (CG-12): keyboard users tab here first, then jump to main */}

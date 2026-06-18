@@ -86,7 +86,10 @@ export function CatalystHeader() {
         // 2026-04-30 Jira parity: header rides at elevation.surface
         // (raised), matching the sidebar so the entire shell chrome
         // reads as one continuous surface above the canvas.
-        background: 'var(--ds-surface, #22272B)',
+        // 2026-06-18 (Vikram): use --cp-bg-elevated so it actually resolves to
+        // the raised #22272B (the sidebar's --ds-surface-raised), not --ds-surface
+        // which mis-resolves to #1D2125 in this theme. Uniform shell in both modes.
+        background: 'var(--cp-bg-elevated)',
         borderBottom: '1px solid var(--ds-border, var(--cp-ink-1, #2E2E2E))',
         boxSizing: 'border-box',
         flexShrink: 0,

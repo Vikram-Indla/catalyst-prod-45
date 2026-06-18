@@ -177,6 +177,13 @@ interface SidebarBaseProps {
    * the context switcher in the sidebar header instead of the top nav.
    */
   renderHeaderSwitcher?: (expanded: boolean) => React.ReactNode;
+  /**
+   * Optional custom node pinned to the very bottom of the rail (below the
+   * scrollable nav and any footerItem). Unlike footerItem this is free-form,
+   * not a nav link — used by HomeSidebar for the dual-zone clock. Other
+   * consumers omit it (undefined = nothing rendered). Added 2026-06-18.
+   */
+  footerSlot?: React.ReactNode;
 }
 
 /** Dark mode token set — passed to renderMenuItem */
@@ -200,6 +207,7 @@ export function SidebarBase({
   children,
   onHeaderClick,
   renderHeaderSwitcher,
+  footerSlot,
 }: SidebarBaseProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -520,9 +528,23 @@ export function SidebarBase({
             }}
           >
             {renderMenuItem(
-              config.footerItem, isActive, iconResolver, expanded, handleNavigation, 
+              config.footerItem, isActive, iconResolver, expanded, handleNavigation,
               true, isFavorite, toggleFavorite, tokens
             )}
+          </div>
+        )}
+
+        {/* Footer slot — free-form pinned node (e.g. HomeSidebar dual-zone
+            clock). Sits below the scrollable nav and footerItem. */}
+        {footerSlot && (
+          <div
+            style={{
+              flexShrink: 0,
+              borderTop: `1px solid ${dividerColor}`,
+              padding: '8px 0',
+            }}
+          >
+            {footerSlot}
           </div>
         )}
       </aside>

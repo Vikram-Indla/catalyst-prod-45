@@ -39,6 +39,7 @@ import ListIcon from '@atlaskit/icon/glyph/list';
 import RoadmapIcon from '@atlaskit/icon/glyph/roadmap';
 import TaskIcon from '@atlaskit/icon/glyph/task';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
+import SidebarClock from './SidebarClock';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
@@ -468,6 +469,7 @@ export default function HomeSidebar({
       expanded={expanded}
       onToggle={onToggle}
       className={className}
+      footerSlot={<SidebarClock expanded={expanded} />}
     />
   );
 }

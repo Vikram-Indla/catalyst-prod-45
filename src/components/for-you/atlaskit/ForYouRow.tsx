@@ -192,7 +192,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           probe: tile bg `rgba(5,21,36,0.06)`, dimensions 32px square.
           Default variant: 20px naked icon (legacy compact rail layout). */}
       {isJiraAssigned ? (
-        <div style={{
+        <div className="cp-feed-type-tile" style={{
           width: 32,
           height: 32,
           borderRadius: '25%',
