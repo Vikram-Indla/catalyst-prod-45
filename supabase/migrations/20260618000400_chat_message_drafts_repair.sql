@@ -6,9 +6,21 @@
 -- (42P10: "there is no unique or exclusion constraint matching the ON
 -- CONFLICT specification"). Drafts carry no durable data, so we drop
 -- the broken table and re-create it cleanly with the intended schema.
+--
+-- Lock notes: this migration needs AccessExclusiveLock on
+-- chat_message_drafts plus AccessShareLock on chat_conversations and
+-- auth.users (for the foreign-key checks during CREATE TABLE). If the
+-- app has an active session holding any of those locks the migration
+-- can deadlock. We set a short lock_timeout so a contested run fails
+-- fast — re-run after closing the offending session, or restart the
+-- dev server / browser tabs that are subscribed via Supabase realtime.
+-- No CASCADE on the DROP — nothing references chat_message_drafts.
 -- =====================================================================
 
-DROP TABLE IF EXISTS public.chat_message_drafts CASCADE;
+SET LOCAL lock_timeout = '4s';
+SET LOCAL statement_timeout = '15s';
+
+DROP TABLE IF EXISTS public.chat_message_drafts;
 
 CREATE TABLE public.chat_message_drafts (
   user_id         uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
