@@ -377,6 +377,7 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
         <div style={{ marginBottom: 16 }}>
           <AskCatyInlineBar
             projectKey={BOARD_CATY_KEY}
+            surface="kanban"
             onClose={() => setAskCatyOpen(false)}
           />
         </div>

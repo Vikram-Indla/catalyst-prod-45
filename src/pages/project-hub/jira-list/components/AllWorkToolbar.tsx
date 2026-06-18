@@ -91,6 +91,8 @@ import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import type { WorkItem } from "@/types/workItem.types";
 import "./ask-caty-input.css";
 import { useCatySearch } from "@/components/caty/catySearchStore";
+import { AskCatyInlineBar } from "@/components/caty/AskCatyInlineBar";
+import { CatyAiSearch } from "@/components/caty/CatyAiSearch";
 import { FilterSaveModal } from "@/components/filters/FilterSaveModal";
 import { useAuth } from "@/lib/auth";
 import { JiraBasicFilter } from "@/components/shared/JiraBasicFilter";
@@ -1441,341 +1443,14 @@ export function AllWorkToolbar({
      Hooks-safe: all state is declared above; no early return. */
   if (askCatyOpen) {
     return (
-      <div
-        data-testid="catalyst-allwork-toolbar.ask-caty-bar"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 6,
-          padding: "8px 12px",
-          borderBottom:
-            "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
-          background: "transparent",
-          flexShrink: 0,
-          fontFamily: "var(--cp-font-body)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* Outer frame draws the static Caty rainbow border via a
-            conic-gradient pseudo-element. Adding `is-loading` makes
-            the gradient rotate anticlockwise. The inner row holds the
-            actual input chrome (icon, input, Go button). */}
-          <div
-            className={`ask-caty-frame${askCatyLoading ? " is-loading" : ""}`}
-            style={{ flex: 1, minHeight: 40 }}
-          >
-            <div className="ask-caty-stack">
-              {/* Row 1 — AI query.
-                Default state: editable input with typewriter placeholder.
-                Results state: read-only summary of what was asked, so the
-                second row's "Search work" input becomes the active focus.
-                The whole row is wrapped in a <label> so clicking anywhere
-                between the icon and the button focuses the underlying
-                input (only meaningful in the editable state). */}
-              <label className="ask-caty-row">
-                <span className="ask-caty-row__prefix" aria-hidden="true">
-                  <SparkIcon />
-                </span>
-                {/* Always editable — even after results land — so the user
-                  can iterate on the query without closing the bar.
-                  Previously this swapped to a read-only span on results,
-                  locking the user into a single search per open session. */}
-                <span className="ask-caty-row__field">
-                  <input
-                    ref={askCatyInputRef}
-                    className="ask-caty-row__input"
-                    value={askCatyQuery}
-                    onChange={(e) => setAskCatyQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleAskCatySubmit();
-                      if (e.key === "Escape") {
-                        setAskCatyOpen(false);
-                        setAskCatyQuery("");
-                      }
-                    }}
-                    placeholder=""
-                    disabled={askCatyLoading}
-                    aria-label="Ask Caty"
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                  {askCatyQuery === "" && (
-                    <span
-                      className="ask-caty-row__placeholder"
-                      aria-hidden="true"
-                    >
-                      {phText}
-                      <span className="ask-caty-cursor" />
-                    </span>
-                  )}
-                </span>
-                <span
-                  className="ask-caty-row__suffix"
-                  onMouseDown={(e) =>
-                    e.preventDefault()
-                  } /* keep input focused */
-                >
-                  {/* Go button — disabled/muted when query is empty OR a
-                    request is in flight; active blue otherwise. */}
-                  <button
-                    type="button"
-                    onClick={handleAskCatySubmit}
-                    disabled={!askCatyQuery.trim() || askCatyLoading}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 8,
-                      padding: "4px 8px",
-                      border: "none",
-                      borderRadius: 4,
-                      background:
-                        askCatyQuery.trim() && !askCatyLoading
-                          ? "var(--ds-background-brand-bold, #0C66E4)"
-                          : "var(--ds-background-neutral, #F4F5F7)",
-                      color:
-                        askCatyQuery.trim() && !askCatyLoading
-                          ? "var(--ds-text-inverse, #FFFFFF)"
-                          : "var(--ds-text-disabled, #8590A2)",
-                      fontSize: 13,
-                      fontWeight: 500,
-                      cursor:
-                        askCatyQuery.trim() && !askCatyLoading
-                          ? "pointer"
-                          : "default",
-                      fontFamily: "inherit",
-                      transition: "background 120ms ease",
-                      flexShrink: 0,
-                    }}
-                    aria-label="Submit"
-                  >
-                    <span>Go</span>
-                    <span
-                      aria-hidden="true"
-                      style={{ fontSize: 14, lineHeight: 1 }}
-                    >
-                      ⏎
-                    </span>
-                  </button>
-                </span>
-              </label>
-
-              {/* Row 2 — "Search work" input. Only rendered once AI
-                results have landed; filters the AI-narrowed list
-                further by free-text. Mirrors Jira's pattern (see
-                screenshot 2026-05-14): same rainbow-bordered area,
-                divider between rows, dedicated icon prefix. */}
-              {askCatyHasResults && (
-                <>
-                  <div className="ask-caty-divider" aria-hidden="true" />
-                  {/* Inline styles here intentionally beat any cached or
-                    overridden CSS rules — the secondary search must
-                    sit as a small fixed-width pill on the left,
-                    regardless of what the row's default flex rules
-                    say. Keeps the AI input full-width above while
-                    this row stays compact. */}
-                  <label
-                    className="ask-caty-row"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0,
-                      height: 40,
-                      padding: "0 12px",
-                      boxSizing: "border-box",
-                      justifyContent: "flex-start",
-                    }}
-                  >
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        flex: "0 0 auto",
-                        height: 28,
-                        padding: "0 4px 0 8px",
-                        borderRadius: "4px 0 0 4px",
-                        background: "var(--ds-background-neutral, #F1F2F4)",
-                        color: "var(--ds-text-subtlest, #6B778C)",
-                      }}
-                    >
-                      <SearchIconCore label="" color="currentColor" />
-                    </span>
-                    <span
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        flex: "0 0 auto",
-                        width: 180,
-                        maxWidth: "100%",
-                        height: 28,
-                        padding: "0 8px 0 4px",
-                        borderRadius: "0 4px 4px 0",
-                        background: "var(--ds-background-neutral, #F1F2F4)",
-                        boxSizing: "border-box",
-                      }}
-                    >
-                      <input
-                        value={catySecondaryQuery}
-                        onChange={(e) => catySetSecondaryQuery(e.target.value)}
-                        placeholder="Search work"
-                        aria-label="Search work"
-                        autoComplete="off"
-                        spellCheck={false}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          margin: 0,
-                          padding: 0,
-                          border: 0,
-                          outline: 0,
-                          background: "transparent",
-                          boxShadow: "none",
-                          font: "inherit",
-                          fontSize: 13,
-                          color: "var(--ds-text, #292A2E)",
-                          appearance: "none",
-                          WebkitAppearance: "none",
-                        }}
-                      />
-                    </span>
-                  </label>
-                </>
-              )}
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              setAskCatyOpen(false);
-              setAskCatyQuery("");
-              // Dismiss any active Caty filter too — closing the bar
-              // reverts the project list to the toolbar-driven view.
-              if (askCatyHasResults || askCatyHasError || askCatyLoading) {
-                catyClear();
-              }
-            }}
-            style={{
-              width: 28,
-              height: 28,
-              border: "none",
-              borderRadius: 4,
-              background: "transparent",
-              cursor: "pointer",
-              color: "var(--ds-text-subtle, #505258)",
-              fontSize: 16,
-              lineHeight: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            aria-label="Close Ask Caty"
-          >
-            ✕
-          </button>
-        </div>
-        {/* Disclaimer row — visible when Caty has results OR errored.
-            Mirrors Jira's "Uses AI · Verify results" affordance with
-            thumbs feedback + a Clear pill so the user can restore the
-            normal toolbar-driven view without dismissing the bar. */}
-        {(askCatyHasResults || askCatyHasError) && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 16,
-              padding: "0 4px",
-              fontSize: 12,
-              color: "var(--ds-text-subtlest, #6B778C)",
-            }}
-          >
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                minWidth: 0,
-              }}
-            >
-              <span
-                aria-hidden="true"
-                style={{ display: "inline-flex", alignItems: "center" }}
-              >
-                <InfoIconCore label="" color="currentColor" />
-              </span>
-              <span>Uses AI. Verify results.</span>
-              {askCatyHasResults && catyReason && (
-                <span
-                  style={{
-                    color: "var(--ds-text-subtle, #505258)",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  · {catyReason}
-                </span>
-              )}
-              {askCatyHasError && catyErrorMessage && (
-                <span style={{ color: "var(--ds-text-danger, #AE2A19)" }}>
-                  · {catyErrorMessage}
-                </span>
-              )}
-              {askCatyHasResults && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setAskCatyFeedback((f) => (f === "up" ? null : "up"))
-                    }
-                    aria-label="Helpful"
-                    title="Helpful"
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      cursor: "pointer",
-                      padding: 4,
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color:
-                        askCatyFeedback === "up"
-                          ? "var(--ds-text-brand, #0C66E4)"
-                          : "var(--ds-text-subtlest, #6B778C)",
-                    }}
-                  >
-                    <ThumbsUpIconCore label="" color="currentColor" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setAskCatyFeedback((f) => (f === "down" ? null : "down"))
-                    }
-                    aria-label="Not helpful"
-                    title="Not helpful"
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      cursor: "pointer",
-                      padding: 4,
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color:
-                        askCatyFeedback === "down"
-                          ? "var(--ds-text-danger, #AE2A19)"
-                          : "var(--ds-text-subtlest, #6B778C)",
-                    }}
-                  >
-                    <ThumbsDownIconCore label="" color="currentColor" />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+      <AskCatyInlineBar
+        projectKey={projectKey}
+        surface="list"
+        onClose={() => setAskCatyOpen(false)}
+      />
     );
   }
+
 
   return (
     <div
@@ -1792,34 +1467,16 @@ export function AllWorkToolbar({
         fontFamily: "var(--cp-font-body)",
       }}
     >
-      {/* 3. Ask Caty — replaces Jira's "Ask AI". Click → expands to full-width
-          AI query bar (mirrors Jira BAU Ask AI probe: full toolbar replacement,
-          40px white bar with blue focus border, contextual placeholder). */}
-      <AIIntelligenceButton
-        label="Ask Caty"
-        onClick={() => setAskCatyOpen(true)}
-        tooltip="Ask Caty about this view"
-      />
-
-      {/* 4. Search */}
-      <div style={{ flex: "0 1 220px", minWidth: 140 }}>
-        <Textfield
-          isCompact
-          appearance="standard"
+      {/* 3+4. Canonical clubbed AI search (2026-06-18) — CatyPulseIcon mark
+          inside the box; clicking it or ⌘K opens AskCatyInlineBar (full-width
+          AI bar, the if(askCatyOpen) branch above). Plain typing filters the
+          list via query/onQueryChange. */}
+      <div style={{ flex: "0 1 360px", minWidth: 200 }}>
+        <CatyAiSearch
+          query={query}
+          onQueryChange={onQueryChange}
+          onAskCaty={() => setAskCatyOpen(true)}
           placeholder="Search work"
-          value={query}
-          onChange={(e) => onQueryChange((e.target as HTMLInputElement).value)}
-          elemBeforeInput={
-            <span
-              style={{
-                paddingLeft: 8,
-                color: "var(--ds-text-subtle, #505258)",
-              }}
-            >
-              <SearchIcon />
-            </span>
-          }
-          testId="catalyst-allwork-toolbar.search"
         />
       </div>
 

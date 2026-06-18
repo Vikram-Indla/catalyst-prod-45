@@ -120,6 +120,7 @@ import type {
 import { useStoryBacklog, useEpicBacklog, useRequestsByKeys, useRequestLinksByEpicKeys } from '../hooks/useBacklogData';
 import { BIZ_SOURCE, type BacklogDataSource } from '../adapters/backlogDataSource';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
+import { CatyAiSearch } from '@/components/caty/CatyAiSearch';
 import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
 // Canonical AI affordance — white pill + sparkle + static rainbow ring.
@@ -3502,6 +3503,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       {askCatyOpen && (
         <AskCatyInlineBar
           projectKey={projectKey}
+          surface="backlog"
           onClose={() => setAskCatyOpen(false)}
         />
       )}
@@ -3544,48 +3546,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             digital-transformation.atlassian.net BAU list view). Catalyst
             previously rendered Ask CATY in the global top nav — wrong
             location. Moved here per jira-compare 2026-05-12 finding. */}
-        <div style={{ flexShrink: 0 }}>
-          <AIIntelligenceButton
-            label="Ask Caty"
-            onClick={() => setAskCatyOpen(true)}
-            tooltip="Ask Caty about this backlog"
-          />
-        </div>
-        {/* Apr 28, 2026 (jira-compare cycle 2 T5): wrapper width fixed
-            280 → flex:1 with min/max so the input expands like Jira's
-            (probed Jira width=625px) instead of cramming at 280. */}
+        {/* 2026-06-18 — canonical clubbed AI search unit. CatyPulseIcon mark
+            lives inside the box; clicking it (or ⌘K) opens AskCatyInlineBar
+            above. Plain typing filters the list via `search`/`setSearch`. */}
         <div style={{ flex: 1, minWidth: 240, maxWidth: 640 }}>
-          <Textfield
-            isCompact
+          <CatyAiSearch
+            query={search}
+            onQueryChange={setSearch}
+            onAskCaty={() => setAskCatyOpen(true)}
             placeholder="Search list"
-            value={search}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-            elemBeforeInput={
-              <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-                <AkSearchIcon label="" size="small" />
-              </span>
-            }
-            elemAfterInput={
-              search ? (
-                <button
-                  type="button"
-                  aria-label="Clear search"
-                  onClick={() => setSearch('')}
-                  style={{
-                    paddingInlineEnd: 6,
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: token('color.text.subtlest', '#6B778C'),
-                    padding: '0 8px 0 4px',
-                  }}
-                >
-                  <AkCloseIcon label="" size="small" />
-                </button>
-              ) : undefined
-            }
           />
         </div>
 

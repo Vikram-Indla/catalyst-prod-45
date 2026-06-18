@@ -709,6 +709,7 @@ export function ProductFilterPreviewPage() {
       {askCatyOpen && (
         <AskCatyInlineBar
           projectKey={productCode ?? null}
+          surface="list"
           onClose={() => setAskCatyOpen(false)}
           onJqlGenerated={(generatedJql) => {
             setSavedFilterJql(generatedJql);

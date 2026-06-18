@@ -1135,6 +1135,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
       {askCatyOpen && (
         <AskCatyInlineBar
           projectKey={projectKey ?? null}
+          surface="list"
           onClose={() => setAskCatyOpen(false)}
           onJqlGenerated={(generatedJql) => {
             setSavedFilterJql(generatedJql);
