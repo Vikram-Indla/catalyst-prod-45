@@ -8,7 +8,7 @@ import FeatureFlagsPage from './FeatureFlagsPage';
 
 export default function ModuleAccessAdminPage() {
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 1120, margin: '0 auto' }}>
+    <div style={{ padding: '24px 32px', width: '100%' }}>
       <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0, lineHeight: '28px' }}>
         Module access
       </h1>

@@ -1,47 +1,40 @@
-// Role x Module access matrix — the canonical editor for admin_role_module_permissions.
-// Left rail: roles (system + product). Main: modules grouped by hub with a tri-level
-// (Full / View / Hidden) control per module + per-group bulk. Right: live login nav preview.
-// Writes the SAME table the runtime hook reads, so edits take effect at next login.
+// Role x Module access matrix — full-width grid editor for admin_role_module_permissions.
+// Modules (grouped rows) x roles (columns). Color-coded cells: full / view / hidden.
+// Sticky module column + sticky role header. Click cycles; right-click = direct menu;
+// arrow keys move focus. Role-header click bulk-sets a column; group-row click bulk-sets a group.
+// admin + super_admin columns are locked (bypass = always full). Writes the SAME table the
+// runtime hook reads, so edits take effect at next login.
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Spinner from '@atlaskit/spinner';
-import Select from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
-import {
-  ShieldCheck, Eye, EyeOff, CircleCheck, Search, Lock,
-} from 'lucide-react';
+import { Search } from 'lucide-react';
 import {
   useModuleAccessRoles, useModuleAccessModules, useModuleAccessMatrix, useSetModuleAccess,
-  type AccessLevel, type MatrixRole, type MatrixModule,
+  type AccessLevel, type MatrixModule,
 } from '@/hooks/useModuleAccessAdmin';
 
+const NEXT: Record<AccessLevel, AccessLevel> = { full: 'view', view: 'hidden', hidden: 'full' };
 const LEVELS: AccessLevel[] = ['full', 'view', 'hidden'];
-const LEVEL_META: Record<AccessLevel, { label: string; Icon: typeof Eye; fg: string; bg: string }> = {
-  full: { label: 'Full', Icon: CircleCheck, fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
-  view: { label: 'View', Icon: Eye, fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' },
-  hidden: { label: 'Hidden', Icon: EyeOff, fg: 'var(--ds-text-subtlest, #6B778C)', bg: 'var(--ds-background-neutral, #F1F2F4)' },
+const LABEL: Record<AccessLevel, string> = { full: 'Full', view: 'View', hidden: 'Hidden' };
+const FILL: Record<AccessLevel, string> = {
+  full: 'var(--ds-background-success-bold, #1F845A)',
+  view: 'var(--ds-background-warning-bold, #E2B203)',
+  hidden: 'var(--ds-surface-sunken, #F7F8F9)',
 };
 
-interface Group {
-  parent: MatrixModule | null;
-  label: string;
-  children: MatrixModule[];
-}
+interface Group { parent: MatrixModule | null; label: string; children: MatrixModule[]; }
 
 function buildGroups(modules: MatrixModule[]): Group[] {
   const top = modules.filter((m) => !m.parent_module).sort((a, b) => a.sort_order - b.sort_order);
-  const childrenByParent = new Map<string, MatrixModule[]>();
+  const byParent = new Map<string, MatrixModule[]>();
   modules.forEach((m) => {
-    if (m.parent_module) {
-      const arr = childrenByParent.get(m.parent_module) || [];
-      arr.push(m);
-      childrenByParent.set(m.parent_module, arr);
-    }
+    if (m.parent_module) { const a = byParent.get(m.parent_module) || []; a.push(m); byParent.set(m.parent_module, a); }
   });
-  const groups: Group[] = [];
-  const general: MatrixModule[] = [];
+  const groups: Group[] = []; const general: MatrixModule[] = [];
   top.forEach((t) => {
-    const kids = (childrenByParent.get(t.module_key) || []).sort((a, b) => a.sort_order - b.sort_order);
+    const kids = (byParent.get(t.module_key) || []).sort((a, b) => a.sort_order - b.sort_order);
     if (kids.length) groups.push({ parent: t, label: t.name, children: kids });
     else general.push(t);
   });
@@ -49,238 +42,230 @@ function buildGroups(modules: MatrixModule[]): Group[] {
   return groups;
 }
 
+interface MenuState { x: number; y: number; module_key: string; role_code: string; }
+
 export function ModuleAccessMatrix() {
-  const { data: roles, isLoading: rolesLoading } = useModuleAccessRoles();
-  const { data: modules, isLoading: modulesLoading } = useModuleAccessModules();
-  const { data: matrix, isLoading: matrixLoading } = useModuleAccessMatrix();
+  const { data: roles, isLoading: rl } = useModuleAccessRoles();
+  const { data: modules, isLoading: ml } = useModuleAccessModules();
+  const { data: matrix, isLoading: xl } = useModuleAccessMatrix();
   const setAccess = useSetModuleAccess();
 
-  const [activeRole, setActiveRole] = useState<string>('program_manager');
-  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('');
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [menu, setMenu] = useState<MenuState | null>(null);
+  const gridRef = useRef<HTMLTableElement>(null);
 
   const groups = useMemo(() => buildGroups(modules || []), [modules]);
-  const role: MatrixRole | undefined = (roles || []).find((r) => r.code === activeRole);
 
-  if (rolesLoading || modulesLoading || matrixLoading) {
+  useEffect(() => {
+    if (!menu) return;
+    const close = () => setMenu(null);
+    window.addEventListener('click', close);
+    window.addEventListener('scroll', close, true);
+    return () => { window.removeEventListener('click', close); window.removeEventListener('scroll', close, true); };
+  }, [menu]);
+
+  if (rl || ml || xl) {
     return <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spinner size="large" /></div>;
   }
 
-  const systemRoles = (roles || []).filter((r) => r.tier === 'system');
-  const productRoles = (roles || []).filter((r) => r.tier === 'product');
-  const roleMap = matrix?.[activeRole] || {};
-  const levelOf = (mk: string): AccessLevel => (role?.bypass ? 'full' : (roleMap[mk] || 'hidden'));
-
-  const setOne = (mk: string, lvl: AccessLevel) => {
-    if (role?.bypass) return;
-    setAccess.mutate([{ role_code: activeRole, module_key: mk, access_level: lvl }]);
+  const allRoles = roles || [];
+  const allModules = modules || [];
+  const levelOf = (mk: string, rc: string): AccessLevel => {
+    const r = allRoles.find((x) => x.code === rc);
+    if (r?.bypass) return 'full';
+    return (matrix?.[rc]?.[mk] || 'hidden') as AccessLevel;
   };
-  const setGroup = (g: Group, lvl: AccessLevel) => {
-    if (role?.bypass) return;
+  const setCell = (mk: string, rc: string, lvl: AccessLevel) => {
+    const r = allRoles.find((x) => x.code === rc);
+    if (r?.bypass) return;
+    setAccess.mutate([{ role_code: rc, module_key: mk, access_level: lvl }]);
+  };
+  const cycle = (mk: string, rc: string) => setCell(mk, rc, NEXT[levelOf(mk, rc)]);
+  const bulkColumn = (rc: string) => {
+    const allFull = allModules.every((m) => levelOf(m.module_key, rc) === 'full');
+    const lvl: AccessLevel = allFull ? 'hidden' : 'full';
+    setAccess.mutate(allModules.map((m) => ({ role_code: rc, module_key: m.module_key, access_level: lvl })));
+  };
+  const bulkGroup = (g: Group, rc: string) => {
     const keys = [...(g.parent ? [g.parent.module_key] : []), ...g.children.map((c) => c.module_key)];
-    setAccess.mutate(keys.map((mk) => ({ role_code: activeRole, module_key: mk, access_level: lvl })));
-  };
-  const copyFrom = (srcCode: string) => {
-    const src = matrix?.[srcCode] || {};
-    const rows = (modules || []).map((m) => ({
-      role_code: activeRole,
-      module_key: m.module_key,
-      access_level: (src[m.module_key] || 'hidden') as AccessLevel,
-    }));
-    setAccess.mutate(rows);
+    const allFull = keys.every((k) => levelOf(k, rc) === 'full');
+    const lvl: AccessLevel = allFull ? 'hidden' : 'full';
+    setAccess.mutate(keys.map((k) => ({ role_code: rc, module_key: k, access_level: lvl })));
   };
 
-  // Stats across all modules for the active role
-  let full = 0, view = 0, hidden = 0;
-  (modules || []).forEach((m) => {
-    const l = levelOf(m.module_key);
-    if (l === 'full') full++; else if (l === 'view') view++; else hidden++;
-  });
-
-  const roleCount = (code: string): number => {
-    const r = (roles || []).find((x) => x.code === code);
-    if (r?.bypass) return modules?.length || 0;
-    const rm = matrix?.[code] || {};
-    return (modules || []).filter((m) => (rm[m.module_key] || 'hidden') !== 'hidden').length;
+  const moveFocus = (e: React.KeyboardEvent, r: number, c: number) => {
+    const map: Record<string, [number, number]> = {
+      ArrowUp: [r - 1, c], ArrowDown: [r + 1, c], ArrowLeft: [r, c - 1], ArrowRight: [r, c + 1],
+    };
+    if (map[e.key]) {
+      e.preventDefault();
+      const [nr, nc] = map[e.key];
+      const next = gridRef.current?.querySelector<HTMLButtonElement>(`button[data-r="${nr}"][data-c="${nc}"]`);
+      next?.focus();
+    }
   };
 
-  const matchesSearch = (g: Group): boolean => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
+  const matchesGroup = (g: Group): boolean => {
+    if (!filter.trim()) return true;
+    const q = filter.toLowerCase();
     return g.label.toLowerCase().includes(q) || g.children.some((c) => c.name.toLowerCase().includes(q));
   };
-  const visibleGroups = groups.filter(matchesSearch);
 
-  const Seg = ({ mk }: { mk: string }) => {
-    const cur = levelOf(mk);
-    const locked = !!role?.bypass;
+  // visible module rows numbered for keyboard nav
+  let rowIndex = -1;
+  const sysCount = allRoles.filter((r) => r.tier === 'system').length;
+
+  const cellBtn = (mk: string, rc: string, ri: number, ci: number, bypass: boolean) => {
+    const lvl = levelOf(mk, rc);
     return (
-      <div role="group" aria-label="Access level" style={{ display: 'flex', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6, overflow: 'hidden', opacity: locked ? 0.5 : 1 }}>
-        {LEVELS.map((lv, i) => {
-          const on = cur === lv;
-          const M = LEVEL_META[lv];
-          return (
-            <button
-              key={lv}
-              type="button"
-              aria-pressed={on}
-              disabled={locked}
-              onClick={() => setOne(mk, lv)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 8px', border: 'none',
-                borderLeft: i > 0 ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
-                cursor: locked ? 'default' : 'pointer', fontSize: 12,
-                fontWeight: on ? 600 : 400,
-                background: on ? M.bg : 'transparent',
-                color: on ? M.fg : 'var(--ds-text-subtlest, #6B778C)',
-              }}
-            >
-              <M.Icon size={13} aria-hidden /> {M.label}
-            </button>
-          );
-        })}
-      </div>
+      <button
+        type="button"
+        data-r={ri}
+        data-c={ci}
+        aria-label={`${mk} / ${rc}: ${LABEL[lvl]}`}
+        title={bypass ? 'Bypass — always full' : LABEL[lvl]}
+        disabled={bypass}
+        onClick={() => cycle(mk, rc)}
+        onKeyDown={(e) => { moveFocus(e, ri, ci); }}
+        onContextMenu={(e) => { if (bypass) return; e.preventDefault(); setMenu({ x: e.clientX, y: e.clientY, module_key: mk, role_code: rc }); }}
+        style={{
+          width: '100%', height: 30, minWidth: 44, border: 'none', display: 'block',
+          cursor: bypass ? 'default' : 'pointer', background: FILL[lvl],
+          boxShadow: lvl === 'hidden' ? 'inset 0 0 0 1px var(--ds-border, #DFE1E6)' : 'none',
+          opacity: bypass ? 0.4 : 1,
+          backgroundImage: bypass ? 'repeating-linear-gradient(45deg, var(--ds-border, #DFE1E6), var(--ds-border, #DFE1E6) 3px, transparent 3px, transparent 6px)' : undefined,
+        }}
+      />
     );
   };
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        {([['Full access', full, LEVEL_META.full.fg], ['View only', view, LEVEL_META.view.fg], ['Hidden', hidden, LEVEL_META.hidden.fg]] as const).map(([lbl, n, color]) => (
-          <div key={lbl} style={{ flex: 1, background: 'var(--ds-surface-sunken, #F7F8F9)', borderRadius: 8, padding: '12px 16px' }}>
-            <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>{lbl}</div>
-            <div style={{ fontSize: 22, fontWeight: 600, color }}>{n}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-        <div style={{ width: 200, flexShrink: 0, background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
-          {[['System roles', systemRoles], ['Product roles', productRoles]].map(([label, list]) => (
-            <div key={label as string}>
-              <div style={{ padding: '8px 12px', fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: 'var(--ds-text-subtlest, #6B778C)', background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-                {(label as string).toUpperCase()}
-              </div>
-              {(list as MatrixRole[]).map((r) => {
-                const on = r.code === activeRole;
-                return (
-                  <button
-                    key={r.code}
-                    type="button"
-                    onClick={() => setActiveRole(r.code)}
-                    style={{
-                      width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6,
-                      padding: '8px 12px', border: 'none', borderBottom: '1px solid var(--ds-border, #DFE1E6)', cursor: 'pointer', fontSize: 13,
-                      background: on ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
-                      color: on ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)',
-                      fontWeight: on ? 600 : 400,
-                    }}
-                  >
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
-                    <span style={{ fontSize: 11, flexShrink: 0, color: r.bypass ? 'var(--ds-text-success, #216E4E)' : 'var(--ds-text-subtlest, #6B778C)' }}>
-                      {r.bypass ? 'all' : roleCount(r.code)}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>Legend</span>
+          {LEVELS.map((lv) => (
+            <span key={lv} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ width: 13, height: 13, borderRadius: 3, background: FILL[lv], boxShadow: lv === 'hidden' ? 'inset 0 0 0 1px var(--ds-border, #DFE1E6)' : 'none' }} />
+              {LABEL[lv]}
+            </span>
           ))}
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            {allRoles.length} roles &times; {allModules.length} modules &middot; click cycles, right-click for menu, click a header to bulk-set
+          </span>
         </div>
-
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '4px 8px', borderRadius: 6, background: role?.tier === 'system' ? 'var(--ds-background-information, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)', color: role?.tier === 'system' ? 'var(--ds-text-information, #0055CC)' : 'var(--ds-text-subtle, #44546F)' }}>
-                {role?.tier}
-              </span>
-              <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {role?.name}
-                {role?.bypass && <span style={{ fontWeight: 400, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}> — bypasses matrix (full)</span>}
-              </span>
-            </div>
-            <div style={{ width: 200, flexShrink: 0 }}>
-              <Select
-                inputId="copy-from"
-                spacing="compact"
-                placeholder="Copy access from…"
-                isDisabled={!!role?.bypass}
-                value={null}
-                options={(roles || []).filter((r) => r.code !== activeRole && !r.bypass).map((r) => ({ label: `${r.name} (${r.tier})`, value: r.code }))}
-                onChange={(opt: any) => opt && copyFrom(opt.value)}
-              />
-            </div>
-          </div>
-
-          <div style={{ marginBottom: 12, maxWidth: 280 }}>
-            <Textfield
-              isCompact
-              placeholder="Search modules"
-              value={search}
-              onChange={(e: any) => setSearch(e.target.value)}
-              elemBeforeInput={<span style={{ paddingLeft: 8, display: 'flex' }}><Search size={14} aria-hidden /></span>}
-            />
-          </div>
-
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
-            {visibleGroups.map((g) => (
-              <div key={g.label}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px', background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{g.label}</span>
-                    {g.parent && <Seg mk={g.parent.module_key} />}
-                  </div>
-                  {!role?.bypass && (
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      {LEVELS.map((lv) => {
-                        const M = LEVEL_META[lv];
-                        return (
-                          <button key={lv} type="button" aria-label={`Set all ${g.label} to ${M.label}`} title={`Set all ${g.label} to ${M.label}`}
-                            onClick={() => setGroup(g, lv)}
-                            style={{ height: 24, width: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6, background: 'transparent', cursor: 'pointer', color: M.fg }}>
-                            <M.Icon size={14} aria-hidden />
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-                {g.children.map((c) => (
-                  <div key={c.module_key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px 8px 24px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-                    <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>{c.name}</span>
-                    <Seg mk={c.module_key} />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: 12, background: 'var(--ds-surface-sunken, #F7F8F9)', borderRadius: 8, padding: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 8 }}>
-              <Eye size={15} aria-hidden /> Login nav preview — what this role sees
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {(() => {
-                const hubs = groups.filter((g) => g.parent);
-                const chips = hubs.filter((g) => g.parent && levelOf(g.parent.module_key) !== 'hidden');
-                if (!chips.length) return <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>No top-level modules visible — this role lands on an empty shell.</span>;
-                return chips.map((g) => {
-                  const ro = g.parent ? levelOf(g.parent.module_key) === 'view' : false;
-                  return (
-                    <span key={g.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, padding: '4px 8px', borderRadius: 6, background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #172B4D)' }}>
-                      <ShieldCheck size={13} aria-hidden style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
-                      {g.label}
-                      {ro && <span style={{ fontSize: 10, color: 'var(--ds-text-warning, #A54800)' }}>read-only</span>}
-                    </span>
-                  );
-                });
-              })()}
-            </div>
-          </div>
-
-          <div style={{ marginTop: 12, fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Lock size={12} aria-hidden /> Admin &amp; super admin always get full access and bypass this matrix. A user's effective access merges all their roles — highest level wins.
-          </div>
+        <div style={{ width: 220 }}>
+          <Textfield
+            isCompact
+            placeholder="Filter modules"
+            value={filter}
+            onChange={(e: any) => setFilter(e.target.value)}
+            elemBeforeInput={<span style={{ paddingLeft: 8, display: 'flex' }}><Search size={14} aria-hidden /></span>}
+          />
         </div>
       </div>
+
+      <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'auto', maxHeight: 'calc(100vh - 220px)' }}>
+        <table ref={gridRef} style={{ borderCollapse: 'separate', borderSpacing: 0, fontSize: 12, width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ position: 'sticky', left: 0, top: 0, zIndex: 4, background: 'var(--ds-surface-sunken, #F7F8F9)', textAlign: 'left', padding: '8px 12px', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', minWidth: 200, borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)' }}>
+                Module \ Role
+              </th>
+              {allRoles.map((r, ci) => (
+                <th
+                  key={r.code}
+                  onClick={() => !r.bypass && bulkColumn(r.code)}
+                  title={r.bypass ? `${r.name} — bypass (always full)` : `${r.name} — click to toggle all`}
+                  style={{
+                    position: 'sticky', top: 0, zIndex: 3, background: 'var(--ds-surface-sunken, #F7F8F9)',
+                    padding: '8px 4px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)',
+                    borderLeft: ci === sysCount ? '2px solid var(--ds-border-bold, #758195)' : undefined,
+                    verticalAlign: 'bottom', cursor: r.bypass ? 'default' : 'pointer', minWidth: 44,
+                  }}
+                >
+                  <div style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', fontSize: 11, fontWeight: r.tier === 'system' ? 600 : 400, color: r.tier === 'system' ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #44546F)', whiteSpace: 'nowrap', height: 84, margin: '0 auto' }}>
+                    {r.name}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {groups.filter(matchesGroup).map((g) => {
+              const isCollapsed = collapsed[g.label];
+              return (
+                <React.Fragment key={g.label}>
+                  <tr>
+                    <td
+                      onClick={() => setCollapsed((p) => ({ ...p, [g.label]: !p[g.label] }))}
+                      style={{ position: 'sticky', left: 0, zIndex: 2, background: 'var(--ds-surface-sunken, #F7F8F9)', padding: '8px 12px', fontWeight: 600, fontSize: 12, color: 'var(--ds-text, #172B4D)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    >
+                      {isCollapsed ? '▸ ' : '▾ '}{g.label}
+                    </td>
+                    {allRoles.map((r, ci) => {
+                      const keys = [...(g.parent ? [g.parent.module_key] : []), ...g.children.map((c) => c.module_key)];
+                      const allFull = keys.every((k) => levelOf(k, r.code) === 'full');
+                      const anyVis = keys.some((k) => levelOf(k, r.code) !== 'hidden');
+                      const bar = r.bypass || allFull ? FILL.full : anyVis ? FILL.view : FILL.hidden;
+                      return (
+                        <td key={r.code} style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)', borderLeft: ci === sysCount ? '2px solid var(--ds-border-bold, #758195)' : undefined, padding: 0 }}>
+                          <button
+                            type="button"
+                            disabled={r.bypass}
+                            aria-label={`Set ${g.label} for ${r.name}`}
+                            onClick={() => bulkGroup(g, r.code)}
+                            style={{ width: '100%', height: 10, border: 'none', background: bar, opacity: r.bypass ? 0.4 : 0.6, cursor: r.bypass ? 'default' : 'pointer', display: 'block' }}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                  {!isCollapsed && g.children.filter((c) => !filter.trim() || c.name.toLowerCase().includes(filter.toLowerCase()) || g.label.toLowerCase().includes(filter.toLowerCase())).map((c) => {
+                    rowIndex += 1;
+                    const ri = rowIndex;
+                    return (
+                      <tr key={c.module_key}>
+                        <td style={{ position: 'sticky', left: 0, zIndex: 1, background: 'var(--ds-surface, #FFFFFF)', padding: '8px 12px 8px 24px', fontSize: 12, color: 'var(--ds-text, #172B4D)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)', whiteSpace: 'nowrap' }}>
+                          {c.name}
+                        </td>
+                        {allRoles.map((r, ci) => (
+                          <td key={r.code} style={{ padding: 0, borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)', borderLeft: ci === sysCount ? '2px solid var(--ds-border-bold, #758195)' : undefined }}>
+                            {cellBtn(c.module_key, r.code, ri, ci, !!r.bypass)}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {menu && createPortal(
+        <div
+          role="menu"
+          onClick={(e) => e.stopPropagation()}
+          style={{ position: 'fixed', top: menu.y, left: menu.x, zIndex: 9999, background: 'var(--ds-surface-overlay, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6, boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))', padding: '4px 0', minWidth: 140 }}
+        >
+          {LEVELS.map((lv) => (
+            <button
+              key={lv}
+              role="menuitem"
+              type="button"
+              onClick={() => { setCell(menu.module_key, menu.role_code, lv); setMenu(null); }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)', textAlign: 'left' }}
+            >
+              <span style={{ width: 12, height: 12, borderRadius: 3, background: FILL[lv], boxShadow: lv === 'hidden' ? 'inset 0 0 0 1px var(--ds-border, #DFE1E6)' : 'none' }} />
+              {LABEL[lv]}
+            </button>
+          ))}
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }
