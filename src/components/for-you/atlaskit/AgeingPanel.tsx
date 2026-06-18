@@ -17,7 +17,7 @@ import Lozenge from '@atlaskit/lozenge';
 import Textfield from '@atlaskit/textfield';
 import Button from '@atlaskit/button/new';
 import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
-import ForYouRow from './ForYouRow';
+import ForYouRow, { JiraForYouLozenge } from './ForYouRow';
 import { ForYouEmptyState } from './helpers';
 import { text } from '@/lib/typography';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -112,6 +112,7 @@ function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
     hubLabel: 'Project',
     issueType: a.issue_type,
     status: a.status || 'To Do',
+    statusCategory: a.status_category || undefined,
     priority: a.priority || 'Medium',
     priorityLevel: 2,
     parentKey: a.parent_key || undefined,
@@ -224,7 +225,7 @@ function ArchivedRow({ item }: {
         }}>
           {item.summary}
         </span>
-        <Lozenge appearance="default">{item.status}</Lozenge>
+        <JiraForYouLozenge status={item.status} statusCategory={item.status_category} />
         <span style={{
           fontSize: 11, color: token('color.text.subtlest', '#6B778C'),
           flexShrink: 0, minWidth: 40, textAlign: 'right',
