@@ -43,15 +43,23 @@ export interface RecentLocation {
   iconName: string | null;
   color: string | null;
   visitedAt: number;
-  hub: 'project' | 'product' | 'task';
+  hub: HubType;
 }
+
+/**
+ * Hub kinds tracked by the Home rail.
+ *   - Space-scoped (have a per-space key/code): 'project', 'product'.
+ *   - Global single hubs (no per-space key — type word only in the rail):
+ *     'task', 'incident', 'release', 'plan'.
+ */
+export type HubType = 'project' | 'product' | 'task' | 'incident' | 'release' | 'plan';
 
 export interface StoredEntry {
   projectKey: string;
   path: string;
   section: string;
   visitedAt: number;
-  hub?: 'project' | 'product' | 'task';
+  hub?: HubType;
 }
 
 const SECTION_LABELS: Record<string, string> = {
@@ -74,6 +82,27 @@ const SECTION_LABELS: Record<string, string> = {
   'epic-backlog': 'Backlog',
   'feature-backlog': 'Backlog',
   'story-backlog': 'Backlog',
+  // Incident hub
+  'all-incidents': 'All incidents',
+  work: 'Work',
+  analytics: 'Analytics',
+  insights: 'Insights',
+  'committee-queue': 'Committee queue',
+  // Release hub
+  'command-center': 'Command center',
+  compare: 'Compare',
+  triage: 'Triage',
+  changes: 'Changes',
+  'sign-off-queue': 'Sign-off queue',
+  'production-events': 'Production events',
+  'freeze-windows': 'Freeze windows',
+  // Plan hub
+  library: 'Library',
+  master: 'Master plan',
+  resources: 'Resources',
+  ai: 'AI',
+  capacity: 'Capacity',
+  'budget-planner': 'Budget planner',
 };
 
 /**
@@ -90,6 +119,60 @@ const TASK_NAV_SECTIONS = new Set([
   'settings',
 ]);
 const TASK_SPACE_KEY = 'tasks';
+
+/**
+ * Global single-hub nav sections (no per-space key). Each hub records its own
+ * section grain and surfaces as ONE space group in the rail, headed by a type
+ * word only ("Incident" / "Release" / "Plan"). Mirrors the Tasks precedent.
+ */
+const INCIDENT_NAV_SECTIONS = new Set([
+  'dashboard',
+  'all-incidents',
+  'board',
+  'filters',
+  'timeline',
+  'work',
+  'analytics',
+  'insights',
+  'reports',
+  'committee-queue',
+]);
+const RELEASE_NAV_SECTIONS = new Set([
+  'command-center',
+  'releases',
+  'compare',
+  'triage',
+  'changes',
+  'sign-off-queue',
+  'production-events',
+  'freeze-windows',
+]);
+const PLAN_NAV_SECTIONS = new Set([
+  'library',
+  'compare',
+  'master',
+  'resources',
+  'ai',
+  'reports',
+  'capacity',
+  'budget-planner',
+]);
+
+/** Synthesized header label per global hub (type word only — no key). */
+const GLOBAL_HUB_LABEL: Record<'task' | 'incident' | 'release' | 'plan', string> = {
+  task: 'Tasks',
+  incident: 'Incident',
+  release: 'Release',
+  plan: 'Plan',
+};
+
+function globalHubSections(hub: 'incident' | 'release' | 'plan'): Set<string> {
+  return hub === 'incident'
+    ? INCIDENT_NAV_SECTIONS
+    : hub === 'release'
+    ? RELEASE_NAV_SECTIONS
+    : PLAN_NAV_SECTIONS;
+}
 
 /**
  * Canonical sidebar nav sections — covers both Project Hub and Product Hub slugs.
@@ -220,7 +303,7 @@ export function recordLocationVisit(input: {
   projectKey: string;
   path: string;
   section: string;
-  hub?: 'project' | 'product' | 'task';
+  hub?: HubType;
 }) {
   const { projectKey, path, section, hub = 'project' } = input;
   if (!projectKey || !path) return;
@@ -229,6 +312,14 @@ export function recordLocationVisit(input: {
   const normalizedPath =
     hub === 'task'
       ? `/tasks/${section}`
+      : hub === 'incident'
+      ? `/incident-hub/${section}`
+      : hub === 'release'
+      ? `/release-hub/${section}`
+      : hub === 'plan'
+      ? section === 'library'
+        ? '/planhub'
+        : `/planhub/${section}`
       : hub === 'product'
       ? `/product-hub/${projectKey}/${section}`
       : `/project-hub/${projectKey}/${section}`;
@@ -264,6 +355,32 @@ export function useRecordProjectVisit() {
       const view = taskMatch[1];
       if (TASK_NAV_SECTIONS.has(view)) {
         recordLocationVisit({ projectKey: TASK_SPACE_KEY, path: location.pathname, section: view, hub: 'task' });
+      }
+      return;
+    }
+
+    // Global single hubs — one space group each, headed by a type word.
+    const incidentMatch = location.pathname.match(/^\/incident-hub\/([^/]+)/);
+    if (incidentMatch) {
+      const sec = incidentMatch[1];
+      if (INCIDENT_NAV_SECTIONS.has(sec)) {
+        recordLocationVisit({ projectKey: 'incident', path: location.pathname, section: sec, hub: 'incident' });
+      }
+      return;
+    }
+    const releaseMatch = location.pathname.match(/^\/release-hub\/([^/]+)/);
+    if (releaseMatch) {
+      const sec = releaseMatch[1];
+      if (RELEASE_NAV_SECTIONS.has(sec)) {
+        recordLocationVisit({ projectKey: 'release', path: location.pathname, section: sec, hub: 'release' });
+      }
+      return;
+    }
+    const planMatch = location.pathname.match(/^\/planhub(?:\/([^/]+))?/);
+    if (planMatch) {
+      const sec = planMatch[1] ?? 'library';
+      if (PLAN_NAV_SECTIONS.has(sec)) {
+        recordLocationVisit({ projectKey: 'plan', path: location.pathname, section: sec, hub: 'plan' });
       }
       return;
     }
@@ -304,11 +421,14 @@ export function useRecentProjects(limit = 8) {
     return () => window.removeEventListener('catalyst:recent-locations-updated', handler);
   }, []);
 
-  const allEntries = readStore().filter(
-    (e) =>
-      ((e.hub ?? 'project') === 'task' && TASK_NAV_SECTIONS.has(e.section)) ||
-      CANONICAL_NAV_SECTIONS.has(e.section),
-  );
+  const allEntries = readStore().filter((e) => {
+    const hub = e.hub ?? 'project';
+    if (hub === 'task') return TASK_NAV_SECTIONS.has(e.section);
+    if (hub === 'incident' || hub === 'release' || hub === 'plan') {
+      return globalHubSections(hub).has(e.section);
+    }
+    return CANONICAL_NAV_SECTIONS.has(e.section);
+  });
   // Today's actions only — falls back to most-recent when today is empty.
   const entries = selectRecentEntries(allEntries, limit, Date.now());
 
@@ -344,18 +464,20 @@ export function useRecentProjects(limit = 8) {
       return entries
         .map<RecentLocation | null>((e) => {
           const hub = e.hub ?? 'project';
-          if (hub === 'task') {
-            // Standalone hub — no DB row to hydrate. Synthesize directly.
+          if (hub === 'task' || hub === 'incident' || hub === 'release' || hub === 'plan') {
+            // Global single hub — no DB row to hydrate. Synthesize directly.
+            // Header is a type word only; no per-space key, no icon/color
+            // (HomeSidebar renders the hub icon from its own registry).
             return {
-              projectKey: 'Tasks',
+              projectKey: GLOBAL_HUB_LABEL[hub],
               path: e.path,
               section: e.section,
               sectionLabel: labelForSection(e.section),
-              projectName: 'Tasks',
+              projectName: GLOBAL_HUB_LABEL[hub],
               iconName: null,
               color: null,
               visitedAt: e.visitedAt,
-              hub: 'task',
+              hub,
             };
           }
           if (hub === 'product') {

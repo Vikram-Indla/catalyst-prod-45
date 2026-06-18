@@ -22,7 +22,6 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import TaskIcon from '@atlaskit/icon/glyph/task';
 import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
 import StarIcon from '@atlaskit/icon/glyph/star';
-import RecentIcon from '@atlaskit/icon/glyph/recent';
 import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import { supabase } from '@/integrations/supabase/client';
@@ -155,10 +154,23 @@ function SwitcherPanel({
   const filtered = (items: SwitcherItem[]) =>
     q ? items.filter(i => i.name.toLowerCase().includes(q) || i.key.toLowerCase().includes(q)) : items;
 
+  // Recency rank from recentItems (most-recent-first). Drives the order of the
+  // FULL list so every project is reachable while recently-opened ones float to
+  // the top — recency as sort key, not as a filter that hides the rest.
+  const rank = new Map(recentItems.map((r, i) => [r.key, i]));
+  const byRecency = (a: SwitcherItem, b: SwitcherItem) => {
+    const ra = rank.has(a.key) ? rank.get(a.key)! : Infinity;
+    const rb = rank.has(b.key) ? rank.get(b.key)! : Infinity;
+    if (ra !== rb) return ra - rb;
+    return a.name.localeCompare(b.name);
+  };
+
+  const starredKeys = new Set(starredItems.map(s => s.key));
   const showStarred = mode !== 'tasks' && !q && filtered(starredItems).length > 0;
-  const showRecent = mode !== 'tasks' && !q && filtered(recentItems).length > 0;
-  const showAll = q || mode === 'tasks';
-  const filteredAll = filtered(allItems);
+  const mainItems = (mode === 'tasks' ? allItems : allItems.filter(i => !starredKeys.has(i.key)))
+    .slice()
+    .sort(byRecency);
+  const filteredMain = filtered(mainItems);
 
   // Position from trigger
   const rect = triggerRef.current!.getBoundingClientRect();
@@ -169,9 +181,9 @@ function SwitcherPanel({
     'All workstreams';
 
   const newLabel =
-    mode === 'project' ? '+ New project' :
-    mode === 'product' ? '+ New product' :
-    '+ New workstream';
+    mode === 'project' ? 'New project' :
+    mode === 'product' ? 'New product' :
+    'New workstream';
 
   return (
     <div
@@ -250,34 +262,23 @@ function SwitcherPanel({
           />
         )}
 
-        {/* Recent section */}
-        {showRecent && (
-          <Section
-            label="RECENT"
-            icon={<RecentIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />}
-            items={filtered(recentItems)}
-            currentKey={currentKey}
-            onNavigate={onNavigate}
-          />
-        )}
-
-        {/* Divider before all-items when searching or tasks mode */}
-        {(showStarred || showRecent) && showAll && filteredAll.length > 0 && (
+        {/* Divider between starred and the full recency-ordered list */}
+        {showStarred && filteredMain.length > 0 && (
           <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
         )}
 
-        {/* All / filtered items */}
-        {showAll && filteredAll.length > 0 && (
+        {/* Full list — every item, recency-ordered (recently-opened float to top) */}
+        {filteredMain.length > 0 && (
           <Section
             label={q ? 'RESULTS' : mode === 'tasks' ? 'WORKSTREAMS' : undefined}
-            items={filteredAll}
+            items={filteredMain}
             currentKey={currentKey}
             onNavigate={onNavigate}
           />
         )}
 
         {/* Empty state when search returns nothing */}
-        {q && filteredAll.length === 0 && filtered(starredItems).length === 0 && filtered(recentItems).length === 0 && (
+        {q && filteredMain.length === 0 && filtered(starredItems).length === 0 && (
           <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 13,
             color: 'var(--ds-text-subtlest, #626F86)' }}>
             No results for "{search}"
@@ -285,7 +286,7 @@ function SwitcherPanel({
         )}
 
         {/* Empty state — no items at all */}
-        {!q && allItems.length === 0 && starredItems.length === 0 && recentItems.length === 0 && (
+        {!q && allItems.length === 0 && starredItems.length === 0 && (
           <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 13,
             color: 'var(--ds-text-subtlest, #626F86)' }}>
             {mode === 'tasks' ? 'No active workstreams' :
@@ -320,13 +321,13 @@ function SwitcherPanel({
           style={{
             display: 'flex', alignItems: 'center', gap: 4,
             border: 'none', background: 'none', cursor: 'pointer', padding: '4px 8px',
-            fontSize: 12, fontWeight: 500, color: 'var(--ds-link, #0052CC)',
+            fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #44546F)',
             borderRadius: 3, fontFamily: 'inherit',
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F4F5F7)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'none')}
         >
-          <AddIcon size="small" label="" primaryColor="var(--ds-link, #0052CC)" />
+          <AddIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #626F86)" />
           {newLabel}
         </button>
       </div>

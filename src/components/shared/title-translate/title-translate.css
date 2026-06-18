@@ -48,8 +48,18 @@
 }
 .ttw-translate-chip__globe {
   font-size: 14px;
-  opacity: 0.7;
+  opacity: 1;
   flex-shrink: 0;
+}
+
+@keyframes ttwCatyPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.ttw-caty-pulse {
+  display: inline-flex;
+  align-items: center;
+  animation: ttwCatyPulse 1s ease-in-out infinite;
 }
 .ttw-translate-chip__arrow {
   font-size: 10px;
