@@ -9,7 +9,7 @@
  * target_date is NOT NULL on rh_releases — mirrored from the planned release
  * date. New releases start at status 'draft' (lifecycle stage 1).
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -17,11 +17,13 @@ import Select from '@atlaskit/select';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useCreateRelease } from '@/hooks/useReleaseHub';
+import { useCreateRelease, useUpdateRelease } from '@/hooks/useReleaseHub';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 
-interface Props { onClose: () => void }
+/** When `release` is passed the modal is in EDIT mode (prefill + update);
+ *  otherwise it creates a new release. */
+interface Props { onClose: () => void; release?: any }
 interface Opt { label: string; value: string }
 
 const RELEASE_TYPES: Opt[] = [
@@ -47,16 +49,18 @@ const errStyle: React.CSSProperties = {
   fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4,
 };
 
-export function CreateReleaseModal({ onClose }: Props) {
+export function CreateReleaseModal({ onClose, release }: Props) {
   const createRelease = useCreateRelease();
+  const updateRelease = useUpdateRelease();
+  const isEdit = !!release;
 
-  const [name, setName] = useState('');
-  const [version, setVersion] = useState('');
-  const [releaseType, setReleaseType] = useState<Opt | null>(null);
-  const [targetEnv, setTargetEnv] = useState<Opt | null>(null);
+  const [name, setName] = useState(release?.name ?? '');
+  const [version, setVersion] = useState(release?.version ?? '');
+  const [releaseType, setReleaseType] = useState<Opt | null>(() => RELEASE_TYPES.find((t) => t.value === release?.release_type) ?? null);
+  const [targetEnv, setTargetEnv] = useState<Opt | null>(() => TARGET_ENVS.find((t) => t.value === release?.target_env) ?? null);
   const [productId, setProductId] = useState<Opt | null>(null);
-  const [plannedStart, setPlannedStart] = useState('');
-  const [plannedRelease, setPlannedRelease] = useState('');
+  const [plannedStart, setPlannedStart] = useState(release?.planned_start_date ?? '');
+  const [plannedRelease, setPlannedRelease] = useState(release?.planned_release_date ?? release?.target_date ?? '');
   const [releaseManager, setReleaseManager] = useState<Opt | null>(null);
   const [productOwner, setProductOwner] = useState<Opt | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -80,6 +84,14 @@ export function CreateReleaseModal({ onClose }: Props) {
   const productOpts: Opt[] = useMemo(() => products.map((p) => ({ label: p.code ? `${p.name} (${p.code})` : p.name, value: p.id })), [products]);
   const userOpts: Opt[] = useMemo(() => users.map((u) => ({ label: u.full_name ?? 'Unknown', value: u.id })), [users]);
 
+  // Edit mode: resolve product/manager/owner ids → select options once loaded.
+  useEffect(() => {
+    if (!release) return;
+    if (release.product_id) setProductId((cur) => cur ?? productOpts.find((o) => o.value === release.product_id) ?? null);
+    if (release.release_manager_id) setReleaseManager((cur) => cur ?? userOpts.find((o) => o.value === release.release_manager_id) ?? null);
+    if (release.product_owner_id) setProductOwner((cur) => cur ?? userOpts.find((o) => o.value === release.product_owner_id) ?? null);
+  }, [release, productOpts, userOpts]);
+
   const errors = {
     name: !name.trim() ? 'Name is required' : '',
     releaseType: !releaseType ? 'Release type is required' : '',
@@ -92,6 +104,30 @@ export function CreateReleaseModal({ onClose }: Props) {
     setSubmitted(true);
     setFormError('');
     if (!isValid) return;
+
+    if (isEdit) {
+      updateRelease.mutate(
+        {
+          id: release.id,
+          name: name.trim(),
+          target_date: plannedRelease,
+          planned_release_date: plannedRelease,
+          planned_start_date: plannedStart || null,
+          release_type: releaseType!.value,
+          target_env: targetEnv!.value,
+          product_id: productId?.value || null,
+          version: version.trim() || null,
+          release_manager_id: releaseManager?.value || null,
+          product_owner_id: productOwner?.value || null,
+        },
+        {
+          onSuccess: () => { catalystToast.success('Release updated'); onClose(); },
+          onError: (err: any) => { setFormError(err?.message || 'Failed to update release'); catalystToast.error('Failed to update release'); },
+        },
+      );
+      return;
+    }
+
     createRelease.mutate(
       {
         name: name.trim(),
@@ -114,11 +150,13 @@ export function CreateReleaseModal({ onClose }: Props) {
     );
   };
 
+  const busy = createRelease.isPending || updateRelease.isPending;
+
   return (
     <ModalTransition>
       <Modal onClose={onClose} width="medium">
         <ModalHeader hasCloseButton>
-          <ModalTitle>New release</ModalTitle>
+          <ModalTitle>{isEdit ? 'Edit release' : 'New release'}</ModalTitle>
         </ModalHeader>
         <ModalBody>
           {formError && (
@@ -182,8 +220,8 @@ export function CreateReleaseModal({ onClose }: Props) {
         </ModalBody>
         <ModalFooter>
           <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-          <Button appearance="primary" onClick={handleSubmit} isDisabled={createRelease.isPending} isLoading={createRelease.isPending}>
-            Create release
+          <Button appearance="primary" onClick={handleSubmit} isDisabled={busy} isLoading={busy}>
+            {isEdit ? 'Save changes' : 'Create release'}
           </Button>
         </ModalFooter>
       </Modal>

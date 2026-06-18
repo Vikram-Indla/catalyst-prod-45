@@ -140,6 +140,22 @@ export const useCreateRelease = () => {
   });
 };
 
+/** Update editable release fields (not status — that goes through the guarded
+ *  useUpdateReleaseStatus). */
+export const useUpdateRelease = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...fields }: { id: string } & Record<string, any>) => {
+      const { error } = await supabase.from('rh_releases').update(fields).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: KEYS.releases });
+      qc.invalidateQueries({ queryKey: KEYS.release((vars as any).id) });
+    },
+  });
+};
+
 export const useUpdateReleaseStatus = () => {
   const qc = useQueryClient();
   return useMutation({

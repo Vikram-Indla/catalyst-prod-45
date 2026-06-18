@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useRelease, useUpdateReleaseStatus } from '@/hooks/useReleaseHub';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { ScopeTab, ChangesTab, SignoffsTab, NotifyList, ReadinessTab, ReleaseNotesTab, ProductionEventsTab, AuditTab } from '@/components/releasehub/detail/ReleaseDetailTabs';
+import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
@@ -146,6 +147,7 @@ export default function ReleaseDetailPage() {
 
   const updateStatus = useUpdateReleaseStatus();
   const { canManage } = useReleaseOpsPermissions();
+  const [showEdit, setShowEdit] = React.useState(false);
 
   const r = release as any;
   const statusLabel = useMemo(() => (r?.status && TERMINAL[r.status] ? TERMINAL[r.status] : null), [r?.status]);
@@ -199,6 +201,7 @@ export default function ReleaseDetailPage() {
             lifecycle-guarded transitions; Link change routes to Change Records. */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           {([
+            { key: 'edit', label: 'Edit', primary: false, onClick: () => setShowEdit(true) },
             { key: 'signoff', label: 'Request sign-off', primary: false, onClick: () => transition('ready_for_signoff', 'Sign-off requested') },
             { key: 'link', label: 'Link change', primary: false, onClick: () => navigate('/release-hub/changes') },
             { key: 'schedule', label: 'Schedule', primary: true, onClick: () => transition('scheduled', 'Release scheduled') },
@@ -272,6 +275,8 @@ export default function ReleaseDetailPage() {
         <TabPanel><div style={{ width: '100%' }}><ProductionEventsTab releaseId={r.id} /></div></TabPanel>
         <TabPanel><div style={{ width: '100%' }}><AuditTab releaseId={r.id} /></div></TabPanel>
       </Tabs>
+
+      {showEdit && <CreateReleaseModal release={r} onClose={() => setShowEdit(false)} />}
     </div>
   );
 }
