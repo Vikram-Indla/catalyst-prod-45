@@ -463,7 +463,10 @@ export function SidebarBase({
 
           {config.sections ? (
             config.sections.map((section, sectionIndex) => {
-              if (section.items.length === 0) return null;
+              // A collapsed space group (HomeSidebar) has 0 items but a rich
+              // titleNode header that must stay visible so the user can re-expand
+              // it. Only drop a section when it has neither rows nor a header.
+              if (section.items.length === 0 && !section.titleNode) return null;
               
               return (
                 <div key={section.title}>

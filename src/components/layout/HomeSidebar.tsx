@@ -25,7 +25,7 @@
  *   - "All projects" footer link — removed (project-hub/all-projects is
  *     not a project, surfacing it was misleading).
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import ClockIcon from '@atlaskit/icon/core/clock';
@@ -33,6 +33,8 @@ import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
 import BacklogIcon from '@atlaskit/icon/glyph/backlog';
 import BoardIcon from '@atlaskit/icon/glyph/board';
 import CalendarIcon from '@atlaskit/icon/glyph/calendar';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
 import FilterIcon from '@atlaskit/icon/glyph/filter';
 import ListIcon from '@atlaskit/icon/glyph/list';
@@ -43,8 +45,36 @@ import SidebarClock from './SidebarClock';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
+import { sliceVisible } from '@/lib/home-recents';
 
 const RECENT_LIMIT = 16;
+
+/**
+ * Collapse state persists across reloads so a folded space stays folded.
+ * Stored as a JSON array of group keys (`hub:projectKey`). Session-only
+ * "show all" (the +N more fold) deliberately does NOT persist — it is a
+ * transient peek, not a preference.
+ */
+const COLLAPSE_STORAGE_KEY = 'catalyst.home.recents.collapsed.v1';
+
+function loadCollapsed(): Set<string> {
+  try {
+    const raw = localStorage.getItem(COLLAPSE_STORAGE_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? new Set(arr as string[]) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function saveCollapsed(s: Set<string>): void {
+  try {
+    localStorage.setItem(COLLAPSE_STORAGE_KEY, JSON.stringify([...s]));
+  } catch {
+    /* private mode / quota — collapse just won't persist */
+  }
+}
 
 interface HomeSidebarProps {
   expanded?: boolean;
@@ -179,22 +209,53 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
  * Generous vertical padding (12px top) separates each space without a hairline
  * divider — the enterprise "calm whitespace" read requested 2026-06-17.
  */
-function SpaceGroupHeader({ head }: { head: RecentLocation }) {
+function SpaceGroupHeader({
+  head,
+  isCollapsed,
+  onToggle,
+}: {
+  head: RecentLocation;
+  isCollapsed: boolean;
+  onToggle: () => void;
+}) {
   // Space-scoped hubs (project/product) carry a per-space KEY → show "KEY · Type".
   // Global single hubs (task/incident/release/plan) have no key → type word only.
   const isSpaceScoped = head.hub === 'project' || head.hub === 'product';
   const globalHubIcon =
     HUB_ICON_OUTLINE_REGISTRY[head.hub as keyof typeof HUB_ICON_OUTLINE_REGISTRY];
 
+  // Whole header is the collapse affordance. The chevron sits left of the
+  // avatar (Jira "Recent" group-header pattern) and rotates open→down /
+  // closed→right. Neutral chevron tone — color stays reserved for the avatar.
+  const Chevron = isCollapsed ? ChevronRightIcon : ChevronDownIcon;
+
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-expanded={!isCollapsed}
+      aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${head.projectName}`}
+      onClick={onToggle}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onToggle();
+        }
+      }}
       style={{
         display: 'flex',
         alignItems: 'center',
         gap: token('space.100', '8px'),
         padding: '12px 12px 6px 12px',
+        cursor: 'pointer',
       }}
     >
+      <span
+        aria-hidden="true"
+        style={{ flexShrink: 0, display: 'inline-flex', marginLeft: -4 }}
+      >
+        <Chevron label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+      </span>
       {head.hub === 'task' ? (
         <span
           aria-hidden="true"
@@ -355,6 +416,30 @@ export default function HomeSidebar({
   const navigate = useNavigate();
   const { recentLocations, loading } = useRecentProjects(RECENT_LIMIT);
 
+  // Per-space display state. `collapsed` (persisted) hides a group's rows;
+  // `showAll` (session) unfolds a group past the 3-row cap.
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => loadCollapsed());
+  const [showAll, setShowAll] = useState<Set<string>>(() => new Set());
+
+  const toggleCollapsed = useCallback((key: string) => {
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      saveCollapsed(next);
+      return next;
+    });
+  }, []);
+
+  const toggleShowAll = useCallback((key: string) => {
+    setShowAll((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }, []);
+
   const config: SidebarConfig = useMemo(() => {
     if (!expanded) {
       // Collapsed HOME route: render hub icons with outline styling
@@ -448,11 +533,59 @@ export default function HomeSidebar({
       icon: () => <SectionIconWrapper section={loc.section} />,
     });
 
-    const sections = groupIntoSpaces(recentLocations).map((group) => ({
-      title: group.head.projectName,
-      titleNode: <SpaceGroupHeader head={group.head} />,
-      items: group.items.map(toItem),
-    }));
+    const sections = groupIntoSpaces(recentLocations).map((group) => {
+      const isCollapsed = collapsed.has(group.key);
+      const header = (
+        <SpaceGroupHeader
+          head={group.head}
+          isCollapsed={isCollapsed}
+          onToggle={() => toggleCollapsed(group.key)}
+        />
+      );
+
+      if (isCollapsed) {
+        // Header only — SidebarBase keeps the section alive via its titleNode.
+        return { title: group.head.projectName, titleNode: header, items: [] };
+      }
+
+      const { visible, hiddenCount } = sliceVisible(group.items, showAll.has(group.key));
+      const items: SidebarMenuItem[] = visible.map(toItem);
+
+      // "+N more" / "Show less" fold toggle — non-navigating synthetic row.
+      // The hash path never matches a route, so it never reads as active.
+      if (group.items.length > visible.length || showAll.has(group.key)) {
+        const expanded = showAll.has(group.key);
+        items.push({
+          id: `recent-more-${group.key}`,
+          title: (
+            <span
+              style={{
+                color: token('color.link', '#0C66E4'),
+                fontWeight: 500,
+                fontSize: token('font.size.075', '12px'),
+                lineHeight: '20px',
+              }}
+            >
+              {expanded ? 'Show less' : `+${hiddenCount} more`}
+            </span>
+          ),
+          tooltip: expanded ? 'Show less' : `Show ${hiddenCount} more`,
+          path: `#recent-more-${group.key}`,
+          icon: () => (
+            <span aria-hidden="true" style={{ display: 'inline-flex' }}>
+              {expanded ? (
+                <ChevronDownIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+              ) : (
+                <ChevronRightIcon label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+              )}
+            </span>
+          ),
+          onClick: () => toggleShowAll(group.key),
+        });
+      }
+
+      return { title: group.head.projectName, titleNode: header, items };
+    });
 
     return {
       badge: null,
@@ -461,7 +594,7 @@ export default function HomeSidebar({
       hideSectionDividers: true,
       sections,
     };
-  }, [recentLocations, loading, expanded]);
+  }, [recentLocations, loading, expanded, collapsed, showAll, toggleCollapsed, toggleShowAll]);
 
   return (
     <SidebarBase
