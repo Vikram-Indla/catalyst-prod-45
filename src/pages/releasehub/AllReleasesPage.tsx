@@ -154,6 +154,14 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: row.workItemsCount > 0 ? T.text : T.subtlest }}>{row.workItemsCount}</span>,
     },
     {
+      id: 'target_env', label: 'Env', width: 10,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.target_env)}</span>,
+    },
+    {
+      id: 'release_type', label: 'Type', width: 10,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.release_type)}</span>,
+    },
+    {
       id: 'status', label: 'Status', width: 12, sortable: true,
       cell: ({ row }) => <StatusLozenge status={row.status} />,
     },
@@ -179,15 +187,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       },
     },
     {
-      id: 'target_env', label: 'Env', width: 10,
-      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.target_env)}</span>,
-    },
-    {
-      id: 'release_type', label: 'Type', width: 10,
-      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.release_type)}</span>,
-    },
-    {
-      id: 'target_date', label: 'Target', width: 10, sortable: true,
+      id: 'target_date', label: 'Planned', width: 10, sortable: true,
       accessor: (row) => row.planned_release_date ?? row.target_date,
       cell: ({ row }) => {
         const d = row.planned_release_date ?? row.target_date;
@@ -195,7 +195,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       },
     },
     {
-      id: 'changes', label: 'Changes', width: 8, align: 'end', sortable: true,
+      id: 'changes', label: 'Chg', width: 8, align: 'end', sortable: true,
       accessor: (row) => row.changeCount,
       cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.text }}>{row.changeCount}</span>,
     },
