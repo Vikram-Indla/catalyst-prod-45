@@ -107,10 +107,44 @@ export const useCreateRelease = () => {
 export const useUpdateReleaseStatus = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) => releaseService.updateStatus(id, status),
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      await releaseService.updateStatus(id, status);
+      // Auto-generate a production event when a production-targeted release
+      // reaches `completed` (idempotent — skips if one already exists).
+      if (status === 'completed') {
+        const { data: rel } = await supabase
+          .from('rh_releases')
+          .select('id, name, target_env, product_id')
+          .eq('id', id)
+          .maybeSingle();
+        if (rel && (rel as any).target_env === 'production') {
+          const { count } = await supabase
+            .from('rh_production_events')
+            .select('*', { count: 'exact', head: true })
+            .eq('release_id', id);
+          if (!count) {
+            const userId = (await supabase.auth.getUser()).data.user?.id;
+            await supabase.from('rh_production_events').insert({
+              release_id: id,
+              release_key: (rel as any).name,
+              product_id: (rel as any).product_id ?? undefined,
+              title: `${(rel as any).name} deployed to production`,
+              event_type: 'release',
+              deployed_at: new Date().toISOString(),
+              produced_at: new Date().toISOString(),
+              deployed_by: userId ?? 'system',
+              deployment_status: 'success',
+              deployment_result: 'SUCCESS',
+              target_env: 'production',
+            });
+          }
+        }
+      }
+    },
     onSuccess: (_, { id }) => {
       qc.invalidateQueries({ queryKey: KEYS.releases });
       qc.invalidateQueries({ queryKey: KEYS.release(id) });
+      qc.invalidateQueries({ queryKey: KEYS.productionEvents });
     },
   });
 };
@@ -792,3 +826,33 @@ export const useApplySopTemplate = () => {
     onSuccess: (_n, v) => qc.invalidateQueries({ queryKey: ['release-hub', 'changes', v.changeId, 'sop-steps'] }),
   });
 };
+
+// ── Production Events list + detail (Phase 10) ───────────────────────
+export interface ProductionEventRow {
+  id: string; title: string; eventType: string; targetEnv: string | null;
+  releaseId: string | null; releaseKey: string | null; changeId: string | null; changeKey: string | null;
+  deployedAt: string | null; producedAt: string | null; deployedBy: string;
+  result: string | null; deploymentStatus: string | null; durationMinutes: number | null; notes: string | null;
+  workItemsSnapshot: any; businessRequestsSnapshot: any; commitsSnapshot: any; sopEvidenceSnapshot: any; approversSnapshot: any;
+}
+
+export const useProductionEventsList = () =>
+  useQuery({
+    queryKey: [...KEYS.productionEvents, 'list'],
+    staleTime: 30_000,
+    queryFn: async (): Promise<ProductionEventRow[]> => {
+      const { data, error } = await supabase
+        .from('rh_production_events')
+        .select('*')
+        .order('deployed_at', { ascending: false });
+      if (error) throw error;
+      return (data ?? []).map((e: any) => ({
+        id: e.id, title: e.title, eventType: e.event_type, targetEnv: e.target_env ?? null,
+        releaseId: e.release_id ?? null, releaseKey: e.release_key ?? null, changeId: e.change_id ?? null, changeKey: e.change_key ?? null,
+        deployedAt: e.deployed_at ?? null, producedAt: e.produced_at ?? null, deployedBy: e.deployed_by,
+        result: e.deployment_result ?? null, deploymentStatus: e.deployment_status ?? null, durationMinutes: e.duration_minutes ?? null, notes: e.notes ?? null,
+        workItemsSnapshot: e.work_items_snapshot ?? null, businessRequestsSnapshot: e.business_requests_snapshot ?? null,
+        commitsSnapshot: e.commits_snapshot ?? null, sopEvidenceSnapshot: e.sop_evidence_snapshot ?? null, approversSnapshot: e.approvers_snapshot ?? null,
+      }));
+    },
+  });
