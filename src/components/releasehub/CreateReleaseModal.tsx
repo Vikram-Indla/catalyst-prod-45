@@ -9,7 +9,7 @@
  * target_date is NOT NULL on rh_releases — mirrored from the planned release
  * date. New releases start at status 'draft' (lifecycle stage 1).
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -17,14 +17,19 @@ import Select from '@atlaskit/select';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useCreateRelease } from '@/hooks/useReleaseHub';
+import { useCreateRelease, useUpdateRelease } from '@/hooks/useReleaseHub';
 import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
+import { useConfigOptions } from '@/hooks/releases/useReleaseConfig';
 
-interface Props { onClose: () => void }
+/** When `release` is passed the modal is in EDIT mode (prefill + update);
+ *  otherwise it creates a new release. */
+interface Props { onClose: () => void; release?: any }
 interface Opt { label: string; value: string }
 
-const RELEASE_TYPES: Opt[] = [
+// Fallback option sets — used only if the admin config (rh_config_options)
+// has not loaded yet. The canonical lists are managed at /admin/release-ops.
+const FALLBACK_RELEASE_TYPES: Opt[] = [
   { label: 'Regular', value: 'regular' },
   { label: 'Minor', value: 'minor' },
   { label: 'Major', value: 'major' },
@@ -32,7 +37,7 @@ const RELEASE_TYPES: Opt[] = [
   { label: 'Emergency', value: 'emergency' },
 ];
 
-const TARGET_ENVS: Opt[] = [
+const FALLBACK_TARGET_ENVS: Opt[] = [
   { label: 'QA', value: 'qa' },
   { label: 'Beta', value: 'beta' },
   { label: 'Staging', value: 'staging' },
@@ -47,16 +52,19 @@ const errStyle: React.CSSProperties = {
   fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4,
 };
 
-export function CreateReleaseModal({ onClose }: Props) {
+export function CreateReleaseModal({ onClose, release }: Props) {
   const createRelease = useCreateRelease();
+  const updateRelease = useUpdateRelease();
+  const isEdit = !!release;
 
-  const [name, setName] = useState('');
-  const [version, setVersion] = useState('');
-  const [releaseType, setReleaseType] = useState<Opt | null>(null);
-  const [targetEnv, setTargetEnv] = useState<Opt | null>(null);
+  const [name, setName] = useState(release?.name ?? '');
+  const [version, setVersion] = useState(release?.version ?? '');
+  const humanize = (v: string) => v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const [releaseType, setReleaseType] = useState<Opt | null>(() => release?.release_type ? { label: humanize(release.release_type), value: release.release_type } : null);
+  const [targetEnv, setTargetEnv] = useState<Opt | null>(() => release?.target_env ? { label: humanize(release.target_env), value: release.target_env } : null);
   const [productId, setProductId] = useState<Opt | null>(null);
-  const [plannedStart, setPlannedStart] = useState('');
-  const [plannedRelease, setPlannedRelease] = useState('');
+  const [plannedStart, setPlannedStart] = useState(release?.planned_start_date ?? '');
+  const [plannedRelease, setPlannedRelease] = useState(release?.planned_release_date ?? release?.target_date ?? '');
   const [releaseManager, setReleaseManager] = useState<Opt | null>(null);
   const [productOwner, setProductOwner] = useState<Opt | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -80,6 +88,20 @@ export function CreateReleaseModal({ onClose }: Props) {
   const productOpts: Opt[] = useMemo(() => products.map((p) => ({ label: p.code ? `${p.name} (${p.code})` : p.name, value: p.id })), [products]);
   const userOpts: Opt[] = useMemo(() => users.map((u) => ({ label: u.full_name ?? 'Unknown', value: u.id })), [users]);
 
+  // Admin-managed option lists (rh_config_options) with static fallback.
+  const releaseTypeCfg = useConfigOptions('release_type');
+  const targetEnvCfg = useConfigOptions('target_env');
+  const releaseTypeOpts: Opt[] = useMemo(() => releaseTypeCfg.length ? releaseTypeCfg.map((o) => ({ label: o.label, value: o.value })) : FALLBACK_RELEASE_TYPES, [releaseTypeCfg]);
+  const targetEnvOpts: Opt[] = useMemo(() => targetEnvCfg.length ? targetEnvCfg.map((o) => ({ label: o.label, value: o.value })) : FALLBACK_TARGET_ENVS, [targetEnvCfg]);
+
+  // Edit mode: resolve product/manager/owner ids → select options once loaded.
+  useEffect(() => {
+    if (!release) return;
+    if (release.product_id) setProductId((cur) => cur ?? productOpts.find((o) => o.value === release.product_id) ?? null);
+    if (release.release_manager_id) setReleaseManager((cur) => cur ?? userOpts.find((o) => o.value === release.release_manager_id) ?? null);
+    if (release.product_owner_id) setProductOwner((cur) => cur ?? userOpts.find((o) => o.value === release.product_owner_id) ?? null);
+  }, [release, productOpts, userOpts]);
+
   const errors = {
     name: !name.trim() ? 'Name is required' : '',
     releaseType: !releaseType ? 'Release type is required' : '',
@@ -92,6 +114,30 @@ export function CreateReleaseModal({ onClose }: Props) {
     setSubmitted(true);
     setFormError('');
     if (!isValid) return;
+
+    if (isEdit) {
+      updateRelease.mutate(
+        {
+          id: release.id,
+          name: name.trim(),
+          target_date: plannedRelease,
+          planned_release_date: plannedRelease,
+          planned_start_date: plannedStart || null,
+          release_type: releaseType!.value,
+          target_env: targetEnv!.value,
+          product_id: productId?.value || null,
+          version: version.trim() || null,
+          release_manager_id: releaseManager?.value || null,
+          product_owner_id: productOwner?.value || null,
+        },
+        {
+          onSuccess: () => { catalystToast.success('Release updated'); onClose(); },
+          onError: (err: any) => { setFormError(err?.message || 'Failed to update release'); catalystToast.error('Failed to update release'); },
+        },
+      );
+      return;
+    }
+
     createRelease.mutate(
       {
         name: name.trim(),
@@ -114,11 +160,13 @@ export function CreateReleaseModal({ onClose }: Props) {
     );
   };
 
+  const busy = createRelease.isPending || updateRelease.isPending;
+
   return (
     <ModalTransition>
       <Modal onClose={onClose} width="medium">
         <ModalHeader hasCloseButton>
-          <ModalTitle>New release</ModalTitle>
+          <ModalTitle>{isEdit ? 'Edit release' : 'New release'}</ModalTitle>
         </ModalHeader>
         <ModalBody>
           {formError && (
@@ -136,12 +184,12 @@ export function CreateReleaseModal({ onClose }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16 }}>
             <div>
               <label style={labelStyle}>Release type *</label>
-              <Select inputId="rel-type" options={RELEASE_TYPES} value={releaseType} onChange={(v) => setReleaseType(v as Opt)} placeholder="Select type" spacing="compact" menuPosition="fixed" />
+              <Select inputId="rel-type" options={releaseTypeOpts} value={releaseType} onChange={(v) => setReleaseType(v as Opt)} placeholder="Select type" spacing="compact" menuPosition="fixed" />
               {submitted && errors.releaseType && <div style={errStyle}>{errors.releaseType}</div>}
             </div>
             <div>
               <label style={labelStyle}>Target environment *</label>
-              <Select inputId="rel-env" options={TARGET_ENVS} value={targetEnv} onChange={(v) => setTargetEnv(v as Opt)} placeholder="Select environment" spacing="compact" menuPosition="fixed" />
+              <Select inputId="rel-env" options={targetEnvOpts} value={targetEnv} onChange={(v) => setTargetEnv(v as Opt)} placeholder="Select environment" spacing="compact" menuPosition="fixed" />
               {submitted && errors.targetEnv && <div style={errStyle}>{errors.targetEnv}</div>}
             </div>
           </div>
@@ -182,8 +230,8 @@ export function CreateReleaseModal({ onClose }: Props) {
         </ModalBody>
         <ModalFooter>
           <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-          <Button appearance="primary" onClick={handleSubmit} isDisabled={createRelease.isPending} isLoading={createRelease.isPending}>
-            Create release
+          <Button appearance="primary" onClick={handleSubmit} isDisabled={busy} isLoading={busy}>
+            {isEdit ? 'Save changes' : 'Create release'}
           </Button>
         </ModalFooter>
       </Modal>

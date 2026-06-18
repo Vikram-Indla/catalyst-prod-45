@@ -81,6 +81,12 @@ export const adminPockets: AdminNavPocket[] = [
     ],
   },
   {
+    id: 'release-ops',
+    label: 'Release Operations',
+    iconName: 'Rocket',
+    path: '/admin/release-ops',
+  },
+  {
     id: 'field-configuration',
     label: 'Field Configuration',
     iconName: 'Database',
@@ -152,6 +158,7 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/avatars',
   '/admin/components',
   '/admin/workflows',
+  '/admin/release-ops',
   '/admin/departments',
   '/admin/business-owners',
   '/admin/workhub/jira-connection',

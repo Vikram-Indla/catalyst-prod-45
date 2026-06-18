@@ -57,6 +57,10 @@ export interface ReleaseListRow {
   jira_key: string | null;
   updated_at: string | null;
   changeCount: number;
+  workItemsCount: number;
+  productName: string | null;
+  manager: { name: string; avatarUrl: string | null } | null;
+  signoffProgress: { approved: number; total: number } | null;
 }
 
 /**
@@ -70,10 +74,12 @@ export const useReleasesList = () =>
   useQuery({
     queryKey: [...KEYS.releases, 'list'],
     staleTime: 30_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<ReleaseListRow[]> => {
       const { data: rels, error } = await supabase
         .from('rh_releases')
-        .select('id, name, version, status, health, release_type, target_env, target_date, planned_release_date, readiness_pct, source, jira_key, updated_at')
+        .select('id, name, version, status, health, release_type, target_env, target_date, planned_release_date, readiness_pct, source, jira_key, updated_at, product_id, release_manager_id')
         .order('updated_at', { ascending: false });
       if (error) throw error;
       const releases = (rels ?? []) as any[];
@@ -88,7 +94,54 @@ export const useReleasesList = () =>
           if (c.release_id) counts[c.release_id] = (counts[c.release_id] ?? 0) + 1;
         });
       }
-      return releases.map((r) => ({ ...r, changeCount: counts[r.id] ?? 0 })) as ReleaseListRow[];
+
+      // Work-item count per release (rh_release_work_items).
+      const itemCounts: Record<string, number> = {};
+      if (ids.length > 0) {
+        const { data: wis } = await supabase.from('rh_release_work_items').select('release_id').in('release_id', ids);
+        (wis ?? []).forEach((w: any) => {
+          if (w.release_id) itemCounts[w.release_id] = (itemCounts[w.release_id] ?? 0) + 1;
+        });
+      }
+
+      // Resolve product names + manager profiles (best-effort; render nothing
+      // when a lookup is absent — no typed-default lies, CLAUDE.md zero-assumption).
+      const productMap: Record<string, string> = {};
+      const productIds = [...new Set(releases.map((r) => r.product_id).filter(Boolean))];
+      if (productIds.length > 0) {
+        const { data: prods } = await supabase.from('products').select('id, name').in('id', productIds);
+        (prods ?? []).forEach((p: any) => { productMap[p.id] = p.name; });
+      }
+      const managerMap: Record<string, { name: string; avatarUrl: string | null }> = {};
+      const managerIds = [...new Set(releases.map((r) => r.release_manager_id).filter(Boolean))];
+      if (managerIds.length > 0) {
+        const { data: profs } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', managerIds);
+        (profs ?? []).forEach((p: any) => { managerMap[p.id] = { name: p.full_name, avatarUrl: p.avatar_url ?? null }; });
+      }
+
+      // Release sign-off progress (approved/total per release). Degrades to null
+      // (column renders '—') until the rh_release_signoffs migration is applied.
+      const signoffMap: Record<string, { approved: number; total: number }> = {};
+      if (ids.length > 0) {
+        const { data: sos, error: soErr } = await supabase
+          .from('rh_release_signoffs' as any).select('release_id, status').in('release_id', ids);
+        if (!soErr) {
+          (sos ?? []).forEach((s: any) => {
+            const e = (signoffMap[s.release_id] ??= { approved: 0, total: 0 });
+            e.total += 1;
+            if (s.status === 'approved') e.approved += 1;
+          });
+        }
+      }
+
+      return releases.map((r) => ({
+        ...r,
+        changeCount: counts[r.id] ?? 0,
+        workItemsCount: itemCounts[r.id] ?? 0,
+        productName: r.product_id ? (productMap[r.product_id] ?? null) : null,
+        manager: r.release_manager_id ? (managerMap[r.release_manager_id] ?? null) : null,
+        signoffProgress: signoffMap[r.id] ?? null,
+      })) as ReleaseListRow[];
     },
   });
 
@@ -103,6 +156,22 @@ export const useCreateRelease = () => {
   return useMutation({
     mutationFn: releaseService.create,
     onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.releases }),
+  });
+};
+
+/** Update editable release fields (not status — that goes through the guarded
+ *  useUpdateReleaseStatus). */
+export const useUpdateRelease = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...fields }: { id: string } & Record<string, any>) => {
+      const { error } = await supabase.from('rh_releases').update(fields).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: KEYS.releases });
+      qc.invalidateQueries({ queryKey: KEYS.release((vars as any).id) });
+    },
   });
 };
 
@@ -231,6 +300,8 @@ export const usePendingApprovals = () =>
   useQuery({
     queryKey: KEYS.pendingApprovals,
     staleTime: 15_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<PendingApproval[]> => {
       const { data: rows, error } = await supabase
         .from('rh_change_signoffs')
@@ -684,26 +755,69 @@ export interface ChangeListRow {
   releaseName: string | null;
   source: string;
   updated_at: string | null;
+  sopProgress: { done: number; total: number } | null;
+  apprProgress: { approved: number; total: number } | null;
+  manager: { name: string; avatarUrl: string | null } | null;
 }
 
 export const useChangesList = () =>
   useQuery({
     queryKey: [...KEYS.changes, 'list'],
     staleTime: 15_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<ChangeListRow[]> => {
       const { data: rows, error } = await supabase
         .from('rh_changes')
-        .select('id, chg_number, title, status, risk_level, change_type, target_env, deployment_category, deployment_date, window_start, release_id, source, updated_at')
+        .select('id, chg_number, title, status, risk_level, change_type, target_env, deployment_category, deployment_date, window_start, release_id, source, updated_at, change_manager_id')
         .order('updated_at', { ascending: false });
       if (error) throw error;
       const changes = (rows ?? []) as any[];
+      const chgIds = changes.map((c) => c.id);
       const relIds = [...new Set(changes.map((c) => c.release_id).filter(Boolean))] as string[];
       const relMap: Record<string, string> = {};
       if (relIds.length > 0) {
         const { data: rels } = await supabase.from('rh_releases').select('id, name').in('id', relIds);
         (rels ?? []).forEach((r: any) => { relMap[r.id] = r.name; });
       }
-      return changes.map((c) => ({ ...c, releaseName: c.release_id ? (relMap[c.release_id] ?? null) : null })) as ChangeListRow[];
+
+      // SOP progress (done/total) per change.
+      const sop: Record<string, { done: number; total: number }> = {};
+      if (chgIds.length > 0) {
+        const { data: steps } = await supabase.from('rh_sop_steps').select('change_id, status').in('change_id', chgIds);
+        (steps ?? []).forEach((s: any) => {
+          const e = (sop[s.change_id] ??= { done: 0, total: 0 });
+          e.total += 1;
+          if (s.status === 'done') e.done += 1;
+        });
+      }
+
+      // Approval progress (approved/total) per change.
+      const appr: Record<string, { approved: number; total: number }> = {};
+      if (chgIds.length > 0) {
+        const { data: signoffs } = await supabase.from('rh_change_signoffs').select('change_id, status').in('change_id', chgIds);
+        (signoffs ?? []).forEach((s: any) => {
+          const e = (appr[s.change_id] ??= { approved: 0, total: 0 });
+          e.total += 1;
+          if (s.status === 'approved') e.approved += 1;
+        });
+      }
+
+      // Change manager profiles (best-effort; render nothing when absent).
+      const mgrMap: Record<string, { name: string; avatarUrl: string | null }> = {};
+      const mgrIds = [...new Set(changes.map((c) => c.change_manager_id).filter(Boolean))] as string[];
+      if (mgrIds.length > 0) {
+        const { data: profs } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', mgrIds);
+        (profs ?? []).forEach((p: any) => { mgrMap[p.id] = { name: p.full_name, avatarUrl: p.avatar_url ?? null }; });
+      }
+
+      return changes.map((c) => ({
+        ...c,
+        releaseName: c.release_id ? (relMap[c.release_id] ?? null) : null,
+        sopProgress: sop[c.id] ?? null,
+        apprProgress: appr[c.id] ?? null,
+        manager: c.change_manager_id ? (mgrMap[c.change_manager_id] ?? null) : null,
+      })) as ChangeListRow[];
     },
   });
 
@@ -854,6 +968,8 @@ export const useProductionEventsList = () =>
   useQuery({
     queryKey: [...KEYS.productionEvents, 'list'],
     staleTime: 30_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<ProductionEventRow[]> => {
       const { data, error } = await supabase
         .from('rh_production_events')
@@ -918,6 +1034,8 @@ export const useFreezeWindowsList = () =>
   useQuery({
     queryKey: ['release-hub', 'freeze-windows', 'list'],
     staleTime: 30_000,
+    refetchOnMount: 'always',
+    retry: 2,
     queryFn: async (): Promise<FreezeWindowRow[]> => {
       const [fwRes, relRes, chgRes] = await Promise.all([
         supabase.from('rh_freeze_windows').select('id, name, start_date, end_date, reason, target_env, applicability, status').order('start_date', { ascending: false }),

@@ -431,17 +431,36 @@ export default function HomeSidebar({
         title: hub.label,
         tooltip: hub.label,
         path: hub.href,
-        icon: () => (
-          <img
-            src={HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]}
-            alt={hub.label}
-            style={{
-              width: '24px',
-              height: '24px',
-              display: 'block',
-            }}
-          />
-        ),
+        icon: ({ style }: { className?: string; style?: React.CSSProperties } = {}) => {
+          // Mask-fill the outline asset so the icon inherits a theme-aware
+          // colour instead of the baked-in #44546F stroke. <img> bakes its
+          // colour into the file and cannot respond to dark mode. SidebarBase's
+          // renderMenuItem passes the active-aware ADS colour via style.color
+          // (var(--ds-icon-brand) when active, var(--ds-icon) when inactive) —
+          // honouring it keeps the rail in step with every other sidebar icon
+          // and gives active hubs the brand-blue fill for free.
+          const maskUrl = `url(${HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]})`;
+          return (
+            <span
+              role="img"
+              aria-label={hub.label}
+              style={{
+                width: '24px',
+                height: '24px',
+                display: 'block',
+                backgroundColor: style?.color ?? 'var(--ds-icon, #172B4D)',
+                WebkitMaskImage: maskUrl,
+                maskImage: maskUrl,
+                WebkitMaskRepeat: 'no-repeat',
+                maskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'center',
+                maskPosition: 'center',
+                WebkitMaskSize: 'contain',
+                maskSize: 'contain',
+              }}
+            />
+          );
+        },
       }));
 
       return {
