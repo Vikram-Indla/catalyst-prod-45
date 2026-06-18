@@ -108,6 +108,7 @@ function HubRow({ row, onOpenRow, onUnstar }: { row: StarredHubRow; onOpenRow: (
   const isWork = row.category === 'work_item';
   return (
     <div
+      className="starred-hub-row"
       role="button"
       tabIndex={0}
       onClick={() => onOpenRow(row)}
@@ -153,6 +154,20 @@ export function StarredHubList({ rows, onOpenRow, onUnstar }: StarredHubListProp
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', paddingInline: 8, paddingBlockEnd: 8 }}>
+      {/*
+        Kill the global [role="button"] press animation (index.css "micro-
+        interactions" block: transform: scale(0.97) on :active + transition:
+        all 150ms). These rows declare role="button" for a11y but must stay
+        STATIC — Jira list rows never bounce or scale on click. !important is
+        required: the global :active selector outscores a plain class.
+      */}
+      <style>{`
+        .starred-hub-row, .starred-hub-row:active,
+        .starred-hub-row button, .starred-hub-row button:active {
+          transform: none !important;
+          transition: none !important;
+        }
+      `}</style>
       {groups.map(({ title, items }) => (
         <div key={title}>
           <GroupHeading title={title} />
