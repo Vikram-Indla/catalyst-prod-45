@@ -403,7 +403,7 @@ export default function AllProjectsPage() {
                 favoriteIds={favorites}
                 onToggleFav={(id, fav) => {
                   const p = pageData.find(pr => pr.id === id);
-                  toggleFav.mutate({ projectId: id, isFavorited: fav, starMeta: p ? { label: p.name, subtitle: 'Project' } : undefined });
+                  toggleFav.mutate({ projectId: id, isFavorited: fav, starMeta: p ? { label: p.name, subtitle: 'Project', projectKey: p.key, iconName: p.icon ?? undefined, color: p.color ?? undefined } : undefined });
                 }}
                 onSelectProject={id => setSelectedProject(id)}
                 sortCol={sortCol}
@@ -495,7 +495,7 @@ export default function AllProjectsPage() {
           open={!!selectedProject}
           onClose={() => setSelectedProject(null)}
           isFav={selectedProject ? favorites.has(selectedProject) : false}
-          onToggleFav={() => { if (selectedProject) toggleFav.mutate({ projectId: selectedProject, isFavorited: favorites.has(selectedProject), starMeta: selectedProjectData ? { label: selectedProjectData.name, subtitle: 'Project' } : undefined }); }}
+          onToggleFav={() => { if (selectedProject) toggleFav.mutate({ projectId: selectedProject, isFavorited: favorites.has(selectedProject), starMeta: selectedProjectData ? { label: selectedProjectData.name, subtitle: 'Project', projectKey: selectedProjectData.key, iconName: selectedProjectData.icon ?? undefined, color: selectedProjectData.color ?? undefined } : undefined }); }}
         />
         <CreateSpaceModal
           isOpen={showCreateModal}

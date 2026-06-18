@@ -127,7 +127,7 @@ export function useToggleFavorite() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ projectId, isFavorited, starMeta }: { projectId: string; isFavorited: boolean; starMeta?: { label?: string; subtitle?: string; route?: string } }) => {
+    mutationFn: async ({ projectId, isFavorited, starMeta }: { projectId: string; isFavorited: boolean; starMeta?: { label?: string; subtitle?: string; route?: string; projectKey?: string; iconName?: string; color?: string } }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 

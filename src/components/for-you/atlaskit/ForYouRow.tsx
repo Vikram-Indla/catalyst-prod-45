@@ -522,7 +522,7 @@ export default memo(ForYouRowImpl);
 // shared canonical palette (statusPalette.ts) so the done-green matches the
 // #94C748 used by Recommended/detail/table surfaces. Inner text is Jira's
 // `653 11px/16px Atlassian Sans` UPPERCASE, ls 0.165px two-span structure.
-function JiraForYouLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
+export function JiraForYouLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
   const ap = statusToAppearance(status, statusCategory);
   // Canonical palette — single source of truth (statusPalette.ts). The local
   // pale done-green drifted from the canonical #94C748 that Recommended/detail/

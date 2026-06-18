@@ -26,6 +26,11 @@ export interface StarredMetadata {
   subtitle?: string;
   route?: string;
   icon?: string;
+  // Project/product icon identity → renders the canonical ProjectIcon.
+  projectKey?: string;
+  iconName?: string;
+  color?: string;
+  avatarUrl?: string;
 }
 
 export interface StarredItem {

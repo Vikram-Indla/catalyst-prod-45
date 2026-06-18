@@ -52,6 +52,11 @@ export interface StarredHubRow {
   statusCategory?: string;
   /** metadata.route for surface stars; work items route via openDetail(id). */
   route?: string;
+  /** Project/product icon identity (from metadata) → renders the real ProjectIcon. */
+  projectKey?: string;
+  iconName?: string;
+  iconColor?: string;
+  avatarUrl?: string;
   starredAt: string;
 }
 
@@ -124,6 +129,10 @@ export function useStarredHub() {
           label: r.metadata?.label ?? '—',
           subtitle: r.metadata?.subtitle,
           route: r.metadata?.route,
+          projectKey: r.metadata?.projectKey,
+          iconName: r.metadata?.iconName,
+          iconColor: r.metadata?.color,
+          avatarUrl: r.metadata?.avatarUrl,
           starredAt: r.starred_at,
         };
       });
