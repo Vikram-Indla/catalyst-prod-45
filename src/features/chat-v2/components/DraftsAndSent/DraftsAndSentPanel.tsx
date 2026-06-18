@@ -7,11 +7,12 @@
  * LaterPanel. Clicking a row delegates back up to the shell which
  * swaps the active view to 'chat' and routes per the spec's flows.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import type { DraftsTab as DraftsTabId } from '@/features/chat/hooks/useShellState';
+import type { ChatConversation } from '@/types/chat';
 import { DraftsAndSentHeader } from './DraftsAndSentHeader';
 import { DraftsAndSentTabs } from './DraftsAndSentTabs';
 import { DraftsTab } from './DraftsTab';
@@ -32,6 +33,7 @@ const db = supabase as unknown as { from: (t: string) => any };
 
 interface DraftsAndSentPanelProps {
   activeTab: DraftsTabId;
+  conversations: ChatConversation[];
   onActiveTabChange: (tab: DraftsTabId) => void;
   onSelectDraft: (draft: DraftListItem) => void;
   onSelectScheduled: (msg: ScheduledMessage) => void;
@@ -44,6 +46,7 @@ interface DraftsAndSentPanelProps {
 
 export function DraftsAndSentPanel({
   activeTab,
+  conversations,
   onActiveTabChange,
   onSelectDraft,
   onSelectScheduled,
@@ -51,6 +54,11 @@ export function DraftsAndSentPanel({
   onNewMessage,
   gridArea = 'panel',
 }: DraftsAndSentPanelProps) {
+  const conversationById = useMemo<Map<string, ChatConversation>>(() => {
+    const map = new Map<string, ChatConversation>();
+    for (const c of conversations) map.set(c.id, c);
+    return map;
+  }, [conversations]);
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [bannerDismissed, dismissBanner] = useOutgoingBannerDismissed();
@@ -174,6 +182,7 @@ export function DraftsAndSentPanel({
           <DraftsTab
             selectMode={selectMode}
             selectedIds={selectedIds}
+            conversationById={conversationById}
             onSelectDraft={onSelectDraft}
             onToggleSelected={handleToggleSelected}
             onToggleSelectAll={handleToggleSelectAll}
@@ -182,9 +191,17 @@ export function DraftsAndSentPanel({
           />
         )}
         {activeTab === 'scheduled' && (
-          <ScheduledTab onSelectScheduled={onSelectScheduled} />
+          <ScheduledTab
+            conversationById={conversationById}
+            onSelectScheduled={onSelectScheduled}
+          />
         )}
-        {activeTab === 'sent' && <SentTab onSelectSent={onSelectSent} />}
+        {activeTab === 'sent' && (
+          <SentTab
+            conversationById={conversationById}
+            onSelectSent={onSelectSent}
+          />
+        )}
       </div>
     </section>
   );

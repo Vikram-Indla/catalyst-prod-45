@@ -1,9 +1,12 @@
 import React from 'react';
 import { formatRowTimestamp } from '../../lib/formatTimestamp';
+import { PresenceAvatar } from '../shared/PresenceAvatar';
 import type { DraftListItem } from '../../hooks/useAllDrafts';
+import type { ChatConversation } from '@/types/chat';
 
 interface DraftRowProps {
   draft: DraftListItem;
+  conversation?: ChatConversation;
   onClick: () => void;
   /** When in select mode, leading checkbox is rendered + click toggles selection. */
   selectMode?: boolean;
@@ -13,6 +16,7 @@ interface DraftRowProps {
 
 export function DraftRow({
   draft,
+  conversation,
   onClick,
   selectMode = false,
   selected = false,
@@ -25,6 +29,7 @@ export function DraftRow({
     }
     onClick();
   };
+  const avatar = resolveAvatar(draft, conversation);
   return (
     <button
       type="button"
@@ -74,23 +79,12 @@ export function DraftRow({
           )}
         </span>
       )}
-      <span
-        aria-hidden="true"
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 6,
-          background: 'var(--cv2-bg-row-hover)',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--cv2-text-subtle)',
-          fontWeight: 600,
-          flex: '0 0 auto',
-        }}
-      >
-        {firstInitial(draft.conversationTitle)}
-      </span>
+      <PresenceAvatar
+        src={avatar.src}
+        name={avatar.name}
+        size={36}
+        displayLabel={avatar.displayLabel}
+      />
       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <span
           style={{
@@ -129,8 +123,27 @@ export function DraftRow({
   );
 }
 
-function firstInitial(title: string): string {
-  const trimmed = title.trim();
-  if (trimmed.length === 0) return '?';
-  return trimmed.charAt(0).toUpperCase();
+function resolveAvatar(
+  draft: DraftListItem,
+  conversation: ChatConversation | undefined,
+): { src: string | null; name: string; displayLabel?: string } {
+  const kind = conversation?.kind ?? draft.conversationKind;
+  if (kind === 'dm') {
+    const url = conversation?.dmAvatarUrls?.[0] ?? null;
+    const name =
+      conversation?.dmMemberNames?.[0] ??
+      conversation?.title ??
+      draft.conversationTitle;
+    return { src: url, name };
+  }
+  if (kind === 'group_dm') {
+    const count = conversation?.dmMemberNames?.length ?? 0;
+    return {
+      src: null,
+      name: conversation?.title ?? draft.conversationTitle,
+      displayLabel: count > 0 ? String(count) : undefined,
+    };
+  }
+  // Channels, projects, tickets — no per-user avatar, render initial.
+  return { src: null, name: conversation?.title ?? draft.conversationTitle };
 }

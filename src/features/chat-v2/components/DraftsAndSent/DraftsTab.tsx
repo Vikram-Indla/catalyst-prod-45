@@ -2,10 +2,12 @@ import React from 'react';
 import { useAllDrafts, type DraftListItem } from '../../hooks/useAllDrafts';
 import { DraftRow } from './DraftRow';
 import { SelectAllRow } from './SelectAllRow';
+import type { ChatConversation } from '@/types/chat';
 
 interface DraftsTabProps {
   selectMode: boolean;
   selectedIds: Set<string>;
+  conversationById: Map<string, ChatConversation>;
   onSelectDraft: (draft: DraftListItem) => void;
   onToggleSelected: (id: string) => void;
   onToggleSelectAll: (allIds: string[], allSelected: boolean) => void;
@@ -16,6 +18,7 @@ interface DraftsTabProps {
 export function DraftsTab({
   selectMode,
   selectedIds,
+  conversationById,
   onSelectDraft,
   onToggleSelected,
   onToggleSelectAll,
@@ -63,6 +66,7 @@ export function DraftsTab({
           <li key={d.conversationId}>
             <DraftRow
               draft={d}
+              conversation={conversationById.get(d.conversationId)}
               onClick={() => onSelectDraft(d)}
               selectMode={selectMode}
               selected={selectedIds.has(d.conversationId)}

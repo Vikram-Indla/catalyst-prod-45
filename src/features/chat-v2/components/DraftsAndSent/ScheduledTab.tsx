@@ -1,12 +1,14 @@
 import React from 'react';
 import { useMyScheduledMessages, type ScheduledMessage } from '../../hooks/useMyScheduledMessages';
 import { ScheduledRow } from './ScheduledRow';
+import type { ChatConversation } from '@/types/chat';
 
 interface ScheduledTabProps {
+  conversationById: Map<string, ChatConversation>;
   onSelectScheduled: (msg: ScheduledMessage) => void;
 }
 
-export function ScheduledTab({ onSelectScheduled }: ScheduledTabProps) {
+export function ScheduledTab({ conversationById, onSelectScheduled }: ScheduledTabProps) {
   const { data: scheduled = [], isLoading } = useMyScheduledMessages();
 
   if (isLoading) return null;
@@ -41,7 +43,11 @@ export function ScheduledTab({ onSelectScheduled }: ScheduledTabProps) {
     >
       {scheduled.map(s => (
         <li key={s.id}>
-          <ScheduledRow scheduled={s} onClick={() => onSelectScheduled(s)} />
+          <ScheduledRow
+            scheduled={s}
+            conversation={conversationById.get(s.conversationId)}
+            onClick={() => onSelectScheduled(s)}
+          />
         </li>
       ))}
     </ul>

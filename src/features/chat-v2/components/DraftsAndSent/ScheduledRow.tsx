@@ -1,12 +1,16 @@
 import React from 'react';
+import { PresenceAvatar } from '../shared/PresenceAvatar';
 import type { ScheduledMessage } from '../../hooks/useMyScheduledMessages';
+import type { ChatConversation } from '@/types/chat';
 
 interface ScheduledRowProps {
   scheduled: ScheduledMessage;
+  conversation?: ChatConversation;
   onClick: () => void;
 }
 
-export function ScheduledRow({ scheduled, onClick }: ScheduledRowProps) {
+export function ScheduledRow({ scheduled, conversation, onClick }: ScheduledRowProps) {
+  const avatar = resolveAvatar(scheduled, conversation);
   return (
     <button
       type="button"
@@ -33,23 +37,12 @@ export function ScheduledRow({ scheduled, onClick }: ScheduledRowProps) {
         (e.currentTarget as HTMLElement).style.background = 'transparent';
       }}
     >
-      <span
-        aria-hidden="true"
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 6,
-          background: 'var(--cv2-bg-row-hover)',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--cv2-text-subtle)',
-          fontWeight: 600,
-          flex: '0 0 auto',
-        }}
-      >
-        {firstInitial(scheduled.conversationTitle)}
-      </span>
+      <PresenceAvatar
+        src={avatar.src}
+        name={avatar.name}
+        size={36}
+        displayLabel={avatar.displayLabel}
+      />
       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <span
           style={{
@@ -88,10 +81,28 @@ export function ScheduledRow({ scheduled, onClick }: ScheduledRowProps) {
   );
 }
 
-function firstInitial(title: string): string {
-  const trimmed = title.trim();
-  if (trimmed.length === 0) return '?';
-  return trimmed.charAt(0).toUpperCase();
+function resolveAvatar(
+  scheduled: ScheduledMessage,
+  conversation: ChatConversation | undefined,
+): { src: string | null; name: string; displayLabel?: string } {
+  const kind = conversation?.kind ?? scheduled.conversationKind;
+  if (kind === 'dm') {
+    const url = conversation?.dmAvatarUrls?.[0] ?? null;
+    const name =
+      conversation?.dmMemberNames?.[0] ??
+      conversation?.title ??
+      scheduled.conversationTitle;
+    return { src: url, name };
+  }
+  if (kind === 'group_dm') {
+    const count = conversation?.dmMemberNames?.length ?? 0;
+    return {
+      src: null,
+      name: conversation?.title ?? scheduled.conversationTitle,
+      displayLabel: count > 0 ? String(count) : undefined,
+    };
+  }
+  return { src: null, name: conversation?.title ?? scheduled.conversationTitle };
 }
 
 /**

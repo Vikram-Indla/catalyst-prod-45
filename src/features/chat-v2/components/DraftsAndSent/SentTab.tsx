@@ -2,8 +2,10 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { useMySentMessages, type SentMessage } from '../../hooks/useMySentMessages';
 import { dayKey, formatDateSeparator } from '../../lib/formatTimestamp';
 import { SentRow } from './SentRow';
+import type { ChatConversation } from '@/types/chat';
 
 interface SentTabProps {
+  conversationById: Map<string, ChatConversation>;
   onSelectSent: (msg: SentMessage) => void;
 }
 
@@ -13,7 +15,7 @@ interface DayGroup {
   rows: SentMessage[];
 }
 
-export function SentTab({ onSelectSent }: SentTabProps) {
+export function SentTab({ conversationById, onSelectSent }: SentTabProps) {
   const {
     data,
     isLoading,
@@ -115,6 +117,7 @@ export function SentTab({ onSelectSent }: SentTabProps) {
               <li key={row.id}>
                 <SentRow
                   message={row}
+                  conversation={conversationById.get(row.conversationId)}
                   onClick={() => onSelectSent(row)}
                   isLastInGroup={idx === group.rows.length - 1}
                 />

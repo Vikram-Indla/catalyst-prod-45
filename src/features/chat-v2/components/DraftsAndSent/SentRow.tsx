@@ -1,17 +1,21 @@
 import React from 'react';
+import { PresenceAvatar } from '../shared/PresenceAvatar';
 import type { SentMessage } from '../../hooks/useMySentMessages';
+import type { ChatConversation } from '@/types/chat';
 
 interface SentRowProps {
   message: SentMessage;
+  conversation?: ChatConversation;
   onClick: () => void;
   /** Suppresses the inter-row divider so it doesn't overlap with the
    *  enclosing group container's bottom border. */
   isLastInGroup?: boolean;
 }
 
-export function SentRow({ message, onClick, isLastInGroup = false }: SentRowProps) {
+export function SentRow({ message, conversation, onClick, isLastInGroup = false }: SentRowProps) {
   const isChannel =
     message.conversationKind === 'channel' || message.conversationKind === 'custom_channel';
+  const avatar = resolveAvatar(message, conversation);
   return (
     <button
       type="button"
@@ -39,24 +43,12 @@ export function SentRow({ message, onClick, isLastInGroup = false }: SentRowProp
         (e.currentTarget as HTMLElement).style.background = 'transparent';
       }}
     >
-      <span
-        aria-hidden="true"
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 6,
-          background: 'var(--cv2-bg-row-hover)',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--cv2-text-subtle)',
-          fontWeight: 600,
-          flex: '0 0 auto',
-          fontSize: 16,
-        }}
-      >
-        {isChannel ? '#' : firstInitial(message.conversationTitle)}
-      </span>
+      <PresenceAvatar
+        src={avatar.src}
+        name={avatar.name}
+        size={36}
+        displayLabel={avatar.displayLabel}
+      />
       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <span
           style={{
@@ -95,10 +87,31 @@ export function SentRow({ message, onClick, isLastInGroup = false }: SentRowProp
   );
 }
 
-function firstInitial(title: string): string {
-  const trimmed = title.trim();
-  if (trimmed.length === 0) return '?';
-  return trimmed.charAt(0).toUpperCase();
+function resolveAvatar(
+  message: SentMessage,
+  conversation: ChatConversation | undefined,
+): { src: string | null; name: string; displayLabel?: string } {
+  const kind = conversation?.kind ?? message.conversationKind;
+  if (kind === 'dm') {
+    const url = conversation?.dmAvatarUrls?.[0] ?? null;
+    const name =
+      conversation?.dmMemberNames?.[0] ??
+      conversation?.title ??
+      message.conversationTitle;
+    return { src: url, name };
+  }
+  if (kind === 'group_dm') {
+    const count = conversation?.dmMemberNames?.length ?? 0;
+    return {
+      src: null,
+      name: conversation?.title ?? message.conversationTitle,
+      displayLabel: count > 0 ? String(count) : undefined,
+    };
+  }
+  if (kind === 'channel' || kind === 'custom_channel') {
+    return { src: null, name: conversation?.title ?? message.conversationTitle, displayLabel: '#' };
+  }
+  return { src: null, name: conversation?.title ?? message.conversationTitle };
 }
 
 function formatTime(iso: string): string {
