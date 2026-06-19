@@ -1983,6 +1983,17 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     if (container && projectKey) {
       sessionStorage.setItem(`backlog-scroll-${projectKey}`, Math.max(0, container.scrollTop).toString());
     }
+    /* 2026-06-19: release entityKind short-circuits to the dedicated
+       ReleaseDetailPage (8-tab release surface). No CatalystViewRelease
+       in CatalystDetailRouter — releases live in rh_releases and have a
+       distinct detail structure (Overview / Scope / Readiness / Changes /
+       Sign-offs / Notes / Prod Events / Audit). Side-panel mounting would
+       be a reimplementation of that surface — banned per CLAUDE.md
+       "ADOPT — don't reimplement". Navigate instead. */
+    if (dataSource?.entityKind === 'release') {
+      navigate(`/release-hub/${it.id}`);
+      return;
+    }
     writeTicketOrigin({
       fromUrl: `${resolvedBaseUrl}/backlog`,
       fromLabel: 'Backlog',
@@ -2008,7 +2019,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       itemType,
       key: it.key ?? null,
     });
-  }, [projectKey, dataSource, resolvedBaseUrl]);
+  }, [projectKey, dataSource, resolvedBaseUrl, navigate]);
 
   /* 2026-06-17: open the panel on first render when the caller asks for
      it (e.g. /tasks/list?openTask=<id> landing from the "Open in full
