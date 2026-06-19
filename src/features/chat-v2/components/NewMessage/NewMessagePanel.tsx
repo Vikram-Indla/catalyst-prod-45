@@ -10,6 +10,7 @@
  */
 import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { useAuth } from '@/hooks/useAuth';
 import { useStartDm } from '@/hooks/chat/useStartDm';
 import { useStartGroupDm } from '@/hooks/chat/useStartGroupDm';
@@ -267,7 +268,6 @@ function RecipientPicker({
         <RecipientChip
           key={r.id}
           label={r.isSelf ? `${selfName} (you)` : r.name}
-          avatarUrl={r.avatarUrl}
           onRemove={() => onRemove(r.id)}
         />
       ))}
@@ -303,13 +303,12 @@ function RecipientPicker({
 
 function RecipientChip({
   label,
-  avatarUrl,
   onRemove,
 }: {
   label: string;
-  avatarUrl: string | null;
   onRemove: () => void;
 }) {
+  const photo = resolveAvatarUrl(label);
   return (
     <span
       style={{
@@ -325,9 +324,9 @@ function RecipientChip({
         color: 'var(--cv2-text)',
       }}
     >
-      {avatarUrl ? (
+      {photo ? (
         <img
-          src={avatarUrl}
+          src={photo}
           alt=""
           style={{ width: 20, height: 20, borderRadius: 3, objectFit: 'cover' }}
         />
@@ -427,9 +426,9 @@ function Dropdown({
             (e.currentTarget as HTMLElement).style.background = 'transparent';
           }}
         >
-          {h.avatarUrl ? (
+          {resolveAvatarUrl(h.name) ? (
             <img
-              src={h.avatarUrl}
+              src={resolveAvatarUrl(h.name) as string}
               alt=""
               style={{ width: 28, height: 28, borderRadius: 4, objectFit: 'cover', flex: 'none' }}
             />

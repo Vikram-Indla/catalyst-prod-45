@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useChatAddMember } from '@/hooks/chat/useChatActions';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { useWorkspacePeopleSearch, type PeopleHit } from '../../hooks/useWorkspacePeopleSearch';
 import { XIcon } from '../shared/Icon';
 
@@ -235,7 +236,7 @@ function Chip({ person, onRemove }: { person: PeopleHit; onRemove: () => void })
         color: 'var(--cv2-text-strong)',
       }}
     >
-      <Avatar name={person.name} avatarUrl={person.avatarUrl} size={20} />
+      <Avatar name={person.name} size={20} />
       <span>{person.name}</span>
       <button
         type="button"
@@ -282,15 +283,16 @@ function PersonRow({ hit, onPick }: { hit: PeopleHit; onPick: () => void }) {
         fontSize: 14,
       }}
     >
-      <Avatar name={hit.name} avatarUrl={hit.avatarUrl} size={28} />
+      <Avatar name={hit.name} size={28} />
       <span style={{ fontWeight: 600 }}>{hit.name}</span>
     </button>
   );
 }
 
-function Avatar({ name, avatarUrl, size }: { name: string; avatarUrl: string | null; size: number }) {
-  if (avatarUrl) {
-    return <img src={avatarUrl} alt="" width={size} height={size} style={{ borderRadius: 4, objectFit: 'cover' }} />;
+function Avatar({ name, size }: { name: string; size: number }) {
+  const photo = resolveAvatarUrl(name);
+  if (photo) {
+    return <img src={photo} alt="" width={size} height={size} style={{ borderRadius: 4, objectFit: 'cover' }} />;
   }
   return (
     <div

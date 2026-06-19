@@ -16,6 +16,7 @@ import type { LaterItem } from '../../hooks/useLaterItems';
 import { formatRowTimestamp } from '../../lib/formatTimestamp';
 import { useAuth } from '@/hooks/useAuth';
 import { renderMarkdownInline } from '../../lib/markdown';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 interface LaterRowProps {
   item: LaterItem;
@@ -97,7 +98,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
         </div>
 
         <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-          <Avatar name={item.authorName} avatarUrl={item.authorAvatarUrl} />
+          <Avatar name={item.authorName} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
@@ -215,12 +216,13 @@ function StripBtn({
   );
 }
 
-function Avatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
+function Avatar({ name }: { name: string }) {
   const initial = (name || 'M').charAt(0).toUpperCase();
-  if (avatarUrl) {
+  const photo = resolveAvatarUrl(name);
+  if (photo) {
     return (
       <img
-        src={avatarUrl}
+        src={photo}
         alt=""
         width={36}
         height={36}
