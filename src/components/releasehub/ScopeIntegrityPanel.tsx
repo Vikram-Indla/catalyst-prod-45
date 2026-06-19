@@ -18,7 +18,7 @@ const T = {
   bgBrand: 'var(--ds-background-brand-bold, #0C66E4)',
 };
 
-const SKIP_STATUS = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived', 'draft'];
+const SKIP_STATUS = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived', 'draft', 'production'];
 
 function Chip({ label, color, bg }: { label: string; color: string; bg: string }) {
   return (

@@ -20,7 +20,7 @@ const T = {
   bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
 };
 
-const SKIP_STATUS = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived', 'draft'];
+const SKIP_STATUS = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived', 'draft', 'production'];
 
 type SignoffTier = 'complete' | 'partial' | 'none' | 'unknown';
 
