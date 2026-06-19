@@ -12,6 +12,7 @@
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
+import { validateReleaseTransition } from '@/lib/release-ops/lifecycle';
 import type { StatusCategory } from '../types';
 import type { KanbanMode } from './useKanbanData';
 
@@ -80,9 +81,24 @@ async function resolveTaskStatusIdByName(name: string): Promise<string | null> {
 export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutations {
   const isProduct = mode === 'product';
   const isTasks = mode === 'tasks';
+  const isRelease = mode === 'release';
 
   /* ── updateStatus ──────────────────────────────────────────────────── */
   const updateStatus = useCallback(async (issueId: string, status: string, category?: StatusCategory) => {
+    if (isRelease) {
+      /* Release status moves go through validateReleaseTransition so the
+         canonical board enforces the same lifecycle guards the dedicated
+         release-status hook does. A rejected transition throws and the
+         board rolls the card back. */
+      const guard = await validateReleaseTransition(issueId, status);
+      if (!guard.ok) throw new Error(guard.reason ?? 'Release transition not allowed');
+      const { error } = await supabase
+        .from('rh_releases')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isTasks) {
       const statusId = await resolveTaskStatusIdByName(status);
       if (!statusId) throw new Error(`Unknown task status: ${status}`);
@@ -106,10 +122,16 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     if (jiraCat) patch.status_category = jiraCat;
     const { error } = await supabase.from('ph_issues').update(patch).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   /* ── toggleFlag ────────────────────────────────────────────────────── */
   const toggleFlag = useCallback(async (issueId: string, isFlagged: boolean) => {
+    if (isRelease) {
+      /* rh_releases has no is_flagged column — silent no-op. Health is the
+         canonical "needs attention" signal for releases (set elsewhere). */
+      void isFlagged; void issueId;
+      return;
+    }
     if (isTasks) {
       /* tasks table has no is_flagged column — no-op so the card menu's
          flag toggle silently does nothing instead of erroring. */
@@ -119,10 +141,26 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     const table = isProduct ? 'business_requests' : 'ph_issues';
     const { error } = await (supabase as any).from(table).update({ is_flagged: isFlagged }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   /* ── updateAssignee ────────────────────────────────────────────────── */
   const updateAssignee = useCallback(async (issueId: string, displayName: string | null, accountId: string | null) => {
+    if (isRelease) {
+      /* Releases store the lead as release_manager_id (uuid). Resolve
+         displayName → profile.id; null clears. */
+      let profileId: string | null = null;
+      if (displayName) {
+        const { data } = await supabase
+          .from('profiles').select('id').eq('full_name', displayName).maybeSingle();
+        profileId = (data as { id: string } | null)?.id ?? null;
+      }
+      const { error } = await supabase
+        .from('rh_releases')
+        .update({ release_manager_id: profileId, updated_at: new Date().toISOString() })
+        .eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isTasks) {
       let profileId: string | null = null;
       if (displayName) {
@@ -159,11 +197,22 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       .update({ assignee_display_name: displayName, assignee_account_id: accountId })
       .eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   /* ── createIssue ───────────────────────────────────────────────────── */
   const createIssue = useCallback(async (input: NewIssueInput) => {
     const now = new Date().toISOString();
+    if (isRelease) {
+      const { error } = await supabase.from('rh_releases').insert({
+        name: input.summary,
+        status: input.status,
+        source: 'catalyst',
+        created_at: now,
+        updated_at: now,
+      });
+      if (error) throw error;
+      return;
+    }
     if (isTasks) {
       const statusId = await resolveTaskStatusIdByName(input.status);
       if (!statusId) throw new Error(`Unknown task status: ${input.status}`);
@@ -218,10 +267,18 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       ...(input.dueDate ? { due_date: input.dueDate } : {}),
     });
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   /* ── updateSummary ─────────────────────────────────────────────────── */
   const updateSummary = useCallback(async (issueId: string, summary: string) => {
+    if (isRelease) {
+      const { error } = await supabase
+        .from('rh_releases')
+        .update({ name: summary, updated_at: new Date().toISOString() })
+        .eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isTasks) {
       const { error } = await (supabase as any)
         .from('tasks').update({ title: summary, updated_at: new Date().toISOString() }).eq('id', issueId);
@@ -236,11 +293,17 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issues').update({ summary }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   /* ── addLabel ──────────────────────────────────────────────────────── */
   const addLabel = useCallback(async (issueId: string, current: string[], label: string) => {
     const next = Array.from(new Set([...(current ?? []), label]));
+    if (isRelease) {
+      /* rh_releases has no labels/tags column today — silent no-op so the
+         card menu's add-label item doesn't error in release mode. */
+      void issueId; void next;
+      return;
+    }
     if (isTasks) {
       const { error } = await (supabase as any)
         .from('tasks').update({ tags: next, updated_at: new Date().toISOString() }).eq('id', issueId);
@@ -255,10 +318,22 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issues').update({ labels: next }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   /* ── archiveIssue ──────────────────────────────────────────────────── */
   const archiveIssue = useCallback(async (issueId: string) => {
+    if (isRelease) {
+      /* rh_releases has no archived_at — fall through to status='cancelled'
+         (canonical "soft retire" for a release). Lifecycle guards still apply. */
+      const guard = await validateReleaseTransition(issueId, 'cancelled');
+      if (!guard.ok) throw new Error(guard.reason ?? 'Cannot archive release');
+      const { error } = await supabase
+        .from('rh_releases')
+        .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+        .eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isTasks) {
       const { error } = await (supabase as any)
         .from('tasks').update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
@@ -275,17 +350,34 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issues').update({ archived_at: new Date().toISOString() }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   /* ── deleteIssue ───────────────────────────────────────────────────── */
   const deleteIssue = useCallback(async (issueId: string) => {
+    if (isRelease) {
+      /* rh_releases has no deleted_at — route delete through the same
+         status='cancelled' soft retire as archive. Lifecycle guards apply. */
+      const guard = await validateReleaseTransition(issueId, 'cancelled');
+      if (!guard.ok) throw new Error(guard.reason ?? 'Cannot delete release');
+      const { error } = await supabase
+        .from('rh_releases')
+        .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+        .eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     const table = isTasks ? 'tasks' : isProduct ? 'business_requests' : 'ph_issues';
     const { error } = await (supabase as any).from(table).update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   /* ── setParent ─────────────────────────────────────────────────────── */
   const setParent = useCallback(async (issueId: string, parentKey: string | null, parentSummary: string | null) => {
+    if (isRelease) {
+      /* Releases have no parent_key hierarchy — silent no-op. */
+      void parentKey; void parentSummary; void issueId;
+      return;
+    }
     if (isProduct) {
       /* Resolve parent request_key → parent uuid. Skip when clearing. */
       let parentId: string | null = null;
@@ -312,10 +404,15 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       .update({ parent_key: parentKey, parent_summary: parentSummary })
       .eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   /* ── linkIssue ─────────────────────────────────────────────────────── */
   const linkIssue = useCallback(async (sourceKey: string, targetKey: string, linkType: string) => {
+    if (isRelease) {
+      /* No release-link table today — no-op. */
+      void sourceKey; void targetKey; void linkType;
+      return;
+    }
     if (isTasks) {
       /* No issue-links table for tasks in v1. No-op. */
       void sourceKey; void targetKey; void linkType;
@@ -330,7 +427,7 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issue_links').insert({ source_id: sourceKey, target_id: targetKey, link_type: linkType });
     if (error) throw error;
-  }, [isProduct, isTasks]);
+  }, [isProduct, isTasks, isRelease]);
 
   return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue };
 }

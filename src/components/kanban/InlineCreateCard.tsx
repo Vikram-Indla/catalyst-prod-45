@@ -160,7 +160,7 @@ interface InlineCreateCardProps {
    *    'tasks'             → tasks table with status resolved by name
    *  When 'product', `projectKey` holds the product CODE (e.g. 'INV') and
    *  is used to resolve `products.id` for the insert. */
-  mode?: 'project' | 'product' | 'incident' | 'tasks';
+  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release';
   onCreateCard: (issue: CreatedIssue) => void;
   onCancel: () => void;
 }
@@ -355,7 +355,33 @@ function InlineCreateCardComponent({
     try {
       const nowIso = new Date().toISOString();
 
-      if (mode === 'tasks') {
+      if (mode === 'release') {
+        /* 2026-06-19: RELEASE branch — insert into rh_releases.
+           - Status is the column's primary lifecycle stage (e.g. 'draft').
+           - No version/product/manager wired here; the user can fill richer
+             fields from the detail view after creation. */
+        const insertRow: Record<string, any> = {
+          name: summary.trim(),
+          status: status || 'draft',
+          source: 'catalyst',
+          created_at: nowIso,
+          updated_at: nowIso,
+        };
+        const { data, error: insErr } = await supabase
+          .from('rh_releases')
+          .insert(insertRow as any)
+          .select('id, name')
+          .single();
+        if (insErr) throw insErr;
+        const createdIssue: CreatedIssue = {
+          issueId: (data as any)?.id ?? '',
+          issueKey: (data as any)?.id ?? '',
+          issueType: 'Release',
+          summary: summary.trim(),
+          status: status || 'draft',
+        };
+        onCreateCard(createdIssue);
+      } else if (mode === 'tasks') {
         /* 2026-06-17: TASKS branch — insert into `tasks` table.
            - status_id is resolved by looking up task_statuses by NAME
              (the column header passes the status NAME, not the slug).
