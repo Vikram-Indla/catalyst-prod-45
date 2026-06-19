@@ -163,10 +163,18 @@ function ChatV2Inner() {
   useEffect(() => {
     if (didHydrateParams.current) return;
     const c = searchParams.get('c');
-    if (!c) return;
+    const view = searchParams.get('view');
+    const tab = searchParams.get('tab');
+    if (!c && !view && !tab) return;
     didHydrateParams.current = true;
-    setActiveConversationId(c);
-  }, [searchParams]);
+    if (c) setActiveConversationId(c);
+    if (view === 'chat' || view === 'dms' || view === 'activity' || view === 'later' || view === 'people' || view === 'drafts') {
+      shell.setActiveView(view);
+    }
+    if (tab === 'drafts' || tab === 'scheduled' || tab === 'sent') {
+      shell.setDraftsActiveTab(tab);
+    }
+  }, [searchParams, shell]);
 
   const unreadDMs = useMemo(
     () =>

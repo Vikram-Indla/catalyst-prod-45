@@ -152,6 +152,7 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
               color: 'var(--cv2-text-muted)',
               fontFamily: 'var(--cv2-font)',
               fontSize: 'var(--cv2-fs-composer)',
+              fontWeight: 400,
               pointerEvents: 'none',
               userSelect: 'none',
             }}
@@ -181,6 +182,7 @@ export const ComposerEditor = forwardRef<ComposerEditorHandle, ComposerEditorPro
             outline: 'none',
             fontFamily: 'var(--cv2-font)',
             fontSize: 'var(--cv2-fs-composer)',
+            fontWeight: 400,
             lineHeight: 1.45,
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',

@@ -67,7 +67,7 @@ body[data-cv2-theme="dark"] {
   --cv2-bg-rail-active: rgba(255, 255, 255, 0.10);
   --cv2-bg-toolbar: #222529;
   --cv2-bg-composer: transparent;
-  --cv2-bg-composer-border: rgba(255, 255, 255, 0.12);
+  --cv2-bg-composer-border: rgba(255, 255, 255, 0.22);
   --cv2-bg-reaction: rgba(29, 155, 240, 0.10);
   --cv2-bg-reaction-mine: rgba(29, 155, 240, 0.18);
   --cv2-bg-banner: rgba(255, 255, 255, 0.04);
