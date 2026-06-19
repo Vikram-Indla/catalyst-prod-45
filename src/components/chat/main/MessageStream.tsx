@@ -6,7 +6,8 @@
  */
 import React, { useMemo, useState, lazy, Suspense, useRef, useCallback, useEffect } from 'react';
 import type { ChatMessage } from '@/types/chat';
-import { Avatar, initialsOf, colorFor } from './avatar';
+import AtlaskitAvatar from './AtlaskitAvatar';
+import { initialsOf } from './avatar';
 import { useConversationAttachments, type ChatAttachment } from '@/hooks/chat/useChatAttachments';
 import { AttachmentPreview } from './AttachmentPreview';
 import { LinkUnfurl } from './LinkUnfurl';
@@ -550,7 +551,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
       {grouped ? (
         <span className="cc-msg__gutter-time">{timeLabel(msg.createdAt)}</span>
       ) : (
-        <Avatar name={msg.authorName} seed={msg.authorId} color={colorFor(msg.authorId)} className="cc-msg__av" />
+        <AtlaskitAvatar name={msg.authorName} seed={msg.authorId} pixelSize={32} className="cc-msg__av" />
       )}
       <div className="cc-msg__body">
         {!grouped && (
@@ -766,8 +767,8 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
         {msg.replyCount > 0 ? (
           <button type="button" className="cc-thread" onClick={() => onOpenThread?.(msg.id)}>
             <div className="cc-thread__stack">
-              <Avatar name={msg.authorName} seed={`${msg.id}-a`} color={colorFor(`${msg.id}-a`)} />
-              <Avatar name={msg.authorName} seed={`${msg.id}-b`} color={colorFor(`${msg.id}-b`)} />
+              <AtlaskitAvatar name={msg.authorName} seed={`${msg.id}-a`} pixelSize={24} />
+              <AtlaskitAvatar name={msg.authorName} seed={`${msg.id}-b`} pixelSize={24} />
             </div>
             <span className="cc-thread__link">
               {msg.replyCount} {msg.replyCount === 1 ? 'reply' : 'replies'}
