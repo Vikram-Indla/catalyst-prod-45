@@ -885,7 +885,7 @@
 .cc-conv-pane .catalyst-description-toolbar {
   flex-wrap: nowrap !important;
   overflow-x: auto !important;
-  gap: 2px !important;
+  gap: 4px !important;
 }
 
 /* ── Collapsible section headers (findings 09-10) ──────────── */
