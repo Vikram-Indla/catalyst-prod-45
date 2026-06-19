@@ -9,6 +9,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval,
   isSameMonth, isSameDay, format, addMonths, subMonths,
@@ -18,6 +19,8 @@ import {
   useReleaseCalendar, useReleasePredictions, useSprintBands,
   type CalendarEvent, type CalendarLane, type Prediction, type PredictionRisk, type SprintBand,
 } from '@/hooks/useReleaseHub';
+import Button from '@atlaskit/button';
+import Spinner from '@atlaskit/spinner';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { ReleasePredictorCard } from '@/components/releasehub/ReleasePredictorCard';
@@ -97,7 +100,8 @@ function Seg({ options, value, onChange }: { options: { v: string; label: string
 
 export default function ReleaseCalendarPage() {
   const navigate = useNavigate();
-  const { data: events = [] } = useReleaseCalendar();
+  const qc = useQueryClient();
+  const { data: events = [], isFetching: calFetching } = useReleaseCalendar();
   const { data: predictions } = useReleasePredictions();
   const { data: sprintBands = [] } = useSprintBands();
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
@@ -217,6 +221,15 @@ export default function ReleaseCalendarPage() {
         <Seg options={[{ v: 'product', label: 'Product' }, { v: 'project', label: 'Project' }]} value={perspective} onChange={(v) => setPerspective(v as 'product' | 'project')} />
         <Seg options={[{ v: 'month', label: 'Month' }, { v: 'quarter', label: 'Quarter' }]} value={view} onChange={(v) => setView(v as 'month' | 'quarter')} />
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Button
+            appearance="subtle"
+            spacing="compact"
+            isDisabled={calFetching}
+            iconBefore={calFetching ? <Spinner size="small" /> : undefined}
+            onClick={() => qc.invalidateQueries({ queryKey: ['release-hub', 'calendar'] })}
+          >
+            {calFetching ? 'Refreshing…' : '↻ Re-run all'}
+          </Button>
           <button onClick={() => setMonth((m) => subMonths(m, view === 'quarter' ? 3 : 1))} aria-label="Previous" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 6, border: `0.5px solid ${T.border}`, background: T.card, cursor: 'pointer', color: T.subtle }}><ChevronLeft size={16} /></button>
           <button onClick={() => setMonth(startOfMonth(new Date()))} style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.text, background: T.card, border: `0.5px solid ${T.border}`, borderRadius: 6, padding: '0 12px', height: 32, cursor: 'pointer' }}>Today</button>
           <span style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, minWidth: 160, textAlign: 'center' }}>{view === 'quarter' ? `${format(month, 'MMM')} – ${format(addMonths(month, 2), 'MMM yyyy')}` : format(month, 'MMMM yyyy')}</span>

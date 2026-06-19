@@ -21,7 +21,13 @@ import {
   useReleaseAudit,
   useGenerateReleaseNotes,
   useSaveReleaseNotes,
+  useReleaseWorkItems,
 } from '@/hooks/useReleaseHub';
+import Button from '@atlaskit/button';
+import Spinner from '@atlaskit/spinner';
+import { catalystToast } from '@/lib/catalystToast';
+import { JiraTable, makeKeyCell, makeStatusCell, makeAssigneeCell, makePriorityCell, type Column } from '@/components/shared/JiraTable';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import TextArea from '@atlaskit/textarea';
 import { Sparkles } from '@/lib/atlaskit-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
@@ -97,32 +103,84 @@ function ScopeSection({ title, children }: { title: string; children: React.Reac
   );
 }
 
+const SCOPE_WI_COLUMNS: Column<any>[] = [
+  makeKeyCell(
+    (r) => r.workItemKey,
+    undefined,
+    undefined,
+    (r) => r.issueType ? <JiraIssueTypeIcon type={r.issueType} size={14} /> : undefined,
+  ) as unknown as Column<any>,
+  {
+    id: 'summary',
+    label: 'Summary',
+    flex: true,
+    accessor: (r) => r.summary,
+    cell: ({ row }) => (
+      <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {row.summary ?? '—'}
+      </span>
+    ),
+  },
+  makeStatusCell((r) => r.status, (r) => r.statusCategory) as unknown as Column<any>,
+  makeAssigneeCell((r) => r.assigneeName ? { name: r.assigneeName, avatarUrl: r.assigneeAvatar } : null) as unknown as Column<any>,
+  makePriorityCell((r) => r.priority) as unknown as Column<any>,
+];
+
 export function ScopeTab({ releaseId }: { releaseId: string }) {
-  const { data, isLoading } = useReleaseScope(releaseId);
-  if (isLoading) return <Loading />;
-  const scope = data ?? { brs: [], sprints: [], workItems: [] };
+  const { data: scope, isLoading: scopeLoading } = useReleaseScope(releaseId);
+  const { data: workItems = [], isLoading: wiLoading } = useReleaseWorkItems(releaseId);
+  if (scopeLoading) return <Loading />;
+  const { brs = [], sprints = [] } = scope ?? {};
+
   return (
     <div style={{ padding: '8px 0' }}>
+      {/* Business requests */}
       <ScopeSection title="Business requests">
-        {scope.brs.length === 0 ? <Empty text="No business requests linked." /> : scope.brs.map((b) => (
-          <div key={b.id} style={rowStyle}><span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text }}>{b.title ?? b.businessRequestId}</span></div>
-        ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+          {brs.length === 0
+            ? <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No linked business requests</span>
+            : brs.map((b) => (
+              <span key={b.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 16, background: T.sunken, border: `1px solid ${T.border}`, fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>
+                <JiraIssueTypeIcon type="Business Request" size={14} />
+                {b.title ?? b.businessRequestId}
+              </span>
+            ))}
+        </div>
+        <Button appearance="default" spacing="compact" onClick={() => catalystToast.info('Coming soon')}>
+          + Link BR
+        </Button>
       </ScopeSection>
+
+      {/* Sprints */}
       <ScopeSection title="Sprints">
-        {scope.sprints.length === 0 ? <Empty text="No sprints linked." /> : scope.sprints.map((s) => (
-          <div key={s.id} style={rowStyle}>
-            <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.link }}>{s.code ?? '—'}</span>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text }}>{s.name ?? ''}</span>
-          </div>
-        ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+          {sprints.length === 0
+            ? <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No sprints linked</span>
+            : sprints.map((s) => (
+              <span key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 16, background: T.sunken, border: `1px solid ${T.border}`, fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>
+                {s.code ? <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{s.code}</span> : null}
+                {s.name ?? '—'}
+              </span>
+            ))}
+        </div>
       </ScopeSection>
+
+      {/* Work items */}
       <ScopeSection title="Work items">
-        {scope.workItems.length === 0 ? <Empty text="No work items in scope. Linked sprints contribute their items automatically." /> : scope.workItems.map((w) => (
-          <div key={w.id} style={rowStyle}>
-            <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.link }}>{w.workItemKey}</span>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>{w.inclusionSource}</span>
-          </div>
-        ))}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          <Button appearance="default" spacing="compact" onClick={() => catalystToast.info('Coming soon')}>
+            + Link work item
+          </Button>
+          <Button appearance="default" spacing="compact" onClick={() => catalystToast.info('Coming soon')}>
+            + Link BR
+          </Button>
+        </div>
+        {wiLoading
+          ? <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 0' }}><Spinner size="small" /><span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading work items…</span></div>
+          : workItems.length === 0
+            ? <Empty text="No work items in scope." />
+            : <JiraTable columns={SCOPE_WI_COLUMNS} rows={workItems} getRowKey={(r) => r.id} density="compact" />
+        }
       </ScopeSection>
     </div>
   );
