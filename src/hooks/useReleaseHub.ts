@@ -1260,3 +1260,88 @@ export const useSaveCatyRiskNote = () =>
       if (error) throw error;
     },
   });
+
+// ── Release / Sprint Predictor (date-based, no story points) ─────────
+export type PredictionRisk = 'on_track' | 'at_risk' | 'off_track' | 'done' | 'no_data';
+export interface PredictionReason { kind: string; label: string; keys?: string[] }
+export interface PredictionStage { status: string; category: string | null; count: number; weight: number }
+export interface Prediction {
+  subjectKind: 'release' | 'sprint';
+  subjectId: string;
+  subjectLabel: string | null;
+  predictedPct: number | null;
+  forecastDate: string | null;
+  dueDate: string | null;
+  slipDays: number | null;
+  risk: PredictionRisk;
+  itemTotal: number;
+  itemDone: number;
+  itemOverdue: number;
+  timeUsedPct: number | null;
+  observedPace: number | null;
+  requiredPace: number | null;
+  statusSpread: PredictionStage[];
+  reasons: PredictionReason[];
+  narrative: string | null;
+  dataQuality: Record<string, unknown>;
+  computedAt: string | null;
+}
+
+function mapPrediction(r: any): Prediction {
+  return {
+    subjectKind: r.subject_kind,
+    subjectId: r.subject_id,
+    subjectLabel: r.subject_label ?? null,
+    predictedPct: r.predicted_pct ?? null,
+    forecastDate: r.forecast_date ?? null,
+    dueDate: r.due_date ?? null,
+    slipDays: r.slip_days ?? null,
+    risk: (r.risk ?? 'no_data') as PredictionRisk,
+    itemTotal: r.item_total ?? 0,
+    itemDone: r.item_done ?? 0,
+    itemOverdue: r.item_overdue ?? 0,
+    timeUsedPct: r.time_used_pct ?? null,
+    observedPace: r.observed_pace ?? null,
+    requiredPace: r.required_pace ?? null,
+    statusSpread: (r.status_spread ?? []) as PredictionStage[],
+    reasons: (r.reasons ?? []) as PredictionReason[],
+    narrative: r.narrative ?? null,
+    dataQuality: (r.data_quality ?? {}) as Record<string, unknown>,
+    computedAt: r.computed_at ?? null,
+  };
+}
+
+// Cached predictions for the calendar reflection — keyed `${kind}:${id}`.
+export const useReleasePredictions = () =>
+  useQuery({
+    queryKey: ['release-hub', 'predictions'],
+    staleTime: 30_000,
+    queryFn: async (): Promise<Map<string, Prediction>> => {
+      const { data, error } = await supabase.from('rh_predictions').select('*');
+      if (error) throw error;
+      const m = new Map<string, Prediction>();
+      (data ?? []).forEach((r: any) => m.set(`${r.subject_kind}:${r.subject_id}`, mapPrediction(r)));
+      return m;
+    },
+  });
+
+// Run (or re-run) the predictor edge function for one subject, then refresh cache.
+export const useRunPredictor = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { kind: 'release' | 'sprint'; id: string }): Promise<Prediction> => {
+      const { data, error } = await supabase.functions.invoke('release-sprint-predictor', { body: input });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return mapPrediction({
+        subject_kind: data.subject_kind, subject_id: data.subject_id, subject_label: data.subject_label,
+        predicted_pct: data.predicted_pct, forecast_date: data.forecast_date, due_date: data.due_date,
+        slip_days: data.slip_days, risk: data.risk, item_total: data.item_total, item_done: data.item_done,
+        item_overdue: data.item_overdue, time_used_pct: data.time_used_pct, observed_pace: data.observed_pace,
+        required_pace: data.required_pace, status_spread: data.status_spread, reasons: data.reasons,
+        narrative: data.narrative, data_quality: data.data_quality, computed_at: new Date().toISOString(),
+      });
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['release-hub', 'predictions'] }); },
+  });
+};

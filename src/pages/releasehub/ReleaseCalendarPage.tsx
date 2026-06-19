@@ -13,9 +13,10 @@ import {
   isSameMonth, isSameDay, format, addMonths, subMonths,
 } from 'date-fns';
 import { ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
-import { useReleaseCalendar, type CalendarEvent, type CalendarLane } from '@/hooks/useReleaseHub';
+import { useReleaseCalendar, useReleasePredictions, type CalendarEvent, type CalendarLane, type Prediction, type PredictionRisk } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { ReleasePredictorCard } from '@/components/releasehub/ReleasePredictorCard';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -37,15 +38,28 @@ const LANE: Record<CalendarLane, { label: string; fg: string; bg: string }> = {
 };
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-function Chip({ ev, onClick }: { ev: CalendarEvent; onClick: () => void }) {
+const RISK_DOT: Record<PredictionRisk, string> = {
+  on_track: 'var(--ds-icon-success, #22A06B)',
+  at_risk: 'var(--ds-icon-warning, #E2B203)',
+  off_track: 'var(--ds-icon-danger, #C9372C)',
+  done: 'var(--ds-icon-success, #22A06B)',
+  no_data: 'var(--ds-icon-subtlest, #8590A2)',
+};
+
+function Chip({ ev, onClick, pred }: { ev: CalendarEvent; onClick: () => void; pred?: Prediction }) {
   const l = LANE[ev.lane];
+  const showPred = ev.lane === 'release' && pred && pred.risk !== 'no_data';
   return (
     <button
       onClick={onClick}
       title={ev.label}
-      style={{ display: 'block', width: '100%', textAlign: 'left', border: 'none', cursor: ev.link ? 'pointer' : 'default', background: l.bg, color: l.fg, fontFamily: RH.fontBody, fontSize: 10, fontWeight: 600, borderRadius: 3, padding: '0 4px', marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '16px' }}
+      style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%', textAlign: 'left', border: 'none', cursor: ev.link ? 'pointer' : 'default', background: l.bg, color: l.fg, fontFamily: RH.fontBody, fontSize: 10, fontWeight: 600, borderRadius: 3, padding: '0 4px', marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', lineHeight: '16px' }}
     >
-      {ev.label}
+      {showPred && <span style={{ width: 6, height: 6, borderRadius: '50%', flex: 'none', background: RISK_DOT[pred!.risk] }} />}
+      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{ev.label}</span>
+      {showPred && pred!.predictedPct != null && (
+        <span style={{ flex: 'none', fontWeight: 600, opacity: 0.85 }}>{pred!.predictedPct}%</span>
+      )}
     </button>
   );
 }
@@ -53,7 +67,21 @@ function Chip({ ev, onClick }: { ev: CalendarEvent; onClick: () => void }) {
 export default function ReleaseCalendarPage() {
   const navigate = useNavigate();
   const { data: events = [] } = useReleaseCalendar();
+  const { data: predictions } = useReleasePredictions();
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
+  const [peek, setPeek] = useState<{ id: string; label: string } | null>(null);
+
+  const relUuid = (ev: CalendarEvent): string | null =>
+    ev.lane === 'release' && ev.id.startsWith('rel-') ? ev.id.slice(4) : null;
+  const predFor = (ev: CalendarEvent): Prediction | undefined => {
+    const uuid = relUuid(ev);
+    return uuid ? predictions?.get(`release:${uuid}`) : undefined;
+  };
+  const onChipClick = (ev: CalendarEvent) => {
+    const uuid = relUuid(ev);
+    if (uuid) setPeek({ id: uuid, label: ev.label });
+    else if (ev.link) navigate(ev.link);
+  };
 
   const days = useMemo(() => {
     const start = startOfWeek(startOfMonth(month));
@@ -133,7 +161,7 @@ export default function ReleaseCalendarPage() {
             <div key={day.toISOString()} style={{ minHeight: 96, border: `1px solid ${T.border}`, borderRadius: 6, background: bg, padding: 4, opacity: inMonth ? 1 : 0.45, overflow: 'hidden' }}>
               <div style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: isToday ? 700 : 500, color: T.subtle, textAlign: 'right', padding: '0 4px' }}>{format(day, 'd')}</div>
               {dayEvents.slice(0, 4).map((ev) => (
-                <Chip key={`${ev.id}-${format(day, 'yyyyMMdd')}`} ev={ev} onClick={() => ev.link && navigate(ev.link)} />
+                <Chip key={`${ev.id}-${format(day, 'yyyyMMdd')}`} ev={ev} pred={predFor(ev)} onClick={() => onChipClick(ev)} />
               ))}
               {dayEvents.length > 4 && (
                 <span style={{ fontFamily: RH.fontBody, fontSize: 10, color: T.subtlest, padding: '0 4px' }}>+{dayEvents.length - 4} more</span>
@@ -142,6 +170,31 @@ export default function ReleaseCalendarPage() {
           );
         })}
       </div>
+
+      {/* Predictor peek — opens when a release chip is clicked */}
+      {peek && (
+        <div
+          onClick={() => setPeek(null)}
+          style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket, rgba(9,30,66,0.36))', zIndex: 400, display: 'flex', justifyContent: 'flex-end' }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: 420, maxWidth: '92vw', height: '100%', background: T.surface, borderLeft: `1px solid ${T.border}`, padding: 16, overflowY: 'auto', boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.18))' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+              <span style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{peek.label}</span>
+              <button onClick={() => navigate(`/release-hub/${peek.id}`)} style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, background: 'transparent', border: `0.5px solid ${T.border}`, borderRadius: 6, padding: '4px 8px', cursor: 'pointer', marginRight: 8 }}>Open release</button>
+              <button onClick={() => setPeek(null)} aria-label="Close" style={{ fontFamily: RH.fontBody, fontSize: 16, color: T.subtle, background: 'transparent', border: 'none', cursor: 'pointer', lineHeight: 1 }}>×</button>
+            </div>
+            <ReleasePredictorCard
+              kind="release"
+              id={peek.id}
+              label={peek.label}
+              prediction={predictions?.get(`release:${peek.id}`) ?? null}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
