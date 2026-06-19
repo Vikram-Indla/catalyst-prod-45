@@ -15,7 +15,7 @@ interface Props {
 
 interface Pos { top: number; left: number }
 
-const CAPSULE_STYLE_ID = 'vf-capsule-styles-v2';
+const CAPSULE_STYLE_ID = 'vf-capsule-styles-v3';
 if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID)) {
   const s = document.createElement('style');
   s.id = CAPSULE_STYLE_ID;
@@ -37,14 +37,12 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(18, 28, 45, 0.72);
+      background: rgba(18, 28, 45, 0.92);
       border-radius: 999px;
       padding: 0 12px;
       height: 40px;
       min-width: 200px;
       max-width: min(480px, calc(100vw - 32px));
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
     }
     .vf-capsule--entering .vf-capsule__row {
       animation: vf-slide-in 150ms ease forwards;
