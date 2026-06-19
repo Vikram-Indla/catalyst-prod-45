@@ -19,6 +19,7 @@ import { Check, Sparkles } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useRelease, useUpdateReleaseStatus } from '@/hooks/useReleaseHub';
+import { useReleaseConfig } from '@/hooks/releases/useReleaseConfig';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { ScopeTab, ChangesTab, SignoffsTab, NotifyList, ReadinessTab, ReleaseNotesTab, ProductionEventsTab, AuditTab } from '@/components/releasehub/detail/ReleaseDetailTabs';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
@@ -41,21 +42,22 @@ const T = {
   inverse: 'var(--ds-text-inverse, #FFFFFF)',
 };
 
-const STAGES = [
-  { key: 'draft', label: 'Draft' },
-  { key: 'planned', label: 'Planned' },
-  { key: 'in_readiness', label: 'In readiness' },
-  { key: 'ready_for_signoff', label: 'Ready for sign-off' },
-  { key: 'approved', label: 'Approved' },
-  { key: 'scheduled', label: 'Scheduled' },
-  { key: 'deploying', label: 'Deploying' },
-  { key: 'monitoring', label: 'Monitoring' },
-  { key: 'completed', label: 'Completed' },
+// Default 5-stage tracker (used while config loads or as fallback).
+const DEFAULT_STAGES = [
+  { key: 'draft',       label: 'Draft' },
+  { key: 'in_progress', label: 'In Progress' },
+  { key: 'qa',          label: 'QA' },
+  { key: 'beta',        label: 'Beta' },
+  { key: 'production',  label: 'Production' },
 ];
 
-// Map legacy statuses onto the new lifecycle scale.
+// Map legacy / pre-migration status values to the canonical 5-stage keys.
 const LEGACY: Record<string, string> = {
-  todo: 'draft', planning: 'planned', in_progress: 'deploying', released: 'completed', done: 'completed',
+  todo: 'draft', planning: 'draft', planned: 'draft',
+  in_readiness: 'in_progress', ready_for_signoff: 'in_progress',
+  approved: 'qa', scheduled: 'qa',
+  deploying: 'beta', monitoring: 'beta',
+  completed: 'production', released: 'production', done: 'production',
 };
 const TERMINAL: Record<string, string> = { rolled_back: 'Rolled back', cancelled: 'Cancelled' };
 
@@ -70,13 +72,13 @@ function HealthPill({ health }: { health: string | null }) {
   return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3 }}>{m.label}</span>;
 }
 
-function Tracker({ status }: { status: string }) {
+function Tracker({ status, stages }: { status: string; stages: { key: string; label: string }[] }) {
   const isTerminal = !!TERMINAL[status];
   const resolved = LEGACY[status] ?? status;
-  const currentIdx = STAGES.findIndex((s) => s.key === resolved);
+  const currentIdx = stages.findIndex((s) => s.key === resolved);
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', overflowX: 'auto', padding: '16px 0', gap: 0 }}>
-      {STAGES.map((s, i) => {
+      {stages.map((s, i) => {
         const done = !isTerminal && currentIdx > i;
         const current = !isTerminal && currentIdx === i;
         const circleBg = done ? T.success : current ? T.brand : T.card;
@@ -148,6 +150,19 @@ export default function ReleaseDetailPage() {
 
   const updateStatus = useUpdateReleaseStatus();
   const { canManage } = useReleaseOpsPermissions();
+  const { data: releaseConfig } = useReleaseConfig();
+
+  // Derive tracker stages from admin config (non-terminal, active, sorted).
+  // Falls back to DEFAULT_STAGES while config is loading.
+  const trackerStages = useMemo(() => {
+    const opts = releaseConfig?.options.release_status;
+    if (!opts) return DEFAULT_STAGES;
+    const live = opts
+      .filter((o) => o.is_active && o.color_category !== 'terminal')
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((o) => ({ key: o.value, label: o.label }));
+    return live.length ? live : DEFAULT_STAGES;
+  }, [releaseConfig]);
   const [showEdit, setShowEdit] = React.useState(false);
 
   const r = release as any;
@@ -210,9 +225,9 @@ export default function ReleaseDetailPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           {([
             { key: 'edit', label: 'Edit', primary: false, onClick: () => setShowEdit(true) },
-            { key: 'signoff', label: 'Request sign-off', primary: false, onClick: () => transition('ready_for_signoff', 'Sign-off requested') },
+            { key: 'signoff', label: 'Send to QA', primary: false, onClick: () => transition('qa', 'Moved to QA') },
             { key: 'link', label: 'Link change', primary: false, onClick: () => navigate('/release-hub/changes') },
-            { key: 'schedule', label: 'Schedule', primary: true, onClick: () => transition('scheduled', 'Release scheduled') },
+            { key: 'schedule', label: 'Deploy to beta', primary: true, onClick: () => transition('beta', 'Deploying to beta') },
           ] as const).map((a) => (
             <button
               key={a.key}
@@ -241,8 +256,8 @@ export default function ReleaseDetailPage() {
         <NotifyList itemType="release" itemId={r.id} />
       </div>
 
-      {/* Lifecycle tracker */}
-      <Tracker status={r.status} />
+      {/* Lifecycle tracker — stages driven by admin config (useReleaseConfig) */}
+      <Tracker status={r.status} stages={trackerStages} />
 
       {/* Tabs */}
       <Tabs id="release-detail-tabs">

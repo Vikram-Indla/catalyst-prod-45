@@ -49,32 +49,22 @@ export function DockConversationPane({ conversation, onBack }: DockConversationP
 
       {/* Ticket summary pill — finding 52: Caty can summarize ticket threads */}
       {conversation.kind === 'ticket' && !summaryDismissed && messages.length >= 3 && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          margin: '6px 10px',
-          padding: '7px 12px',
-          borderRadius: 8,
-          background: 'var(--ds-background-information, #E8F2FF)',
-          border: '1px solid var(--ds-border-information, #85B8FF)',
-          fontSize: 12,
-        }}>
-          <img src={catyIcon} alt="" width={16} height={16} style={{ flexShrink: 0 }} />
-          <span style={{ flex: 1, color: 'var(--ds-text-information, #0055CC)', fontWeight: 500 }}>
+        <div className="cc-conv-pane__ticket-summary">
+          <img src={catyIcon} alt="" width={16} height={16} />
+          <span className="cc-conv-pane__ticket-summary-text">
             {messages.length} messages — summarize this thread?
           </span>
           <button
             type="button"
-            style={{ background: 'var(--ds-background-brand-bold, #0C66E4)', color: '#fff', border: 'none', borderRadius: 4, padding: '3px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}
+            className="cc-conv-pane__ticket-summary-cta"
             onClick={() => window.dispatchEvent(new CustomEvent('catalyst:ask-caty', { detail: { prompt: `Summarize the discussion on ${conversation.ticketKey ?? 'this ticket'}` } }))}
           >
             Summarize
           </button>
           <button
             type="button"
-            style={{ background: 'transparent', border: 'none', color: 'var(--ds-text-subtlest, #6B778C)', cursor: 'pointer', padding: 2, fontSize: 16, lineHeight: 1 }}
-            aria-label="Dismiss"
+            className="cc-conv-pane__ticket-summary-dismiss"
+            aria-label="Dismiss thread summary"
             onClick={() => setSummaryDismissed(true)}
           >×</button>
         </div>
@@ -90,7 +80,7 @@ export function DockConversationPane({ conversation, onBack }: DockConversationP
           onAlsoSendToConversation={(text) => sendMessage(text)}
         />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+        <div className="cc-conv-pane__body">
           <MessageStream
             conversationId={conversation.id}
             messages={messages}

@@ -22,16 +22,14 @@ import {
   useGenerateReleaseNotes,
   useSaveReleaseNotes,
   useReleaseWorkItems,
-  useLinkWorkItem,
-  useLinkBr,
+  useReleaseLinkWorkItem,
+  useReleaseLinkBr,
 } from '@/hooks/useReleaseHub';
 import Button from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
 import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
-import Select from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
 import { catalystToast } from '@/lib/catalystToast';
-import { supabase } from '@/integrations/supabase/client';
 import { JiraTable, makeKeyCell, makeStatusCell, makeAssigneeCell, makePriorityCell, type Column } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import TextArea from '@atlaskit/textarea';
@@ -115,7 +113,7 @@ function LinkWorkItemModal({ releaseId, onClose }: { releaseId: string; onClose:
   const [options, setOptions] = React.useState<{ label: string; value: string; issueType: string | null }[]>([]);
   const [selected, setSelected] = React.useState<{ label: string; value: string } | null>(null);
   const [searching, setSearching] = React.useState(false);
-  const link = useLinkWorkItem(releaseId);
+  const link = useReleaseLinkWorkItem(releaseId);
 
   const search = async (q: string) => {
     if (!q.trim()) { setOptions([]); return; }
@@ -188,7 +186,7 @@ function LinkWorkItemModal({ releaseId, onClose }: { releaseId: string; onClose:
 function LinkBrModal({ releaseId, alreadyLinked, onClose }: { releaseId: string; alreadyLinked: string[]; onClose: () => void }) {
   const [options, setOptions] = React.useState<{ label: string; value: string }[]>([]);
   const [selected, setSelected] = React.useState<{ label: string; value: string } | null>(null);
-  const link = useLinkBr(releaseId);
+  const link = useReleaseLinkBr(releaseId);
 
   React.useEffect(() => {
     supabase.from('business_requests').select('id, title, request_key').order('created_at', { ascending: false }).limit(100)
@@ -244,26 +242,56 @@ function LinkBrModal({ releaseId, alreadyLinked, onClose }: { releaseId: string;
 }
 
 const SCOPE_WI_COLUMNS: Column<any>[] = [
-  makeKeyCell(
-    (r) => r.workItemKey,
-    undefined,
-    undefined,
-    (r) => r.issueType ? <JiraIssueTypeIcon type={r.issueType} size={14} /> : undefined,
-  ) as unknown as Column<any>,
+  {
+    id: 'key',
+    label: 'Key',
+    width: 10,
+    alwaysVisible: true,
+    defaultVisible: true,
+    accessor: (r) => r.workItemKey ?? '',
+    cell: makeKeyCell(
+      (r) => r.workItemKey,
+      undefined,
+      undefined,
+      (r) => r.issueType ? <JiraIssueTypeIcon type={r.issueType} size={14} /> : undefined,
+    ),
+  },
   {
     id: 'summary',
     label: 'Summary',
     flex: true,
-    accessor: (r) => r.summary,
+    defaultVisible: true,
+    accessor: (r) => r.summary ?? '',
     cell: ({ row }) => (
       <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {row.summary ?? '—'}
       </span>
     ),
   },
-  makeStatusCell((r) => r.status, (r) => r.statusCategory) as unknown as Column<any>,
-  makeAssigneeCell((r) => r.assigneeName ? { name: r.assigneeName, avatarUrl: r.assigneeAvatar } : null) as unknown as Column<any>,
-  makePriorityCell((r) => r.priority) as unknown as Column<any>,
+  {
+    id: 'status',
+    label: 'Status',
+    width: 12,
+    defaultVisible: true,
+    accessor: (r) => r.status ?? '',
+    cell: makeStatusCell((r) => r.status, () => 'default' as any),
+  },
+  {
+    id: 'assignee',
+    label: 'Assignee',
+    width: 10,
+    defaultVisible: true,
+    accessor: (r) => r.assigneeName ?? '',
+    cell: makeAssigneeCell((r) => r.assigneeName ? { name: r.assigneeName, avatarUrl: r.assigneeAvatar } : null),
+  },
+  {
+    id: 'priority',
+    label: 'Priority',
+    width: 8,
+    defaultVisible: true,
+    accessor: (r) => r.priority ?? '',
+    cell: makePriorityCell((r) => r.priority),
+  },
 ];
 
 export function ScopeTab({ releaseId }: { releaseId: string }) {

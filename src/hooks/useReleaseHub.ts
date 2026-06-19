@@ -1361,7 +1361,7 @@ export const useReleaseBits = (releaseId: string | null) =>
   });
 
 // ── Link / unlink scope items ─────────────────────────────────────────────────
-export const useLinkWorkItem = (releaseId: string) => {
+export const useReleaseLinkWorkItem = (releaseId: string) => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (workItemKey: string) => {
@@ -1379,7 +1379,7 @@ export const useLinkWorkItem = (releaseId: string) => {
   });
 };
 
-export const useLinkBr = (releaseId: string) => {
+export const useReleaseLinkBr = (releaseId: string) => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (businessRequestId: string) => {

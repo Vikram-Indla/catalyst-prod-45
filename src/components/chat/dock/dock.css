@@ -11,7 +11,7 @@
   right: 24px;
   bottom: 24px;
   width: 460px;
-  height: 720px;
+  height: min(720px, calc(100vh - 48px));
   background: var(--ds-surface, #FFFFFF);
   border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 12px;
@@ -904,9 +904,9 @@
   background: transparent;
   border: none;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ds-text-subtlest, #6B778C);
   cursor: pointer;
   text-align: left;
@@ -1152,4 +1152,403 @@
 .cc-dir__collapsed-nudge-sub {
   font-size: 12px;
   color: var(--ds-text-subtlest, #6B778C);
+}
+
+/* Unread visual bolding — name is heavier, preview is primary text (H6 recognition) */
+.cc-dir__row--unread .cc-dir__name {
+  font-weight: 700;
+  color: var(--ds-text, #172B4D);
+}
+
+.cc-dir__row--unread .cc-dir__preview {
+  color: var(--ds-text, #172B4D);
+  font-weight: 500;
+}
+
+/* Section-level empty state hint */
+.cc-dir__section-empty {
+  padding: 6px 16px 8px;
+  font-size: 12px;
+  color: var(--ds-text-subtlest, #6B778C);
+  line-height: 1.5;
+}
+
+/* First-run welcome state (H10 empty state CTA) */
+.cc-dir__first-run {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 32px 24px 24px;
+}
+
+.cc-dir__first-run-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ds-text, #172B4D);
+}
+
+.cc-dir__first-run-sub {
+  font-size: 13px;
+  color: var(--ds-text-subtle, #44546F);
+  line-height: 1.5;
+  max-width: 300px;
+}
+
+.cc-dir__first-run-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cc-dir__first-run-btn {
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: var(--ds-background-brand-bold, #0C66E4);
+  color: var(--ds-text-inverse, #FFFFFF);
+  transition: background 0.1s;
+}
+
+.cc-dir__first-run-btn:hover {
+  background: var(--ds-background-brand-bold-hovered, #0055CC);
+}
+
+.cc-dir__first-run-btn--secondary {
+  background: var(--ds-background-neutral, #F1F2F4);
+  color: var(--ds-text, #172B4D);
+  border: 1px solid var(--ds-border, #DFE1E6);
+}
+
+.cc-dir__first-run-btn--secondary:hover {
+  background: var(--ds-background-neutral-hovered, #EBECF0);
+}
+
+/* Focus visible improvements for section action buttons */
+.cc-dir__section-add:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: 1px;
+}
+
+.cc-dir__first-run-btn:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: 2px;
+}
+
+/* ── Focus rings for all interactive elements ──────────────── */
+
+.cc-conv-pane__back:hover {
+  color: var(--ds-link-pressed, #0055CC);
+  background: var(--ds-background-neutral-subtle-hovered, #EBECF0);
+}
+
+.cc-conv-pane__back:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: -2px;
+}
+
+.cc-dir__section-toggle:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.cc-dir__rowact:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: 1px;
+}
+
+.cc-dir__caty:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: -1px;
+  border-radius: 6px;
+}
+
+.cc-dir__search-clear:hover {
+  background: var(--ds-background-neutral-hovered, #EBECF0);
+  color: var(--ds-text, #172B4D);
+}
+
+.cc-dir__search-clear:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: 1px;
+}
+
+/* Keep selected bg on hover for active row */
+.cc-dir__row-wrap--active .cc-dir__row:hover {
+  background: var(--ds-background-selected-hovered, #CCE0FF);
+}
+
+/* ── Ticket thread summary pill (DockConversationPane) ──────── */
+.cc-conv-pane__ticket-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 10px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: var(--ds-background-information, #E8F2FF);
+  border: 1px solid var(--ds-border-information, #85B8FF);
+  font-size: 12px;
+  flex: 0 0 auto;
+}
+
+.cc-conv-pane__ticket-summary-text {
+  flex: 1;
+  color: var(--ds-text-information, #0055CC);
+  font-weight: 500;
+}
+
+.cc-conv-pane__ticket-summary-cta {
+  background: var(--ds-background-brand-bold, #0C66E4);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.cc-conv-pane__ticket-summary-cta:hover {
+  background: var(--ds-background-brand-bold-hovered, #0055CC);
+}
+
+.cc-conv-pane__ticket-summary-cta:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: 2px;
+}
+
+.cc-conv-pane__ticket-summary-dismiss {
+  background: transparent;
+  border: none;
+  color: var(--ds-text-subtlest, #6B778C);
+  cursor: pointer;
+  padding: 2px;
+  font-size: 16px;
+  line-height: 1;
+  flex: 0 0 auto;
+  border-radius: 3px;
+}
+
+.cc-conv-pane__ticket-summary-dismiss:hover {
+  background: var(--ds-background-neutral-hovered, #EBECF0);
+  color: var(--ds-text, #172B4D);
+}
+
+.cc-conv-pane__ticket-summary-dismiss:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: 1px;
+}
+
+/* ── Smart archive suggestion banner ──────────────────────────── */
+.cc-dir__archive-suggest {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 8px 4px;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--ds-background-neutral, #F1F2F4);
+  border: 1px solid var(--ds-border, #DFE1E6);
+  font-size: 11px;
+}
+
+.cc-dir__archive-suggest-text {
+  flex: 1;
+  color: var(--ds-text-subtle, #44546F);
+}
+
+.cc-dir__archive-suggest-btn {
+  background: transparent;
+  border: 1px solid var(--ds-border, #DFE1E6);
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--ds-text, #172B4D);
+  flex: 0 0 auto;
+}
+
+.cc-dir__archive-suggest-btn:hover {
+  background: var(--ds-background-neutral-hovered, #EBECF0);
+}
+
+.cc-dir__archive-suggest-btn:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: 1px;
+}
+
+.cc-dir__archive-suggest-dismiss {
+  background: transparent;
+  border: none;
+  color: var(--ds-text-subtlest, #6B778C);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  flex: 0 0 auto;
+  border-radius: 3px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-dir__archive-suggest-dismiss:hover {
+  background: var(--ds-background-neutral-hovered, #EBECF0);
+  color: var(--ds-text, #172B4D);
+}
+
+.cc-dir__archive-suggest-dismiss:focus-visible {
+  outline: 2px solid var(--ds-border-focused, #388BFF);
+  outline-offset: 1px;
+}
+
+/* ── Custom channel hash glyph ─────────────────────────────── */
+.cc-dir__channel-hash {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ds-text-subtle, #44546F);
+  flex-shrink: 0;
+}
+
+/* ── People row busy indicator ─────────────────────────────── */
+.cc-dir__people-busy {
+  font-size: 12px;
+  color: var(--ds-text-subtlest, #6B778C);
+  flex: 0 0 auto;
+}
+
+/* ── ConvGlyph — conversation tile glyphs (chat dock tab bar) ── */
+.cc-conv-glyph {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-text-inverse, #FFFFFF);
+  font-weight: 600;
+}
+.cc-conv-glyph--channel { font-size: 14px; }
+.cc-conv-glyph--ticket  { font-size: 9px; }
+.cc-conv-glyph--dm {
+  position: relative;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+}
+.cc-conv-glyph__inner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-text-inverse, #FFFFFF);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ── Dock content area wrappers ─────────────────────────────── */
+.cc-dock__messages-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.cc-dock__messages-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.cc-dock__caty-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Tab unread dot ─────────────────────────────────────────── */
+.cc-tab__unread-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ds-background-brand-bold, #0C66E4);
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+/* ── DM stack avatar (overlapping group-DM avatars) ─────────── */
+.cc-dir__dm-stack {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  display: inline-block;
+}
+.cc-dir__dm-stack__top  { position: absolute; top: 0; left: 0; }
+.cc-dir__dm-stack__bottom {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--ds-surface, #FFFFFF);
+}
+
+/* ── Section chevron ────────────────────────────────────────── */
+.cc-dir__chevron {
+  transition: transform 0.15s;
+  transform: rotate(0deg);
+}
+.cc-dir__chevron--collapsed { transform: rotate(-90deg); }
+
+/* ── Muted icon inline with name ────────────────────────────── */
+.cc-dir__muted-icon { margin-left: 4px; vertical-align: middle; flex-shrink: 0; }
+
+/* ── Archive suggest icon ───────────────────────────────────── */
+.cc-dir__archive-suggest-icon { color: var(--ds-text-subtlest, #6B778C); flex-shrink: 0; }
+
+/* ── Conversation pane body wrapper ─────────────────────────── */
+.cc-conv-pane__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.cc-conv-pane__ticket-summary img { flex-shrink: 0; }
+
+/* ── Caty status pill (DockDirectory suggestion rows) ───────── */
+.cc-dir__caty-status-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--ds-text, #172B4D);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
