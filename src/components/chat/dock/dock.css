@@ -706,6 +706,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
 }
 
 .cc-conv-pane__back {
@@ -723,6 +724,161 @@
   font-weight: 500;
   cursor: pointer;
   text-align: left;
+}
+
+/* ── Dock pane child component compaction ──────────────────
+   Full-page chat components (ConversationHeader, MessageStream, MessageComposer)
+   are narrower in dock (460px). These scoped rules force horizontal layout and
+   shrink to fit 360-460px viewport. */
+
+/* Message row layout — force horizontal, no wrapping */
+.cc-conv-pane .cc-msg {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+/* Message avatar — fixed, never shrink */
+.cc-conv-pane .cc-msg__av {
+  flex: 0 0 auto !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+}
+
+/* Message body wrapper — flex to fill space */
+.cc-conv-pane .cc-msg__body {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+/* Message head — author name + timestamp on one line */
+.cc-conv-pane .cc-msg__head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  min-width: 0 !important;
+}
+
+.cc-conv-pane .cc-msg__name {
+  flex: 0 0 auto !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+}
+
+.cc-conv-pane .cc-msg__time {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+  font-size: 11px !important;
+  color: var(--ds-text-subtlest, #6B778C) !important;
+}
+
+.cc-conv-pane .cc-msg__edited {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+  font-size: 11px !important;
+  color: var(--ds-text-subtlest, #6B778C) !important;
+}
+
+/* Message text — allow normal flow */
+.cc-conv-pane .cc-msg__text {
+  flex: 1 !important;
+  min-width: 0 !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Message hover actions — overlay absolutely, not inline */
+.cc-conv-pane .cc-msg__actions {
+  position: absolute !important;
+  top: -28px !important;
+  right: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 2px !important;
+  align-items: center !important;
+  z-index: 10 !important;
+  background: var(--ds-surface-overlay, #FFFFFF) !important;
+  border: 1px solid var(--ds-border, #DFE1E6) !important;
+  border-radius: 4px !important;
+  padding: 4px !important;
+  box-shadow: var(--ds-shadow-raised, 0 1px 2px rgba(9,30,66,0.12)) !important;
+}
+
+/* Gutter time for grouped messages — keep compact */
+.cc-conv-pane .cc-msg__gutter-time {
+  flex: 0 0 auto !important;
+  font-size: 11px !important;
+  color: var(--ds-text-subtlest, #6B778C) !important;
+  white-space: nowrap !important;
+}
+
+/* Message item container — has position relative for actions overlay */
+.cc-conv-pane .cc-msg {
+  position: relative !important;
+}
+
+/* MessageComposer wrapper — flex column, single row input */
+.cc-conv-pane [class*="MessageComposer"] {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Composer input area — flex to fill */
+.cc-conv-pane [class*="editor"],
+.cc-conv-pane [contenteditable] {
+  flex: 1 !important;
+  min-width: 0 !important;
+  min-height: 36px !important;
+  max-height: 120px !important;
+}
+
+/* Composer actions — single row */
+.cc-conv-pane [class*="MessageComposer"] [class*="action"],
+.cc-conv-pane [class*="MessageComposer"] [class*="toolbar"] {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 4px !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+}
+
+/* Recipient/channel chip at bottom — keep minimal */
+.cc-conv-pane [class*="recipient"],
+.cc-conv-pane [class*="chip"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 2px 6px !important;
+  border-radius: 3px !important;
+  background: var(--ds-background-neutral, #F1F2F4) !important;
+  color: var(--ds-text-subtle, #42526E) !important;
+  font-size: 11px !important;
+  flex: 0 0 auto !important;
+}
+
+.cc-conv-pane [class*="chip"] button {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  color: inherit !important;
 }
 
 /* ── Collapsible section headers (findings 09-10) ──────────── */
