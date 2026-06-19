@@ -36,6 +36,7 @@ import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import { useLinkedEntities } from '@/hooks/workhub/useLinkedEntities';
+import { jqlToFilterState, hasActiveFacets } from '@/lib/jql/jqlToFilterState';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -260,45 +261,8 @@ function filterStatusAppearance(status: string | null | undefined): LozengeAppea
   return 'default';
 }
 
-// Reverse of filterStateToJql — parses the predictable JQL we generate back into
-// chip-level FilterState so saved filters restore their UI selections on load.
-// Only handles the exact format filterStateToJql outputs; arbitrary JQL is ignored.
-const JQL_FIELD_TO_FACET: Record<string, FilterFacet> = {
-  assignee:    'assignee',
-  reporter:    'reporter',
-  status:      'status',
-  priority:    'priority',
-  issuetype:   'workType',
-  labels:      'labels',
-  fixVersion:  'sprintReleases',
-  parent:      'parent',
-  resolution:  'resolution',
-  sprint:      'sprint',
-  storyPoints: 'storyPoints',
-  'cf[10125]': 'severity',
-};
-
-function jqlToFilterState(jql: string): Partial<FilterState> {
-  const result: Partial<FilterState> = {};
-  // Match: field in ("a", "b") — multi-value
-  const inRe = /(\S+)\s+in\s+\(([^)]+)\)/g;
-  // Match: field = "a" — single-value (skip project clause)
-  const eqRe = /(\S+)\s+=\s+"([^"]+)"/g;
-  let m: RegExpExecArray | null;
-  while ((m = inRe.exec(jql)) !== null) {
-    const facet = JQL_FIELD_TO_FACET[m[1]];
-    if (!facet) continue;
-    const vals = [...m[2].matchAll(/"([^"]+)"/g)].map(v => v[1]);
-    if (vals.length) result[facet] = vals;
-  }
-  while ((m = eqRe.exec(jql)) !== null) {
-    if (m[1] === 'project') continue;
-    const facet = JQL_FIELD_TO_FACET[m[1]];
-    if (!facet || result[facet]) continue; // skip if already set by IN clause
-    result[facet] = [m[2]];
-  }
-  return result;
-}
+// JQL→FilterState parsing now uses the canonical lib parser (imported above).
+// The previous local regex fork was deleted in the Phase C de-fork (G2).
 
 // Mirrors AllWorkToolbar's TOOLBAR_FACET_TYPES exactly — same type filter drives
 // the Work type chip options so FilterPreviewPage shows the same set as AllWork.
@@ -735,7 +699,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
     } else if (loadedFilter.jql_query) {
       // Legacy filters stored only jql_query — parse it back into chip state.
       const parsed = jqlToFilterState(loadedFilter.jql_query);
-      if (Object.keys(parsed).length > 0) {
+      if (hasActiveFacets(parsed)) {
         setFilters({ ...EMPTY_FILTERS, ...parsed });
       }
     }
@@ -834,7 +798,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
 
   const switchToBasic = useCallback(() => {
     const parsed = jqlToFilterState(jqlText);
-    if (Object.keys(parsed).length > 0) {
+    if (hasActiveFacets(parsed)) {
       setFilters({ ...EMPTY_FILTERS, ...parsed });
       setSavedFilterJql(null);
     } else if (jqlText.trim()) {

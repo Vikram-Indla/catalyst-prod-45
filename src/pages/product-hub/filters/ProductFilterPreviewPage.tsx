@@ -53,6 +53,7 @@ import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useLinkedEntities } from '@/hooks/workhub/useLinkedEntities';
+import { jqlToFilterState, hasActiveFacets } from '@/lib/jql/jqlToFilterState';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { supabase } from '@/integrations/supabase/client';
@@ -283,40 +284,8 @@ function useProductBrResults(productId: string | null, filters: FilterState, sea
 
 // ── JQL→FilterState parser (same as FilterPreviewPage — for loading saved filters) ──
 
-const JQL_FIELD_TO_FACET: Record<string, FilterFacet> = {
-  assignee: 'assignee',
-  reporter: 'reporter',
-  status: 'status',
-  priority: 'priority',
-  issuetype: 'workType',
-  labels: 'labels',
-  fixVersion: 'sprintReleases',
-  parent: 'parent',
-  resolution: 'resolution',
-  sprint: 'sprint',
-  storyPoints: 'storyPoints',
-  'cf[10125]': 'severity',
-};
-
-function jqlToFilterState(jql: string): Partial<FilterState> {
-  const result: Partial<FilterState> = {};
-  const inRe = /(\S+)\s+in\s+\(([^)]+)\)/g;
-  const eqRe = /(\S+)\s+=\s+"([^"]+)"/g;
-  let m: RegExpExecArray | null;
-  while ((m = inRe.exec(jql)) !== null) {
-    const facet = JQL_FIELD_TO_FACET[m[1]];
-    if (!facet) continue;
-    const vals = [...m[2].matchAll(/"([^"]+)"/g)].map(v => v[1]);
-    if (vals.length) result[facet] = vals;
-  }
-  while ((m = eqRe.exec(jql)) !== null) {
-    if (m[1] === 'project') continue;
-    const facet = JQL_FIELD_TO_FACET[m[1]];
-    if (!facet || result[facet]) continue;
-    result[facet] = [m[2]];
-  }
-  return result;
-}
+// JQL→FilterState parsing now uses the canonical lib parser (imported above).
+// The previous local regex fork was deleted in the Phase C de-fork (G2).
 
 // ── Page component ─────────────────────────────────────────────────────────────
 
@@ -404,7 +373,7 @@ export function ProductFilterPreviewPage() {
       setFilters({ ...EMPTY_FILTERS, ...(cfg as Partial<FilterState>) });
     } else if (loadedFilter.jql_query) {
       const parsed = jqlToFilterState(loadedFilter.jql_query);
-      if (Object.keys(parsed).length > 0) setFilters({ ...EMPTY_FILTERS, ...parsed });
+      if (hasActiveFacets(parsed)) setFilters({ ...EMPTY_FILTERS, ...parsed });
     }
   }, [loadedFilter]);
 
@@ -416,7 +385,7 @@ export function ProductFilterPreviewPage() {
 
   const switchToBasic = useCallback(() => {
     const parsed = jqlToFilterState(jqlText);
-    if (Object.keys(parsed).length > 0) {
+    if (hasActiveFacets(parsed)) {
       setFilters({ ...EMPTY_FILTERS, ...parsed });
       setSavedFilterJql(null);
     } else if (jqlText.trim()) {

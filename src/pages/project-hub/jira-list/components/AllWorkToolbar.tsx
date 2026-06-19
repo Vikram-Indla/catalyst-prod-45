@@ -379,7 +379,13 @@ export function itemPassesFilters(item: WorkItem, f: FilterState): boolean {
     return false;
   if (f.parent.length > 0 && !f.parent.includes(toLabel(item.parentKey)))
     return false;
-  if (f.assignee.length > 0 && !f.assignee.includes(toLabel(item.assignee?.name)))
+  // Match either the display name or the account id — saved-filter JQL may carry
+  // either representation in the facet (Phase C / G2, Path B).
+  if (
+    f.assignee.length > 0 &&
+    !f.assignee.includes(toLabel(item.assignee?.name)) &&
+    !f.assignee.includes(toLabel(item.assigneeId))
+  )
     return false;
   if (f.workType.length > 0 && !f.workType.includes(toLabel(item.rawType)))
     return false;
@@ -391,7 +397,11 @@ export function itemPassesFilters(item: WorkItem, f: FilterState): boolean {
     return false;
   if (f.priority.length > 0 && !f.priority.includes(toLabel(item.priority)))
     return false;
-  if (f.reporter.length > 0 && !f.reporter.includes(toLabel(item.reporter?.name)))
+  if (
+    f.reporter.length > 0 &&
+    !f.reporter.includes(toLabel(item.reporter?.name)) &&
+    !f.reporter.includes(toLabel(item.reporterId))
+  )
     return false;
   if (f.severity.length > 0 && !f.severity.includes(toLabel(item.severity)))
     return false;

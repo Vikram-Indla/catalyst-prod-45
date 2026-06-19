@@ -22,14 +22,17 @@
 - **P1 (7):** G1, G2, G3, G7, G8, G9, G10.
 - **P2 (4):** G5, G6, G11, G12.
 
-## Phase C (G2) — BLOCKED, do not de-fork yet (2026-06-19)
+## Phase C (G2) — PARSER DE-FORK RESOLVED via Path B (2026-06-19)
 
-Attempted the "safe half" (delete the 2 forked `jqlToFilterState` regex parsers → use the lib parser). **A golden/characterization test against the 9 real saved-filter JQL strings caught a regression that blocks the swap:**
+The 2 forked `jqlToFilterState` regex parsers (FilterPreviewPage, ProductFilterPreviewPage) are DELETED; both pages now use the canonical lib parser. Done in 3 TDD steps:
 
-- The lib parser DROPS the `assignee` facet when the JQL value is a Jira account id (`assignee = "712020:..."`) — `translate()` emits the `assignee_account_id` column but `COLUMN_TO_FACET` only maps `assignee_display_name`. The regex fork keeps it (keys on the JQL field name). 2 of the 9 real filters use account-id assignees.
-- The obvious fix (map `assignee_account_id → 'assignee'` in the lib) is NOT safe: it changes AllWork, which already uses the lib parser, and AllWork has a **pre-existing assignee id-vs-name inconsistency** — `itemPassesFilters` (`AllWorkToolbar.tsx:382`) matches `f.assignee` against `item.assignee.name` (display name), while `applyServerFilter` matches `assignee_account_id`. Feeding account ids into the client path → empty results.
+1. **Path B — `itemPassesFilters` (AllWorkToolbar) now matches both account id AND display name** for assignee + reporter (was display-name only). Unit-tested (`itemPassesFilters.assignee.test.ts`). This resolves the pre-existing id/name inconsistency that blocked the de-fork.
+2. **Lib `COLUMN_TO_FACET` maps `assignee_account_id`/`reporter_account_id` → facet** so account-id JQL (`assignee = "712020:..."`) captures the facet on load. Added `hasActiveFacets()` (full-FilterState-aware guard).
+3. **De-fork:** deleted both regex parsers + local `JQL_FIELD_TO_FACET` maps; both preview pages import the lib parser; the 4 consumer guards changed `Object.keys(parsed).length > 0` → `hasActiveFacets(parsed)`.
 
-**Decision:** reverted all lib edits; shipped ONLY a characterization test (`src/lib/jql/__tests__/jqlToFilterState.golden.test.ts`) pinning current behavior + documenting the gap. The de-fork needs a prior dedicated slice to resolve the AllWork assignee id/name inconsistency (likely: resolve account id → display name at parse time, or make `itemPassesFilters` match both). **Needs Vikram decision on which path.** Forward-serializer collapse (C3/C4) remains untouched.
+Verified: golden test on the real corpus (account-id assignees now captured), itemPassesFilters unit tests, full filter + AllWork suites green, tsc clean, 0 new ADS violations.
+
+**Remaining C debt (C3/C4 — NOT done):** the 3 forward `filterState→JQL` serializers (`basicToJql`, `lib/filterStateToJql`, `AllWorkToolbar.filterStateToJql`) are still divergent. Collapsing them behind a single adapter is a separate slice — higher risk (changes saved-JQL serialization; needs golden-output snapshots per call site). Parser side is now single-source.
 
 ## Cross-cutting notes
 - **Canonical adoption is ALREADY good** — the trio is reused across 4 hubs. This audit does NOT call for re-architecting; it calls for finishing wiring (G3/G10), one security fix (G4), one consolidation (G2), one new hub (G8), one fallback (G9), and cleanup (G5/G6/G11).

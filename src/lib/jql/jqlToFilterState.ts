@@ -20,7 +20,13 @@ import type { FilterState } from '@/pages/project-hub/jira-list/components/AllWo
 const COLUMN_TO_FACET: Partial<Record<string, keyof FilterState>> = {
   status:                  'status',
   assignee_display_name:   'assignee',
+  // translate() emits the accountIdColumn when the value looks like a Jira
+  // account id (e.g. assignee = "712020:..."); map it to the same facet so
+  // account-id assignees aren't dropped on load. itemPassesFilters matches
+  // both id and name (AllWorkToolbar, Phase C / G2 Path B).
+  assignee_account_id:     'assignee',
   reporter_display_name:   'reporter',
+  reporter_account_id:     'reporter',
   priority:                'priority',
   issue_type:              'workType',
   labels:                  'labels',
@@ -50,4 +56,18 @@ export function jqlToFilterState(jql: string): FilterState {
   }
 
   return state;
+}
+
+/**
+ * True when a parsed FilterState carries at least one active facet selection.
+ *
+ * jqlToFilterState always returns a full FilterState (every key present, empty
+ * arrays by default), so `Object.keys(parsed).length > 0` is always true and
+ * cannot tell "parsed something" from "parsed nothing". Callers that gate on
+ * whether the JQL produced any facet (e.g. the Basic/JQL mode toggle) use this.
+ */
+export function hasActiveFacets(state: Partial<FilterState>): boolean {
+  return Object.values(state).some(v =>
+    Array.isArray(v) ? v.length > 0 : Boolean(v),
+  );
 }

@@ -1,34 +1,26 @@
 /**
- * Characterization test for the canonical jqlToFilterState (Phase C / G2 groundwork).
+ * Golden test for the canonical jqlToFilterState (Phase C / G2).
  *
- * Pins the lib parser's CURRENT output against the real saved-filter JQL corpus
- * (ph_saved_filters.jql_query, snapshot 2026-06-19). This is the parser that
- * ProjectAllWorkView / ProductAllWorkView already use in production.
+ * Pins the lib parser against the real saved-filter JQL corpus
+ * (ph_saved_filters.jql_query, snapshot 2026-06-19). This is the single parser
+ * now used by ProjectAllWorkView / ProductAllWorkView AND (after the Phase C
+ * de-fork) by FilterPreviewPage / ProductFilterPreviewPage — the two regex
+ * forks were deleted in favour of this one.
  *
- * Purpose: the two preview pages (FilterPreviewPage, ProductFilterPreviewPage)
- * carry a divergent regex fork of this parser (gap G2). Before those forks can
- * be deleted in favour of this lib parser, the parsers must be proven
- * equivalent on real data. This test documents where they are NOT yet
- * equivalent — see the ACCOUNT-ID GAP below — which is why the de-fork is
- * currently blocked (see docs/implementation/filters/03-GAP-AUDIT.md G2).
- *
- * ── ACCOUNT-ID GAP (blocks the de-fork) ──
- * For `assignee = "712020:..."` the lib parser drops the assignee facet:
- * translate() emits the `assignee_account_id` column (not assignee_display_name),
- * and COLUMN_TO_FACET only maps the display-name column. The regex fork in the
- * preview pages keys on the JQL field name `assignee` and KEEPS the value.
- * Mapping assignee_account_id → 'assignee' in the lib looks trivial but changes
- * AllWork behaviour: itemPassesFilters (AllWorkToolbar.tsx:382) matches
- * f.assignee against item.assignee.name (display name), while applyServerFilter
- * matches assignee_account_id — a pre-existing id-vs-name inconsistency that
- * must be resolved first. Do NOT broaden COLUMN_TO_FACET without fixing that.
+ * Contract pinned:
+ *  - project clauses are dropped (no project facet in the builder)
+ *  - status / issuetype(workType) facets populate from = and in
+ *  - account-id AND display-name assignees populate the assignee facet
+ *    (itemPassesFilters matches both — AllWorkToolbar, Path B)
  */
 import { describe, it, expect } from 'vitest';
-import { jqlToFilterState } from '../jqlToFilterState';
+import { jqlToFilterState, hasActiveFacets } from '../jqlToFilterState';
 
 const get = (jql: string) => jqlToFilterState(jql) as Record<string, string[]>;
+const ACC1 = '5ff30c7b44065f013f971b80';
+const ACC2 = '712020:c0113e0c-ee77-4f30-82ea-1626526f4f39';
 
-describe('jqlToFilterState — real ph_saved_filters corpus (characterization)', () => {
+describe('jqlToFilterState — real ph_saved_filters corpus (golden)', () => {
   it('status = "Backlog" → status facet, project dropped', () => {
     const s = get('project = "BAU" AND status = "Backlog"');
     expect(s.status).toEqual(['Backlog']);
@@ -46,20 +38,36 @@ describe('jqlToFilterState — real ph_saved_filters corpus (characterization)',
     expect(s.status).toEqual(['Backlog', 'In Development', 'BETA READY', 'In Design', 'In Production', 'In Progress']);
   });
 
-  it('bare status (no project clause) parses', () => {
-    expect(get('status = "Backlog"').status).toEqual(['Backlog']);
+  it('account-id assignees populate the assignee facet (in clause)', () => {
+    const s = get(`assignee in ("${ACC1}", "${ACC2}") AND status = "BETA READY"`);
+    expect(s.assignee).toEqual([ACC1, ACC2]);
+    expect(s.status).toEqual(['BETA READY']);
   });
 
-  // ACCOUNT-ID GAP — pinned, NOT desired end state. When the de-fork lands with
-  // the AllWork id/name fix, flip these to expect the account id in s.assignee.
-  it('KNOWN GAP: account-id assignee is currently DROPPED by the lib parser', () => {
-    const s = get('project = "BAU" AND assignee = "712020:c0113e0c-ee77-4f30-82ea-1626526f4f39" AND status in ("Backlog")');
-    expect(s.assignee ?? []).toEqual([]); // regex fork keeps it; lib drops it
+  it('account-id assignee populates the assignee facet (eq clause)', () => {
+    const s = get(`project = "BAU" AND assignee = "${ACC2}" AND status in ("Backlog")`);
+    expect(s.assignee).toEqual([ACC2]);
     expect(s.status).toEqual(['Backlog']);
   });
 
-  it('empty / unrecognised JQL parses to an all-empty FilterState', () => {
-    expect(get('').status ?? []).toEqual([]);
-    expect(get('cf[99999] = "x"').status ?? []).toEqual([]);
+  it('every real filter produces at least one active facet', () => {
+    const corpus = [
+      'project = "BAU" AND status = "Backlog"',
+      'project = "INV" AND status = "In Development"',
+      `assignee in ("${ACC1}", "${ACC2}") AND status = "BETA READY"`,
+      'issuetype = "Task" AND status = "Backlog"',
+      'project = "BAU" AND issuetype = "Epic" AND status = "In Progress"',
+      'project = "INV" AND issuetype = "Business Request" AND status = "In Development"',
+      'status = "Backlog"',
+      `project = "BAU" AND assignee = "${ACC2}" AND status in ("Backlog", "In Development")`,
+    ];
+    for (const jql of corpus) expect(hasActiveFacets(jqlToFilterState(jql))).toBe(true);
+  });
+});
+
+describe('hasActiveFacets', () => {
+  it('is false for empty / unrecognised JQL', () => {
+    expect(hasActiveFacets(jqlToFilterState(''))).toBe(false);
+    expect(hasActiveFacets(jqlToFilterState('cf[99999] = "x"'))).toBe(false);
   });
 });
