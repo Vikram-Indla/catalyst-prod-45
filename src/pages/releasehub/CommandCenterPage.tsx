@@ -36,6 +36,8 @@ import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { CatyRiskPanel } from '@/components/releasehub/CatyRiskPanel';
 import { ReleasePortfolio } from '@/components/releasehub/ReleasePortfolio';
 import { ReleaseTimeline } from '@/components/releasehub/ReleaseTimeline';
+import { ScopeIntegrityPanel } from '@/components/releasehub/ScopeIntegrityPanel';
+import { OwnerAlignmentStrip } from '@/components/releasehub/OwnerAlignmentStrip';
 import { useReleasePortfolio } from '@/hooks/useReleasePortfolio';
 
 const T = {
@@ -213,6 +215,16 @@ export default function CommandCenterPage() {
       {/* Release timeline — go-lives + freeze overlay */}
       <div style={{ marginBottom: 16 }}>
         <ReleaseTimeline />
+      </div>
+
+      {/* Scope integrity — per-release drift + defects */}
+      <div style={{ marginBottom: 16 }}>
+        <ScopeIntegrityPanel />
+      </div>
+
+      {/* Owner alignment — per-release signoff coverage */}
+      <div style={{ marginBottom: 16 }}>
+        <OwnerAlignmentStrip />
       </div>
 
       {/* CATY Risk Summary — strategic synthesis before operational detail */}
