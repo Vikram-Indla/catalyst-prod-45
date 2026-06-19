@@ -87,6 +87,9 @@ const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPa
 const ReleaseBoardCanonical = lazy(() => import("../pages/releasehub/ReleaseBoardCanonical"));
 const ReleasesBacklogCanonical = lazy(() => import("../pages/releasehub/ReleasesBacklogCanonical"));
 const ReleasesWorkCanonical = lazy(() => import("../pages/releasehub/ReleasesWorkCanonical"));
+const ReleaseFiltersListPage = lazy(() => import("../pages/releasehub/ReleaseFiltersListPage"));
+const ReleaseFilterPreviewPage = lazy(() => import("../pages/releasehub/ReleaseFilterPreviewPage"));
+const ReleaseFilterDetailPage = lazy(() => import("../pages/releasehub/ReleaseFilterDetailPage"));
 const ReleasesTimelineCanonical = lazy(() => import("../pages/releasehub/ReleasesTimelineCanonical"));
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
 const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
@@ -781,6 +784,9 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/releases" element={<S><ReleasesBacklogCanonical /></S>} />
         <Route path="/release-hub/release-kanban" element={<S><ReleaseBoardCanonical /></S>} />
         <Route path="/release-hub/work" element={<S><ReleasesWorkCanonical /></S>} />
+        <Route path="/release-hub/filters" element={<S><ReleaseFiltersListPage /></S>} />
+        <Route path="/release-hub/filters/create" element={<S><ReleaseFilterPreviewPage /></S>} />
+        <Route path="/release-hub/filters/:filterId" element={<S><ReleaseFilterDetailPage /></S>} />
         <Route path="/release-hub/timeline" element={<S><ReleasesTimelineCanonical /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />

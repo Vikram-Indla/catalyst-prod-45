@@ -22,22 +22,25 @@ interface FilterDetailPageProps {
    *  links, no :key in URL. 2026-06-17: 'tasks' added — /tasks/... links,
    *  no :key in URL, 'TASKS' sentinel projectKey. Per CLAUDE.md "ADOPT
    *  CANONICAL COMPONENTS". */
-  mode?: 'project' | 'product' | 'incident' | 'tasks';
+  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release';
 }
 
 export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageProps = {}) {
   const isProduct = mode === 'product';
   const isIncident = mode === 'incident';
   const isTasks = mode === 'tasks';
+  const isRelease = mode === 'release';
   const hubBase =
     isProduct ? 'product-hub'
     : isIncident ? 'incident-hub'
     : isTasks ? 'tasks'
+    : isRelease ? 'release-hub'
     : 'project-hub';
   const { key: routeKey, filterId } = useParams<{ key: string; filterId: string }>();
   const projectKey =
     isIncident ? 'INCIDENTS'
     : isTasks ? 'TASKS'
+    : isRelease ? 'RELEASES'
     : routeKey;
   const navigate = useNavigate();
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -77,6 +80,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
   const backHref =
     isIncident ? '/incident-hub/filters'
     : isTasks ? '/tasks/filters'
+    : isRelease ? '/release-hub/filters'
     : projectKey
       ? `/${hubBase}/${projectKey}/filters`
       : '/product-hub/filters';
@@ -134,6 +138,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
   const editHref =
     isIncident ? `/incident-hub/filters/create?filterId=${filter.id}`
     : isTasks ? `/tasks/filters/create?filterId=${filter.id}`
+    : isRelease ? `/release-hub/filters/create?filterId=${filter.id}`
     : projectKey ? `/${hubBase}/${projectKey}/filters/create?filterId=${filter.id}`
     : `/product-hub/filters/create?filterId=${filter.id}`;
 
@@ -240,7 +245,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                 </Button>
               </>
             )}
-            {filter.jql_query && projectKey && !isIncident && !isTasks && (
+            {filter.jql_query && projectKey && !isIncident && !isTasks && !isRelease && (
               <>
                 <Button
                   appearance="subtle"
@@ -256,6 +261,9 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                 </Button>
               </>
             )}
+            {/* Release hub has no filterId-aware work/board surface yet, so no
+                apply button is shown — avoids a misleading no-op. Add when
+                ReleasesWorkCanonical consumes ?filterId. */}
             {filter.jql_query && !projectKey && !isIncident && !isTasks && (
               <Button
                 appearance="primary"
@@ -324,6 +332,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                     href={
                       isTasks ? '/tasks/board'
                       : isIncident ? '/incident-hub/board'
+                      : isRelease ? '/release-hub/release-kanban'
                       : projectKey ? `/${hubBase}/${projectKey}/board`
                       : '#'
                     }

@@ -49,7 +49,7 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 /* 2026-06-17: 'tasks' added — same chrome, /tasks/filters links, no :key in
  *  URL. Saves use the 'TASKS' projectKey sentinel. Per CLAUDE.md "ADOPT
  *  CANONICAL COMPONENTS — DO NOT REIMPLEMENT". */
-export type HubType = 'project' | 'product' | 'incident' | 'tasks';
+export type HubType = 'project' | 'product' | 'incident' | 'tasks' | 'release';
 
 interface FiltersListPageProps {
   hubType?: HubType;
@@ -147,6 +147,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const projectKey =
     hubType === 'incident' ? 'INCIDENTS'
     : hubType === 'tasks' ? 'TASKS'
+    : hubType === 'release' ? 'RELEASES'
     : routeKey;
   const navigate = useNavigate();
 
@@ -178,7 +179,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       ? `/incident-hub/filters/create`
       : hubType === 'tasks'
         ? `/tasks/filters/create`
-        : `/project-hub/${projectKey}/filters/create`;
+        : hubType === 'release'
+          ? `/release-hub/filters/create`
+          : `/project-hub/${projectKey}/filters/create`;
 
   // Keyboard shortcut: N opens the create flow (Jira pattern)
   React.useEffect(() => {
@@ -275,7 +278,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       ? `/incident-hub/filters/${f.id}`
       : hubType === 'tasks'
         ? `/tasks/filters/${f.id}`
-        : `/project-hub/${projectKey}/filters/${f.id}`;
+        : hubType === 'release'
+          ? `/release-hub/filters/${f.id}`
+          : `/project-hub/${projectKey}/filters/${f.id}`;
 
   const columns = useMemo<Column<SavedFilterFull>[]>(() => [
     {
@@ -543,7 +548,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         : (projectKey
           ? <ProjectPageHeader
               projectKey={projectKey}
-              hubType={hubType === 'incident' ? 'incident' : hubType === 'product' ? 'product' : undefined}
+              hubType={hubType === 'incident' ? 'incident' : hubType === 'product' ? 'product' : hubType === 'release' ? 'release' : undefined}
             />
           : undefined)}
       tabs={QUICK_TABS}

@@ -28,6 +28,9 @@
 - Versions: `ph_filter_versions` (11 rows, immutable, indexed). Derived: `filter_derived_views` (2 rows, used via `useFilterDerivedViews`).
 - Board link: `boards.filter_id` (FK → ph_saved_filters.id), partial index present.
 
+## Phase G8 (Releases hub) — DONE (2026-06-19)
+Added `/release-hub/filters` trio (list/create/:filterId) reusing the canonical trio via 3 thin wrappers (`src/pages/releasehub/ReleaseFilter*Page.tsx`). Threaded `'release'` through all 4 unions (FilterHubType, FiltersListPage HubType, FilterPreviewPage + FilterDetailPage mode) + every branch (sentinel `RELEASES`, createHref/detailHref/backHref/editHref → `/release-hub/...`, ProjectPageHeader hubType). Release = cross-project ph_issues (jqlProjectKey undefined, no type guard — falls through existing project-results path); new `useReleaseFacetItems` (cross-project, standard types). Routes before `:releaseId`; `NavFiltersIcon` nav item in ReleaseHubSidebar. No release apply button (ReleasesWorkCanonical doesn't read filterId yet — avoided dead button). Tests: release-filters-wiring (real `hubTypeToProjectKey` + grep) + full 5-hub regression 87/0; tsc clean; ADS clean. Note: RELEASES/INCIDENTS/TASKS 'project'-visibility filters are owner-only by design (sentinels aren't real ph_projects) — consistent across sentinel hubs.
+
 ## Phase C (G2) — PARSER DE-FORK DONE via Path B (2026-06-19)
 Path B chosen: `itemPassesFilters` (AllWorkToolbar) now matches both account id + display name (assignee + reporter), unblocking the de-fork. Lib `COLUMN_TO_FACET` captures `*_account_id` columns; added `hasActiveFacets()`. Both preview pages' regex `jqlToFilterState` forks DELETED → use the lib parser; 4 guards switched to `hasActiveFacets`. Tests: itemPassesFilters unit (RED→GREEN) + golden corpus + full filter/AllWork suites all green; tsc clean; 0 new ADS violations. **C3/C4 (collapse the 3 forward serializers) still open — separate higher-risk slice.** Details in `03-GAP-AUDIT.md`.
 

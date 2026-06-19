@@ -39,7 +39,7 @@ export function visibilityOptions(ctx: {
 /** 2026-06-17: hub type recognized by the filters subsystem. Tasks added
  *  alongside project/product/incident so downstream code (sidebar, lists,
  *  saved-filter scoping) can branch consistently. */
-export type FilterHubType = 'project' | 'product' | 'incident' | 'tasks';
+export type FilterHubType = 'project' | 'product' | 'incident' | 'tasks' | 'release';
 
 /** Map a FilterHubType to its sentinel projectKey when no real project key
  *  exists in the URL (incident, tasks hubs). project/product hubs return the
@@ -50,6 +50,7 @@ export function hubTypeToProjectKey(
 ): string | undefined {
   if (hubType === 'incident') return 'INCIDENTS';
   if (hubType === 'tasks') return 'TASKS';
+  if (hubType === 'release') return 'RELEASES';
   return routeKey;
 }
 
