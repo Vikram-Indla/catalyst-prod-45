@@ -266,13 +266,16 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     });
   }, [filters, quickTab, currentUserId, search, ownerFilter, projectFilter, groupFilter, sortKey, sortOrder]);
 
+  // Row click + name link open the read-only detail page. The builder is
+  // reached only via an explicit Edit action (kebab modal in the list, or the
+  // "Edit filter" button on the detail page). G1, 2026-06-19.
   const detailHref = (f: SavedFilterFull) => hubType === 'product'
-    ? `/product-hub/${projectKey}/filters/create?filterId=${f.id}`
+    ? `/product-hub/${projectKey}/filters/${f.id}`
     : hubType === 'incident'
-      ? `/incident-hub/filters/create?filterId=${f.id}`
+      ? `/incident-hub/filters/${f.id}`
       : hubType === 'tasks'
-        ? `/tasks/filters/create?filterId=${f.id}`
-        : `/project-hub/${projectKey}/filters/create?filterId=${f.id}`;
+        ? `/tasks/filters/${f.id}`
+        : `/project-hub/${projectKey}/filters/${f.id}`;
 
   const columns = useMemo<Column<SavedFilterFull>[]>(() => [
     {

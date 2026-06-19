@@ -35,6 +35,7 @@ import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
+import { useLinkedEntities } from '@/hooks/workhub/useLinkedEntities';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
 import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -585,24 +586,6 @@ function useProjectMembers(projectKey: string | undefined): Member[] {
   });
   return data;
 }
-
-// ---------------------------------------------------------------------------
-// Linked entities — scaffolded for future Kanban/board/widget wiring.
-// When a saved filter gains dependents (Kanban board, Sprint board, gadget),
-// this hook will return them and the impact Flag will show automatically.
-// ---------------------------------------------------------------------------
-export interface LinkedFilterEntity {
-  type: string;   // e.g. "Kanban board", "Sprint board"
-  name: string;
-  href?: string;
-}
-
-function useLinkedEntities(_filterId: string | null): LinkedFilterEntity[] {
-  // TODO: query ph_filter_dependents (or equivalent) when the schema exists.
-  return [];
-}
-
-// ---------------------------------------------------------------------------
 
 interface FilterPreviewPageProps {
   /** 2026-06-15: mode switch. project (default) hits ph_issues via the JQL

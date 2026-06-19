@@ -44,6 +44,12 @@
 - **RLS verified** via 2-user isolation (RED→GREEN): editor edits+reads, can't delete; stranger fully blocked; owner unchanged. Indexes 4/4 confirmed. Advisors: no new class (can_edit shares the existing helper WARN category).
 - **Phase B status: COMPLETE + verified.** G4 (P0) closed. G5 closed.
 
+## Phase D+E — COMPLETE (commit pending push)
+- **D (G1):** `FiltersListPage.detailHref` now → detail route `/…/filters/:id` (was builder). `FilterDetailPage` "Edit filter" + "add one now" → builder `…/filters/create?filterId=` via new `editHref`; removed dead `FilterSaveModal`/`editOpen`. Row click = read; explicit Edit = builder.
+- **E (G3):** new `src/hooks/workhub/useLinkedEntities.ts` (`mapLinkedEntities` pure + react-query hook over `boards.filter_id` + `filter_derived_views.source_filter_id`). Both page stubs (returned `[]`) replaced with the shared hook. Functional proof: filter `37875fde` surfaces real Kanban board + Dashboard.
+- Tests: `useLinkedEntities.test.ts` (5) + `filters-rowclick-detail.test.ts` (5) → 10/10 GREEN (RED-first). tsc clean. ADS audit 0 NEW violations (2 pre-existing in preview pages, untouched).
+- **Known pre-existing reds (NOT mine, proven via stash):** `filters-canonical-table.test.ts` (×2: Create-filter-CTA count, placeholder quote style) + `useFilterDerivedViews.test.ts` (undefined-vs-null). Flagged for a separate cleanup.
+
 ## Feature flags touched
 - (none)
 
