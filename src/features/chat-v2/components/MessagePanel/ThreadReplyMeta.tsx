@@ -63,7 +63,7 @@ export function ThreadReplyMeta({
         <span style={{ display: 'inline-flex' }}>
           {participants.slice(0, 3).map((p, i) => (
             <span key={i} style={{ marginLeft: i === 0 ? 0 : -6 }}>
-              <PresenceAvatar src={p.avatarUrl} name={p.name} size={20} />
+              <PresenceAvatar name={p.name} size={20} />
             </span>
           ))}
         </span>

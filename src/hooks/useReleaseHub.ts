@@ -1186,41 +1186,6 @@ export const useWorkItemTraceability = (workItemKey: string) =>
   });
 
 // ── CATY advisory: release-notes draft (Phase 17, advisory only) ─────
-/** Assemble an AI-assisted release-notes draft from the release's linked
- *  changes + their work items. Deterministic template (input_basis is the live
- *  linkage); advisory — the user edits and chooses to save. */
-export const useGenerateReleaseNotes = () =>
-  useMutation({
-    mutationFn: async (releaseId: string): Promise<string> => {
-      const { data: rel } = await supabase.from('rh_releases').select('name, version, target_env, planned_release_date, target_date').eq('id', releaseId).maybeSingle();
-      const r = (rel as any) ?? {};
-      const { data: changes } = await supabase.from('rh_changes').select('id, chg_number, title, status').eq('release_id', releaseId);
-      const chgs = (changes ?? []) as any[];
-      const chgIds = chgs.map((c) => c.id);
-      let workItems: any[] = [];
-      if (chgIds.length > 0) {
-        const { data: wi } = await supabase.from('rh_change_work_items').select('work_item_key, work_item_title').in('change_id', chgIds);
-        workItems = wi ?? [];
-      }
-      const date = r.planned_release_date ?? r.target_date;
-      const lines: string[] = [];
-      lines.push(`# ${r.name ?? 'Release'}${r.version ? ` ${r.version}` : ''}`);
-      if (date) lines.push(`_Target: ${new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}${r.target_env ? ` · ${r.target_env}` : ''}_`);
-      lines.push('');
-      lines.push('## Changes');
-      if (chgs.length === 0) lines.push('- No changes linked.');
-      else chgs.forEach((c) => lines.push(`- **${c.chg_number}** ${c.title}`));
-      lines.push('');
-      lines.push('## Work items');
-      if (workItems.length === 0) lines.push('- No work items linked.');
-      else {
-        const seen = new Set<string>();
-        workItems.forEach((w) => { if (!seen.has(w.work_item_key)) { seen.add(w.work_item_key); lines.push(`- ${w.work_item_key} — ${w.work_item_title}`); } });
-      }
-      return lines.join('\n');
-    },
-  });
-
 export const useSaveReleaseNotes = () => {
   const qc = useQueryClient();
   return useMutation({
@@ -1293,3 +1258,150 @@ export const useSaveCatyRiskNote = () =>
       if (error) throw error;
     },
   });
+
+// ── Release / Sprint Predictor (date-based, no story points) ─────────
+export type PredictionRisk = 'on_track' | 'at_risk' | 'off_track' | 'done' | 'no_data';
+export interface PredictionReason { kind: string; label: string; keys?: string[] }
+export interface PredictionStage { status: string; category: string | null; count: number; weight: number }
+export interface Prediction {
+  subjectKind: 'release' | 'sprint';
+  subjectId: string;
+  subjectLabel: string | null;
+  predictedPct: number | null;
+  forecastDate: string | null;
+  dueDate: string | null;
+  slipDays: number | null;
+  risk: PredictionRisk;
+  itemTotal: number;
+  itemDone: number;
+  itemOverdue: number;
+  timeUsedPct: number | null;
+  observedPace: number | null;
+  requiredPace: number | null;
+  statusSpread: PredictionStage[];
+  reasons: PredictionReason[];
+  narrative: string | null;
+  dataQuality: Record<string, unknown>;
+  computedAt: string | null;
+}
+
+function mapPrediction(r: any): Prediction {
+  return {
+    subjectKind: r.subject_kind,
+    subjectId: r.subject_id,
+    subjectLabel: r.subject_label ?? null,
+    predictedPct: r.predicted_pct ?? null,
+    forecastDate: r.forecast_date ?? null,
+    dueDate: r.due_date ?? null,
+    slipDays: r.slip_days ?? null,
+    risk: (r.risk ?? 'no_data') as PredictionRisk,
+    itemTotal: r.item_total ?? 0,
+    itemDone: r.item_done ?? 0,
+    itemOverdue: r.item_overdue ?? 0,
+    timeUsedPct: r.time_used_pct ?? null,
+    observedPace: r.observed_pace ?? null,
+    requiredPace: r.required_pace ?? null,
+    statusSpread: (r.status_spread ?? []) as PredictionStage[],
+    reasons: (r.reasons ?? []) as PredictionReason[],
+    narrative: r.narrative ?? null,
+    dataQuality: (r.data_quality ?? {}) as Record<string, unknown>,
+    computedAt: r.computed_at ?? null,
+  };
+}
+
+// Cached predictions for the calendar reflection — keyed `${kind}:${id}`.
+export const useReleasePredictions = () =>
+  useQuery({
+    queryKey: ['release-hub', 'predictions'],
+    staleTime: 30_000,
+    queryFn: async (): Promise<Map<string, Prediction>> => {
+      const { data, error } = await supabase.from('rh_predictions').select('*');
+      if (error) throw error;
+      const m = new Map<string, Prediction>();
+      (data ?? []).forEach((r: any) => m.set(`${r.subject_kind}:${r.subject_id}`, mapPrediction(r)));
+      return m;
+    },
+  });
+
+// Run (or re-run) the predictor edge function for one subject, then refresh cache.
+export const useRunPredictor = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { kind: 'release' | 'sprint'; id: string }): Promise<Prediction> => {
+      const { data, error } = await supabase.functions.invoke('release-sprint-predictor', { body: input });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return mapPrediction({
+        subject_kind: data.subject_kind, subject_id: data.subject_id, subject_label: data.subject_label,
+        predicted_pct: data.predicted_pct, forecast_date: data.forecast_date, due_date: data.due_date,
+        slip_days: data.slip_days, risk: data.risk, item_total: data.item_total, item_done: data.item_done,
+        item_overdue: data.item_overdue, time_used_pct: data.time_used_pct, observed_pace: data.observed_pace,
+        required_pace: data.required_pace, status_spread: data.status_spread, reasons: data.reasons,
+        narrative: data.narrative, data_quality: data.data_quality, computed_at: new Date().toISOString(),
+      });
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['release-hub', 'predictions'] }); },
+  });
+};
+
+// ── Sprint bands for the calendar Project lens ───────────────────────
+export interface SprintBand { name: string; start: string; end: string }
+export const useSprintBands = () =>
+  useQuery({
+    queryKey: ['release-hub', 'sprint-bands'],
+    staleTime: 30_000,
+    queryFn: async (): Promise<SprintBand[]> => {
+      const [anchor, product] = await Promise.all([
+        supabase.from('anchor_sprints').select('name,start_date,end_date'),
+        supabase.from('product_sprints').select('name,start_date,end_date'),
+      ]);
+      const out: SprintBand[] = [];
+      const seen = new Set<string>();
+      [...(anchor.data ?? []), ...(product.data ?? [])].forEach((s: any) => {
+        if (!s.name || !s.start_date || !s.end_date || seen.has(s.name)) return;
+        seen.add(s.name);
+        out.push({ name: s.name, start: s.start_date.slice(0, 10), end: s.end_date.slice(0, 10) });
+      });
+      return out;
+    },
+  });
+
+// ── Release-detail bits for the calendar peek (notes / changes / sprints) ──
+export interface ReleaseNote { id: string; contentMd: string | null; generatedByAi: boolean; updatedAt: string | null }
+export interface ReleaseChangeLite { id: string; chgNumber: string | null; title: string | null; status: string | null }
+export interface ReleaseSprintLite { name: string; start: string | null; end: string | null }
+export interface ReleaseBits { notes: ReleaseNote | null; changes: ReleaseChangeLite[]; sprints: ReleaseSprintLite[] }
+
+export const useReleaseBits = (releaseId: string | null) =>
+  useQuery({
+    queryKey: ['release-hub', 'release-bits', releaseId],
+    enabled: !!releaseId,
+    staleTime: 15_000,
+    queryFn: async (): Promise<ReleaseBits> => {
+      const [notes, changes, sprints] = await Promise.all([
+        supabase.from('rh_release_notes').select('id,content_md,generated_by_ai,updated_at')
+          .eq('release_id', releaseId).order('updated_at', { ascending: false }).limit(1),
+        supabase.from('rh_changes').select('id,chg_number,title,status').eq('release_id', releaseId),
+        supabase.from('product_sprints').select('name,start_date,end_date').eq('release_id', releaseId),
+      ]);
+      const n = (notes.data ?? [])[0] as any;
+      return {
+        notes: n ? { id: n.id, contentMd: n.content_md ?? null, generatedByAi: !!n.generated_by_ai, updatedAt: n.updated_at ?? null } : null,
+        changes: (changes.data ?? []).map((c: any) => ({ id: c.id, chgNumber: c.chg_number ?? null, title: c.title ?? null, status: c.status ?? null })),
+        sprints: (sprints.data ?? []).map((s: any) => ({ name: s.name, start: s.start_date ?? null, end: s.end_date ?? null })),
+      };
+    },
+  });
+
+export const useGenerateReleaseNotes = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (releaseId: string): Promise<string> => {
+      const { data, error } = await supabase.functions.invoke('release-notes-generate', { body: { releaseId } });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data.content_md as string;
+    },
+    onSuccess: (_d, releaseId) => { qc.invalidateQueries({ queryKey: ['release-hub', 'release-bits', releaseId] }); },
+  });
+};

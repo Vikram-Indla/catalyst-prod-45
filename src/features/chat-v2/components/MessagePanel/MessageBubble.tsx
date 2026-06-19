@@ -168,7 +168,7 @@ export function MessageBubble({
         }}
       >
         {showHeader ? (
-          <PresenceAvatar src={message.authorAvatarUrl} name={message.authorName} size={36} />
+          <PresenceAvatar name={message.authorName} size={36} />
         ) : (
           <span
             aria-hidden="true"
@@ -388,7 +388,7 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
           background: 'transparent',
         }}
       >
-        <PresenceAvatar src={info.sourceAuthorAvatarUrl ?? null} name={info.sourceAuthorName ?? 'Someone'} size={28} />
+        <PresenceAvatar name={info.sourceAuthorName ?? 'Someone'} size={28} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
             {info.sourceAuthorName ?? 'Someone'}

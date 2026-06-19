@@ -140,6 +140,10 @@ import { STORY_STATUS_LOZENGE, getPriorityLabel, shouldSynthesizeEpicRow, keyCel
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useAtlaskitThemeSync } from '../components/SubtasksPanel/atlaskitTheme';
 import { writeTicketOrigin } from '../hooks/useTicketOrigin';
+import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
+import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
+import { HealthStatusDescriptor } from '@/components/business-request/HealthStatusDescriptor';
+import { DatePulseHoverCard } from '@/components/business-request/DatePulseHoverCard';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import { jiraSyncService } from '@/services/jira-sync.service';
 import { JiraFilterAtlaskit, emptyFilterValue } from '@/components/shared/JiraFilterAtlaskit';
@@ -155,6 +159,7 @@ import type {
   SprintReleaseOption,
 } from '@/components/shared/JiraFilterAtlaskit';
 
+
 // Drag-and-drop — migrated from @dnd-kit → Pragmatic (BAU-backlog-drag-01)
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
@@ -167,6 +172,50 @@ const AkChevronsLeftIcon = () => (
 const AkChevronsRightIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"/></svg>
 );
+
+/**
+ * HealthCell — Date Pulse health badge with popover (Phase 2B).
+ * Delegates to CanalystStatusPill (canonical), mounts descriptor + hover card on click.
+ */
+function HealthCell({ row }: { row: BacklogItem }) {
+  const { health, isLoading } = useBusinessRequestHealth(row.id);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  if (isLoading || !health) return <div style={{ padding: '4px 8px' }}>—</div>;
+
+  return (
+    <div ref={triggerRef} style={{ padding: '4px 8px' }}>
+      <HealthStatusBadge
+        health={health}
+        size="sm"
+        onClick={() => setPopoverOpen(!popoverOpen)}
+      />
+      {popoverOpen && triggerRef.current && ReactDOM.createPortal(
+        <div
+          data-cp-health-popover
+          style={{
+            position: 'fixed',
+            zIndex: 9999,
+            top: (triggerRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
+            left: triggerRef.current?.getBoundingClientRect().left ?? 0,
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 6,
+            boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+            padding: 16,
+            minWidth: 320,
+          }}
+          onMouseLeave={() => setPopoverOpen(false)}
+        >
+          <HealthStatusDescriptor health={health} />
+          <DatePulseHoverCard violations={health.date_pulse_violations} />
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
 
 /**
  * DragHandleCell — Pragmatic drag-and-drop for row ranking (BAU-backlog-drag-01).
@@ -436,6 +485,7 @@ const ALLOWED_COLUMN_IDS = new Set([
   // key id retained for URL backward-compat.
   'key',
   'status',
+  'health',
   'comments',
   'parent',
   'assignee',
@@ -2914,6 +2964,20 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           />
         </div>
       ),
+    },
+    // ── 2026-06-19 Date Pulse health status badge (product-hub only) ────────
+    // Phase 2B: wire the HealthStatusBadge + popover to the BR backlog table.
+    // Component delegates to CatalystStatusPill (canonical pattern, portal-based).
+    // Click opens HealthStatusDescriptor + DatePulseHoverCard in a popover.
+    // useBusinessRequestHealth hook includes 30s TTL in-memory cache.
+    // Severity states: Uncommitted/Committed/On Track/Delayed/At Risk/Blocked/Delivered.
+    {
+      id: 'health',
+      label: 'Health',
+      width: 9,
+      sortable: false,
+      defaultVisible: false,
+      cell: (props) => <HealthCell row={props.row} />,
     },
     // 2026-06-01: Arabic title column removed — arabic_title DB column dropped.
     // 2026-06-09: __actions column restored. Width bumped 3 → 5 (~60px)

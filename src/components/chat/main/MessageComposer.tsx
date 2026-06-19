@@ -47,6 +47,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
     const uploadAttachment = useUploadAttachment();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
+    const [sendError, setSendError] = useState<string | null>(null);
 
     const placeholder = conversationTitle
       ? `Message ${conversationTitle}`
@@ -67,11 +68,14 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
         }
         if (isEmpty || !plainText) return;
         setSending(true);
+        setSendError(null);
         try {
           await onSend(plainText, { adf: JSON.parse(adfJson), scheduled_for: null });
           draft.clear();
           // Increment key to reset editor to empty state
           setResetKey((k) => k + 1);
+        } catch (err) {
+          setSendError(err instanceof Error ? err.message : 'Failed to send message');
         } finally {
           setSending(false);
         }
@@ -148,7 +152,11 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
             userSelect: 'none',
           }}
         >
-          {sendHint}
+          {sendError ? (
+            <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>✕ {sendError}</span>
+          ) : (
+            sendHint
+          )}
         </div>
       </div>
     );
