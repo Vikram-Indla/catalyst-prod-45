@@ -1,5 +1,7 @@
 import React from 'react';
 import { PresenceAvatar } from '../shared/PresenceAvatar';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { ChatConversation } from '@/types/chat';
 import { formatRowTimestamp } from '../../lib/formatTimestamp';
 
@@ -16,7 +18,7 @@ export function ConversationRow({
   onClick,
   presence = null,
 }: ConversationRowProps) {
-  const { title, lastMessageAt, unreadCount, kind, memberCount } = conversation;
+  const { title, lastMessageAt, unreadCount, kind, memberCount, projectKey, ticketType } = conversation;
   const hasUnread = unreadCount > 0;
   // Group DM avatars match Slack: a square showing the OTHER-member count
   // instead of name initials. Skip the override when memberCount is unknown
@@ -25,6 +27,25 @@ export function ConversationRow({
     kind === 'group_dm' && typeof memberCount === 'number' && memberCount > 0
       ? String(memberCount)
       : undefined;
+
+  // Leading visual by kind — canonical components only. Projects use the real
+  // ProjectIcon (brand avatar by key), work items use JiraIssueTypeIcon (real
+  // type, no fallback), people use the avatar primitive. Never name-initials
+  // for projects/tickets (CLAUDE.md reuse-first + locked icon registry).
+  let leadingVisual: React.ReactNode;
+  if (kind === 'ticket' && ticketType) {
+    leadingVisual = (
+      <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+        <JiraIssueTypeIcon type={ticketType} size={20} />
+      </span>
+    );
+  } else if (kind === 'channel' && projectKey) {
+    leadingVisual = <ProjectIcon projectKey={projectKey} size="medium" name={title} />;
+  } else {
+    leadingVisual = (
+      <PresenceAvatar name={title} size={24} presence={presence} displayLabel={groupLabel} />
+    );
+  }
 
   return (
     <button
@@ -55,13 +76,7 @@ export function ConversationRow({
         }
       }}
     >
-      <PresenceAvatar
-        src={null}
-        name={title}
-        size={24}
-        presence={presence}
-        displayLabel={groupLabel}
-      />
+      {leadingVisual}
       <span
         style={{
           fontFamily: 'var(--cv2-font)',
