@@ -28,6 +28,7 @@ import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { jqlClause } from "@/lib/filters/jqlClause";
 import Textfield from "@atlaskit/textfield";
 import Textarea from "@atlaskit/textarea";
 import AvatarGroup from "@atlaskit/avatar-group";
@@ -994,16 +995,10 @@ export function filterStateToJql(state: FilterState, projectKey?: string): strin
   }
 
   for (const facet of FACET_ORDER) {
-    const vals = state[facet];
-    if (!vals || vals.length === 0) continue;
     const field = FACET_JQL[facet];
     if (!field) continue;
-    if (vals.length === 1) {
-      clauses.push(`${field} = "${vals[0]}"`);
-    } else {
-      const quoted = vals.map(v => `"${v}"`).join(', ');
-      clauses.push(`${field} in (${quoted})`);
-    }
+    const c = jqlClause(field, state[facet]);
+    if (c) clauses.push(c);
   }
 
   return clauses.join(' AND ');

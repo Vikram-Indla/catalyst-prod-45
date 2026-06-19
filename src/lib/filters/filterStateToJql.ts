@@ -7,6 +7,7 @@
  * ORDER BY updated DESC is appended so results feel live by default.
  */
 import type { FilterState } from '@/pages/project-hub/jira-list/components/AllWorkToolbar';
+import { jqlClause } from './jqlClause';
 
 /** Map FilterState facet → JQL field name */
 const FACET_TO_JQL_FIELD: Partial<Record<keyof FilterState, string>> = {
@@ -33,14 +34,8 @@ export function filterStateToJql(state: FilterState, projectKey?: string): strin
   }
 
   for (const [facet, jqlField] of Object.entries(FACET_TO_JQL_FIELD) as [keyof FilterState, string][]) {
-    const values = state[facet];
-    if (!values || values.length === 0) continue;
-
-    if (values.length === 1) {
-      clauses.push(`${jqlField} = ${quoted(values[0])}`);
-    } else {
-      clauses.push(`${jqlField} in (${values.map(quoted).join(', ')})`);
-    }
+    const c = jqlClause(jqlField, state[facet], quoted);
+    if (c) clauses.push(c);
   }
 
   if (clauses.length === 0) return '';

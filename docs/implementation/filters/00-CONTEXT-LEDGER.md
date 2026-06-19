@@ -28,6 +28,9 @@
 - Versions: `ph_filter_versions` (11 rows, immutable, indexed). Derived: `filter_derived_views` (2 rows, used via `useFilterDerivedViews`).
 - Board link: `boards.filter_id` (FK → ph_saved_filters.id), partial index present.
 
+## Phase C3/C4 (G2 forward serializers) — DEDUPED, divergence preserved (2026-06-19)
+The 3 forward serializers (`basicToJql`, lib `filterStateToJql`, AllWorkToolbar `filterStateToJql`) are divergent BY DESIGN — different input types, field sets, escaping, ORDER BY. Did NOT force a single-function collapse (would change saved-JQL output for marginal gain = over-engineering). Instead: golden-snapshot all 3 (`serializers.golden.test.ts`, 11 cases pinning exact output) + extracted the one truly-identical piece — the `=`/`in (...)` clause builder — into `src/lib/filters/jqlClause.ts`. All 3 refactored to share it (each passes its own quote fn for escaping). Golden snapshot proves **byte-identical** output; tsc clean; 45/0 regression. Field maps + ORDER BY + projectKey stay per-serializer. **G2 closed** (parser unified in Phase C; forward clause-logic shared here; full unification intentionally declined).
+
 ## Phase F (G10 — detail = source of truth) — DONE (2026-06-19)
 FilterDetailPage now: mounts the canonical `FilterKebabMenu` (star/subscribe/copy/share/transfer/whatsapp/derive/delete — full reuse, no new action wiring) in the header; shows Editors + Subscribers metadata; renders a "Derived views" section from `useLinkedEntities` (real boards+roadmaps+dashboards, replacing the old empty state). Added currentUserId fetch. Tests: 3 new detail-source assertions + full detail/release/hooks regression 67/0; tsc clean; ADS 0 violations (fixed one 10px→8px). **Activity feed DEFERRED** — no confirmed filter-activity table; not inventing one. Kebab `hubType` passes 'project' for release/incident/tasks (derive actions flag-gated → no bad nav).
 
