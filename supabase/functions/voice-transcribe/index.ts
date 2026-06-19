@@ -95,8 +95,10 @@ async function transcribeWithGroq(
   groqKey: string,
 ): Promise<{ englishText: string; confidence: "high" | "low"; detectedLanguage: string | undefined }> {
   const audioBytes = Uint8Array.from(atob(audioBase64), c => c.charCodeAt(0));
+  // Groq rejects codec params (e.g. "audio/webm;codecs=opus") — strip to base type
+  const groqMimeType = mimeType.split(";")[0].trim();
   const form = new FormData();
-  form.append("file", new Blob([audioBytes], { type: mimeType }), "audio.webm");
+  form.append("file", new Blob([audioBytes], { type: groqMimeType }), "audio.webm");
   form.append("model", "whisper-large-v3");
   form.append("response_format", "verbose_json");
   form.append("task", "translate");
@@ -280,6 +282,10 @@ serve(async (req) => {
     const message = e instanceof Error ? e.message : String(e);
     console.error("voice-transcribe unhandled:", message);
     await logGovernance({ action: "voice_transcribe", payload: {}, status: "error", error_message: message });
+    // If both providers 429'd, return a proper 429 so client shows "Busy" toast
+    if (message.includes("_429")) {
+      return json({ error: "rate_limited", message: "Busy — try again in a moment" }, 429);
+    }
     return json({ error: "internal_error", message }, 500);
   }
 });
