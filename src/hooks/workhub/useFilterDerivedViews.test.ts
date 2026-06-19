@@ -70,8 +70,10 @@ describe('useExistingDashboardForFilter', () => {
       () => useExistingDashboardForFilter('filter-1', 'user-1'),
       { wrapper },
     );
-    await waitFor(() => !result.current.isLoading);
-    expect(result.current.data).toBeNull();
+    // waitFor must ASSERT (throw until ready). `() => !isLoading` returns a
+    // boolean and never throws, so it resolves on the first tick before the
+    // query settles — leaving data undefined. Assert the settled value directly.
+    await waitFor(() => expect(result.current.data).toBeNull());
   });
 });
 
