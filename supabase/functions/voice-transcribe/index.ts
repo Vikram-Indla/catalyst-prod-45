@@ -33,6 +33,17 @@ const GEMINI_GENERATE_URL =
 const GEMINI_STREAM_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent";
 
+/** Retry fetch once on 429, honouring Retry-After header (max 4 s delay). */
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 1): Promise<Response> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const resp = await fetch(url, options);
+    if (resp.status !== 429 || attempt === maxRetries) return resp;
+    const retryAfter = parseInt(resp.headers.get("Retry-After") ?? "2", 10);
+    await new Promise<void>((r) => setTimeout(r, Math.min(retryAfter * 1000, 4000)));
+  }
+  return fetch(url, options);
+}
+
 const SOURCE_LANG_LABELS: Record<string, string> = {
   "ar-SA": "Arabic (Saudi)",
   "ar-AE": "Arabic (UAE)",
@@ -179,7 +190,7 @@ serve(async (req) => {
 
     // ── Streaming path ────────────────────────────────────────────────
     if (streaming) {
-      const geminiResp = await fetch(
+      const geminiResp = await fetchWithRetry(
         `${GEMINI_STREAM_URL}?key=${GEMINI_API_KEY}&alt=sse`,
         {
           method: "POST",
@@ -191,7 +202,9 @@ serve(async (req) => {
       if (!geminiResp.ok || !geminiResp.body) {
         const errBody = await geminiResp.text().catch(() => "");
         console.error("voice-transcribe streaming Gemini error:", geminiResp.status, errBody.slice(0, 500));
-        return json({ error: "gateway_error", message: "Transcription failed" }, geminiResp.status);
+        const code = geminiResp.status === 429 ? "rate_limited" : "gateway_error";
+        const message = geminiResp.status === 429 ? "Busy — try again in a moment" : "Transcription failed";
+        return json({ error: code, message }, geminiResp.status);
       }
 
       // Forward Gemini SSE stream to client and accumulate for final packet
@@ -260,7 +273,7 @@ serve(async (req) => {
     }
 
     // ── Non-streaming path ────────────────────────────────────────────
-    const geminiResp = await fetch(
+    const geminiResp = await fetchWithRetry(
       `${GEMINI_GENERATE_URL}?key=${GEMINI_API_KEY}`,
       {
         method: "POST",

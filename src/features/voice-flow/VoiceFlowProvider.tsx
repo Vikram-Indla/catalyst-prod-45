@@ -135,7 +135,11 @@ export function VoiceFlowProvider({ children }: Props) {
       });
 
       if (!resp.ok) {
-        throw new Error(`voice-transcribe: HTTP ${resp.status}`);
+        const errBody = await resp.json().catch(() => ({})) as Record<string, unknown>;
+        const friendlyMsg = resp.status === 429
+          ? 'Busy — try again in a moment'
+          : (errBody?.message as string | undefined) ?? `Transcription error (${resp.status})`;
+        throw new Error(friendlyMsg);
       }
 
       const contentType = resp.headers.get('content-type') ?? '';
