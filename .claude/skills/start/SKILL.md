@@ -22,6 +22,34 @@ After the user says `proceed`, apply only the selected skills/capabilities from 
 
 End every `proceed` run with a Benefit Report.
 
+---
+
+## 🖼️ MANDATORY VISUAL WIDGET GATE (P0, non-negotiable)
+
+**After every narrative and after every change, you MUST render a visual widget of what is being proposed or what changed — and STOP until the user consents. No widget → no movement. No consent → no movement.**
+
+### The rule
+
+1. **Tool:** call `mcp__visualize__read_me` once per session (silently — do not narrate it), then render the widget with `mcp__visualize__show_widget`. This is the ONLY mechanism for the gate; a text description is not a widget and does not satisfy it.
+2. **When it fires (every time, no exceptions):**
+   - After the `/start` recommendation narrative (before `proceed`) — render a widget that maps the requested change: work type, the skills to be applied, and the expected before→after of the surface/outcome.
+   - After EVERY individual change during a `proceed` run — render a widget of that specific change (before→after mockup, diagram, or annotated state). One change = one widget.
+   - Before the Benefit Report — render a final widget summarising what changed end-to-end.
+3. **Consent gate:** after rendering the widget, emit one line — `Widget rendered. Confirm to proceed (reply "approved" / "looks good" / "proceed"), or tell me what to change.` — and then **STOP**. Do not make the next change, run the next step, commit, or push until the user explicitly consents.
+4. **No consent, no movement.** If the user requests edits to the widget, revise the widget and re-emit the consent line. Do not advance to code or the next step on a silent or ambiguous reply.
+5. **The widget must depict the REQUESTED change** — not generic decoration. A before/after of the affected surface, a flow of the skills being applied, or an annotated diagram of the diff. If you cannot depict the change, you do not understand it well enough to proceed — re-scope first.
+
+### Output marker (emit with every widget)
+
+```
+🖼️ VISUAL WIDGET GATE — {what this widget depicts}
+Awaiting consent. No movement until you approve.
+```
+
+A `/start` run or `proceed` step that advances without a rendered widget + explicit consent is a process violation.
+
+---
+
 ## Core flow
 
 ### `/start [request]`
@@ -49,7 +77,7 @@ I will wait for you to say `proceed`. After that, I will apply only the selected
 ## Benefit report note
 After `proceed`, I will end with a Benefit Report showing what each selected skill contributed and the estimated token/context budget impact.
 
-Then stop.
+Then render the Visual Widget Gate widget (a map of the requested change), emit the consent line, and stop. No `proceed` is honoured until the widget is approved.
 
 ### `proceed`
 
@@ -59,8 +87,9 @@ When user says `proceed`:
 3. Check git status before implementation.
 4. Do not run destructive commands.
 5. Do not install tools unless explicitly approved.
-6. Produce the main deliverable.
-7. End with the mandatory Benefit Report.
+6. For EVERY change: make the change, then render a Visual Widget Gate widget of that change, emit the consent line, and STOP until approved (see the Visual Widget Gate above). One change = one widget = one consent. No consent, no next change.
+7. Produce the main deliverable.
+8. Render a final summary widget + consent line, then end with the mandatory Benefit Report.
 
 If user says `proceed` without a prior `/start`, ask them to run `/start [request]` first.
 
