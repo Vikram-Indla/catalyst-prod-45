@@ -47,6 +47,9 @@ export function VoiceFlowProvider({ children }: Props) {
   const fieldRef          = useRef<ActiveField | null>(null);
   const sessionIdRef      = useRef<string | null>(null);
   const stopAndProcessRef = useRef<() => Promise<void>>(() => Promise.resolve());
+  // Native SpeechRecognition path (English only — skips edge function entirely)
+  const recognitionRef  = useRef<SpeechRecognition | null>(null);
+  const nativeModeRef   = useRef(false);
 
   const setStatusBoth = (s: VoiceStatus) => {
     statusRef.current = s;
@@ -54,7 +57,13 @@ export function VoiceFlowProvider({ children }: Props) {
   };
 
   const reset = useCallback(() => {
-    captureRef.current.cancel();
+    if (nativeModeRef.current) {
+      recognitionRef.current?.abort();
+      recognitionRef.current = null;
+      nativeModeRef.current = false;
+    } else {
+      captureRef.current.cancel();
+    }
     if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null; }
     fieldRef.current     = null;
     sessionIdRef.current = null;
@@ -70,6 +79,11 @@ export function VoiceFlowProvider({ children }: Props) {
 
   // ─── Stop recording → Gemini (streaming) → result ────────────────────
   const stopAndProcess = useCallback(async () => {
+    if (nativeModeRef.current) {
+      // Native path: stop() triggers onend → handleResult called there
+      recognitionRef.current?.stop();
+      return;
+    }
     if (!captureRef.current.isRecording && statusRef.current !== 'listening') return;
     setStatusBoth('processing');
     setAnalyserNode(null); // stop waveform; mic stops below
@@ -300,7 +314,13 @@ export function VoiceFlowProvider({ children }: Props) {
   // ─── Cancel ──────────────────────────────────────────────────────────
   const cancel = useCallback(() => {
     if (statusRef.current === 'idle') return;
-    captureRef.current.cancel();
+    if (nativeModeRef.current) {
+      recognitionRef.current?.abort();
+      recognitionRef.current = null;
+      nativeModeRef.current = false;
+    } else {
+      captureRef.current.cancel();
+    }
     setStatusBoth('cancelled');
     void updateSession('cancelled');
     setTimeout(reset, 400);
@@ -340,8 +360,78 @@ export function VoiceFlowProvider({ children }: Props) {
     sessionIdRef.current = sessId;
     void logSessionStart(sessId, field.kind);
 
+    const prefLang = getPreferredLanguage();
+    const SR: (new () => SpeechRecognition) | undefined =
+      (window as unknown as { SpeechRecognition?: new () => SpeechRecognition }).SpeechRecognition ??
+      (window as unknown as { webkitSpeechRecognition?: new () => SpeechRecognition }).webkitSpeechRecognition;
+
+    if (prefLang === 'en' && SR) {
+      // ── Native English path: zero edge-function calls, zero latency ──
+      nativeModeRef.current = true;
+      const recognition = new SR();
+      recognition.lang = 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognitionRef.current = recognition;
+
+      const sessionStart = Date.now();
+      let finalTranscript = '';
+
+      recognition.onstart = () => setStatusBoth('listening');
+
+      recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const t = event.results[i][0].transcript;
+          if (event.results[i].isFinal) finalTranscript += t;
+          else interim += t;
+        }
+        if (interim && statusRef.current === 'listening') setPartialText(interim);
+      };
+
+      recognition.onend = async () => {
+        nativeModeRef.current = false;
+        recognitionRef.current = null;
+        if (statusRef.current !== 'listening' && statusRef.current !== 'processing') return;
+        setStatusBoth('processing');
+        setPartialText(null);
+        const durationMs = Date.now() - sessionStart;
+        if (finalTranscript.trim()) {
+          await handleResult(finalTranscript.trim(), 'en', 'high', durationMs, sessionStart);
+        } else {
+          setErrorMessage('No speech detected');
+          setStatusBoth('error');
+          setTimeout(reset, 3000);
+        }
+      };
+
+      recognition.onerror = (event) => {
+        nativeModeRef.current = false;
+        recognitionRef.current = null;
+        const err = (event as SpeechRecognitionErrorEvent).error;
+        const msg = err === 'not-allowed'
+          ? 'Microphone access denied. Check browser permissions.'
+          : err === 'no-speech' ? 'No speech detected' : `Speech recognition error: ${err}`;
+        setErrorMessage(msg);
+        setStatusBoth('error');
+        setTimeout(reset, 3000);
+      };
+
+      try {
+        recognition.start();
+      } catch {
+        nativeModeRef.current = false;
+        recognitionRef.current = null;
+        setErrorMessage('Speech recognition unavailable');
+        setStatusBoth('error');
+        setTimeout(reset, 3000);
+      }
+      return;
+    }
+
+    // ── Groq / Gemini path (AR/UR/HI + first-ever session) ───────────
+    nativeModeRef.current = false;
     // Fresh instance every activation — guarantees clean stream/AudioContext state
-    // even if a prior session errored mid-way and left residual resources.
     captureRef.current = new AudioCaptureService();
 
     try {
@@ -354,7 +444,6 @@ export function VoiceFlowProvider({ children }: Props) {
         },
       });
 
-      // Wire real-time analyser for waveform visualisation
       const node = captureRef.current.getAnalyserNode();
       setAnalyserNode(node);
 
