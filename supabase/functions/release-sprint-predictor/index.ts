@@ -53,7 +53,11 @@ interface Item {
   status: string | null;
   category: string | null;
   due: string | null; // yyyy-mm-dd
+  updatedAt: string | null; // jira_updated_at, for trailing velocity
 }
+
+const VELOCITY_WINDOW_DAYS = 14;
+const ITEM_COLS = "issue_key,status,status_category,effective_due_date,due_date,jira_updated_at";
 
 function dateOnly(d: Date) { return d.toISOString().slice(0, 10); }
 function parse(d: string | null): number | null {
@@ -94,20 +98,22 @@ serve(async (req: Request) => {
 
       const { data: links } = await supabase
         .from("rh_release_work_items").select("work_item_key").eq("release_id", id);
-      const keys = (links ?? []).map((l: any) => l.work_item_key).filter(Boolean);
+      const explicit = (links ?? []).map((l: any) => l.work_item_key).filter(Boolean);
+
+      // BR expansion: linked BRs → their work tree (parent_key descendants).
+      const { data: brLinks } = await supabase
+        .from("rh_release_brs").select("business_request_id").eq("release_id", id);
+      const brIds = (brLinks ?? []).map((b: any) => b.business_request_id).filter(Boolean);
+      const brTree = brIds.length ? await expandBrTree(supabase, brIds) : [];
+
+      const keys = [...new Set([...explicit, ...brTree])];
       if (keys.length) {
-        const { data: rows } = await supabase
-          .from("ph_issues")
-          .select("issue_key,status,status_category,effective_due_date,due_date")
-          .in("issue_key", keys);
+        const { data: rows } = await supabase.from("ph_issues").select(ITEM_COLS).in("issue_key", keys);
         items = (rows ?? []).map(mapRow);
       }
     } else {
       label = String(id);
-      const { data: rows } = await supabase
-        .from("ph_issues")
-        .select("issue_key,status,status_category,effective_due_date,due_date")
-        .eq("sprint_name", id);
+      const { data: rows } = await supabase.from("ph_issues").select(ITEM_COLS).eq("sprint_name", id);
       items = (rows ?? []).map(mapRow);
       // window from linked sprint definition if present
       const { data: aS } = await supabase
@@ -155,7 +161,24 @@ function mapRow(r: any): Item {
     status: r.status ?? null,
     category: r.status_category ?? null,
     due: r.effective_due_date ?? r.due_date ?? null,
+    updatedAt: r.jira_updated_at ?? null,
   };
+}
+
+// Resolve the work tree under a set of business requests: BR.request_key →
+// ph_issues.parent_key descendants, walked down to a bounded depth (BR→Epic→
+// Story→Sub-task). Returns the issue_keys in the tree.
+async function expandBrTree(supabase: any, brIds: string[]): Promise<string[]> {
+  const { data: brs } = await supabase.from("business_requests").select("request_key").in("id", brIds);
+  let frontier = (brs ?? []).map((b: any) => b.request_key).filter(Boolean) as string[];
+  const found = new Set<string>();
+  for (let depth = 0; depth < 4 && frontier.length; depth++) {
+    const { data: kids } = await supabase.from("ph_issues").select("issue_key").in("parent_key", frontier);
+    const fresh = (kids ?? []).map((k: any) => k.issue_key).filter((k: string) => k && !found.has(k));
+    fresh.forEach((k: string) => found.add(k));
+    frontier = fresh;
+  }
+  return [...found];
 }
 
 function compute(
@@ -193,9 +216,23 @@ function compute(
   const time_used_pct = (windowDays && daysElapsed !== null)
     ? round(Math.min(100, Math.max(0, daysElapsed / windowDays * 100))) : null;
 
-  // observed pace = items closed per elapsed day; required = remaining / days left
-  const observed_pace = (daysElapsed && daysElapsed >= 1 && doneCount > 0)
-    ? round(doneCount / daysElapsed, 2) : (doneCount > 0 ? round(doneCount, 2) : 0);
+  // observed pace: prefer real closures in the trailing window (jira_updated_at
+  // on done items); fall back to cumulative done / elapsed when no recent signal.
+  const cutoff = now - VELOCITY_WINDOW_DAYS * DAY;
+  const recentlyDone = items.filter((i) =>
+    isDone(i.status, i.category) && i.updatedAt !== null && (parse(i.updatedAt) ?? 0) >= cutoff).length;
+  let observed_pace: number;
+  let velocity_source: string;
+  if (recentlyDone > 0) {
+    observed_pace = round(recentlyDone / VELOCITY_WINDOW_DAYS, 2);
+    velocity_source = "trailing_closures";
+  } else if (daysElapsed && daysElapsed >= 1 && doneCount > 0) {
+    observed_pace = round(doneCount / daysElapsed, 2);
+    velocity_source = "cumulative";
+  } else {
+    observed_pace = doneCount > 0 ? round(doneCount, 2) : 0;
+    velocity_source = "cumulative";
+  }
   const required_pace = (daysLeft !== null && daysLeft > 0) ? round(notDone / daysLeft, 2) : null;
 
   let forecast_date: string | null = null, slip_days: number | null = null;
@@ -232,6 +269,7 @@ function compute(
     no_due_dates: withDue === 0,
     items_with_due: withDue,
     has_window: startMs !== null && dueMs !== null,
+    velocity_source,
   };
 
   const r = {
