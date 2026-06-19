@@ -11,11 +11,15 @@ interface Props {
   onCancel: () => void;
   remainingMs?: number;
   detectedLanguage?: string | null;
+  /** Real-time mic analyser — drives bar heights from amplitude data */
+  analyserNode?: AnalyserNode | null;
+  /** Partial streaming text during processing state */
+  partialText?: string | null;
 }
 
 interface Pos { top: number; left: number }
 
-const CAPSULE_STYLE_ID = 'vf-capsule-styles-v3';
+const CAPSULE_STYLE_ID = 'vf-capsule-styles-v4';
 if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID)) {
   const s = document.createElement('style');
   s.id = CAPSULE_STYLE_ID;
@@ -44,6 +48,10 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       min-width: 200px;
       max-width: min(480px, calc(100vw - 32px));
     }
+    .vf-capsule__row--review {
+      background: rgba(80, 40, 0, 0.92);
+      border: 1px solid rgba(247, 144, 9, 0.4);
+    }
     .vf-capsule--entering .vf-capsule__row {
       animation: vf-slide-in 150ms ease forwards;
     }
@@ -52,31 +60,36 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       to   { opacity: 1; transform: translateY(0)   scale(1); }
     }
 
-    /* Waveform bars — thin magenta */
+    /* Waveform bars — magenta; JS drives heights when analyser available, else CSS anim */
     .vf-bars {
       display: flex;
       align-items: center;
       gap: 2px;
       height: 18px;
+      flex-shrink: 0;
     }
     .vf-bar {
       width: 2px;
       border-radius: 2px;
       background: #E040FB;
+      height: 5px;
+      transition: height 80ms ease;
+    }
+    /* CSS fallback — only active via class when no analyser drives bars */
+    .vf-bars--css-anim .vf-bar {
       animation: vf-bounce 0.8s ease-in-out infinite;
     }
-    .vf-bar:nth-child(1) { animation-delay: 0ms;   height: 5px; }
-    .vf-bar:nth-child(2) { animation-delay: 100ms; height: 12px; }
-    .vf-bar:nth-child(3) { animation-delay: 200ms; height: 18px; }
-    .vf-bar:nth-child(4) { animation-delay: 100ms; height: 12px; }
-    .vf-bar:nth-child(5) { animation-delay: 0ms;   height: 5px; }
-
+    .vf-bars--css-anim .vf-bar:nth-child(1) { animation-delay: 0ms;   height: 5px; }
+    .vf-bars--css-anim .vf-bar:nth-child(2) { animation-delay: 100ms; height: 12px; }
+    .vf-bars--css-anim .vf-bar:nth-child(3) { animation-delay: 200ms; height: 18px; }
+    .vf-bars--css-anim .vf-bar:nth-child(4) { animation-delay: 100ms; height: 12px; }
+    .vf-bars--css-anim .vf-bar:nth-child(5) { animation-delay: 0ms;   height: 5px; }
     @keyframes vf-bounce {
       0%, 100% { transform: scaleY(0.3); }
       50%       { transform: scaleY(1); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .vf-bar { animation: vf-pulse 1.5s ease infinite; }
+      .vf-bar { animation: vf-pulse 1.5s ease infinite !important; }
       @keyframes vf-pulse {
         0%, 100% { opacity: 0.4; }
         50%       { opacity: 1; }
@@ -94,6 +107,12 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     }
     @keyframes vf-spin { to { transform: rotate(360deg); } }
     @media (prefers-reduced-motion: reduce) { .vf-spinner { animation: none; opacity: 0.6; } }
+
+    /* Warning icon for review state */
+    .vf-icon--warn {
+      font-size: 14px;
+      flex-shrink: 0;
+    }
 
     /* Text */
     .vf-label {
@@ -114,8 +133,17 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       color: rgba(255,255,255,0.92);
       font-weight: 400;
     }
+    .vf-label--partial {
+      color: rgba(255,255,255,0.55);
+      font-weight: 400;
+      font-style: italic;
+    }
     .vf-label--error {
       color: #F87168;
+    }
+    .vf-label--review {
+      color: #F79009;
+      font-weight: 500;
     }
 
     /* Muted timer — no glow, no magenta */
@@ -140,6 +168,21 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       font-size: 11px;
       font-weight: 500;
       color: #CE93D8;
+      animation: vf-fade-in 250ms ease forwards;
+      align-self: flex-start;
+      margin-left: 12px;
+    }
+    /* Hotkey hint badge (listening state, no lang yet) */
+    .vf-hint-badge {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.35);
       animation: vf-fade-in 250ms ease forwards;
       align-self: flex-start;
       margin-left: 12px;
@@ -170,23 +213,75 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       color: #FFFFFF;
     }
     .vf-btn--commit:hover { background: #0055CC; }
+    .vf-btn--commit-review {
+      background: #F79009;
+      color: #FFFFFF;
+    }
+    .vf-btn--commit-review:hover { background: #D97706; }
   `;
   document.head.appendChild(s);
 }
 
-function WaveformBars() {
+// ─── WaveformBars ────────────────────────────────────────────────────────────
+
+interface WaveformBarsProps {
+  analyserNode?: AnalyserNode | null;
+}
+
+function WaveformBars({ analyserNode }: WaveformBarsProps) {
+  const barRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    if (!analyserNode) return;
+
+    const data = new Uint8Array(analyserNode.frequencyBinCount); // 16 bins for fftSize=32
+    const NUM_BARS = 5;
+    const bucketSize = Math.max(1, Math.floor(data.length / NUM_BARS));
+    const MIN_H = 3;
+    const MAX_H = 18;
+    let rafId: number;
+
+    const tick = () => {
+      analyserNode.getByteFrequencyData(data);
+      barRefs.current.forEach((bar, i) => {
+        if (!bar) return;
+        const start = i * bucketSize;
+        const end   = Math.min(start + bucketSize, data.length);
+        let sum = 0;
+        for (let j = start; j < end; j++) sum += data[j];
+        const avg = sum / (end - start);
+        const h = MIN_H + (avg / 255) * (MAX_H - MIN_H);
+        bar.style.height = `${h}px`;
+      });
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [analyserNode]);
+
+  const hasCssAnim = !analyserNode;
+
   return (
-    <div className="vf-bars" aria-hidden="true">
+    <div className={`vf-bars${hasCssAnim ? ' vf-bars--css-anim' : ''}`} aria-hidden="true">
       {[0, 1, 2, 3, 4].map(i => (
-        <div key={i} className="vf-bar" />
+        <div
+          key={i}
+          className="vf-bar"
+          ref={el => { barRefs.current[i] = el; }}
+        />
       ))}
     </div>
   );
 }
 
+// ─── Spinner ─────────────────────────────────────────────────────────────────
+
 function Spinner() {
   return <div className="vf-spinner" aria-hidden="true" />;
 }
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatMs(ms: number): string {
   const totalSec = Math.ceil(ms / 1000);
@@ -194,6 +289,8 @@ function formatMs(ms: number): string {
   const s = totalSec % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
 }
+
+// ─── VoiceFloatingCapsule ─────────────────────────────────────────────────────
 
 export function VoiceFloatingCapsule({
   status,
@@ -204,6 +301,8 @@ export function VoiceFloatingCapsule({
   onCancel,
   remainingMs,
   detectedLanguage,
+  analyserNode,
+  partialText,
 }: Props) {
   const [pos, setPos] = useState<Pos | null>(null);
   const posRef = useRef<Pos | null>(null);
@@ -240,6 +339,8 @@ export function VoiceFloatingCapsule({
 
   if (!pos || status === 'idle' || status === 'cancelled' || status === 'committing') return null;
 
+  const isReview = status === 'review';
+
   const content = (() => {
     switch (status) {
       case 'arming':
@@ -250,10 +351,11 @@ export function VoiceFloatingCapsule({
             <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Cancel">✕</button>
           </>
         );
+
       case 'listening':
         return (
           <>
-            <WaveformBars />
+            <WaveformBars analyserNode={analyserNode} />
             <span className="vf-label vf-label--muted">Listening… (Space to finish)</span>
             {remainingMs !== undefined && (
               <span className="vf-timer" aria-label={`${formatMs(remainingMs)} remaining`}>
@@ -263,14 +365,22 @@ export function VoiceFloatingCapsule({
             <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Cancel voice">✕</button>
           </>
         );
+
       case 'processing':
         return (
           <>
             <Spinner />
-            <span className="vf-label vf-label--muted">Translating…</span>
+            {partialText ? (
+              <span className="vf-label vf-label--partial" title={partialText}>
+                {partialText}
+              </span>
+            ) : (
+              <span className="vf-label vf-label--muted">Transcribing…</span>
+            )}
             <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Cancel">✕</button>
           </>
         );
+
       case 'ready':
         return (
           <>
@@ -281,6 +391,19 @@ export function VoiceFloatingCapsule({
             <button className="vf-btn vf-btn--commit" onClick={onCommit} aria-label="Insert text">✓</button>
           </>
         );
+
+      case 'review':
+        return (
+          <>
+            <span className="vf-icon--warn" aria-hidden="true">⚠</span>
+            <span className="vf-label vf-label--review" title={resultText ?? ''}>
+              {resultText ?? 'Low confidence — review before inserting'}
+            </span>
+            <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Discard">✕</button>
+            <button className="vf-btn vf-btn--commit-review" onClick={onCommit} aria-label="Insert anyway">✓</button>
+          </>
+        );
+
       case 'error':
         return (
           <>
@@ -290,6 +413,7 @@ export function VoiceFloatingCapsule({
             <button className="vf-btn vf-btn--cancel" onClick={onCancel} aria-label="Dismiss">✕</button>
           </>
         );
+
       default:
         return null;
     }
@@ -305,12 +429,17 @@ export function VoiceFloatingCapsule({
       className="vf-capsule vf-capsule--entering"
       style={{ top: pos.top, left: pos.left }}
     >
-      <div className="vf-capsule__row">
+      <div className={`vf-capsule__row${isReview ? ' vf-capsule__row--review' : ''}`}>
         {content}
       </div>
       {detectedLanguage && (
         <div className="vf-lang-badge" aria-label={`Detected language: ${detectedLanguage}`}>
           {detectedLanguage}
+        </div>
+      )}
+      {status === 'listening' && !detectedLanguage && (
+        <div className="vf-hint-badge" aria-hidden="true">
+          ⌘⇧V or double-space
         </div>
       )}
     </div>,

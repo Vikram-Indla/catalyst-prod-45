@@ -22,7 +22,22 @@ export const VOICE_FLOW_CONFIG = {
     'audio/ogg;codecs=opus',
     'audio/mp4',
   ],
+  /** When confidence is low, pause for user review instead of auto-committing. */
+  confidenceReviewEnabled: true,
 } as const;
+
+// ─── Language preference ─────────────────────────────────────────────────────
+const LANG_KEY = 'catalyst.voice.language';
+
+/** Persist last detected language for use as hint on next session. */
+export function setPreferredLanguage(lang: string): void {
+  try { localStorage.setItem(LANG_KEY, lang); } catch { /* ignore */ }
+}
+
+/** Returns last detected/pinned language, or null for auto. */
+export function getPreferredLanguage(): string | null {
+  try { return localStorage.getItem(LANG_KEY); } catch { return null; }
+}
 
 /** Fields that must never activate voice regardless of kind. */
 export const BLOCKED_INPUT_TYPES = new Set([

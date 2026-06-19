@@ -4,6 +4,7 @@ export type VoiceStatus =
   | 'listening'        // MediaRecorder active, user speaking
   | 'processing'       // blob sent to Gemini, awaiting result
   | 'ready'            // result received, showing preview (auto_commit=false only)
+  | 'review'           // low-confidence result — user must confirm before commit
   | 'committing'       // inserting text into field
   | 'cancelled'        // user pressed Esc or ×
   | 'error';           // unrecoverable error in current session
@@ -25,6 +26,7 @@ export interface ActiveField {
 export interface VoiceResult {
   englishText: string;
   detectedLanguage?: string;
+  confidence?: 'high' | 'low';
   durationMs: number;
   geminiLatencyMs?: number;
 }

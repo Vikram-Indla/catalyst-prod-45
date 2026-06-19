@@ -8,6 +8,7 @@ export interface AudioCaptureCallbacks {
 /**
  * Wraps MediaRecorder for Phase 1 voice capture.
  * Records as audio/webm (Gemini accepts this natively).
+ * Also creates an AnalyserNode for real-time amplitude visualisation.
  */
 export class AudioCaptureService {
   private mediaRecorder: MediaRecorder | null = null;
@@ -18,12 +19,21 @@ export class AudioCaptureService {
   private maxDurationTimer: ReturnType<typeof setTimeout> | null = null;
   private callbacks: AudioCaptureCallbacks = {};
 
+  // Web Audio API for real-time waveform bars
+  private audioCtx: AudioContext | null = null;
+  private analyserNode: AnalyserNode | null = null;
+
   get isRecording(): boolean {
     return this.mediaRecorder?.state === 'recording';
   }
 
   get durationMs(): number {
     return this.startTimeMs ? Date.now() - this.startTimeMs : 0;
+  }
+
+  /** Returns the AnalyserNode for real-time amplitude data, or null if not recording. */
+  getAnalyserNode(): AnalyserNode | null {
+    return this.analyserNode;
   }
 
   static getSupportedMimeType(): string {
@@ -47,6 +57,19 @@ export class AudioCaptureService {
         noiseSuppression: true,
       },
     });
+
+    // ── Web Audio analyser (amplitude → waveform bars) ────────────────────
+    try {
+      this.audioCtx = new AudioContext();
+      const source = this.audioCtx.createMediaStreamSource(this.stream);
+      this.analyserNode = this.audioCtx.createAnalyser();
+      this.analyserNode.fftSize = 32;               // 16 frequency bins — enough for 5 bars
+      this.analyserNode.smoothingTimeConstant = 0.5; // moderate smoothing
+      source.connect(this.analyserNode);
+    } catch {
+      // Non-fatal — bars fall back to CSS animation
+      this.analyserNode = null;
+    }
 
     const mimeType = AudioCaptureService.getSupportedMimeType();
     this.mediaRecorder = new MediaRecorder(this.stream, mimeType ? { mimeType } : undefined);
@@ -128,5 +151,9 @@ export class AudioCaptureService {
     this.mediaRecorder = null;
     this.chunks = [];
     this.startTimeMs = 0;
+    // Release Web Audio resources
+    this.analyserNode = null;
+    this.audioCtx?.close().catch(() => {});
+    this.audioCtx = null;
   }
 }

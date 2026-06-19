@@ -4,8 +4,11 @@
  * Accepts: audio blob as base64 in request body.
  * Flow: audio (AR/UR/HI) → Gemini 2.5 Flash native API → English text.
  *
- * Uses the native Gemini generateContent API (not the OpenAI-compat wrapper)
- * because the OpenAI-compat endpoint does not support inlineData audio parts.
+ * Supports:
+ *   - streaming=true → SSE via streamGenerateContent, partial text forwarded to client
+ *   - [LOW_CONFIDENCE] prefix detection → confidence field in response
+ *   - [LANG:code] detection → detectedLanguage field in response
+ *   - preferredLanguage hint in prompt
  *
  * Security:
  *   - Auth required (Supabase JWT validated by serve())
@@ -27,6 +30,8 @@ const corsHeaders = {
 
 const GEMINI_GENERATE_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+const GEMINI_STREAM_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent";
 
 const SOURCE_LANG_LABELS: Record<string, string> = {
   "ar-SA": "Arabic (Saudi)",
@@ -35,20 +40,56 @@ const SOURCE_LANG_LABELS: Record<string, string> = {
   "hi-IN": "Hindi",
 };
 
-function buildPrompt(sourceLanguages: string[], cleanupEnabled: boolean): string {
+function buildPrompt(sourceLanguages: string[], cleanupEnabled: boolean, preferredLanguage?: string): string {
   const langs = sourceLanguages
     .map(l => SOURCE_LANG_LABELS[l] ?? l)
     .join(", ");
 
+  const langHint = preferredLanguage
+    ? `The speaker's most recent language was "${preferredLanguage}" — use as a hint but do not assume.\n`
+    : "";
+
   return (
     `Transcribe the following audio recorded in ${langs}.\n` +
+    langHint +
     `Translate the transcribed text to fluent English.\n` +
     (cleanupEnabled
       ? "Remove filler words (um, uh, hmm), false starts, and obvious repetitions from the English output.\n"
       : "") +
-    "Return ONLY the clean English translation. No preamble, no commentary, no source-language text.\n" +
+    "If you are uncertain about the transcription quality (poor audio, unclear speech, heavy background noise), " +
+    "prepend your response with exactly \"[LOW_CONFIDENCE]:\" followed by the transcription.\n" +
+    "If you can detect the speaker's language, append exactly \"[LANG:<BCP-47-code>]\" at the very end of your response (after all text). " +
+    "For example: \"[LANG:ar-SA]\" or \"[LANG:ur-PK]\".\n" +
+    "Return ONLY the clean English translation (and optional markers above). No preamble, no commentary, no source-language text.\n" +
     "If the audio is silent or contains no speech, return the exact string: [no_speech]"
   );
+}
+
+/** Parse raw Gemini text → { englishText, confidence, detectedLanguage } */
+function parseGeminiText(raw: string): {
+  englishText: string;
+  confidence: "high" | "low";
+  detectedLanguage: string | undefined;
+} {
+  let text = raw.trim().replace(/^["«]+|["»]+$/g, "").trim();
+  let confidence: "high" | "low" = "high";
+  let detectedLanguage: string | undefined;
+
+  // [LOW_CONFIDENCE]: prefix
+  const LOW_PREFIX = "[LOW_CONFIDENCE]:";
+  if (text.startsWith(LOW_PREFIX)) {
+    confidence = "low";
+    text = text.slice(LOW_PREFIX.length).trim();
+  }
+
+  // [LANG:code] suffix
+  const langMatch = text.match(/\[LANG:([^\]]+)\]\s*$/);
+  if (langMatch) {
+    detectedLanguage = langMatch[1].trim();
+    text = text.slice(0, langMatch.index).trim();
+  }
+
+  return { englishText: text, confidence, detectedLanguage };
 }
 
 async function logGovernance(params: {
@@ -105,31 +146,26 @@ serve(async (req) => {
       ? body.sourceLanguages
       : ["ar-SA", "ur-PK", "hi-IN"];
     const cleanupEnabled: boolean = body?.cleanupEnabled !== false;
+    const streaming: boolean = body?.streaming === true;
+    const preferredLanguage: string | undefined = body?.preferredLanguage ?? undefined;
 
     if (!audioBase64 || audioBase64.length < 100) {
       return json({ error: "empty_audio", message: "No audio data provided" }, 400);
     }
 
-    // Sanity check: base64 string → audio size
     const estimatedBytes = Math.floor(audioBase64.length * 0.75);
-    if (estimatedBytes > 10 * 1024 * 1024) { // 10MB guard
+    if (estimatedBytes > 10 * 1024 * 1024) {
       return json({ error: "audio_too_large", message: "Audio exceeds 10MB limit" }, 413);
     }
 
-    // ── Gemini native API call ────────────────────────────────────────
-    const prompt = buildPrompt(sourceLanguages, cleanupEnabled);
+    const prompt = buildPrompt(sourceLanguages, cleanupEnabled, preferredLanguage);
 
     const geminiBody = {
       contents: [
         {
           role: "user",
           parts: [
-            {
-              inlineData: {
-                mimeType,
-                data: audioBase64,
-              },
-            },
+            { inlineData: { mimeType, data: audioBase64 } },
             { text: prompt },
           ],
         },
@@ -141,6 +177,89 @@ serve(async (req) => {
       },
     };
 
+    // ── Streaming path ────────────────────────────────────────────────
+    if (streaming) {
+      const geminiResp = await fetch(
+        `${GEMINI_STREAM_URL}?key=${GEMINI_API_KEY}&alt=sse`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(geminiBody),
+        },
+      );
+
+      if (!geminiResp.ok || !geminiResp.body) {
+        const errBody = await geminiResp.text().catch(() => "");
+        console.error("voice-transcribe streaming Gemini error:", geminiResp.status, errBody.slice(0, 500));
+        return json({ error: "gateway_error", message: "Transcription failed" }, geminiResp.status);
+      }
+
+      // Forward Gemini SSE stream to client and accumulate for final packet
+      const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
+      const writer = writable.getWriter();
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+
+      // Process Gemini SSE in background, forwarding chunks + appending final result packet
+      (async () => {
+        const reader = geminiResp.body!.getReader();
+        let accumulated = "";
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            // Forward raw chunk to client
+            await writer.write(value);
+
+            // Accumulate text for final parsing
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split("\n");
+            for (const line of lines) {
+              if (line.startsWith("data: ")) {
+                const raw = line.slice(6).trim();
+                if (raw === "[DONE]") continue;
+                try {
+                  const parsed = JSON.parse(raw);
+                  const delta = parsed?.candidates?.[0]?.content?.parts?.[0]?.text;
+                  if (delta) accumulated += delta;
+                } catch { /* ignore */ }
+              }
+            }
+          }
+
+          // Parse accumulated and send final structured packet
+          const { englishText, confidence, detectedLanguage } = parseGeminiText(accumulated);
+
+          if (englishText && englishText !== "[no_speech]") {
+            const finalPacket = `data: ${JSON.stringify({ englishText, confidence, detectedLanguage })}\ndata: [DONE]\n\n`;
+            await writer.write(encoder.encode(finalPacket));
+
+            logGovernance({
+              action: "voice_transcribe",
+              payload: { sessionId, audioBytes: estimatedBytes, outputLength: englishText.length, sourceLanguages, cleanupEnabled, streaming: true, confidence },
+              status: "ok",
+            }).catch(() => {});
+          }
+        } catch (e) {
+          console.error("voice-transcribe stream error:", e);
+        } finally {
+          await writer.close().catch(() => {});
+        }
+      })();
+
+      return new Response(readable, {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "X-Accel-Buffering": "no",
+        },
+      });
+    }
+
+    // ── Non-streaming path ────────────────────────────────────────────
     const geminiResp = await fetch(
       `${GEMINI_GENERATE_URL}?key=${GEMINI_API_KEY}`,
       {
@@ -170,10 +289,7 @@ serve(async (req) => {
     }
 
     const geminiData = await geminiResp.json();
-
-    // Navigate Gemini response: candidates[0].content.parts[0].text
-    const rawText: string =
-      geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const rawText: string = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
     if (!rawText || rawText.trim() === "[no_speech]") {
       await logGovernance({
@@ -184,31 +300,20 @@ serve(async (req) => {
       return json({ error: "no_speech", message: "No speech detected in audio" }, 422);
     }
 
-    const englishText = rawText.trim().replace(/^["«]+|["»]+$/g, "").trim();
+    const { englishText, confidence, detectedLanguage } = parseGeminiText(rawText);
 
     if (!englishText) {
       return json({ error: "empty_result", message: "Transcription returned empty text" }, 502);
     }
 
-    // Extract detected language hint from usage metadata if available
-    const detectedLanguage: string | undefined =
-      geminiData?.usageMetadata?.inputTokensDetails?.[0]?.modality === "AUDIO"
-        ? undefined // Gemini doesn't report detected lang in v1beta yet
-        : undefined;
-
     logGovernance({
       action: "voice_transcribe",
-      payload: {
-        sessionId,
-        audioBytes: estimatedBytes,
-        outputLength: englishText.length,
-        sourceLanguages,
-        cleanupEnabled,
-      },
+      payload: { sessionId, audioBytes: estimatedBytes, outputLength: englishText.length, sourceLanguages, cleanupEnabled, confidence },
       status: "ok",
     }).catch(() => {});
 
-    return json({ englishText, detectedLanguage, mimeType });
+    return json({ englishText, confidence, detectedLanguage, mimeType });
+
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     console.error("voice-transcribe unhandled:", message);

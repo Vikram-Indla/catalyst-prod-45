@@ -12,12 +12,11 @@ interface UseVoiceHotkeyOptions {
 }
 
 /**
- * Double-space hotkey handler.
+ * Voice activation hotkey handler.
  *
- * Activation: two Space presses within doubleSpaceThresholdMs on an eligible field.
- *   - preventDefault on second Space (never typed)
- *   - removes trailing space left by first Space
- *   - captures field state, calls onActivate()
+ * Activation triggers (both always active):
+ *   1. Double-space within doubleSpaceThresholdMs on an eligible field
+ *   2. Cmd+Shift+V (Mac) / Ctrl+Shift+V (Windows/Linux) — works from any text field
  *
  * While voice active:
  *   Space or Enter → onCommit()
@@ -42,7 +41,11 @@ export function useVoiceHotkey({
     const onKeyDown = (e: KeyboardEvent) => {
       if (!enabledRef.current) return;
       if (e.isComposing) return; // IME composition — never intercept
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const isCmdShiftV = (e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyV';
+
+      // Block modifier combos EXCEPT Cmd+Shift+V
+      if (!isCmdShiftV && (e.ctrlKey || e.metaKey || e.altKey)) return;
 
       const isSpace  = e.code === 'Space';
       const isEnter  = e.code === 'Enter' || e.code === 'NumpadEnter';
@@ -59,7 +62,18 @@ export function useVoiceHotkey({
           e.stopPropagation();
           onCancel();
         }
-        // Let other keys through (user might correct something while capsule shows)
+        return;
+      }
+
+      // ── Cmd+Shift+V — activate from any text field ─────────────────
+      if (isCmdShiftV) {
+        const target = document.activeElement;
+        const field = getActiveTextTarget(target);
+        if (field) {
+          e.preventDefault();
+          e.stopPropagation();
+          onActivate(field);
+        }
         return;
       }
 

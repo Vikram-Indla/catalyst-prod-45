@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
-import { VOICE_FLOW_CONFIG } from './voiceFlow.config';
+import { VOICE_FLOW_CONFIG, getPreferredLanguage, setPreferredLanguage } from './voiceFlow.config';
 import { AudioCaptureService } from './AudioCaptureService';
 import { insertTextIntoTarget } from './insertTextIntoTarget';
 import { useVoiceHotkey } from './useVoiceHotkey';
@@ -21,25 +21,31 @@ export const useVoiceFlow = () => useContext(VoiceFlowContext);
 
 interface Props { children?: React.ReactNode }
 
+// Edge function URL — reconstructed for streaming fetch (supabase.functions.invoke doesn't stream)
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://lmqwtldpfacrrlvdnmld.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
+const VOICE_FN_URL = `${SUPABASE_URL}/functions/v1/voice-transcribe`;
+
 export function VoiceFlowProvider({ children }: Props) {
   const { isModuleEnabled } = useFeatureFlags();
   const featureEnabled =
     import.meta.env.VITE_VOICE_DICTATION_ENABLED === 'true' &&
     isModuleEnabled('voice_dictation');
 
-  const [status, setStatus] = useState<VoiceStatus>('idle');
-  const [result, setResult] = useState<VoiceResult | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [remainingMs, setRemainingMs] = useState<number>(VOICE_FLOW_CONFIG.maxDurationMs);
+  const [status, setStatus]                     = useState<VoiceStatus>('idle');
+  const [result, setResult]                     = useState<VoiceResult | null>(null);
+  const [errorMessage, setErrorMessage]         = useState<string | null>(null);
+  const [remainingMs, setRemainingMs]           = useState<number>(VOICE_FLOW_CONFIG.maxDurationMs);
   const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
+  const [analyserNode, setAnalyserNode]         = useState<AnalyserNode | null>(null);
+  const [partialText, setPartialText]           = useState<string | null>(null);
+
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Ref mirror of status — timer/async callbacks read this to avoid stale closure
   const statusRef         = useRef<VoiceStatus>('idle');
   const captureRef        = useRef(new AudioCaptureService());
   const fieldRef          = useRef<ActiveField | null>(null);
   const sessionIdRef      = useRef<string | null>(null);
-  // Stable ref to stopAndProcess so commit can always call the current version
   const stopAndProcessRef = useRef<() => Promise<void>>(() => Promise.resolve());
 
   const setStatusBoth = (s: VoiceStatus) => {
@@ -58,12 +64,15 @@ export function VoiceFlowProvider({ children }: Props) {
     setErrorMessage(null);
     setDetectedLanguage(null);
     setRemainingMs(VOICE_FLOW_CONFIG.maxDurationMs);
+    setAnalyserNode(null);
+    setPartialText(null);
   }, []);
 
-  // ─── Stop recording → Gemini → commit ────────────────────────────────
+  // ─── Stop recording → Gemini (streaming) → result ────────────────────
   const stopAndProcess = useCallback(async () => {
     if (!captureRef.current.isRecording && statusRef.current !== 'listening') return;
     setStatusBoth('processing');
+    setAnalyserNode(null); // stop waveform; mic stops below
 
     let blob: Blob;
     let durationMs: number;
@@ -95,54 +104,180 @@ export function VoiceFlowProvider({ children }: Props) {
 
     const geminiStart = Date.now();
 
+    // Get auth token for direct fetch
+    let authToken = SUPABASE_ANON_KEY;
     try {
-      const { data, error } = await supabase.functions.invoke('voice-transcribe', {
-        body: {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData.session?.access_token) {
+        authToken = sessionData.session.access_token;
+      }
+    } catch { /* fall back to anon key */ }
+
+    const preferredLanguage = getPreferredLanguage();
+
+    try {
+      const resp = await fetch(VOICE_FN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+          'apikey': SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
           audioBase64,
           mimeType,
           sessionId: sessionIdRef.current,
           sourceLanguages: VOICE_FLOW_CONFIG.sourceLanguages,
           cleanupEnabled: VOICE_FLOW_CONFIG.cleanupEnabled,
-        },
+          preferredLanguage: preferredLanguage ?? undefined,
+          streaming: true,
+        }),
       });
 
-      if (error || !data?.englishText) {
-        throw new Error(data?.error ?? error?.message ?? 'Empty transcription');
+      if (!resp.ok) {
+        throw new Error(`voice-transcribe: HTTP ${resp.status}`);
       }
 
-      const voiceResult: VoiceResult = {
-        englishText: data.englishText as string,
-        detectedLanguage: data.detectedLanguage as string | undefined,
-        durationMs,
-        geminiLatencyMs: Date.now() - geminiStart,
-      };
+      const contentType = resp.headers.get('content-type') ?? '';
 
-      if (data.detectedLanguage) setDetectedLanguage(data.detectedLanguage as string);
-      setResult(voiceResult);
+      // ── SSE streaming path ────────────────────────────────────────────
+      if (contentType.includes('text/event-stream') && resp.body) {
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulated = '';
+        let finalData: Record<string, unknown> | null = null;
 
-      if (VOICE_FLOW_CONFIG.autoCommit && fieldRef.current) {
-        setStatusBoth('committing');
-        try {
-          insertTextIntoTarget(fieldRef.current, voiceResult.englishText);
-        } catch (insertErr) {
-          console.warn('[VoiceFlow] auto-commit insert failed:', insertErr);
+        outer: while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const raw = line.slice(6).trim();
+              if (raw === '[DONE]') break outer;
+              try {
+                const parsed = JSON.parse(raw) as Record<string, unknown>;
+                // Final result packet — no candidates, carries result fields
+                if ('englishText' in parsed) {
+                  finalData = parsed;
+                  break outer;
+                }
+                // Gemini SSE candidate delta
+                const candidates = parsed.candidates as Array<{content:{parts:Array<{text:string}>}}> | undefined;
+                if (candidates?.[0]?.content?.parts?.[0]?.text) {
+                  accumulated += candidates[0].content.parts[0].text;
+                  if (statusRef.current === 'processing') {
+                    setPartialText(accumulated);
+                  }
+                }
+              } catch { /* malformed line — skip */ }
+            }
+          }
         }
-        void updateSession('completed', voiceResult);
-        setTimeout(reset, 200);
+
+        // Parse final SSE packet or fall back to accumulated text
+        let englishText: string;
+        let detectedLang: string | undefined;
+        let confidence: 'high' | 'low' | undefined;
+
+        if (finalData) {
+          englishText  = finalData.englishText as string;
+          detectedLang = finalData.detectedLanguage as string | undefined;
+          confidence   = finalData.confidence as 'high' | 'low' | undefined;
+        } else {
+          // Parse accumulated streaming text for markers
+          let text = accumulated;
+          if (text.startsWith('[LOW_CONFIDENCE]:')) {
+            confidence = 'low';
+            text = text.slice('[LOW_CONFIDENCE]:'.length).trim();
+          }
+          const langMatch = text.match(/\[LANG:([^\]]+)\]\s*$/);
+          if (langMatch) {
+            detectedLang = langMatch[1];
+            text = text.slice(0, langMatch.index).trim();
+          }
+          englishText = text;
+        }
+
+        if (!englishText) throw new Error('Empty transcription');
+
+        setPartialText(null);
+        await handleResult(englishText, detectedLang, confidence, durationMs, geminiStart);
+
       } else {
-        setStatusBoth('ready');
+        // ── Non-streaming JSON fallback ──────────────────────────────────
+        const data = await resp.json() as Record<string, unknown>;
+        if (!data?.englishText) throw new Error((data?.error as string) ?? 'Empty transcription');
+
+        setPartialText(null);
+        await handleResult(
+          data.englishText as string,
+          data.detectedLanguage as string | undefined,
+          data.confidence as 'high' | 'low' | undefined,
+          durationMs,
+          geminiStart,
+        );
       }
+
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Translation failed';
       console.error('[VoiceFlow] transcription error:', e);
+      setPartialText(null);
       setErrorMessage(msg);
       setStatusBoth('error');
       void updateSession('error', undefined, msg);
       setTimeout(reset, 4000);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reset]);
 
-  // Keep ref current so timer callbacks always call the latest version
+  const handleResult = useCallback(async (
+    englishText: string,
+    detectedLang: string | undefined,
+    confidence: 'high' | 'low' | undefined,
+    durationMs: number,
+    geminiStart: number,
+  ) => {
+    const voiceResult: VoiceResult = {
+      englishText,
+      detectedLanguage: detectedLang,
+      confidence,
+      durationMs,
+      geminiLatencyMs: Date.now() - geminiStart,
+    };
+
+    if (detectedLang) {
+      setDetectedLanguage(detectedLang);
+      setPreferredLanguage(detectedLang); // pin for next session
+    }
+
+    setResult(voiceResult);
+
+    const isLowConfidence =
+      confidence === 'low' && VOICE_FLOW_CONFIG.confidenceReviewEnabled;
+
+    if (isLowConfidence) {
+      setStatusBoth('review');
+      return;
+    }
+
+    if (VOICE_FLOW_CONFIG.autoCommit && fieldRef.current) {
+      setStatusBoth('committing');
+      try {
+        insertTextIntoTarget(fieldRef.current, englishText);
+      } catch (insertErr) {
+        console.warn('[VoiceFlow] auto-commit insert failed:', insertErr);
+      }
+      void updateSession('completed', voiceResult);
+      setTimeout(reset, 200);
+    } else {
+      setStatusBoth('ready');
+    }
+  }, [reset]);
+
   stopAndProcessRef.current = stopAndProcess;
 
   // Countdown tick while listening
@@ -174,8 +309,9 @@ export function VoiceFlowProvider({ children }: Props) {
       void stopAndProcessRef.current();
       return;
     }
-    if (s === 'ready' && fieldRef.current) {
-      const r = result; // capture from closure
+    // 'ready' and 'review' both commit the result text into the target field
+    if ((s === 'ready' || s === 'review') && fieldRef.current) {
+      const r = result;
       if (!r) return;
       setStatusBoth('committing');
       try {
@@ -202,7 +338,6 @@ export function VoiceFlowProvider({ children }: Props) {
 
     try {
       await captureRef.current.start({
-        // Use ref so these callbacks always see the live version of stopAndProcess
         onSilenceTimeout: () => {
           if (statusRef.current === 'listening') void stopAndProcessRef.current();
         },
@@ -210,6 +345,11 @@ export function VoiceFlowProvider({ children }: Props) {
           void stopAndProcessRef.current();
         },
       });
+
+      // Wire real-time analyser for waveform visualisation
+      const node = captureRef.current.getAnalyserNode();
+      setAnalyserNode(node);
+
       setStatusBoth('listening');
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Microphone access denied';
@@ -276,6 +416,8 @@ export function VoiceFlowProvider({ children }: Props) {
           onCancel={cancel}
           remainingMs={remainingMs}
           detectedLanguage={detectedLanguage}
+          analyserNode={analyserNode}
+          partialText={partialText}
         />
       )}
     </VoiceFlowContext.Provider>
