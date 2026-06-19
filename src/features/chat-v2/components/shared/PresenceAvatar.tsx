@@ -1,6 +1,10 @@
 import React from 'react';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 interface PresenceAvatarProps {
+  /** @deprecated Ignored — external avatar URLs are banned (CLAUDE.md §19).
+   *  Photos resolve only from the bundled-local resolver via `name`.
+   *  Kept temporarily so existing callers typecheck; remove `src=` from callers. */
   src?: string | null;
   name: string;
   size?: number;
@@ -23,9 +27,12 @@ function hashHue(seed: string): number {
   return Math.abs(h) % 360;
 }
 
-export function PresenceAvatar({ src, name, size = 36, presence = null, displayLabel }: PresenceAvatarProps) {
+export function PresenceAvatar({ name, size = 36, presence = null, displayLabel }: PresenceAvatarProps) {
   const dotSize = Math.max(8, Math.round(size * 0.28));
   const fallbackBg = `hsl(${hashHue(name)} 50% 45%)`;
+  // CLAUDE.md §19: never render a caller-supplied external avatar URL. Resolve
+  // the photo only from the bundled-local resolver; fall back to initials.
+  const photo = resolveAvatarUrl(name);
   return (
     <span
       aria-label={name}
@@ -37,9 +44,9 @@ export function PresenceAvatar({ src, name, size = 36, presence = null, displayL
         flex: '0 0 auto',
       }}
     >
-      {src ? (
+      {photo ? (
         <img
-          src={src}
+          src={photo}
           alt=""
           width={size}
           height={size}
