@@ -21,16 +21,6 @@ export const useVoiceFlow = () => useContext(VoiceFlowContext);
 
 interface Props { children?: React.ReactNode }
 
-/**
- * VoiceFlowProvider — global singleton for voice translate dictation.
- *
- * Gate: feature flag `voice_dictation` must be enabled in the DB.
- * Also requires env var VITE_VOICE_DICTATION_ENABLED=true for the flag
- * to take effect (double gate — admin toggle + deploy toggle).
- *
- * Phase 1 flow:
- *   double-space → arming → listening (MediaRecorder) → processing (Gemini) → commit → idle
- */
 export function VoiceFlowProvider({ children }: Props) {
   const { isModuleEnabled } = useFeatureFlags();
   const featureEnabled =
@@ -41,86 +31,33 @@ export function VoiceFlowProvider({ children }: Props) {
   const [result, setResult] = useState<VoiceResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const captureRef   = useRef(new AudioCaptureService());
-  const fieldRef     = useRef<ActiveField | null>(null);
-  const sessionIdRef = useRef<string | null>(null);
-  const recordStartRef = useRef(0);
+  // Ref mirror of status — timer/async callbacks read this to avoid stale closure
+  const statusRef         = useRef<VoiceStatus>('idle');
+  const captureRef        = useRef(new AudioCaptureService());
+  const fieldRef          = useRef<ActiveField | null>(null);
+  const sessionIdRef      = useRef<string | null>(null);
+  // Stable ref to stopAndProcess so commit can always call the current version
+  const stopAndProcessRef = useRef<() => Promise<void>>(() => Promise.resolve());
+
+  const setStatusBoth = (s: VoiceStatus) => {
+    statusRef.current = s;
+    setStatus(s);
+  };
 
   const reset = useCallback(() => {
     captureRef.current.cancel();
     fieldRef.current     = null;
     sessionIdRef.current = null;
-    recordStartRef.current = 0;
+    statusRef.current    = 'idle';
     setStatus('idle');
     setResult(null);
     setErrorMessage(null);
   }, []);
 
-  // ─── Cancel ──────────────────────────────────────────────────────────
-  const cancel = useCallback(() => {
-    if (status === 'idle') return;
-    captureRef.current.cancel();
-    setStatus('cancelled');
-    void updateSession('cancelled');
-    setTimeout(reset, 400); // brief "cancelled" flash, then idle
-  }, [status, reset]);
-
-  // ─── Commit ──────────────────────────────────────────────────────────
-  const commit = useCallback(() => {
-    if (status === 'listening') {
-      // User pressed Space/Enter while recording — stop and process
-      void stopAndProcess();
-      return;
-    }
-    if (status === 'ready' && result && fieldRef.current) {
-      setStatus('committing');
-      try {
-        insertTextIntoTarget(fieldRef.current, result.englishText);
-      } catch (e) {
-        console.warn('[VoiceFlow] insert failed:', e);
-      }
-      void updateSession('completed');
-      setTimeout(reset, 200);
-    }
-  }, [status, result, reset]);
-
-  // ─── Activation (double-space detected) ─────────────────────────────
-  const handleActivate = useCallback(async (field: ActiveField) => {
-    if (status !== 'idle') return;
-
-    fieldRef.current = field;
-    setStatus('arming');
-
-    // Log session start
-    const sessId = crypto.randomUUID();
-    sessionIdRef.current = sessId;
-    void logSessionStart(sessId, field.kind);
-
-    try {
-      await captureRef.current.start({
-        onSilenceTimeout: () => {
-          if (status === 'listening') void stopAndProcess();
-        },
-        onMaxDuration: () => {
-          void stopAndProcess();
-        },
-      });
-      recordStartRef.current = Date.now();
-      setStatus('listening');
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Microphone access denied';
-      setErrorMessage(msg.includes('NotAllowedError') || msg.includes('Permission')
-        ? 'Microphone access denied. Check browser permissions.'
-        : msg);
-      setStatus('error');
-      setTimeout(reset, 3000);
-    }
-  }, [status, reset]);
-
-  // ─── Stop recording → send to Gemini ─────────────────────────────────
+  // ─── Stop recording → Gemini → commit ────────────────────────────────
   const stopAndProcess = useCallback(async () => {
-    if (captureRef.current.isRecording === false && status !== 'listening') return;
-    setStatus('processing');
+    if (!captureRef.current.isRecording && statusRef.current !== 'listening') return;
+    setStatusBoth('processing');
 
     let blob: Blob;
     let durationMs: number;
@@ -130,19 +67,19 @@ export function VoiceFlowProvider({ children }: Props) {
     } catch (e) {
       console.warn('[VoiceFlow] stop capture failed:', e);
       setErrorMessage('Failed to capture audio');
-      setStatus('error');
+      setStatusBoth('error');
       setTimeout(reset, 3000);
       return;
     }
 
     if (blob.size < 1000) {
       setErrorMessage('No audio captured — speak after the capsule appears');
-      setStatus('error');
+      setStatusBoth('error');
       setTimeout(reset, 3000);
       return;
     }
 
-    // Convert to base64
+    // Convert blob → base64
     const arrayBuffer = await blob.arrayBuffer();
     const uint8 = new Uint8Array(arrayBuffer);
     let binaryStr = '';
@@ -177,7 +114,7 @@ export function VoiceFlowProvider({ children }: Props) {
       setResult(voiceResult);
 
       if (VOICE_FLOW_CONFIG.autoCommit && fieldRef.current) {
-        setStatus('committing');
+        setStatusBoth('committing');
         try {
           insertTextIntoTarget(fieldRef.current, voiceResult.englishText);
         } catch (insertErr) {
@@ -186,28 +123,94 @@ export function VoiceFlowProvider({ children }: Props) {
         void updateSession('completed', voiceResult);
         setTimeout(reset, 200);
       } else {
-        setStatus('ready');
+        setStatusBoth('ready');
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Translation failed';
       console.error('[VoiceFlow] transcription error:', e);
       setErrorMessage(msg);
-      setStatus('error');
+      setStatusBoth('error');
       void updateSession('error', undefined, msg);
       setTimeout(reset, 4000);
     }
-  }, [status, reset]);
+  }, [reset]);
+
+  // Keep ref current so timer callbacks always call the latest version
+  stopAndProcessRef.current = stopAndProcess;
+
+  // ─── Cancel ──────────────────────────────────────────────────────────
+  const cancel = useCallback(() => {
+    if (statusRef.current === 'idle') return;
+    captureRef.current.cancel();
+    setStatusBoth('cancelled');
+    void updateSession('cancelled');
+    setTimeout(reset, 400);
+  }, [reset]);
+
+  // ─── Commit ──────────────────────────────────────────────────────────
+  const commit = useCallback(() => {
+    const s = statusRef.current;
+    if (s === 'listening') {
+      void stopAndProcessRef.current();
+      return;
+    }
+    if (s === 'ready' && fieldRef.current) {
+      const r = result; // capture from closure
+      if (!r) return;
+      setStatusBoth('committing');
+      try {
+        insertTextIntoTarget(fieldRef.current, r.englishText);
+      } catch (e) {
+        console.warn('[VoiceFlow] insert failed:', e);
+      }
+      void updateSession('completed', r);
+      setTimeout(reset, 200);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result, reset]);
+
+  // ─── Activation ──────────────────────────────────────────────────────
+  const handleActivate = useCallback(async (field: ActiveField) => {
+    if (statusRef.current !== 'idle') return;
+
+    fieldRef.current = field;
+    setStatusBoth('arming');
+
+    const sessId = crypto.randomUUID();
+    sessionIdRef.current = sessId;
+    void logSessionStart(sessId, field.kind);
+
+    try {
+      await captureRef.current.start({
+        // Use ref so these callbacks always see the live version of stopAndProcess
+        onSilenceTimeout: () => {
+          if (statusRef.current === 'listening') void stopAndProcessRef.current();
+        },
+        onMaxDuration: () => {
+          void stopAndProcessRef.current();
+        },
+      });
+      setStatusBoth('listening');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Microphone access denied';
+      setErrorMessage(msg.includes('NotAllowedError') || msg.includes('Permission')
+        ? 'Microphone access denied. Check browser permissions.'
+        : msg);
+      setStatusBoth('error');
+      setTimeout(reset, 3000);
+    }
+  }, [reset]);
 
   // ─── Keyboard shortcuts ───────────────────────────────────────────────
   useVoiceHotkey({
     enabled: featureEnabled,
-    isVoiceActive: status !== 'idle' && status !== 'cancelled' && status !== 'committed',
+    isVoiceActive: status !== 'idle' && status !== 'cancelled',
     onActivate: handleActivate,
     onCommit: commit,
     onCancel: cancel,
   });
 
-  // ─── Supabase audit helpers ───────────────────────────────────────────
+  // ─── Audit helpers ────────────────────────────────────────────────────
   async function logSessionStart(id: string, kind: string) {
     try {
       await supabase.from('voice_dictation_sessions' as never).insert({
@@ -218,11 +221,7 @@ export function VoiceFlowProvider({ children }: Props) {
     } catch { /* non-blocking */ }
   }
 
-  async function updateSession(
-    newStatus: string,
-    vr?: VoiceResult,
-    errorCode?: string,
-  ) {
+  async function updateSession(newStatus: string, vr?: VoiceResult, errorCode?: string) {
     if (!sessionIdRef.current) return;
     try {
       await supabase.from('voice_dictation_sessions' as never).update({
