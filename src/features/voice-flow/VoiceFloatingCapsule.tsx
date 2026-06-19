@@ -19,7 +19,7 @@ interface Props {
 
 interface Pos { top: number; left: number }
 
-const CAPSULE_STYLE_ID = 'vf-capsule-styles-v4';
+const CAPSULE_STYLE_ID = 'vf-capsule-styles-v5';
 if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID)) {
   const s = document.createElement('style');
   s.id = CAPSULE_STYLE_ID;
@@ -41,7 +41,11 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(18, 28, 45, 0.92);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-radius: 999px;
       padding: 0 12px;
       height: 40px;
@@ -49,8 +53,8 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       max-width: min(480px, calc(100vw - 32px));
     }
     .vf-capsule__row--review {
-      background: rgba(80, 40, 0, 0.92);
-      border: 1px solid rgba(247, 144, 9, 0.4);
+      border-color: rgba(247, 144, 9, 0.5);
+      box-shadow: inset 0 0 0 1px rgba(247, 144, 9, 0.12);
     }
     .vf-capsule--entering .vf-capsule__row {
       animation: vf-slide-in 150ms ease forwards;
@@ -116,9 +120,9 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
 
     /* Text */
     .vf-label {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
-      color: rgba(255,255,255,0.92);
+      color: rgba(255,255,255,0.88);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -126,11 +130,11 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       flex: 1;
     }
     .vf-label--muted {
-      color: rgba(255,255,255,0.65);
+      color: rgba(255,255,255,0.88);
       font-weight: 400;
     }
     .vf-label--result {
-      color: rgba(255,255,255,0.92);
+      color: rgba(255,255,255,0.88);
       font-weight: 400;
     }
     .vf-label--partial {
@@ -204,10 +208,10 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       transition: background 100ms;
     }
     .vf-btn--cancel {
-      background: rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.65);
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.7);
     }
-    .vf-btn--cancel:hover { background: rgba(255,255,255,0.16); }
+    .vf-btn--cancel:hover { background: rgba(255,255,255,0.22); }
     .vf-btn--commit {
       background: #0C66E4;
       color: #FFFFFF;
