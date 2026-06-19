@@ -77,6 +77,8 @@ export interface MessageStreamProps {
   firstUnreadId?: string;
   /** Project key for the active conversation — passed to CreateWorkItemModal. */
   projectKey?: string | null;
+  /** Typing indicator — name of user currently typing, if any */
+  typingUserName?: string | null;
 }
 
 // Broadcast tokens (@here / @channel / @everyone) — these use a distinct
@@ -462,6 +464,11 @@ export function MessageStream({
           />
         ),
       )}
+      {typingUserName && (
+        <div style={{ padding: '8px 12px', fontSize: '12px', color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic' }}>
+          {typingUserName} is typing…
+        </div>
+      )}
     </div>
   );
 }
@@ -557,7 +564,10 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
         {!grouped && (
           <div className="cc-msg__head">
             <span className="cc-msg__name">{msg.authorName}</span>
-            <span className="cc-msg__time">{timeLabel(msg.createdAt)}</span>
+            <span className="cc-msg__time">
+              {timeLabel(msg.createdAt)}
+              {isOwn && <span style={{ marginLeft: '4px' }}>✓✓</span>}
+            </span>
             {msg.editedAt && <span className="cc-msg__edited">(edited)</span>}
           </div>
         )}
