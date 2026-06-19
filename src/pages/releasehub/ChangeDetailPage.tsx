@@ -12,12 +12,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { format, formatDistanceToNowStrict } from 'date-fns';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Spinner from '@atlaskit/spinner';
-import { ArrowLeft, Check } from '@/lib/atlaskit-icons';
+import { Check } from '@/lib/atlaskit-icons';
 import { useChange } from '@/hooks/useReleaseHub';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { NotifyList } from '@/components/releasehub/detail/ReleaseDetailTabs';
 import { SopExecutionTab } from '@/components/releasehub/detail/SopExecutionTab';
 import { RH } from '@/constants/releasehub.design';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -131,9 +132,17 @@ export default function ChangeDetailPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
-      <button onClick={() => navigate('/release-hub/changes')} style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 13, color: T.subtle, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 16 }}>
-        <ArrowLeft size={14} style={{ color: T.subtle }} /> Change Records
-      </button>
+      <div style={{ margin: '-24px -24px 16px' }}>
+        <ProjectPageHeader
+          hubType="release"
+          projectKey="RELEASES"
+          hideTitle
+          trail={[
+            { text: 'Change Records', href: '/release-hub/changes' },
+            { text: c.chg_number },
+          ]}
+        />
+      </div>
 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 8 }}>
         <div>

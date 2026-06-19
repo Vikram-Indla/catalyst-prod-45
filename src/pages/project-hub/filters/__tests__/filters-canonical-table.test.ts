@@ -24,21 +24,25 @@ describe('filters module — canonical components', () => {
     expect(read('FilterDetailPage.tsx')).toMatch(/FilterResultsPanel/);
   });
 
-  it('FiltersListPage has a single Create filter CTA', () => {
+  it('has Create CTAs only in the toolbar and the empty state (no accidental duplicate)', () => {
     const src = read('FiltersListPage.tsx')
       .replace(/\/\*[\s\S]*?\*\//g, '')
       .replace(/^\s*\/\/.*$/gm, '');
-    const matches = src.match(/Create (your first )?filter/g) ?? [];
-    expect(matches.length).toBe(1);
+    // Two legitimate create entry points: the toolbar CTA and the empty-state
+    // button — both wire to navigate(createHref). More than two would signal a
+    // duplicate; fewer would mean a missing CTA.
+    const ctas = src.match(/onClick=\{\(\)\s*=>\s*navigate\(createHref\)\}/g) ?? [];
+    expect(ctas.length).toBe(2);
   });
 
   // Jira directory parity (live /rest/api/3/filter/search probe, 2026-06-10)
   it('FiltersListPage uses the Jira directory toolbar, not tabs', () => {
     const src = read('FiltersListPage.tsx');
     expect(src).not.toMatch(/@atlaskit\/tabs/);
-    expect(src).toMatch(/placeholder="Owner"/);
-    expect(src).toMatch(/placeholder="Project"/);
-    expect(src).toMatch(/placeholder="Group"/);
+    // Toolbar filters are passed as objects ({ id, placeholder, ... }), not JSX attrs.
+    expect(src).toMatch(/placeholder:\s*['"]Owner['"]/);
+    expect(src).toMatch(/placeholder:\s*['"]Project['"]/);
+    expect(src).toMatch(/placeholder:\s*['"]Group['"]/);
   });
 
   it('FiltersListPage renders permissions as icon + text, not lozenges, and has no Last used column', () => {

@@ -52,6 +52,7 @@ import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { useUpdateSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import { useJqlResults, type JqlResultRow } from '@/hooks/workhub/useJqlResults';
+import { useLinkedEntities } from '@/hooks/workhub/useLinkedEntities';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { supabase } from '@/integrations/supabase/client';
@@ -279,11 +280,6 @@ function useProductBrResults(productId: string | null, filters: FilterState, sea
     },
   });
 }
-
-// ── Linked entities (scaffold — same as FilterPreviewPage) ───────────────────
-
-export interface LinkedFilterEntity { type: string; name: string; href?: string; }
-function useLinkedEntities(_filterId: string | null): LinkedFilterEntity[] { return []; }
 
 // ── JQL→FilterState parser (same as FilterPreviewPage — for loading saved filters) ──
 

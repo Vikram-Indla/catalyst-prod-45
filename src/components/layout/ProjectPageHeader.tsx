@@ -35,6 +35,15 @@ interface Props {
    * skip the DB name lookup, and show no star.
    */
   hubType?: 'project' | 'product' | 'incident' | 'release';
+  /**
+   * Detail-page trail. When provided, the breadcrumb renders
+   * "Home / [Root] / ...trail" instead of the auto-derived route word — so a
+   * detail page can show "Home / Releases / Change Records / CHG8841". Each
+   * entry except the last should carry an href; the last is the current page.
+   */
+  trail?: { text: string; href?: string }[];
+  /** Hide the H2 title row (detail pages render their own rich header below). */
+  hideTitle?: boolean;
 }
 
 /** Root crumb label + href per hub type. Global hubs have no entity crumb. */
@@ -56,7 +65,7 @@ export function surfaceStarType(routeWord: string): StarredItemType | undefined 
   return SURFACE_STAR_TYPE[routeWord.trim().toLowerCase()];
 }
 
-export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'project' }: Props) {
+export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'project', trail, hideTitle }: Props) {
   const { pathname } = useLocation();
   const isGlobalHub = hubType === 'incident' || hubType === 'release';
 
@@ -126,9 +135,14 @@ export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'projec
         <BreadcrumbsItem text={rootLabel} href={rootHref} />
         {/* Entity crumb only for entity-scoped hubs (project/product). Global
             hubs (incident/release) jump straight to the route word. */}
-        {!isGlobalHub && <BreadcrumbsItem text={projectName} href={entityHref} />}
-        <BreadcrumbsItem text={routeWord} />
+        {!isGlobalHub && !trail && <BreadcrumbsItem text={projectName} href={entityHref} />}
+        {/* Detail pages pass an explicit trail (e.g. Change Records / CHG8841);
+            otherwise the auto-derived route word is the final crumb. */}
+        {trail
+          ? trail.map((c) => <BreadcrumbsItem key={c.text} text={c.text} href={c.href} />)
+          : <BreadcrumbsItem text={routeWord} />}
       </Breadcrumbs>
+      {!hideTitle && (
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <Heading size="large">{routeWord}</Heading>
         {starType && (
@@ -143,6 +157,7 @@ export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'projec
           />
         )}
       </div>
+      )}
     </div>
   );
 }

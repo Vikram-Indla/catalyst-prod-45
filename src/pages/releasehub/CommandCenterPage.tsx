@@ -29,7 +29,7 @@ import {
 import { RH } from '@/constants/releasehub.design';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
-import { statusBg, statusFg, type StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 import { Avatar } from '@/components/ads/Avatar';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
@@ -74,19 +74,37 @@ function shortWait(since: string | null | undefined): string {
   return `${Math.max(1, differenceInHours(new Date(), d))}H`;
 }
 
-function EnvLozenge({ env }: { env: string | null }) {
-  if (!env) return null;
-  return <StatusLozenge appearance={env === 'production' ? 'success' : 'inprogress'} label={titleCase(env)} />;
+/**
+ * Canonical Jira status pill — identical geometry + palette to the shared
+ * `StatusLozenge` (statusPalette.ts): medium-pastel Jira background, dark text
+ * (#292A2E, never white/inverse), 11px/700/uppercase. Every status-like badge
+ * on this page routes through here so the overview matches the home page and
+ * uses ONLY the canonical Jira status colors. `appearance` is a statusPalette
+ * key: success | inprogress | moved | new | removed | default.
+ */
+function JiraPill({ appearance, label }: { appearance: string; label: string }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: statusBg(appearance), borderRadius: 3, padding: '0 7px', height: 20 }}>
+      <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, lineHeight: '20px', color: statusFg(), textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{label}</span>
+    </span>
+  );
 }
 
+// Environment → canonical Jira appearance. Production = live = green (done),
+// beta = lavender (new), staging = warm yellow (moved), everything else = blue.
+const ENV_APPEARANCE: Record<string, string> = { production: 'success', beta: 'new', staging: 'moved', uat: 'inprogress' };
+function EnvLozenge({ env }: { env: string | null }) {
+  if (!env) return null;
+  return <JiraPill appearance={ENV_APPEARANCE[env] ?? 'inprogress'} label={titleCase(env)} />;
+}
+
+// Health → canonical Jira appearance. at_risk = coral red (removed),
+// on_track = blue (inprogress), done = green (success).
+const HEALTH_APPEARANCE: Record<string, string> = { at_risk: 'removed', on_track: 'inprogress', done: 'success' };
 function HealthLozenge({ health }: { health: string | null }) {
-  const map: Record<string, { label: string; appearance: StatusAppearance }> = {
-    at_risk: { label: 'At risk', appearance: 'removed' },
-    on_track: { label: 'On track', appearance: 'inprogress' },
-    done: { label: 'Done', appearance: 'success' },
-  };
-  const m = map[health ?? ''] ?? { label: titleCase(health), appearance: 'default' as StatusAppearance };
-  return <StatusLozenge appearance={m.appearance} label={m.label} />;
+  if (!health) return null;
+  const label = health === 'at_risk' ? 'At risk' : health === 'on_track' ? 'On track' : titleCase(health);
+  return <JiraPill appearance={HEALTH_APPEARANCE[health] ?? 'default'} label={label} />;
 }
 
 function KpiCard({ label, value, dot, onClick }: { label: string; value: number; dot: string; onClick?: () => void }) {
@@ -327,11 +345,12 @@ export default function CommandCenterPage() {
         ) : prodEvents.slice(0, 4).map((ev) => {
           const ok = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'success';
           const partial = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'partial';
+          const resultAppearance = ok ? 'success' : partial ? 'moved' : 'removed';
           const wi = Array.isArray(ev.workItemsSnapshot) ? ev.workItemsSnapshot.length : null;
           const br = Array.isArray(ev.businessRequestsSnapshot) ? ev.businessRequestsSnapshot.length : null;
           return (
             <div key={ev.id} style={rowStyleClickable()}>
-              <div style={{ flexShrink: 0 }}><StatusLozenge appearance={ok ? 'success' : partial ? 'moved' : 'removed'} label={titleCase(ev.result ?? ev.deploymentStatus)} /></div>
+              <span style={{ flexShrink: 0 }}><JiraPill appearance={resultAppearance} label={titleCase(ev.result ?? ev.deploymentStatus)} /></span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0 }}>{ev.title}</p>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>

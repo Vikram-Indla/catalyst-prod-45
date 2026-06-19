@@ -5,7 +5,6 @@ import Button from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory';
 import { FilterUsageSparkline } from '@/components/filters/FilterUsageSparkline';
 import { FilterResultsPanel } from '@/components/filters/FilterResultsPanel';
@@ -41,7 +40,6 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
     : isTasks ? 'TASKS'
     : routeKey;
   const navigate = useNavigate();
-  const [editOpen, setEditOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
   const { data: filter, isLoading } = useQuery({
@@ -131,6 +129,14 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
     }
   })();
 
+  // Explicit Edit opens the full builder (FilterPreviewPage) for this filter.
+  // The detail page itself stays read-only. G1, 2026-06-19.
+  const editHref =
+    isIncident ? `/incident-hub/filters/create?filterId=${filter.id}`
+    : isTasks ? `/tasks/filters/create?filterId=${filter.id}`
+    : projectKey ? `/${hubBase}/${projectKey}/filters/create?filterId=${filter.id}`
+    : `/product-hub/filters/create?filterId=${filter.id}`;
+
   return (
     <div style={{
       display: 'flex',
@@ -198,7 +204,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
             <Button
               appearance="subtle"
               iconBefore={() => <Edit size="small" />}
-              onClick={() => setEditOpen(true)}
+              onClick={() => navigate(editHref)}
             >
               Edit filter
             </Button>
@@ -387,7 +393,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
             No JQL query saved — <Button
               appearance="link"
               spacing="none"
-              onClick={() => setEditOpen(true)}
+              onClick={() => navigate(editHref)}
             >
               add one now
             </Button>
@@ -408,18 +414,6 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
       </div>
 
       {/* Modals */}
-      {editOpen && (
-        <FilterSaveModal
-          filter={filter}
-          hubScope={isProduct ? 'product' : 'project'}
-          /* 2026-06-16: always pass hub identity for strict scoping.
-             2026-06-17: tasks hub uses the 'TASKS' sentinel as projectKey. */
-          {...(isProduct ? { productKey: projectKey } : { projectKey })}
-          onClose={() => setEditOpen(false)}
-          onSaved={() => setEditOpen(false)}
-        />
-      )}
-
       {historyOpen && (
         <FilterVersionHistory
           filterId={filter.id}
