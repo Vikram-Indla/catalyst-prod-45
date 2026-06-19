@@ -28,6 +28,9 @@
 - Versions: `ph_filter_versions` (11 rows, immutable, indexed). Derived: `filter_derived_views` (2 rows, used via `useFilterDerivedViews`).
 - Board link: `boards.filter_id` (FK → ph_saved_filters.id), partial index present.
 
+## Phase C (G2) — BLOCKED (2026-06-19)
+Attempted parser de-fork. Golden test on the 9 real JQL strings caught: lib parser drops account-id assignees (`assignee = "712020:..."`); fixing it ripples into a pre-existing AllWork assignee id-vs-name inconsistency (`itemPassesFilters` wants display name, `applyServerFilter` wants account id). Reverted all lib/page edits — shipped ONLY a characterization test. De-fork needs a dedicated slice + Vikram decision on the id/name resolution. Details in `03-GAP-AUDIT.md` Phase C note.
+
 ## Open defects / gaps (carried to Gate 3 audit)
 - G1 Directory row click opens BUILDER (`/filters/create?filterId=`), not read-only DETAIL. `FilterDetailPage` route orphaned.
 - G2 Three divergent `filterState→JQL` serializers (`basicToJql`, `lib/filterStateToJql`, `AllWorkToolbar.filterStateToJql`) + reverse parser `jqlToFilterState` FORKED into 3 copies (1 lib + 2 local dupes in FilterPreviewPage:280, ProductFilterPreviewPage:305).

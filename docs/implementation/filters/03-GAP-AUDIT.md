@@ -22,6 +22,15 @@
 - **P1 (7):** G1, G2, G3, G7, G8, G9, G10.
 - **P2 (4):** G5, G6, G11, G12.
 
+## Phase C (G2) — BLOCKED, do not de-fork yet (2026-06-19)
+
+Attempted the "safe half" (delete the 2 forked `jqlToFilterState` regex parsers → use the lib parser). **A golden/characterization test against the 9 real saved-filter JQL strings caught a regression that blocks the swap:**
+
+- The lib parser DROPS the `assignee` facet when the JQL value is a Jira account id (`assignee = "712020:..."`) — `translate()` emits the `assignee_account_id` column but `COLUMN_TO_FACET` only maps `assignee_display_name`. The regex fork keeps it (keys on the JQL field name). 2 of the 9 real filters use account-id assignees.
+- The obvious fix (map `assignee_account_id → 'assignee'` in the lib) is NOT safe: it changes AllWork, which already uses the lib parser, and AllWork has a **pre-existing assignee id-vs-name inconsistency** — `itemPassesFilters` (`AllWorkToolbar.tsx:382`) matches `f.assignee` against `item.assignee.name` (display name), while `applyServerFilter` matches `assignee_account_id`. Feeding account ids into the client path → empty results.
+
+**Decision:** reverted all lib edits; shipped ONLY a characterization test (`src/lib/jql/__tests__/jqlToFilterState.golden.test.ts`) pinning current behavior + documenting the gap. The de-fork needs a prior dedicated slice to resolve the AllWork assignee id/name inconsistency (likely: resolve account id → display name at parse time, or make `itemPassesFilters` match both). **Needs Vikram decision on which path.** Forward-serializer collapse (C3/C4) remains untouched.
+
 ## Cross-cutting notes
 - **Canonical adoption is ALREADY good** — the trio is reused across 4 hubs. This audit does NOT call for re-architecting; it calls for finishing wiring (G3/G10), one security fix (G4), one consolidation (G2), one new hub (G8), one fallback (G9), and cleanup (G5/G6/G11).
 - **No `auth.jwt()` anti-pattern, no MDT/StoryPoints leaks, no parallel table implementations.** The codebase already follows CLAUDE.md reuse/RLS rules.
