@@ -46,6 +46,7 @@ const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
 const IssueFullPage = lazy(() => import("./pages/IssueFullPage"));
 const ChatDockMountLazy = lazy(() => import("./components/chat/ChatDockMount"));
+import { VoiceFlowProvider } from './features/voice-flow';
 
 // Full app routes — only imported when ENABLE_FULL_APP=true
 const FullAppRoutes = ENABLE_FULL_APP
@@ -233,6 +234,7 @@ function App() {
                 <Route path="*" element={<S><NotFound /></S>} />
               </Routes>
               <ChatDockGuard />
+              <VoiceFlowProvider />
               </BrowserRouter>
           </ProcessStepsProvider>
         </NavigationProvider>

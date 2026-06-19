@@ -76,3 +76,11 @@ export const ENABLE_FILTER_TO_DASHBOARD = import.meta.env.VITE_ENABLE_FILTER_TO_
  */
 export const ENABLE_FILTER_WHATSAPP_AI_SUMMARY =
   import.meta.env.VITE_ENABLE_FILTER_WHATSAPP_AI_SUMMARY !== 'false';
+
+/**
+ * Voice Translate Dictation — double-space hotkey, Gemini STT AR/UR/HI→EN.
+ * Defaults to FALSE. Requires runtime flag `voice_dictation` in feature_flags table AND
+ * this env var to both be true/enabled before the feature activates.
+ * Set VITE_VOICE_DICTATION_ENABLED=true to enable locally.
+ */
+export const ENABLE_VOICE_DICTATION = import.meta.env.VITE_VOICE_DICTATION_ENABLED === 'true';
