@@ -29,12 +29,12 @@ import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/use
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { type StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 import { Avatar } from '@/components/ads/Avatar';
-import { ProgressBar } from '@/components/ads/ProgressBar';
 import Heading from '@atlaskit/heading';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { CatyRiskPanel } from '@/components/releasehub/CatyRiskPanel';
+import { ReleasePortfolio } from '@/components/releasehub/ReleasePortfolio';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -74,23 +74,6 @@ function shortWait(since: string | null | undefined): string {
   return `${Math.max(1, differenceInHours(new Date(), d))}H`;
 }
 
-// Environment → canonical statusPalette appearance. Production = live = green,
-// beta = lavender (new), staging = blue (in-progress), uat = blue. No amber —
-// an environment is not a warning state (releasehub bans yellow/amber).
-const ENV_APPEARANCE: Record<string, StatusAppearance> = { production: 'success', beta: 'new', staging: 'inprogress', uat: 'inprogress' };
-function EnvLozenge({ env }: { env: string | null }) {
-  if (!env) return null;
-  return <StatusLozenge appearance={ENV_APPEARANCE[env] ?? 'inprogress'} label={titleCase(env)} />;
-}
-
-// Health → canonical statusPalette appearance. at_risk = coral red (removed),
-// on_track = blue (inprogress), done = green (success).
-const HEALTH_APPEARANCE: Record<string, StatusAppearance> = { at_risk: 'removed', on_track: 'inprogress', done: 'success' };
-function HealthLozenge({ health }: { health: string | null }) {
-  if (!health) return null;
-  const label = health === 'at_risk' ? 'At risk' : health === 'on_track' ? 'On track' : titleCase(health);
-  return <StatusLozenge appearance={HEALTH_APPEARANCE[health] ?? 'default'} label={label} />;
-}
 
 function KpiCard({ label, value, dot, onClick }: { label: string; value: number; dot: string; onClick?: () => void }) {
   return (
@@ -159,15 +142,6 @@ export default function CommandCenterPage() {
     };
   }, [releases, activeReleases, changes, freezes, prodEvents, approvals]);
 
-  const upcoming = useMemo(
-    () => releases
-      .filter((r) => (r.planned_release_date ?? r.target_date))
-      .filter((r) => !TERMINAL_RELEASE.includes(r.status))
-      .sort((a, b) => new Date(a.planned_release_date ?? a.target_date!).getTime() - new Date(b.planned_release_date ?? b.target_date!).getTime())
-      .slice(0, 4),
-    [releases],
-  );
-
   const execQueue = useMemo(
     () => changes.filter((c) => IN_FLIGHT_CHANGE.includes(c.status) || c.status === 'implementing').slice(0, 4),
     [changes],
@@ -229,54 +203,9 @@ export default function CommandCenterPage() {
         <KpiCard label="Deployment Windows" value={kpis.deploymentWindows} dot={T.link} onClick={() => navigate('/release-hub/calendar')} />
       </div>
 
-      {/* Upcoming Release Windows + Release Health */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-        <Panel title="Upcoming Release Windows" action={<ViewLink label="View calendar" onClick={() => navigate('/release-hub/calendar')} />}>
-          {upcoming.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No upcoming releases</div>
-          ) : upcoming.map((r) => {
-            const d = new Date(r.planned_release_date ?? r.target_date!);
-            return (
-              <div key={r.id} style={rowStyleClickable(() => navigate(`/release-hub/${r.id}`))} onClick={() => navigate(`/release-hub/${r.id}`)}>
-                <div style={{ width: 44, height: 44, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-background-information, #E9F2FE)', borderRadius: 8 }}>
-                  <div style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', color: 'var(--ds-text-information, #0055CC)' }}>{format(d, 'MMM')}</div>
-                  <div style={{ fontFamily: RH.fontDisplay, fontSize: 18, fontWeight: 700, lineHeight: 1, color: 'var(--ds-text-information, #0055CC)' }}>{format(d, 'd')}</div>
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</p>
-                  <p style={{ fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>
-                    {r.jira_key
-                      ? <span style={{ fontFamily: T.mono }}>{r.jira_key}</span>
-                      : <span style={{ fontFamily: RH.fontBody }}>{titleCase(r.target_env)}</span>}
-                  </p>
-                </div>
-                <EnvLozenge env={r.target_env} />
-              </div>
-            );
-          })}
-        </Panel>
-
-        <Panel title="Release Health">
-          {activeReleases.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No active releases</div>
-          ) : activeReleases.slice(0, 4).map((r) => {
-            const pct = r.readiness_pct ?? 0;
-            return (
-              <div key={r.id} style={{ padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, gap: 8 }}>
-                  <span style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
-                  <HealthLozenge health={r.health} />
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <ProgressBar value={pct / 100} appearance={r.health === 'at_risk' ? 'default' : 'success'} aria-label={`${r.name} readiness ${pct}%`} />
-                  </div>
-                  <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.subtle, minWidth: 32, textAlign: 'right' }}>{pct}%</span>
-                </div>
-              </div>
-            );
-          })}
-        </Panel>
+      {/* Release portfolio — centerpiece: per-release production confidence */}
+      <div style={{ marginBottom: 16 }}>
+        <ReleasePortfolio />
       </div>
 
       {/* Pending Approvals */}
