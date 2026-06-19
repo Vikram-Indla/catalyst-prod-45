@@ -90,12 +90,13 @@ export function Toolbar({
       style={{
         display: 'flex',
         alignItems: 'center',
-        flexWrap: 'wrap',
+        flexWrap: 'nowrap',
         gap: 2,
         padding: '6px 8px',
         borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         background: 'var(--ds-surface, #FFFFFF)',
         flexShrink: 0,
+        overflowX: 'auto',
       }}
     >
       {micSupported && (

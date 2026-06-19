@@ -881,6 +881,13 @@
   color: inherit !important;
 }
 
+/* RichTextEditor toolbar — single row, horizontal scroll at dock width */
+.cc-conv-pane .catalyst-description-toolbar {
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  gap: 2px !important;
+}
+
 /* ── Collapsible section headers (findings 09-10) ──────────── */
 .cc-dir__section--collapsible {
   display: flex;
