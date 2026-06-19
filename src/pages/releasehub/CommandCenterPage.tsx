@@ -51,9 +51,6 @@ const T = {
   warning: 'var(--ds-text-warning, #A54800)',
   hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
   mono: 'var(--ds-font-family-code, monospace)',
-  discoveryFg: 'var(--ds-text-discovery, #5E4DB2)',
-  discoveryBg: 'var(--ds-background-discovery, #F3F0FF)',
-  discoveryBorder: 'var(--ds-border-discovery, #B8ACF6)',
 };
 
 const TERMINAL_RELEASE = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived'];

@@ -1,98 +1,42 @@
-/**
- * HealthStatusBadge Component
- *
- * CANONICAL PATTERN: Uses CatalystStatusPill for rendering health status.
- * Maps health states to semantic status values, then delegates to CatalystStatusPill
- * which handles portal, colors, keyboard nav, and hover affordances.
- *
- * Health states map to status semantics:
- * - Uncommitted/Committed → 'backlog' (grey/blue)
- * - On Track → 'done' (green)
- * - Delayed → 'in_progress' (amber) — treating as "needs attention"
- * - At Risk/Blocked → 'in_review' (red) — treating as "urgent"
- * - Delivered → 'done' (green)
- *
- * Size and click handler passed through to CatalystStatusPill.
- */
-
-import React, { useCallback } from 'react';
-
-import { BusinessRequestHealth, HealthStatusBadgeProps } from '@/types/date-pulse';
+import React from 'react';
 import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import type { BusinessRequestHealth } from '@/types/date-pulse';
 
-/**
- * Map health status to a semantic status value for CatalystStatusPill
- */
-function mapHealthToStatus(healthStatus: string): string {
-  switch (healthStatus) {
-    case 'Uncommitted':
-      return 'backlog';
-    case 'Committed':
-      return 'backlog'; // Waiting to start
-    case 'On Track':
-      return 'done'; // All clear, on schedule
-    case 'Delayed':
-      return 'in_progress'; // Needs attention
-    case 'At Risk':
-      return 'in_review'; // Urgent action needed
-    case 'Blocked':
-      return 'in_review'; // Critical blocker
-    case 'Delivered':
-      return 'done'; // Complete
-    default:
-      return 'backlog';
-  }
+interface HealthStatusBadgeProps {
+  health: BusinessRequestHealth;
+  size?: 'sm' | 'md' | 'lg';
+  onClick?: () => void;
 }
 
-export const HealthStatusBadge: React.FC<HealthStatusBadgeProps> = ({
-  health,
-  size = 'md',
-  onClick,
-  className = '',
-  'data-testid': testId,
-}) => {
-  const semanticStatus = mapHealthToStatus(health.health_status);
-
-  // For compact pill rendering (no dropdown needed in some contexts)
-  if (onClick) {
-    return (
-      <button
-        onClick={onClick}
-        className={`health-status-badge ${className}`}
-        data-testid={testId || 'health-status-badge'}
-        title={health.health_descriptor}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          padding: 0,
-        }}
-      >
-        <CatalystStatusPill
-          status={semanticStatus}
-          isCompact={size === 'sm'}
-          isLoading={false}
-          onStatusChange={() => {}} // Read-only for health display
-        />
-      </button>
-    );
-  }
-
-  // Default: render the pill without click handler
-  return (
-    <div
-      className={`health-status-badge ${className}`}
-      data-testid={testId || 'health-status-badge'}
-      title={health.health_descriptor}
-    >
-      <CatalystStatusPill
-        status={semanticStatus}
-        isCompact={size === 'sm'}
-        isLoading={false}
-        onStatusChange={() => {}} // Read-only for health display
-      />
-    </div>
-  );
+const HEALTH_COLORS: Record<string, 'success' | 'inprogress' | 'warning' | 'default' | 'danger'> = {
+  'Delivered': 'success',
+  'On Track': 'inprogress',
+  'Committed': 'inprogress',
+  'Delayed': 'warning',
+  'At Risk': 'danger',
+  'Blocked': 'danger',
+  'Uncommitted': 'default',
 };
 
-export default HealthStatusBadge;
+export function HealthStatusBadge({ health, onClick }: HealthStatusBadgeProps) {
+  const appearance = HEALTH_COLORS[health.health_status] || 'default';
+
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        border: 'none',
+        background: 'transparent',
+        cursor: onClick ? 'pointer' : 'default',
+        padding: 0,
+        display: 'inline-flex',
+        alignItems: 'center',
+      }}
+    >
+      <CatalystStatusPill
+        status={health.health_status}
+        appearance={appearance}
+      />
+    </button>
+  );
+}

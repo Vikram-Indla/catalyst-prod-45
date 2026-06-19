@@ -140,6 +140,10 @@ import { STORY_STATUS_LOZENGE, getPriorityLabel, shouldSynthesizeEpicRow, keyCel
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useAtlaskitThemeSync } from '../components/SubtasksPanel/atlaskitTheme';
 import { writeTicketOrigin } from '../hooks/useTicketOrigin';
+import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
+import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
+import { HealthStatusDescriptor } from '@/components/business-request/HealthStatusDescriptor';
+import { DatePulseHoverCard } from '@/components/business-request/DatePulseHoverCard';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import { jiraSyncService } from '@/services/jira-sync.service';
 import { JiraFilterAtlaskit, emptyFilterValue } from '@/components/shared/JiraFilterAtlaskit';
@@ -155,11 +159,6 @@ import type {
   SprintReleaseOption,
 } from '@/components/shared/JiraFilterAtlaskit';
 
-// Date Pulse Phase 2B — health badge column wiring
-import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
-import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
-import { HealthStatusDescriptor } from '@/components/business-request/HealthStatusDescriptor';
-import { DatePulseHoverCard } from '@/components/business-request/DatePulseHoverCard';
 
 // Drag-and-drop — migrated from @dnd-kit → Pragmatic (BAU-backlog-drag-01)
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
@@ -210,7 +209,7 @@ function HealthCell({ row }: { row: BacklogItem }) {
           onMouseLeave={() => setPopoverOpen(false)}
         >
           <HealthStatusDescriptor health={health} />
-          <DatePulseHoverCard violations={health.violations} />
+          <DatePulseHoverCard violations={health.date_pulse_violations} />
         </div>,
         document.body
       )}
@@ -486,6 +485,7 @@ const ALLOWED_COLUMN_IDS = new Set([
   // key id retained for URL backward-compat.
   'key',
   'status',
+  'health',
   'comments',
   'parent',
   'assignee',
