@@ -215,58 +215,7 @@ export default function CommandCenterPage() {
         <ReleaseTimeline />
       </div>
 
-      {/* Pending Approvals */}
-      <div style={{ marginBottom: 16 }}>
-        <Panel title="Pending Approvals" sub="Waiting on specific approvers" action={<ViewLink label="Open sign-off queue" onClick={() => navigate('/release-hub/sign-off-queue')} />}>
-          {approvals.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center' }}>
-              <CheckSquare size={20} style={{ color: T.success }} />
-              <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.success, margin: '8px 0 0' }}>No pending approvals</p>
-            </div>
-          ) : approvals.slice(0, 6).map((a: PendingApproval) => (
-            <div key={a.id} style={rowStyleClickable()}>
-              {(() => { const isRel = a.entityType === 'release'; return <div style={{ flexShrink: 0 }}><StatusLozenge appearance={isRel ? 'inprogress' : 'new'} label={isRel ? 'Release' : 'Change'} /></div>; })()}
-              <div style={{ width: 220, minWidth: 0 }}>
-                {a.chgNumber && <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{a.chgNumber}</span>}
-                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.changeTitle ?? '—'}</p>
-              </div>
-              <Avatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="small" />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.approverName ?? 'Unassigned'}</p>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{titleCase(a.role)}</p>
-              </div>
-              {(() => {
-                const urgent = (a.role ?? '').toLowerCase().includes('emergency');
-                return (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: urgent ? T.danger : T.subtle, whiteSpace: 'nowrap' }}>
-                    <Clock size={12} /> {shortWait(a.waitStartedAt)}
-                  </span>
-                );
-              })()}
-              <button onClick={() => canApprove && navigate('/release-hub/sign-off-queue')} disabled={!canApprove} title={canApprove ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border-success, #4BCE97)`, borderRadius: 6, padding: '4px 12px', cursor: canApprove ? 'pointer' : 'not-allowed', opacity: canApprove ? 1 : 0.5, whiteSpace: 'nowrap' }}>Review</button>
-            </div>
-          ))}
-        </Panel>
-      </div>
-
-      {/* Change Execution Queue */}
-      <div style={{ marginBottom: 16 }}>
-        <Panel title="Change Execution Queue" action={<ViewLink label="All changes" onClick={() => navigate('/release-hub/changes')} />}>
-          {execQueue.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No changes in flight</div>
-          ) : execQueue.map((c) => (
-            <div key={c.id} style={rowStyleClickable(() => navigate(`/release-hub/changes/${c.id}`))} onClick={() => navigate(`/release-hub/changes/${c.id}`)}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.text }}>{c.chg_number}</span>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{c.window_start ? format(new Date(c.window_start), 'MMM d, HH:mm') : (c.deployment_date ? format(new Date(c.deployment_date), 'MMM d') : '—')}</p>
-              </div>
-              <StatusLozenge status={c.status} />
-            </div>
-          ))}
-        </Panel>
-      </div>
-
-      {/* CATY Risk Summary */}
+      {/* CATY Risk Summary — strategic synthesis before operational detail */}
       <div style={{ marginBottom: 16 }}>
         <CatyRiskPanel
           context={riskContext}
@@ -276,8 +225,60 @@ export default function CommandCenterPage() {
         />
       </div>
 
+      {/* Operational panels — 2-column grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+        {/* Pending Approvals */}
+        <Panel title="Pending approvals" sub={`${approvals.length} waiting`} action={<ViewLink label="Sign-off queue" onClick={() => navigate('/release-hub/sign-off-queue')} />}>
+          {approvals.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center' }}>
+              <CheckSquare size={20} style={{ color: T.success }} />
+              <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.success, margin: '8px 0 0' }}>No pending approvals</p>
+            </div>
+          ) : approvals.slice(0, 5).map((a: PendingApproval) => (
+            <div key={a.id} style={rowStyleClickable()}>
+              <Avatar name={a.approverName ?? 'Unassigned'} src={a.approverAvatarUrl ?? undefined} size="small" />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.approverName ?? 'Unassigned'}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.changeTitle ?? '—'}</p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+                {(() => {
+                  const urgent = (a.role ?? '').toLowerCase().includes('emergency');
+                  return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: urgent ? T.danger : T.subtlest }}>{shortWait(a.waitStartedAt)}</span>;
+                })()}
+                <button onClick={() => canApprove && navigate('/release-hub/sign-off-queue')} disabled={!canApprove} title={canApprove ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border-success, #4BCE97)`, borderRadius: 4, padding: '4px 8px', cursor: canApprove ? 'pointer' : 'not-allowed', opacity: canApprove ? 1 : 0.5 }}>Review</button>
+              </div>
+            </div>
+          ))}
+        </Panel>
+
+        {/* Change Execution Queue */}
+        <Panel title="Change execution queue" action={<ViewLink label="All changes" onClick={() => navigate('/release-hub/changes')} />}>
+          {execQueue.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No changes in flight</div>
+          ) : execQueue.map((c) => {
+            const risk = (c.risk_level ?? '').toLowerCase();
+            const riskColor = risk === 'high' ? T.danger : risk === 'medium' ? T.warning : T.subtlest;
+            const windowStr = c.window_start ? format(new Date(c.window_start), 'MMM d, HH:mm') : (c.deployment_date ? format(new Date(c.deployment_date), 'MMM d') : null);
+            return (
+              <div key={c.id} style={rowStyleClickable(() => navigate(`/release-hub/changes/${c.id}`))} onClick={() => navigate(`/release-hub/changes/${c.id}`)}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link, flexShrink: 0 }}>{c.chg_number}</span>
+                    {risk && risk !== 'low' && <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: riskColor, letterSpacing: '0.05em' }}>{risk.toUpperCase()} RISK</span>}
+                  </div>
+                  <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.text, margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title ?? '—'}</p>
+                  {windowStr && <p style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest, margin: '4px 0 0' }}>{windowStr}</p>}
+                </div>
+                <div style={{ flexShrink: 0 }}><StatusLozenge status={c.status} /></div>
+              </div>
+            );
+          })}
+        </Panel>
+      </div>
+
       {/* Recent Production Events */}
-      <Panel title="Recent Production Events" action={<ViewLink label="All events" onClick={() => navigate('/release-hub/production-events')} />}>
+      <Panel title="Recent production events" action={<ViewLink label="All events" onClick={() => navigate('/release-hub/production-events')} />}>
         {prodEvents.length === 0 ? (
           <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No production events</div>
         ) : prodEvents.slice(0, 4).map((ev) => {
