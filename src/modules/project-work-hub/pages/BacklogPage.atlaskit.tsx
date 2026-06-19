@@ -71,7 +71,7 @@ import AkLinkExternalIcon from '@atlaskit/icon/core/link-external';
 import AkLinkIcon from '@atlaskit/icon/core/link';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
-import DropdownMenu, { DropdownItem, DropdownItemGroup, DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
+import DropdownMenu, { DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
 import Modal, {
   ModalBody,
   ModalFooter,
@@ -7500,33 +7500,93 @@ function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFilter
       isFilterRelevantToBacklog(f as unknown as BacklogFilterScopeInput, projectKey, currentUserId),
   );
 
+  // CLAUDE.md 2026-06-13: @atlaskit/dropdown-menu (Popper.js v2) renders at
+  // viewport (0,0) when any ancestor has overflow:hidden — the backlog toolbar
+  // lives inside the overflow:hidden list panel. Bespoke createPortal popup
+  // anchored to the trigger via getBoundingClientRect avoids Popper entirely.
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const [anchor, setAnchor] = useState<{ top: number; right: number } | null>(null);
+
+  useEffect(() => {
+    if (!anchor) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setAnchor(null); }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [anchor]);
+
   if (jqlFilters.length === 0) return null;
 
+  const openMenu = () => {
+    const rect = triggerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setAnchor(anchor ? null : { top: rect.bottom + 4, right: window.innerWidth - rect.right });
+  };
+
   return (
-    <DropdownMenu
-      trigger={({ triggerRef, ...props }) => (
-        <Button
-          ref={triggerRef as React.Ref<HTMLButtonElement>}
-          {...props}
-          appearance="subtle"
-        >
-          <span style={{ color: token('color.text.subtle', '#42526E'), fontSize: 13 }}>
-            Saved filters ({jqlFilters.length})
-          </span>
-        </Button>
-      )}
-    >
-      <DropdownItemGroup>
-        {jqlFilters.map(f => (
-          <DropdownItem
-            key={f.id}
-            description={f.description ?? undefined}
-            onClick={() => onApply(f.jql_query!)}
+    <>
+      <Button ref={triggerRef} appearance="subtle" onClick={openMenu}>
+        <span style={{ color: token('color.text.subtle', '#42526E'), fontSize: 13 }}>
+          Saved filters ({jqlFilters.length})
+        </span>
+      </Button>
+
+      {anchor && ReactDOM.createPortal(
+        <>
+          <div
+            onClick={() => setAnchor(null)}
+            style={{ position: 'fixed', inset: 0, zIndex: 9000 }}
+          />
+          <div
+            role="menu"
+            aria-label="Saved filters"
+            data-testid="backlog.saved-filters-popup"
+            style={{
+              position: 'fixed',
+              top: anchor.top,
+              right: anchor.right,
+              zIndex: 9001,
+              background: token('elevation.surface.overlay', '#FFFFFF'),
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 4,
+              boxShadow: 'var(--ds-shadow-overlay, 0 4px 16px rgba(9, 30, 66, 0.16))',
+              minWidth: 240,
+              maxWidth: 360,
+              padding: '8px 0',
+            }}
           >
-            {f.name}
-          </DropdownItem>
-        ))}
-      </DropdownItemGroup>
-    </DropdownMenu>
+            {jqlFilters.map(f => (
+              <button
+                key={f.id}
+                role="menuitem"
+                onClick={() => { onApply(f.jql_query!); setAnchor(null); }}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  textAlign: 'left',
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  padding: '6px 16px',
+                  font: 'inherit',
+                  color: token('color.text', '#172B4D'),
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                <span style={{ display: 'block', fontSize: 14 }}>{f.name}</span>
+                {f.description && (
+                  <span style={{ display: 'block', fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>
+                    {f.description}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </>,
+        document.body,
+      )}
+    </>
   );
 }

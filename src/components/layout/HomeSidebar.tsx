@@ -32,13 +32,25 @@ import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
 import BacklogIcon from '@atlaskit/icon/glyph/backlog';
 import BoardIcon from '@atlaskit/icon/glyph/board';
+import BulletListIcon from '@atlaskit/icon/glyph/bullet-list';
 import CalendarIcon from '@atlaskit/icon/glyph/calendar';
+import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
+import DiscoverIcon from '@atlaskit/icon/glyph/discover';
+import DocumentsIcon from '@atlaskit/icon/glyph/documents';
+import EditIcon from '@atlaskit/icon/glyph/edit';
 import FilterIcon from '@atlaskit/icon/glyph/filter';
+import GraphBarIcon from '@atlaskit/icon/glyph/graph-bar';
+import GraphLineIcon from '@atlaskit/icon/glyph/graph-line';
 import ListIcon from '@atlaskit/icon/glyph/list';
+import LockIcon from '@atlaskit/icon/glyph/lock';
+import PeopleIcon from '@atlaskit/icon/glyph/people';
+import QueuesIcon from '@atlaskit/icon/glyph/queues';
 import RoadmapIcon from '@atlaskit/icon/glyph/roadmap';
+import SettingsIcon from '@atlaskit/icon/glyph/settings';
+import WarningIcon from '@atlaskit/icon/glyph/warning';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import SidebarClock from './SidebarClock';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
@@ -164,14 +176,17 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         width: '100%',
       }}
     >
-      {/* Section name — the destination, primary weight */}
+      {/* Section name — a CHILD of the space header above it. Deliberately
+          lighter (13px / 400 / subtle) than the 14px/500/primary space header
+          so the parent→child hierarchy reads at a glance and children never
+          look like their own space group (2026-06-19 hierarchy fix). */}
       <span
         style={{
           flex: 1,
           minWidth: 0,
-          color: token('color.text', '#292A2E'),
-          fontWeight: 500,
-          fontSize: token('font.size.100', '14px'),
+          color: token('color.text.subtle', '#44546F'),
+          fontWeight: 400,
+          fontSize: token('font.size.075', '12px'),
           lineHeight: '20px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -329,6 +344,7 @@ function SpaceGroupHeader({
 type SectionIconType = React.ComponentType<{ label: string; size?: string; primaryColor?: string }>;
 
 const SECTION_ICON_MAP: Record<string, SectionIconType> = {
+  // Project / product canonical sections
   dashboard: DashboardIcon as unknown as SectionIconType,
   overview: DashboardIcon as unknown as SectionIconType,
   backlog: BacklogIcon as unknown as SectionIconType,
@@ -338,10 +354,34 @@ const SECTION_ICON_MAP: Record<string, SectionIconType> = {
   boards: BoardIcon as unknown as SectionIconType,
   board: BoardIcon as unknown as SectionIconType,
   allwork: ListIcon as unknown as SectionIconType,
+  work: ListIcon as unknown as SectionIconType,
   list: ListIcon as unknown as SectionIconType,
   calendar: CalendarIcon as unknown as SectionIconType,
   timeline: RoadmapIcon as unknown as SectionIconType,
   filters: FilterIcon as unknown as SectionIconType,
+  settings: SettingsIcon as unknown as SectionIconType,
+  reports: DocumentsIcon as unknown as SectionIconType,
+  analytics: GraphLineIcon as unknown as SectionIconType,
+  insights: GraphBarIcon as unknown as SectionIconType,
+  compare: GraphLineIcon as unknown as SectionIconType,
+  // Release hub sections
+  'command-center': DashboardIcon as unknown as SectionIconType,
+  releases: BulletListIcon as unknown as SectionIconType,
+  triage: QueuesIcon as unknown as SectionIconType,
+  changes: EditIcon as unknown as SectionIconType,
+  'sign-off-queue': CheckCircleIcon as unknown as SectionIconType,
+  'production-events': WarningIcon as unknown as SectionIconType,
+  'freeze-windows': LockIcon as unknown as SectionIconType,
+  // Incident hub sections
+  'all-incidents': WarningIcon as unknown as SectionIconType,
+  'committee-queue': QueuesIcon as unknown as SectionIconType,
+  // Plan hub sections
+  library: DocumentsIcon as unknown as SectionIconType,
+  master: RoadmapIcon as unknown as SectionIconType,
+  resources: PeopleIcon as unknown as SectionIconType,
+  ai: DiscoverIcon as unknown as SectionIconType,
+  capacity: GraphBarIcon as unknown as SectionIconType,
+  'budget-planner': GraphLineIcon as unknown as SectionIconType,
 };
 
 function getSectionIcon(section: string): SectionIconType {
@@ -350,12 +390,32 @@ function getSectionIcon(section: string): SectionIconType {
 
 function SectionIconWrapper({ section, color }: { section: string; color?: string | null }) {
   const Icon = getSectionIcon(section);
+  // Indented child row with a vertical guide rail connecting it to its space
+  // header above (the approved 2026-06-19 hierarchy design). The wrapper is the
+  // left-most element of SidebarBase's menu button (flex, align-items:center,
+  // 4px vertical padding, 40px min-height). alignSelf:stretch + the -4px top/
+  // bottom margins bleed the border through the button's padding so consecutive
+  // rows' rails butt together into one continuous line. borderLeft = the rail;
+  // paddingLeft pushes the glyph to the right of it; marginLeft sets the indent.
   return (
-    <Icon
-      label=""
-      size="small"
-      primaryColor={color ?? 'var(--ds-text-subtle, #44546F)'}
-    />
+    <span
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        alignSelf: 'stretch',
+        marginTop: -4,
+        marginBottom: -4,
+        marginLeft: token('space.100', '8px'),
+        paddingLeft: token('space.150', '12px'),
+        borderLeft: '1.5px solid var(--ds-border, #091E4224)',
+      }}
+    >
+      <Icon
+        label=""
+        size="small"
+        primaryColor={color ?? 'var(--ds-text-subtle, #44546F)'}
+      />
+    </span>
   );
 }
 
