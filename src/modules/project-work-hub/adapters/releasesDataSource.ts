@@ -270,6 +270,10 @@ export function useReleasesSource(): BacklogDataSource | null {
     productId: 'RELEASES',
 
     entityKind: 'release',
+
+    /* Returns 'Release' so BacklogPage renders the teal stopwatch icon
+       instead of the amber Business Request lightbulb fallback. */
+    resolveItemType: () => 'Release',
   }), [
     extraStories, isLoading,
     statusOptions, allStatuses, resolvedStatusAppearance, resolvedStatusLabel,

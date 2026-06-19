@@ -24,7 +24,8 @@
         { "id": "frontend",            "label": "Frontend",            "color": "#1868DB", "metaphor": "window with brackets",    "mapsToJira": null,             "darkVariant": null },
         { "id": "backend",             "label": "Backend",             "color": "#1868DB", "metaphor": "code chevrons",           "mapsToJira": null,             "darkVariant": null },
         { "id": "integration",         "label": "Integration",         "color": "#1868DB", "metaphor": "three connected nodes",   "mapsToJira": null,             "darkVariant": null },
-        { "id": "figma",               "label": "Figma",               "color": "#292A2E", "metaphor": "Figma F-mark",            "mapsToJira": null,             "darkVariant": "_dark/figma.svg" }
+        { "id": "figma",               "label": "Figma",               "color": "#292A2E", "metaphor": "Figma F-mark",            "mapsToJira": null,             "darkVariant": "_dark/figma.svg" },
+        { "id": "release",             "label": "Release",             "color": "#0C7A6D", "metaphor": "stopwatch with clock hands","mapsToJira": null,             "darkVariant": null }
       ]
     },
     "priority": {

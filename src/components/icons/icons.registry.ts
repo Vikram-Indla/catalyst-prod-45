@@ -47,6 +47,7 @@ import integrationLight from '@/assets/icons/work-type/integration.svg?url';
 import figmaLight from '@/assets/icons/work-type/figma.svg?url';
 import brdTaskLight from '@/assets/icons/work-type/brd-task.svg?url';
 import uatFindingLight from '@/assets/icons/work-type/uat-finding.svg?url';
+import releaseLight from '@/assets/icons/work-type/release.svg?url';
 
 import figmaDark from '@/assets/icons/work-type/_dark/figma.svg?url';
 import brdTaskDark from '@/assets/icons/work-type/_dark/brd-task.svg?url';
@@ -174,7 +175,7 @@ export type WorkItemType =
   | 'feature' | 'change-request' | 'production-incident'
   | 'business-request' | 'business-gap' | 'api-requirement'
   | 'frontend' | 'backend' | 'integration' | 'figma'
-  | 'brd-task' | 'uat-finding';
+  | 'brd-task' | 'uat-finding' | 'release';
 
 export type PriorityLevel =
   | 'highest' | 'high' | 'medium' | 'low' | 'lowest' | 'none';
@@ -232,7 +233,7 @@ export const WORK_ITEM_TYPES: readonly WorkItemType[] = [
   'story', 'task', 'epic', 'sub-task', 'qa-bug', 'feature', 'change-request',
   'production-incident', 'business-request', 'business-gap', 'api-requirement',
   'frontend', 'backend', 'integration', 'figma',
-  'brd-task', 'uat-finding',
+  'brd-task', 'uat-finding', 'release',
 ] as const;
 
 export const PRIORITY_LEVELS: readonly PriorityLevel[] = [
@@ -266,6 +267,7 @@ export const WORK_TYPE_REGISTRY: Record<WorkItemType, WorkTypeMeta> = {
   'figma':               { id: 'figma',               label: 'Figma',               color: 'var(--ds-text, #292A2E)',           light: figmaLight,               dark: figmaDark },
   'brd-task':            { id: 'brd-task',            label: 'BRD Task',            color: 'var(--ds-text-discovery, #6554C0)', light: brdTaskLight,             dark: brdTaskDark },
   'uat-finding':         { id: 'uat-finding',         label: 'UAT Finding',         color: 'var(--ds-text-discovery, #6554C0)', light: uatFindingLight,          dark: uatFindingDark },
+  'release':             { id: 'release',             label: 'Release',             color: '#0C7A6D',                            light: releaseLight,             dark: releaseLight },
 };
 
 export const PRIORITY_REGISTRY: Record<PriorityLevel, PriorityMeta> = {
@@ -524,6 +526,7 @@ export function normalizeWorkItemType(raw: string | null | undefined): WorkItemT
   if (t === 'figma' || t === 'entity figma') return 'figma';
   if (t.includes('brd')) return 'brd-task';
   if (t.includes('uat')) return 'uat-finding';
+  if (t === 'release') return 'release';
 
   return null;
 }

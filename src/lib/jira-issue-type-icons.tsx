@@ -216,6 +216,13 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
     color: 'var(--ds-text-warning, #FFAB00)',
     iconFile: 'business-request',
   },
+
+  // ── Release: teal stopwatch ──
+  release: {
+    label: 'Release',
+    color: '#0C7A6D',
+    iconFile: 'release',
+  },
 };
 
 export const PROTECTED_ISSUE_TYPE_OPTIONS = [
@@ -238,6 +245,7 @@ export const PROTECTED_ISSUE_TYPE_OPTIONS = [
   'QA Bug',
   'Question',
   'Story',
+  'Release',
   'Sub-task',
   'Task',
   'UAT Finding',
@@ -288,6 +296,7 @@ export function resolveJiraTypeConfig(issueType: string): JiraTypeConfig {
   if (t.includes('backend')) return CONFIGS.backend;
   if (t.includes('frontend')) return CONFIGS.frontend;
   if (t.includes('integration')) return CONFIGS.integration;
+  if (t === 'release') return CONFIGS.release;
   if (t.includes('task')) return CONFIGS.task;
   if (t.includes('feature')) return CONFIGS.feature;
   if (t.includes('issue')) return CONFIGS.issue;
