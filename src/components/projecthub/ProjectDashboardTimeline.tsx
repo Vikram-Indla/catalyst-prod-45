@@ -10,120 +10,274 @@ const T = {
   subtlest: 'var(--ds-text-subtlest, #626F86)',
   bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
   link: 'var(--ds-link, #0C66E4)',
-  success: 'var(--ds-background-success, #216E4E)',
-  warning: 'var(--ds-background-warning, #974F0C)',
-  danger: 'var(--ds-background-danger, #AE2A19)',
 };
 
-const CONF_DOT: Record<string, string> = {
-  high: T.success,
-  medium: T.warning,
-  low: T.danger,
-  draft: 'var(--ds-background-subtlest, #B3B9C4)',
+type SprintStatus = 'released' | 'active' | 'soon' | 'upcoming' | 'future';
+
+function getStatus(releaseDate: string, today: Date): SprintStatus {
+  const diff = differenceInDays(new Date(releaseDate), today);
+  if (diff < -14)               return 'released';
+  if (diff >= -14 && diff <= 7) return 'active';
+  if (diff > 7 && diff <= 30)   return 'soon';
+  if (diff > 30 && diff <= 120) return 'upcoming';
+  return 'future';
+}
+
+// Solid ADS icon tokens — NOT background-* tokens (those resolve to pastels)
+const STATUS_STYLE: Record<SprintStatus, { dot: string; bg: string; text: string; borderColor: string; label: string }> = {
+  released: {
+    dot:         'var(--ds-icon-disabled, #8993A5)',
+    bg:          'var(--ds-background-neutral, #F1F2F4)',
+    text:        'var(--ds-text-subtlest, #626F86)',
+    borderColor: 'var(--ds-border, #DFE1E6)',
+    label:       'Completed',
+  },
+  active: {
+    dot:         'var(--ds-icon-brand, #0C66E4)',
+    bg:          'var(--ds-background-selected, #E9F2FF)',
+    text:        'var(--ds-link, #0C66E4)',
+    borderColor: 'var(--ds-border-focused, #388BFF)',
+    label:       'Active',
+  },
+  soon: {
+    dot:         'var(--ds-icon-warning, #D97008)',
+    bg:          'var(--ds-background-warning-subtle, #FFF7D6)',
+    text:        'var(--ds-text-warning, #7F5F01)',
+    borderColor: 'var(--ds-border-warning, #F8E6A0)',
+    label:       'Due soon',
+  },
+  upcoming: {
+    dot:         'var(--ds-icon-success, #22A06B)',
+    bg:          'var(--ds-background-success-subtle, #DCFFF1)',
+    text:        'var(--ds-text-success, #216E4E)',
+    borderColor: 'var(--ds-border-success, #BAF3DB)',
+    label:       'Upcoming',
+  },
+  future: {
+    dot:         'var(--ds-icon-subtle, #626F86)',
+    bg:          'var(--ds-background-neutral, #F1F2F4)',
+    text:        'var(--ds-text-subtle, #44546F)',
+    borderColor: 'var(--ds-border, #DFE1E6)',
+    label:       'Planned',
+  },
 };
 
 export function ProjectDashboardTimeline({ projectKey }: { projectKey: string }) {
   const { data, isLoading } = useProjectTimeline(projectKey);
-  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showPast, setShowPast] = useState(false);
 
-  if (isLoading || !data?.sprints) return null;
-  if (data.sprints.length === 0) return null;
+  if (isLoading || !data?.sprints?.length) return null;
 
-  const sprints = data.sprints;
   const today = startOfDay(new Date());
-  const rangeStart = addDays(today, -14);
-  const rangeEnd = sprints.length > 0
-    ? addDays(new Date(sprints[sprints.length - 1].releaseDate), 21)
-    : addDays(today, 90);
+  const sprints = data.sprints;
+
+  // Split: past (>14 days ago) vs active/upcoming
+  const past = sprints.filter(s => differenceInDays(new Date(s.releaseDate), today) < -14);
+  const visible = sprints.filter(s => differenceInDays(new Date(s.releaseDate), today) >= -14);
+
+  // Track shows last past sprint as anchor + all visible
+  const anchor = past.length > 0 ? past[past.length - 1] : null;
+  const trackSprints = [...(anchor ? [anchor] : []), ...visible];
+
+  // Date window: from anchor-7d to last visible+21d (or today+60d fallback)
+  const rangeStart = anchor
+    ? addDays(new Date(anchor.releaseDate), -7)
+    : addDays(today, -14);
+  const rangeEnd = visible.length > 0
+    ? addDays(new Date(visible[visible.length - 1].releaseDate), 21)
+    : addDays(today, 60);
   const totalDays = Math.max(1, differenceInDays(rangeEnd, rangeStart));
   const todayPct = Math.max(0, Math.min(100, (differenceInDays(today, rangeStart) / totalDays) * 100));
+  const pct = (d: Date) => Math.max(0, Math.min(100, (differenceInDays(d, rangeStart) / totalDays) * 100));
 
-  const pct = (d: Date) => {
-    const p = (differenceInDays(d, rangeStart) / totalDays) * 100;
-    return Math.max(0, Math.min(100, p));
-  };
-
-  const selectedSprint = sprints.find(s => s.id === selectedSprintId);
+  const selectedSprint = sprints.find(s => s.id === selectedId);
 
   return (
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
+      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: T.text }}>Sprint Timeline</span>
-        <span style={{ fontSize: 12, color: T.subtlest }}>
-          {format(rangeStart, 'MMM d')} – {format(rangeEnd, 'MMM d')}
-        </span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Sprint Timeline</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {past.length > 0 && (
+            <button
+              onClick={() => setShowPast(v => !v)}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: 11, color: T.subtle, display: 'flex', alignItems: 'center',
+                gap: 4, padding: 0, fontFamily: 'inherit',
+              }}
+            >
+              <span style={{ fontSize: 9 }}>{showPast ? '▼' : '▶'}</span>
+              {past.length} past
+            </button>
+          )}
+          <span style={{ fontSize: 11, color: T.subtlest }}>
+            {format(rangeStart, 'MMM d')} – {format(rangeEnd, 'MMM d, yyyy')}
+          </span>
+        </div>
       </div>
 
-      <div style={{ padding: '16px 16px 0' }}>
-        {/* Track */}
-        <div style={{ position: 'relative', height: 44, borderRadius: 4, background: T.bgNeutral }}>
-          {/* Today hairline */}
+      {/* Track */}
+      <div style={{ padding: '14px 16px 0' }}>
+        <div style={{ position: 'relative', height: 36, borderRadius: 4, background: T.bgNeutral }}>
+          {/* Today line */}
           <div style={{ position: 'absolute', left: `${todayPct}%`, top: -4, bottom: -4, width: 2, background: T.link, zIndex: 2 }}>
-            <span style={{ position: 'absolute', bottom: '100%', marginBottom: 4, left: '50%', transform: 'translateX(-50%)', fontSize: 9, fontWeight: 700, color: T.link, whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>TODAY</span>
+            <span style={{
+              position: 'absolute', bottom: '100%', marginBottom: 3,
+              left: '50%', transform: 'translateX(-50%)',
+              fontSize: 9, fontWeight: 700, color: T.link, whiteSpace: 'nowrap', letterSpacing: '0.08em',
+            }}>TODAY</span>
           </div>
 
           {/* Sprint dots */}
-          {sprints.map((sprint) => {
+          {trackSprints.map(sprint => {
+            const status = getStatus(sprint.releaseDate, today);
+            const style = STATUS_STYLE[status];
             const p = pct(startOfDay(new Date(sprint.releaseDate)));
-            const isSelected = sprint.id === selectedSprintId;
+            const isSelected = sprint.id === selectedId;
             return (
               <div
                 key={sprint.id}
-                onClick={() => setSelectedSprintId(isSelected ? null : sprint.id)}
-                title={`${sprint.name} — ${sprint.storyCount ?? 0} stories`}
+                onClick={() => setSelectedId(isSelected ? null : sprint.id)}
+                title={`${sprint.name} · ${sprint.storyCount ?? 0} work items · ${format(new Date(sprint.releaseDate), 'MMM d, yyyy')}`}
                 style={{
                   position: 'absolute',
                   left: `${p}%`,
                   top: '50%',
                   transform: 'translate(-50%, -50%)',
-                  width: 14,
-                  height: 14,
+                  width: isSelected ? 16 : 12,
+                  height: isSelected ? 16 : 12,
                   borderRadius: '50%',
-                  background: CONF_DOT[sprint.confidence || 'draft'],
-                  border: isSelected ? `3px solid ${T.link}` : '2px solid white',
-                  zIndex: 3,
+                  background: style.dot,
+                  border: isSelected ? `2px solid ${T.link}` : `2px solid ${T.card}`,
+                  zIndex: isSelected ? 5 : 3,
                   cursor: 'pointer',
-                  boxShadow: isSelected ? `0 0 0 2px ${T.card}` : 'none',
+                  transition: 'all 0.12s ease',
+                  boxShadow: isSelected
+                    ? `0 0 0 3px rgba(12,102,228,0.18)`
+                    : '0 1px 2px rgba(9,30,66,0.18)',
                 }}
               />
             );
           })}
         </div>
 
-        {/* Axis labels */}
-        <div style={{ position: 'relative', height: 18, marginTop: 4 }}>
-          <span style={{ position: 'absolute', left: 0, fontSize: 10, color: T.subtlest }}>{format(rangeStart, 'MMM d')}</span>
-          <span style={{ position: 'absolute', left: `${todayPct}%`, transform: 'translateX(-50%)', fontSize: 10, fontWeight: 600, color: T.link, whiteSpace: 'nowrap' }}>{format(new Date(), 'MMM d')}</span>
-          <span style={{ position: 'absolute', right: 0, fontSize: 10, color: T.subtlest }}>{format(rangeEnd, 'MMM d')}</span>
+        {/* Axis */}
+        <div style={{ position: 'relative', height: 16, marginTop: 3 }}>
+          <span style={{ position: 'absolute', left: 0, fontSize: 10, color: T.subtlest }}>
+            {format(rangeStart, 'MMM d')}
+          </span>
+          <span style={{
+            position: 'absolute', left: `${todayPct}%`,
+            transform: 'translateX(-50%)',
+            fontSize: 10, fontWeight: 600, color: T.link, whiteSpace: 'nowrap',
+          }}>
+            {format(today, 'MMM d')}
+          </span>
+          <span style={{ position: 'absolute', right: 0, fontSize: 10, color: T.subtlest }}>
+            {format(rangeEnd, 'MMM d')}
+          </span>
         </div>
       </div>
 
-      {/* Legend chips */}
-      <div style={{ padding: '8px 16px 12px', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {sprints.map((sprint) => (
-          <div key={sprint.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', background: T.bgNeutral, borderRadius: 4 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: CONF_DOT[sprint.confidence || 'draft'], flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: T.subtle, fontWeight: 500 }}>{sprint.name}</span>
-            {sprint.releaseDate && (
-              <span style={{ fontSize: 11, color: T.subtlest }}>
-                {format(new Date(sprint.releaseDate), 'MMM d')}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Selected sprint details */}
-      {selectedSprint && (
-        <div style={{ padding: '12px 16px', borderTop: `1px solid ${T.border}`, background: T.bgNeutral }}>
-          <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 8, color: T.text }}>
-            {selectedSprint.name} · {selectedSprint.storyCount ?? 0} stories
-          </div>
-          <div style={{ fontSize: 12, color: T.subtlest }}>
-            Stories in this sprint appear in the list below
-          </div>
+      {/* Active/upcoming chip row */}
+      {visible.length > 0 && (
+        <div style={{ padding: '10px 16px 12px', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {visible.map(sprint => {
+            const status = getStatus(sprint.releaseDate, today);
+            const style = STATUS_STYLE[status];
+            const isSelected = sprint.id === selectedId;
+            return (
+              <button
+                key={sprint.id}
+                onClick={() => setSelectedId(isSelected ? null : sprint.id)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '3px 8px 3px 6px',
+                  background: isSelected ? style.bg : T.bgNeutral,
+                  border: `1px solid ${isSelected ? style.dot : T.border}`,
+                  borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit',
+                  transition: 'all 0.1s ease',
+                }}
+              >
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: style.dot, flexShrink: 0 }} />
+                <span style={{ fontSize: 12, color: isSelected ? style.text : T.subtle, fontWeight: isSelected ? 600 : 400 }}>
+                  {sprint.name}
+                </span>
+                <span style={{ fontSize: 10, color: T.subtlest }}>
+                  {format(new Date(sprint.releaseDate), 'MMM d')}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
+
+      {/* Past sprints (collapsed) */}
+      {showPast && past.length > 0 && (
+        <div style={{ padding: '0 16px 10px', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {past.map(sprint => {
+            const isSelected = sprint.id === selectedId;
+            const style = STATUS_STYLE.released;
+            return (
+              <button
+                key={sprint.id}
+                onClick={() => setSelectedId(isSelected ? null : sprint.id)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '3px 8px 3px 6px',
+                  background: isSelected ? style.bg : T.bgNeutral,
+                  border: `1px solid ${isSelected ? style.dot : T.border}`,
+                  borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit', opacity: 0.65,
+                }}
+              >
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: style.dot, flexShrink: 0 }} />
+                <span style={{ fontSize: 11, color: T.subtlest }}>{sprint.name}</span>
+                <span style={{ fontSize: 10, color: T.subtlest }}>{format(new Date(sprint.releaseDate), 'MMM d')}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Selected sprint detail panel */}
+      {selectedSprint && (() => {
+        const status = getStatus(selectedSprint.releaseDate, today);
+        const style = STATUS_STYLE[status];
+        return (
+          <div style={{
+            padding: '12px 16px', borderTop: `1px solid ${T.border}`,
+            background: style.bg,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: style.dot, flexShrink: 0 }} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{selectedSprint.name}</span>
+                <span style={{
+                  fontSize: 11, fontWeight: 500, color: style.text,
+                  background: T.card, border: `1px solid ${style.dot}`,
+                  borderRadius: 10, padding: '1px 7px',
+                }}>
+                  {style.label}
+                </span>
+              </div>
+              <div style={{ fontSize: 12, color: T.subtle, paddingLeft: 16, display: 'flex', gap: 16 }}>
+                <span>{format(new Date(selectedSprint.releaseDate), 'MMMM d, yyyy')}</span>
+                <span>{selectedSprint.storyCount ?? 0} work items</span>
+              </div>
+            </div>
+            <button
+              onClick={() => setSelectedId(null)}
+              aria-label="Close sprint detail"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: T.subtlest, lineHeight: 1, padding: '0 2px', fontFamily: 'inherit' }}
+            >
+              ×
+            </button>
+          </div>
+        );
+      })()}
     </div>
   );
 }
