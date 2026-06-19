@@ -8,8 +8,8 @@ description: >-
   Mandatory before any design-only surface is declared done.
   Triggers on: "design critique", "UX review", "audit the design", "heuristic
   review", "design score", "does this look right", "rate the UI".
-version: 1.1.0
-author: preflight × Vikram × Claude, 2026-06-01 (v1.1: clone-parity gate + 10 anti-shipping-fast guards)
+version: 1.3.0
+author: preflight × Vikram × Claude, 2026-06-19 (v1.3: 80/20 output contract — one-liners + widget, no commentary; v1.2: mandatory visual widget consent gate; v1.1: clone-parity gate + 10 anti-shipping-fast guards)
 metadata:
   category: design-quality
   tags: [design, ux, heuristics, audit, closure, ads, atlaskit]
@@ -24,6 +24,57 @@ Stop subjective "looks good" sign-offs. Produce a scored, evidence-backed
 design audit against 10 measurable heuristics before any UI surface is
 declared done. Pairs with `jira-compare` (pixel parity) and `ads-validator`
 (token compliance) to form the full UI quality gate.
+
+---
+
+## 📐 OUTPUT CONTRACT — 80% VISUAL, 20% ONE-LINERS (P0, non-negotiable)
+
+**The widget (and the live-page arrows) carry the critique. Prose is a caption.** Every turn of this skill:
+
+1. **No commentary, no narration, no "let me…" lines.** Probe silently; report only the result.
+2. **Each section is ONE line.** Collapse the critique to:
+   ```
+   Understanding: <surface + what's being judged, one line>
+   Violations: <count + the top issues, one line — e.g. "3 P0: shadcn dropdown, raw hex header, uppercase labels">
+   Score: <X/30 · SHIP|HALT>
+   ```
+   For a fix turn:
+   ```
+   Fix: <one line>
+   Applied: <files/paths, one line>
+   Violations: <remaining, one line, or "none">
+   ```
+3. **Then the widget** (`mcp__visualize__show_widget`) — the scorecard, violation map, or before→after lives here, not in prose. The full findings table goes INTO the widget, never as paragraphs.
+4. **Then the consent line**, then STOP.
+5. Target ≤4 short prose lines per turn. The soft-announcement / score banners below still apply, but no free-text explanation around them.
+
+A critique that emits paragraphs instead of one-liners + widget is a process violation, even if the scoring is correct.
+
+---
+
+## 🖼️ MANDATORY VISUAL WIDGET GATE (P0, non-negotiable)
+
+**After every narrative and after every change, you MUST render a visual widget of what is being proposed or what changed — and STOP until the user consents. No widget → no movement. No consent → no movement.** This is in addition to the live-page SVG red→green arrows below; the arrows annotate the running page, the widget renders inline in chat as the consent artefact.
+
+### The rule
+
+1. **Tool:** call `mcp__visualize__read_me` once per session (silently — do not narrate it), then render with `mcp__visualize__show_widget`. A text findings table is not a widget and does not satisfy the gate.
+2. **When it fires (every time, no exceptions):**
+   - After the findings narrative / score is produced — render a widget that depicts the findings (e.g. a before→after of the surface, an annotated heuristic scorecard, or the violation map).
+   - After EVERY individual fix during a red→green pass — render a before→after widget of that specific fix. One fix = one widget.
+   - Before declaring the surface design-complete — render a final summary widget of the full red→green progression.
+3. **Consent gate:** after rendering, emit `Widget rendered. Confirm to proceed (reply "approved" / "looks good" / "proceed"), or tell me what to change.` and then **STOP**. Do not apply the next fix, re-score, commit, or declare closure until the user explicitly consents.
+4. **No consent, no movement.** If the user requests edits, revise the widget and re-emit the consent line. A silent or ambiguous reply is not consent.
+5. **The widget must depict the REQUESTED change / finding** — not generic decoration. Annotated before/after of the affected surface, the heuristic scorecard, or the violation diagram.
+
+### Output marker (emit with every widget)
+
+```
+🖼️ VISUAL WIDGET GATE — {what this widget depicts}
+Awaiting consent. No movement until you approve.
+```
+
+A critique that advances a fix, re-scores, or declares closure without a rendered widget + explicit consent is a process violation.
 
 ---
 
@@ -326,14 +377,9 @@ For each heuristic, state:
 - **Finding**: what's wrong (if score < 3)
 - **Severity**: P0 (blocks ship) / P1 (fix before next release) / P2 (polish backlog)
 
-### Step 3 — Produce findings table
+### Step 3 — Render the findings table INSIDE the widget (not as prose)
 
-```
-| Heuristic | Score | Finding | Severity | Fix |
-|---|---|---|---|---|
-| H4 Consistency | 1 | Three-dots uses shadcn DropdownMenu; rest of app uses AKDropdownMenu | P0 | Replace with AKDropdownMenu |
-| H9 Typography | 2 | Column headers UPPERCASE (text-transform: uppercase) vs Jira sentence-case | P1 | Set text-transform: none; sentence-case label strings |
-```
+Per the Output Contract, the findings table is the widget payload — render it via `mcp__visualize__show_widget` (a scorecard/violation map), not as a markdown block in chat. In prose, emit only the `Understanding:` / `Violations:` / `Score:` one-liners. Each widget row carries: Heuristic · Score · Finding · Severity · Fix — e.g. `H4 Consistency · 1 · shadcn DropdownMenu vs AKDropdownMenu · P0 · replace with AKDropdownMenu`.
 
 ### Step 4 — Closure Evidence (MANDATORY — same rule as preflight Phase 6)
 
@@ -343,9 +389,10 @@ When the critique is complete and findings are resolved:
 2. **Inject SVG arrow annotations directly on the live page** (↓ ← → ↑) via `javascript_tool`. Every arrow carries a before/after label: `← AKDropdownMenu (was shadcn, dead)`. Raw screenshots with no arrows are **rejected**.
 3. **Display each annotated screenshot inline in the chat** — the conversation IS the artefact. No file export, no folder, no disk storage. Caption each image in chat: surface · heuristic(s) fixed · severity resolved.
 4. Update the preflight handover under `## Design Closure Evidence` with the **caption list only** — visuals live in the chat session above.
-5. Commit before declaring the surface design-complete.
+5. **Render the final Visual Widget Gate widget** (full red→green summary via `mcp__visualize__show_widget`), emit the consent line, and STOP. Do not commit or declare closure until approved.
+6. Commit before declaring the surface design-complete — only after widget consent.
 
-A critique that closes without annotated screenshots has NOT closed.
+A critique that closes without annotated screenshots AND a consented visual widget has NOT closed.
 
 ---
 
