@@ -411,7 +411,7 @@ function ConversationItemRow({
       )}
       {variant === 'ticket' && (
         <span className="cc-item-icon">
-          <JiraIssueTypeIcon type={c.ticketType ?? 'Task'} size={14} />
+          {c.ticketType ? <JiraIssueTypeIcon type={c.ticketType} size={14} /> : null}
         </span>
       )}
       {variant === 'dm' && presence && (

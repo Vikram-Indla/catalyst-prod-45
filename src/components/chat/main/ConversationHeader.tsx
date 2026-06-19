@@ -141,7 +141,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
 
   const glyph = isTicket ? (
     <span className="cc-typesq cc-conv-head__typesq">
-      <JiraIssueTypeIcon type={conversation.ticketType ?? 'Task'} size={12} />
+      {conversation.ticketType ? <JiraIssueTypeIcon type={conversation.ticketType} size={12} /> : null}
     </span>
   ) : isChannel ? (
     <ProjectIcon projectKey={conversation.projectKey ?? ''} size="medium" />
