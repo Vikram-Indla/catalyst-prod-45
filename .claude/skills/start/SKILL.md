@@ -56,7 +56,8 @@ A turn that emits paragraphs of explanation instead of one-liners + widget is a 
 
 ### The rule
 
-1. **Tool:** call `mcp__visualize__read_me` once per session (silently — do not narrate it), then render the widget with `mcp__visualize__show_widget`. This is the ONLY mechanism for the gate; a text description is not a widget and does not satisfy it.
+1. **Tool:** call `mcp__visualize__read_me` once per session (silently — do not narrate it), then render the widget with `mcp__visualize__show_widget`. This is the preferred mechanism; a plain text description is not a widget and does not satisfy it.
+   - **Fallback (portability):** if `mcp__visualize__show_widget` is not available in the current Claude Code client, state that once in a single line, then render the gate as an inline fenced ASCII/markdown mock of the change (before→after / skill map). The consent requirement is unchanged — still STOP and wait. The gate must NEVER silently no-op because the tool is missing.
 2. **When it fires (every time, no exceptions):**
    - After the `/start` recommendation narrative (before `proceed`) — render a widget that maps the requested change: work type, the skills to be applied, and the expected before→after of the surface/outcome.
    - After EVERY individual change during a `proceed` run — render a widget of that specific change (before→after mockup, diagram, or annotated state). One change = one widget.

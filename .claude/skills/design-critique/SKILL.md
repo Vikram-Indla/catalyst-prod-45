@@ -59,6 +59,7 @@ A critique that emits paragraphs instead of one-liners + widget is a process vio
 ### The rule
 
 1. **Tool:** call `mcp__visualize__read_me` once per session (silently — do not narrate it), then render with `mcp__visualize__show_widget`. A text findings table is not a widget and does not satisfy the gate.
+   - **Fallback (portability):** if `mcp__visualize__show_widget` is not available in the current Claude Code client, state that once in a single line, then render the gate as an inline fenced ASCII/markdown scorecard or violation map. The consent requirement is unchanged — still STOP and wait. The gate must NEVER silently no-op because the tool is missing.
 2. **When it fires (every time, no exceptions):**
    - After the findings narrative / score is produced — render a widget that depicts the findings (e.g. a before→after of the surface, an annotated heuristic scorecard, or the violation map).
    - After EVERY individual fix during a red→green pass — render a before→after widget of that specific fix. One fix = one widget.
