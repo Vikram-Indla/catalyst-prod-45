@@ -190,6 +190,31 @@ function SectionHeader({ label, count, collapsed, unreadInSection, onToggle, act
   );
 }
 
+// Group-DM avatar: stack the first two members' avatars (face or single
+// initial via resolveAvatarUrl) instead of mashing both people's initials into
+// one tile. Mirrors the chat-v2 DmRichRow pattern. Single DMs keep one avatar.
+function DmStackAvatar({ c }: { c: ChatConversation }) {
+  const names = c.dmMemberNames ?? [];
+  if (c.kind === 'group_dm' && names.length >= 2) {
+    return (
+      <span
+        aria-label={c.title}
+        style={{ position: 'relative', width: 28, height: 28, flex: '0 0 auto', display: 'inline-block' }}
+      >
+        <span style={{ position: 'absolute', top: 0, left: 0 }}>
+          <Avatar name={names[0]} seed={names[0]} size={18} />
+        </span>
+        <span
+          style={{ position: 'absolute', bottom: 0, right: 0, borderRadius: '50%', boxShadow: '0 0 0 2px var(--ds-surface, #FFFFFF)' }}
+        >
+          <Avatar name={names[1]} seed={names[1]} size={18} />
+        </span>
+      </span>
+    );
+  }
+  return <Avatar name={c.title} seed={c.id} className="cc-dir__avatar" />;
+}
+
 interface ConvRowProps {
   conversation: ChatConversation;
   isActive: boolean;
@@ -539,7 +564,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
     if (c.kind === 'channel') {
       return <ProjectIcon projectKey={c.projectKey ?? ''} size="medium" />;
     }
-    return <Avatar name={c.title} seed={c.id} className="cc-dir__avatar" />;
+    return <DmStackAvatar c={c} />;
   };
 
   const renderMixedRow = (c: ChatConversation) => (
@@ -814,7 +839,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
             onArchive={(id) => archive.mutate(id)}
             onTogglePin={handleTogglePin}
       
-            glyph={<Avatar name={c.title} seed={c.id} className="cc-dir__avatar" />}
+            glyph={<DmStackAvatar c={c} />}
           />
         ))}
 
