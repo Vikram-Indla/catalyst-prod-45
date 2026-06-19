@@ -1,6 +1,6 @@
 import React from "react";
 import { toStatusCategory } from "@/components/ads";
-import { statusBg, statusFg } from "@/components/catalyst-detail-views/shared/sections/statusPalette";
+import { statusBg, statusFg, type StatusAppearance } from "@/components/catalyst-detail-views/shared/sections/statusPalette";
 
 // Canonical palette (statusPalette.ts). Local pale done-green drifted from
 // canonical #94C748 — unified 2026-06-17.
@@ -55,10 +55,25 @@ function getDisplayName(status: string): string {
   return status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-export function StatusLozenge({ status }: { status: string }) {
-  const category = toStatusCategory(status);
-  const label = getDisplayName(status);
-  const bg = statusBg(CATEGORY_TO_APPEARANCE[category] ?? 'default');
+/**
+ * `status` resolves color + label from the workflow-status category (default
+ * path). For non-status domains (environment, health, deploy outcome) pass an
+ * explicit canonical `appearance` + `label` — same visual contract, no
+ * forking, colors still drawn from the locked statusPalette.
+ */
+export function StatusLozenge({
+  status,
+  appearance,
+  label,
+}: {
+  status?: string;
+  appearance?: StatusAppearance;
+  label?: string;
+}) {
+  const resolvedLabel = label ?? getDisplayName(status ?? '');
+  const resolvedAppearance =
+    appearance ?? CATEGORY_TO_APPEARANCE[toStatusCategory(status ?? '')] ?? 'default';
+  const bg = statusBg(resolvedAppearance);
   return (
     <span style={{
       display: 'inline-flex',
@@ -79,7 +94,7 @@ export function StatusLozenge({ status }: { status: string }) {
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
       }}>
-        {label}
+        {resolvedLabel}
       </span>
     </span>
   );

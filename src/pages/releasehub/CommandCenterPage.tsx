@@ -12,8 +12,10 @@
  */
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formatDistanceToNowStrict, format, isToday, differenceInDays } from 'date-fns';
-import { Rocket, CheckSquare, ArrowLeftRight, Clock, Calendar, AlertTriangle, Sparkles, ChevronRight } from '@/lib/atlaskit-icons';
+import { format, isToday, differenceInDays, differenceInHours } from 'date-fns';
+import { Rocket, CheckSquare, ArrowLeftRight, Clock, Calendar, AlertTriangle, ChevronRight, RefreshCw, Copy, StickyNote } from '@/lib/atlaskit-icons';
+import Button from '@atlaskit/button/new';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import {
   useReleasesList,
   useChangesList,
@@ -27,6 +29,7 @@ import {
 import { RH } from '@/constants/releasehub.design';
 import { useReleaseOpsPermissions, PERMISSION_DENIED_TOOLTIP } from '@/hooks/useReleaseOpsPermissions';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { statusBg, statusFg, type StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 import { Avatar } from '@/components/ads/Avatar';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
@@ -63,22 +66,27 @@ function titleCase(v: string | null | undefined) {
   return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
 }
 
+function shortWait(since: string | null | undefined): string {
+  if (!since) return '—';
+  const d = new Date(since);
+  const days = differenceInDays(new Date(), d);
+  if (days >= 1) return `${days}D`;
+  return `${Math.max(1, differenceInHours(new Date(), d))}H`;
+}
+
 function EnvLozenge({ env }: { env: string | null }) {
   if (!env) return null;
-  const prod = env === 'production';
-  const fg = prod ? 'var(--ds-text-success, #216E4E)' : 'var(--ds-text-information, #0055CC)';
-  const bg = prod ? 'var(--ds-background-success, #DCFFF1)' : 'var(--ds-background-information, #E9F2FE)';
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: fg, background: bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{titleCase(env)}</span>;
+  return <StatusLozenge appearance={env === 'production' ? 'success' : 'inprogress'} label={titleCase(env)} />;
 }
 
 function HealthLozenge({ health }: { health: string | null }) {
-  const map: Record<string, { label: string; fg: string; bg: string }> = {
-    at_risk: { label: 'At risk', fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
-    on_track: { label: 'On track', fg: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FE)' },
-    done: { label: 'Done', fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+  const map: Record<string, { label: string; appearance: StatusAppearance }> = {
+    at_risk: { label: 'At risk', appearance: 'removed' },
+    on_track: { label: 'On track', appearance: 'inprogress' },
+    done: { label: 'Done', appearance: 'success' },
   };
-  const m = map[health ?? ''] ?? { label: titleCase(health), fg: T.subtle, bg: T.sunken };
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{m.label}</span>;
+  const m = map[health ?? ''] ?? { label: titleCase(health), appearance: 'default' as StatusAppearance };
+  return <StatusLozenge appearance={m.appearance} label={m.label} />;
 }
 
 function KpiCard({ label, value, dot, onClick }: { label: string; value: number; dot: string; onClick?: () => void }) {
@@ -211,9 +219,9 @@ export default function CommandCenterPage() {
             const d = new Date(r.planned_release_date ?? r.target_date!);
             return (
               <div key={r.id} style={rowStyleClickable(() => navigate(`/release-hub/${r.id}`))} onClick={() => navigate(`/release-hub/${r.id}`)}>
-                <div style={{ width: 44, textAlign: 'center', flexShrink: 0 }}>
-                  <div style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: T.subtlest }}>{format(d, 'MMM')}</div>
-                  <div style={{ fontFamily: RH.fontDisplay, fontSize: 18, fontWeight: 600, color: T.text }}>{format(d, 'd')}</div>
+                <div style={{ width: 44, height: 44, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-background-information, #E9F2FE)', borderRadius: 8 }}>
+                  <div style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--ds-text-information, #0055CC)' }}>{format(d, 'MMM')}</div>
+                  <div style={{ fontFamily: RH.fontDisplay, fontSize: 18, fontWeight: 700, lineHeight: 1, color: 'var(--ds-text-information, #0055CC)' }}>{format(d, 'd')}</div>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.text, margin: 0 }}>{r.jira_key ?? r.name}</p>
@@ -259,7 +267,7 @@ export default function CommandCenterPage() {
             </div>
           ) : approvals.slice(0, 6).map((a: PendingApproval) => (
             <div key={a.id} style={rowStyleClickable()}>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3, minWidth: 56, textAlign: 'center', flexShrink: 0 }}>Change</span>
+              {(() => { const isRel = (a.chgNumber ?? '').toUpperCase().startsWith('REL'); return <div style={{ flexShrink: 0 }}><StatusLozenge appearance={isRel ? 'inprogress' : 'new'} label={isRel ? 'Release' : 'Change'} /></div>; })()}
               <div style={{ width: 220, minWidth: 0 }}>
                 {a.chgNumber && <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{a.chgNumber}</span>}
                 <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.changeTitle ?? '—'}</p>
@@ -269,8 +277,8 @@ export default function CommandCenterPage() {
                 <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0 }}>Waiting on {a.approverName ?? 'Unassigned'}</p>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{a.approverName ?? 'Unassigned'} · {a.role ?? '—'}</p>
               </div>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, color: T.warning, background: 'var(--ds-background-warning, #FFF7D6)', padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{a.waitStartedAt ? formatDistanceToNowStrict(new Date(a.waitStartedAt)) : '—'}</span>
-              <button onClick={() => canApprove && navigate('/release-hub/sign-off-queue')} disabled={!canApprove} title={canApprove ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border, #DFE1E6)`, borderRadius: 6, padding: '4px 12px', cursor: canApprove ? 'pointer' : 'not-allowed', opacity: canApprove ? 1 : 0.5, whiteSpace: 'nowrap' }}>Review</button>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, color: statusFg(), background: statusBg((a.role ?? '').toLowerCase().includes('emergency') ? 'removed' : 'moved'), padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', minWidth: 32, textAlign: 'center' }}>{shortWait(a.waitStartedAt)}</span>
+              <button onClick={() => canApprove && navigate('/release-hub/sign-off-queue')} disabled={!canApprove} title={canApprove ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border-success, #4BCE97)`, borderRadius: 6, padding: '4px 12px', cursor: canApprove ? 'pointer' : 'not-allowed', opacity: canApprove ? 1 : 0.5, whiteSpace: 'nowrap' }}>Review</button>
             </div>
           ))}
         </Panel>
@@ -295,19 +303,19 @@ export default function CommandCenterPage() {
 
       {/* CATY Risk Summary */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ background: T.discoveryBg, border: `1px solid ${T.discoveryBorder}`, borderRadius: 8, padding: 16 }}>
+        <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Sparkles size={14} style={{ color: T.discoveryFg }} />
-              <span style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.discoveryFg }}>AI Release Risk Summary · CATY</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <CatyPulseIcon size={16} />
+              <span style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.text }}>AI Release Risk Summary · CATY</span>
             </div>
             <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>{caty.basis}</span>
           </div>
           <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0, lineHeight: 1.5 }}>{caty.body}</p>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button onClick={() => catalystToast.info('Recomputed from live data')} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.discoveryFg, background: 'transparent', border: `1px solid ${T.discoveryBorder}`, borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Regenerate</button>
-            <button onClick={copyCaty} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.discoveryFg, background: 'transparent', border: `1px solid ${T.discoveryBorder}`, borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Copy</button>
-            <button onClick={() => catalystToast.success('Saved as note')} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.discoveryFg, background: 'transparent', border: `1px solid ${T.discoveryBorder}`, borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Save as note</button>
+            <Button appearance="default" iconBefore={RefreshCw} onClick={() => catalystToast.info('Recomputed from live data')}>Regenerate</Button>
+            <Button appearance="subtle" iconBefore={Copy} onClick={copyCaty}>Copy</Button>
+            <Button appearance="subtle" iconBefore={StickyNote} onClick={() => catalystToast.success('Saved as note')}>Save as note</Button>
           </div>
         </div>
       </div>
@@ -319,13 +327,11 @@ export default function CommandCenterPage() {
         ) : prodEvents.slice(0, 4).map((ev) => {
           const ok = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'success';
           const partial = (ev.result ?? ev.deploymentStatus ?? '').toLowerCase() === 'partial';
-          const fg = ok ? T.success : partial ? T.warning : T.danger;
-          const bg = ok ? 'var(--ds-background-success, #DCFFF1)' : partial ? 'var(--ds-background-warning, #FFF7D6)' : 'var(--ds-background-danger, #FFECEB)';
           const wi = Array.isArray(ev.workItemsSnapshot) ? ev.workItemsSnapshot.length : null;
           const br = Array.isArray(ev.businessRequestsSnapshot) ? ev.businessRequestsSnapshot.length : null;
           return (
             <div key={ev.id} style={rowStyleClickable()}>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, color: fg, background: bg, padding: '0 8px', borderRadius: 3, minWidth: 64, textAlign: 'center', flexShrink: 0 }}>{titleCase(ev.result ?? ev.deploymentStatus)}</span>
+              <div style={{ flexShrink: 0 }}><StatusLozenge appearance={ok ? 'success' : partial ? 'moved' : 'removed'} label={titleCase(ev.result ?? ev.deploymentStatus)} /></div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, margin: 0 }}>{ev.title}</p>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>
