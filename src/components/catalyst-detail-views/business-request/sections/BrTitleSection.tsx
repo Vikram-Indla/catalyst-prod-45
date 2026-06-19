@@ -41,7 +41,7 @@ export function BrTitleSection({ request, onUpdate }: Props) {
       style={{ marginBottom: 12 }}
       aria-label="Business Request title"
     >
-      <div className="cv-title-edit-hide-label">
+      <div className="cv-title-edit-hide-label" data-voice-zone="true">
         <InlineEdit<string>
           key={request.id ?? request.request_key}
           label="Business Request title"

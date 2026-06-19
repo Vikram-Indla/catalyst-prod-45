@@ -828,6 +828,7 @@ export function CreateStoryModal({
                       field="summary"
                     >
                       {({ dir }) => (
+                        <div data-voice-zone="true" style={{ display: 'contents' }}>
                         <Textfield
                           {...(fieldProps as any)}
                           autoFocus
@@ -839,6 +840,7 @@ export function CreateStoryModal({
                           maxLength={200}
                           dir={dir}
                         />
+                        </div>
                       )}
                     </TitleTranslateWrapper>
                     {summaryError && (

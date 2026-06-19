@@ -3,8 +3,8 @@ import type { SourceLanguageCode } from './voiceFlow.types';
 export const VOICE_FLOW_CONFIG = {
   /** ms window for double-space detection. */
   doubleSpaceThresholdMs: 350,
-  /** Max recording duration before auto-stop. */
-  maxDurationMs: 60_000,
+  /** Max recording duration before auto-stop (3 minutes). */
+  maxDurationMs: 180_000,
   /** Auto-stop after this much silence (MediaRecorder data chunk silence). */
   silenceAutoStopMs: 3_000,
   /** Run Gemini cleanup/polish pass on final result. */

@@ -166,6 +166,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
             >
               Channel name
             </label>
+            <div data-voice-zone="true" style={{ display: 'contents' }}>
             <Textfield
               id="cc-new-channel-name"
               placeholder="e.g. design-feedback"
@@ -174,6 +175,7 @@ export function NewChannelModal({ isOpen, onClose, existingCount, onCreated }: N
               autoFocus
               isDisabled={atLimit}
             />
+            </div>
             {name.trim() && (
               <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #44546F)', marginTop: 4 }}>
                 Will be created as <strong>#{slugify(name)}</strong>

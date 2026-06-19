@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { VOICE_FLOW_CONFIG } from './voiceFlow.config';
@@ -30,6 +30,9 @@ export function VoiceFlowProvider({ children }: Props) {
   const [status, setStatus] = useState<VoiceStatus>('idle');
   const [result, setResult] = useState<VoiceResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [remainingMs, setRemainingMs] = useState<number>(VOICE_FLOW_CONFIG.maxDurationMs);
+  const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Ref mirror of status — timer/async callbacks read this to avoid stale closure
   const statusRef         = useRef<VoiceStatus>('idle');
@@ -46,12 +49,15 @@ export function VoiceFlowProvider({ children }: Props) {
 
   const reset = useCallback(() => {
     captureRef.current.cancel();
+    if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null; }
     fieldRef.current     = null;
     sessionIdRef.current = null;
     statusRef.current    = 'idle';
     setStatus('idle');
     setResult(null);
     setErrorMessage(null);
+    setDetectedLanguage(null);
+    setRemainingMs(VOICE_FLOW_CONFIG.maxDurationMs);
   }, []);
 
   // ─── Stop recording → Gemini → commit ────────────────────────────────
@@ -111,6 +117,7 @@ export function VoiceFlowProvider({ children }: Props) {
         geminiLatencyMs: Date.now() - geminiStart,
       };
 
+      if (data.detectedLanguage) setDetectedLanguage(data.detectedLanguage as string);
       setResult(voiceResult);
 
       if (VOICE_FLOW_CONFIG.autoCommit && fieldRef.current) {
@@ -137,6 +144,19 @@ export function VoiceFlowProvider({ children }: Props) {
 
   // Keep ref current so timer callbacks always call the latest version
   stopAndProcessRef.current = stopAndProcess;
+
+  // Countdown tick while listening
+  useEffect(() => {
+    if (status === 'listening') {
+      setRemainingMs(VOICE_FLOW_CONFIG.maxDurationMs);
+      countdownRef.current = setInterval(() => {
+        setRemainingMs(prev => Math.max(0, prev - 1000));
+      }, 1000);
+    } else {
+      if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null; }
+    }
+    return () => { if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null; } };
+  }, [status]);
 
   // ─── Cancel ──────────────────────────────────────────────────────────
   const cancel = useCallback(() => {
@@ -254,6 +274,8 @@ export function VoiceFlowProvider({ children }: Props) {
           errorMessage={errorMessage}
           onCommit={commit}
           onCancel={cancel}
+          remainingMs={remainingMs}
+          detectedLanguage={detectedLanguage}
         />
       )}
     </VoiceFlowContext.Provider>

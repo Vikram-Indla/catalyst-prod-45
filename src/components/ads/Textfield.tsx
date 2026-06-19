@@ -61,29 +61,31 @@ export function Textfield({
   ...rest
 }: TextfieldProps) {
   return (
-    <AkTextfield
-      value={value}
-      defaultValue={defaultValue}
-      placeholder={placeholder}
-      isDisabled={isDisabled}
-      isReadOnly={isReadOnly}
-      isRequired={isRequired}
-      isInvalid={isInvalid}
-      width={isFullWidth ? '100%' : undefined}
-      isCompact={spacing === 'compact'}
-      elemBeforeInput={elemBeforeInput}
-      elemAfterInput={elemAfterInput}
-      onChange={onChange}
-      onKeyDown={onKeyDown}
-      onBlur={onBlur}
-      onFocus={onFocus}
-      name={name}
-      type={type}
-      autoFocus={autoFocus}
-      maxLength={maxLength}
-      aria-label={rest['aria-label']}
-      aria-describedby={rest['aria-describedby']}
-      testId={testId}
-    />
+    <div data-voice-zone="true" style={{ display: 'contents' }}>
+      <AkTextfield
+        value={value}
+        defaultValue={defaultValue}
+        placeholder={placeholder}
+        isDisabled={isDisabled}
+        isReadOnly={isReadOnly}
+        isRequired={isRequired}
+        isInvalid={isInvalid}
+        width={isFullWidth ? '100%' : undefined}
+        isCompact={spacing === 'compact'}
+        elemBeforeInput={elemBeforeInput}
+        elemAfterInput={elemAfterInput}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        name={name}
+        type={type}
+        autoFocus={autoFocus}
+        maxLength={maxLength}
+        aria-label={rest['aria-label']}
+        aria-describedby={rest['aria-describedby']}
+        testId={testId}
+      />
+    </div>
   );
 }

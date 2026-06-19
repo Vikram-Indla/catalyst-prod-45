@@ -171,6 +171,7 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
     //   ancestor has `overflow-y: auto`.
     <div
       className="cv-title-edit-hide-label"
+      data-voice-zone="true"
       aria-label="Issue title"
       style={{
         display: 'flex',

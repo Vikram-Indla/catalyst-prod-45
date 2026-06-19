@@ -22,6 +22,7 @@ export function CatalystInlineEdit({
   isRequired = false,
 }: CatalystInlineEditProps) {
   return (
+    <div data-voice-zone="true" style={{ display: 'contents' }}>
     <InlineEdit
       defaultValue={defaultValue}
       label={label}
@@ -43,5 +44,6 @@ export function CatalystInlineEdit({
       )}
       onConfirm={onConfirm}
     />
+    </div>
   );
 }
