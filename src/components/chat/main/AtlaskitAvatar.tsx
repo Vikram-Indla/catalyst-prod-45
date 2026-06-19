@@ -82,6 +82,8 @@ export interface AtlaskitAvatarProps {
   pixelSize?: number;
   /** Atlaskit size: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge'. Ignored if pixelSize set. */
   size?: 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
+  /** Avatar shape — 'circle' for people (default), 'square' for projects/channels/spaces. Maps to @atlaskit/avatar appearance. */
+  shape?: 'circle' | 'square';
   /** Optional presence indicator: green (online) / red (offline) / amber (away) / grey (idle) */
   presence?: AvatarPresenceColor | null;
   /** Full name for tooltip (if different from name). Shows in tooltip hover state. */
@@ -125,6 +127,7 @@ export function AtlaskitAvatar({
   seed,
   pixelSize,
   size = 'medium',
+  shape = 'circle',
   presence,
   fullName,
   status,
@@ -180,7 +183,7 @@ export function AtlaskitAvatar({
       }
     >
       <AtlaskitAvatar
-        appearance="circle"
+        appearance={shape}
         size={atlaskitSize}
         src={photoUrl ?? undefined}
         name={name}
