@@ -203,10 +203,13 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
   const createIssue = useCallback(async (input: NewIssueInput) => {
     const now = new Date().toISOString();
     if (isRelease) {
+      /* target_date is NOT NULL — seed with today; user reschedules later. */
+      const todayDate = new Date().toISOString().slice(0, 10);
       const { error } = await supabase.from('rh_releases').insert({
         name: input.summary,
         status: input.status,
         source: 'catalyst',
+        target_date: todayDate,
         created_at: now,
         updated_at: now,
       });

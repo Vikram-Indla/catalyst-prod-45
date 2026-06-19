@@ -360,10 +360,13 @@ function InlineCreateCardComponent({
            - Status is the column's primary lifecycle stage (e.g. 'draft').
            - No version/product/manager wired here; the user can fill richer
              fields from the detail view after creation. */
+        /* target_date is NOT NULL on rh_releases — seed with today. */
+        const todayDate = nowIso.slice(0, 10);
         const insertRow: Record<string, any> = {
           name: summary.trim(),
           status: status || 'draft',
           source: 'catalyst',
+          target_date: todayDate,
           created_at: nowIso,
           updated_at: nowIso,
         };

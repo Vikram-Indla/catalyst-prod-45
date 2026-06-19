@@ -173,10 +173,13 @@ export function useReleasesSource(): BacklogDataSource | null {
   const createMutation = useMutation({
     mutationFn: async ({ title }: { title: string }) => {
       const now = new Date().toISOString();
+      const todayDate = now.slice(0, 10);
+      /* target_date is NOT NULL on rh_releases (legacy migration 20260309). */
       const { error } = await supabase.from('rh_releases').insert({
         name: title,
         status: 'draft',
         source: 'catalyst',
+        target_date: todayDate,
         created_at: now,
         updated_at: now,
       } as any);

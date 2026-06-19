@@ -135,8 +135,9 @@ export default function TimelineView(props: TimelineViewProps) {
   const openDetail = useCallback((issue: TimelineIssue) => {
     const itemType = resolveItemType(issue);
     // For task entities the detail panel reads from `tasks` by row UUID.
+    // For release entities the detail panel reads from `rh_releases` by row UUID.
     // For ph_issue entities (default) the lookup token is `issue_key`.
-    const id = detailEntityKind === 'task' ? issue.id : issue.issueKey;
+    const id = (detailEntityKind === 'task' || detailEntityKind === 'release') ? issue.id : issue.issueKey;
     setPanelItem({ id, itemType, displayType: issue.issueType ?? 'Story' });
   }, [resolveItemType, detailEntityKind]);
   const goToFullPage = useCallback(() => {
