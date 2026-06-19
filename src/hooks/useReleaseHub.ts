@@ -1360,6 +1360,41 @@ export const useReleaseBits = (releaseId: string | null) =>
     },
   });
 
+// ── Link / unlink scope items ─────────────────────────────────────────────────
+export const useLinkWorkItem = (releaseId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (workItemKey: string) => {
+      const { error } = await supabase.from('rh_release_work_items').insert({
+        release_id: releaseId,
+        work_item_key: workItemKey,
+        inclusion_source: 'manual',
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['release-hub', 'releases', releaseId, 'work-items-detail'] });
+      qc.invalidateQueries({ queryKey: ['release-hub', 'releases', releaseId, 'scope'] });
+    },
+  });
+};
+
+export const useLinkBr = (releaseId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (businessRequestId: string) => {
+      const { error } = await supabase.from('rh_release_brs').insert({
+        release_id: releaseId,
+        business_request_id: businessRequestId,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['release-hub', 'releases', releaseId, 'scope'] });
+    },
+  });
+};
+
 // ── Release scope work items with ph_issues details ──────────────────────────
 export interface ReleaseWorkItem {
   id: string;
