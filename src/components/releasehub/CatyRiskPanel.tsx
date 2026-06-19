@@ -14,10 +14,10 @@
  *
  * ADS tokens only. Canonical CatyPulseIcon for the CATY signature.
  */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
-import { RefreshCw, Copy, StickyNote, ChevronRight } from '@/lib/atlaskit-icons';
+import { RefreshCw, Copy, StickyNote, ChevronRight, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import { RH } from '@/constants/releasehub.design';
 import { catalystToast } from '@/lib/catalystToast';
@@ -70,6 +70,16 @@ function postureFromIndex(idx: number): ReleaseRiskPosture {
   if (idx >= 25) return 'watch';
   return 'clear';
 }
+
+// Executive status chip — plain business language + one restrained Atlassian
+// semantic colour. The only colour the panel carries: an at-a-glance posture
+// for a C-suite reader.
+const POSTURE_STATUS: Record<ReleaseRiskPosture, { label: string; fg: string; bg: string }> = {
+  clear:    { label: 'On track',        fg: T.success,     bg: T.bgSuccess },
+  watch:    { label: 'Monitor',         fg: T.information, bg: T.bgInformation },
+  elevated: { label: 'Needs attention', fg: T.warning,     bg: T.bgWarning },
+  critical: { label: 'Action required', fg: T.danger,      bg: T.bgDanger },
+};
 
 /** Local estimate used until the AI responds, or if it fails. */
 function localEstimate(metrics: CatyRiskMetrics, narrative: string): ReleaseRiskSummary {
@@ -158,6 +168,9 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
     );
   };
 
+  const [expanded, setExpanded] = useState(false);
+  const status = POSTURE_STATUS[summary.posture];
+
   const tiles: { value: number; label: string }[] = [
     { value: metrics.freezeConflicts, label: metrics.freezeConflicts === 1 ? 'Freeze conflict' : 'Freeze conflicts' },
     { value: metrics.pending, label: 'Sign-offs pending' },
@@ -167,76 +180,99 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
 
   return (
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', borderBottom: `1px solid ${T.border}` }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      {/* Header — click to expand / collapse (collapsed by default) */}
+      <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        onClick={() => setExpanded((v) => !v)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded((v) => !v); } }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: '16px', borderBottom: expanded ? `1px solid ${T.border}` : 'none', cursor: 'pointer' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
           <CatyPulseIcon size={16} />
-          <span style={{ fontFamily: RH.fontDisplay, fontSize: 15, fontWeight: 600, color: T.text }}>AI release risk summary</span>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.caty, background: T.catyBg, padding: '4px 8px', borderRadius: 6 }}>CATY</span>
+          <span style={{ fontFamily: RH.fontDisplay, fontSize: 15, fontWeight: 600, color: T.text, flexShrink: 0 }}>AI release risk summary</span>
+          {!isLoading && !expanded && (
+            <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· {summary.headline}</span>
+          )}
         </div>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>{basis}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+          {!isLoading && (
+            <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: status.fg, background: status.bg, padding: '4px 8px', borderRadius: 12 }}>{status.label}</span>
+          )}
+          {expanded ? <ChevronUp size={20} style={{ color: T.subtlest }} /> : <ChevronDown size={20} style={{ color: T.subtlest }} />}
+        </div>
       </div>
 
-      {/* Metric tiles */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, padding: '16px', borderBottom: `1px solid ${T.border}` }}>
-        {tiles.map((tile) => (
-          <div key={tile.label} style={{ background: T.sunken, borderRadius: 6, padding: '8px 12px' }}>
-            <p style={{ fontFamily: RH.fontDisplay, fontSize: 22, fontWeight: 600, color: T.text, margin: 0, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{tile.value}</p>
-            <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, margin: '4px 0 0' }}>{tile.label}</p>
+      {expanded && (
+        <>
+          {/* Basis */}
+          <div style={{ padding: '8px 16px', borderBottom: `1px solid ${T.border}`, background: T.sunken }}>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>{basis}</span>
           </div>
-        ))}
-      </div>
 
-      {/* Narrative */}
-      <div style={{ padding: '16px', borderBottom: summary.drivers.length ? `1px solid ${T.border}` : 'none' }}>
-        {isLoading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <SkeletonBar w="100%" /><SkeletonBar w="82%" />
-          </div>
-        ) : (
-          <>
-            <p style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.text, margin: '0 0 8px' }}>{summary.headline}</p>
-            <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0, lineHeight: 1.65 }}>{summary.narrative}</p>
-          </>
-        )}
-      </div>
-
-      {/* Key risk drivers */}
-      {!isLoading && summary.drivers.length > 0 && (
-        <div style={{ padding: '16px 16px 8px' }}>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>What needs attention</p>
-          {summary.drivers.slice(0, 4).map((d, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.subtlest, marginTop: 4, flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, margin: 0 }}>{d.title}</p>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, margin: '4px 0 0' }}>{d.action}</p>
+          {/* Metric tiles */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, padding: '16px', borderBottom: `1px solid ${T.border}` }}>
+            {tiles.map((tile) => (
+              <div key={tile.label} style={{ background: T.sunken, borderRadius: 6, padding: '8px 12px' }}>
+                <p style={{ fontFamily: RH.fontDisplay, fontSize: 22, fontWeight: 600, color: T.text, margin: 0, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{tile.value}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, margin: '4px 0 0' }}>{tile.label}</p>
               </div>
-              {d.link && (
-                <button
-                  onClick={() => goLink(d.link)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, whiteSpace: 'nowrap', flexShrink: 0 }}
-                >
-                  {d.link === 'freeze' ? 'Resolve' : d.link === 'signoff' ? 'Review' : 'Open'}
-                  <ChevronRight size={14} />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
 
-      {/* Footer actions */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderTop: `1px solid ${T.border}`, background: T.sunken }}>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Button appearance="default" iconBefore={RefreshCw} isDisabled={gen.isPending} isLoading={gen.isPending} onClick={() => gen.mutate(context)}>Regenerate</Button>
-          <Button appearance="subtle" iconBefore={Copy} onClick={copy}>Copy</Button>
-          <Button appearance="subtle" iconBefore={StickyNote} isDisabled={saveNote.isPending} onClick={save}>Save as note</Button>
-        </div>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>
-          {usedFallback ? 'Computed estimate · live AI unavailable' : 'Generated by CATY'}
-        </span>
-      </div>
+          {/* Narrative */}
+          <div style={{ padding: '16px', borderBottom: summary.drivers.length ? `1px solid ${T.border}` : 'none' }}>
+            {isLoading ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <SkeletonBar w="100%" /><SkeletonBar w="82%" />
+              </div>
+            ) : (
+              <>
+                <p style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.text, margin: '0 0 8px' }}>{summary.headline}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0, lineHeight: 1.65 }}>{summary.narrative}</p>
+              </>
+            )}
+          </div>
+
+          {/* What needs attention */}
+          {!isLoading && summary.drivers.length > 0 && (
+            <div style={{ padding: '16px 16px 8px' }}>
+              <p style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>What needs attention</p>
+              {summary.drivers.slice(0, 4).map((d, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.subtlest, marginTop: 4, flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, margin: 0 }}>{d.title}</p>
+                    <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, margin: '4px 0 0' }}>{d.action}</p>
+                  </div>
+                  {d.link && (
+                    <button
+                      onClick={() => goLink(d.link)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, whiteSpace: 'nowrap', flexShrink: 0 }}
+                    >
+                      {d.link === 'freeze' ? 'Resolve' : d.link === 'signoff' ? 'Review' : 'Open'}
+                      <ChevronRight size={14} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Footer actions */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderTop: `1px solid ${T.border}`, background: T.sunken }}>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Button appearance="default" iconBefore={RefreshCw} isDisabled={gen.isPending} isLoading={gen.isPending} onClick={() => gen.mutate(context)}>Regenerate</Button>
+              <Button appearance="subtle" iconBefore={Copy} onClick={copy}>Copy</Button>
+              <Button appearance="subtle" iconBefore={StickyNote} isDisabled={saveNote.isPending} isLoading={saveNote.isPending} onClick={save}>Save as note</Button>
+            </div>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>
+              {usedFallback ? 'Estimated from live release data' : 'Generated by Caty'}
+            </span>
+          </div>
+        </>
+      )}
     </div>
   );
 }

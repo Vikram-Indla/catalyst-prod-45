@@ -145,6 +145,33 @@ export const useReleasesList = () =>
     },
   });
 
+/**
+ * Sprint codes per release (from rh_release_sprints → anchor_sprints) for the
+ * Release readiness panel's sprint context. Gates attach at the release level,
+ * so sprints are shown as context chips — not as a fabricated gate→sprint tree.
+ */
+export const useReleaseSprintsMap = (releaseIds: string[]) =>
+  useQuery({
+    queryKey: ['release-hub', 'sprints-map', [...releaseIds].sort().join(',')],
+    enabled: releaseIds.length > 0,
+    staleTime: 60_000,
+    queryFn: async (): Promise<Record<string, { code: string | null; name: string | null }[]>> => {
+      const { data, error } = await supabase
+        .from('rh_release_sprints')
+        .select('release_id, anchor_sprints(code, name)')
+        .in('release_id', releaseIds);
+      if (error) throw error;
+      const map: Record<string, { code: string | null; name: string | null }[]> = {};
+      (data ?? []).forEach((row: any) => {
+        (map[row.release_id] ??= []).push({
+          code: row.anchor_sprints?.code ?? null,
+          name: row.anchor_sprints?.name ?? null,
+        });
+      });
+      return map;
+    },
+  });
+
 export const useRelease = (id: string) =>
   useQuery({ queryKey: KEYS.release(id), queryFn: () => releaseService.getById(id), enabled: !!id });
 
@@ -1249,6 +1276,11 @@ export const useGenerateReleaseRisk = () =>
 export const useSaveCatyRiskNote = () =>
   useMutation({
     mutationFn: async (note: { contentMd: string; riskIndex: number | null; posture: string | null; payload: unknown }) => {
+      // RLS INSERT policy requires created_by = auth.uid(); set it explicitly
+      // or the insert is rejected with 42501 (the column has no auth.uid() default).
+      const { data: auth } = await supabase.auth.getUser();
+      const uid = auth?.user?.id;
+      if (!uid) throw new Error('Not signed in');
       // rh_caty_risk_notes is not yet in generated types — cast per repo convention.
       const { error } = await (supabase as any).from('rh_caty_risk_notes').insert({
         content_md: note.contentMd,
@@ -1256,6 +1288,7 @@ export const useSaveCatyRiskNote = () =>
         posture: note.posture,
         payload: note.payload,
         generated_by_ai: true,
+        created_by: uid,
       });
       if (error) throw error;
     },
