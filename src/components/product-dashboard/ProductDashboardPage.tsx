@@ -4,6 +4,7 @@ import { token } from '@atlaskit/tokens';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { DashboardWorkflowPath } from './DashboardWorkflowPath';
+import ProductDashboardTimeline from '@/components/producthub/ProductDashboardTimeline';
 import { AtAGlanceWidget } from './widgets/AtAGlanceWidget';
 import { StageOverviewWidget } from './widgets/StageOverviewWidget';
 import { NeedsAttentionWidget } from './widgets/NeedsAttentionWidget';
@@ -138,6 +139,7 @@ export function ProductDashboardPage() {
             gap: 20,
           }}
         >
+          {key && <ProductDashboardTimeline productId={key} />}
           <AtAGlanceWidget />
           <StageOverviewWidget onStageClick={() => {}} />
           <NeedsAttentionWidget />

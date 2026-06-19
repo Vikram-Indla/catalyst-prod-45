@@ -34,6 +34,7 @@ import { nextSpan, type WidgetSpan } from '@/components/project-hub/dashboard/wi
 import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import ProjectDashboardTimeline from '@/components/projecthub/ProjectDashboardTimeline';
 
 
 // Self-rolled dropdown for edit mode actions — avoids @atlaskit/popup (0,0) bug
@@ -521,6 +522,11 @@ useEffect(() => {
 
         {/* Dashboard content in full screen */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+          {!isProduct && !isIncident && pKey && (
+            <div style={{ marginBottom: 24 }}>
+              <ProjectDashboardTimeline projectKey={pKey} />
+            </div>
+          )}
           <DashboardWidgetGrid
             projectId={projectId || pKey}
             projectKey={pKey}
@@ -590,6 +596,11 @@ useEffect(() => {
                   <SectionMessage appearance="information">
                     You are currently editing your dashboard. Changes will be saved when you click Done.
                   </SectionMessage>
+                </div>
+              )}
+              {!isProduct && !isIncident && pKey && (
+                <div style={{ marginBottom: 24 }}>
+                  <ProjectDashboardTimeline projectKey={pKey} />
                 </div>
               )}
               <DashboardWidgetGrid
