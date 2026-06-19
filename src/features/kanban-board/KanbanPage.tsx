@@ -38,9 +38,10 @@ import './styles.css';
    rows from `tasks` table, no :key in URL (sentinel 'TASKS').
    useKanbanData + useKanbanMutations branch internally on the same mode value. */
 interface KanbanPageProps {
-  mode?: 'project' | 'product' | 'incident' | 'tasks';
+  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release';
   /** When set, overrides the URL :key param. Used by surfaces where the
-   *  board route doesn't carry a :key (e.g. /incident-hub/board, /tasks/board). */
+   *  board route doesn't carry a :key (e.g. /incident-hub/board, /tasks/board,
+   *  /release-hub/release-kanban). */
   keyOverride?: string;
 }
 
@@ -186,7 +187,9 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
                   ? ['Production Incident']
                   : mode === 'tasks'
                     ? ['Task']
-                    : undefined
+                    : mode === 'release'
+                      ? ['Release']
+                      : undefined
             }
             onCreateCard={() => { setOpenCreateCol(null); refetch(); }}
             onCancel={() => setOpenCreateCol(null)}
@@ -233,11 +236,18 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
 
   // Card click → open the canonical Catalyst detail (Atlaskit-compliant,
   // ph_issues-backed by issue_key). Highlight selection locally too.
+  // Release mode: releases live in rh_releases with UUID PKs; their detail
+  // view is the dedicated /release-hub/:id route (not the global ph_issues
+  // detail), so navigate instead of using the global search store.
   const onSelect = useCallback((id: string) => {
     setSelectedId(id);
+    if (mode === 'release') {
+      navigate(`/release-hub/${id}`);
+      return;
+    }
     const issueKey = idToKey.get(id);
     if (issueKey) useGlobalSearchStore.getState().openDetail({ id: issueKey });
-  }, [idToKey]);
+  }, [idToKey, mode, navigate]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden', background: token('elevation.surface', '#FFFFFF') }}>
@@ -253,10 +263,12 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
             <BreadcrumbsItem text="Incidents" href="/incident-hub" />
           ) : mode === 'tasks' ? (
             <BreadcrumbsItem text="Tasks" href="/tasks/overview" />
+          ) : mode === 'release' ? (
+            <BreadcrumbsItem text="Releases" href="/release-hub/overview" />
           ) : (
             <BreadcrumbsItem text={STRINGS.PROJECTS} href="/project-hub/projects" />
           )}
-          {mode !== 'incident' && mode !== 'tasks' && (
+          {mode !== 'incident' && mode !== 'tasks' && mode !== 'release' && (
             <BreadcrumbsItem
               text={projectName}
               href={mode === 'product' ? `/product-hub/${key}` : `/project-hub/${key}`}

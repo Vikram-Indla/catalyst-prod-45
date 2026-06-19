@@ -11,9 +11,7 @@
  */
 
 import {
-  LayoutDashboard,
   List,
-  Kanban,
   Clock,
   Calendar,
   ArrowLeftRight,
@@ -22,6 +20,7 @@ import {
   CalendarOff,
   Settings,
 } from '@/lib/atlaskit-icons';
+import { NavKanbanIcon, NavDashboardIcon, NavWorkIcon, NavTimelineIcon } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface ReleaseHubSidebarProps {
@@ -35,14 +34,16 @@ export const buildReleaseHubSections = (pendingSignoffs: number): SidebarSection
   {
     title: '',
     items: [
-      { id: 'overview', title: 'Dashboard', path: '/release-hub/overview', icon: LayoutDashboard, exact: true },
+      { id: 'overview', title: 'Dashboard', path: '/release-hub/overview', icon: NavDashboardIcon, exact: true },
     ],
   },
   {
     title: 'Releases',
     items: [
       { id: 'backlog', title: 'Releases', path: '/release-hub/releases', icon: List, exact: true },
-      { id: 'release-kanban', title: 'Board', path: '/release-hub/release-kanban', icon: Kanban, exact: false },
+      { id: 'release-kanban', title: 'Board', path: '/release-hub/release-kanban', icon: NavKanbanIcon, exact: false },
+      { id: 'work', title: 'Work', path: '/release-hub/work', icon: NavWorkIcon, exact: false },
+      { id: 'timeline', title: 'Timeline', path: '/release-hub/timeline', icon: NavTimelineIcon, exact: false },
       { id: 'calendar', title: 'Calendar', path: '/release-hub/calendar', icon: Calendar, exact: true },
     ],
   },

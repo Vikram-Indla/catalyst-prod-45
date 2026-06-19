@@ -132,8 +132,10 @@ function CatyRiskAdvisory({ r, changeCount }: { r: any; changeCount: number }) {
   );
 }
 
-export default function ReleaseDetailPage() {
-  const { releaseId } = useParams();
+/* 2026-06-19: extracted inner content so the AllWork right pane can mount
+   the release detail inline (entityKind='release' detail panel). Default
+   export still reads from useParams for the full-page route. */
+export function ReleaseDetailContent({ releaseId, hideChromeHeader = false }: { releaseId: string; hideChromeHeader?: boolean }) {
   const navigate = useNavigate();
   const { data: release, isLoading, error } = useRelease(releaseId ?? '');
 
@@ -178,6 +180,7 @@ export default function ReleaseDetailPage() {
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
+      {!hideChromeHeader && (
       <div style={{ margin: '-24px -24px 16px' }}>
         <ProjectPageHeader
           hubType="release"
@@ -188,6 +191,7 @@ export default function ReleaseDetailPage() {
           ]}
         />
       </div>
+      )}
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 8 }}>
@@ -287,4 +291,9 @@ export default function ReleaseDetailPage() {
       {showEdit && <CreateReleaseModal release={r} onClose={() => setShowEdit(false)} />}
     </div>
   );
+}
+
+export default function ReleaseDetailPage() {
+  const { releaseId } = useParams();
+  return <ReleaseDetailContent releaseId={releaseId ?? ''} />;
 }

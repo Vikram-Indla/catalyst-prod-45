@@ -211,7 +211,7 @@ export interface TimelineViewProps {
    *  hub / product hub legacy path). Tasks Hub passes 'task' so
    *  CatalystDetailRouter dispatches to TaskCatalystView. Added 2026-06-16
    *  for Phase 3 Tasks Timeline. */
-  detailEntityKind?: 'ph_issue' | 'task';
+  detailEntityKind?: 'ph_issue' | 'task' | 'release';
 
   /* the query client used for cache invalidations after mutations.
      Pages keep ownership of the cache key so the view never hardcodes it. */

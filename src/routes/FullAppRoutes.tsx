@@ -84,6 +84,10 @@ function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
 const ProductionEventsPageLazy = lazy(() => import("../pages/releasehub/ProductionEventsPage"));
 const RH21CommandCenterPage = lazy(() => import("../pages/releasehub/CommandCenterPage"));
 const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPage"));
+const ReleaseBoardCanonical = lazy(() => import("../pages/releasehub/ReleaseBoardCanonical"));
+const ReleasesBacklogCanonical = lazy(() => import("../pages/releasehub/ReleasesBacklogCanonical"));
+const ReleasesWorkCanonical = lazy(() => import("../pages/releasehub/ReleasesWorkCanonical"));
+const ReleasesTimelineCanonical = lazy(() => import("../pages/releasehub/ReleasesTimelineCanonical"));
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
 const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
@@ -774,8 +778,10 @@ export default function FullAppRoutes() {
         {/* Release Operations — sections per handoff §6 (2026-06-18). */}
         <Route path="/release-hub" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/release-hub/overview" element={<ModuleGuard moduleCode="releases"><S><RH21CommandCenterPage /></S></ModuleGuard>} />
-        <Route path="/release-hub/releases" element={<S><RH21AllReleasesPage variant="backlog" /></S>} />
-        <Route path="/release-hub/release-kanban" element={<S><RH21AllReleasesPage variant="kanban" /></S>} />
+        <Route path="/release-hub/releases" element={<S><ReleasesBacklogCanonical /></S>} />
+        <Route path="/release-hub/release-kanban" element={<S><ReleaseBoardCanonical /></S>} />
+        <Route path="/release-hub/work" element={<S><ReleasesWorkCanonical /></S>} />
+        <Route path="/release-hub/timeline" element={<S><ReleasesTimelineCanonical /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />

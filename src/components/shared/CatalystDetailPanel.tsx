@@ -11,6 +11,12 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter')
 );
+/* 2026-06-19: release entityKind short-circuits to the canonical 8-tab
+   ReleaseDetailContent — the same component the full-page /release-hub/:id
+   route mounts. No CatalystViewRelease; no parallel reimplementation. */
+const ReleaseDetailContent = lazy(
+  () => import('@/pages/releasehub/ReleaseDetailPage').then(m => ({ default: m.ReleaseDetailContent }))
+);
 
 export interface CatalystDetailPanelProps {
   isOpen: boolean;
@@ -38,7 +44,7 @@ export interface CatalystDetailPanelProps {
    * product hub legacy path). Tasks Hub passes 'task' to route through
    * TaskCatalystView. Added 2026-06-16 (Task 1.5d).
    */
-  entityKind?: 'ph_issue' | 'task';
+  entityKind?: 'ph_issue' | 'task' | 'release';
 }
 
 export function CatalystDetailPanel({
@@ -275,16 +281,22 @@ export function CatalystDetailPanel({
             </div>
           }
         >
-          <CatalystDetailRouter
-            isOpen={true}
-            onClose={onClose}
-            itemId={itemId}
-            itemType={itemType}
-            projectKey={projectKey}
-            projectId={projectId}
-            panelMode={true}
-            entityKind={entityKind}
-          />
+          {entityKind === 'release' ? (
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <ReleaseDetailContent releaseId={itemId} hideChromeHeader />
+            </div>
+          ) : (
+            <CatalystDetailRouter
+              isOpen={true}
+              onClose={onClose}
+              itemId={itemId}
+              itemType={itemType}
+              projectKey={projectKey}
+              projectId={projectId}
+              panelMode={true}
+              entityKind={entityKind}
+            />
+          )}
         </Suspense>
       </div>
     </div>
