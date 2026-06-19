@@ -1,154 +1,96 @@
 /**
  * HealthStatusBadge Component
  *
- * Glanceable health status indicator (3 sizes)
- * - sm: 10px dot only (hover shows text)
- * - md: dot + status text
- * - lg: dot + status text + brief descriptor
+ * CANONICAL PATTERN: Uses CatalystStatusPill for rendering health status.
+ * Maps health states to semantic status values, then delegates to CatalystStatusPill
+ * which handles portal, colors, keyboard nav, and hover affordances.
  *
- * Colors use ADS tokens:
- * Uncommitted: grey, Committed: blue, On Track: green,
- * Delayed: amber, At Risk: red, Blocked: red, Delivered: green
+ * Health states map to status semantics:
+ * - Uncommitted/Committed → 'backlog' (grey/blue)
+ * - On Track → 'done' (green)
+ * - Delayed → 'in_progress' (amber) — treating as "needs attention"
+ * - At Risk/Blocked → 'in_review' (red) — treating as "urgent"
+ * - Delivered → 'done' (green)
+ *
+ * Size and click handler passed through to CatalystStatusPill.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { BusinessRequestHealth, HealthStatusBadgeProps } from '@/types/date-pulse';
+import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
 
-// ADS token color mapping
-const healthColorMap: Record<string, string> = {
-  Uncommitted: 'var(--ds-text-subtlest, #6B778C)', // grey
-  Committed: 'var(--ds-background-information, #0052CC)', // blue
-  'On Track': 'var(--ds-background-success, #216E4E)', // green
-  Delayed: 'var(--ds-background-warning, #974F0C)', // amber
-  'At Risk': 'var(--ds-background-danger, #AE2A19)', // red
-  Blocked: 'var(--ds-background-danger, #AE2A19)', // red
-  Delivered: 'var(--ds-background-success, #216E4E)', // green
-};
-
-const healthLabelMap: Record<string, string> = {
-  Uncommitted: 'Uncommitted',
-  Committed: 'Committed',
-  'On Track': 'On Track',
-  Delayed: 'Delayed',
-  'At Risk': 'At Risk',
-  Blocked: 'Blocked',
-  Delivered: 'Delivered',
-};
+/**
+ * Map health status to a semantic status value for CatalystStatusPill
+ */
+function mapHealthToStatus(healthStatus: string): string {
+  switch (healthStatus) {
+    case 'Uncommitted':
+      return 'backlog';
+    case 'Committed':
+      return 'backlog'; // Waiting to start
+    case 'On Track':
+      return 'done'; // All clear, on schedule
+    case 'Delayed':
+      return 'in_progress'; // Needs attention
+    case 'At Risk':
+      return 'in_review'; // Urgent action needed
+    case 'Blocked':
+      return 'in_review'; // Critical blocker
+    case 'Delivered':
+      return 'done'; // Complete
+    default:
+      return 'backlog';
+  }
+}
 
 export const HealthStatusBadge: React.FC<HealthStatusBadgeProps> = ({
   health,
   size = 'md',
-  showText = false,
   onClick,
   className = '',
   'data-testid': testId,
 }) => {
-  const color = healthColorMap[health.health_status] || healthColorMap.Uncommitted;
-  const label = healthLabelMap[health.health_status];
+  const semanticStatus = mapHealthToStatus(health.health_status);
 
-  if (size === 'sm') {
+  // For compact pill rendering (no dropdown needed in some contexts)
+  if (onClick) {
     return (
       <button
         onClick={onClick}
-        className={`health-badge health-badge--sm ${className}`}
-        data-testid={testId || 'health-status-badge'}
-        title={health.health_summary}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          cursor: onClick ? 'pointer' : 'default',
-          padding: '2px',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <span
-          className="health-badge__dot"
-          style={{
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            background: color,
-            display: 'inline-block',
-          }}
-          aria-hidden="true"
-        />
-      </button>
-    );
-  }
-
-  if (size === 'md') {
-    return (
-      <button
-        onClick={onClick}
-        className={`health-badge health-badge--md ${className}`}
+        className={`health-status-badge ${className}`}
         data-testid={testId || 'health-status-badge'}
         title={health.health_descriptor}
         style={{
           background: 'transparent',
           border: 'none',
-          cursor: onClick ? 'pointer' : 'default',
-          padding: '2px 4px',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          fontSize: '13px',
-          fontWeight: 500,
-          color: 'var(--ds-text, #172B4D)',
+          cursor: 'pointer',
+          padding: 0,
         }}
       >
-        <span
-          className="health-badge__dot"
-          style={{
-            width: '14px',
-            height: '14px',
-            borderRadius: '50%',
-            background: color,
-            display: 'inline-block',
-            flexShrink: 0,
-          }}
-          aria-hidden="true"
+        <CatalystStatusPill
+          status={semanticStatus}
+          isCompact={size === 'sm'}
+          isLoading={false}
+          onStatusChange={() => {}} // Read-only for health display
         />
-        {showText && <span className="health-badge__text">{label}</span>}
       </button>
     );
   }
 
-  // lg
+  // Default: render the pill without click handler
   return (
     <div
-      className={`health-badge health-badge--lg ${className}`}
+      className={`health-status-badge ${className}`}
       data-testid={testId || 'health-status-badge'}
-      style={{
-        padding: '8px',
-        background: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
-        borderRadius: '3px',
-        fontSize: '13px',
-      }}
+      title={health.health_descriptor}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-        <span
-          className="health-badge__dot"
-          style={{
-            width: '16px',
-            height: '16px',
-            borderRadius: '50%',
-            background: color,
-            display: 'inline-block',
-            flexShrink: 0,
-          }}
-          aria-hidden="true"
-        />
-        <span className="health-badge__label" style={{ fontWeight: 600 }}>
-          {label}
-        </span>
-      </div>
-      <div className="health-badge__descriptor" style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: '12px' }}>
-        {health.health_descriptor}
-      </div>
+      <CatalystStatusPill
+        status={semanticStatus}
+        isCompact={size === 'sm'}
+        isLoading={false}
+        onStatusChange={() => {}} // Read-only for health display
+      />
     </div>
   );
 };

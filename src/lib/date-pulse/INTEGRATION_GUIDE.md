@@ -1,5 +1,36 @@
 # Date Pulse Integration Guide
 
+## ⚠️ P0 MANDATORY — Canonical Components Required
+
+**Phase 2A components MUST use actual Catalyst canonical patterns (not custom HTML):**
+
+### 1. HealthStatusBadge
+- ✅ Delegates to `CatalystStatusPill` (handles portal, colors, keyboard nav)
+- Maps health states to semantic status values (Uncommitted→backlog, On Track→done, etc.)
+- Never custom color dots or inline HTML
+
+### 2. HealthStatusDescriptor
+- ✅ Uses `@atlaskit/tokens` for all colors (no hardcoded hex)
+- ✅ Uses stacked (column) field-row layout like `CatalystSidebarDetails`
+- ✅ Renders field labels in uppercase: TARGET, RELEASE, DATES, WORK
+- Never inline styles without token() wrapper
+
+### 3. DatePulseHoverCard
+- ✅ Uses `@atlaskit/lozenge` for severity badges (CRITICAL/WARNING/ADVISORY)
+- ✅ Shows affected item key + description (no avatars in violations, avatars are actor-only)
+- ✅ Uses `@atlaskit/tokens` for all colors
+- Never emoji icons or custom badge HTML
+
+### When wiring to ProductBacklogPage:
+- **Import these from Catalyst (do not reinvent):**
+  - `CatalystStatusPill` — status rendering + portal pattern
+  - `CatalystAvatar` — avatar + deterministic initials fallback
+  - `CatalystSidebarDetails` — field-row stacked layout pattern
+  - `@atlaskit/lozenge` — severity badges
+  - `@atlaskit/tokens` — color tokens (never hardcoded hex)
+
+---
+
 ## Phase 2A Complete: Core Engine + Components + Migrations
 
 All Date Pulse infrastructure is in place:

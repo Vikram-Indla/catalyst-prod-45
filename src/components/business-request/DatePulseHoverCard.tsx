@@ -1,33 +1,34 @@
 /**
  * DatePulseHoverCard Component
  *
- * Full violations list panel
- * Shows all violations sorted by severity (critical → warning → advisory)
+ * CANONICAL PATTERN: Uses @atlaskit/lozenge for severity badges.
+ * Uses @atlaskit/tokens for all colors. Violations show affected item key
+ * with avatar + name when available (following Jira notification pattern).
  *
  * Displays:
- * - Violation count by severity
- * - Detailed violation list with affected items
- * - Action buttons (Learn More, Update Dates, Close)
+ * - Violation count by severity via Lozenge
+ * - Detailed violation list (affected item + description)
+ * - Dates and context in header
+ * - Action links (design TBD)
  */
 
 import React from 'react';
+import Lozenge from '@atlaskit/lozenge';
+import { token } from '@atlaskit/tokens';
 
 import { DatePulseHoverCardProps, DatePulseViolation, ViolationSeverity } from '@/types/date-pulse';
 
-const severityConfig: Record<ViolationSeverity, { icon: string; color: string; label: string }> = {
+const severityConfig: Record<ViolationSeverity, { appearance: 'moved' | 'new' | 'removed' | 'inprogress' | 'default'; label: string }> = {
   critical: {
-    icon: '🔴',
-    color: 'var(--ds-background-danger, #AE2A19)',
+    appearance: 'removed', // red
     label: 'CRITICAL',
   },
   warning: {
-    icon: '🟡',
-    color: 'var(--ds-background-warning, #974F0C)',
+    appearance: 'moved', // amber
     label: 'WARNING',
   },
   advisory: {
-    icon: 'ℹ️',
-    color: 'var(--ds-background-information, #0052CC)',
+    appearance: 'default', // blue
     label: 'ADVISORY',
   },
 };
@@ -41,38 +42,26 @@ const ViolationGroup: React.FC<{
   const config = severityConfig[severity];
 
   return (
-    <div style={{ marginBottom: '12px' }}>
-      <div
-        style={{
-          fontSize: '12px',
-          fontWeight: 600,
-          color: config.color,
-          marginBottom: '6px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-        }}
-      >
-        <span>{config.icon}</span>
-        <span>
+    <div style={{ marginBottom: '16px' }}>
+      <div style={{ marginBottom: '8px' }}>
+        <Lozenge appearance={config.appearance} isBold>
           {config.label} ({violations.length})
-        </span>
+        </Lozenge>
       </div>
 
-      <div style={{ paddingLeft: '20px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '4px' }}>
         {violations.map((v, idx) => (
           <div
             key={v.id || idx}
             style={{
               fontSize: '12px',
-              marginBottom: '6px',
-              color: 'var(--ds-text, #172B4D)',
+              lineHeight: '1.4',
             }}
           >
-            <div style={{ fontWeight: 500, marginBottom: '2px' }}>
+            <div style={{ fontWeight: 500, color: token('color.text', '#172B4D'), marginBottom: '2px' }}>
               {v.affected_item_key ? `${v.affected_item_key}: ${v.title}` : v.title}
             </div>
-            <div style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: '11px' }}>
+            <div style={{ color: token('color.text.subtle', '#42526E'), fontSize: '11px' }}>
               {v.description}
             </div>
           </div>
@@ -109,13 +98,15 @@ export const DatePulseHoverCard: React.FC<DatePulseHoverCardProps> = ({
         className={`date-pulse-hover-card ${className}`}
         style={{
           padding: '12px',
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          background: token('color.surface.overlay', '#FFFFFF'),
+          border: `1px solid ${token('color.border', '#DFE1E6')}`,
           borderRadius: '3px',
           fontSize: '13px',
         }}
       >
-        <div style={{ color: 'var(--ds-text-subtle, #42526E)' }}>✓ No violations detected. All dates aligned.</div>
+        <div style={{ color: token('color.text.subtle', '#42526E') }}>
+          ✓ No violations detected. All dates aligned.
+        </div>
       </div>
     );
   }
@@ -125,25 +116,25 @@ export const DatePulseHoverCard: React.FC<DatePulseHoverCardProps> = ({
       className={`date-pulse-hover-card ${className}`}
       style={{
         padding: '12px',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: token('color.surface.overlay', '#FFFFFF'),
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
         borderRadius: '3px',
         minWidth: '320px',
         maxWidth: '500px',
       }}
     >
       {/* Header */}
-      <div style={{ marginBottom: '12px' }}>
-        <h3 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 600 }}>
-          Date Pulse Violations ({violations.length})
+      <div style={{ marginBottom: '16px' }}>
+        <h3 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 600, color: token('color.text', '#172B4D') }}>
+          Date Pulse Violations
         </h3>
-        <p style={{ margin: 0, fontSize: '12px', color: 'var(--ds-text-subtle, #42526E)' }}>
+        <p style={{ margin: 0, fontSize: '12px', color: token('color.text.subtle', '#42526E') }}>
           {brKey} · Target: {formatDate(brTargetDate)} · Release: {formatDate(releaseDate)}
         </p>
       </div>
 
       {/* Violation groups */}
-      <div style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+      <div style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
         <ViolationGroup severity="critical" violations={criticalViolations} />
         <ViolationGroup severity="warning" violations={warningViolations} />
         <ViolationGroup severity="advisory" violations={advisoryViolations} />
@@ -155,23 +146,9 @@ export const DatePulseHoverCard: React.FC<DatePulseHoverCardProps> = ({
           style={{
             padding: '4px 8px',
             fontSize: '12px',
-            color: 'var(--ds-link, #0052CC)',
+            color: token('color.link', '#0052CC'),
             background: 'transparent',
-            border: '1px solid var(--ds-link, #0052CC)',
-            borderRadius: '2px',
-            cursor: 'pointer',
-            fontWeight: 500,
-          }}
-        >
-          Learn More
-        </button>
-        <button
-          style={{
-            padding: '4px 8px',
-            fontSize: '12px',
-            color: 'var(--ds-link, #0052CC)',
-            background: 'transparent',
-            border: '1px solid var(--ds-link, #0052CC)',
+            border: `1px solid ${token('color.link', '#0052CC')}`,
             borderRadius: '2px',
             cursor: 'pointer',
             fontWeight: 500,
