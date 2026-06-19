@@ -1,20 +1,18 @@
 /**
- * voice-transcribe — Phase 1 Gemini multimodal STT + translation.
+ * voice-transcribe — Groq Whisper primary, Gemini fallback.
  *
- * Accepts: audio blob as base64 in request body.
- * Flow: audio (AR/UR/HI) → Gemini 2.5 Flash native API → English text.
+ * Flow: audio (AR/UR/HI) → Groq whisper-large-v3 (translate→EN) → English text.
+ * Fallback: Groq failure → Gemini 2.5 Flash (non-streaming).
  *
- * Supports:
- *   - streaming=true → SSE via streamGenerateContent, partial text forwarded to client
- *   - [LOW_CONFIDENCE] prefix detection → confidence field in response
- *   - [LANG:code] detection → detectedLanguage field in response
- *   - preferredLanguage hint in prompt
+ * Groq verbose_json provides:
+ *   - language detection (BCP-47 mapped)
+ *   - avg_logprob → confidence proxy (threshold -0.5)
  *
  * Security:
- *   - Auth required (Supabase JWT validated by serve())
- *   - GEMINI_API_KEY only in env — never sent to client
+ *   - Auth required (Supabase JWT)
+ *   - GROQ_API_KEY / GEMINI_API_KEY env-only, never client
  *   - No audio stored
- *   - Audit row written to ai_governance_audit_log
+ *   - Audit row → ai_governance_audit_log
  */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
@@ -28,12 +26,11 @@ const corsHeaders = {
   "Vary": "Origin",
 };
 
+const GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
 const GEMINI_GENERATE_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-const GEMINI_STREAM_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent";
 
-/** Retry fetch once on 429, honouring Retry-After header (max 4 s delay). */
+/** Retry once on 429, honouring Retry-After (max 4 s). */
 async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 1): Promise<Response> {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const resp = await fetch(url, options);
@@ -44,6 +41,15 @@ async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 1)
   return fetch(url, options);
 }
 
+// Whisper language name → BCP-47
+const WHISPER_LANG_MAP: Record<string, string> = {
+  arabic: "ar-SA",
+  urdu: "ur-PK",
+  hindi: "hi-IN",
+  english: "en",
+};
+
+// Gemini fallback helpers
 const SOURCE_LANG_LABELS: Record<string, string> = {
   "ar-SA": "Arabic (Saudi)",
   "ar-AE": "Arabic (UAE)",
@@ -51,32 +57,22 @@ const SOURCE_LANG_LABELS: Record<string, string> = {
   "hi-IN": "Hindi",
 };
 
-function buildPrompt(sourceLanguages: string[], cleanupEnabled: boolean, preferredLanguage?: string): string {
-  const langs = sourceLanguages
-    .map(l => SOURCE_LANG_LABELS[l] ?? l)
-    .join(", ");
-
-  const langHint = preferredLanguage
+function buildGeminiPrompt(sourceLanguages: string[], preferredLanguage?: string): string {
+  const langs = sourceLanguages.map(l => SOURCE_LANG_LABELS[l] ?? l).join(", ");
+  const hint = preferredLanguage
     ? `The speaker's most recent language was "${preferredLanguage}" — use as a hint but do not assume.\n`
     : "";
-
   return (
     `Transcribe the following audio recorded in ${langs}.\n` +
-    langHint +
+    hint +
     `Translate the transcribed text to fluent English.\n` +
-    (cleanupEnabled
-      ? "Remove filler words (um, uh, hmm), false starts, and obvious repetitions from the English output.\n"
-      : "") +
-    "If you are uncertain about the transcription quality (poor audio, unclear speech, heavy background noise), " +
-    "prepend your response with exactly \"[LOW_CONFIDENCE]:\" followed by the transcription.\n" +
-    "If you can detect the speaker's language, append exactly \"[LANG:<BCP-47-code>]\" at the very end of your response (after all text). " +
-    "For example: \"[LANG:ar-SA]\" or \"[LANG:ur-PK]\".\n" +
-    "Return ONLY the clean English translation (and optional markers above). No preamble, no commentary, no source-language text.\n" +
-    "If the audio is silent or contains no speech, return the exact string: [no_speech]"
+    "If uncertain about transcription quality, prepend exactly \"[LOW_CONFIDENCE]:\" followed by the transcription.\n" +
+    "If you detect the language, append exactly \"[LANG:<BCP-47-code>]\" at the very end.\n" +
+    "Return ONLY the English translation (and optional markers). No preamble, no source-language text.\n" +
+    "If audio is silent or has no speech, return exactly: [no_speech]"
   );
 }
 
-/** Parse raw Gemini text → { englishText, confidence, detectedLanguage } */
 function parseGeminiText(raw: string): {
   englishText: string;
   confidence: "high" | "low";
@@ -85,22 +81,90 @@ function parseGeminiText(raw: string): {
   let text = raw.trim().replace(/^["«]+|["»]+$/g, "").trim();
   let confidence: "high" | "low" = "high";
   let detectedLanguage: string | undefined;
-
-  // [LOW_CONFIDENCE]: prefix
   const LOW_PREFIX = "[LOW_CONFIDENCE]:";
-  if (text.startsWith(LOW_PREFIX)) {
-    confidence = "low";
-    text = text.slice(LOW_PREFIX.length).trim();
-  }
-
-  // [LANG:code] suffix
+  if (text.startsWith(LOW_PREFIX)) { confidence = "low"; text = text.slice(LOW_PREFIX.length).trim(); }
   const langMatch = text.match(/\[LANG:([^\]]+)\]\s*$/);
-  if (langMatch) {
-    detectedLanguage = langMatch[1].trim();
-    text = text.slice(0, langMatch.index).trim();
+  if (langMatch) { detectedLanguage = langMatch[1].trim(); text = text.slice(0, langMatch.index).trim(); }
+  return { englishText: text, confidence, detectedLanguage };
+}
+
+/** Primary: Groq whisper-large-v3 with task=translate → English. */
+async function transcribeWithGroq(
+  audioBase64: string,
+  mimeType: string,
+  groqKey: string,
+): Promise<{ englishText: string; confidence: "high" | "low"; detectedLanguage: string | undefined }> {
+  const audioBytes = Uint8Array.from(atob(audioBase64), c => c.charCodeAt(0));
+  const form = new FormData();
+  form.append("file", new Blob([audioBytes], { type: mimeType }), "audio.webm");
+  form.append("model", "whisper-large-v3");
+  form.append("response_format", "verbose_json");
+  form.append("task", "translate");
+  form.append("temperature", "0");
+
+  const resp = await fetchWithRetry(GROQ_STT_URL, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${groqKey}` },
+    body: form,
+  });
+
+  if (!resp.ok) {
+    const err = await resp.text().catch(() => "");
+    throw new Error(`groq_${resp.status}: ${err.slice(0, 200)}`);
   }
 
-  return { englishText: text, confidence, detectedLanguage };
+  const data = await resp.json() as {
+    text: string;
+    language?: string;
+    duration?: number;
+    segments?: Array<{ avg_logprob: number }>;
+  };
+
+  const englishText = data.text?.trim() ?? "";
+  const rawLang = data.language?.toLowerCase() ?? "";
+  const detectedLanguage = WHISPER_LANG_MAP[rawLang] ?? (rawLang || undefined);
+
+  const segments = data.segments ?? [];
+  const avgLogprob = segments.length > 0
+    ? segments.reduce((s, seg) => s + (seg.avg_logprob ?? 0), 0) / segments.length
+    : -0.3;
+  const confidence: "high" | "low" = avgLogprob > -0.5 ? "high" : "low";
+
+  return { englishText, confidence, detectedLanguage };
+}
+
+/** Fallback: Gemini non-streaming (used only when Groq fails). */
+async function transcribeWithGemini(
+  audioBase64: string,
+  mimeType: string,
+  geminiKey: string,
+  sourceLanguages: string[],
+  preferredLanguage: string | undefined,
+): Promise<{ englishText: string; confidence: "high" | "low"; detectedLanguage: string | undefined }> {
+  const body = {
+    contents: [{
+      role: "user",
+      parts: [
+        { inlineData: { mimeType, data: audioBase64 } },
+        { text: buildGeminiPrompt(sourceLanguages, preferredLanguage) },
+      ],
+    }],
+    generationConfig: { temperature: 0.1, maxOutputTokens: 2048, candidateCount: 1 },
+  };
+
+  const resp = await fetchWithRetry(
+    `${GEMINI_GENERATE_URL}?key=${geminiKey}`,
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) },
+  );
+
+  if (!resp.ok) {
+    const err = await resp.text().catch(() => "");
+    throw new Error(`gemini_${resp.status}: ${err.slice(0, 200)}`);
+  }
+
+  const data = await resp.json();
+  const raw: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  return parseGeminiText(raw);
 }
 
 async function logGovernance(params: {
@@ -110,24 +174,22 @@ async function logGovernance(params: {
   error_message?: string;
 }) {
   try {
-    const url  = Deno.env.get("SUPABASE_URL");
-    const svc  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const url = Deno.env.get("SUPABASE_URL");
+    const svc = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!url || !svc) return;
     const sb = createClient(url, svc, { auth: { persistSession: false } });
     await sb.from("ai_governance_audit_log").insert({
-      action:        params.action,
-      payload:       params.payload,
-      status:        params.status,
+      action: params.action,
+      payload: params.payload,
+      status: params.status,
       error_message: params.error_message ?? null,
-      source:        "voice-transcribe",
+      source: "voice-transcribe",
     } as never);
-  } catch { /* never block the response */ }
+  } catch { /* non-blocking */ }
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const json = (body: unknown, status = 200) =>
     new Response(JSON.stringify(body), {
@@ -138,204 +200,86 @@ serve(async (req) => {
   try {
     // ── Auth ──────────────────────────────────────────────────────────
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return json({ error: "unauthorized" }, 401);
-    }
+    if (!authHeader?.startsWith("Bearer ")) return json({ error: "unauthorized" }, 401);
 
+    const GROQ_API_KEY   = Deno.env.get("GROQ_API_KEY");
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) {
-      console.error("voice-transcribe: GEMINI_API_KEY not set");
+
+    if (!GROQ_API_KEY && !GEMINI_API_KEY) {
+      console.error("voice-transcribe: no GROQ_API_KEY or GEMINI_API_KEY set");
       return json({ error: "server_misconfiguration" }, 500);
     }
 
     // ── Request body ──────────────────────────────────────────────────
     const body = await req.json();
     const audioBase64: string | undefined = body?.audioBase64;
-    const mimeType: string = body?.mimeType ?? "audio/webm";
-    const sessionId: string | undefined = body?.sessionId;
-    const sourceLanguages: string[] = Array.isArray(body?.sourceLanguages)
-      ? body.sourceLanguages
-      : ["ar-SA", "ur-PK", "hi-IN"];
-    const cleanupEnabled: boolean = body?.cleanupEnabled !== false;
-    const streaming: boolean = body?.streaming === true;
+    const mimeType: string               = body?.mimeType ?? "audio/webm";
+    const sessionId: string | undefined  = body?.sessionId;
+    const sourceLanguages: string[]      = Array.isArray(body?.sourceLanguages)
+      ? body.sourceLanguages : ["ar-SA", "ur-PK", "hi-IN"];
     const preferredLanguage: string | undefined = body?.preferredLanguage ?? undefined;
 
-    if (!audioBase64 || audioBase64.length < 100) {
+    if (!audioBase64 || audioBase64.length < 100)
       return json({ error: "empty_audio", message: "No audio data provided" }, 400);
-    }
 
     const estimatedBytes = Math.floor(audioBase64.length * 0.75);
-    if (estimatedBytes > 10 * 1024 * 1024) {
+    if (estimatedBytes > 10 * 1024 * 1024)
       return json({ error: "audio_too_large", message: "Audio exceeds 10MB limit" }, 413);
-    }
 
-    const prompt = buildPrompt(sourceLanguages, cleanupEnabled, preferredLanguage);
+    // ── Transcription — Groq primary, Gemini fallback ────────────────
+    let englishText: string;
+    let confidence: "high" | "low";
+    let detectedLanguage: string | undefined;
+    let provider: "groq" | "gemini" = "groq";
 
-    const geminiBody = {
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { inlineData: { mimeType, data: audioBase64 } },
-            { text: prompt },
-          ],
-        },
-      ],
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 2048,
-        candidateCount: 1,
-      },
-    };
-
-    // ── Streaming path ────────────────────────────────────────────────
-    if (streaming) {
-      const geminiResp = await fetchWithRetry(
-        `${GEMINI_STREAM_URL}?key=${GEMINI_API_KEY}&alt=sse`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(geminiBody),
-        },
-      );
-
-      if (!geminiResp.ok || !geminiResp.body) {
-        const errBody = await geminiResp.text().catch(() => "");
-        console.error("voice-transcribe streaming Gemini error:", geminiResp.status, errBody.slice(0, 500));
-        const code = geminiResp.status === 429 ? "rate_limited" : "gateway_error";
-        const message = geminiResp.status === 429 ? "Busy — try again in a moment" : "Transcription failed";
-        return json({ error: code, message }, geminiResp.status);
-      }
-
-      // Forward Gemini SSE stream to client and accumulate for final packet
-      const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
-      const writer = writable.getWriter();
-      const encoder = new TextEncoder();
-      const decoder = new TextDecoder();
-
-      // Process Gemini SSE in background, forwarding chunks + appending final result packet
-      (async () => {
-        const reader = geminiResp.body!.getReader();
-        let accumulated = "";
-
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            // Forward raw chunk to client
-            await writer.write(value);
-
-            // Accumulate text for final parsing
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split("\n");
-            for (const line of lines) {
-              if (line.startsWith("data: ")) {
-                const raw = line.slice(6).trim();
-                if (raw === "[DONE]") continue;
-                try {
-                  const parsed = JSON.parse(raw);
-                  const delta = parsed?.candidates?.[0]?.content?.parts?.[0]?.text;
-                  if (delta) accumulated += delta;
-                } catch { /* ignore */ }
-              }
-            }
-          }
-
-          // Parse accumulated and send final structured packet
-          const { englishText, confidence, detectedLanguage } = parseGeminiText(accumulated);
-
-          if (englishText && englishText !== "[no_speech]") {
-            const finalPacket = `data: ${JSON.stringify({ englishText, confidence, detectedLanguage })}\ndata: [DONE]\n\n`;
-            await writer.write(encoder.encode(finalPacket));
-
-            logGovernance({
-              action: "voice_transcribe",
-              payload: { sessionId, audioBytes: estimatedBytes, outputLength: englishText.length, sourceLanguages, cleanupEnabled, streaming: true, confidence },
-              status: "ok",
-            }).catch(() => {});
-          }
-        } catch (e) {
-          console.error("voice-transcribe stream error:", e);
-        } finally {
-          await writer.close().catch(() => {});
+    if (GROQ_API_KEY) {
+      try {
+        ({ englishText, confidence, detectedLanguage } = await transcribeWithGroq(audioBase64, mimeType, GROQ_API_KEY));
+      } catch (groqErr) {
+        console.warn("voice-transcribe Groq failed, falling back to Gemini:", groqErr);
+        if (!GEMINI_API_KEY) {
+          const msg = groqErr instanceof Error ? groqErr.message : "Groq transcription failed";
+          const is429 = msg.includes("groq_429");
+          return json({ error: is429 ? "rate_limited" : "gateway_error", message: is429 ? "Busy — try again in a moment" : msg }, is429 ? 429 : 502);
         }
-      })();
-
-      return new Response(readable, {
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "text/event-stream",
-          "Cache-Control": "no-cache",
-          "X-Accel-Buffering": "no",
-        },
-      });
+        provider = "gemini";
+        ({ englishText, confidence, detectedLanguage } = await transcribeWithGemini(audioBase64, mimeType, GEMINI_API_KEY, sourceLanguages, preferredLanguage));
+      }
+    } else {
+      // No Groq key — Gemini only
+      provider = "gemini";
+      ({ englishText, confidence, detectedLanguage } = await transcribeWithGemini(audioBase64, mimeType, GEMINI_API_KEY!, sourceLanguages, preferredLanguage));
     }
 
-    // ── Non-streaming path ────────────────────────────────────────────
-    const geminiResp = await fetchWithRetry(
-      `${GEMINI_GENERATE_URL}?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(geminiBody),
-      },
-    );
-
-    if (!geminiResp.ok) {
-      const status = geminiResp.status;
-      const errBody = await geminiResp.text().catch(() => "");
-      console.error("voice-transcribe Gemini error:", status, errBody.slice(0, 500));
-      await logGovernance({
-        action: "voice_transcribe",
-        payload: { sessionId, audioBytes: estimatedBytes, status },
-        status: "error",
-        error_message: `gemini_${status}`,
-      });
-      const code = status === 429 ? "rate_limited"
-                 : status === 400 ? "invalid_audio"
-                 : "gateway_error";
-      return json({
-        error: code,
-        message: status === 429 ? "Rate limit exceeded, try again in a moment" : "Transcription failed",
-      }, status);
-    }
-
-    const geminiData = await geminiResp.json();
-    const rawText: string = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-
-    if (!rawText || rawText.trim() === "[no_speech]") {
-      await logGovernance({
-        action: "voice_transcribe",
-        payload: { sessionId, audioBytes: estimatedBytes, noSpeech: true },
-        status: "ok",
-      });
+    if (!englishText || englishText.trim() === "[no_speech]") {
+      await logGovernance({ action: "voice_transcribe", payload: { sessionId, audioBytes: estimatedBytes, noSpeech: true, provider }, status: "ok" });
       return json({ error: "no_speech", message: "No speech detected in audio" }, 422);
     }
 
-    const { englishText, confidence, detectedLanguage } = parseGeminiText(rawText);
-
-    if (!englishText) {
-      return json({ error: "empty_result", message: "Transcription returned empty text" }, 502);
-    }
+    // ── SSE response (streaming=true client path) ─────────────────────
+    // Groq responds synchronously; we wrap the result as a single SSE packet
+    // so the client SSE reader works unchanged (no partial text with Groq).
+    const streaming: boolean = body?.streaming === true;
 
     logGovernance({
       action: "voice_transcribe",
-      payload: { sessionId, audioBytes: estimatedBytes, outputLength: englishText.length, sourceLanguages, cleanupEnabled, confidence },
+      payload: { sessionId, audioBytes: estimatedBytes, outputLength: englishText.length, sourceLanguages, provider, confidence },
       status: "ok",
     }).catch(() => {});
 
-    return json({ englishText, confidence, detectedLanguage, mimeType });
+    if (streaming) {
+      const packet = `data: ${JSON.stringify({ englishText, confidence, detectedLanguage })}\ndata: [DONE]\n\n`;
+      return new Response(packet, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "X-Accel-Buffering": "no" },
+      });
+    }
+
+    return json({ englishText, confidence, detectedLanguage, mimeType, provider });
 
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     console.error("voice-transcribe unhandled:", message);
-    await logGovernance({
-      action: "voice_transcribe",
-      payload: {},
-      status: "error",
-      error_message: message,
-    });
+    await logGovernance({ action: "voice_transcribe", payload: {}, status: "error", error_message: message });
     return json({ error: "internal_error", message }, 500);
   }
 });
