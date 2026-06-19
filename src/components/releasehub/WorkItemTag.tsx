@@ -1,5 +1,5 @@
 import React from 'react';
-import { WorkItemTypeIcon } from './WorkItemTypeIcon';
+import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { RH } from '@/constants/releasehub.design';
 
 interface Props {
