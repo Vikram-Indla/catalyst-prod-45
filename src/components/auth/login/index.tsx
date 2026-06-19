@@ -197,21 +197,13 @@ export function CatalystLoginPage() {
     }
     // Always remember email — Jira-like, no "Remember me" checkbox
     localStorage.setItem('catalyst_remembered_email', email.toLowerCase().trim());
-    const { data: { user: currentUser } } = await supabase.auth.getUser();
-    if (currentUser) {
-      const needsChange = await checkMustChangePassword(currentUser.id);
-      if (needsChange) {
-        setMustChangePassword(true);
-        setCurrentUserId(currentUser.id);
-        setIsLoading(false);
-        return {};
-      }
-    }
     storeCurrentLoginTime();
     const lastRoute = getLastRoute();
     clearLastRoute();
-    navigate(lastRoute);
-    setIsLoading(false);
+
+    // Sync redirect — execute immediately, bypass setTimeout queue
+    window.location.href = lastRoute || '/project-hub';
+    // Never reached; page unloads
     return {};
   };
 
@@ -467,8 +459,8 @@ export function CatalystLoginPage() {
             onSendOtp={handleSendOtp}
             onVerifyOtp={handleVerifyOtp}
             onForgotPassword={handleForgotPassword}
-            loading={isLoading}
             error={loginError}
+            loading={isLoading}
             lang={lang}
           />
         </div>
