@@ -28,6 +28,10 @@
 - Versions: `ph_filter_versions` (11 rows, immutable, indexed). Derived: `filter_derived_views` (2 rows, used via `useFilterDerivedViews`).
 - Board link: `boards.filter_id` (FK → ph_saved_filters.id), partial index present.
 
+## Phase G7 + G9 — flags shipped (2026-06-19)
+**G9 was already done** (my Gate-2 note was wrong): `useWhatsAppSummary` already wires `buildFallbackSummary(ctx)` — a real deterministic count-based template — on both AI error paths ("never block the copy path"). I'd only checked the edge fn (no fallback) and missed the client hook.
+**G7:** flipped all 4 vertical flags default FALSE → default ON (`!== 'false'`, the file's standard ship pattern) — `ENABLE_FILTER_TO_KANBAN/ROADMAP/DASHBOARD`, `ENABLE_FILTER_WHATSAPP_AI_SUMMARY`. Updated docstrings + featureFlags.test.ts (now asserts default-on). WhatsApp safe to ship because of the deterministic fallback. 63/0 tests, tsc + ADS clean. **Production behavior change: these 4 filter actions are now live by default (project-hub); opt-out via VITE_...=false.**
+
 ## Phase C3/C4 (G2 forward serializers) — DEDUPED, divergence preserved (2026-06-19)
 The 3 forward serializers (`basicToJql`, lib `filterStateToJql`, AllWorkToolbar `filterStateToJql`) are divergent BY DESIGN — different input types, field sets, escaping, ORDER BY. Did NOT force a single-function collapse (would change saved-JQL output for marginal gain = over-engineering). Instead: golden-snapshot all 3 (`serializers.golden.test.ts`, 11 cases pinning exact output) + extracted the one truly-identical piece — the `=`/`in (...)` clause builder — into `src/lib/filters/jqlClause.ts`. All 3 refactored to share it (each passes its own quote fn for escaping). Golden snapshot proves **byte-identical** output; tsc clean; 45/0 regression. Field maps + ORDER BY + projectKey stay per-serializer. **G2 closed** (parser unified in Phase C; forward clause-logic shared here; full unification intentionally declined).
 
