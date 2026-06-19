@@ -898,6 +898,21 @@ The working tree on `main` frequently carries **stale, uncommitted changes** fro
 
 ---
 
+## 2026-06-20 — `git add <path-already-git-rm'd>` aborts the whole stage → split a file deletion from its dependent edit → build break on main
+
+**Surface:** Deleting a file that is imported elsewhere (orphaned `ProductFilterPreviewPage.tsx` + its `lazy()` import in `FullAppRoutes.tsx`).
+
+**Pattern:** Ran `git rm src/.../ProductFilterPreviewPage.tsx` (stages the deletion), edited `FullAppRoutes.tsx` to remove the now-dangling `import`, then ran `git add ProductFilterPreviewPage.tsx FullAppRoutes.tsx`. `git add` errored on the first pathspec (`fatal: pathspec '...ProductFilterPreviewPage.tsx' did not match any files` — the file is already gone, staged by `git rm`) and **aborted before staging `FullAppRoutes.tsx`**. The commit therefore contained ONLY the deletion, NOT the import-removal. Pushed → `main` had a `lazy(() => import('<deleted file>'))` → broken build. Caught by a `git show HEAD:FullAppRoutes.tsx | grep` check after the push, fixed with a follow-up commit.
+
+**Rule:**
+1. **Never re-`git add` a path already staged by `git rm`** — it errors and aborts the rest of the pathspec list. Stage the deletion via `git rm` only; stage the *other* files (the dependent edits) in a **separate** `git add` of just those paths.
+2. **A file deletion and the removal of every import of that file are ONE atomic commit.** When deleting a file, grep for its importers first (`grep -rn "<BaseName>" src/`), edit every importer in the same change, and verify with `git diff --cached --name-only` that BOTH the deletion AND every importer edit are staged before committing.
+3. **After any file deletion, prove no dangling reference survives** before push: `git show HEAD:<importer> | grep <BaseName>` should be 0 (or `npx tsc --noEmit` clean). A deletion that compiles locally can still ship broken if the importer edit didn't make it into the commit.
+
+**Severity:** P1 (shipped a broken build to `main`; self-caught + fixed same turn, but a clean `git diff --cached` inspection before commit would have prevented it).
+
+---
+
 ## TDD Cycle (non-negotiable)
 
 1. **Write a failing test first.** No implementation code before a test exists.
