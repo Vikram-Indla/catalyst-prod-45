@@ -61,7 +61,6 @@ const FiltersListPageLazy = lazy(() => import("../pages/project-hub/filters/Filt
 const RoadmapsListPageLazy = lazy(() => import("../pages/project-hub/roadmaps/RoadmapsListPage"));
 const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/FilterDetailPage"));
 const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/FilterPreviewPage").then(m => ({ default: m.FilterPreviewPage })));
-const ProductFilterPreviewPageLazy = lazy(() => import("../pages/product-hub/filters/ProductFilterPreviewPage").then(m => ({ default: m.ProductFilterPreviewPage })));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 
