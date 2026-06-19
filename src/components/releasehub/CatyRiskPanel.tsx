@@ -64,34 +64,12 @@ interface CatyRiskPanelProps {
   fallbackNarrative: string;
 }
 
-const POSTURE_LABEL: Record<ReleaseRiskPosture, string> = {
-  clear: 'Clear',
-  watch: 'Watch',
-  elevated: 'Elevated risk',
-  critical: 'Critical risk',
-};
-
 function postureFromIndex(idx: number): ReleaseRiskPosture {
   if (idx >= 75) return 'critical';
   if (idx >= 50) return 'elevated';
   if (idx >= 25) return 'watch';
   return 'clear';
 }
-
-function postureColors(posture: ReleaseRiskPosture): { fg: string; bg: string; bar: string } {
-  switch (posture) {
-    case 'critical': return { fg: T.danger, bg: T.bgDanger, bar: T.danger };
-    case 'elevated': return { fg: T.warning, bg: T.bgWarning, bar: T.warning };
-    case 'watch': return { fg: T.information, bg: T.bgInformation, bar: T.information };
-    default: return { fg: T.success, bg: T.bgSuccess, bar: T.success };
-  }
-}
-
-const SEVERITY_DOT: Record<ReleaseRiskDriver['severity'], string> = {
-  high: T.danger,
-  medium: T.warning,
-  low: T.success,
-};
 
 /** Local estimate used until the AI responds, or if it fails. */
 function localEstimate(metrics: CatyRiskMetrics, narrative: string): ReleaseRiskSummary {
@@ -154,10 +132,6 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
   const isLoading = gen.isPending && !gen.data;
   const usedFallback = !gen.data && !gen.isPending; // resolved but no AI data (error/empty)
 
-  const colors = postureColors(summary.posture);
-  const SEGMENTS = 6;
-  const filled = Math.max(summary.riskIndex > 0 ? 1 : 0, Math.round((summary.riskIndex / 100) * SEGMENTS));
-
   const goLink = (link: ReleaseRiskDriver['link']) => {
     if (link === 'freeze') navigate('/release-hub/freeze-windows');
     else if (link === 'signoff') navigate('/release-hub/sign-off-queue');
@@ -184,16 +158,12 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
     );
   };
 
-  const tiles: { value: number; label: string; tone: 'danger' | 'warning' | 'neutral' }[] = [
-    { value: metrics.freezeConflicts, label: metrics.freezeConflicts === 1 ? 'Freeze conflict' : 'Freeze conflicts', tone: metrics.freezeConflicts > 0 ? 'danger' : 'neutral' },
-    { value: metrics.pending, label: 'Sign-offs pending', tone: metrics.pending > 0 ? 'warning' : 'neutral' },
-    { value: metrics.atRisk, label: metrics.atRisk === 1 ? 'At-risk release' : 'At-risk releases', tone: metrics.atRisk > 0 ? 'warning' : 'neutral' },
-    { value: metrics.active, label: 'Active releases', tone: 'neutral' },
+  const tiles: { value: number; label: string }[] = [
+    { value: metrics.freezeConflicts, label: metrics.freezeConflicts === 1 ? 'Freeze conflict' : 'Freeze conflicts' },
+    { value: metrics.pending, label: 'Sign-offs pending' },
+    { value: metrics.atRisk, label: metrics.atRisk === 1 ? 'At-risk release' : 'At-risk releases' },
+    { value: metrics.active, label: 'Active releases' },
   ];
-  const tileColors = (tone: 'danger' | 'warning' | 'neutral') =>
-    tone === 'danger' ? { bg: T.bgDanger, fg: T.danger }
-    : tone === 'warning' ? { bg: T.bgWarning, fg: T.warning }
-    : { bg: T.sunken, fg: T.text };
 
   return (
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
@@ -204,51 +174,17 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
           <span style={{ fontFamily: RH.fontDisplay, fontSize: 15, fontWeight: 600, color: T.text }}>AI release risk summary</span>
           <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.caty, background: T.catyBg, padding: '4px 8px', borderRadius: 6 }}>CATY</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>{basis}</span>
-          {!isLoading && (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: colors.fg, background: colors.bg, padding: '4px 8px', borderRadius: 6 }}>{POSTURE_LABEL[summary.posture]}</span>
-          )}
-        </div>
-      </div>
-
-      {/* Risk index + posture meter */}
-      <div style={{ display: 'flex', alignItems: 'stretch', gap: 18, padding: '16px', borderBottom: `1px solid ${T.border}` }}>
-        <div style={{ flexShrink: 0, minWidth: 112, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          {isLoading ? <SkeletonBar w={72} h={32} /> : (
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-              <span style={{ fontFamily: RH.fontDisplay, fontSize: 34, fontWeight: 600, color: colors.fg, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{summary.riskIndex}</span>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.subtlest }}>/100</span>
-            </div>
-          )}
-          <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, marginTop: 4 }}>Composite risk index</span>
-        </div>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
-          <div style={{ display: 'flex', gap: 4, height: 8 }}>
-            {Array.from({ length: SEGMENTS }).map((_, i) => (
-              <div key={i} style={{ flex: 1, borderRadius: 3, background: isLoading ? T.bgNeutral : i < filled ? colors.bar : T.border }} />
-            ))}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>
-            <span style={summary.posture === 'clear' ? { color: colors.fg, fontWeight: 600 } : undefined}>Clear</span>
-            <span style={summary.posture === 'watch' ? { color: colors.fg, fontWeight: 600 } : undefined}>Watch</span>
-            <span style={summary.posture === 'elevated' ? { color: colors.fg, fontWeight: 600 } : undefined}>Elevated</span>
-            <span style={summary.posture === 'critical' ? { color: colors.fg, fontWeight: 600 } : undefined}>Critical</span>
-          </div>
-        </div>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>{basis}</span>
       </div>
 
       {/* Metric tiles */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, padding: '16px', borderBottom: `1px solid ${T.border}` }}>
-        {tiles.map((tile) => {
-          const c = tileColors(tile.tone);
-          return (
-            <div key={tile.label} style={{ background: c.bg, borderRadius: 6, padding: '8px 12px' }}>
-              <p style={{ fontFamily: RH.fontDisplay, fontSize: 22, fontWeight: 600, color: c.fg, margin: 0, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{tile.value}</p>
-              <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: c.fg, margin: '4px 0 0' }}>{tile.label}</p>
-            </div>
-          );
-        })}
+        {tiles.map((tile) => (
+          <div key={tile.label} style={{ background: T.sunken, borderRadius: 6, padding: '8px 12px' }}>
+            <p style={{ fontFamily: RH.fontDisplay, fontSize: 22, fontWeight: 600, color: T.text, margin: 0, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{tile.value}</p>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, margin: '4px 0 0' }}>{tile.label}</p>
+          </div>
+        ))}
       </div>
 
       {/* Narrative */}
@@ -258,17 +194,20 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
             <SkeletonBar w="100%" /><SkeletonBar w="82%" />
           </div>
         ) : (
-          <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0, lineHeight: 1.65 }}>{summary.narrative}</p>
+          <>
+            <p style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.text, margin: '0 0 8px' }}>{summary.headline}</p>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0, lineHeight: 1.65 }}>{summary.narrative}</p>
+          </>
         )}
       </div>
 
       {/* Key risk drivers */}
       {!isLoading && summary.drivers.length > 0 && (
         <div style={{ padding: '16px 16px 8px' }}>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>Key risk drivers</p>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>What needs attention</p>
           {summary.drivers.slice(0, 4).map((d, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: SEVERITY_DOT[d.severity] ?? T.subtlest, marginTop: 4, flexShrink: 0 }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.subtlest, marginTop: 4, flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, margin: 0 }}>{d.title}</p>
                 <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, margin: '4px 0 0' }}>{d.action}</p>
