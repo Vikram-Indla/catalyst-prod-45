@@ -23,7 +23,7 @@ export function QuickSearchInput({ value, onChange, resultCount, totalCount }: Q
       display: 'flex', alignItems: 'center', gap: 8,
       marginBottom: 12, maxWidth: 320,
     }}>
-      <div style={{ flex: 1 }}>
+      <div data-voice-zone="true" style={{ flex: 1 }}>
         <Textfield
           ref={inputRef}
           placeholder="Search by key or title..."

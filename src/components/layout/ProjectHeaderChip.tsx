@@ -446,7 +446,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                 Add a registered user by email. Press Enter or click Add.
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <div style={{ flex: 1 }}>
+                <div data-voice-zone="true" style={{ flex: 1 }}>
                   <Textfield
                     placeholder="email@company.com"
                     value={inviteEmail}

@@ -121,6 +121,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
     <>
       <div
         ref={triggerRef}
+        data-voice-zone="true"
         style={
           collapsed
             ? { width: 'min(560px, calc(100vw - 220px))', flexShrink: 1, minWidth: 0 }
