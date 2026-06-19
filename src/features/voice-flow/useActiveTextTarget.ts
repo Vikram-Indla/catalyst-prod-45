@@ -5,6 +5,16 @@ import { captureFieldState } from './insertTextIntoTarget';
 /**
  * Returns an ActiveField for `el` if it is eligible for voice input,
  * or null if the element should never trigger voice dictation.
+ *
+ * SCOPING RULE: voice dictation only activates inside a "voice zone" —
+ * a container marked with data-voice-zone="true". This restricts the
+ * feature to Catalyst message composers (chat, description, activity
+ * comments) and prevents accidental activation in search boxes, filter
+ * inputs, nav fields, or any other utility input.
+ *
+ * contenteditable elements (TipTap / ProseMirror) are always inside a
+ * voice zone when rendered by RichTextEditor, so they require the same
+ * ancestor check as plain inputs.
  */
 export function getActiveTextTarget(el: Element | null): ActiveField | null {
   if (!el || !(el instanceof HTMLElement)) return null;
@@ -17,6 +27,7 @@ export function getActiveTextTarget(el: Element | null): ActiveField | null {
     if (BLOCKED_INPUT_TYPES.has(input.type.toLowerCase())) return null;
     if (input.disabled || input.readOnly) return null;
     if (isSensitive(input)) return null;
+    if (!isInVoiceZone(input)) return null;
     return buildField(input, 'input');
   }
 
@@ -24,17 +35,34 @@ export function getActiveTextTarget(el: Element | null): ActiveField | null {
     const ta = el as HTMLTextAreaElement;
     if (ta.disabled || ta.readOnly) return null;
     if (isSensitive(ta)) return null;
+    if (!isInVoiceZone(ta)) return null;
     return buildField(ta, 'textarea');
   }
 
   // contenteditable (includes ProseMirror, Tiptap, plain divs)
-  if (el.isContentEditable) {
+  // isContentEditable is undefined in some jsdom versions; fall back to attribute check
+  const editable = el.getAttribute('contenteditable');
+  if (el.isContentEditable || editable === 'true' || editable === 'plaintext-only') {
     if ((el as HTMLElement).getAttribute('aria-readonly') === 'true') return null;
     if (isSensitive(el)) return null;
+    if (!isInVoiceZone(el)) return null;
     return buildField(el, 'contenteditable');
   }
 
   return null;
+}
+
+/**
+ * Walk ancestor chain looking for data-voice-zone="true".
+ * Stops at document.body — O(depth) but depth is never large.
+ */
+function isInVoiceZone(el: HTMLElement): boolean {
+  let node: HTMLElement | null = el;
+  while (node && node !== document.body) {
+    if (node.dataset.voiceZone === 'true') return true;
+    node = node.parentElement;
+  }
+  return false;
 }
 
 function buildField(el: HTMLElement, kind: ActiveFieldKind): ActiveField {

@@ -380,7 +380,7 @@ export function RichTextEditor({
   const saveDisabled = isSaving || pendingUploads > 0;
 
   return (
-    <div ref={editorRootRef}>
+    <div ref={editorRootRef} data-voice-zone="true">
       <EditorView
         editor={editor}
         minHeight={minHeight}
