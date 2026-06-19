@@ -279,6 +279,7 @@ export const usePendingSignOffs = () =>
 
 export interface PendingApproval {
   id: string;
+  entityType: 'change' | 'release';
   changeId: string | null;
   chgNumber: string | null;
   changeTitle: string | null;
@@ -303,14 +304,35 @@ export const usePendingApprovals = () =>
     refetchOnMount: 'always',
     retry: 2,
     queryFn: async (): Promise<PendingApproval[]> => {
-      const { data: rows, error } = await supabase
+      const { data: changeRows, error } = await supabase
         .from('rh_change_signoffs')
         .select('id, change_id, signoff_role, stage, status, wait_started_at, assigned_to, rh_changes(chg_number, title, risk_level)')
         .in('status', ['pending', 'waiting'])
         .order('wait_started_at', { ascending: true });
       if (error) throw error;
-      const signoffs = rows ?? [];
-      const approverIds = [...new Set(signoffs.map((s: any) => s.assigned_to).filter(Boolean))] as string[];
+      const changeSignoffs = changeRows ?? [];
+
+      // Release sign-offs mirror the change sign-off shape. Degrade gracefully —
+      // a release-table read failure must not blank the (working) change rows.
+      let releaseSignoffs: any[] = [];
+      const { data: relRows, error: relErr } = await supabase
+        .from('rh_release_signoffs' as any)
+        .select('id, release_id, signoff_role, stage, status, wait_started_at, assigned_to')
+        .in('status', ['pending', 'waiting'])
+        .order('wait_started_at', { ascending: true });
+      if (!relErr) releaseSignoffs = relRows ?? [];
+
+      const releaseIds = [...new Set(releaseSignoffs.map((s) => s.release_id).filter(Boolean))] as string[];
+      const releaseMap: Record<string, { jira_key: string | null; key: string | null; name: string | null }> = {};
+      if (releaseIds.length > 0) {
+        const { data: rels } = await supabase
+          .from('rh_releases')
+          .select('id, jira_key, key, name')
+          .in('id', releaseIds);
+        (rels ?? []).forEach((r: any) => { releaseMap[r.id] = { jira_key: r.jira_key, key: r.key, name: r.name }; });
+      }
+
+      const approverIds = [...new Set([...changeSignoffs, ...releaseSignoffs].map((s: any) => s.assigned_to).filter(Boolean))] as string[];
       const profileMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
       if (approverIds.length > 0) {
         const { data: profs } = await supabase
@@ -319,8 +341,13 @@ export const usePendingApprovals = () =>
           .in('id', approverIds);
         (profs ?? []).forEach((p: any) => { profileMap[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }; });
       }
-      return signoffs.map((s: any) => ({
+
+      const nameOf = (id: string | null) => (id ? (profileMap[id]?.full_name ?? null) : null);
+      const avatarOf = (id: string | null) => (id ? (profileMap[id]?.avatar_url ?? null) : null);
+
+      const changeApprovals: PendingApproval[] = changeSignoffs.map((s: any) => ({
         id: s.id,
+        entityType: 'change',
         changeId: s.change_id ?? null,
         chgNumber: s.rh_changes?.chg_number ?? null,
         changeTitle: s.rh_changes?.title ?? null,
@@ -329,9 +356,33 @@ export const usePendingApprovals = () =>
         status: s.status,
         waitStartedAt: s.wait_started_at ?? null,
         approverId: s.assigned_to ?? null,
-        approverName: s.assigned_to ? (profileMap[s.assigned_to]?.full_name ?? null) : null,
-        approverAvatarUrl: s.assigned_to ? (profileMap[s.assigned_to]?.avatar_url ?? null) : null,
+        approverName: nameOf(s.assigned_to ?? null),
+        approverAvatarUrl: avatarOf(s.assigned_to ?? null),
       }));
+
+      const releaseApprovals: PendingApproval[] = releaseSignoffs.map((s: any) => {
+        const rel = releaseMap[s.release_id] ?? null;
+        return {
+          id: s.id,
+          entityType: 'release',
+          changeId: s.release_id ?? null,
+          chgNumber: rel?.jira_key ?? rel?.key ?? null,
+          changeTitle: rel?.name ?? null,
+          riskLevel: null,
+          role: s.signoff_role ?? s.stage ?? null,
+          status: s.status,
+          waitStartedAt: s.wait_started_at ?? null,
+          approverId: s.assigned_to ?? null,
+          approverName: nameOf(s.assigned_to ?? null),
+          approverAvatarUrl: avatarOf(s.assigned_to ?? null),
+        };
+      });
+
+      return [...changeApprovals, ...releaseApprovals].sort((a, b) => {
+        const ta = a.waitStartedAt ? new Date(a.waitStartedAt).getTime() : 0;
+        const tb = b.waitStartedAt ? new Date(b.waitStartedAt).getTime() : 0;
+        return ta - tb;
+      });
     },
   });
 
@@ -1160,3 +1211,52 @@ export const useSaveReleaseNotes = () => {
     onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ['release-hub', 'releases', v.releaseId, 'notes'] }),
   });
 };
+
+// ── CATY release-risk summary (overview panel) ───────────────────────
+export type ReleaseRiskPosture = 'clear' | 'watch' | 'elevated' | 'critical';
+export interface ReleaseRiskDriver {
+  severity: 'high' | 'medium' | 'low';
+  title: string;
+  action: string;
+  link: 'freeze' | 'signoff' | 'release' | null;
+  entityName?: string | null;
+}
+export interface ReleaseRiskSummary {
+  riskIndex: number;
+  posture: ReleaseRiskPosture;
+  headline: string;
+  narrative: string;
+  drivers: ReleaseRiskDriver[];
+}
+
+/** Invoke the ai-digest `release-risk` mode with a live operations snapshot. */
+export const useGenerateReleaseRisk = () =>
+  useMutation({
+    mutationFn: async (context: Record<string, unknown>): Promise<ReleaseRiskSummary> => {
+      const { data, error } = await supabase.functions.invoke('ai-digest', {
+        body: { mode: 'release-risk', context },
+      });
+      if (error) throw error;
+      const risk = (data as { risk?: ReleaseRiskSummary } | null)?.risk;
+      if (!risk || typeof risk.riskIndex !== 'number') {
+        throw new Error('release-risk: malformed response');
+      }
+      return { ...risk, drivers: Array.isArray(risk.drivers) ? risk.drivers : [] };
+    },
+  });
+
+/** Persist a generated risk summary as an overview-level note. */
+export const useSaveCatyRiskNote = () =>
+  useMutation({
+    mutationFn: async (note: { contentMd: string; riskIndex: number | null; posture: string | null; payload: unknown }) => {
+      // rh_caty_risk_notes is not yet in generated types — cast per repo convention.
+      const { error } = await (supabase as any).from('rh_caty_risk_notes').insert({
+        content_md: note.contentMd,
+        risk_index: note.riskIndex,
+        posture: note.posture,
+        payload: note.payload,
+        generated_by_ai: true,
+      });
+      if (error) throw error;
+    },
+  });

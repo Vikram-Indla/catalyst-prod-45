@@ -13,9 +13,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, isToday, differenceInDays, differenceInHours } from 'date-fns';
-import { Rocket, CheckSquare, ArrowLeftRight, Clock, Calendar, AlertTriangle, ChevronRight, RefreshCw, Copy, StickyNote } from '@/lib/atlaskit-icons';
-import Button from '@atlaskit/button/new';
-import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
+import { Rocket, CheckSquare, ArrowLeftRight, Clock, Calendar, AlertTriangle } from '@/lib/atlaskit-icons';
 import {
   useReleasesList,
   useChangesList,
@@ -33,8 +31,8 @@ import { statusBg, statusFg } from '@/components/catalyst-detail-views/shared/se
 import { Avatar } from '@/components/ads/Avatar';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
-import { catalystToast } from '@/lib/catalystToast';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { CatyRiskPanel } from '@/components/releasehub/CatyRiskPanel';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -202,7 +200,23 @@ export default function CommandCenterPage() {
     return { body, basis };
   }, [releases, kpis, changes]);
 
-  const copyCaty = () => { navigator.clipboard?.writeText(caty.body).then(() => catalystToast.success('Copied')).catch(() => {}); };
+  // Compact, UUID-free snapshot sent to the ai-digest `release-risk` mode.
+  const riskContext = useMemo(() => ({
+    kpis,
+    releases: activeReleases.map((r) => ({
+      name: r.name,
+      version: r.version,
+      status: r.status,
+      health: r.health,
+      readiness_pct: r.readiness_pct,
+      target_date: r.planned_release_date ?? r.target_date,
+    })),
+    changes: changes
+      .filter((c) => IN_FLIGHT_CHANGE.includes(c.status))
+      .map((c) => ({ change: c.chg_number, title: c.title, status: c.status, risk_level: c.risk_level, window_start: c.window_start ?? c.deployment_date })),
+    freezeWindows: freezes.map((f) => ({ name: f.name, target_env: f.targetEnv, status: f.status, conflicts: f.conflicts, start: f.startDate, end: f.endDate })),
+    pendingApprovals: approvals.map((a) => ({ change: a.chgNumber, title: a.changeTitle, role: a.role, risk_level: a.riskLevel, waiting_since: a.waitStartedAt, approver: a.approverName })),
+  }), [kpis, activeReleases, changes, freezes, approvals]);
 
   return (
     <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
@@ -238,7 +252,7 @@ export default function CommandCenterPage() {
             return (
               <div key={r.id} style={rowStyleClickable(() => navigate(`/release-hub/${r.id}`))} onClick={() => navigate(`/release-hub/${r.id}`)}>
                 <div style={{ width: 44, height: 44, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-background-information, #E9F2FE)', borderRadius: 8 }}>
-                  <div style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--ds-text-information, #0055CC)' }}>{format(d, 'MMM')}</div>
+                  <div style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', color: 'var(--ds-text-information, #0055CC)' }}>{format(d, 'MMM')}</div>
                   <div style={{ fontFamily: RH.fontDisplay, fontSize: 18, fontWeight: 700, lineHeight: 1, color: 'var(--ds-text-information, #0055CC)' }}>{format(d, 'd')}</div>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -285,7 +299,7 @@ export default function CommandCenterPage() {
             </div>
           ) : approvals.slice(0, 6).map((a: PendingApproval) => (
             <div key={a.id} style={rowStyleClickable()}>
-              {(() => { const isRel = (a.chgNumber ?? '').toUpperCase().startsWith('REL'); return <div style={{ flexShrink: 0 }}><StatusLozenge appearance={isRel ? 'inprogress' : 'new'} label={isRel ? 'Release' : 'Change'} /></div>; })()}
+              {(() => { const isRel = a.entityType === 'release'; return <div style={{ flexShrink: 0 }}><StatusLozenge appearance={isRel ? 'inprogress' : 'new'} label={isRel ? 'Release' : 'Change'} /></div>; })()}
               <div style={{ width: 220, minWidth: 0 }}>
                 {a.chgNumber && <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{a.chgNumber}</span>}
                 <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.changeTitle ?? '—'}</p>
@@ -321,21 +335,12 @@ export default function CommandCenterPage() {
 
       {/* CATY Risk Summary */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <CatyPulseIcon size={16} />
-              <span style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.text }}>AI Release Risk Summary · CATY</span>
-            </div>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>{caty.basis}</span>
-          </div>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0, lineHeight: 1.5 }}>{caty.body}</p>
-          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <Button appearance="default" iconBefore={RefreshCw} onClick={() => catalystToast.info('Recomputed from live data')}>Regenerate</Button>
-            <Button appearance="subtle" iconBefore={Copy} onClick={copyCaty}>Copy</Button>
-            <Button appearance="subtle" iconBefore={StickyNote} onClick={() => catalystToast.success('Saved as note')}>Save as note</Button>
-          </div>
-        </div>
+        <CatyRiskPanel
+          context={riskContext}
+          metrics={{ freezeConflicts: kpis.freezeConflicts, pending: kpis.pending, atRisk: kpis.atRisk, active: kpis.active }}
+          basis={caty.basis}
+          fallbackNarrative={caty.body}
+        />
       </div>
 
       {/* Recent Production Events */}

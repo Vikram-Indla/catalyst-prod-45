@@ -39,12 +39,10 @@ import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
 import FilterIcon from '@atlaskit/icon/glyph/filter';
 import ListIcon from '@atlaskit/icon/glyph/list';
 import RoadmapIcon from '@atlaskit/icon/glyph/roadmap';
-import TaskIcon from '@atlaskit/icon/glyph/task';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import SidebarClock from './SidebarClock';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
-import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import { HUB_ICON_OUTLINE_REGISTRY, HUB_ICON_REGISTRY } from '@/components/icons';
+import { HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
 import { sliceVisible } from '@/lib/home-recents';
 
 const RECENT_LIMIT = 16;
@@ -200,11 +198,11 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
 }
 
 /**
- * Space group header — project avatar + name, rendered once above the group's
- * rows. Uses the canonical ProjectIcon (bundled brand avatar → Lucide+color →
- * stock). NEVER a single-letter tile (mem://constraints/canonical-project-icons).
- * The standalone Tasks hub has no project row, so it gets the canonical Tasks
- * glyph in a tinted tile instead.
+ * Space group header — neutral hub glyph + name, rendered once above the group's
+ * rows. Uses the monochrome hub-outline mask (theme-aware) for every space type;
+ * project/product identity is carried by the name + "· Project/Product" label,
+ * not a colourful brand tile (2026-06-19 sidebar de-noise decision — reverses the
+ * prior colour-tile / canonical-brand-avatar treatment for THIS surface only).
  *
  * Generous vertical padding (12px top) separates each space without a hairline
  * divider — the enterprise "calm whitespace" read requested 2026-06-17.
@@ -221,10 +219,12 @@ function SpaceGroupHeader({
   // Space-scoped hubs (project/product) carry a per-space KEY → show "KEY · Type".
   // Global single hubs (task/incident/release/plan) have no key → type word only.
   const isSpaceScoped = head.hub === 'project' || head.hub === 'product';
-  // Full-color gradient hub tile (same asset as the module launcher), not the
-  // monochrome outline glyph — Plan/Release/Incident now read with launcher parity.
-  const globalHubIcon =
-    HUB_ICON_REGISTRY[head.hub as keyof typeof HUB_ICON_REGISTRY];
+  // Neutral monochrome hub-outline glyph for every space — identity is carried by
+  // the name + "· Project/Product" label, not a colourful tile. Mask-filled so the
+  // single glyph is theme-aware (no baked-in stroke colour). 2026-06-19 de-noise.
+  const outlineUrl =
+    HUB_ICON_OUTLINE_REGISTRY[head.hub as keyof typeof HUB_ICON_OUTLINE_REGISTRY];
+  const iconMask = outlineUrl ? `url(${outlineUrl})` : undefined;
 
   // Whole header is the collapse affordance. The chevron sits left of the
   // avatar (Jira "Recent" group-header pattern) and rotates open→down /
@@ -248,7 +248,7 @@ function SpaceGroupHeader({
         display: 'flex',
         alignItems: 'center',
         gap: token('space.100', '8px'),
-        padding: '12px 12px 6px 12px',
+        padding: `${token('space.150', '12px')} ${token('space.150', '12px')} ${token('space.075', '6px')} ${token('space.150', '12px')}`,
         cursor: 'pointer',
       }}
     >
@@ -258,38 +258,24 @@ function SpaceGroupHeader({
       >
         <Chevron label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
       </span>
-      {head.hub === 'task' ? (
-        <span
-          aria-hidden="true"
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 3,
-            flexShrink: 0,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'var(--ds-background-accent-yellow-subtler, #FFF7D6)',
-          }}
-        >
-          <TaskIcon label="" size="small" primaryColor="var(--ds-icon-accent-yellow, #946F00)" />
-        </span>
-      ) : !isSpaceScoped ? (
-        <img
-          src={globalHubIcon}
-          alt=""
-          aria-hidden="true"
-          style={{ width: 20, height: 20, borderRadius: 4, flexShrink: 0, display: 'block' }}
-        />
-      ) : (
-        <ProjectIcon
-          projectKey={head.projectKey}
-          iconName={head.iconName}
-          color={head.color}
-          name={head.projectName}
-          size="small"
-        />
-      )}
+      <span
+        aria-hidden="true"
+        style={{
+          width: 20,
+          height: 20,
+          flexShrink: 0,
+          display: 'block',
+          backgroundColor: 'var(--ds-text-subtle, #44546F)',
+          WebkitMaskImage: iconMask,
+          maskImage: iconMask,
+          WebkitMaskRepeat: 'no-repeat',
+          maskRepeat: 'no-repeat',
+          WebkitMaskPosition: 'center',
+          maskPosition: 'center',
+          WebkitMaskSize: 'contain',
+          maskSize: 'contain',
+        }}
+      />
       <span
         title={head.projectName}
         style={{

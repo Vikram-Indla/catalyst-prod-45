@@ -139,7 +139,7 @@ serve(async (req) => {
       });
     }
     // ── NEW AI MODES — For You tab Caty features ────────────────────────
-    if (body.mode === 'ageing-triage' || body.mode === 'board-insight' || body.mode === 'workload-risk' || body.mode === 'morning-brief') {
+    if (body.mode === 'ageing-triage' || body.mode === 'board-insight' || body.mode === 'workload-risk' || body.mode === 'morning-brief' || body.mode === 'release-risk') {
       const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
       if (!geminiApiKey) {
         return new Response(
@@ -164,6 +164,17 @@ serve(async (req) => {
       } else if (body.mode === 'morning-brief') {
         systemPrompt = `You are Caty, an AI work management assistant. Write a 3-sentence morning brief for this user based on their assigned items. Mention: items due this week, highest-priority unblocked item, and any items that may need attention (stale or blocked). Return JSON: { "brief": string }. Be direct and actionable — no pleasantries.`;
         responseKey = 'brief';
+      } else if (body.mode === 'release-risk') {
+        systemPrompt = `You are Caty, the AI release-operations analyst for Catalyst (Saudi Arabia Ministry of Industry). You are given a JSON snapshot of release operations: active releases (with name, status, health, readiness_pct, target date), in-flight changes, code-freeze windows (with conflict counts), pending sign-off approvals (with how long each has waited), and rollup counts. Assess deployment risk for the next window. Return JSON: { "risk": { "riskIndex": number, "posture": "clear"|"watch"|"elevated"|"critical", "headline": string, "narrative": string, "drivers": [{ "severity": "high"|"medium"|"low", "title": string, "action": string, "link": "freeze"|"signoff"|"release"|null, "entityName": string }] } }.
+Rules:
+(1) riskIndex = integer 0-100 reflecting how exposed the next deployment window is. Weight signals: a freeze conflict is the strongest signal, then at-risk release health, then long-pending sign-offs, then low readiness_pct. No blocking signals = a low index in the 0-20 band.
+(2) posture: "clear" if riskIndex < 25, "watch" if 25-49, "elevated" if 50-74, "critical" if >= 75.
+(3) headline = max 8 words, name the single most exposed release or the dominant risk (e.g. "June Production Release exposed by freeze conflict"). If nothing is wrong, say the path is clear.
+(4) narrative = exactly 2 sentences. Lead with the most critical finding naming the specific release/window; second sentence states the corrective path before the next window. No pleasantries.
+(5) drivers = 0 to 4 items, ranked most-severe first. Each: severity by impact; title = the specific problem naming the real entity (release name, approver, window); action = one imperative sentence with the concrete next step; entityName = the human-readable release/change/window/approver name from the data (never a UUID); link = "freeze" for freeze-window issues, "signoff" for pending-approval issues, "release" for release-health/readiness issues, null otherwise.
+(6) If there are zero blocking signals, return an empty drivers array and a reassuring narrative.
+Use ONLY the data provided. Never invent releases, names, dates, or counts. Never surface a UUID in any text field.`;
+        responseKey = 'risk';
       }
 
       // ── ageing-triage cache: no-delta guard (2026-06-18) ──────────────
