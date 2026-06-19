@@ -325,34 +325,36 @@ export function ChatDock({
       {/* Messages mode — directory OR conversation pane */}
       {dockMode === "messages" && (
         <>
-          {activeId ? (
-            // Render pane immediately when activeId is set, even before the
-            // conversations query refetches (race condition fix). Stub fills
-            // in the title/kind until byId has the real data.
-            <DockConversationPane
-              conversation={byId.get(activeId) ?? {
-                id: activeId,
-                kind: "dm",
-                title: "…",
-                isArchived: false,
-                lastMessageAt: null,
-                lastMessagePreview: null,
-                unreadCount: 0,
-                ticketKey: null,
-                ticketType: null,
-                projectKey: null,
-                projectName: null,
-              }}
-              onBack={() => onFocusDirectory?.()}
-            />
-          ) : (
-            <DockDirectory
-              conversations={listConversations}
-              activeId={activeId}
-              onSelectConversation={onSelect}
-              focusTick={dirFocusTick}
-            />
-          )}
+          <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+            {activeId ? (
+              // Render pane immediately when activeId is set, even before the
+              // conversations query refetches (race condition fix). Stub fills
+              // in the title/kind until byId has the real data.
+              <DockConversationPane
+                conversation={byId.get(activeId) ?? {
+                  id: activeId,
+                  kind: "dm",
+                  title: "…",
+                  isArchived: false,
+                  lastMessageAt: null,
+                  lastMessagePreview: null,
+                  unreadCount: 0,
+                  ticketKey: null,
+                  ticketType: null,
+                  projectKey: null,
+                  projectName: null,
+                }}
+                onBack={() => onFocusDirectory?.()}
+              />
+            ) : (
+              <DockDirectory
+                conversations={listConversations}
+                activeId={activeId}
+                onSelectConversation={onSelect}
+                focusTick={dirFocusTick}
+              />
+            )}
+          </div>
 
           <div className="cc-tabs">
             {openConversationIds.map((id) => {
