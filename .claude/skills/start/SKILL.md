@@ -24,6 +24,32 @@ End every `proceed` run with a Benefit Report.
 
 ---
 
+## 📐 OUTPUT CONTRACT — 80% VISUAL, 20% ONE-LINERS (P0, non-negotiable)
+
+**The visual widget is the deliverable. Prose is a caption, not an essay.** Every `/start` and every `proceed` step obeys this:
+
+1. **No commentary, no narration, no "let me…" / "I'll…" lines.** Run the scan silently; report only the result.
+2. **Each section is ONE line.** No multi-line bullets, no per-skill paragraphs, no rationale prose. A `/start` turn is exactly these one-liners, then the widget:
+   ```
+   Understanding: <one line>
+   Work type: <one line>
+   Skills: <comma-separated list, one line>
+   Skipping: <comma-separated list, one line>
+   ```
+   A `proceed` change turn is instead:
+   ```
+   Fix: <one line>
+   Applied: <files/paths, one line>
+   Violations: <one line, or "none">
+   ```
+3. **Then the widget** (`mcp__visualize__show_widget`) — it carries the detail (the map, the before→after, the skill flow, the why). Anything you'd be tempted to explain goes INTO the widget, not into prose.
+4. **Then the consent line**, then STOP.
+5. Target ≤4 short prose lines per turn. A 5th line belongs in the widget.
+
+A turn that emits paragraphs of explanation instead of one-liners + widget is a process violation, even if the content is correct.
+
+---
+
 ## 🖼️ MANDATORY VISUAL WIDGET GATE (P0, non-negotiable)
 
 **After every narrative and after every change, you MUST render a visual widget of what is being proposed or what changed — and STOP until the user consents. No widget → no movement. No consent → no movement.**
@@ -54,30 +80,16 @@ A `/start` run or `proceed` step that advances without a rendered widget + expli
 
 ### `/start [request]`
 
-Output:
+Emit EXACTLY these four one-liners (no headers, no bullets, no prose), then the widget, then the consent line. Nothing else.
 
-## Intent understood
-[One sentence.]
+```
+Understanding: <one line>
+Work type: <one of: Investigation / Audit / Feature replication / Debugging / Implementation planning / Implementation / UI-DOM analysis / Design audit / Validation / Guardrail update / Tooling setup>
+Skills: <comma-separated list>
+Skipping: <comma-separated list>
+```
 
-## Work type
-[Investigation / Audit / Feature replication / Debugging / Implementation planning / Implementation / UI-DOM analysis / Design audit / Validation / Guardrail update / Tooling setup.]
-
-## I would use these skills
-- [Skill / capability]&#58; [Why it is needed.] It will [what it will do after proceed].
-
-## I would not use these
-- [Skill / capability]&#58; [Why it is not needed now.]
-
-## Approval gate
-I will wait for you to say `proceed`. After that, I will apply only the selected skills/capabilities above.
-
-## Expected output after proceed
-[Investigation report / source-target map / implementation spec / validation report / code-change plan / implementation summary.]
-
-## Benefit report note
-After `proceed`, I will end with a Benefit Report showing what each selected skill contributed and the estimated token/context budget impact.
-
-Then render the Visual Widget Gate widget (a map of the requested change), emit the consent line, and stop. No `proceed` is honoured until the widget is approved.
+Then render the recommendation widget (work type, skills→why mapping, expected before→after — all inside the widget). Then emit the consent line and stop. No `proceed` is honoured until the widget is approved. Everything else (work-type catalogue, per-skill rationale, expected outputs) lives in the widget, never in prose.
 
 ### `proceed`
 
@@ -87,7 +99,7 @@ When user says `proceed`:
 3. Check git status before implementation.
 4. Do not run destructive commands.
 5. Do not install tools unless explicitly approved.
-6. For EVERY change: make the change, then render a Visual Widget Gate widget of that change, emit the consent line, and STOP until approved (see the Visual Widget Gate above). One change = one widget = one consent. No consent, no next change.
+6. For EVERY change: make the change, emit the three `Fix:`/`Applied:`/`Violations:` one-liners (per the Output Contract), render a Visual Widget Gate widget of that change (before→after), emit the consent line, and STOP until approved. One change = one widget = one consent. No consent, no next change. No prose beyond the three one-liners.
 7. Produce the main deliverable.
 8. Render a final summary widget + consent line, then end with the mandatory Benefit Report.
 
@@ -258,6 +270,8 @@ Always apply:
 17. Never alter schema, migrations, env files, secrets, credentials, commits, or pushes without explicit approval.
 
 ## Mandatory Benefit Report
+
+Render the end-to-end summary widget FIRST (carries the visual recap), then the consent line. The Benefit Report below is the only allowed prose block — keep it to the tables/fields shown, no added narration.
 
 After every `proceed`, include:
 

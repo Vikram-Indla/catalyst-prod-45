@@ -8,8 +8,8 @@ description: >-
   Mandatory before any design-only surface is declared done.
   Triggers on: "design critique", "UX review", "audit the design", "heuristic
   review", "design score", "does this look right", "rate the UI".
-version: 1.2.0
-author: preflight × Vikram × Claude, 2026-06-19 (v1.2: mandatory visual widget consent gate; v1.1: clone-parity gate + 10 anti-shipping-fast guards)
+version: 1.3.0
+author: preflight × Vikram × Claude, 2026-06-19 (v1.3: 80/20 output contract — one-liners + widget, no commentary; v1.2: mandatory visual widget consent gate; v1.1: clone-parity gate + 10 anti-shipping-fast guards)
 metadata:
   category: design-quality
   tags: [design, ux, heuristics, audit, closure, ads, atlaskit]
@@ -24,6 +24,31 @@ Stop subjective "looks good" sign-offs. Produce a scored, evidence-backed
 design audit against 10 measurable heuristics before any UI surface is
 declared done. Pairs with `jira-compare` (pixel parity) and `ads-validator`
 (token compliance) to form the full UI quality gate.
+
+---
+
+## 📐 OUTPUT CONTRACT — 80% VISUAL, 20% ONE-LINERS (P0, non-negotiable)
+
+**The widget (and the live-page arrows) carry the critique. Prose is a caption.** Every turn of this skill:
+
+1. **No commentary, no narration, no "let me…" lines.** Probe silently; report only the result.
+2. **Each section is ONE line.** Collapse the critique to:
+   ```
+   Understanding: <surface + what's being judged, one line>
+   Violations: <count + the top issues, one line — e.g. "3 P0: shadcn dropdown, raw hex header, uppercase labels">
+   Score: <X/30 · SHIP|HALT>
+   ```
+   For a fix turn:
+   ```
+   Fix: <one line>
+   Applied: <files/paths, one line>
+   Violations: <remaining, one line, or "none">
+   ```
+3. **Then the widget** (`mcp__visualize__show_widget`) — the scorecard, violation map, or before→after lives here, not in prose. The full findings table goes INTO the widget, never as paragraphs.
+4. **Then the consent line**, then STOP.
+5. Target ≤4 short prose lines per turn. The soft-announcement / score banners below still apply, but no free-text explanation around them.
+
+A critique that emits paragraphs instead of one-liners + widget is a process violation, even if the scoring is correct.
 
 ---
 
@@ -352,14 +377,9 @@ For each heuristic, state:
 - **Finding**: what's wrong (if score < 3)
 - **Severity**: P0 (blocks ship) / P1 (fix before next release) / P2 (polish backlog)
 
-### Step 3 — Produce findings table
+### Step 3 — Render the findings table INSIDE the widget (not as prose)
 
-```
-| Heuristic | Score | Finding | Severity | Fix |
-|---|---|---|---|---|
-| H4 Consistency | 1 | Three-dots uses shadcn DropdownMenu; rest of app uses AKDropdownMenu | P0 | Replace with AKDropdownMenu |
-| H9 Typography | 2 | Column headers UPPERCASE (text-transform: uppercase) vs Jira sentence-case | P1 | Set text-transform: none; sentence-case label strings |
-```
+Per the Output Contract, the findings table is the widget payload — render it via `mcp__visualize__show_widget` (a scorecard/violation map), not as a markdown block in chat. In prose, emit only the `Understanding:` / `Violations:` / `Score:` one-liners. Each widget row carries: Heuristic · Score · Finding · Severity · Fix — e.g. `H4 Consistency · 1 · shadcn DropdownMenu vs AKDropdownMenu · P0 · replace with AKDropdownMenu`.
 
 ### Step 4 — Closure Evidence (MANDATORY — same rule as preflight Phase 6)
 
