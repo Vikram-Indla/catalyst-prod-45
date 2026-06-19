@@ -1345,3 +1345,65 @@ export const useRunPredictor = () => {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['release-hub', 'predictions'] }); },
   });
 };
+
+// ── Sprint bands for the calendar Project lens ───────────────────────
+export interface SprintBand { name: string; start: string; end: string }
+export const useSprintBands = () =>
+  useQuery({
+    queryKey: ['release-hub', 'sprint-bands'],
+    staleTime: 30_000,
+    queryFn: async (): Promise<SprintBand[]> => {
+      const [anchor, product] = await Promise.all([
+        supabase.from('anchor_sprints').select('name,start_date,end_date'),
+        supabase.from('product_sprints').select('name,start_date,end_date'),
+      ]);
+      const out: SprintBand[] = [];
+      const seen = new Set<string>();
+      [...(anchor.data ?? []), ...(product.data ?? [])].forEach((s: any) => {
+        if (!s.name || !s.start_date || !s.end_date || seen.has(s.name)) return;
+        seen.add(s.name);
+        out.push({ name: s.name, start: s.start_date.slice(0, 10), end: s.end_date.slice(0, 10) });
+      });
+      return out;
+    },
+  });
+
+// ── Release-detail bits for the calendar peek (notes / changes / sprints) ──
+export interface ReleaseNote { id: string; contentMd: string | null; generatedByAi: boolean; updatedAt: string | null }
+export interface ReleaseChangeLite { id: string; chgNumber: string | null; title: string | null; status: string | null }
+export interface ReleaseSprintLite { name: string; start: string | null; end: string | null }
+export interface ReleaseBits { notes: ReleaseNote | null; changes: ReleaseChangeLite[]; sprints: ReleaseSprintLite[] }
+
+export const useReleaseBits = (releaseId: string | null) =>
+  useQuery({
+    queryKey: ['release-hub', 'release-bits', releaseId],
+    enabled: !!releaseId,
+    staleTime: 15_000,
+    queryFn: async (): Promise<ReleaseBits> => {
+      const [notes, changes, sprints] = await Promise.all([
+        supabase.from('rh_release_notes').select('id,content_md,generated_by_ai,updated_at')
+          .eq('release_id', releaseId).order('updated_at', { ascending: false }).limit(1),
+        supabase.from('rh_changes').select('id,chg_number,title,status').eq('release_id', releaseId),
+        supabase.from('product_sprints').select('name,start_date,end_date').eq('release_id', releaseId),
+      ]);
+      const n = (notes.data ?? [])[0] as any;
+      return {
+        notes: n ? { id: n.id, contentMd: n.content_md ?? null, generatedByAi: !!n.generated_by_ai, updatedAt: n.updated_at ?? null } : null,
+        changes: (changes.data ?? []).map((c: any) => ({ id: c.id, chgNumber: c.chg_number ?? null, title: c.title ?? null, status: c.status ?? null })),
+        sprints: (sprints.data ?? []).map((s: any) => ({ name: s.name, start: s.start_date ?? null, end: s.end_date ?? null })),
+      };
+    },
+  });
+
+export const useGenerateReleaseNotes = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (releaseId: string): Promise<string> => {
+      const { data, error } = await supabase.functions.invoke('release-notes-generate', { body: { releaseId } });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data.content_md as string;
+    },
+    onSuccess: (_d, releaseId) => { qc.invalidateQueries({ queryKey: ['release-hub', 'release-bits', releaseId] }); },
+  });
+};
