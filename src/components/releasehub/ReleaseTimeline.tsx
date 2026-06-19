@@ -64,13 +64,19 @@ export function ReleaseTimeline() {
 
   if (sorted.length === 0 && freezes.length === 0) return null;
 
-  const anchor     = past.length > 0 ? past[past.length - 1] : null;
-  const rangeStart = anchor?.goLiveDate
-    ? addDays(new Date(anchor.goLiveDate), -7)
-    : addDays(today, -21);
-  const lastVisible = visible[visible.length - 1];
-  const rangeEnd   = lastVisible?.goLiveDate
-    ? addDays(new Date(lastVisible.goLiveDate), 21)
+  const noUpcoming = visible.length === 0;
+  const effectiveShowPast = showPast || noUpcoming;
+  const shownPast = effectiveShowPast ? (noUpcoming && !showPast ? past.slice(-4) : past) : [];
+
+  // Range anchored to rows actually rendered
+  const rendered = [...shownPast, ...visible];
+  const rangeAnchor = rendered.length > 0 ? rendered : past;
+  const firstR = rangeAnchor[0];
+  const lastR  = rangeAnchor[rangeAnchor.length - 1];
+  const firstEnd = firstR.goLiveDate ? new Date(firstR.goLiveDate) : addDays(today, -14);
+  const rangeStart = addDays(addDays(firstEnd, -14), -7);
+  const rangeEnd = lastR.goLiveDate
+    ? addDays(new Date(lastR.goLiveDate), 21)
     : addDays(today, 60);
 
   const totalDays  = Math.max(1, differenceInDays(rangeEnd, rangeStart));
@@ -231,7 +237,7 @@ export function ReleaseTimeline() {
                 display: 'flex', alignItems: 'center', gap: 3,
               }}
             >
-              {showPast ? '▼' : '▶'} {past.length} past
+              {effectiveShowPast ? '▼' : '▶'} {past.length} past
             </button>
           )}
         </div>
@@ -296,13 +302,15 @@ export function ReleaseTimeline() {
               background: T.sunken, cursor: 'pointer', padding: '0 16px',
             }}
           >
-            <span style={{ fontSize: 9, color: T.subtlest }}>{showPast ? '▼' : '▶'}</span>
+            <span style={{ fontSize: 9, color: T.subtlest }}>{effectiveShowPast ? '▼' : '▶'}</span>
             <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 600, color: T.subtlest, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Released — {past.length}
+              {noUpcoming
+                ? `Released — showing ${shownPast.length} of ${past.length}`
+                : `Released — ${past.length}`}
             </span>
           </div>
         )}
-        {showPast && past.map(r => renderRow(r, true))}
+        {effectiveShowPast && shownPast.map(r => renderRow(r, true))}
 
         {/* TODAY pill row */}
         <div style={{

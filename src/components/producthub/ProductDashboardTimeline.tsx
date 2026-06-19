@@ -56,13 +56,22 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
   const past    = sorted.filter(r => getStatus(r.endDate, today) === 'completed');
   const visible = sorted.filter(r => getStatus(r.endDate, today) !== 'completed');
 
-  const anchor     = past.length > 0 ? past[past.length - 1] : null;
-  const rangeStart = anchor?.endDate
-    ? addDays(new Date(anchor.endDate), -7)
+  const noUpcoming = visible.length === 0;
+  const effectiveShowPast = showPast || noUpcoming;
+  const shownPast = effectiveShowPast ? (noUpcoming && !showPast ? past.slice(-4) : past) : [];
+
+  // Range anchored to actual rendered rows
+  const rendered = [...shownPast, ...visible];
+  const rangeAnchor = rendered.length > 0 ? rendered : past;
+  const firstR = rangeAnchor[0];
+  const lastR  = rangeAnchor[rangeAnchor.length - 1];
+  const startAnchor = firstR.startDate ?? firstR.endDate;
+  const endAnchor   = lastR.endDate;
+  const rangeStart = startAnchor
+    ? addDays(new Date(startAnchor), -7)
     : addDays(today, -21);
-  const lastVisible = visible[visible.length - 1];
-  const rangeEnd   = lastVisible?.endDate
-    ? addDays(new Date(lastVisible.endDate), 21)
+  const rangeEnd = endAnchor
+    ? addDays(new Date(endAnchor), 21)
     : addDays(today, 60);
 
   const totalDays  = Math.max(1, differenceInDays(rangeEnd, rangeStart));
@@ -250,13 +259,15 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
               background: T.sunken, cursor: 'pointer', padding: '0 16px',
             }}
           >
-            <span style={{ fontSize: 9, color: T.subtlest }}>{showPast ? '▼' : '▶'}</span>
+            <span style={{ fontSize: 9, color: T.subtlest }}>{effectiveShowPast ? '▼' : '▶'}</span>
             <span style={{ fontSize: 10, fontWeight: 600, color: T.subtlest, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Completed — {past.length} releases
+              {noUpcoming
+                ? `Completed — showing ${shownPast.length} of ${past.length} releases`
+                : `Completed — ${past.length} releases`}
             </span>
           </div>
         )}
-        {showPast && past.map(r => renderRow(r, true))}
+        {effectiveShowPast && shownPast.map(r => renderRow(r, true))}
 
         {/* TODAY pill row */}
         <div style={{
@@ -278,8 +289,8 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
           </span>
         </div>
 
-        {/* No active release */}
-        {!hasActive && (
+        {/* No active release — only show when upcoming exist but none active */}
+        {!hasActive && !noUpcoming && (
           <div style={{
             display: 'flex', alignItems: 'center', height: 36, gap: 10,
             borderBottom: `1px solid ${T.borderSub}`,

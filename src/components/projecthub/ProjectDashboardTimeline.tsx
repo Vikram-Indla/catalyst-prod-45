@@ -58,14 +58,20 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
   const past    = sprints.filter(s => getStatus(s.releaseDate, today) === 'completed');
   const visible = sprints.filter(s => getStatus(s.releaseDate, today) !== 'completed');
 
-  const anchor     = past.length > 0 ? past[past.length - 1] : null;
-  const rangeStart = anchor
-    ? addDays(new Date(anchor.releaseDate), -7)
-    : addDays(today, -21);
-  const lastVisible = visible[visible.length - 1];
-  const rangeEnd   = lastVisible
-    ? addDays(new Date(lastVisible.releaseDate), 21)
-    : addDays(today, 60);
+  // When no upcoming/active sprints, auto-show last 4 completed so chart isn't empty
+  const noUpcoming = visible.length === 0;
+  const effectiveShowPast = showPast || noUpcoming;
+  const shownPast = effectiveShowPast ? (noUpcoming && !showPast ? past.slice(-4) : past) : [];
+
+  // Range must cover the rows actually rendered — compute AFTER knowing what shows
+  const rendered = [...shownPast, ...visible];
+  const rangeAnchor = rendered.length > 0 ? rendered : past;
+  const firstR = rangeAnchor[0];
+  const lastR  = rangeAnchor[rangeAnchor.length - 1];
+  const rangeStart = addDays(new Date(firstR.startDate), -7);
+  const rangeEnd   = noUpcoming
+    ? addDays(new Date(lastR.releaseDate), 21)
+    : addDays(new Date(lastR.releaseDate), 21);
 
   const totalDays  = Math.max(1, differenceInDays(rangeEnd, rangeStart));
   const todayRatio = Math.max(0, Math.min(1, differenceInDays(today, rangeStart) / totalDays));
@@ -246,13 +252,15 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
               background: T.sunken, cursor: 'pointer', padding: '0 16px',
             }}
           >
-            <span style={{ fontSize: 9, color: T.subtlest }}>{showPast ? '▼' : '▶'}</span>
+            <span style={{ fontSize: 9, color: T.subtlest }}>{effectiveShowPast ? '▼' : '▶'}</span>
             <span style={{ fontSize: 10, fontWeight: 600, color: T.subtlest, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Completed — {past.length} sprints
+              {noUpcoming
+                ? `Completed — showing ${shownPast.length} of ${past.length} sprints`
+                : `Completed — ${past.length} sprints`}
             </span>
           </div>
         )}
-        {showPast && past.map(s => renderRow(s, true))}
+        {effectiveShowPast && shownPast.map(s => renderRow(s, true))}
 
         {/* TODAY pill row */}
         <div style={{
@@ -274,8 +282,8 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
           </span>
         </div>
 
-        {/* No active sprint */}
-        {!hasActive && (
+        {/* No active sprint — only show when there ARE upcoming but none active */}
+        {!hasActive && !noUpcoming && (
           <div style={{
             display: 'flex', alignItems: 'center', height: 36, gap: 10,
             borderBottom: `1px solid ${T.borderSub}`,
