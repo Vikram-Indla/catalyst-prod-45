@@ -89,7 +89,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
             background: 'var(--cv2-bg-row-hover)',
           }}
         >
-          <PresenceAvatar src={message.authorAvatarUrl} name={message.authorName} size={32} />
+          <PresenceAvatar name={message.authorName} size={32} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>

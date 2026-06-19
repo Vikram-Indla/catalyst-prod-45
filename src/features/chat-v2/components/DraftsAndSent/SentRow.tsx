@@ -45,7 +45,6 @@ export function SentRow({ message, conversation, onClick, isLastInGroup = false 
         kind={conversation?.kind ?? message.conversationKind}
         isPrivate={conversation?.isPrivate ?? message.conversationIsPrivate}
         name={avatar.name}
-        src={avatar.src}
         displayLabel={avatar.displayLabel}
         size={36}
       />

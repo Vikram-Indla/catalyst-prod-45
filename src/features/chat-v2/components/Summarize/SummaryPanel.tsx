@@ -357,7 +357,7 @@ function AvatarStack({ people }: { people: SummaryPayload['participants'] }) {
             display: 'inline-flex',
           }}
         >
-          <PresenceAvatar src={p.avatarUrl} name={p.name || 'Member'} size={20} />
+          <PresenceAvatar name={p.name || 'Member'} size={20} />
         </div>
       ))}
     </div>

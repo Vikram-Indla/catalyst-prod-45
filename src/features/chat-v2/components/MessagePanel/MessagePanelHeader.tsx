@@ -93,7 +93,7 @@ export function MessagePanelHeader({
         >
           <StarIcon size={16} fill={isStarred ? 'currentColor' : 'none'} />
         </button>
-        <PresenceAvatar src={null} name={conversation.title} size={24} presence={null} />
+        <PresenceAvatar name={conversation.title} size={24} presence={null} />
         <button
           type="button"
           style={{

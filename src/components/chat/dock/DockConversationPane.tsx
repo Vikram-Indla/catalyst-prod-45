@@ -90,7 +90,7 @@ export function DockConversationPane({ conversation, onBack }: DockConversationP
           onAlsoSendToConversation={(text) => sendMessage(text)}
         />
       ) : (
-        <>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
           <MessageStream
             conversationId={conversation.id}
             messages={messages}
@@ -108,7 +108,7 @@ export function DockConversationPane({ conversation, onBack }: DockConversationP
             disabled={false}
             onSend={(text) => sendMessage(text)}
           />
-        </>
+        </div>
       )}
     </div>
   );
