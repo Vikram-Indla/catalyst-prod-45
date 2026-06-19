@@ -13,7 +13,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, isToday, differenceInDays, differenceInHours } from 'date-fns';
-import { Rocket, CheckSquare, ArrowLeftRight, Clock, Calendar, AlertTriangle } from '@/lib/atlaskit-icons';
+import { CheckSquare, Clock } from '@/lib/atlaskit-icons';
 import {
   useReleasesList,
   useChangesList,
@@ -35,13 +35,14 @@ import { CreateChgModal } from '@/components/releasehub/CreateChgModal';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { CatyRiskPanel } from '@/components/releasehub/CatyRiskPanel';
 import { ReleasePortfolio } from '@/components/releasehub/ReleasePortfolio';
+import { ReleaseTimeline } from '@/components/releasehub/ReleaseTimeline';
+import { useReleasePortfolio } from '@/hooks/useReleasePortfolio';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
   card: 'var(--ds-surface-raised, #FFFFFF)',
   sunken: 'var(--ds-surface-sunken, #F7F8F9)',
   border: 'var(--ds-border, #DFE1E6)',
-  borderBold: 'var(--ds-border-bold, #B3B9C4)',
   text: 'var(--ds-text, #172B4D)',
   subtle: 'var(--ds-text-subtle, #44546F)',
   subtlest: 'var(--ds-text-subtlest, #626F86)',
@@ -53,9 +54,6 @@ const T = {
   warning: 'var(--ds-text-warning, #A54800)',
   hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
   mono: 'var(--ds-font-family-code, monospace)',
-  discoveryFg: 'var(--ds-text-discovery, #5E4DB2)',
-  discoveryBg: 'var(--ds-background-discovery, #F3F0FF)',
-  discoveryBorder: 'var(--ds-border-discovery, #B8ACF6)',
 };
 
 const TERMINAL_RELEASE = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived'];
@@ -75,22 +73,6 @@ function shortWait(since: string | null | undefined): string {
 }
 
 
-function KpiCard({ label, value, dot, onClick }: { label: string; value: number; dot: string; onClick?: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, textAlign: 'left', cursor: onClick ? 'pointer' : 'default', display: 'block', width: '100%', transition: 'border-color 120ms' }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.borderBold; }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.subtlest }}>{label}</span>
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: dot }} />
-      </div>
-      <p style={{ fontFamily: RH.fontDisplay, fontSize: 28, fontWeight: 600, color: T.text, margin: '8px 0 0', fontVariantNumeric: 'tabular-nums' }}>{value}</p>
-    </button>
-  );
-}
 
 function Panel({ title, sub, action, children }: { title: string; sub?: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -122,6 +104,7 @@ export default function CommandCenterPage() {
   const { data: approvals = [] } = usePendingApprovals();
   const { data: prodEvents = [] } = useProductionEventsList();
   const { data: freezes = [] } = useFreezeWindowsList();
+  const { data: portfolio = [] } = useReleasePortfolio();
   const [showCreateRel, setShowCreateRel] = useState(false);
   const [showCreateChg, setShowCreateChg] = useState(false);
   const { canManage, canApprove } = useReleaseOpsPermissions();
@@ -146,6 +129,14 @@ export default function CommandCenterPage() {
     () => changes.filter((c) => IN_FLIGHT_CHANGE.includes(c.status) || c.status === 'implementing').slice(0, 4),
     [changes],
   );
+
+  const { openRiskItems, lowConfidenceCount } = useMemo(() => {
+    const activePortfolio = portfolio.filter((r) => r.confidence !== 'released' && r.confidence !== 'draft');
+    return {
+      openRiskItems: activePortfolio.reduce((s, r) => s + r.openDefects + r.openIncidents, 0),
+      lowConfidenceCount: activePortfolio.filter((r) => r.confidence === 'low').length,
+    };
+  }, [portfolio]);
 
   const caty = useMemo(() => {
     const reasons: string[] = [];
@@ -191,21 +182,37 @@ export default function CommandCenterPage() {
         <button onClick={() => canManage && setShowCreateRel(true)} disabled={!canManage} title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: T.brand, color: T.inverse, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}>Create release</button>
       </div>
 
-      {/* 8 KPI cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 16 }}>
-        <KpiCard label="Active Releases" value={kpis.active} dot={T.link} onClick={() => navigate('/release-hub/releases')} />
-        <KpiCard label="Ready for Sign-off" value={kpis.readyForSignoff} dot={T.link} onClick={() => navigate('/release-hub/sign-off-queue')} />
-        <KpiCard label="At-risk Releases" value={kpis.atRisk} dot={T.danger} onClick={() => navigate('/release-hub/releases')} />
-        <KpiCard label="Changes Today" value={kpis.changesToday} dot={T.link} onClick={() => navigate('/release-hub/changes')} />
-        <KpiCard label="Freeze Conflicts" value={kpis.freezeConflicts} dot={T.danger} onClick={() => navigate('/release-hub/freeze-windows')} />
-        <KpiCard label="Prod Events This Week" value={kpis.prodThisWeek} dot={T.success} onClick={() => navigate('/release-hub/production-events')} />
-        <KpiCard label="Pending Approvals" value={kpis.pending} dot={T.warning} onClick={() => navigate('/release-hub/sign-off-queue')} />
-        <KpiCard label="Deployment Windows" value={kpis.deploymentWindows} dot={T.link} onClick={() => navigate('/release-hub/calendar')} />
+      {/* 5-metric command strip */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, marginBottom: 16, overflow: 'hidden' }}>
+        {([
+          { label: 'Active releases', value: kpis.active, sub: lowConfidenceCount > 0 ? `${lowConfidenceCount} low confidence` : 'all clear', subColor: lowConfidenceCount > 0 ? T.danger : T.success, onClick: () => navigate('/release-hub/releases') },
+          { label: 'Pending approvals', value: kpis.pending, sub: kpis.pending > 0 ? 'needs action' : 'none pending', subColor: kpis.pending > 0 ? T.warning : T.success, onClick: () => navigate('/release-hub/sign-off-queue') },
+          { label: 'Open risk items', value: openRiskItems, sub: openRiskItems > 0 ? 'defects + incidents' : 'no open items', subColor: openRiskItems > 0 ? T.danger : T.success, onClick: () => navigate('/release-hub/releases') },
+          { label: 'Freeze conflicts', value: kpis.freezeConflicts, sub: kpis.freezeConflicts > 0 ? 'resolve before deploy' : 'no conflicts', subColor: kpis.freezeConflicts > 0 ? T.danger : T.success, onClick: () => navigate('/release-hub/freeze-windows') },
+          { label: 'Events this week', value: kpis.prodThisWeek, sub: kpis.prodThisWeek > 0 ? 'production deployments' : 'none this week', subColor: kpis.prodThisWeek > 0 ? T.success : T.subtlest, onClick: () => navigate('/release-hub/production-events') },
+        ] as const).map((m, i) => (
+          <button
+            key={i}
+            onClick={m.onClick}
+            style={{ padding: '16px', textAlign: 'left', cursor: 'pointer', background: 'transparent', border: 'none', borderRight: i < 4 ? `1px solid ${T.border}` : 'none', transition: 'background 120ms' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = T.hover; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, letterSpacing: '0.04em' }}>{m.label}</span>
+            <p style={{ fontFamily: RH.fontDisplay, fontSize: 32, fontWeight: 700, color: T.text, margin: '8px 0 4px', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{m.value}</p>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 500, color: m.subColor }}>{m.sub}</span>
+          </button>
+        ))}
       </div>
 
-      {/* Release portfolio — centerpiece: per-release production confidence */}
+      {/* Release portfolio — per-release production confidence */}
       <div style={{ marginBottom: 16 }}>
         <ReleasePortfolio />
+      </div>
+
+      {/* Release timeline — go-lives + freeze overlay */}
+      <div style={{ marginBottom: 16 }}>
+        <ReleaseTimeline />
       </div>
 
       {/* Pending Approvals */}
