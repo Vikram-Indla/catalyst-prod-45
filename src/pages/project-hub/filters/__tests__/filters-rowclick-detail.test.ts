@@ -29,3 +29,19 @@ describe('Filter detail explicit Edit → builder (Phase D / G1)', () => {
     expect(detailSrc).toMatch(/navigate\(editHref\)/);
   });
 });
+
+describe('Filter detail is the source of truth (Phase F / G10)', () => {
+  it('mounts the canonical FilterKebabMenu for per-filter actions', () => {
+    expect(detailSrc).toMatch(/<FilterKebabMenu/);
+  });
+
+  it('shows Editors and Subscribers metadata', () => {
+    expect(detailSrc).toMatch(/label="Editors"/);
+    expect(detailSrc).toMatch(/label="Subscribers"/);
+  });
+
+  it('renders a Derived views section from useLinkedEntities (not the old stub)', () => {
+    expect(detailSrc).toMatch(/useLinkedEntities/);
+    expect(detailSrc).toMatch(/Derived views/);
+  });
+});

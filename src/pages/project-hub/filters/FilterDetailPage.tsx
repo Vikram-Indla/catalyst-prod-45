@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
@@ -6,6 +6,8 @@ import AkAvatar from '@atlaskit/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory';
+import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
+import { useLinkedEntities } from '@/hooks/workhub/useLinkedEntities';
 import { FilterUsageSparkline } from '@/components/filters/FilterUsageSparkline';
 import { FilterResultsPanel } from '@/components/filters/FilterResultsPanel';
 import { type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
@@ -44,6 +46,12 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
     : routeKey;
   const navigate = useNavigate();
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) =>
+      setCurrentUserId(session?.user?.id ?? null));
+  }, []);
+  const linkedEntities = useLinkedEntities(filterId ?? null);
 
   const { data: filter, isLoading } = useQuery({
     queryKey: ['filter-detail', filterId],
@@ -120,6 +128,16 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
       </div>
     );
   }
+
+  const editorsLabel = (() => {
+    const ec = filter.editors_config;
+    if (!ec || ec.type === 'private' || !ec.type) return 'Owner only';
+    if (ec.type === 'everyone' || ec.type === 'org') return 'Everyone';
+    if (ec.type === 'specific') return `${ec.user_ids?.length ?? 0} people`;
+    return 'Owner only';
+  })();
+
+  const subscriberCount = filter.subscriber_ids?.length ?? 0;
 
   const viewersLabel = (() => {
     switch (filter.viewers_config?.type) {
@@ -206,6 +224,14 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
             >
               Version history
             </Button>
+            {/* Canonical per-filter actions (star / subscribe / copy / share /
+                transfer / WhatsApp / derive / delete) — reuses the same menu as
+                the directory row. Detail page is the source of truth (G10). */}
+            <FilterKebabMenu
+              filter={filter}
+              currentUserId={currentUserId}
+              hubType={isProduct ? 'product' : 'project'}
+            />
             <Button
               appearance="subtle"
               iconBefore={() => <Edit size="small" />}
@@ -315,6 +341,18 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
             )}
           </MetaField>
 
+          <MetaField label="Editors">
+            <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+              {editorsLabel}
+            </span>
+          </MetaField>
+
+          <MetaField label="Subscribers">
+            <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+              {subscriberCount === 0 ? '—' : `${subscriberCount} watching`}
+            </span>
+          </MetaField>
+
           <MetaField label="Starred by">
             <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
               {filter.starred_by_user_ids.length}
@@ -361,6 +399,41 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
             <FilterUsageSparkline data={[]} totalCount={filter.use_count} />
           </MetaField>
         </div>
+
+        {/* Derived views — Kanban boards, roadmaps, and dashboards that depend
+            on this filter (real data via useLinkedEntities, G3/G10). */}
+        {linkedEntities.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <h2 style={{
+              margin: '0 0 8px',
+              fontSize: 14,
+              fontWeight: token('font.weight.semibold'),
+              color: token('color.text.subtle'),
+            }}>
+              Derived views
+            </h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {linkedEntities.map((e, i) => (
+                <span
+                  key={`${e.type}-${e.name}-${i}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '4px 8px',
+                    borderRadius: 3,
+                    background: token('color.background.neutral'),
+                    color: token('color.text.subtle'),
+                    fontSize: 12,
+                    fontWeight: token('font.weight.medium'),
+                  }}
+                >
+                  <span style={{ color: token('color.text.subtlest') }}>{e.type}:</span> {e.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* JQL block */}
         {filter.jql_query ? (
