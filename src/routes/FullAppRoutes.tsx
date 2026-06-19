@@ -86,6 +86,7 @@ const RH21CommandCenterPage = lazy(() => import("../pages/releasehub/CommandCent
 const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPage"));
 const ReleaseBoardCanonical = lazy(() => import("../pages/releasehub/ReleaseBoardCanonical"));
 const ReleasesBacklogCanonical = lazy(() => import("../pages/releasehub/ReleasesBacklogCanonical"));
+const ReleasesWorkCanonical = lazy(() => import("../pages/releasehub/ReleasesWorkCanonical"));
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
 const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
@@ -778,6 +779,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/overview" element={<ModuleGuard moduleCode="releases"><S><RH21CommandCenterPage /></S></ModuleGuard>} />
         <Route path="/release-hub/releases" element={<S><ReleasesBacklogCanonical /></S>} />
         <Route path="/release-hub/release-kanban" element={<S><ReleaseBoardCanonical /></S>} />
+        <Route path="/release-hub/work" element={<S><ReleasesWorkCanonical /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />

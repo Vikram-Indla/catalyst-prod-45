@@ -21,7 +21,7 @@ import React, { lazy, Suspense, useState, useCallback, useRef, useEffect, useMem
 // (token import removed — switched to var(--cp-*) for proper dark-mode flip)
 import Select from '@atlaskit/select';
 import Pagination from '@atlaskit/pagination';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { WorkListPanel } from './components/WorkListPanel';
@@ -112,6 +112,15 @@ const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
 );
 
+/* 2026-06-19: release-mode detail panel mounts the canonical 8-tab
+   ReleaseDetailContent (Overview / Scope / Readiness / Changes / Sign-offs
+   / Notes / Prod Events / Audit) inline — the same component the full-page
+   /release-hub/:id route renders. No CatalystViewRelease; no parallel
+   reimplementation. */
+const ReleaseDetailContent = lazy(
+  () => import('@/pages/releasehub/ReleaseDetailPage').then(m => ({ default: m.ReleaseDetailContent })),
+);
+
 interface Props {
   /** project mode: ph_projects.key (e.g. 'BAU'). product mode: products.code (e.g. 'INV'). */
   projectKey: string;
@@ -128,8 +137,13 @@ interface Props {
   productName?: string;
   /** tasks branch: pre-fetched WorkItem list. Skips project/product DB queries. */
   tasksItems?: WorkItem[];
-  /** Entity kind forwarded to CatalystDetailRouter. Default 'ph_issue'. */
-  entityKind?: 'ph_issue' | 'task';
+  /** Entity kind forwarded to CatalystDetailRouter. Default 'ph_issue'.
+   *  2026-06-19: 'release' added — row click navigates to /release-hub/:id
+   *  (the canonical 8-tab release detail) instead of mounting CatalystDetailRouter.
+   *  No CatalystViewRelease — releases live in rh_releases with a distinct
+   *  detail structure; cloning it into the side panel would be a parallel
+   *  reimplementation banned by CLAUDE.md "ADOPT — don't reimplement". */
+  entityKind?: 'ph_issue' | 'task' | 'release';
 }
 
 /** Split container widths for 3-state responsive layout:
@@ -144,6 +158,8 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
   const isProduct = mode === 'product';
   const isIncident = mode === 'incident';
   const isTasks = !!tasksItems;
+  const isRelease = entityKind === 'release';
+  const navigate = useNavigate();
 
   /* ── Incident items (mode='incident') ───────────────────────────────────────
      Fetches ph_issues where issue_type='Production Incident' across ALL
@@ -781,22 +797,31 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                     Loading…
                   </div>
                 }>
-                  <CatalystDetailRouter
-                    isOpen={true}
-                    onClose={() => selectItem(null)}
-                    // tasks mode: TaskCatalystView queries tasks by UUID (tasks.id).
-                    // ph_issue mode: CatalystDetailRouter queries ph_issues by issue_key.
-                    itemId={entityKind === 'task' ? (activeItem.dbId ?? activeItem.id) : activeItem.id}
-                    itemType={activeItem.rawType || activeItem.type}
-                    projectId={projectId}
-                    projectKey={projectKey}
-                    onOpenItem={handleOpenItem}
-                    panelMode={true}
-                    navigationItems={navigationItems}
-                    onNavigate={handleNavigate}
-                    hideSidebar={panelLayout === 'medium'}
-                    entityKind={entityKind}
-                  />
+                  {isRelease ? (
+                    <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+                      <ReleaseDetailContent
+                        releaseId={activeItem.dbId ?? activeItem.id}
+                        hideChromeHeader
+                      />
+                    </div>
+                  ) : (
+                    <CatalystDetailRouter
+                      isOpen={true}
+                      onClose={() => selectItem(null)}
+                      // tasks mode: TaskCatalystView queries tasks by UUID (tasks.id).
+                      // ph_issue mode: CatalystDetailRouter queries ph_issues by issue_key.
+                      itemId={entityKind === 'task' ? (activeItem.dbId ?? activeItem.id) : activeItem.id}
+                      itemType={activeItem.rawType || activeItem.type}
+                      projectId={projectId}
+                      projectKey={projectKey}
+                      onOpenItem={handleOpenItem}
+                      panelMode={true}
+                      navigationItems={navigationItems}
+                      onNavigate={handleNavigate}
+                      hideSidebar={panelLayout === 'medium'}
+                      entityKind={entityKind === 'release' ? 'ph_issue' : entityKind}
+                    />
+                  )}
                 </Suspense>
               </div>
             ) : (
@@ -865,7 +890,17 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
             router (same one used in the wide-mode panel above) handles
             all types, so Story / Epic / Feature / Subtask / Task / BR /
             Defect / Incident all render through their own CatalystView*. */}
-      {overlayItemId && (
+      {overlayItemId && isRelease && (
+        /* Release narrow-mode overlay → mount ReleaseDetailContent directly.
+           CatalystDetailRouter has no 'release' branch. */
+        <Suspense fallback={null}>
+          <ReleaseDetailContent
+            releaseId={items.find(i => i.id === overlayItemId)?.dbId ?? overlayItemId ?? ''}
+            hideChromeHeader
+          />
+        </Suspense>
+      )}
+      {overlayItemId && !isRelease && (
         /* jira-compare 2026-05-10 — N1: items.find guard removed. The
            overlay must open any key, including parents (typically Epics)
            that AllWork filters out of `items`. CatalystDetailRouter does
