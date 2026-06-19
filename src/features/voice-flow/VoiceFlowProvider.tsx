@@ -43,7 +43,7 @@ export function VoiceFlowProvider({ children }: Props) {
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const statusRef         = useRef<VoiceStatus>('idle');
-  const captureRef        = useRef(new AudioCaptureService());
+  const captureRef        = useRef<AudioCaptureService>(new AudioCaptureService());
   const fieldRef          = useRef<ActiveField | null>(null);
   const sessionIdRef      = useRef<string | null>(null);
   const stopAndProcessRef = useRef<() => Promise<void>>(() => Promise.resolve());
@@ -335,6 +335,10 @@ export function VoiceFlowProvider({ children }: Props) {
     const sessId = crypto.randomUUID();
     sessionIdRef.current = sessId;
     void logSessionStart(sessId, field.kind);
+
+    // Fresh instance every activation — guarantees clean stream/AudioContext state
+    // even if a prior session errored mid-way and left residual resources.
+    captureRef.current = new AudioCaptureService();
 
     try {
       await captureRef.current.start({

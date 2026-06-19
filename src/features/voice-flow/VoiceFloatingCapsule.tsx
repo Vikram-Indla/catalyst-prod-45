@@ -19,7 +19,7 @@ interface Props {
 
 interface Pos { top: number; left: number }
 
-const CAPSULE_STYLE_ID = 'vf-capsule-styles-v5';
+const CAPSULE_STYLE_ID = 'vf-capsule-styles-v6';
 if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID)) {
   const s = document.createElement('style');
   s.id = CAPSULE_STYLE_ID;
@@ -41,9 +41,9 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      background: rgba(16, 20, 36, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 4px 24px rgba(0, 0, 0, 0.28);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-radius: 999px;
@@ -53,8 +53,8 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       max-width: min(480px, calc(100vw - 32px));
     }
     .vf-capsule__row--review {
+      background: rgba(40, 20, 0, 0.85);
       border-color: rgba(247, 144, 9, 0.5);
-      box-shadow: inset 0 0 0 1px rgba(247, 144, 9, 0.12);
     }
     .vf-capsule--entering .vf-capsule__row {
       animation: vf-slide-in 150ms ease forwards;
