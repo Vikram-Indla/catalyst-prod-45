@@ -23,6 +23,19 @@
   font-family: inherit;
 }
 
+/* Stop wheel/touch scroll from chaining to the page behind the dock at
+   each scroll container. overscroll-behavior must sit on the scroller
+   itself, NOT on every descendant (that would swallow wheel events on
+   non-scrolling rows and block them from reaching the real scroller). */
+.cc-dock [role="log"],
+.cc-dock .cc-dock__list,
+.cc-dock .cc-dir__scroll,
+.cc-dock .cp-welcome,
+.cc-dock .cp-messages,
+.cc-dock .cp-assistant-menu {
+  overscroll-behavior: contain;
+}
+
 /* Option C two-row title bar */
 .cc-dock__headerwrap {
   flex: 0 0 auto;
@@ -480,6 +493,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  height: 100%;
 }
 
 .cc-dir__search {
