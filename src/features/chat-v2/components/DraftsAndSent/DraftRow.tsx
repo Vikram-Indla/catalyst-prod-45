@@ -83,7 +83,6 @@ export function DraftRow({
         kind={conversation?.kind ?? draft.conversationKind}
         isPrivate={conversation?.isPrivate ?? draft.conversationIsPrivate}
         name={avatar.name}
-        src={avatar.src}
         displayLabel={avatar.displayLabel}
         size={36}
       />

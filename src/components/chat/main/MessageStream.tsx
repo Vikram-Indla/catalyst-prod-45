@@ -6,7 +6,8 @@
  */
 import React, { useMemo, useState, lazy, Suspense, useRef, useCallback, useEffect } from 'react';
 import type { ChatMessage } from '@/types/chat';
-import { Avatar, initialsOf, colorFor } from './avatar';
+import AtlaskitAvatar from './AtlaskitAvatar';
+import { initialsOf } from './avatar';
 import { useConversationAttachments, type ChatAttachment } from '@/hooks/chat/useChatAttachments';
 import { AttachmentPreview } from './AttachmentPreview';
 import { LinkUnfurl } from './LinkUnfurl';
@@ -76,6 +77,8 @@ export interface MessageStreamProps {
   firstUnreadId?: string;
   /** Project key for the active conversation — passed to CreateWorkItemModal. */
   projectKey?: string | null;
+  /** Typing indicator — name of user currently typing, if any */
+  typingUserName?: string | null;
 }
 
 // Broadcast tokens (@here / @channel / @everyone) — these use a distinct
@@ -201,6 +204,7 @@ export function MessageStream({
   currentUserId,
   firstUnreadId,
   projectKey,
+  typingUserName,
 }: MessageStreamProps) {
   // Ticket-key linkification: one batched ph_issues lookup per message list.
   const ticketKeys = useMemo(
@@ -461,6 +465,11 @@ export function MessageStream({
           />
         ),
       )}
+      {typingUserName && (
+        <div style={{ padding: '8px 12px', fontSize: '12px', color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic' }}>
+          {typingUserName} is typing…
+        </div>
+      )}
     </div>
   );
 }
@@ -550,13 +559,16 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
       {grouped ? (
         <span className="cc-msg__gutter-time">{timeLabel(msg.createdAt)}</span>
       ) : (
-        <Avatar name={msg.authorName} seed={msg.authorId} color={colorFor(msg.authorId)} className="cc-msg__av" />
+        <AtlaskitAvatar name={msg.authorName} seed={msg.authorId} pixelSize={32} className="cc-msg__av" />
       )}
       <div className="cc-msg__body">
         {!grouped && (
           <div className="cc-msg__head">
             <span className="cc-msg__name">{msg.authorName}</span>
-            <span className="cc-msg__time">{timeLabel(msg.createdAt)}</span>
+            <span className="cc-msg__time">
+              {timeLabel(msg.createdAt)}
+              {isOwn && <span style={{ marginLeft: '4px' }}>✓✓</span>}
+            </span>
             {msg.editedAt && <span className="cc-msg__edited">(edited)</span>}
           </div>
         )}
@@ -766,8 +778,8 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
         {msg.replyCount > 0 ? (
           <button type="button" className="cc-thread" onClick={() => onOpenThread?.(msg.id)}>
             <div className="cc-thread__stack">
-              <Avatar name={msg.authorName} seed={`${msg.id}-a`} color={colorFor(`${msg.id}-a`)} />
-              <Avatar name={msg.authorName} seed={`${msg.id}-b`} color={colorFor(`${msg.id}-b`)} />
+              <AtlaskitAvatar name={msg.authorName} seed={`${msg.id}-a`} pixelSize={24} />
+              <AtlaskitAvatar name={msg.authorName} seed={`${msg.id}-b`} pixelSize={24} />
             </div>
             <span className="cc-thread__link">
               {msg.replyCount} {msg.replyCount === 1 ? 'reply' : 'replies'}

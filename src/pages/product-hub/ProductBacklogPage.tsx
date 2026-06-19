@@ -100,6 +100,7 @@ export default function ProductBacklogPage() {
       'assignee',        // modal: Assignee
       'reporter',        // modal: Reporter
       'labels',          // modal: Labels
+      'health',          // Date Pulse health status badge
     ] as const,
   };
 

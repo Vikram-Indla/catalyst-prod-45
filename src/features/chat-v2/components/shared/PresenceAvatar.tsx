@@ -2,10 +2,6 @@ import React from 'react';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 interface PresenceAvatarProps {
-  /** @deprecated Ignored — external avatar URLs are banned (CLAUDE.md §19).
-   *  Photos resolve only from the bundled-local resolver via `name`.
-   *  Kept temporarily so existing callers typecheck; remove `src=` from callers. */
-  src?: string | null;
   name: string;
   size?: number;
   presence?: 'online' | 'offline' | 'away' | null;
