@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Catalyst Filters — Focused Design Widget (Gate 2)</title>
+<style>
+  /* ADS tokens (light) — fallbacks per CLAUDE.md token map. Dark overrides below. */
+  :root{
+    --ds-surface:#FFFFFF; --ds-surface-overlay:#FFFFFF; --ds-surface-sunken:#F7F8F9;
+    --ds-bg-neutral:#F1F2F4; --ds-bg-neutral-hover:rgba(9,30,66,0.06);
+    --ds-bg-selected:#E9F2FE; --ds-bg-info:#E9F2FE; --ds-bg-success:#DCFFF1;
+    --ds-bg-warning:#FFF7D6; --ds-bg-danger:#FFECEB;
+    --ds-text:#172B4D; --ds-text-subtle:#42526E; --ds-text-subtlest:#6B778C;
+    --ds-text-danger:#AE2A19; --ds-text-success:#216E4E; --ds-text-warning:#974F0C;
+    --ds-border:#DFE1E6; --ds-link:#0052CC; --ds-brand:#1868DB;
+    --ds-font:"Atlassian Sans",ui-sans-serif,-apple-system,"Segoe UI",sans-serif;
+    --ds-mono:"Atlassian Mono",ui-monospace,monospace;
+  }
+  [data-theme="dark"]{
+    --ds-surface:#1D2125; --ds-surface-overlay:#22272B; --ds-surface-sunken:#161A1D;
+    --ds-bg-neutral:#2C333A; --ds-bg-neutral-hover:rgba(166,197,226,0.12);
+    --ds-bg-selected:#1C2B41; --ds-bg-info:#1C2B41; --ds-bg-success:#1C3329;
+    --ds-bg-warning:#332E1B; --ds-bg-danger:#42221F;
+    --ds-text:#C7D1DB; --ds-text-subtle:#9FADBC; --ds-text-subtlest:#8C9BAB;
+    --ds-text-danger:#FD9891; --ds-text-success:#7EE2B8; --ds-text-warning:#F5CD47;
+    --ds-border:#2C333A; --ds-link:#669DF1; --ds-brand:#669DF1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--ds-font);background:var(--ds-surface-sunken);color:var(--ds-text);font-size:14px;line-height:1.5}
+  .topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:16px;padding:10px 20px;background:var(--ds-surface);border-bottom:1px solid var(--ds-border)}
+  .topbar h1{font-size:16px;font-weight:653;margin:0}
+  .topbar .sub{font-size:12px;color:var(--ds-text-subtlest)}
+  .pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:500}
+  .pill.new{background:var(--ds-bg-success);color:var(--ds-text-success)}
+  .pill.chg{background:var(--ds-bg-warning);color:var(--ds-text-warning)}
+  .pill.p0{background:var(--ds-bg-danger);color:var(--ds-text-danger)}
+  .layout{display:flex;min-height:calc(100vh - 53px)}
+  nav.side{width:260px;flex-shrink:0;background:var(--ds-surface);border-right:1px solid var(--ds-border);padding:12px 8px;position:sticky;top:53px;align-self:flex-start;height:calc(100vh - 53px);overflow-y:auto}
+  nav.side .grp{font-size:11px;font-weight:653;color:var(--ds-text-subtlest);padding:12px 10px 4px}
+  nav.side button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ds-text-subtle);font:inherit;font-size:13px;font-weight:500;padding:7px 10px;border-radius:4px;cursor:pointer}
+  nav.side button:hover{background:var(--ds-bg-neutral-hover)}
+  nav.side button.active{background:var(--ds-bg-selected);color:var(--ds-brand);box-shadow:inset 2px 0 0 var(--ds-brand)}
+  main{flex:1;padding:24px 32px;max-width:1180px}
+  .panel{display:none}
+  .panel.show{display:block}
+  h2.surface{font-size:24px;font-weight:653;margin:0 0 6px;line-height:28px}
+  .surface-meta{font-size:13px;color:var(--ds-text-subtle);margin:0 0 20px}
+  .card{background:var(--ds-surface);border:1px solid var(--ds-border);border-radius:8px;overflow:hidden;margin-bottom:24px}
+  .card-h{padding:10px 16px;border-bottom:1px solid var(--ds-border);font-size:12px;font-weight:653;color:var(--ds-text-subtlest);display:flex;justify-content:space-between;align-items:center;background:var(--ds-surface-sunken)}
+  .card-b{padding:16px}
+  /* mock app shell */
+  .shell{display:flex;border:1px solid var(--ds-border);border-radius:6px;overflow:hidden;background:var(--ds-surface)}
+  .shell .nav{width:200px;background:var(--ds-surface);border-right:1px solid var(--ds-border);padding:10px 6px;font-size:13px}
+  .shell .nav .ni{padding:6px 10px;border-radius:4px;color:var(--ds-text-subtle);display:flex;align-items:center;gap:8px}
+  .shell .nav .ni.on{background:var(--ds-bg-selected);color:var(--ds-brand);font-weight:500;box-shadow:inset 2px 0 0 var(--ds-brand)}
+  .shell .body{flex:1;padding:16px 20px;min-width:0}
+  .crumb{font-size:13px;color:var(--ds-text-subtle);margin-bottom:8px}
+  .crumb a{color:var(--ds-link);text-decoration:none}
+  table.jt{width:100%;border-collapse:collapse;font-size:13px}
+  table.jt th{text-align:left;font-size:12px;font-weight:653;color:var(--ds-text-subtle);padding:6px 10px;border-bottom:1.5px solid var(--ds-border)}
+  table.jt td{padding:8px 10px;border-bottom:1px solid var(--ds-border);color:var(--ds-text);vertical-align:middle}
+  table.jt tr:hover td{background:var(--ds-bg-neutral-hover);cursor:pointer}
+  .lozenge{display:inline-flex;padding:2px 6px;border-radius:3px;font-size:11px;font-weight:653;text-transform:uppercase;letter-spacing:.16px}
+  .lz-ok{background:var(--ds-bg-success);color:var(--ds-text-success)}
+  .lz-warn{background:var(--ds-bg-warning);color:var(--ds-text-warning)}
+  .lz-bad{background:var(--ds-bg-danger);color:var(--ds-text-danger)}
+  .lz-neu{background:var(--ds-bg-neutral);color:var(--ds-text-subtle)}
+  .av{width:20px;height:20px;border-radius:50%;background:var(--ds-brand);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:600}
+  .star{color:#E2B203}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:3px;border:1px solid var(--ds-border);background:var(--ds-surface);color:var(--ds-text);font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+  .btn.primary{background:var(--ds-brand);color:#fff;border-color:var(--ds-brand)}
+  .btn.subtle{border-color:transparent;background:none;color:var(--ds-text-subtle)}
+  .btn.danger{color:var(--ds-text-danger)}
+  .chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;background:var(--ds-bg-neutral);font-size:12px;color:var(--ds-text-subtle);margin:0 4px 4px 0}
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;padding:16px;background:var(--ds-surface-sunken);border-radius:4px}
+  .mf-l{font-size:11px;font-weight:653;color:var(--ds-text-subtlest);margin-bottom:4px}
+  pre.jql{margin:0;padding:12px 16px;background:var(--ds-surface-sunken);border:1px solid var(--ds-border);border-radius:4px;font-family:var(--ds-mono);font-size:13px;white-space:pre-wrap}
+  .annot{background:var(--ds-bg-info);border-left:3px solid var(--ds-brand);padding:10px 14px;border-radius:0 4px 4px 0;font-size:13px;margin:0 0 16px;color:var(--ds-text)}
+  .annot b{color:var(--ds-brand)}
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px}
+  .flow .node{padding:8px 12px;border:1px solid var(--ds-border);border-radius:6px;background:var(--ds-surface-sunken);font-weight:500}
+  .flow .node.hot{border-color:var(--ds-brand);background:var(--ds-bg-info);color:var(--ds-brand)}
+  .flow .arr{color:var(--ds-text-subtlest)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .state-box{border:1px dashed var(--ds-border);border-radius:6px;padding:20px;text-align:center;color:var(--ds-text-subtlest);font-size:13px}
+  .modal{border:1px solid var(--ds-border);border-radius:8px;background:var(--ds-surface-overlay);box-shadow:0 8px 28px rgba(9,30,66,.25);max-width:520px}
+  .modal-h{padding:16px 20px;border-bottom:1px solid var(--ds-border);font-size:16px;font-weight:653}
+  .modal-b{padding:20px}
+  .modal-f{padding:12px 20px;border-top:1px solid var(--ds-border);display:flex;justify-content:flex-end;gap:8px}
+  label.fl{display:block;font-size:12px;font-weight:653;color:var(--ds-text-subtle);margin:14px 0 4px}
+  .inp{width:100%;padding:7px 10px;border:1px solid var(--ds-border);border-radius:4px;background:var(--ds-surface);color:var(--ds-text);font:inherit;font-size:13px}
+  .radio{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13px}
+  small.note{color:var(--ds-text-subtlest);font-size:12px}
+  .legend{display:flex;gap:16px;font-size:12px;color:var(--ds-text-subtle);margin-bottom:16px;flex-wrap:wrap}
+</style>
+</head>
+<body data-theme="light">
+<div class="topbar">
+  <h1>Catalyst Filters — Focused Design Widget</h1>
+  <span class="sub">Gate 2 · only NEW/CHANGED surfaces (working surfaces not re-mocked)</span>
+  <span style="flex:1"></span>
+  <button class="btn" onclick="toggleTheme()">◐ Toggle light / dark</button>
+</div>
+
+<div class="layout">
+<nav class="side">
+  <div class="grp">Changed flows</div>
+  <button class="active" data-p="p-rowclick">1 · Directory row-click <span class="pill p0">P0</span></button>
+  <button data-p="p-detail">2 · Filter detail (enhanced) <span class="pill chg">CHG</span></button>
+  <button data-p="p-share">3 · Share / governance modal <span class="pill chg">CHG</span></button>
+  <button data-p="p-query">4 · Consolidated query arch</button>
+  <div class="grp">New surfaces</div>
+  <button data-p="p-releases">5 · Releases hub filters <span class="pill new">NEW</span></button>
+  <button data-p="p-whatsapp">6 · WhatsApp + fallback <span class="pill new">NEW</span></button>
+  <div class="grp">States (all surfaces)</div>
+  <button data-p="p-states">7 · Empty / load / error / denied</button>
+  <button data-p="p-health">8 · Filter health states</button>
+</nav>
+
+<main>
+<!-- ============ 1 · ROW CLICK ============ -->
+<section class="panel show" id="p-rowclick">
+  <h2 class="surface">1 · Directory row-click → read-only detail <span class="pill p0">P0 · gap G1</span></h2>
+  <p class="surface-meta">Route: <code>/project-hub/:key/filters</code> · component <code>FiltersListPage.tsx</code></p>
+  <div class="annot"><b>Current bug:</b> every row entry point (row click <i>and</i> name link) routes to <code>/filters/create?filterId=X</code> — the <b>builder/edit</b> page. The dedicated <code>FilterDetailPage</code> route <code>/filters/:filterId</code> is orphaned. <b>Fix:</b> row click + name link → <code>detailHref = /filters/:filterId</code> (detail). Only the explicit <b>Edit</b> kebab action → builder.</p>
+  <div class="legend"><span>⭐ star toggle</span><span>row click → DETAIL</span><span>⋯ kebab → actions incl. Edit</span></div>
+  <div class="card"><div class="card-h">Filters directory — corrected interaction</div><div class="card-b">
+    <table class="jt">
+      <thead><tr><th style="width:28px"></th><th>Name</th><th>Owner</th><th>Visibility</th><th>Health</th><th>Linked views</th><th>Last used</th><th style="width:32px"></th></tr></thead>
+      <tbody>
+        <tr><td><span class="star">★</span></td><td><b>My open blockers</b><br><small class="note">status = Blocked AND assignee = currentUser()</small></td><td><span class="av">VI</span> Vikram</td><td><span class="chip">Project members</span></td><td><span class="lozenge lz-ok">Healthy</span></td><td>🗂 2 boards · 🛣 1 roadmap</td><td>2h ago</td><td>⋯</td></tr>
+        <tr><td><span style="color:var(--ds-text-subtlest)">☆</span></td><td><b>Release 4.2 scope</b><br><small class="note">fixVersion = "4.2"</small></td><td><span class="av">SH</span> Syed</td><td><span class="chip">Everyone</span></td><td><span class="lozenge lz-warn">Stale 31d</span></td><td>📊 1 dashboard</td><td>5d ago</td><td>⋯</td></tr>
+        <tr><td><span style="color:var(--ds-text-subtlest)">☆</span></td><td><b>Unassigned QA bugs</b><br><small class="note">type = "QA Bug" AND assignee IS EMPTY</small></td><td><span class="av">YD</span> Yazeed</td><td><span class="chip">Specific · 4 people</span></td><td><span class="lozenge lz-bad">Broken field</span></td><td>—</td><td>—</td><td>⋯</td></tr>
+      </tbody>
+    </table>
+  </div></div>
+  <div class="card"><div class="card-h">Row ⋯ kebab (existing FilterKebabMenu — unchanged)</div><div class="card-b">
+    <div class="modal" style="max-width:260px">
+      <div class="modal-b" style="padding:6px">
+        <div class="radio">✏️ Edit filter <small class="note" style="margin-left:auto">→ builder</small></div>
+        <div class="radio">⭐ Star / unstar</div>
+        <div class="radio">🔔 Subscribe</div>
+        <div class="radio">📋 Copy filter</div>
+        <div class="radio">🔗 Copy link</div>
+        <div class="radio">👥 Share…</div>
+        <div class="radio">↪️ Transfer ownership…</div>
+        <div class="radio">🗂 Create Kanban / 🛣 Roadmap / 📊 Dashboard <small class="note" style="margin-left:auto">flag-gated</small></div>
+        <div class="radio">💬 Copy WhatsApp summary</div>
+        <hr style="border:0;border-top:1px solid var(--ds-border)">
+        <div class="radio" style="color:var(--ds-text-danger)">🗑 Delete… <small class="note" style="margin-left:auto">impact warning</small></div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ============ 2 · DETAIL ============ -->
+<section class="panel" id="p-detail">
+  <h2 class="surface">2 · Filter detail — enhanced <span class="pill chg">CHG · gaps G1/G3</span></h2>
+  <p class="surface-meta">Route: <code>/project-hub/:key/filters/:filterId</code> · component <code>FilterDetailPage.tsx</code> (436 LOC, already live)</p>
+  <div class="annot"><b>Already present:</b> breadcrumb, title, metadata grid, JQL block, live results table, version history, edit modal, hub-aware apply buttons. <b>Adds (this refactor):</b> (1) editors / subscribers chips next to viewers; (2) <b>full action bar</b> (star/subscribe/copy/share/transfer/whatsapp/delete — today only in kebab); (3) <b>derived-view traceability</b> — linked Kanban + Roadmap + Dashboard (today only boards); (4) wire <code>useLinkedEntities</code> to real data (G3 — today returns <code>[]</code>); (5) activity feed.</div>
+  <div class="card"><div class="card-b" style="padding:0">
+    <div style="padding:16px 24px;border-bottom:1px solid var(--ds-border);font-size:13px;color:var(--ds-text-subtle)"><a href="#" style="color:var(--ds-link);text-decoration:none">← Filters</a> / My open blockers</div>
+    <div style="padding:24px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+        <div><h1 style="margin:0;font-size:24px;font-weight:653;line-height:28px">My open blockers</h1>
+          <p style="margin:8px 0 0;font-size:14px;color:var(--ds-text-subtle);max-width:640px">All blocked items assigned to me across the BAU project.</p></div>
+      </div>
+      <!-- NEW action bar -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
+        <button class="btn"><span class="star">★</span> Starred · 3</button>
+        <button class="btn">🔔 Subscribe</button>
+        <button class="btn">📋 Copy</button>
+        <button class="btn">👥 Share</button>
+        <button class="btn">↪️ Transfer</button>
+        <button class="btn">💬 WhatsApp summary</button>
+        <span style="flex:1"></span>
+        <button class="btn">🕑 Version history</button>
+        <button class="btn">✏️ Edit filter</button>
+        <button class="btn primary">Apply to backlog</button>
+      </div>
+      <!-- metadata incl NEW editors/subscribers -->
+      <div class="meta-grid" style="margin-bottom:20px">
+        <div><div class="mf-l">Visibility</div><span class="chip">Project members</span></div>
+        <div><div class="mf-l">Owner</div><span class="av">VI</span> Vikram</div>
+        <div><div class="mf-l">Editors <span class="pill new">NEW</span></div><span class="av">VI</span><span class="av" style="background:#5E4DB2">SH</span> <small class="note">+1</small></div>
+        <div><div class="mf-l">Subscribers <span class="pill new">NEW</span></div><span class="av" style="background:#206A83">YD</span> <small class="note">3 watching</small></div>
+        <div><div class="mf-l">Health</div><span class="lozenge lz-ok">Healthy</span></div>
+        <div><div class="mf-l">Use count</div>47 ▁▂▅▇▃</div>
+      </div>
+      <!-- NEW derived-view traceability -->
+      <div class="card"><div class="card-h">Derived views <span class="pill new">NEW · wires useLinkedEntities (G3)</span></div><div class="card-b" style="display:flex;gap:12px;flex-wrap:wrap">
+        <span class="chip">🗂 Sprint blockers (Kanban) →</span>
+        <span class="chip">🛣 Q3 blocker roadmap →</span>
+        <span class="chip">📊 Blocker burn-down (Dashboard) →</span>
+        <small class="note">Editing the JQL notifies these 3 views' owners.</small>
+      </div></div>
+      <h2 style="font-size:14px;font-weight:600;color:var(--ds-text-subtle);margin:20px 0 8px">JQL query</h2>
+      <pre class="jql">status = Blocked AND assignee = currentUser() ORDER BY updated DESC</pre>
+      <h2 style="font-size:14px;font-weight:600;color:var(--ds-text-subtle);margin:20px 0 8px">Live results · 6 items</h2>
+      <table class="jt"><thead><tr><th>Key</th><th>Summary</th><th>Status</th><th>Assignee</th></tr></thead><tbody>
+        <tr><td>BAU-5757</td><td>SSO callback 500s on token refresh</td><td><span class="lozenge lz-neu">Blocked</span></td><td><span class="av">VI</span></td></tr>
+        <tr><td>BAU-5612</td><td>Webhook retry storm</td><td><span class="lozenge lz-neu">Blocked</span></td><td><span class="av">VI</span></td></tr>
+      </tbody></table>
+      <!-- NEW activity -->
+      <div class="card" style="margin-top:20px"><div class="card-h">Activity <span class="pill new">NEW</span></div><div class="card-b" style="font-size:13px;color:var(--ds-text-subtle)">
+        <div style="padding:6px 0">🕑 <b>Vikram</b> changed the query · 2h ago</div>
+        <div style="padding:6px 0">👥 <b>Vikram</b> shared with Syed (editor) · 1d ago</div>
+        <div style="padding:6px 0">🗂 <b>Syed</b> created Kanban "Sprint blockers" from this filter · 3d ago</div>
+      </div></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ============ 3 · SHARE MODAL ============ -->
+<section class="panel" id="p-share">
+  <h2 class="surface">3 · Share / governance modal <span class="pill chg">CHG · gap G4</span></h2>
+  <p class="surface-meta">Reuses <code>@atlaskit/modal-dialog</code> + <code>@atlaskit/select</code> user picker</p>
+  <div class="annot"><b>Backend gap G4:</b> RLS UPDATE policy = <code>user_id OR owner_id</code> only — <b>editors_config is NOT honored</b>, so "specific editors" cannot actually write. This modal's "Editors" section is a lie until the RLS UPDATE policy adds an <code>editors_config</code> branch + helper fn <code>ph_saved_filter_can_edit(filter_id, uid)</code>. Design + backend fix ship together.</div>
+  <div class="modal">
+    <div class="modal-h">Share filter · My open blockers</div>
+    <div class="modal-b">
+      <label class="fl">Who can SEE this filter</label>
+      <div class="radio"><input type="radio" name="vis" checked> Private (only me)</div>
+      <div class="radio"><input type="radio" name="vis"> Project members <small class="note">— BAU</small></div>
+      <div class="radio"><input type="radio" name="vis"> Everyone in the org</div>
+      <div class="radio"><input type="radio" name="vis"> Specific people…</div>
+      <label class="fl">Who can EDIT this filter <span class="pill p0">enforced at RLS — G4</span></label>
+      <div class="inp" style="display:flex;gap:6px;flex-wrap:wrap;min-height:36px"><span class="chip">VI Vikram (owner) ✕</span><span class="chip">SH Syed ✕</span><span style="color:var(--ds-text-subtlest)">add person…</span></div>
+      <small class="note">Editors can change the query, name, description, and visibility. They cannot delete or transfer.</small>
+    </div>
+    <div class="modal-f"><button class="btn subtle">Cancel</button><button class="btn primary">Save sharing</button></div>
+  </div>
+</section>
+
+<!-- ============ 4 · QUERY ARCH ============ -->
+<section class="panel" id="p-query">
+  <h2 class="surface">4 · Consolidated query architecture <span class="pill chg">gap G2</span></h2>
+  <div class="annot"><b>Current:</b> 3 divergent <code>filterState→JQL</code> serializers (different facet maps + ORDER BY behavior) + reverse parser <code>jqlToFilterState</code> <b>forked into 3 copies</b> (1 lib + 2 local dupes). A parse fix in lib never reaches the preview pages. <b>Target:</b> single adapter module — all inputs (Basic facets, Advanced JQL text, Caty AI spec, Templates) converge on ONE serialize path + ONE parse path + ONE execution path.</div>
+  <div class="card"><div class="card-h">Target data flow</div><div class="card-b">
+    <div class="flow" style="margin-bottom:16px">
+      <span class="node">Basic facets</span><span class="node">Advanced JQL</span><span class="node">Caty AI spec</span><span class="node">Templates</span>
+      <span class="arr">→</span><span class="node hot">FilterQueryModel (single adapter)</span>
+      <span class="arr">→</span><span class="node">serializeToJQL()</span><span class="arr">→</span><span class="node">validate (jql-validate)</span><span class="arr">→</span><span class="node">applyJQLFilters → ph_issues</span>
+    </div>
+    <div class="flow">
+      <span class="node">Saved JQL string</span><span class="arr">→</span><span class="node">translate()</span><span class="arr">→</span><span class="node hot">parseToModel() (single)</span><span class="arr">→</span><span class="node">Basic facets / Advanced editor</span>
+    </div>
+    <p class="surface-meta" style="margin-top:16px"><b>Migration safety:</b> keep <code>filterState→JQL</code> output byte-identical for the canonical builder during Phase C; delete the 2 local <code>jqlToFilterState</code> dupes first (they shadow the lib one — pure debt), then collapse the 3 forward serializers behind the adapter with a golden-output test per existing call site so saved filters don't re-serialize differently.</p>
+  </div></div>
+</section>
+
+<!-- ============ 5 · RELEASES ============ -->
+<section class="panel" id="p-releases">
+  <h2 class="surface">5 · Releases hub filters <span class="pill new">NEW · gap G8</span></h2>
+  <p class="surface-meta">New route <code>/releases/filters</code> + sidebar nav · mounts canonical trio with <code>hubType="release"</code></p>
+  <div class="annot"><b>Only genuinely-missing hub.</b> Template registry already knows <code>'release'</code> scope. Add: route trio (list/create/:id), <code>ReleasesHubSidebar</code> "Filters" nav item, <code>FilterHubType</code> += <code>'release'</code>, sentinel <code>projectKey='RELEASES'</code> or fixVersion-scoped, results = <code>ph_issues</code> filtered to fixVersions. Reuse the exact canonical trio — no new components.</div>
+  <div class="shell">
+    <div class="nav">
+      <div style="font-size:11px;font-weight:653;color:var(--ds-text-subtlest);padding:6px 10px">RELEASES</div>
+      <div class="ni">📋 Overview</div><div class="ni">🚀 Releases</div><div class="ni">📦 Versions</div>
+      <div class="ni on">🔻 Filters</div>
+    </div>
+    <div class="body">
+      <div class="crumb">Releases / Filters</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h1 style="margin:0;font-size:20px;font-weight:653">Release filters</h1><button class="btn primary">+ Create filter</button></div>
+      <table class="jt"><thead><tr><th>Name</th><th>Owner</th><th>Fix version</th><th>Health</th></tr></thead><tbody>
+        <tr><td>Ready for 4.2 release</td><td><span class="av">VI</span></td><td>4.2</td><td><span class="lozenge lz-ok">Healthy</span></td></tr>
+        <tr><td>4.1 carry-over</td><td><span class="av">SH</span></td><td>4.1</td><td><span class="lozenge lz-warn">Stale</span></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 · WHATSAPP ============ -->
+<section class="panel" id="p-whatsapp">
+  <h2 class="surface">6 · WhatsApp summary + deterministic fallback <span class="pill new">gap G9</span></h2>
+  <div class="annot"><b>Edge fn <code>generate-whatsapp-summary</code> exists</b> + is well-guarded against hallucination (ground-truth-only system prompt, real item keys, "state missing data plainly"). <b>Missing (prompt §3.7):</b> a deterministic fallback when Gemini is down / rate-limited / <code>ENABLE_FILTER_WHATSAPP_AI_SUMMARY=false</code>. Build a client-side template summary from the same <code>FilterSummaryContext</code> counts — no AI, never hallucinates.</div>
+  <div class="two">
+    <div class="card"><div class="card-h">AI summary (preview before copy)</div><div class="card-b">
+      <pre class="jql" style="font-family:var(--ds-font);font-size:13px">*My open blockers* 🚧
+
+6 items, all blocked.
+
+*Needs attention*
+• BAU-5757 — SSO callback 500s on token refresh (no reason given)
+• BAU-5612 — Webhook retry storm (no updates in &gt;14 days)
+
+*ETAs*
+4 of 6 have no target date set.
+
+_Generated 19 Jun · catalyst link_</pre>
+      <button class="btn primary" style="margin-top:12px">📋 Copy to clipboard</button>
+    </div></div>
+    <div class="card"><div class="card-h">Deterministic fallback <span class="pill new">NEW</span></div><div class="card-b">
+      <pre class="jql" style="font-family:var(--ds-font);font-size:13px">*My open blockers*
+
+Total: 6 · Done: 0 · In progress: 0
+Blocked: 6 · In review: 0
+Overdue: 0 · Missing ETA: 4
+
+Top blocked:
+• BAU-5757 — SSO callback 500s…
+• BAU-5612 — Webhook retry storm
+
+catalyst link · 19 Jun 14:32</pre>
+      <small class="note">Pure template from counts. Shown when AI unavailable. Banner: "AI summary unavailable — showing data summary."</small>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ 7 · STATES ============ -->
+<section class="panel" id="p-states">
+  <h2 class="surface">7 · Universal states</h2>
+  <p class="surface-meta">Reused across directory, builder, detail. Catalyst-native — no new patterns.</p>
+  <div class="two">
+    <div class="card"><div class="card-h">Empty</div><div class="card-b"><div class="state-box">🔍<br>No saved filters yet<br><button class="btn primary" style="margin-top:10px">+ Create your first filter</button></div></div></div>
+    <div class="card"><div class="card-h">Loading</div><div class="card-b"><div class="state-box">◌ Loading…</div></div></div>
+    <div class="card"><div class="card-h">Error</div><div class="card-b"><div class="state-box" style="color:var(--ds-text-danger)">⚠ Couldn't load filters<br><button class="btn" style="margin-top:10px">Retry</button></div></div></div>
+    <div class="card"><div class="card-h">Permission denied</div><div class="card-b"><div class="state-box">🔒<br>You don't have access to this filter<br><small class="note">Visibility = Private · owned by Syed</small></div></div></div>
+  </div>
+</section>
+
+<!-- ============ 8 · HEALTH ============ -->
+<section class="panel" id="p-health">
+  <h2 class="surface">8 · Filter health states</h2>
+  <p class="surface-meta">Column <code>health_status</code> (indexed). Computed once server-side; UI never recomputes.</p>
+  <div class="card"><div class="card-b">
+    <table class="jt"><thead><tr><th>State</th><th>Lozenge</th><th>Meaning</th><th>Action</th></tr></thead><tbody>
+      <tr><td>healthy</td><td><span class="lozenge lz-ok">Healthy</span></td><td>Valid JQL, used recently</td><td>—</td></tr>
+      <tr><td>stale</td><td><span class="lozenge lz-warn">Stale 31d</span></td><td>Valid but unused &gt;30d</td><td>Suggest review/archive</td></tr>
+      <tr><td>broken</td><td><span class="lozenge lz-bad">Broken field</span></td><td>JQL references unknown field/value</td><td>Open builder → validation error shown</td></tr>
+      <tr><td>empty</td><td><span class="lozenge lz-neu">No results</span></td><td>Valid JQL, 0 matches</td><td>Informational</td></tr>
+    </tbody></table>
+  </div></div>
+</section>
+
+</main>
+</div>
+<script>
+  document.querySelectorAll('nav.side button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('nav.side button').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));
+      b.classList.add('active');
+      document.getElementById(b.dataset.p).classList.add('show');
+      window.scrollTo(0,0);
+    });
+  });
+  function toggleTheme(){
+    const b=document.body;
+    b.dataset.theme = b.dataset.theme==='dark'?'light':'dark';
+  }
+</script>
+</body>
+</html>
