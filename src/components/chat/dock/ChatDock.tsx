@@ -324,7 +324,7 @@ export function ChatDock({
 
       {/* Messages mode — directory OR conversation pane */}
       {dockMode === "messages" && (
-        <>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
           <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
             {activeId ? (
               // Render pane immediately when activeId is set, even before the
@@ -441,7 +441,7 @@ export function ChatDock({
               </svg>
             </button>
           </div>
-        </>
+        </div>
       )}
 
       {/* Caty AI mode — new panel, messages mode is paused but state preserved */}
