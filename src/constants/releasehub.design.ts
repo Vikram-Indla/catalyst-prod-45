@@ -38,7 +38,7 @@ export const RH = {
   // Fonts
   fontDisplay: "var(--ds-font-family-heading)",
   fontBody: "var(--ds-font-family-body)",
-  fontMono: "'JetBrains Mono', monospace",
+  fontMono: "var(--ds-font-family-code)",
 
   // Layout
   navH: 48,
