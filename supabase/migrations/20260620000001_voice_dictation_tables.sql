@@ -5,7 +5,7 @@
 -- ─── Settings (per-user preferences) ────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.voice_dictation_settings (
   id                   uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id              uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id              uuid        NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   source_languages     text[]      NOT NULL DEFAULT ARRAY['ar-SA', 'ur-PK', 'hi-IN'],
   enabled              boolean     NOT NULL DEFAULT true,
   auto_commit          boolean     NOT NULL DEFAULT true,
@@ -30,16 +30,16 @@ CREATE POLICY "voice_dictation_settings_owner_all" ON public.voice_dictation_set
 -- ─── Sessions (audit log — no audio, no transcript) ──────────────────
 CREATE TABLE IF NOT EXISTS public.voice_dictation_sessions (
   id                   uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id              uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id              uuid        NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   session_started_at   timestamptz NOT NULL DEFAULT now(),
   duration_ms          int,
   detected_language    text,
   status               text        NOT NULL DEFAULT 'started'
                          CHECK (status IN ('started','completed','cancelled','error')),
   error_code           text,
-  audio_bytes          int,          -- size only, not content
+  audio_bytes          int,
   gemini_latency_ms    int,
-  target_field_kind    text,         -- 'input' | 'textarea' | 'contenteditable'
+  target_field_kind    text,
   created_at           timestamptz NOT NULL DEFAULT now()
 );
 
@@ -61,7 +61,6 @@ CREATE POLICY "voice_dictation_sessions_owner_update" ON public.voice_dictation_
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
 
--- Admins can read all sessions for usage analytics
 CREATE POLICY "voice_dictation_sessions_admin_select" ON public.voice_dictation_sessions
   FOR SELECT TO authenticated
   USING (
@@ -75,7 +74,7 @@ CREATE POLICY "voice_dictation_sessions_admin_select" ON public.voice_dictation_
 INSERT INTO public.feature_flags (
   module_key, module_name, label, description, group_name, is_enabled, enabled, sort_order, icon
 )
-VALUES (
+SELECT
   'voice_dictation',
   'Voice Translate Dictation',
   'Voice Translate Dictation',
@@ -85,5 +84,6 @@ VALUES (
   false,
   95,
   'microphone'
-)
-ON CONFLICT (module_key) DO NOTHING;
+WHERE NOT EXISTS (
+  SELECT 1 FROM public.feature_flags WHERE module_key = 'voice_dictation'
+);
