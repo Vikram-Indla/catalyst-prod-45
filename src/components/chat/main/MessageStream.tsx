@@ -204,6 +204,7 @@ export function MessageStream({
   currentUserId,
   firstUnreadId,
   projectKey,
+  typingUserName,
 }: MessageStreamProps) {
   // Ticket-key linkification: one batched ph_issues lookup per message list.
   const ticketKeys = useMemo(
