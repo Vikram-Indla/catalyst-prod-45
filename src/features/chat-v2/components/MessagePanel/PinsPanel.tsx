@@ -181,7 +181,7 @@ function PinnedCard({
         transition: 'border-color var(--cv2-transition-fast)',
       }}
     >
-      <PresenceAvatar src={message.authorAvatarUrl} name={message.authorName} size={32} />
+      <PresenceAvatar name={message.authorName} size={32} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>

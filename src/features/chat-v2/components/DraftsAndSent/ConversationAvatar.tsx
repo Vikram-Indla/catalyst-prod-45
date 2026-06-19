@@ -16,8 +16,6 @@ interface ConversationAvatarProps {
   isPrivate?: boolean;
   /** Used for PresenceAvatar initials + alt text. */
   name: string;
-  /** Avatar image URL when known (DMs). */
-  src?: string | null;
   /** Optional override for the displayed letter/badge (e.g. group member count). */
   displayLabel?: string;
   size?: number;
@@ -27,7 +25,6 @@ export function ConversationAvatar({
   kind,
   isPrivate,
   name,
-  src,
   displayLabel,
   size = 36,
 }: ConversationAvatarProps) {
@@ -52,7 +49,7 @@ export function ConversationAvatar({
     );
   }
   return (
-    <PresenceAvatar src={src ?? null} name={name} size={size} displayLabel={displayLabel} />
+    <PresenceAvatar name={name} size={size} displayLabel={displayLabel} />
   );
 }
 

@@ -398,7 +398,7 @@ function SuggestRow({
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
-      <PresenceAvatar src={recipient.avatarUrl} name={recipient.name} size={24} />
+      <PresenceAvatar name={recipient.name} size={24} />
       <span style={{ fontWeight: 600, color: 'var(--cv2-text-strong)' }}>{recipient.name}</span>
       <span aria-hidden="true" style={{ opacity: 0.5 }}>›</span>
       <span style={{ color: 'var(--cv2-text-muted)' }}>{recipient.name}</span>
@@ -418,7 +418,7 @@ function SourceMessagePreview({ message }: { message: ChatMessage }) {
         background: 'transparent',
       }}
     >
-      <PresenceAvatar src={message.authorAvatarUrl} name={message.authorName} size={28} />
+      <PresenceAvatar name={message.authorName} size={28} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontWeight: 700, color: 'var(--cv2-text-strong)', fontSize: 13 }}>
           {message.authorName}

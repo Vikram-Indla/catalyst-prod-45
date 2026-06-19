@@ -155,7 +155,6 @@ function AvatarStack({
   if (!isGroup) {
     return (
       <PresenceAvatar
-        src={urls[0] ?? null}
         name={names[0] ?? ''}
         size={size}
         presence={null}
@@ -167,7 +166,7 @@ function AvatarStack({
   return (
     <div style={{ position: 'relative', width: size, height: size, flex: '0 0 auto' }}>
       <div style={{ position: 'absolute', top: 0, left: 0 }}>
-        <PresenceAvatar src={a.url} name={a.name} size={stackSize} presence={null} />
+        <PresenceAvatar name={a.name} size={stackSize} presence={null} />
       </div>
       <div
         style={{
@@ -179,7 +178,7 @@ function AvatarStack({
           background: 'var(--cv2-bg-sidebar)',
         }}
       >
-        <PresenceAvatar src={b.url} name={b.name} size={stackSize} presence={null} />
+        <PresenceAvatar name={b.name} size={stackSize} presence={null} />
       </div>
     </div>
   );

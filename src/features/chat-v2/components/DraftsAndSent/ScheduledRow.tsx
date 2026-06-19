@@ -41,7 +41,6 @@ export function ScheduledRow({ scheduled, conversation, onClick }: ScheduledRowP
         kind={conversation?.kind ?? scheduled.conversationKind}
         isPrivate={conversation?.isPrivate ?? scheduled.conversationIsPrivate}
         name={avatar.name}
-        src={avatar.src}
         displayLabel={avatar.displayLabel}
         size={36}
       />
