@@ -4,7 +4,10 @@ import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
 import Toggle from '@atlaskit/toggle';
 import ProgressBar from '@atlaskit/progress-bar';
+import Textfield from '@atlaskit/textfield';
+import SectionMessage from '@atlaskit/section-message';
 import { supabase } from '@/integrations/supabase/client';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -57,7 +60,6 @@ interface Stats {
   total: number;
   success: number;
   failed: number;
-  avg_duration_ms: number | null;
 }
 
 interface DeployStatus {
@@ -84,6 +86,9 @@ interface JobInfo {
   conclusion: string | null;
   steps: JobStep[];
 }
+
+const FONT =
+  '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif';
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
@@ -136,10 +141,10 @@ function useDeployControl() {
     return () => clearInterval(t);
   }, [refresh]);
 
-  const toggle = useCallback(async (enabled: boolean, reason?: string) => {
+  const toggle = useCallback(async (enabled: boolean) => {
     setToggling(true);
     try {
-      await call('POST', { action: 'toggle', enabled, reason });
+      await call('POST', { action: 'toggle', enabled });
       setData((prev) =>
         prev
           ? {
@@ -200,19 +205,18 @@ function fmtRelative(iso: string | number | null) {
 }
 
 function errorLabel(conclusion: string | null): string | null {
-  if (!conclusion || conclusion === 'success') return null;
+  if (!conclusion || conclusion === 'success' || conclusion === 'skipped') return null;
   if (conclusion === 'failure') return 'Build failed';
   if (conclusion === 'cancelled') return 'Cancelled';
   if (conclusion === 'timed_out') return 'Timed out';
   if (conclusion === 'startup_failure') return 'Startup failure';
-  if (conclusion === 'skipped') return 'Skipped';
   return conclusion;
 }
 
 function RunStatusBadge({ status, conclusion }: { status: string; conclusion: string | null }) {
   if (status === 'in_progress' || status === 'queued' || status === 'waiting') {
     return (
-      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
         <Spinner size="small" />
         <Lozenge appearance="inprogress">Running</Lozenge>
       </span>
@@ -233,63 +237,17 @@ function VercelStateBadge({ state }: { state: string }) {
   return <Lozenge appearance="default">{state}</Lozenge>;
 }
 
-function StatCard({
-  label,
-  value,
-  sub,
-  accent,
-}: {
-  label: string;
-  value: string | number;
-  sub?: string;
-  accent?: 'success' | 'danger' | 'neutral';
-}) {
-  const accentColor =
-    accent === 'success'
-      ? 'var(--ds-text-success, #1F845A)'
-      : accent === 'danger'
-      ? 'var(--ds-text-danger, #AE2A19)'
-      : 'var(--ds-text, #172B4D)';
-  return (
-    <div
-      style={{
-        flex: 1,
-        minWidth: 0,
-        padding: '16px 20px',
-        background: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
-        borderRadius: 8,
-      }}
-    >
-      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: 28, fontWeight: 653, color: accentColor, lineHeight: 1 }}>
-        {value}
-      </div>
-      {sub && (
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
-          {sub}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ─── Live progress ────────────────────────────────────────────────────────────
 
 function StepIcon({ status, conclusion }: { status: string; conclusion: string | null }) {
   if (status === 'in_progress') return <Spinner size="small" />;
-  if (status === 'completed' && conclusion === 'success') {
-    return <span style={{ color: 'var(--ds-text-success, #1F845A)', fontWeight: 700, fontSize: 14 }}>✓</span>;
-  }
-  if (status === 'completed' && conclusion === 'failure') {
-    return <span style={{ color: 'var(--ds-text-danger, #AE2A19)', fontWeight: 700, fontSize: 14 }}>✗</span>;
-  }
-  if (status === 'completed' && conclusion === 'skipped') {
-    return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>—</span>;
-  }
-  return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>○</span>;
+  if (status === 'completed' && conclusion === 'success')
+    return <span style={{ color: 'var(--ds-text-success, #1F845A)', fontWeight: 700 }}>✓</span>;
+  if (status === 'completed' && conclusion === 'failure')
+    return <span style={{ color: 'var(--ds-text-danger, #AE2A19)', fontWeight: 700 }}>✗</span>;
+  if (status === 'completed')
+    return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>;
+  return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>○</span>;
 }
 
 function LiveProgress({
@@ -304,50 +262,45 @@ function LiveProgress({
 
   useEffect(() => {
     let cancelled = false;
-
     const poll = async () => {
       try {
         const result = await call('POST', { action: 'get_run_jobs', run_id: run.id }) as { jobs?: JobInfo[] };
-        if (!cancelled) {
-          setJobs(result.jobs ?? []);
-          setFetchError(false);
-        }
+        if (!cancelled) { setJobs(result.jobs ?? []); setFetchError(false); }
       } catch {
         if (!cancelled) setFetchError(true);
       }
     };
-
     poll();
     const t = setInterval(poll, 5000);
     return () => { cancelled = true; clearInterval(t); };
   }, [run.id, call]);
 
   const deployJob = jobs.find((j) => j.name === 'deploy') ?? jobs.find((j) => j.steps.length > 0);
-  const allSteps: JobStep[] = deployJob?.steps ?? [];
+  const allSteps = deployJob?.steps ?? [];
   const visibleSteps = allSteps.filter((s) => !['Set up job', 'Complete job'].includes(s.name));
   const completedCount = visibleSteps.filter((s) => s.status === 'completed').length;
   const progress = visibleSteps.length > 0 ? completedCount / visibleSteps.length : 0;
-
-  const runningStep = visibleSteps.find((s) => s.status === 'in_progress');
 
   return (
     <div
       style={{
         background: 'var(--ds-surface, #FFFFFF)',
         border: '2px solid var(--ds-border-brand, #0052CC)',
-        borderRadius: 8,
-        padding: '20px 24px',
-        marginBottom: 24,
+        borderRadius: 4,
+        padding: '16px 20px',
+        marginBottom: 20,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
         <Spinner size="medium" />
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>
             Deploying to production
           </div>
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', marginTop: 2 }}>
-            <code style={{ fontFamily: 'var(--ds-font-family-code, monospace)' }}>{run.head_sha}</code>
+          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', marginTop: 2 }}>
+            <code style={{ fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace', fontSize: 11 }}>
+              {run.head_sha}
+            </code>
             {' — '}
             {run.head_commit_message.split('\n')[0].slice(0, 80)}
           </div>
@@ -356,60 +309,51 @@ function LiveProgress({
           href={run.html_url}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--ds-link, #0052CC)', textDecoration: 'none', flexShrink: 0 }}
+          style={{ fontSize: 12, color: 'var(--ds-link, #0052CC)', textDecoration: 'none', flexShrink: 0 }}
         >
           View on GitHub ↗
         </a>
       </div>
 
-      <div style={{ marginBottom: 12 }}>
+      <div style={{ marginBottom: visibleSteps.length > 0 ? 12 : 0 }}>
         <ProgressBar value={progress} isIndeterminate={visibleSteps.length === 0} />
       </div>
 
       {fetchError && (
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
-          Could not load step details — check GitHub Actions directly
+        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          Step data unavailable — check GitHub Actions directly
         </div>
       )}
 
       {visibleSteps.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }}>
           {visibleSteps.map((step) => (
             <div key={step.number} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 13 }}>
                 <StepIcon status={step.status} conclusion={step.conclusion} />
               </div>
               <span
                 style={{
                   fontSize: 13,
-                  color: step.status === 'in_progress'
-                    ? 'var(--ds-text, #172B4D)'
-                    : step.status === 'completed'
-                    ? 'var(--ds-text-subtle, #42526E)'
-                    : 'var(--ds-text-subtlest, #6B778C)',
+                  color: step.status === 'in_progress' ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
                   fontWeight: step.status === 'in_progress' ? 500 : 400,
+                  flex: 1,
                 }}
               >
                 {step.name}
               </span>
               {step.status === 'completed' && step.started_at && step.completed_at && (
-                <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 'auto' }}>
+                <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
                   {fmtDuration(new Date(step.completed_at).getTime() - new Date(step.started_at).getTime())}
                 </span>
               )}
               {step.status === 'in_progress' && step.started_at && (
-                <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 'auto' }}>
+                <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
                   {fmtDuration(Date.now() - new Date(step.started_at).getTime())}…
                 </span>
               )}
             </div>
           ))}
-        </div>
-      )}
-
-      {runningStep && visibleSteps.length === 0 && (
-        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
-          {runningStep.name}…
         </div>
       )}
     </div>
@@ -431,92 +375,68 @@ function ConfigPanel({
   const tokenRef = useRef<HTMLInputElement>(null);
 
   return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 560 }}>
+      <div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 4 }}>
+          GitHub personal access token{' '}
+          {config.github_pat_set && <span style={{ color: 'var(--ds-text-success, #1F845A)' }}>✓ saved</span>}
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 6 }}>
+          Needs <code>actions:write</code> scope — for listing runs and triggering deploys
+        </div>
+        <Textfield
+          ref={patRef}
+          type="password"
+          placeholder={config.github_pat_set ? '••••••••••••••••••••' : 'ghp_xxxxxxxxxxxxxxxxxxxx'}
+        />
+      </div>
+
+      <div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 4 }}>
+          Vercel API token{' '}
+          {config.vercel_token_set && <span style={{ color: 'var(--ds-text-success, #1F845A)' }}>✓ saved</span>}
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 6 }}>
+          From vercel.com → Settings → Tokens
+        </div>
+        <Textfield
+          ref={tokenRef}
+          type="password"
+          placeholder={config.vercel_token_set ? '••••••••••••••••••••' : 'xxxxxxxxxxxxxxxxxxxx'}
+        />
+      </div>
+
+      <div>
+        <Button
+          appearance="primary"
+          isLoading={saving}
+          onClick={() => onSave(
+            (patRef.current as HTMLInputElement | null)?.value || undefined,
+            (tokenRef.current as HTMLInputElement | null)?.value || undefined,
+          )}
+        >
+          Save credentials
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Section label ────────────────────────────────────────────────────────────
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
     <div
       style={{
-        background: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
-        borderRadius: 8,
-        padding: '20px 24px',
+        fontSize: 12,
+        fontWeight: 653,
+        color: 'var(--ds-text-subtle, #505258)',
+        padding: '20px 0 8px',
+        borderBottom: '1.67px solid var(--ds-border, rgba(11,18,14,0.14))',
+        marginBottom: 12,
       }}
     >
-      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 16 }}>
-        API credentials
-      </div>
-      <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 20, lineHeight: '18px' }}>
-        Stored securely in Supabase. Required for live run history and manual deploy trigger.
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
-            GitHub personal access token
-            {config.github_pat_set && (
-              <span style={{ marginLeft: 8, color: 'var(--ds-text-success, #1F845A)' }}>✓ Saved</span>
-            )}
-          </label>
-          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 6 }}>
-            Needs <code>actions:write</code> scope — for listing runs and triggering deploys
-          </div>
-          <input
-            ref={patRef}
-            type="password"
-            placeholder={config.github_pat_set ? '••••••••••••••••••••' : 'ghp_xxxxxxxxxxxxxxxxxxxx'}
-            style={{
-              width: '100%',
-              boxSizing: 'border-box',
-              padding: '8px 10px',
-              fontSize: 13,
-              border: '2px solid var(--ds-border, #DFE1E6)',
-              borderRadius: 4,
-              background: 'var(--ds-surface, #FFFFFF)',
-              color: 'var(--ds-text, #172B4D)',
-              outline: 'none',
-              fontFamily: 'var(--ds-font-family-code, monospace)',
-            }}
-          />
-        </div>
-
-        <div>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
-            Vercel API token
-            {config.vercel_token_set && (
-              <span style={{ marginLeft: 8, color: 'var(--ds-text-success, #1F845A)' }}>✓ Saved</span>
-            )}
-          </label>
-          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 6 }}>
-            From vercel.com → Settings → Tokens — for live Vercel deployment status
-          </div>
-          <input
-            ref={tokenRef}
-            type="password"
-            placeholder={config.vercel_token_set ? '••••••••••••••••••••' : 'xxxxxxxxxxxxxxxxxxxx'}
-            style={{
-              width: '100%',
-              boxSizing: 'border-box',
-              padding: '8px 10px',
-              fontSize: 13,
-              border: '2px solid var(--ds-border, #DFE1E6)',
-              borderRadius: 4,
-              background: 'var(--ds-surface, #FFFFFF)',
-              color: 'var(--ds-text, #172B4D)',
-              outline: 'none',
-              fontFamily: 'var(--ds-font-family-code, monospace)',
-            }}
-          />
-        </div>
-
-        <div>
-          <Button
-            appearance="primary"
-            isLoading={saving}
-            onClick={() =>
-              onSave(patRef.current?.value || undefined, tokenRef.current?.value || undefined)
-            }
-          >
-            Save credentials
-          </Button>
-        </div>
-      </div>
+      {children}
     </div>
   );
 }
@@ -543,31 +463,23 @@ export default function VercelConnectionPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: '48px', display: 'flex', alignItems: 'center', gap: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
-        <Spinner size="medium" />
-        <span>Loading deployment status…</span>
-      </div>
+      <AdminGuard>
+        <div style={{ padding: 48, display: 'flex', alignItems: 'center', gap: 12, color: 'var(--ds-text-subtle, #505258)', fontFamily: FONT }}>
+          <Spinner size="medium" />
+          <span style={{ fontSize: 14 }}>Loading deployment status…</span>
+        </div>
+      </AdminGuard>
     );
   }
 
   if (error) {
     return (
-      <div style={{ padding: 32 }}>
-        <div
-          style={{
-            padding: '12px 16px',
-            background: 'var(--ds-background-danger, #FFEDEB)',
-            border: '1px solid var(--ds-border-danger, #FF5630)',
-            borderRadius: 4,
-            fontSize: 14,
-            color: 'var(--ds-text-danger, #AE2A19)',
-            marginBottom: 16,
-          }}
-        >
-          {error}
+      <AdminGuard>
+        <div style={{ padding: '24px 32px', fontFamily: FONT }}>
+          <SectionMessage appearance="error" title="Failed to load">{error}</SectionMessage>
+          <div style={{ marginTop: 16 }}><Button onClick={refresh}>Retry</Button></div>
         </div>
-        <Button onClick={refresh}>Retry</Button>
-      </div>
+      </AdminGuard>
     );
   }
 
@@ -576,87 +488,125 @@ export default function VercelConnectionPage() {
   const latestDeployment = deployments[0] ?? null;
   const isRunInProgress = latestRun?.status === 'in_progress' || latestRun?.status === 'queued';
 
-  return (
-    <div style={{ padding: '32px 40px', maxWidth: 920 }}>
+  const TH: React.CSSProperties = {
+    textAlign: 'left',
+    fontSize: 12,
+    fontWeight: 653,
+    color: 'var(--ds-text-subtle, #505258)',
+    padding: '8px 12px 8px 0',
+    borderBottom: '1.67px solid var(--ds-border, rgba(11,18,14,0.14))',
+    letterSpacing: 'normal',
+    lineHeight: '16px',
+    whiteSpace: 'nowrap',
+  };
+  const TD: React.CSSProperties = {
+    fontSize: 14,
+    color: 'var(--ds-text, #292A2E)',
+    padding: '10px 12px 10px 0',
+    borderBottom: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.08))',
+    verticalAlign: 'middle',
+  };
+  const TD_MUTED: React.CSSProperties = { ...TD, color: 'var(--ds-text-subtle, #505258)', fontSize: 13 };
+  const MONO: React.CSSProperties = {
+    fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
+    fontSize: 12,
+  };
 
-      {/* ── Header ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}>
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 8,
-            background: '#000000',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 20,
-            color: '#FFFFFF',
-            fontWeight: 700,
-            flexShrink: 0,
-          }}
-        >
-          ▲
-        </div>
-        <div>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 24,
-              fontWeight: 653,
-              color: 'var(--ds-text, #172B4D)',
-              lineHeight: '28px',
-            }}
-          >
-            Production deploys
-          </h1>
-          <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)', marginTop: 2 }}>
-            {config.production_url} · {config.github_repo}
+  return (
+    <AdminGuard>
+      <div
+        style={{
+          padding: '24px 32px 48px',
+          maxWidth: 1280,
+          color: 'var(--ds-text, #292A2E)',
+          fontFamily: FONT,
+        }}
+      >
+        {/* ── Header ── */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 6,
+                background: '#000000',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 18,
+                color: '#FFFFFF',
+                fontWeight: 700,
+                flexShrink: 0,
+              }}
+            >
+              ▲
+            </div>
+            <h1 style={{ fontSize: 24, fontWeight: 653, lineHeight: '28px', color: 'var(--ds-text, #292A2E)', margin: 0 }}>
+              Production deploys
+            </h1>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {config.github_pat_set
+              ? <Lozenge appearance="success">GitHub ✓</Lozenge>
+              : <Lozenge appearance="default">GitHub — no PAT</Lozenge>}
+            {config.vercel_token_set
+              ? <Lozenge appearance="success">Vercel ✓</Lozenge>
+              : <Lozenge appearance="default">Vercel — no token</Lozenge>}
+            <Button appearance="subtle" onClick={refresh} spacing="compact">Refresh</Button>
           </div>
         </div>
 
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-          {config.github_pat_set ? (
-            <Lozenge appearance="success">GitHub ✓</Lozenge>
-          ) : (
-            <Lozenge appearance="default">GitHub — no PAT</Lozenge>
-          )}
-          {config.vercel_token_set ? (
-            <Lozenge appearance="success">Vercel ✓</Lozenge>
-          ) : (
-            <Lozenge appearance="default">Vercel — no token</Lozenge>
-          )}
-          <Button appearance="subtle" onClick={refresh} spacing="compact">
-            Refresh
-          </Button>
-        </div>
-      </div>
+        <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #505258)', margin: '0 0 4px', lineHeight: '20px' }}>
+          {config.production_url} · {config.github_repo}
+        </p>
+        {lastRefreshed && (
+          <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', margin: '0 0 24px' }}>
+            Updated {fmtRelative(lastRefreshed.toISOString())} · auto-refreshes every 30s
+          </p>
+        )}
 
-      {lastRefreshed && (
-        <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 24 }}>
-          Updated {fmtRelative(lastRefreshed.toISOString())} · auto-refreshes every 30s
-        </div>
-      )}
+        {/* ── Vercel token warning ── */}
+        {!config.vercel_token_set && (
+          <div style={{ marginBottom: 20 }}>
+            <SectionMessage appearance="warning" title="VERCEL_TOKEN not configured">
+              Deploys will fail at the "Deploy to Vercel" step. Add it in Configuration below, then set it as a{' '}
+              <a
+                href={`https://github.com/${config.github_repo}/settings/secrets/actions`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'inherit', fontWeight: 600 }}
+              >
+                GitHub secret
+              </a>
+              {' '}named <code>VERCEL_TOKEN</code>.
+            </SectionMessage>
+          </div>
+        )}
 
-      {/* ── Deploy gate ── */}
-      <div
-        style={{
-          background: 'var(--ds-surface, #FFFFFF)',
-          border: `1px solid ${gate.production_deploy_enabled ? 'var(--ds-border-success, #1F845A)' : 'var(--ds-border, #DFE1E6)'}`,
-          borderRadius: 8,
-          padding: '20px 24px',
-          marginBottom: 24,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+        {/* ── Deploy gate ── */}
+        <div
+          style={{
+            background: 'var(--ds-surface, #FFFFFF)',
+            border: `1px solid ${gate.production_deploy_enabled ? 'var(--ds-border-success, #1F845A)' : 'var(--ds-border, #DCDFE4)'}`,
+            borderRadius: 4,
+            padding: '16px 20px',
+            marginBottom: 20,
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: 16,
+          }}
+        >
           <div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
               Deploy gate
+              {gate.production_deploy_enabled && <Lozenge appearance="success">Active</Lozenge>}
             </div>
-            <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)', lineHeight: '18px' }}>
+            <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)', lineHeight: '18px' }}>
               {gate.production_deploy_enabled
-                ? 'Gate is ON — each push to main will trigger a production build on GitHub Actions'
-                : 'Gate is OFF (default) — pushes to main are ignored. Enable when you want to deploy.'}
+                ? 'Gate ON — each push to main triggers a production build on GitHub Actions'
+                : 'Gate OFF — pushes to main are ignored. Enable when you want to deploy.'}
             </div>
             {!gate.production_deploy_enabled && gate.disabled_at && (
               <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
@@ -664,27 +614,12 @@ export default function VercelConnectionPage() {
                 {gate.disabled_by_email ? ` by ${gate.disabled_by_email}` : ''}
               </div>
             )}
-            {gate.production_deploy_enabled && (
-              <div style={{ marginTop: 8 }}>
-                <Lozenge appearance="success">Active</Lozenge>
-              </div>
-            )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: 500,
-                color: gate.production_deploy_enabled
-                  ? 'var(--ds-text-success, #1F845A)'
-                  : 'var(--ds-text-subtlest, #6B778C)',
-              }}
-            >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, paddingTop: 2 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: gate.production_deploy_enabled ? 'var(--ds-text-success, #1F845A)' : 'var(--ds-text-subtlest, #6B778C)' }}>
               {gate.production_deploy_enabled ? 'ON' : 'OFF'}
             </span>
-            {toggling ? (
-              <Spinner size="small" />
-            ) : (
+            {toggling ? <Spinner size="small" /> : (
               <Toggle
                 id="deploy-gate"
                 isChecked={gate.production_deploy_enabled}
@@ -694,300 +629,192 @@ export default function VercelConnectionPage() {
             )}
           </div>
         </div>
-      </div>
 
-      {/* ── Live deployment progress ── */}
-      {isRunInProgress && latestRun && (
-        <LiveProgress run={latestRun} call={call} />
-      )}
+        {/* ── Live progress ── */}
+        {isRunInProgress && latestRun && <LiveProgress run={latestRun} call={call} />}
 
-      {/* ── Actions ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <Button
-          appearance="primary"
-          isDisabled={!config.github_pat_set || triggering}
-          isLoading={triggering}
-          onClick={triggerDeploy}
-        >
-          Deploy to production now
-        </Button>
-        {!config.github_pat_set && (
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-            Add GitHub PAT in configuration below to enable
-          </span>
-        )}
-        <a
-          href={`https://github.com/${config.github_repo}/actions`}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ fontSize: 13, color: 'var(--ds-link, #0052CC)', textDecoration: 'none', marginLeft: 'auto' }}
-        >
-          View GitHub Actions ↗
-        </a>
-      </div>
-
-      {/* ── Vercel token warning ── */}
-      {!config.vercel_token_set && (
-        <div
-          style={{
-            marginBottom: 24,
-            padding: '12px 16px',
-            background: 'var(--ds-background-danger, #FFEDEB)',
-            border: '1px solid var(--ds-border-danger, #AE2A19)',
-            borderRadius: 6,
-            fontSize: 13,
-            color: 'var(--ds-text-danger, #AE2A19)',
-            lineHeight: '18px',
-          }}
-        >
-          <strong>VERCEL_TOKEN not configured.</strong> Deploys will fail at the "Deploy to Vercel" step.{' '}
-          Add it at{' '}
-          <a
-            href={`https://github.com/${config.github_repo}/settings/secrets/actions`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'inherit', fontWeight: 600 }}
+        {/* ── Actions ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+          <Button
+            appearance="primary"
+            isDisabled={!config.github_pat_set || triggering}
+            isLoading={triggering}
+            onClick={triggerDeploy}
           >
-            GitHub → Secrets → VERCEL_TOKEN
-          </a>
-          {'. Get token from '}
-          <a
-            href="https://vercel.com/account/tokens"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'inherit', fontWeight: 600 }}
-          >
-            vercel.com/account/tokens
-          </a>.
-        </div>
-      )}
-
-      {/* ── Stats ── */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-        <StatCard label="Today" value={stats.today} sub="deploys triggered" />
-        <StatCard
-          label="Succeeded"
-          value={stats.success}
-          sub={`of ${stats.total} runs`}
-          accent={stats.success > 0 ? 'success' : 'neutral'}
-        />
-        <StatCard
-          label="Failed"
-          value={stats.failed}
-          sub={`of ${stats.total} runs`}
-          accent={stats.failed > 0 ? 'danger' : 'neutral'}
-        />
-      </div>
-
-      {/* ── Current production ── */}
-      {(latestRun || latestDeployment) && (
-        <div
-          style={{
-            background: 'var(--ds-surface, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
-            borderRadius: 8,
-            padding: '16px 20px',
-            marginBottom: 24,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 16,
-            flexWrap: 'wrap',
-          }}
-        >
-          <div
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: 'var(--ds-text-subtlest, #6B778C)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              flexShrink: 0,
-            }}
-          >
-            Production now
-          </div>
-
-          {latestDeployment ? (
-            <>
-              <VercelStateBadge state={latestDeployment.state} />
-              <a
-                href={`https://${latestDeployment.url}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ fontSize: 13, color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
-              >
-                {latestDeployment.url}
-              </a>
-              {latestDeployment.meta.github_commit_sha && (
-                <code style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
-                  {latestDeployment.meta.github_commit_sha.slice(0, 7)}
-                </code>
-              )}
-              {latestDeployment.meta.github_commit_message && (
-                <span
-                  style={{
-                    fontSize: 13,
-                    color: 'var(--ds-text, #172B4D)',
-                    flex: 1,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {latestDeployment.meta.github_commit_message.split('\n')[0]}
-                </span>
-              )}
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
-                {fmtRelative(latestDeployment.ready_at ?? latestDeployment.created_at)}
-              </span>
-            </>
-          ) : latestRun ? (
-            <>
-              <RunStatusBadge status={latestRun.status} conclusion={latestRun.conclusion} />
-              <code style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
-                {latestRun.head_sha}
-              </code>
-              <span
-                style={{
-                  fontSize: 13,
-                  color: 'var(--ds-text, #172B4D)',
-                  flex: 1,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {latestRun.head_commit_message.split('\n')[0]}
-              </span>
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
-                {fmtRelative(latestRun.updated_at)}
-              </span>
-            </>
-          ) : null}
-        </div>
-      )}
-
-      {/* ── Deploy history ── */}
-      <div style={{ marginBottom: 24 }}>
-        <div
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: 'var(--ds-text, #172B4D)',
-            marginBottom: 12,
-          }}
-        >
-          Deploy history
+            Deploy to production now
+          </Button>
           {!config.github_pat_set && (
-            <span style={{ fontWeight: 400, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 8 }}>
-              — add GitHub PAT in configuration below to load live runs
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Add GitHub PAT in Configuration below to enable
             </span>
           )}
+          <a
+            href={`https://github.com/${config.github_repo}/actions`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
+          >
+            View GitHub Actions ↗
+          </a>
         </div>
-        {runs.length === 0 ? (
+
+        {/* ── Stats ── */}
+        <div
+          style={{
+            display: 'flex',
+            gap: 0,
+            marginBottom: 24,
+            border: '1px solid var(--ds-border, #DCDFE4)',
+            borderRadius: 4,
+            overflow: 'hidden',
+            background: 'var(--ds-surface, #FFFFFF)',
+          }}
+        >
+          {[
+            { label: 'Today', value: stats.today, sub: 'deploys triggered', accent: undefined as string | undefined },
+            { label: 'Succeeded', value: stats.success, sub: `of ${stats.total} runs`, accent: stats.success > 0 ? 'var(--ds-text-success, #1F845A)' : undefined },
+            { label: 'Failed', value: stats.failed, sub: `of ${stats.total} runs`, accent: stats.failed > 0 ? 'var(--ds-text-danger, #AE2A19)' : undefined },
+          ].map((s, i) => (
+            <div
+              key={s.label}
+              style={{
+                flex: 1,
+                padding: '16px 20px',
+                borderLeft: i > 0 ? '1px solid var(--ds-border, #DCDFE4)' : 'none',
+              }}
+            >
+              <div style={{ fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
+                {s.label}
+              </div>
+              <div style={{ fontSize: 28, fontWeight: 653, lineHeight: 1, color: s.accent ?? 'var(--ds-text, #292A2E)' }}>
+                {s.value}
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
+                {s.sub}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Current production ── */}
+        {(latestRun || latestDeployment) && (
           <div
             style={{
-              padding: '32px 24px',
-              border: '1px solid var(--ds-border, #DFE1E6)',
-              borderRadius: 8,
-              textAlign: 'center',
-              fontSize: 13,
-              color: 'var(--ds-text-subtlest, #6B778C)',
+              background: 'var(--ds-surface, #FFFFFF)',
+              border: '1px solid var(--ds-border, #DCDFE4)',
+              borderRadius: 4,
+              padding: '12px 16px',
+              marginBottom: 24,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              flexWrap: 'wrap',
             }}
           >
-            {config.github_pat_set
-              ? 'No runs found for this workflow'
-              : 'Configure a GitHub PAT in the settings below to see live run history'}
+            <span style={{ fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', flexShrink: 0 }}>
+              Production now
+            </span>
+            {latestDeployment ? (
+              <>
+                <VercelStateBadge state={latestDeployment.state} />
+                <a
+                  href={`https://${latestDeployment.url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: 13, color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
+                >
+                  {latestDeployment.url}
+                </a>
+                {latestDeployment.meta.github_commit_sha && (
+                  <code style={{ ...MONO, color: 'var(--ds-text-subtle, #505258)' }}>
+                    {latestDeployment.meta.github_commit_sha.slice(0, 7)}
+                  </code>
+                )}
+                {latestDeployment.meta.github_commit_message && (
+                  <span style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {latestDeployment.meta.github_commit_message.split('\n')[0]}
+                  </span>
+                )}
+                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
+                  {fmtRelative(latestDeployment.ready_at ?? latestDeployment.created_at)}
+                </span>
+              </>
+            ) : latestRun ? (
+              <>
+                <RunStatusBadge status={latestRun.status} conclusion={latestRun.conclusion} />
+                <code style={{ ...MONO, color: 'var(--ds-text-subtle, #505258)' }}>{latestRun.head_sha}</code>
+                <span style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {latestRun.head_commit_message.split('\n')[0]}
+                </span>
+                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
+                  {fmtRelative(latestRun.updated_at)}
+                </span>
+              </>
+            ) : null}
+          </div>
+        )}
+
+        {/* ── Deploy history ── */}
+        <SectionLabel>
+          Deploy history
+          {!config.github_pat_set && (
+            <span style={{ fontWeight: 400, marginLeft: 8, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              — add GitHub PAT in Configuration below
+            </span>
+          )}
+        </SectionLabel>
+
+        {runs.length === 0 ? (
+          <div style={{ padding: '32px 0', textAlign: 'center', fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            {config.github_pat_set ? 'No runs found for this workflow' : 'Configure a GitHub PAT to see live run history'}
           </div>
         ) : (
-          <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-                  {['Status', 'Commit', 'What shipped', 'Error', 'Duration', 'When', 'By'].map((h) => (
-                    <th
-                      key={h}
-                      style={{
-                        padding: '8px 12px',
-                        textAlign: 'left',
-                        fontSize: 12,
-                        fontWeight: 653,
-                        color: 'var(--ds-text-subtle, #42526E)',
-                      }}
-                    >
-                      {h}
-                    </th>
-                  ))}
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+              <thead style={{ position: 'sticky', top: 0, background: 'var(--ds-background-accent-gray-subtlest, #F7F8F9)', zIndex: 1 }}>
+                <tr>
+                  <th style={TH}>Status</th>
+                  <th style={TH}>Commit</th>
+                  <th style={{ ...TH, width: '40%' }}>What shipped</th>
+                  <th style={TH}>Error</th>
+                  <th style={TH}>Duration</th>
+                  <th style={TH}>When</th>
+                  <th style={TH}>By</th>
                 </tr>
               </thead>
               <tbody>
-                {runs.map((run, i) => {
+                {runs.map((run) => {
                   const errLabel = errorLabel(run.conclusion);
                   return (
-                    <tr
-                      key={run.id}
-                      style={{
-                        borderBottom: i < runs.length - 1 ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
-                        background: run.conclusion === 'failure'
-                          ? 'var(--ds-background-danger-hovered, #FFEDEB)'
-                          : 'transparent',
-                      }}
-                    >
-                      <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
-                        <RunStatusBadge status={run.status} conclusion={run.conclusion} />
-                      </td>
-                      <td style={{ padding: '10px 12px' }}>
+                    <tr key={run.id}>
+                      <td style={TD}><RunStatusBadge status={run.status} conclusion={run.conclusion} /></td>
+                      <td style={TD}>
                         <a
                           href={run.html_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{
-                            fontFamily: 'var(--ds-font-family-code, monospace)',
-                            fontSize: 12,
-                            color: 'var(--ds-link, #0052CC)',
-                            textDecoration: 'none',
-                          }}
+                          style={{ ...MONO, color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
                         >
                           {run.head_sha}
                         </a>
                       </td>
-                      <td style={{ padding: '10px 12px', maxWidth: 280 }}>
+                      <td style={{ ...TD, maxWidth: 360 }}>
                         {run.summary ? (
-                          <span style={{ color: 'var(--ds-text, #172B4D)', fontSize: 13 }}>
-                            {run.summary}
-                          </span>
+                          <span style={{ fontSize: 13 }}>{run.summary}</span>
                         ) : (
-                          <span
-                            style={{
-                              color: 'var(--ds-text-subtle, #42526E)',
-                              fontSize: 12,
-                              fontFamily: 'var(--ds-font-family-code, monospace)',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              display: 'block',
-                            }}
-                          >
+                          <span style={{ ...MONO, color: 'var(--ds-text-subtle, #505258)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {run.head_commit_message.split('\n')[0]}
                           </span>
                         )}
                       </td>
-                      <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
-                        {errLabel ? (
-                          <Lozenge appearance={run.conclusion === 'failure' ? 'removed' : 'default'}>
-                            {errLabel}
-                          </Lozenge>
-                        ) : '—'}
+                      <td style={TD}>
+                        {errLabel
+                          ? <Lozenge appearance={run.conclusion === 'failure' ? 'removed' : 'default'}>{errLabel}</Lozenge>
+                          : <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>}
                       </td>
-                      <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle, #42526E)', whiteSpace: 'nowrap' }}>
-                        {fmtDuration(run.duration_ms)}
-                      </td>
-                      <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle, #42526E)', whiteSpace: 'nowrap' }}>
-                        {fmtRelative(run.created_at)}
-                      </td>
-                      <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle, #42526E)' }}>
-                        {run.trigger || '—'}
-                      </td>
+                      <td style={TD_MUTED}>{fmtDuration(run.duration_ms)}</td>
+                      <td style={{ ...TD_MUTED, whiteSpace: 'nowrap' }}>{fmtRelative(run.created_at)}</td>
+                      <td style={TD_MUTED}>{run.trigger || '—'}</td>
                     </tr>
                   );
                 })}
@@ -995,95 +822,74 @@ export default function VercelConnectionPage() {
             </table>
           </div>
         )}
-      </div>
 
-      {/* ── Vercel deployments ── */}
-      {deployments.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 12 }}>
-            Vercel deployments
-          </div>
-          <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-                  {['Status', 'URL', 'Commit', 'Build time', 'When'].map((h) => (
-                    <th
-                      key={h}
-                      style={{
-                        padding: '8px 12px',
-                        textAlign: 'left',
-                        fontSize: 12,
-                        fontWeight: 653,
-                        color: 'var(--ds-text-subtle, #42526E)',
-                      }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {deployments.map((d, i) => (
-                  <tr
-                    key={d.uid}
-                    style={{ borderBottom: i < deployments.length - 1 ? '1px solid var(--ds-border, #DFE1E6)' : 'none' }}
-                  >
-                    <td style={{ padding: '10px 12px' }}>
-                      <VercelStateBadge state={d.state} />
-                    </td>
-                    <td style={{ padding: '10px 12px' }}>
-                      <a
-                        href={`https://${d.url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ fontSize: 12, color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
-                      >
-                        {d.url}
-                      </a>
-                    </td>
-                    <td style={{ padding: '10px 12px' }}>
-                      <code style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
-                        {d.meta.github_commit_sha?.slice(0, 7) ?? '—'}
-                      </code>
-                    </td>
-                    <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle, #42526E)' }}>
-                      {fmtDuration(d.build_duration_ms)}
-                    </td>
-                    <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle, #42526E)', whiteSpace: 'nowrap' }}>
-                      {fmtRelative(d.created_at)}
-                    </td>
+        {/* ── Vercel deployments ── */}
+        {deployments.length > 0 && (
+          <>
+            <SectionLabel>Vercel deployments</SectionLabel>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+                <thead style={{ position: 'sticky', top: 0, background: 'var(--ds-background-accent-gray-subtlest, #F7F8F9)', zIndex: 1 }}>
+                  <tr>
+                    <th style={TH}>Status</th>
+                    <th style={TH}>URL</th>
+                    <th style={TH}>Commit</th>
+                    <th style={TH}>Build time</th>
+                    <th style={TH}>When</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* ── Configuration ── */}
-      <div>
-        <button
-          onClick={() => setShowConfig((v) => !v)}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: 14,
-            fontWeight: 600,
-            color: 'var(--ds-link, #0052CC)',
-            padding: '0 0 12px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
-          {showConfig ? '▼' : '▶'} Configuration
-        </button>
-        {showConfig && (
-          <ConfigPanel config={config} saving={savingConfig} onSave={saveConfig} />
+                </thead>
+                <tbody>
+                  {deployments.map((d) => (
+                    <tr key={d.uid}>
+                      <td style={TD}><VercelStateBadge state={d.state} /></td>
+                      <td style={TD}>
+                        <a
+                          href={`https://${d.url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ fontSize: 13, color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
+                        >
+                          {d.url}
+                        </a>
+                      </td>
+                      <td style={TD}>
+                        <code style={{ ...MONO, color: 'var(--ds-text-subtle, #505258)' }}>
+                          {d.meta.github_commit_sha?.slice(0, 7) ?? '—'}
+                        </code>
+                      </td>
+                      <td style={TD_MUTED}>{fmtDuration(d.build_duration_ms)}</td>
+                      <td style={{ ...TD_MUTED, whiteSpace: 'nowrap' }}>{fmtRelative(d.created_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
+
+        {/* ── Configuration ── */}
+        <SectionLabel>
+          <button
+            onClick={() => setShowConfig((v) => !v)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 12,
+              fontWeight: 653,
+              color: 'var(--ds-text-subtle, #505258)',
+              padding: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontFamily: FONT,
+            }}
+          >
+            {showConfig ? '▼' : '▶'} Configuration
+          </button>
+        </SectionLabel>
+        {showConfig && <ConfigPanel config={config} saving={savingConfig} onSave={saveConfig} />}
       </div>
-    </div>
+    </AdminGuard>
   );
 }
