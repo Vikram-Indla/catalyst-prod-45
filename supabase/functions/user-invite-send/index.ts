@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
     // For invites only, block already-registered users.
     if (purpose === 'invite') {
       const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
-      if (users?.some((u) => u.email === email)) return err('User already exists', 409);
+      if (users?.some((u) => u.email === email)) return err('This user already has an account. Use "Send reset" to send them a password reset link instead.', 409);
     }
 
     // Cryptographically-random single-use token; only the SHA-256 hash is stored.

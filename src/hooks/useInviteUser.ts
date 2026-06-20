@@ -45,7 +45,15 @@ export function useInviteUser() {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('user-invite-send', { body: params });
-      if (error) return { ok: false, error: error.message || 'Invite failed' };
+      if (error) {
+        // supabase.functions.invoke puts non-2xx responses in `error`, not `data`.
+        // Try to extract the actual error message from the response body.
+        try {
+          const body = await (error as { context?: Response }).context?.json?.();
+          if (body?.error) return { ok: false, error: body.error };
+        } catch { /* fall through */ }
+        return { ok: false, error: error.message || 'Invite failed' };
+      }
       return data as InviteUserResult;
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : 'Unknown error' };
