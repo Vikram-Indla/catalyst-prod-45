@@ -34,6 +34,7 @@ interface GitHubRun {
   html_url: string;
   trigger: string;
   duration_ms: number | null;
+  summary: string | null;
 }
 
 interface VercelDeployment {
@@ -848,7 +849,7 @@ export default function VercelConnectionPage() {
                     background: 'var(--ds-surface-sunken, #F7F8F9)',
                   }}
                 >
-                  {['Status', 'Commit', 'Message', 'Duration', 'When', 'Triggered by'].map(
+                  {['Status', 'Commit', 'What shipped', 'Duration', 'When', 'Triggered by'].map(
                     (h) => (
                       <th
                         key={h}
@@ -896,14 +897,28 @@ export default function VercelConnectionPage() {
                     <td
                       style={{
                         padding: '10px 12px',
-                        color: 'var(--ds-text, #172B4D)',
-                        maxWidth: 280,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        maxWidth: 320,
                       }}
                     >
-                      {run.head_commit_message.split('\n')[0]}
+                      {run.summary ? (
+                        <span style={{ color: 'var(--ds-text, #172B4D)', fontSize: 13 }}>
+                          {run.summary}
+                        </span>
+                      ) : (
+                        <span
+                          style={{
+                            color: 'var(--ds-text-subtle, #42526E)',
+                            fontSize: 12,
+                            fontFamily: 'var(--ds-font-family-code, monospace)',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            display: 'block',
+                          }}
+                        >
+                          {run.head_commit_message.split('\n')[0]}
+                        </span>
+                      )}
                     </td>
                     <td
                       style={{

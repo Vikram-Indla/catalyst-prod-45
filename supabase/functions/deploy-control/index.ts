@@ -131,6 +131,70 @@ async function handleGet(supabase: ReturnType<typeof createClient>) {
     }
   }
 
+  // AI summaries — fetch cached, generate missing (max 3 per call to stay within timeout)
+  const runIds = runs.map((r) => (r as Record<string, unknown>).id as number);
+  const summaryMap = new Map<number, string>();
+  if (runIds.length > 0) {
+    const { data: cached } = await supabase
+      .from('deploy_summaries')
+      .select('run_id, summary')
+      .in('run_id', runIds);
+    for (const s of cached ?? []) summaryMap.set(s.run_id, s.summary);
+  }
+
+  const anthropicKey = Deno.env.get('ANTHROPIC_API_KEY');
+  if (anthropicKey) {
+    const needsSummary = runs
+      .filter((r) => {
+        const run = r as Record<string, unknown>;
+        return run.conclusion && run.head_commit_message && !summaryMap.has(run.id as number);
+      })
+      .slice(0, 3);
+
+    if (needsSummary.length > 0) {
+      const generated = await Promise.all(
+        needsSummary.map(async (r) => {
+          const run = r as Record<string, unknown>;
+          try {
+            const res = await fetch('https://api.anthropic.com/v1/messages', {
+              method: 'POST',
+              headers: {
+                'x-api-key': anthropicKey,
+                'anthropic-version': '2023-06-01',
+                'content-type': 'application/json',
+              },
+              body: JSON.stringify({
+                model: 'claude-haiku-4-5-20251001',
+                max_tokens: 100,
+                messages: [{
+                  role: 'user',
+                  content: `Summarize this software deployment in 1 short sentence for a non-technical product owner. What changed for users? Commit: "${(run.head_commit_message as string).split('\n')[0]}"`,
+                }],
+              }),
+            });
+            if (!res.ok) return null;
+            const body = await res.json();
+            const summary: string = body.content?.[0]?.text?.trim() ?? '';
+            if (!summary) return null;
+            summaryMap.set(run.id as number, summary);
+            return { run_id: run.id as number, summary, commit_sha: run.head_sha as string, commit_message: (run.head_commit_message as string).split('\n')[0] };
+          } catch {
+            return null;
+          }
+        }),
+      );
+      const toInsert = generated.filter(Boolean);
+      if (toInsert.length > 0) {
+        await supabase.from('deploy_summaries').upsert(toInsert);
+      }
+    }
+  }
+
+  const runsWithSummaries = runs.map((r) => ({
+    ...(r as Record<string, unknown>),
+    summary: summaryMap.get((r as Record<string, unknown>).id as number) ?? null,
+  }));
+
   // Stats from GitHub runs
   const today = new Date().toISOString().slice(0, 10);
   const todayRuns = runs.filter((r) => (r as Record<string, unknown>).created_at?.toString().startsWith(today));
@@ -157,7 +221,7 @@ async function handleGet(supabase: ReturnType<typeof createClient>) {
       vercel_project_id: settings.vercel_project_id ?? '',
       production_url: settings.production_url ?? 'https://ksa-catalyst.com',
     },
-    runs,
+    runs: runsWithSummaries,
     deployments,
     stats: {
       today: todayRuns.length,
