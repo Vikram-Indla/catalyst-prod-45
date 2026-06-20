@@ -22,8 +22,12 @@ export function HealthStatusBadge({ health, onClick }: HealthStatusBadgeProps) {
   const appearance = HEALTH_COLORS[health.health_status] || 'default';
 
   return (
-    <button
-      onClick={onClick}
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={`Health status: ${health.health_status}. Click for details.`}
+      onClickCapture={(e) => { e.stopPropagation(); onClick?.(); }}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
       style={{
         border: 'none',
         background: 'transparent',
@@ -37,6 +41,6 @@ export function HealthStatusBadge({ health, onClick }: HealthStatusBadgeProps) {
         status={health.health_status}
         appearance={appearance}
       />
-    </button>
+    </div>
   );
 }

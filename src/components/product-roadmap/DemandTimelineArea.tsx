@@ -24,6 +24,10 @@ interface DemandTimelineAreaProps {
   timelineStart: Date;
   timelineEnd: Date;
   onDemandClick: (demandId: string) => void;
+  /** Optional Date Pulse health map: brId → 'Healthy' | 'At Risk' | 'Overdue' | 'Uncommitted' */
+  healthMap?: Map<string, string>;
+  /** When true, bars are colored by health status instead of process step */
+  colorByHealth?: boolean;
 }
 
 // Matching Program density: 56px row height, 44px group header
@@ -31,7 +35,7 @@ const DEMAND_ROW_HEIGHT = 56;
 const GROUP_HEADER_HEIGHT = 44;
 
 export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaProps>(
-  ({ demands, groups, groupBy, scale, showMilestones, timelineStart, timelineEnd, onDemandClick }, ref) => {
+  ({ demands, groups, groupBy, scale, showMilestones, timelineStart, timelineEnd, onDemandClick, healthMap, colorByHealth }, ref) => {
     const headerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
@@ -192,6 +196,7 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
                   timelineEnd={timelineEnd}
                   onClick={() => onDemandClick(demand.id)}
                   rowHeight={DEMAND_ROW_HEIGHT}
+                  healthStatus={colorByHealth ? (healthMap?.get(demand.id) ?? 'Uncommitted') : undefined}
                 />
               ))
             ) : (
@@ -231,6 +236,7 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
                         timelineEnd={timelineEnd}
                         onClick={() => onDemandClick(demand.id)}
                         rowHeight={DEMAND_ROW_HEIGHT}
+                        healthStatus={colorByHealth ? (healthMap?.get(demand.id) ?? 'Uncommitted') : undefined}
                       />
                     ))}
                   </React.Fragment>
@@ -253,7 +259,15 @@ interface DemandTimelineRowProps {
   timelineEnd: Date;
   onClick: () => void;
   rowHeight: number;
+  healthStatus?: string;
 }
+
+const HEALTH_COLORS: Record<string, string> = {
+  'Overdue': 'var(--ds-background-accent-red-bolder, #C9372C)',
+  'At Risk': 'var(--ds-background-accent-orange-bolder, #C25100)',
+  'Healthy': 'var(--ds-background-accent-green-bolder, #1F845A)',
+  'Uncommitted': 'var(--ds-background-neutral-hovered, #DCDFE4)',
+};
 
 // Status-based color mapping for progress bars - CATALYST BRAND COLORS ONLY
 // Blue: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-background-brand-bold-hovered, #1d4ed8)
@@ -289,13 +303,16 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
   timelineEnd,
   onClick,
   rowHeight,
+  healthStatus,
 }) => {
   const barLeft = calcPosition(demand.startDate, timelineStart, timelineEnd);
   const barRight = calcPosition(demand.endDate, timelineStart, timelineEnd);
   const barWidth = Math.max(barRight - barLeft, 2);
   
-  // Get bar color based on status
-  const barColor = getStatusColor(demand.status);
+  // Get bar color — health mode overrides process-step color
+  const barColor = healthStatus
+    ? (HEALTH_COLORS[healthStatus] || getStatusColor(demand.status))
+    : getStatusColor(demand.status);
   const barColorLight = barColor.replace(')', ', 0.2)').replace('hsl(', 'hsla(');
   
   // Format dates for tooltip

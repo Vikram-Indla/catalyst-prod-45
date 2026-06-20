@@ -182,7 +182,26 @@ function HealthCell({ row }: { row: BacklogItem }) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
 
-  if (isLoading || !health) return <div style={{ padding: '4px 8px' }}>—</div>;
+  // Escape closes the popover (capture phase beats parent modal's bubble handler)
+  useEffect(() => {
+    if (!popoverOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setPopoverOpen(false); }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [popoverOpen]);
+
+  if (isLoading) return (
+    <div style={{ padding: '4px 8px' }}>
+      <div style={{
+        width: 90, height: 24, borderRadius: 3,
+        background: 'var(--ds-background-neutral, #F1F2F4)',
+        animation: 'pulse 1.5s ease-in-out infinite',
+      }} />
+    </div>
+  );
+  if (!health) return <div style={{ padding: '4px 8px' }}>—</div>;
 
   return (
     <div ref={triggerRef} style={{ padding: '4px 8px' }}>
@@ -2963,7 +2982,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     {
       id: 'health',
       label: 'Health',
-      width: 9,
+      width: 12,
       sortable: false,
       defaultVisible: false,
       cell: (props) => <HealthCell row={props.row} />,

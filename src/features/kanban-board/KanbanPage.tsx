@@ -354,6 +354,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
               onAvatarClick={(issue, anchor) => setAssigneeTarget({ issue, anchor })}
               renderMenu={renderMenu}
               columnFooter={columnFooter}
+              cardHealthKey={mode === 'product' ? (issue) => issue.id : undefined}
             />
           )}
         </div>

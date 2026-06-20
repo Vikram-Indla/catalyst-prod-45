@@ -14,7 +14,7 @@ import {
   storeCurrentLoginTime,
 } from '@/hooks/useSessionPersistence';
 import { LoginFormPanel } from './LoginFormPanel';
-import { CatyMascot } from './CatyMascot';
+import { CatyPulseIcon } from '@/components/ui/CatyPulseIcon';
 import { useLoginState } from './useLoginState';
 import { ForcePasswordReset } from '@/components/auth/ForcePasswordReset';
 import { FileText } from '@/lib/atlaskit-icons';
@@ -479,7 +479,7 @@ export function CatalystLoginPage() {
         <span className="clmp-ai-watermark"><CPathSvg /></span>
         <div className="clmp-container clmp-ai-grid">
           <div className="clmp-rv">
-            <span className="clmp-ai-kicker"><CatyMascot variant="light" className="clmp-caty-hero" />{t(lang, 'ai.kicker')}</span>
+            <span className="clmp-ai-kicker"><CatyPulseIcon size={48} />{t(lang, 'ai.kicker')}</span>
             <h2>{t(lang, 'ai.title1')} <span className="clmp-ai-hl">{t(lang, 'ai.title2')}</span><br />{t(lang, 'ai.title3')}</h2>
             <p className="clmp-ai-sub">{t(lang, 'ai.sub')}</p>
             <div className="clmp-agent-list">
@@ -493,14 +493,14 @@ export function CatalystLoginPage() {
           </div>
           <div className="clmp-chat clmp-rv" aria-hidden="true">
             <div className="clmp-chat-top">
-              <CatyMascot variant="light" className="clmp-chat-av" />
+              <span className="clmp-chat-av"><CatyPulseIcon size={24} /></span>
               <span className="clmp-chat-ttl">Ask <i>CATY</i></span>
               <span className="clmp-chat-on"><span className="clmp-pulse clmp-pulse-mint" />{t(lang, 'chat.online')}</span>
             </div>
             <div className="clmp-chat-body">
               <div className="clmp-msg clmp-msg-user">{t(lang, 'chat.q')}</div>
               <div className="clmp-msg clmp-msg-caty">
-                <span className="clmp-msg-who"><CatyMascot variant="light" className="clmp-msg-mini" />ASK CATY</span>
+                <span className="clmp-msg-who"><CatyPulseIcon size={18} />ASK CATY</span>
                 {t(lang, 'chat.a')}
                 <span className="clmp-msg-act">
                   <span>{t(lang, 'chat.c1')}</span><span>{t(lang, 'chat.c2')}</span><span>{t(lang, 'chat.c3')}</span>
@@ -525,7 +525,7 @@ export function CatalystLoginPage() {
           </div>
           <div className="clmp-caps clmp-rv">
             <div className="clmp-cap">
-              <div className="clmp-cap-ic caty"><CatyMascot /></div>
+              <div className="clmp-cap-ic caty"><CatyPulseIcon size={20} /></div>
               <div className="clmp-cap-t">{t(lang, 'cap.1.t')}</div><div className="clmp-cap-b">{t(lang, 'cap.1.b')}</div>
             </div>
             <div className="clmp-cap">

@@ -20,8 +20,7 @@ export interface GuardResult { ok: boolean; reason?: string }
 
 // ── Stage orders ─────────────────────────────────────────────────────
 export const RELEASE_STAGES = [
-  'draft', 'planned', 'in_readiness', 'ready_for_signoff', 'approved',
-  'scheduled', 'deploying', 'monitoring', 'completed',
+  'draft', 'in_progress', 'qa', 'beta', 'production',
 ];
 export const CHANGE_STAGES = [
   'draft', 'assessing', 'ready_for_approval', 'approved', 'scheduled',
@@ -31,7 +30,15 @@ const RELEASE_TERMINAL = ['rolled_back', 'cancelled'];
 const CHANGE_TERMINAL = ['failed', 'rolled_back', 'cancelled'];
 
 // Legacy → canonical stage aliasing (lenient: legacy data isn't blocked).
-const RELEASE_ALIAS: Record<string, string> = { todo: 'draft', planning: 'planned', in_progress: 'deploying', released: 'completed', done: 'completed' };
+// Maps all old 9-stage values and other aliases to the new 5-stage model.
+const RELEASE_ALIAS: Record<string, string> = {
+  // pre-migration legacy names
+  todo: 'draft', planning: 'draft', planned: 'draft',
+  in_readiness: 'in_progress', ready_for_signoff: 'in_progress',
+  approved: 'qa', scheduled: 'qa',
+  deploying: 'beta', monitoring: 'beta',
+  completed: 'production', released: 'production', done: 'production',
+};
 const CHANGE_ALIAS: Record<string, string> = { new: 'draft', in_uat: 'implementing', in_beta: 'validating', in_production: 'implemented', done: 'closed' };
 
 /**
@@ -87,15 +94,15 @@ export async function validateReleaseTransition(releaseId: string, toStatus: str
     return { ok: false, reason: `Cannot move from ${r.status.replace(/_/g, ' ')} to ${toStatus.replace(/_/g, ' ')}` };
   }
 
-  // Freeze-conflict block on scheduling a production-window release.
-  if (toStatus === 'scheduled') {
+  // Freeze-conflict block on staging/production deployments.
+  if (toStatus === 'beta' || toStatus === 'production') {
     const date = r.planned_release_date ?? r.target_date;
     const fw = await freezeConflict(r.target_env, date);
     if (fw) return { ok: false, reason: `Release date falls in freeze window "${fw}". Reschedule or lift the freeze.` };
   }
 
   // Production-needs-change: a production release cannot deploy with no change.
-  if ((toStatus === 'scheduled' || toStatus === 'deploying') && r.target_env === 'production') {
+  if ((toStatus === 'beta' || toStatus === 'production') && r.target_env === 'production') {
     const { count } = await supabase.from('rh_changes').select('*', { count: 'exact', head: true }).eq('release_id', releaseId);
     if (!count) {
       const { count: linkCount } = await supabase.from('rh_change_release_links').select('*', { count: 'exact', head: true }).eq('release_id', releaseId).is('unlinked_at', null);
