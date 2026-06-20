@@ -12,7 +12,7 @@
  * at the same position and width as Catalyst's other sidebars, with a 4-row
  * nav (Home/DMs/Activity/Saved) at the top.
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -934,7 +934,47 @@ function SidebarSplitter({
   );
 }
 
+/**
+ * Shell-mounted gate — mirrors the dockMounted pattern in ChatDockMount/ChatDock.
+ * ChatV2Inner owns useConversations + useActivityFeed (cascade = 8-10 parallel
+ * Supabase queries on mount). Firing all of them in SyncLane on /chat navigation
+ * blocks the main thread long enough for Chrome to show "Page Unresponsive".
+ *
+ * The fix: delay mounting ChatV2Inner by one frame via startTransition, identical
+ * to how ChatDock defers DockDirectory. React renders a lightweight placeholder
+ * first (committed in SyncLane, instant), then switches to TransitionLane for the
+ * heavy subtree (yields every 5ms — never freezes).
+ */
 export function ChatV2Shell() {
+  const [shellMounted, setShellMounted] = useState(false);
+
+  useEffect(() => {
+    startTransition(() => setShellMounted(true));
+  }, []);
+
+  if (!shellMounted) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        color: 'var(--ds-text-subtlest, #6B778C)',
+        fontSize: 14,
+      }}>
+        <div style={{
+          width: 20,
+          height: 20,
+          border: '2px solid var(--ds-border, #DFE1E6)',
+          borderTopColor: 'var(--ds-border-brand, #0C66E4)',
+          borderRadius: '50%',
+          animation: 'spin 0.7s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
   return (
     <ChatRealtimeProvider>
       <ChatV2Inner />
