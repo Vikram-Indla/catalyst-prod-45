@@ -288,7 +288,7 @@ const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
-const WorkHubSyncLogs = lazy(() => import("../modules/workhub/admin/pages/WorkHubSyncLogsPage"));
+// WorkHubSyncLogs DEPRECATED 2026-06-20 — route removed
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
@@ -981,10 +981,10 @@ export default function FullAppRoutes() {
           <Route path="workhub/user-mapping" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           {/* DEPRECATED 2026-05-19 — jira-user-sync superseded */}
           <Route path="jira-user-sync" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
-          {/* DEPRECATED 2026-05-19 — merged into sync-logs */}
-          <Route path="workhub/jira-sync-control" element={<Navigate to="/admin/workhub/sync-logs" replace />} />
-          <Route path="workhub/activity-sync" element={<Navigate to="/admin/workhub/sync-logs" replace />} />
-          <Route path="workhub/sync-logs" element={<S><WorkHubSyncLogs /></S>} />
+          {/* DEPRECATED 2026-06-20 — sync-logs removed; redirects to jira-connection */}
+          <Route path="workhub/sync-logs" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
+          <Route path="workhub/jira-sync-control" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
+          <Route path="workhub/activity-sync" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="ai-governance/translations" element={<S><AiTranslationsAuditPage /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />

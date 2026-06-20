@@ -68,7 +68,7 @@ export const adminPockets: AdminNavPocket[] = [
     // under this pocket is a Jira-integration setting; "WorkHub" was a
     // historical codename that confused users.
     //
-    // 2026-06-20 — User mapping removed (deprecated).
+    // 2026-06-20 — User mapping + sync-logs removed (deprecated).
     id: 'jira',
     label: 'Jira',
     iconName: 'Cable',
@@ -76,7 +76,6 @@ export const adminPockets: AdminNavPocket[] = [
     children: [
       { label: 'Connection', path: '/admin/workhub/jira-connection' },
       { label: 'Hierarchy mapping', path: '/admin/workhub/hierarchy-mapping' },
-      { label: 'Sync & logs', path: '/admin/workhub/sync-logs' },
     ],
   },
   {
@@ -105,7 +104,6 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/release-ops',
   '/admin/workhub/jira-connection',
   '/admin/workhub/hierarchy-mapping',
-  '/admin/workhub/sync-logs',
   '/admin/ai-governance/translations',
 ]);
 
