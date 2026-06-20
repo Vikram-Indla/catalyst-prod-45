@@ -1005,7 +1005,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                         <>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
                             <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Override password directly without sending email</div>
-                            <Button appearance="subtle" isDisabled={busyAny && !pwOpen} onClick={() => { setPwOpen(v => !v); setNewPw(''); setConfirmPw(''); }}>
+                            <Button appearance="default" isDisabled={busyAny && !pwOpen} onClick={() => { setPwOpen(v => !v); setNewPw(''); setConfirmPw(''); }}>
                               {pwOpen ? 'Cancel' : 'Set password'}
                             </Button>
                           </div>
