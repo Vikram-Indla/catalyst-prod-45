@@ -96,6 +96,7 @@ export function useDraggableFab() {
       ox: livePos.current.x, oy: livePos.current.y,
     };
     setIsDragging(true);
+    console.debug('[FAB] pointerDown — didMove reset');
   }, []);
 
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
@@ -122,6 +123,7 @@ export function useDraggableFab() {
 
   const onClickCapture = useCallback((e: React.MouseEvent) => {
     // suppress click if pointer moved (drag release)
+    console.debug('[FAB] onClickCapture — didMove=', didMove.current);
     if (didMove.current) e.stopPropagation();
   }, []);
 
