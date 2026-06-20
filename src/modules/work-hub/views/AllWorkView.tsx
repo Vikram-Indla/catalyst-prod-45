@@ -77,7 +77,7 @@ const mockAssignees = [
 
 const mockTypes = [
   { id: 'epic', name: 'Epic', icon: Zap, color: 'text-[var(--sem-warning)]' },
-  { id: 'business-gap', name: 'Business Gap', icon: AlertCircle, color: 'text-[var(--sem-warning)]' },
+  { id: 'business-gap', name: 'Business Gap', icon: AlertCircle, color: 'text-[var(--ds-text-discovery,#6554C0)]' },
   { id: 'change-request', name: 'Change Request', icon: CheckSquare, color: 'text-[var(--sem-info)]' },
   { id: 'production-incident', name: 'Production Incident', icon: AlertCircle, color: 'text-[var(--sem-danger)]' },
   { id: 'backend', name: 'Backend', icon: FileText, color: 'text-muted-foreground' },

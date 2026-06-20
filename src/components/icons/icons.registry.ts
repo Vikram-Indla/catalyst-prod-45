@@ -259,7 +259,7 @@ export const WORK_TYPE_REGISTRY: Record<WorkItemType, WorkTypeMeta> = {
   'feature':             { id: 'feature',             label: 'Feature',             color: 'var(--ds-link, #1868DB)',           light: featureLight,             dark: featureLight },
   'change-request':      { id: 'change-request',      label: 'Change Request',      color: 'var(--ds-link, #1868DB)',           light: changeRequestLight,       dark: changeRequestLight },
   'production-incident': { id: 'production-incident', label: 'Production Incident', color: 'var(--ds-text-warning, #E06C00)',   light: productionIncidentLight,  dark: productionIncidentLight },
-  'business-gap':        { id: 'business-gap',        label: 'Business Gap',        color: 'var(--ds-text-danger, #C9372C)',    light: businessGapLight,         dark: businessGapLight },
+  'business-gap':        { id: 'business-gap',        label: 'Business Gap',        color: 'var(--ds-text-discovery, #6554C0)', light: businessGapLight,         dark: businessGapLight },
   'api-requirement':     { id: 'api-requirement',     label: 'API Requirement',     color: 'var(--ds-text-success, #6A9A23)',   light: apiRequirementLight,      dark: apiRequirementLight },
   'frontend':            { id: 'frontend',            label: 'Frontend',            color: 'var(--ds-link, #1868DB)',           light: frontendLight,            dark: frontendLight },
   'backend':             { id: 'backend',             label: 'Backend',             color: 'var(--ds-link, #1868DB)',           light: backendLight,             dark: backendLight },

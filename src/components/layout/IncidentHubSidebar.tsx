@@ -18,6 +18,7 @@ import {
   NavDashboardIcon,
   NavKanbanIcon,
 } from '@/lib/nav-icons';
+import { HUB_ICON_REGISTRY } from '@/components/icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface IncidentHubSidebarProps {
@@ -71,8 +72,8 @@ const sections: SidebarSection[] = [
 export function IncidentHubSidebar({ expanded, onToggle, className }: IncidentHubSidebarProps) {
   const config: SidebarConfig = {
     badge: 'IH',
-    // Block A rule 7 (2026-05-01): canonical spaced casing.
     label: 'Incidents',
+    badgeHubIconUrl: HUB_ICON_REGISTRY['incident'],
     sections,
   };
 

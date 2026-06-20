@@ -165,6 +165,8 @@ export interface SidebarConfig {
   badgeProjectKey?: string | null;
   badgeProjectColor?: string | null;
   badgeProjectAvatarUrl?: string | null;
+  /** Hub-level icon URL (from HUB_ICON_REGISTRY) shown in header instead of text badge */
+  badgeHubIconUrl?: string;
 }
 
 interface SidebarBaseProps {
@@ -406,6 +408,9 @@ export function SidebarBase({
                     size="small"
                   />
                 )}
+                {!config.badgeProjectKey && config.badgeHubIconUrl && (
+                  <img src={config.badgeHubIconUrl} alt={config.label} style={{ width: 20, height: 20, display: 'block', flexShrink: 0 }} />
+                )}
                 <span
                   className="truncate"
                   style={{
@@ -438,8 +443,10 @@ export function SidebarBase({
                   color={config.badgeProjectColor}
                   size="medium"
                 />
+              ) : config.badgeHubIconUrl ? (
+                <img src={config.badgeHubIconUrl} alt={config.label} style={{ width: 24, height: 24, display: 'block' }} />
               ) : null}
-              {config.badge ? (
+              {config.badge && !config.badgeHubIconUrl ? (
                 <span
                   style={{
                     fontFamily: 'var(--ds-font-family-code, monospace)',

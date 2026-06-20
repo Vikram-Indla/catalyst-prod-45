@@ -189,45 +189,48 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
 
       <div className="cc-conv-head__spacer" />
 
-      {/* Member stack — always a single icon button, no "View members" text fallback (finding 19) */}
-      <button
-        type="button"
-        className="cc-memberstack"
-        aria-label={`${members.length} members — open roster`}
-        onClick={() => setRosterOpen(true)}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          padding: 0,
-          cursor: 'pointer',
-          display: 'inline-flex',
-          alignItems: 'center',
-        }}
-      >
-        {visible.length > 0 ? (
-          <>
-            {visible.map(m => (
-              <Avatar
-                key={m.id}
-                name={m.name}
-                seed={m.id}
-                color={colorFor(m.id)}
-                presence={PRESENCE_MAP[m.presence] ?? null}
-              />
-            ))}
-            {overflow > 0 ? <div className="cc-memberstack__plus">+{overflow}</div> : null}
-          </>
-        ) : (
-          <span className="cc-iconbtn" style={{ display: 'inline-flex', alignItems: 'center', padding: 4 }}>
-            <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </span>
-        )}
-      </button>
+      {/* Member stack — hidden for 1:1 DMs (redundant: always just two people).
+          Shown for channels/tickets where 3+ members justify the button. */}
+      {!isDm && (
+        <button
+          type="button"
+          className="cc-memberstack"
+          aria-label={`${members.length} members — open roster`}
+          onClick={() => setRosterOpen(true)}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+          }}
+        >
+          {visible.length > 0 ? (
+            <>
+              {visible.map(m => (
+                <Avatar
+                  key={m.id}
+                  name={m.name}
+                  seed={m.id}
+                  color={colorFor(m.id)}
+                  presence={PRESENCE_MAP[m.presence] ?? null}
+                />
+              ))}
+              {overflow > 0 ? <div className="cc-memberstack__plus">+{overflow}</div> : null}
+            </>
+          ) : (
+            <span className="cc-iconbtn" style={{ display: 'inline-flex', alignItems: 'center', padding: 4 }}>
+              <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </span>
+          )}
+        </button>
+      )}
 
       {/* Ask Caty REMOVED from header (2026-06-08 design-critique).
           Slack/Jira/ServiceNow have no persistent AI CTA in channel headers.

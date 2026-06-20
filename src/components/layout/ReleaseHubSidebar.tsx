@@ -20,7 +20,8 @@ import {
   CalendarOff,
   Settings,
 } from '@/lib/atlaskit-icons';
-import { NavKanbanIcon, NavDashboardIcon, NavWorkIcon, NavTimelineIcon, NavFiltersIcon } from '@/lib/nav-icons';
+import { HUB_ICON_REGISTRY } from '@/components/icons';
+import { NavKanbanIcon, NavDashboardIcon, NavWorkIcon, NavTimelineIcon } from '@/lib/nav-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface ReleaseHubSidebarProps {
@@ -43,7 +44,6 @@ export const buildReleaseHubSections = (pendingSignoffs: number): SidebarSection
       { id: 'backlog', title: 'Releases', path: '/release-hub/releases', icon: List, exact: true },
       { id: 'release-kanban', title: 'Board', path: '/release-hub/release-kanban', icon: NavKanbanIcon, exact: false },
       { id: 'work', title: 'Work', path: '/release-hub/work', icon: NavWorkIcon, exact: false },
-      { id: 'filters', title: 'Filters', path: '/release-hub/filters', icon: NavFiltersIcon, exact: false },
       { id: 'timeline', title: 'Timeline', path: '/release-hub/timeline', icon: NavTimelineIcon, exact: false },
       { id: 'calendar', title: 'Calendar', path: '/release-hub/calendar', icon: Calendar, exact: true },
     ],
@@ -64,6 +64,7 @@ export function ReleaseHubSidebar({ expanded, onToggle, className, pendingSignof
   const config: SidebarConfig = {
     badge: 'RO',
     label: 'Release Operations',
+    badgeHubIconUrl: HUB_ICON_REGISTRY['release'],
     sections: buildReleaseHubSections(pendingSignoffs),
     footerItem: {
       id: 'settings',

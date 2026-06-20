@@ -3656,7 +3656,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               { id: 'QA Bug',              label: 'QA Bug',              icon: <JiraIssueTypeIcon type="Bug"     size={14} /> },
               { id: 'Production Incident', label: 'Production Incident', icon: <JiraIssueTypeIcon type="Bug"     size={14} /> },
               { id: 'Change Request',      label: 'Change Request',      icon: <JiraIssueTypeIcon type="Task"    size={14} /> },
-              { id: 'Business Gap',        label: 'Business Gap',        icon: <JiraIssueTypeIcon type="Story"   size={14} /> },
+              { id: 'Business Gap',        label: 'Business Gap',        icon: <JiraIssueTypeIcon type="Business Gap" size={14} /> },
               { id: 'API Requirement',     label: 'API Requirement',     icon: <JiraIssueTypeIcon type="Task"    size={14} /> },
             ]}
             sprintReleases={epics.map<SprintReleaseOption>((e) => ({ id: e.id, label: e.epic_key ? `${e.epic_key} — ${e.name}` : e.name }))}

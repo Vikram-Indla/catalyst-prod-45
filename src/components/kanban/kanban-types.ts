@@ -84,7 +84,7 @@ export const CARD_COLOR_BY_TYPE: Record<string, string> = {
   'qa bug':         'var(--ds-text-danger, #E5493A)',
   'production incident': 'var(--ds-background-danger-bold, #FF5630)',
   incident:         'var(--ds-background-danger-bold, #FF5630)',
-  'business gap':   'var(--ds-background-warning, #FFAB00)',
+  'business gap':   'var(--ds-background-discovery, #6554C0)',
   'business request': 'var(--ds-background-warning, #FFAB00)',
   'change request': 'var(--ds-background-warning, #FFAB00)',
 };

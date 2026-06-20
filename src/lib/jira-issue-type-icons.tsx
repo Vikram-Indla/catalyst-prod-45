@@ -16,7 +16,7 @@
  *   API Requirement   → #2684FF  Blue     → task SVG
  *   Backend           → #2684FF  Blue     → subtask SVG       [SUB-TASK]
  *   Bug / QA Bug      → #FF5630  Red      → bug SVG (filled circle)
- *   Business Gap      → #FF5630  Red      → incident SVG
+ *   Business Gap      → #6554C0  Purple   → delta (Δ) SVG
  *   Change Request    → #FFAB00  Amber    → changes SVG (arrows)
  *   Epic              → #6554C0  Purple   → epic SVG (lightning bolt)
  *   Feature           → #36B37E  Green    → new-feature SVG (plus)
@@ -175,11 +175,11 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
     iconFile: 'subtask',
   },
 
-  // ── Business Gap: uses incident (closest match) ──
+  // ── Business Gap: purple delta (Δ = gap/difference) ──
   'business gap': {
     label: 'Business Gap',
-    color: 'var(--ds-text-danger, #FF5630)',
-    iconFile: 'incident',
+    color: 'var(--ds-text-discovery, #6554C0)',
+    iconFile: 'business-gap',
   },
 
   // ── API Requirement: uses task ──

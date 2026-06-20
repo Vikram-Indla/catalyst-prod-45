@@ -25,7 +25,7 @@ const TYPE_BAR_COLORS: Record<string, string> = {
   'change request': '#FFAB00', question: '#6554C0', problem: '#FF5630',
   defect: '#FF5630', issue: '#2684FF', 'qa bug': '#FF5630',
   backend: '#2684FF', frontend: '#2684FF', integration: '#2684FF',
-  figma: '#2684FF', 'business request': '#36B37E', 'business gap': '#FF5630',
+  figma: '#2684FF', 'business request': '#36B37E', 'business gap': '#6554C0',
 };
 
 function getBarColor(type: string): string {

@@ -28,7 +28,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useProjectFavorites } from '@/hooks/useProjectHub';
 import { token } from '@atlaskit/tokens';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
-import { getProductAvatarUrl } from '@/components/icons';
+import { getProductAvatarUrl, HUB_ICON_REGISTRY } from '@/components/icons';
 
 // ─── localStorage keys ────────────────────────────────────────────────────────
 const RECENT_KEY = 'catalyst.switcher-recent';
@@ -633,7 +633,8 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
       );
     }
     if (mode === 'tasks') {
-      return <TaskIcon size={size} label="" primaryColor="var(--ds-icon-accent-purple, #8270DB)" />;
+      const px = size === 'small' ? 20 : 24;
+      return <img src={HUB_ICON_REGISTRY['task']} alt="Tasks" style={{ width: px, height: px, display: 'block', flexShrink: 0 }} />;
     }
     return null;
   };

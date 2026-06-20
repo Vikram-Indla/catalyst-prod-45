@@ -189,12 +189,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Successfully logged in - set the session
       if (data.session) {
-        await supabase.auth.setSession({
+        // Set complete session object
+        const setErr = await supabase.auth.setSession({
           access_token: data.session.access_token,
           refresh_token: data.session.refresh_token,
+          expires_in: data.session.expires_in,
+          expires_at: data.session.expires_at,
+          token_type: data.session.token_type,
+          type: data.session.type,
         });
+
+        if (setErr?.error) {
+          console.error('setSession error:', setErr.error);
+          return { error: setErr.error };
+        }
+
+        // Verify session was actually set
+        const { data: session } = await supabase.auth.getSession();
+        if (!session?.session) {
+          console.error('Session not persisted after setSession');
+          return { error: { message: 'Failed to establish session' } };
+        }
       }
-      
+
       return { error: null };
     } catch (error: any) {
       return { error };
