@@ -14,11 +14,9 @@ import { ProtectedRoute } from "../components/ProtectedRoute";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { RouteRoleGuard } from "../components/RouteRoleGuard";
 
-const ModuleAccessAdminPage = lazy(() => import("../pages/admin/ModuleAccessAdminPage"));
 const GovernanceSettings = lazy(() => import("../pages/admin/GovernanceSettings"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
-const ComponentsAdminPage = lazy(() => import("../pages/admin/components/ComponentsAdminPage"));
 const RoutingTaxonomyPageLazy = lazy(() => import("../pages/admin/RoutingTaxonomyPage"));
 const WorkListPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 
@@ -195,7 +193,7 @@ const ProductHubTimelinePage = lazy(() => import("../pages/product-hub/timeline/
 const ProductTimelineDetailPage = lazy(() => import("../pages/product-hub/timeline/ProductTimelineDetailPage"));
 const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPage"));
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
-const UserNotificationSettingsPage = lazy(() => import("../pages/UserNotificationSettingsPage"));
+// UserNotificationSettingsPage DEPRECATED 2026-06-20 — route removed
 const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
 const TasksDetailPage = lazy(() => import("../modules/tasks/pages/TasksDetailPage"));
 const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
@@ -285,27 +283,16 @@ const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({
 // AdminGuard was used by /admin/v2 shell (deprecated 2026-05-09) — removed
 
 const UsersManagement = lazy(() => import("../pages/admin/UsersManagement"));
-const RolesPermissions = lazy(() => import("../pages/admin/RolesPermissions"));
-const Departments = lazy(() => import("../pages/admin/Departments"));
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
-const ResourceAssignmentsPage = lazy(() => import("../pages/admin/ResourceAssignments"));
-// JiraUserSyncPage DEPRECATED 2026-05-19 — superseded by the canonical
-// /admin/workhub/user-mapping page. Route entry above is a redirect.
-const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
-const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
-const UserAccessPage = lazy(() => import("../pages/admin/UserAccessPage"));
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
-// Admin v2 deprecated 2026-05-09 — all /admin/v2/* redirect to /admin/overview
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
-const WorkHubUserMappingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubUserMappingPage"));
 const WorkHubSyncLogs = lazy(() => import("../modules/workhub/admin/pages/WorkHubSyncLogsPage"));
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 // Incident admin routes deleted 2026-05-09 (Vikram decision: delete all 7)
-const NotificationTriggers = lazy(() => import("../pages/admin/NotificationTriggers"));
 
 const ValueStreamView = lazy(() => import("../pages/ValueStreamView"));
 const UserProfile = lazy(() => import("../pages/UserProfile"));
@@ -969,40 +956,39 @@ export default function FullAppRoutes() {
 
 
         <Route path="/admin" element={<S><AdminLayout /></S>}>
-          <Route index element={<Navigate to="/admin/overview" replace />} />
-          <Route path="overview" element={<S><AdminOverview /></S>} />
-          <Route path="user-access" element={<S><UserAccessPage /></S>} />
+          <Route index element={<Navigate to="/admin/access" replace />} />
+          {/* DEPRECATED 2026-06-20 — removed pages redirect to /admin/access */}
+          <Route path="overview" element={<Navigate to="/admin/access" replace />} />
+          <Route path="user-access" element={<Navigate to="/admin/access" replace />} />
+          <Route path="roles-permissions" element={<Navigate to="/admin/access" replace />} />
+          <Route path="feature-flags" element={<Navigate to="/admin/access" replace />} />
+          <Route path="resource-assignments" element={<Navigate to="/admin/access" replace />} />
+          <Route path="settings/notifications" element={<Navigate to="/admin/access" replace />} />
+          <Route path="notification-triggers" element={<Navigate to="/admin/access" replace />} />
+          <Route path="components" element={<Navigate to="/admin/access" replace />} />
+          <Route path="departments" element={<Navigate to="/admin/access" replace />} />
+          <Route path="business-owners" element={<Navigate to="/admin/access" replace />} />
           <Route path="access" element={<S><AdminAccessPage /></S>} />
           <Route path="users" element={<S><UsersManagement /></S>} />
-          <Route path="roles-permissions" element={<S><RolesPermissions /></S>} />
-          <Route path="departments" element={<S><Departments /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
-          <Route path="resource-assignments" element={<S><ResourceAssignmentsPage /></S>} />
-          {/* DEPRECATED 2026-05-19 — superseded by /admin/workhub/user-mapping.
-              Old URL kept temporarily as a redirect. Remove after 30 days. */}
-          <Route path="jira-user-sync" element={<Navigate to="/admin/workhub/user-mapping" replace />} />
-          <Route path="business-owners" element={<S><BusinessOwnersAdmin /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
           <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub/jira-connection" element={<S><WorkHubAdminPage /></S>} />
           <Route path="workhub/hierarchy-mapping" element={<S><WorkHubHierarchyPage /></S>} />
-          <Route path="workhub/user-mapping" element={<S><WorkHubUserMappingPage /></S>} />
-          {/* DEPRECATED 2026-05-19 — these two were duplicate sync surfaces;
-              all sync functionality lives on /admin/workhub/sync-logs now. */}
+          {/* DEPRECATED 2026-06-20 — user-mapping removed */}
+          <Route path="workhub/user-mapping" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
+          {/* DEPRECATED 2026-05-19 — jira-user-sync superseded */}
+          <Route path="jira-user-sync" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
+          {/* DEPRECATED 2026-05-19 — merged into sync-logs */}
           <Route path="workhub/jira-sync-control" element={<Navigate to="/admin/workhub/sync-logs" replace />} />
           <Route path="workhub/activity-sync" element={<Navigate to="/admin/workhub/sync-logs" replace />} />
           <Route path="workhub/sync-logs" element={<S><WorkHubSyncLogs /></S>} />
           <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
-          <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
-          <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
-          <Route path="feature-flags" element={<S><ModuleAccessAdminPage /></S>} />
           <Route path="ai-governance/translations" element={<S><AiTranslationsAuditPage /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />
           <Route path="storybook" element={<S><AdminStorybookPage /></S>} />
-          {/* Design system pocket — preflight 2026-05-17 consolidation. */}
-          <Route path="components" element={<S><ComponentsAdminPage /></S>} />
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
           <Route path="icons" element={<S><AdminIconsPage /></S>} />
           <Route path="avatars" element={<S><AdminAvatarsPage /></S>} />
@@ -1015,7 +1001,7 @@ export default function FullAppRoutes() {
         <Route path="/ads-validator" element={<Navigate to="/admin/governance" replace />} />
 
         {/* Admin v2 — deprecated 2026-05-09. Redirects to /admin/* canonical shell. */}
-        <Route path="/admin/v2/*" element={<Navigate to="/admin/overview" replace />} />
+        <Route path="/admin/v2/*" element={<Navigate to="/admin/access" replace />} />
 
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />
         <Route path="/profile" element={<S><UserProfile /></S>} />
