@@ -42,6 +42,7 @@ import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
 import Toggle from '@atlaskit/toggle';
 import Spinner from '@atlaskit/spinner';
+import Tooltip from '@atlaskit/tooltip';
 import Modal, {
   ModalBody,
   ModalFooter,
@@ -333,9 +334,12 @@ function GroupSection({
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
         <div>
-          <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: 0 }}>{meta.label}</h2>
-          <p style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, color: T.subtlest, margin: '4px 0 0' }}>{meta.key}</p>
-          {meta.description && <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0' }}>{meta.description}</p>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: 0 }}>{meta.label}</h2>
+            <Tooltip content={meta.description ? `${meta.key} — ${meta.description}` : meta.key} position="right">
+              <span tabIndex={0} aria-label="Field key" style={{ color: T.subtlest, cursor: 'default', fontSize: 13, lineHeight: '1', display: 'inline-flex', alignItems: 'center', userSelect: 'none' }}>ℹ</span>
+            </Tooltip>
+          </div>
         </div>
         {canManage && <Button appearance="default" spacing="compact" onClick={onAdd}>Add option</Button>}
       </div>
