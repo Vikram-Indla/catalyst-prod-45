@@ -20,8 +20,17 @@ import type { ChatConversation, ChatPresence } from "@/types/chat";
 import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
 import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
-import { DockDirectory } from "./DockDirectory";
 import { DockConversationPane } from "./DockConversationPane";
+
+// Kick off DockDirectory chunk download immediately when ChatDock module evaluates
+// (at app-shell mount, before the user touches the FAB). Splitting DockDirectory
+// into its own async chunk prevents the @atlaskit/avatar + @atlaskit/modal-dialog
+// parse cost from blocking the main thread on first FAB click — that parse now
+// happens in the background while the user is looking at the idle FAB.
+const _dockDirPreload = import('./DockDirectory');
+const DockDirectoryLazy = React.lazy(() =>
+  _dockDirPreload.then((m) => ({ default: m.DockDirectory }))
+);
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
 
@@ -311,12 +320,14 @@ export function ChatDock({
                   onBack={() => onFocusDirectory?.()}
                 />
               ) : (
-                <DockDirectory
-                  conversations={listConversations}
-                  activeId={activeId}
-                  onSelectConversation={onSelect}
-                  focusTick={dirFocusTick}
-                />
+                <React.Suspense fallback={<div className="cc-dir__loading" />}>
+                  <DockDirectoryLazy
+                    conversations={listConversations}
+                    activeId={activeId}
+                    onSelectConversation={onSelect}
+                    focusTick={dirFocusTick}
+                  />
+                </React.Suspense>
               )}
             </div>
 
