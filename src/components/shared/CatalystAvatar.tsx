@@ -70,6 +70,16 @@ export function colorForName(name: string): string {
   return PALETTE[h % PALETTE.length];
 }
 
+// CLAUDE.md §19 — external third-party avatar hosts are banned platform-wide.
+// DB rows (profiles.avatar_url) carry Gravatar / Atlassian-CDN URLs synced from
+// Jira; those must be ignored so the deterministic initials fallback renders
+// instead. First-party (local /src/assets, Supabase storage) URLs pass through.
+const BANNED_AVATAR_SRC = /gravatar\.com|atl-paas\.net|atlassian\.(?:net|com)\/.*avatar/i;
+
+export function isBannedAvatarSrc(src?: string | null): boolean {
+  return !!src && BANNED_AVATAR_SRC.test(src);
+}
+
 export default function CatalystAvatar({
   name,
   src,
@@ -79,12 +89,14 @@ export default function CatalystAvatar({
   testId,
   borderColor,
 }: Props) {
-  // Path 1: real image URL → Atlaskit Avatar (handles presence, fallback on load error)
-  if (src) {
+  // Path 1: real image URL → Atlaskit Avatar (handles presence, fallback on load error).
+  // Banned external hosts (§19) are dropped so initials render instead.
+  const safeSrc = isBannedAvatarSrc(src) ? null : src;
+  if (safeSrc) {
     return (
       <Avatar
         name={name ?? ''}
-        src={src}
+        src={safeSrc}
         size={size}
         appearance={appearance}
         presence={presence}

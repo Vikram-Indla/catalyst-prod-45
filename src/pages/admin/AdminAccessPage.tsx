@@ -1249,7 +1249,7 @@ function PeopleTableSkeleton() {
   return (
     <>
       <style>{`@keyframes cp-skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }} data-testid="people-skeleton" data-columns={COLS}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, tableLayout: 'fixed' }} data-testid="people-skeleton" data-columns={COLS}>
         <tbody>
           {Array.from({ length: 8 }).map((_, rowIdx) => (
             <tr key={rowIdx} style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
@@ -1399,24 +1399,24 @@ function PeopleTab() {
       {isLoading ? (
         <PeopleTableSkeleton />
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, tableLayout: 'fixed' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--ds-border, #EBECF0)' }}>
               {[
-                { label: 'Name' },
-                { label: 'Email' },
-                { label: 'Role', width: 140 },
-                { label: 'Department', width: 130 },
-                { label: 'Modules', width: 160 },
-                { label: 'Status', width: 116 },
+                { label: 'Name', width: 180 },
+                { label: 'Email', width: 220 },
+                { label: 'Role', width: 148 },
+                { label: 'Department', width: 120 },
+                { label: 'Modules', width: 144 },
+                { label: 'Status', width: 128 },
                 { label: 'Last active', width: 96 },
-                { label: 'Source', width: 110 },
+                { label: 'Source', width: 100 },
                 { label: '', width: 44 },
               ].map((h, i) => (
                 <th key={i} style={{
                   textAlign: 'left', padding: '8px 12px',
                   fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
-                  fontSize: 12, width: h.width,
+                  fontSize: 12, width: h.width, overflow: 'hidden',
                 }}>
                   {h.label}
                 </th>
@@ -1441,48 +1441,48 @@ function PeopleTab() {
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
-                  <td style={{ padding: '8px 16px', fontWeight: 500 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <td style={{ padding: '8px 16px', fontWeight: 500, overflow: 'hidden' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
                       <CatalystAvatar
                         name={u.full_name || u.email || '?'}
                         src={u.avatar_url}
                         size="small"
                       />
-                      {u.full_name || '—'}
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name || '—'}</span>
                     </div>
                   </td>
-                  <td style={{ padding: '8px 16px', color: 'var(--ds-text-subtle)' }}>{u.email || '—'}</td>
-                  <td style={{ padding: '8px 16px' }}>
+                  <td style={{ padding: '8px 16px', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email || '—'}</td>
+                  <td style={{ padding: '8px 16px', overflow: 'hidden' }}>
                     {u.role ? (
                       <Lozenge appearance={ROLE_APPEARANCE[u.role] || 'default'}>
                         {u.role.replace(/_/g, ' ')}
                       </Lozenge>
                     ) : '—'}
                   </td>
-                  <td style={{ padding: '8px 16px', fontSize: 12, color: 'var(--ds-text-subtle)' }}>
+                  <td style={{ padding: '8px 16px', fontSize: 12, color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {u.department_name ?? '—'}
                   </td>
-                  <td style={{ padding: '8px 16px' }}>
+                  <td style={{ padding: '8px 16px', overflow: 'hidden' }}>
                     {modKeys.length === 0 ? (
                       <span style={{ color: 'var(--ds-text-disabled, #A5ADBA)' }}>—</span>
                     ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }} title={modKeys.map(k => MODULE_ITEMS.find(m => m.key === k)?.label).join(', ')}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'nowrap', overflow: 'hidden' }} title={modKeys.map(k => MODULE_ITEMS.find(m => m.key === k)?.label).join(', ')}>
                         {modKeys.slice(0, 6).map(k => (
-                          <img key={k} src={HUB_ICON_REGISTRY[hubKeyFor(k)]} alt="" width={18} height={18} style={{ display: 'block' }} />
+                          <img key={k} src={HUB_ICON_REGISTRY[hubKeyFor(k)]} alt="" width={18} height={18} style={{ display: 'block', flexShrink: 0 }} />
                         ))}
                         {modKeys.length > 6 && (
-                          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle)', fontWeight: 500 }}>+{modKeys.length - 6}</span>
+                          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle)', fontWeight: 500, flexShrink: 0 }}>+{modKeys.length - 6}</span>
                         )}
                       </div>
                     )}
                   </td>
-                  <td style={{ padding: '8px 16px' }}>
+                  <td style={{ padding: '8px 16px', overflow: 'hidden' }}>
                     <StatusPill state={state} />
                   </td>
-                  <td style={{ padding: '8px 16px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>
+                  <td style={{ padding: '8px 16px', color: 'var(--ds-text-subtle)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {relativeTime(u.last_login_at)}
                   </td>
-                  <td style={{ padding: '8px 16px' }}>
+                  <td style={{ padding: '8px 16px', overflow: 'hidden' }}>
                     {(() => {
                       const s = userSource(u.email);
                       return (
