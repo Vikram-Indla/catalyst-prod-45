@@ -82,6 +82,15 @@ const SECTIONS: { key: SectionKey; title: string }[] = [
 ];
 
 
+function LockGlyph() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+    </svg>
+  );
+}
+
 function HubRowLabel({ hub }: { hub: HubEntry }) {
   return (
     <span
@@ -139,9 +148,15 @@ export function HubSwitcher() {
     [navigate, setSidebarHidden, setSidebarExpanded, setSidebarPinned],
   );
 
+  // A hub is accessible when the user's role(s)/override grant it (or while
+  // access is still loading, to avoid a flash). Inaccessible hubs are still
+  // SHOWN (grayed-out) so users always see the full Catalyst catalogue.
+  const isAccessible = (hub: HubEntry) => accessLoading || canViewInNav(hub.moduleKey);
+
   const shortcutTargets = useMemo(
-    () => HUBS.map((h) => ({ key: h.shortcut, hubKey: h.key, href: h.href })),
-    [],
+    () => HUBS.filter((h) => accessLoading || canViewInNav(h.moduleKey)).map((h) => ({ key: h.shortcut, hubKey: h.key, href: h.href })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [accessLoading, canViewInNav],
   );
 
   useHubShortcuts({
@@ -166,12 +181,10 @@ export function HubSwitcher() {
   const matches = (hub: HubEntry) =>
     !normalisedQuery || hub.label.toLowerCase().includes(normalisedQuery);
 
-  // Role-based visibility: hide hubs the user's role(s) cannot view.
-  // While access is loading, show all to avoid a reveal-flash; filter once resolved.
-  const canSee = (hub: HubEntry) => accessLoading || canViewInNav(hub.moduleKey);
-
+  // Show ALL hubs (subject only to the search filter) — the full module
+  // catalogue is always visible; inaccessible hubs render grayed-out below.
   const hubsBySection = (key: SectionKey) =>
-    HUBS.filter((h) => h.section === key && matches(h) && canSee(h));
+    HUBS.filter((h) => h.section === key && matches(h));
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -267,27 +280,62 @@ export function HubSwitcher() {
             if (rows.length === 0) return null;
             return (
               <Section key={key} title={title}>
-                {rows.map((hub) => (
-                  <LinkItem
-                    key={hub.key}
-                    href={hub.href}
-                    isSelected={isActive(hub.href)}
-                    iconBefore={
-                      <img
-                        src={HUB_ICON_REGISTRY[hub.key]}
-                        alt={hub.label}
+                {rows.map((hub) => {
+                  // Inaccessible hub: shown but grayed-out, non-navigable, locked.
+                  if (!isAccessible(hub)) {
+                    return (
+                      <div
+                        key={hub.key}
+                        role="menuitem"
+                        aria-disabled="true"
+                        data-hub-locked={hub.key}
+                        title="You don't have access to this module — ask an admin"
                         style={{
-                          width: 32,
-                          height: 32,
-                          display: 'block',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '8px 12px',
+                          cursor: 'not-allowed',
+                          opacity: 0.55,
+                          userSelect: 'none',
                         }}
-                      />
-                    }
-                    onClick={(e) => handleNavClick(e, hub)}
-                  >
-                    <HubRowLabel hub={hub} />
-                  </LinkItem>
-                ))}
+                      >
+                        <img
+                          src={HUB_ICON_REGISTRY[hub.key]}
+                          alt={hub.label}
+                          style={{ width: 32, height: 32, display: 'block', filter: 'grayscale(1)' }}
+                        />
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
+                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{hub.label}</span>
+                          <span data-hub-locked-icon={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)', display: 'inline-flex' }}>
+                            <LockGlyph />
+                          </span>
+                        </span>
+                      </div>
+                    );
+                  }
+                  return (
+                    <LinkItem
+                      key={hub.key}
+                      href={hub.href}
+                      isSelected={isActive(hub.href)}
+                      iconBefore={
+                        <img
+                          src={HUB_ICON_REGISTRY[hub.key]}
+                          alt={hub.label}
+                          style={{
+                            width: 32,
+                            height: 32,
+                            display: 'block',
+                          }}
+                        />
+                      }
+                      onClick={(e) => handleNavClick(e, hub)}
+                    >
+                      <HubRowLabel hub={hub} />
+                    </LinkItem>
+                  );
+                })}
               </Section>
             );
           })}
