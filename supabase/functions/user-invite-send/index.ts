@@ -80,7 +80,9 @@ Deno.serve(async (req) => {
     // For invites only, block already-registered users.
     if (purpose === 'invite') {
       const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
-      if (users?.some((u) => u.email === email)) return err('This user already has an account. Use "Send reset" to send them a password reset link instead.', 409);
+      // Return HTTP 200 so the client always reads the actionable error body
+      // (non-2xx responses sometimes get the body swallowed by the SDK).
+      if (users?.some((u) => u.email === email)) return ok(false, 'This user already has an account. Use "Send reset" to send them a password reset link instead.');
     }
 
     // Cryptographically-random single-use token; only the SHA-256 hash is stored.
@@ -181,6 +183,15 @@ Deno.serve(async (req) => {
   }
 });
 
+// Business logic errors (HTTP 200) so the client reads { ok, error } from res.data
+function ok(success: boolean, error?: string) {
+  return new Response(JSON.stringify({ ok: success, error }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+  });
+}
+
+// Auth/permission errors stay non-2xx
 function err(message: string, status: number) {
   return new Response(JSON.stringify({ ok: false, error: message }), {
     status, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },

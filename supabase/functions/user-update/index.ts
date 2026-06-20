@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
         .eq('user_id', user_id);
       if (roleErr) {
         console.error('[user-update] user_roles update:', roleErr);
-        return err('Failed to update user role', 500);
+        return ok(false, 'Failed to update user role');
       }
       changes.role = role;
     }
@@ -77,13 +77,18 @@ Deno.serve(async (req) => {
     if (normEmail) profileUpdates.email = normEmail;
 
     if (Object.keys(profileUpdates).length > 0) {
-      const { error: profileErr } = await supabaseAdmin
+      // Use .select('id') so we can detect 0-row updates (missing profile).
+      const { data: updatedRows, error: profileErr } = await supabaseAdmin
         .from('profiles')
         .update(profileUpdates)
-        .eq('id', user_id);
+        .eq('id', user_id)
+        .select('id');
       if (profileErr) {
         console.error('[user-update] profiles update:', profileErr);
-        return err('Failed to update user profile', 500);
+        return ok(false, 'Failed to update user profile');
+      }
+      if (!updatedRows || updatedRows.length === 0) {
+        return ok(false, 'User profile not found. The user may need to be re-invited to create their profile.');
       }
       Object.assign(changes, profileUpdates);
     }
@@ -110,10 +115,19 @@ Deno.serve(async (req) => {
     );
   } catch (e) {
     console.error('[user-update]', e);
-    return err(e instanceof Error ? e.message : 'Unknown error', 500);
+    return ok(false, e instanceof Error ? e.message : 'Unknown error');
   }
 });
 
+// Business logic errors return HTTP 200 so the client can read { ok, error }
+function ok(success: boolean, error?: string) {
+  return new Response(JSON.stringify({ ok: success, error }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+  });
+}
+
+// Auth/permission errors stay non-2xx
 function err(message: string, status: number) {
   return new Response(JSON.stringify({ ok: false, error: message }), {
     status,
