@@ -612,11 +612,13 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
   const [newPw, setNewPw] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
   const [showPw, setShowPw] = useState(false);
-  const [pwSaving, setPwSaving] = useState(false);
+
+  // Staged changes — committed only when "Save changes" is clicked
+  const [initialRole, setInitialRole] = useState<string | null>(null);
+  const [stagedPassword, setStagedPassword] = useState<string | null>(null);
 
   // Reset / suspend state
   const [resetSending, setResetSending] = useState(false);
-  const [suspending, setSuspending] = useState(false);
   const [localApprovalStatus, setLocalApprovalStatus] = useState<string | null>(null);
 
   // Generate-setup-link state
@@ -659,6 +661,10 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
     setPwOpen(false);
     setNewPw('');
     setConfirmPw('');
+    setStagedPassword(null);
+    const foundRole = ROLE_OPTIONS.find(r => r.value === user.role);
+    const resolvedRole = foundRole?.value ?? user.role ?? null;
+    setInitialRole(resolvedRole);
     setLocalApprovalStatus(user.approval_status ?? null);
   }, [user.id]);
 
@@ -674,7 +680,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
   const canDelete = !isSelf && !isSuperAdmin;
   const canModify = !isSelf && !isSuperAdmin;
   const isActive = !localApprovalStatus || localApprovalStatus === 'APPROVED';
-  const busyAny = saving || deleting || pwSaving || resetSending || suspending || genLoading;
+  const busyAny = saving || deleting || resetSending || genLoading;
   // Placeholder rows (never registered, +jira@catalyst.internal) cannot be invited
   // until given a real address — gate the Generate button on a real email.
   const isPlaceholderEmail = (email || '').includes('+jira@catalyst.internal');
@@ -707,18 +713,35 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await supabase.functions.invoke('user-update', {
-        body: {
-          user_id: user.id,
-          role: roleOpt?.value,
-          module_access: moduleAccess,
-          full_name: [firstName.trim(), lastName.trim()].filter(Boolean).join(' '),
-          email: email.trim(),
-        },
-      });
+      const body: Record<string, unknown> = {
+        user_id: user.id,
+        module_access: moduleAccess,
+        full_name: [firstName.trim(), lastName.trim()].filter(Boolean).join(' '),
+        email: email.trim(),
+      };
+      // Only send role if it changed — prevents "Failed to update user role" for roles
+      // that already match the DB value or that come from a different role table.
+      if (roleOpt?.value !== initialRole) {
+        body.role = roleOpt?.value;
+      }
+      // Commit staged suspension change if it differs from persisted state
+      if (localApprovalStatus !== (user.approval_status ?? null)) {
+        body.approval_status = localApprovalStatus;
+      }
+      const res = await supabase.functions.invoke('user-update', { body });
       if (res.error) throw new Error(res.error.message);
       const data = res.data as { ok: boolean; error?: string };
       if (!data?.ok) throw new Error(data?.error || 'Update failed');
+      // Commit staged password after profile update succeeds
+      if (stagedPassword) {
+        const pwRes = await supabase.functions.invoke('admin-set-password', {
+          body: { userId: user.id, newPassword: stagedPassword },
+        });
+        if (pwRes.error) throw new Error(pwRes.error.message);
+        const pwData = pwRes.data as { ok: boolean; error?: string };
+        if (!pwData?.ok) throw new Error(pwData?.error || 'Failed to set password');
+        setStagedPassword(null);
+      }
       catalystToast.success('User updated successfully');
       qc.invalidateQueries({ queryKey: ['admin-access-people'] });
       onSaved();
@@ -729,24 +752,13 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
     }
   };
 
-  const handleChangePassword = async () => {
+  const handleChangePassword = () => {
     if (!newPw || newPw !== confirmPw) { catalystToast.error('Passwords do not match'); return; }
     if (newPw.length < 8) { catalystToast.error('Password must be at least 8 characters'); return; }
-    setPwSaving(true);
-    try {
-      const res = await supabase.functions.invoke('admin-set-password', {
-        body: { userId: user.id, newPassword: newPw },
-      });
-      if (res.error) throw new Error(res.error.message);
-      const data = res.data as { ok: boolean; error?: string };
-      if (!data?.ok) throw new Error(data?.error || 'Failed to set password');
-      catalystToast.success('Password changed successfully');
-      setPwOpen(false); setNewPw(''); setConfirmPw('');
-    } catch (e) {
-      catalystToast.error(e instanceof Error ? e.message : 'Failed to change password');
-    } finally {
-      setPwSaving(false);
-    }
+    setStagedPassword(newPw);
+    setPwOpen(false);
+    setNewPw('');
+    setConfirmPw('');
   };
 
   const handleResetPassword = async () => {
@@ -768,28 +780,13 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
     }
   };
 
-  const handleToggleSuspend = async () => {
+  const handleToggleSuspend = () => {
     const newStatus = isActive ? 'DISABLED' : 'APPROVED';
     if (newStatus === 'DISABLED' && user.role === 'admin' && adminCount <= 1) {
       catalystToast.error('Cannot suspend the only admin. Promote another user to admin first.');
       return;
     }
-    setSuspending(true);
-    try {
-      const res = await supabase.functions.invoke('user-update', {
-        body: { user_id: user.id, approval_status: newStatus },
-      });
-      if (res.error) throw new Error(res.error.message);
-      const data = res.data as { ok: boolean; error?: string };
-      if (!data?.ok) throw new Error(data?.error || 'Failed to update account status');
-      setLocalApprovalStatus(newStatus);
-      catalystToast.success(newStatus === 'DISABLED' ? 'Account suspended' : 'Account reactivated');
-      qc.invalidateQueries({ queryKey: ['admin-access-people'] });
-    } catch (e) {
-      catalystToast.error(e instanceof Error ? e.message : 'Failed to update account status');
-    } finally {
-      setSuspending(false);
-    }
+    setLocalApprovalStatus(newStatus);
   };
 
   const handleDelete = async () => {
@@ -997,36 +994,47 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                     {/* Set new password */}
                     <div style={{ borderTop: '1px solid var(--ds-border-subtle, #F4F5F7)', paddingTop: 20, marginBottom: 20 }}>
                       <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Set new password</div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
-                        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Override password directly without sending email</div>
-                        <Button appearance="subtle" isDisabled={busyAny && !pwOpen} onClick={() => { setPwOpen(v => !v); setNewPw(''); setConfirmPw(''); }}>
-                          {pwOpen ? 'Cancel' : 'Change'}
-                        </Button>
-                      </div>
-                      {pwOpen && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                          <div>
-                            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>New password</label>
-                            <div style={{ position: 'relative' }}>
-                              <Textfield type={showPw ? 'text' : 'password'} value={newPw} onChange={e => setNewPw((e.target as HTMLInputElement).value)} placeholder="Min 8 characters" isDisabled={pwSaving} />
-                              <button type="button" onClick={() => setShowPw(v => !v)} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: 'var(--ds-text-subtle, #6B778C)', padding: 0 }}>
-                                {showPw ? 'Hide' : 'Show'}
-                              </button>
-                            </div>
+                      {stagedPassword ? (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                          <div style={{ fontSize: 12, color: 'var(--ds-text-success, #216E4E)' }}>
+                            ✓ New password staged — will be set on save
                           </div>
-                          <div>
-                            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>Confirm password</label>
-                            <Textfield type={showPw ? 'text' : 'password'} value={confirmPw} onChange={e => setConfirmPw((e.target as HTMLInputElement).value)} placeholder="Re-enter password" isDisabled={pwSaving} isInvalid={confirmPw.length > 0 && newPw !== confirmPw} />
-                            {confirmPw.length > 0 && newPw !== confirmPw && (
-                              <div style={{ fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>Passwords do not match</div>
-                            )}
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button appearance="primary" isLoading={pwSaving} isDisabled={!newPw || newPw !== confirmPw || newPw.length < 8 || pwSaving} onClick={handleChangePassword}>
-                              Set password
+                          <Button appearance="subtle" onClick={() => setStagedPassword(null)}>Clear</Button>
+                        </div>
+                      ) : (
+                        <>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
+                            <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Override password directly without sending email</div>
+                            <Button appearance="subtle" isDisabled={busyAny && !pwOpen} onClick={() => { setPwOpen(v => !v); setNewPw(''); setConfirmPw(''); }}>
+                              {pwOpen ? 'Cancel' : 'Change'}
                             </Button>
                           </div>
-                        </div>
+                          {pwOpen && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>New password</label>
+                                <div style={{ position: 'relative' }}>
+                                  <Textfield type={showPw ? 'text' : 'password'} value={newPw} onChange={e => setNewPw((e.target as HTMLInputElement).value)} placeholder="Min 8 characters" />
+                                  <button type="button" onClick={() => setShowPw(v => !v)} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: 'var(--ds-text-subtle, #6B778C)', padding: 0 }}>
+                                    {showPw ? 'Hide' : 'Show'}
+                                  </button>
+                                </div>
+                              </div>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>Confirm password</label>
+                                <Textfield type={showPw ? 'text' : 'password'} value={confirmPw} onChange={e => setConfirmPw((e.target as HTMLInputElement).value)} placeholder="Re-enter password" isInvalid={confirmPw.length > 0 && newPw !== confirmPw} />
+                                {confirmPw.length > 0 && newPw !== confirmPw && (
+                                  <div style={{ fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>Passwords do not match</div>
+                                )}
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <Button appearance="primary" isDisabled={!newPw || newPw !== confirmPw || newPw.length < 8} onClick={handleChangePassword}>
+                                  Stage password
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
 
@@ -1035,17 +1043,23 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                       <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Account status</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                         <div>
-                          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', marginBottom: 2 }}>
-                            {isActive ? 'Account is active' : 'Account is suspended'}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                              {isActive ? 'Account is active' : 'Account is suspended'}
+                            </span>
+                            {localApprovalStatus !== (user.approval_status ?? null) && (
+                              <span style={{ fontSize: 10, fontWeight: 500, padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, #974F0C)', border: '1px solid var(--ds-border-warning, #F5CD47)' }}>
+                                pending save
+                              </span>
+                            )}
                           </div>
                           <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>
-                            {isActive ? 'Suspend to revoke all access immediately.' : 'Reactivate to restore access.'}
+                            {isActive ? 'Suspend to revoke all access. Change is committed on save.' : 'Reactivate to restore access. Change is committed on save.'}
                           </div>
                         </div>
                         <Button
                           appearance={isActive ? 'default' : 'primary'}
-                          isLoading={suspending}
-                          isDisabled={busyAny && !suspending}
+                          isDisabled={busyAny}
                           onClick={handleToggleSuspend}
                         >
                           {isActive ? 'Suspend' : 'Reactivate'}
