@@ -1,0 +1,55 @@
+name: Vercel Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_ENABLE_FILTER_TO_KANBAN: "true"
+          VITE_ENABLE_FILTER_TO_ROADMAP: "true"
+          VITE_ENABLE_FILTER_TO_DASHBOARD: "true"
+          VITE_ENABLE_FILTER_WHATSAPP_AI_SUMMARY: "true"
+          VITE_VOICE_DICTATION_ENABLED: "true"
+        run: bunx vite build
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Link Vercel project
+        run: vercel link --yes --scope=catalyst45 --project=catalyst-prod-45 --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Create Vercel output structure
+        run: |
+          mkdir -p .vercel/output/static
+          cp -r dist/. .vercel/output/static/
+          cat > .vercel/output/config.json << 'EOF'
+          {
+            "version": 3,
+            "routes": [
+              { "src": "/assets/(.*)", "dest": "/assets/$1" },
+              { "src": "/(.*\\.(js|css|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|webp|avif|mp4|webm|json))", "dest": "/$1" },
+              { "src": "/(.*)", "dest": "/index.html" }
+            ]
+          }
+          EOF
+
+      - name: Deploy to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
