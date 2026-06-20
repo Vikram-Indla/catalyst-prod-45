@@ -9,6 +9,7 @@ import DatabaseIcon from '@atlaskit/icon/core/database';
 import ShieldIcon from '@atlaskit/icon/core/shield';
 import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
 import StarIcon from '@atlaskit/icon/core/star-starred';
+import VidPlayIcon from '@atlaskit/icon/core/video-play';
 
 const T = {
   text:          'var(--ds-text, #172B4D)',
@@ -73,6 +74,14 @@ const collapsibleSections: CollapsibleSection[] = [
     icon: StarIcon,
     items: [
       { id: 'ai-translations', label: 'Translation logs', path: '/admin/ai-governance/translations', icon: StarIcon },
+    ],
+  },
+  {
+    id: 'replay',
+    label: 'Replay',
+    icon: VidPlayIcon,
+    items: [
+      { id: 'replay-admin', label: 'Replay settings', path: '/admin/replay', icon: VidPlayIcon },
     ],
   },
 ];

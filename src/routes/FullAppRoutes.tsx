@@ -292,6 +292,7 @@ const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/W
 // WorkHubSyncLogs DEPRECATED 2026-06-20 — route removed
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
+const ReplayAdminPage = lazy(() => import("../pages/admin/ReplayAdminPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 // Incident admin routes deleted 2026-05-09 (Vikram decision: delete all 7)
 
@@ -992,6 +993,7 @@ export default function FullAppRoutes() {
           <Route path="workhub/activity-sync" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="ai-governance/translations" element={<S><AiTranslationsAuditPage /></S>} />
+          <Route path="replay" element={<S><ReplayAdminPage /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />
           <Route path="storybook" element={<S><AdminStorybookPage /></S>} />
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
