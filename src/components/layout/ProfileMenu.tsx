@@ -212,7 +212,7 @@ export function ProfileMenu() {
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
-              go('/settings');
+              go('/profile');
             }}
             style={{ cursor: 'pointer', gap: 8 }}
           >

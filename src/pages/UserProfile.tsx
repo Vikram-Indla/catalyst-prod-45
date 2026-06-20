@@ -15,9 +15,16 @@ import { formatDistanceToNow } from 'date-fns';
 
 const ROLE_LABELS: Record<string, string> = {
   admin: 'Admin',
-  program_manager: 'Program Manager',
-  team_lead: 'Team Lead',
+  program_manager: 'Program manager',
+  team_lead: 'Team lead',
   user: 'User',
+  product_manager: 'Product manager',
+  super_admin: 'Super admin',
+  product_owner: 'Product owner',
+  enterprise_architect: 'Enterprise architect',
+  project_manager: 'Project manager',
+  developer: 'Developer',
+  qa_tester: 'QA tester',
 };
 
 const ROLE_COLORS: Record<string, LozengeAppearance> = {
@@ -355,9 +362,11 @@ export default function UserProfile() {
                 {profile?.full_name || '—'}
               </h2>
               {userAppRole && (
-                <Lozenge appearance={ROLE_COLORS[userAppRole] ?? 'default'}>
-                  {ROLE_LABELS[userAppRole] ?? userAppRole}
-                </Lozenge>
+                <span style={{ display: 'inline-flex' }} data-cp-lozenge-jira-parity>
+                  <Lozenge appearance={ROLE_COLORS[userAppRole] ?? 'default'}>
+                    {ROLE_LABELS[userAppRole] ?? userAppRole.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                  </Lozenge>
+                </span>
               )}
             </div>
 
@@ -546,9 +555,11 @@ export default function UserProfile() {
               {userAppRole ? (
                 <div>
                   <div style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C'), marginBottom: 8 }}>Current role</div>
-                  <Lozenge appearance={ROLE_COLORS[userAppRole] ?? 'default'}>
-                    {ROLE_LABELS[userAppRole] ?? userAppRole}
-                  </Lozenge>
+                  <span data-cp-lozenge-jira-parity>
+                    <Lozenge appearance={ROLE_COLORS[userAppRole] ?? 'default'}>
+                      {ROLE_LABELS[userAppRole] ?? userAppRole.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                    </Lozenge>
+                  </span>
                   <div style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C'), marginTop: 8 }}>
                     This role determines your system-wide permissions and access levels.
                   </div>
