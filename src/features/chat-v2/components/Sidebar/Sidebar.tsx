@@ -87,7 +87,7 @@ export function Sidebar({
       const q = search.trim().toLowerCase();
       list = list.filter(c => {
         if (c.title.toLowerCase().includes(q)) return true;
-        const names = c.dmMemberNames ?? [];
+        const names = (c.dmMemberNames ?? []).filter(Boolean);
         return names.some(n => n.toLowerCase().includes(q));
       });
     }

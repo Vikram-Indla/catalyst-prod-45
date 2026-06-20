@@ -181,45 +181,50 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
         : Promise.resolve(),
     ]);
 
-    const conversations = await Promise.all(
-      rows.map(async ({ member, conv }) => {
-        let unreadCount = 0;
-        try {
-          let q = db
-            .from('chat_messages')
-            .select('id', { count: 'exact', head: true })
-            .eq('conversation_id', conv.id)
-            .is('deleted_at', null)
-            .neq('author_id', userId);
-          if (member.last_read_at) q = q.gt('created_at', member.last_read_at);
-          const { count, error: cErr } = await q;
-          if (!cErr && typeof count === 'number') unreadCount = count;
-        } catch {
-          unreadCount = 0;
-        }
+    const unreadCountMap = new Map<string, number>();
+    try {
+      const allConvIds = rows.map(r => r.conv.id);
+      if (allConvIds.length > 0) {
+        const { data: unreadRows, error: uErr } = await db
+          .from('chat_messages')
+          .select('conversation_id', { count: 'exact' })
+          .in('conversation_id', allConvIds)
+          .is('deleted_at', null)
+          .neq('author_id', userId);
 
-        const mapped: ChatConversation = {
-          id: conv.id,
-          kind: (conv.kind ?? 'channel') as ChatConversationKind,
-          ticketKey: conv.ticket_key ?? null,
-          ticketType: conv.ticket_key ? (ticketTypeMap[conv.ticket_key] ?? null) : null,
-          projectKey: conv.project_key ?? null,
-          projectName: conv.project_key ? (projectNameMap[conv.project_key] ?? null) : null,
-          title: conv.kind === 'channel' && conv.project_key
-            ? (projectNameMap[conv.project_key] ?? conv.title ?? '')
-            : (conv.title ?? ''),
-          description: (conv as any).description ?? null,
-          isArchived: !!conv.is_archived,
-          isPrivate: !!conv.is_private,
-          isPinned: !!member.is_pinned,
-          isStarred: !!member.is_starred,
-          lastMessageAt: conv.last_message_at ?? null,
-          lastMessagePreview: conv.last_message_preview ?? null,
-          unreadCount,
-        };
-        return mapped;
-      }),
-    );
+        if (!uErr && unreadRows) {
+          (unreadRows as Array<{ conversation_id: string }>).forEach(row => {
+            unreadCountMap.set(row.conversation_id, (unreadCountMap.get(row.conversation_id) ?? 0) + 1);
+          });
+        }
+      }
+    } catch {
+      // fallback: empty map, all unread counts default to 0
+    }
+
+    const conversations = rows.map(({ member, conv }) => {
+      const unreadCount = unreadCountMap.get(conv.id) ?? 0;
+      const mapped: ChatConversation = {
+        id: conv.id,
+        kind: (conv.kind ?? 'channel') as ChatConversationKind,
+        ticketKey: conv.ticket_key ?? null,
+        ticketType: conv.ticket_key ? (ticketTypeMap[conv.ticket_key] ?? null) : null,
+        projectKey: conv.project_key ?? null,
+        projectName: conv.project_key ? (projectNameMap[conv.project_key] ?? null) : null,
+        title: conv.kind === 'channel' && conv.project_key
+          ? (projectNameMap[conv.project_key] ?? conv.title ?? '')
+          : (conv.title ?? ''),
+        description: (conv as any).description ?? null,
+        isArchived: !!conv.is_archived,
+        isPrivate: !!conv.is_private,
+        isPinned: !!member.is_pinned,
+        isStarred: !!member.is_starred,
+        lastMessageAt: conv.last_message_at ?? null,
+        lastMessagePreview: conv.last_message_preview ?? null,
+        unreadCount,
+      };
+      return mapped;
+    });
 
     // Resolve DM + group_dm display titles from member profile names (both
     // are stored with title=null and otherwise render blank).

@@ -137,11 +137,11 @@ function ChatV2Inner() {
     const handler = () => {
       const vw = window.innerWidth;
       const newMax = Math.max(SIDEBAR_MIN_W, vw - navRailW - SPLITTER_W - RIGHT_PANE_MIN);
-      if (sidebarWidth > newMax) setSidebarWidth(newMax);
+      setSidebarWidth(prev => Math.min(prev, newMax));
     };
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
-  }, [sidebarWidth, setSidebarWidth, navRailW]);
+  }, [navRailW]);
   const queryClient = useQueryClient();
   const shell = useShellState();
   const { conversations } = useConversations();
