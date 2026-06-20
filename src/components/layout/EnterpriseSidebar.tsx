@@ -5,7 +5,7 @@
  * 3 sections: Strategy Hub, Intelligence, and footer Settings.
  */
 
-import { 
+import {
   LayoutDashboard,
   Layers,
   Target,
@@ -15,6 +15,7 @@ import {
   Sparkles,
   Users,
   Settings,
+  Film,
 } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -47,6 +48,7 @@ const enterpriseSidebarConfig: SidebarConfig = {
       items: [
         { id: 'ai-insights', title: 'AI Insights', path: '/strategyhub/ai-insights', icon: Sparkles, exact: false, badge: 3, badgeVariant: 'purple' },
         { id: 'team-alignment', title: 'Team Alignment', path: '/strategyhub/team-alignment', icon: Users, exact: false },
+        { id: 'replay', title: 'Replay', path: '/replay', icon: Film, exact: true },
       ],
     },
   ],
