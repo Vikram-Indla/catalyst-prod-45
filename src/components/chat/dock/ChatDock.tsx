@@ -14,7 +14,6 @@
  */
 import React, { useState } from "react";
 import { IconButton } from "@atlaskit/button/new";
-import Tooltip from "@atlaskit/tooltip";
 import AddIcon from "@atlaskit/icon/core/add";
 import GrowDiagonalIcon from "@atlaskit/icon/core/grow-diagonal";
 import CloseIcon from "@atlaskit/icon/core/close";
@@ -227,38 +226,33 @@ export function ChatDock({
             <span className="cc-dock__wordmark">{dockMode === "caty" ? "Assistant" : "Messages"}</span>
           </div>
           <div className="cc-dock__actions">
-            <Tooltip content="New conversation" position="bottom">
-              <IconButton
-                icon={(p) => <AddIcon {...p} LEGACY_size="small" />}
-                label="New conversation"
-                appearance="subtle"
-                spacing="compact"
-                onClick={() => {
-                  // If a conversation is open, go back to directory.
-                  // Either way, signal directory to focus search so user can type a name.
-                  onFocusDirectory?.();
-                  setDirFocusTick((t) => t + 1);
-                }}
-              />
-            </Tooltip>
-            <Tooltip content="Open full screen" position="bottom">
-              <IconButton
-                icon={(p) => <GrowDiagonalIcon {...p} LEGACY_size="small" />}
-                label="Open full screen"
-                appearance="subtle"
-                spacing="compact"
-                onClick={onPopOut}
-              />
-            </Tooltip>
-            <Tooltip content="Close" position="bottom">
-              <IconButton
-                icon={(p) => <CloseIcon {...p} LEGACY_size="small" />}
-                label="Close"
-                appearance="subtle"
-                spacing="compact"
-                onClick={onToggleCollapsed}
-              />
-            </Tooltip>
+            <IconButton
+              icon={(p) => <AddIcon {...p} LEGACY_size="small" />}
+              label="New conversation"
+              appearance="subtle"
+              spacing="compact"
+              title="New conversation"
+              onClick={() => {
+                onFocusDirectory?.();
+                setDirFocusTick((t) => t + 1);
+              }}
+            />
+            <IconButton
+              icon={(p) => <GrowDiagonalIcon {...p} LEGACY_size="small" />}
+              label="Open full screen"
+              appearance="subtle"
+              spacing="compact"
+              title="Open full screen"
+              onClick={onPopOut}
+            />
+            <IconButton
+              icon={(p) => <CloseIcon {...p} LEGACY_size="small" />}
+              label="Close"
+              appearance="subtle"
+              spacing="compact"
+              title="Close"
+              onClick={onToggleCollapsed}
+            />
           </div>
         </div>
 
