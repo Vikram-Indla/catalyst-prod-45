@@ -1,10 +1,20 @@
 // supabase/functions/user-invite-send/index.ts
+// Access Management rewrite — single onboarding-artifact dispatcher.
+// Creates a one-time, hashed, TTL-bound setup link and either returns it for
+// MANUAL copy or dispatches it over the chosen channel (email now; whatsapp/sms
+// stubbed until provider verification). Backward compatible with the old call
+// shape (no channel/ttl => email, 24h).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const CHANNELS = ['manual', 'email', 'whatsapp', 'sms'];
+const PURPOSES = ['invite', 'reset', 'unlock'];
+const MAX_TTL = 24 * 60 * 60; // 1 day
+const MIN_TTL = 60;           // 1 min floor
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -23,83 +33,117 @@ Deno.serve(async (req) => {
     if (authErr || !user) return err('Unauthorized', 401);
 
     const { data: roleRow } = await supabaseAdmin
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .maybeSingle();
+      .from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
     if (!roleRow || !['admin', 'super_admin'].includes(roleRow.role)) {
       return err('Forbidden: admin role required', 403);
     }
 
     const body = await req.json();
-    const { role = 'user', module_access = {}, full_name } = body;
-    const email: string = body.email;
-    if (!email || typeof email !== 'string') return err('email is required', 400);
-    const normalizedEmail = email.toLowerCase().trim();
+    const email: string = (body.email || '').toLowerCase().trim();
+    if (!email) return err('email is required', 400);
 
-    // Block duplicate active invitations
+    const role = body.role || 'user';
+    const module_access = body.module_access || {};
+    const full_name = body.full_name ?? null;
+    const phone = body.phone ?? null;
+    const purpose = PURPOSES.includes(body.purpose) ? body.purpose : 'invite';
+    const delivery_channel = CHANNELS.includes(body.delivery_channel) ? body.delivery_channel : 'email';
+    const regenerate = body.regenerate === true;
+
+    // Safe-landing guard (server-side): invites must grant ≥1 safe module.
+    if (purpose === 'invite') {
+      const safe = ['home', 'project_hub', 'product_hub'];
+      const hasSafe = safe.some((k) => module_access?.[k] === true);
+      if (!hasSafe) return err('At least one safe landing module (Home, Project, or Product) is required', 422);
+    }
+
+    // TTL: default 5 minutes, admin-selectable, clamped to [1m, 1d].
+    let ttl = Number.isFinite(body.ttl_seconds) ? Math.floor(body.ttl_seconds) : 300;
+    ttl = Math.min(MAX_TTL, Math.max(MIN_TTL, ttl));
+
+    // Existing pending artifact for this email+purpose.
     const { data: existing } = await supabaseAdmin
       .from('user_invitations')
-      .select('id, expires_at')
-      .eq('email', normalizedEmail)
-      .eq('status', 'pending')
+      .select('id, expires_at, status')
+      .eq('email', email).eq('purpose', purpose).eq('status', 'pending')
       .maybeSingle();
     if (existing && new Date(existing.expires_at) > new Date()) {
-      return err('A pending invitation already exists for this email', 409);
+      if (!regenerate) return err('A pending link already exists for this email. Regenerate to replace it.', 409);
+      await supabaseAdmin.from('user_invitations')
+        .update({ status: 'revoked', revoked_at: new Date().toISOString() })
+        .eq('id', existing.id);
     }
 
-    // Block already-registered users
-    const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
-    if (users?.some(u => u.email === normalizedEmail)) {
-      return err('User already exists', 409);
+    // For invites only, block already-registered users.
+    if (purpose === 'invite') {
+      const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
+      if (users?.some((u) => u.email === email)) return err('User already exists', 409);
     }
 
-    // Generate token and SHA-256 hash
+    // Cryptographically-random single-use token; only the SHA-256 hash is stored.
     const rawToken = crypto.randomUUID() + '-' + crypto.randomUUID();
     const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(rawToken));
-    const tokenHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    const tokenHash = Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
 
     const { data: invitation, error: insertErr } = await supabaseAdmin
       .from('user_invitations')
-      .insert({ email: normalizedEmail, invited_by: user.id, token_hash: tokenHash, role, module_access, full_name, expires_at: expiresAt })
-      .select('id')
-      .single();
+      .insert({
+        email, invited_by: user.id, token_hash: tokenHash, role, module_access,
+        full_name, phone, purpose, delivery_channel, ttl_seconds: ttl, expires_at: expiresAt,
+      })
+      .select('id').single();
     if (insertErr || !invitation) {
       console.error('[invite-send] insert:', insertErr);
-      return err('Failed to create invitation', 500);
+      return err('Failed to create link', 500);
     }
-
-    const { data: inviter } = await supabaseAdmin
-      .from('profiles')
-      .select('full_name, email')
-      .eq('id', user.id)
-      .maybeSingle();
-    const inviterName = inviter?.full_name || inviter?.email || 'Your administrator';
 
     const appUrl = Deno.env.get('APP_URL') || 'https://catalyst.lovable.app';
-    const acceptUrl = `${appUrl}/invite/accept?token=${rawToken}&email=${encodeURIComponent(normalizedEmail)}`;
+    const path = purpose === 'invite' ? '/invite/accept' : '/auth/reset-password';
+    const setupLink = `${appUrl}${path}?token=${rawToken}&email=${encodeURIComponent(email)}`;
 
-    const { error: emailErr } = await supabaseAdmin.functions.invoke('email-send', {
-      body: {
-        to: normalizedEmail,
-        subject: `${inviterName} invited you to Catalyst`,
-        text: `You've been invited to join Catalyst by ${inviterName}.\n\nAccept your invitation:\n${acceptUrl}\n\nThis link expires in 24 hours.`,
-        html: inviteHtml(inviterName, acceptUrl, expiresAt),
-        template_name: 'invite',
-        template_props: { inviterName, acceptUrl },
-      },
-    });
+    const { data: inviter } = await supabaseAdmin
+      .from('profiles').select('full_name, email').eq('id', user.id).maybeSingle();
+    const inviterName = inviter?.full_name || inviter?.email || 'Your administrator';
 
-    if (emailErr) {
-      console.error('[invite-send] email:', emailErr);
-      await supabaseAdmin.from('user_invitations').delete().eq('id', invitation.id);
-      return err('Failed to send invitation email', 500);
+    let dispatched = false;
+    let channelPending = false;
+
+    if (delivery_channel === 'email') {
+      const subj = purpose === 'invite'
+        ? `${inviterName} invited you to Catalyst`
+        : purpose === 'reset' ? 'Reset your Catalyst password' : 'Unlock your Catalyst account';
+      const { error: emailErr } = await supabaseAdmin.functions.invoke('email-send', {
+        body: {
+          to: email, recipient: email, channel: 'email', subject: subj,
+          text: `${subj}\n\n${setupLink}\n\nThis link is single-use and expires soon.`,
+          html: linkHtml(subj, inviterName, setupLink, expiresAt, purpose),
+          template_name: purpose,
+          template_props: { inviterName, acceptUrl: setupLink },
+        },
+      });
+      if (emailErr) {
+        console.error('[invite-send] email:', emailErr);
+        await supabaseAdmin.from('user_invitations').delete().eq('id', invitation.id);
+        return err('Failed to send via email', 500);
+      }
+      dispatched = true;
+    } else if (delivery_channel === 'whatsapp' || delivery_channel === 'sms') {
+      // Provider not yet verified — record intent, let admin share the link manually.
+      channelPending = true;
+      await supabaseAdmin.from('email_log').insert({
+        to_email: email, recipient: phone || email, channel: delivery_channel,
+        subject: `${purpose} link`, status: 'pending_provider', template_name: purpose,
+      });
     }
+    // 'manual' => nothing to send; admin copies the link below.
 
     return new Response(
-      JSON.stringify({ ok: true, invitation_id: invitation.id }),
+      JSON.stringify({
+        ok: true, invitation_id: invitation.id, setup_link: setupLink,
+        expires_at: expiresAt, ttl_seconds: ttl, delivery_channel, purpose,
+        dispatched, channel_pending: channelPending,
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (e) {
@@ -110,30 +154,29 @@ Deno.serve(async (req) => {
 
 function err(message: string, status: number) {
   return new Response(JSON.stringify({ ok: false, error: message }), {
-    status,
-    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    status, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
   });
 }
 
-function inviteHtml(inviterName: string, acceptUrl: string, expiresAt: string) {
+function linkHtml(title: string, inviterName: string, url: string, expiresAt: string, purpose: string) {
   const expiry = new Date(expiresAt).toUTCString();
+  const cta = purpose === 'invite' ? 'Set your password' : purpose === 'reset' ? 'Choose a new password' : 'Unlock account';
+  const lede = purpose === 'invite'
+    ? `${inviterName} has invited you to join Catalyst. Set your password to activate your account.`
+    : purpose === 'reset' ? 'We received a request to reset your Catalyst password.'
+    : 'A request was made to unlock your Catalyst account.';
   return `<!DOCTYPE html>
 <html>
-  <body style="font-family: 'Atlassian Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f4f5f7; margin:0; padding:24px;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px; margin:0 auto; background:#ffffff; border-radius:8px; padding:32px;">
+  <body style='font-family: Atlassian Sans, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; background:#f4f5f7; margin:0; padding:24px;'>
+    <table width='100%' cellpadding='0' cellspacing='0' style='max-width:560px; margin:0 auto; background:#ffffff; border-radius:8px; padding:32px;'>
       <tr><td>
-        <h2 style="margin:0 0 8px; color:#172B4D; font-size:14px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Catalyst</h2>
-        <h1 style="margin:0 0 16px; color:#172B4D; font-size:24px; font-weight:600;">You've been invited</h1>
-        <p style="color:#42526E; font-size:14px; line-height:20px; margin:0 0 24px;">
-          ${inviterName} has invited you to join Catalyst.
-        </p>
-        <a href="${acceptUrl}" style="display:inline-block; background:#2563EB; color:#ffffff; text-decoration:none; padding:12px 20px; border-radius:6px; font-size:14px; font-weight:500;">Accept invitation</a>
-        <p style="color:#6B778C; font-size:12px; line-height:18px; margin:24px 0 0;">
-          Expires: ${expiry}. If you didn't expect this email, ignore it.
-        </p>
-        <p style="color:#6B778C; font-size:12px; line-height:18px; margin:8px 0 0; word-break:break-all;">
-          Link: <a href="${acceptUrl}" style="color:#2563EB;">${acceptUrl}</a>
-        </p>
+        <div style='height:3px; background:#2563EB; border-radius:2px; margin-bottom:22px;'></div>
+        <h2 style='margin:0 0 6px; color:#172B4D; font-size:16px; font-weight:600;'>Catalyst</h2>
+        <h1 style='margin:0 0 14px; color:#172B4D; font-size:22px; font-weight:600;'>${title}</h1>
+        <p style='color:#42526E; font-size:14px; line-height:22px; margin:0 0 22px;'>${lede} For your security this link is single-use and expires soon.</p>
+        <a href='${url}' style='display:inline-block; background:#2563EB; color:#ffffff; text-decoration:none; padding:12px 20px; border-radius:6px; font-size:14px; font-weight:500;'>${cta}</a>
+        <p style='color:#6B778C; font-size:12px; line-height:18px; margin:22px 0 0;'>Expires: ${expiry}. If you didn't expect this, ignore this message and never share the link.</p>
+        <p style='color:#6B778C; font-size:12px; line-height:18px; margin:8px 0 0; word-break:break-all;'>Link: <a href='${url}' style='color:#2563EB;'>${url}</a></p>
       </td></tr>
     </table>
   </body>

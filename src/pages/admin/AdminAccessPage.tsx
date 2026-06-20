@@ -99,150 +99,213 @@ function moduleCount(moduleAccess: Record<string, boolean> | null): number {
   return MODULE_ITEMS.filter(m => moduleAccess[m.key] === true).length;
 }
 
-// ─── InviteUserModal ──────────────────────────────────────────────────────────
+// ─── CreateAccessModal ──────────────────────────────────────────────────────
+// MVP onboarding: admin creates a user + a one-time, TTL-bound setup link, on the
+// chosen channel. The link is always returned for manual copy. WhatsApp/SMS are
+// stubbed until provider verification (link still copyable meanwhile).
 
-function InviteUserModal({ onClose }: { onClose: () => void }) {
-  const { inviteUser, isLoading } = useInviteUser();
+const SAFE_KEYS = ['home', 'project_hub', 'product_hub'];
+const CHANNEL_OPTS: { value: 'email' | 'whatsapp' | 'sms' | 'manual'; label: string }[] = [
+  { value: 'email', label: 'Email' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'sms', label: 'SMS' },
+  { value: 'manual', label: 'Manual' },
+];
+const TTL_OPTS: { value: number; label: string }[] = [
+  { value: 300, label: '5 min' },
+  { value: 900, label: '15 min' },
+  { value: 3600, label: '1 hour' },
+  { value: 86400, label: '1 day' },
+];
+
+interface LinkResult { link: string; expiresAt?: string; invitationId?: string; channelPending?: boolean; channel: string }
+
+function CreateAccessModal({ onClose }: { onClose: () => void }) {
+  const { inviteUser, expireInvitation, isLoading } = useInviteUser();
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState<{ label: string; value: string } | null>(
-    { label: 'User', value: 'user' }
-  );
+  const [phone, setPhone] = useState('');
+  const [role, setRole] = useState<{ label: string; value: string } | null>({ label: 'User', value: 'user' });
   const [moduleAccess, setModuleAccess] = useState<Record<string, boolean>>(DEFAULT_MODULE_ACCESS);
+  const [channel, setChannel] = useState<'email' | 'whatsapp' | 'sms' | 'manual'>('email');
+  const [ttl, setTtl] = useState(300);
+  const [result, setResult] = useState<LinkResult | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const toggleModule = (key: string) => setModuleAccess(prev => ({ ...prev, [key]: !prev[key] }));
+  const safeOk = SAFE_KEYS.some(k => moduleAccess[k]);
+  const emailOk = /\S+@\S+\.\S+/.test(email.trim());
+  const canCreate = emailOk && safeOk && !isLoading;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey, true);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey, true);
-      document.body.style.overflow = prev;
-    };
+    return () => { document.removeEventListener('keydown', onKey, true); document.body.style.overflow = prev; };
   }, [onClose]);
 
-  const handleSubmit = async () => {
-    if (!email.trim()) return;
-    const result = await inviteUser({
+  const submit = async (regenerate = false) => {
+    if (!canCreate && !regenerate) return;
+    const r = await inviteUser({
       email: email.trim(),
       full_name: fullName.trim() || undefined,
+      phone: phone.trim() || undefined,
       role: role?.value || 'user',
       module_access: moduleAccess,
+      delivery_channel: channel,
+      ttl_seconds: ttl,
+      purpose: 'invite',
+      regenerate,
     });
-    if (result.ok) {
-      catalystToast.success(`Invitation sent to ${email}`);
-      onClose();
+    if (r.ok) {
+      setResult({ link: r.setup_link || '', expiresAt: r.expires_at, invitationId: r.invitation_id, channelPending: r.channel_pending, channel });
+      setCopied(false);
+      catalystToast.success(r.dispatched ? `Access created · sent via ${channel}` : 'Access created · copy the link');
     } else {
-      catalystToast.error(result.error || 'Failed to send invitation');
+      catalystToast.error(r.error || 'Failed to create access');
     }
   };
 
+  const copyLink = async () => {
+    if (!result?.link) return;
+    try { await navigator.clipboard.writeText(result.link); setCopied(true); } catch { /* clipboard blocked */ }
+  };
+
+  const expireNow = async () => {
+    if (!result?.invitationId) return;
+    const r = await expireInvitation({ invitation_id: result.invitationId });
+    if (r.ok) { catalystToast.success('Link expired'); setResult(prev => prev ? { ...prev, link: '', expiresAt: undefined } : prev); }
+    else catalystToast.error(r.error || 'Failed to expire link');
+  };
+
+  const lblStyle: React.CSSProperties = { display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B778C'), marginBottom: 4 };
+  const segBtn = (active: boolean): React.CSSProperties => ({
+    padding: '6px 12px', fontSize: 13, cursor: 'pointer', border: 'none',
+    borderRight: `1px solid ${token('color.border', '#EBECF0')}`,
+    background: active ? token('color.background.selected', '#E9F2FE') : 'transparent',
+    color: active ? token('color.text.selected', '#0C66E4') : token('color.text.subtle', '#6B778C'),
+  });
+
   return createPortal(
     <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="invite-user-modal-title"
-      style={{
-        position: 'fixed', inset: 0, zIndex: 10000,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
-      }}
+      role="dialog" aria-modal="true" aria-labelledby="create-access-title"
+      style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))' }}
       onClick={onClose}
     >
       <div
         onClick={e => e.stopPropagation()}
-        style={{
-          width: 480, maxWidth: 'calc(100vw - 48px)',
-          background: token('elevation.surface.overlay', '#fff'),
-          borderRadius: 8,
-          boxShadow: token('elevation.shadow.overlay', '0 8px 24px rgba(9,30,66,0.25)'),
-          display: 'flex', flexDirection: 'column',
-          maxHeight: 'calc(100vh - 80px)', overflow: 'hidden',
-        }}
+        style={{ width: 520, maxWidth: 'calc(100vw - 48px)', background: token('elevation.surface.overlay', '#fff'), borderRadius: 8, boxShadow: token('elevation.shadow.overlay', '0 8px 24px rgba(9,30,66,0.25)'), display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 80px)', overflow: 'hidden' }}
       >
         <div style={{ padding: '24px 24px 16px', borderBottom: `1px solid ${token('color.border', '#EBECF0')}` }}>
-          <h2 id="invite-user-modal-title" style={{ margin: 0, fontSize: 20, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
-            Invite User
+          <h2 id="create-access-title" style={{ margin: 0, fontSize: 20, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
+            {result ? 'Setup link' : 'Create access'}
           </h2>
         </div>
-        <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B778C'), marginBottom: 4 }}>
-              Email address *
-            </label>
-            <Textfield
-              value={email}
-              onChange={e => setEmail((e.target as HTMLInputElement).value)}
-              placeholder="user@example.com"
-              aria-label="Email address"
-              isRequired
-            />
-          </div>
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B778C'), marginBottom: 4 }}>
-              Full name (optional)
-            </label>
-            <Textfield
-              value={fullName}
-              onChange={e => setFullName((e.target as HTMLInputElement).value)}
-              placeholder="Jane Doe"
-              aria-label="Full name"
-            />
-          </div>
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B778C'), marginBottom: 4 }}>
-              Role
-            </label>
-            <Select
-              options={ROLE_OPTIONS}
-              value={role}
-              onChange={opt => setRole(opt as { label: string; value: string } | null)}
-              menuPortalTarget={document.body}
-              styles={{ menuPortal: (base) => ({ ...base, zIndex: 10001 }) }}
-            />
-          </div>
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B778C'), marginBottom: 8 }}>
-              Module access
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 16px' }}>
-              {MODULE_ITEMS.map(m => (
-                <label
-                  key={m.key}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    fontSize: 13, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-                    cursor: m.default ? 'default' : 'pointer',
-                    opacity: m.default ? 0.65 : 1,
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!moduleAccess[m.key]}
-                    disabled={!!m.default}
-                    onChange={() => !m.default && toggleModule(m.key)}
-                    style={{ accentColor: token('color.background.brand.bold', 'var(--cp-primary-60, #0052CC)'), cursor: m.default ? 'default' : 'pointer' }}
-                  />
-                  {m.label}
-                  {m.default && <span style={{ fontSize: 11, color: token('color.text.subtlest', '#97A0AF') }}>(default)</span>}
-                </label>
-              ))}
+
+        {!result ? (
+          <>
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto' }}>
+              <div>
+                <label style={lblStyle}>Email address *</label>
+                <Textfield value={email} onChange={e => setEmail((e.target as HTMLInputElement).value)} placeholder="user@example.com" aria-label="Email address" isRequired />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={lblStyle}>Full name</label>
+                  <Textfield value={fullName} onChange={e => setFullName((e.target as HTMLInputElement).value)} placeholder="Jane Doe" aria-label="Full name" />
+                </div>
+                <div>
+                  <label style={lblStyle}>Phone {(channel === 'whatsapp' || channel === 'sms') ? '*' : '(optional)'}</label>
+                  <Textfield value={phone} onChange={e => setPhone((e.target as HTMLInputElement).value)} placeholder="+966 5x xxx xxxx" aria-label="Phone" />
+                </div>
+              </div>
+              <div>
+                <label style={lblStyle}>Role</label>
+                <Select options={ROLE_OPTIONS} value={role} onChange={opt => setRole(opt as { label: string; value: string } | null)} menuPortalTarget={document.body} styles={{ menuPortal: (base) => ({ ...base, zIndex: 10001 }) }} />
+              </div>
+              <div>
+                <label style={lblStyle}>Module access</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 16px' }}>
+                  {MODULE_ITEMS.map(m => (
+                    <label key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), cursor: m.default ? 'default' : 'pointer', opacity: m.default ? 0.65 : 1 }}>
+                      <input type="checkbox" checked={!!moduleAccess[m.key]} disabled={!!m.default} onChange={() => !m.default && toggleModule(m.key)} style={{ accentColor: token('color.background.brand.bold', 'var(--cp-primary-60, #0052CC)'), cursor: m.default ? 'default' : 'pointer' }} />
+                      {m.label}
+                      {m.default && <span style={{ fontSize: 11, color: token('color.text.subtlest', '#97A0AF') }}>(default)</span>}
+                    </label>
+                  ))}
+                </div>
+                {!safeOk && (
+                  <p style={{ margin: '8px 0 0', fontSize: 12, color: token('color.text.danger', '#AE2A19') }}>
+                    Enable at least one safe landing module (Home, Project, or Product). Enforced on the server too.
+                  </p>
+                )}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
+                <div>
+                  <label style={lblStyle}>Send via</label>
+                  <div style={{ display: 'inline-flex', border: `1px solid ${token('color.border', '#EBECF0')}`, borderRadius: 6, overflow: 'hidden' }}>
+                    {CHANNEL_OPTS.map(c => (
+                      <button key={c.value} type="button" onClick={() => setChannel(c.value)} style={{ ...segBtn(channel === c.value), borderRight: c.value === 'manual' ? 'none' : segBtn(false).borderRight }}>{c.label}</button>
+                    ))}
+                  </div>
+                  {(channel === 'whatsapp' || channel === 'sms') && (
+                    <p style={{ margin: '6px 0 0', fontSize: 11, color: token('color.text.subtlest', '#97A0AF') }}>Provider not yet live — link is recorded and copyable; share it manually for now.</p>
+                  )}
+                </div>
+                <div>
+                  <label style={lblStyle}>Link validity</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {TTL_OPTS.map(t => (
+                      <button key={t.value} type="button" onClick={() => setTtl(t.value)} style={{ padding: '5px 10px', fontSize: 12, borderRadius: 999, cursor: 'pointer', border: `1px solid ${ttl === t.value ? token('color.border.selected', '#0C66E4') : token('color.border', '#EBECF0')}`, background: ttl === t.value ? token('color.background.selected', '#E9F2FE') : 'transparent', color: ttl === t.value ? token('color.text.selected', '#0C66E4') : token('color.text.subtle', '#6B778C') }}>{t.label}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div style={{ padding: '12px 24px', display: 'flex', justifyContent: 'flex-end', gap: 8, borderTop: `1px solid ${token('color.border', '#EBECF0')}` }}>
-          <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-          <Button
-            appearance="primary"
-            isLoading={isLoading}
-            isDisabled={!email.trim() || isLoading}
-            onClick={handleSubmit}
-          >
-            Send Invitation
-          </Button>
-        </div>
+            <div style={{ padding: '12px 24px', display: 'flex', justifyContent: 'flex-end', gap: 8, borderTop: `1px solid ${token('color.border', '#EBECF0')}` }}>
+              <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+              <Button appearance="primary" isLoading={isLoading} isDisabled={!canCreate} onClick={() => submit(false)}>Create access</Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto' }}>
+              <p style={{ margin: 0, fontSize: 13, color: token('color.text.subtle', '#6B778C') }}>
+                Access created for <strong style={{ color: token('color.text', '#172B4D') }}>{email}</strong> · <Lozenge appearance="inprogress">Pending setup</Lozenge>
+              </p>
+              <div>
+                <label style={lblStyle}>One-time setup link</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12, background: token('color.background.neutral', '#F1F2F4'), border: `1px solid ${token('color.border', '#EBECF0')}`, borderRadius: 6, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {result.link || 'Link expired — regenerate to issue a new one'}
+                  </div>
+                  <Button appearance="primary" isDisabled={!result.link} onClick={copyLink}>{copied ? 'Copied' : 'Copy link'}</Button>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 24, fontSize: 13 }}>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtlest', '#97A0AF') }}>Expires</div>
+                  <div style={{ color: token('color.text', '#172B4D') }}>{result.expiresAt ? new Date(result.expiresAt).toLocaleString() : '—'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtlest', '#97A0AF') }}>Channel</div>
+                  <div style={{ color: token('color.text', '#172B4D'), textTransform: 'capitalize' }}>{result.channel}{result.channelPending ? ' (manual share)' : ''}</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: 12, background: token('color.background.warning', '#FFF7D6'), borderRadius: 6, fontSize: 12, color: token('color.text.warning', '#974F0C') }}>
+                Single-use link. If the number/email was wrong, expire it now and regenerate. Catalyst never stores the raw token.
+              </div>
+            </div>
+            <div style={{ padding: '12px 24px', display: 'flex', justifyContent: 'space-between', gap: 8, borderTop: `1px solid ${token('color.border', '#EBECF0')}` }}>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <Button appearance="default" isLoading={isLoading} onClick={() => submit(true)}>Regenerate</Button>
+                <Button appearance="subtle" isDisabled={!result.link} onClick={expireNow}>Expire now</Button>
+              </div>
+              <Button appearance="primary" onClick={onClose}>Done</Button>
+            </div>
+          </>
+        )}
       </div>
     </div>,
     document.body,
@@ -844,7 +907,7 @@ function PeopleTab() {
         </div>
         <div style={{ marginLeft: 'auto' }}>
           <Button appearance="primary" iconBefore={PersonAddIcon} onClick={() => setInviteOpen(true)}>
-            Invite User
+            Create access
           </Button>
         </div>
       </div>
@@ -958,7 +1021,7 @@ function PeopleTab() {
           onSaved={() => setEditUser(null)}
         />
       )}
-      {inviteOpen && <InviteUserModal onClose={() => setInviteOpen(false)} />}
+      {inviteOpen && <CreateAccessModal onClose={() => setInviteOpen(false)} />}
     </div>
   );
 }
@@ -1033,7 +1096,7 @@ function InvitationsTab() {
           </thead>
           <tbody>
             {invites.length === 0 ? (
-              <tr><td colSpan={5} style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>No invitations yet. Use "Invite User" in the People tab to send one.</td></tr>
+              <tr><td colSpan={5} style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>No invitations yet. Use "Create access" in the People tab to issue one.</td></tr>
             ) : invites.map(inv => {
               const expired = new Date(inv.expires_at) < new Date() && !inv.accepted_at;
               const isPending = !inv.accepted_at && !expired;
