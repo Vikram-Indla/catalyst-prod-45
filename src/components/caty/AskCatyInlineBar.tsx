@@ -172,6 +172,7 @@ export function AskCatyInlineBar({
   return (
     <div
       data-testid="ask-caty-inline-bar"
+      data-voice-zone="true"
       style={{
         display: "flex",
         flexDirection: "column",
