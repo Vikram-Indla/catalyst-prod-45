@@ -250,9 +250,15 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
       }
     }
 
+    const timestampMap = new Map<string, number>();
+    for (const c of conversations) {
+      if (c.lastMessageAt) {
+        timestampMap.set(c.id, Date.parse(c.lastMessageAt));
+      }
+    }
     conversations.sort((a, b) => {
-      const ta = a.lastMessageAt ? Date.parse(a.lastMessageAt) : 0;
-      const tb = b.lastMessageAt ? Date.parse(b.lastMessageAt) : 0;
+      const ta = timestampMap.get(a.id) ?? 0;
+      const tb = timestampMap.get(b.id) ?? 0;
       return tb - ta;
     });
 

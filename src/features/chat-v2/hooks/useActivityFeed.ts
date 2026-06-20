@@ -318,8 +318,12 @@ export function useActivityFeed(): {
         seen.add(r.id);
       }
 
-      // Newest first.
-      items.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+      // Newest first. Pre-compute timestamps to avoid expensive Date.parse in comparator.
+      const timestampMap = new Map<string, number>();
+      for (const item of items) {
+        timestampMap.set(item.id, Date.parse(item.createdAt));
+      }
+      items.sort((a, b) => (timestampMap.get(b.id) ?? 0) - (timestampMap.get(a.id) ?? 0));
       return items;
     },
     staleTime: 15_000,
