@@ -37,20 +37,17 @@ interface CollapsibleSection {
 
 const navItems: NavItem[] = [
   { id: 'overview', label: 'Overview', path: '/admin/overview', icon: HomeIcon },
-  { id: 'jira-hub', label: 'Jira Hub', path: '/admin/workhub/jira-connection', icon: DatabaseIcon },
-  { id: 'configuration', label: 'Configuration', path: '/admin/overview', icon: SettingsIcon },
-  { id: 'reference-data', label: 'Reference Data', path: '/admin/departments', icon: DatabaseIcon },
   { id: 'users-access', label: 'Users & Access', path: '/admin/access', icon: ShieldIcon },
-  { id: 'release-ops', label: 'Release Operations', path: '/admin/release-ops', icon: DashboardIcon },
 ];
 
 const collapsibleSections: CollapsibleSection[] = [
   {
-    id: 'ai-governance',
-    label: 'AI Governance',
-    icon: StarIcon,
+    id: 'jira-connection',
+    label: 'Jira Connection',
+    icon: DatabaseIcon,
     items: [
-      { id: 'ai-translations', label: 'Translation logs', path: '/admin/ai-governance/translations', icon: StarIcon },
+      { id: 'jira-hub', label: 'Jira Settings', path: '/admin/workhub/jira-connection', icon: DatabaseIcon },
+      { id: 'hierarchy-mapping', label: 'Hierarchy Mapping', path: '/admin/hierarchy-mapping', icon: DatabaseIcon },
     ],
   },
   {
@@ -58,9 +55,24 @@ const collapsibleSections: CollapsibleSection[] = [
     label: 'Design System',
     icon: PaintPaletteIcon,
     items: [
+      { id: 'icons-avatars', label: 'Icons & Avatars', path: '/admin/icons', icon: PaintPaletteIcon },
       { id: 'components', label: 'Components', path: '/admin/components', icon: PaintPaletteIcon },
-      { id: 'icons', label: 'Icons', path: '/admin/icons', icon: PaintPaletteIcon },
-      { id: 'avatars', label: 'Avatars', path: '/admin/avatars', icon: PaintPaletteIcon },
+    ],
+  },
+  {
+    id: 'workflows',
+    label: 'Workflows',
+    icon: SettingsIcon,
+    items: [
+      { id: 'status-transitions', label: 'Status & Transitions', path: '/admin/workflows', icon: SettingsIcon },
+    ],
+  },
+  {
+    id: 'ai-governance',
+    label: 'AI Governance',
+    icon: StarIcon,
+    items: [
+      { id: 'ai-translations', label: 'Translation logs', path: '/admin/ai-governance/translations', icon: StarIcon },
     ],
   },
 ];
@@ -77,8 +89,10 @@ const collapsibleSections: CollapsibleSection[] = [
 export function AdminSidebar() {
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'ai-governance': true,  // AI Governance expanded by default
     'design-system': true,  // Design System expanded by default
+    'jira-connection': false,
+    'workflows': false,
+    'ai-governance': false,
   });
 
   const toggleSection = (sectionId: string) => {
@@ -159,9 +173,9 @@ export function AdminSidebar() {
                 padding: '8px 16px',
                 border: 'none',
                 background: isActive ? T.bgSelected : 'transparent',
-                color: isActive ? T.text : T.textSubtle,
-                fontSize: '14px',
-                fontWeight: isActive ? 600 : 400,
+                color: isActive ? T.text : T.textSubtlest,
+                fontSize: '11px',
+                fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'background 0.1s, color 0.1s',
               }}
