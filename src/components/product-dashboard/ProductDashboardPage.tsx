@@ -10,7 +10,7 @@ import { StageOverviewWidget } from './widgets/StageOverviewWidget';
 import { NeedsAttentionWidget } from './widgets/NeedsAttentionWidget';
 import { ActiveInterventionsWidget } from './widgets/ActiveInterventionsWidget';
 import { WhoCarriesWhatWidget } from './widgets/WhoCarriesWhatWidget';
-import { RecentReleasesWidget } from './widgets/RecentReleasesWidget';
+import { ActiveInitiativesWidget } from './widgets/ActiveInitiativesWidget';
 
 const TIME_RANGE_OPTIONS = ['Last 30 days', 'Last 60 days', 'Last 90 days', 'Last 12 months'] as const;
 type TimeRange = typeof TIME_RANGE_OPTIONS[number];
@@ -144,7 +144,7 @@ export function ProductDashboardPage() {
           <StageOverviewWidget onStageClick={() => {}} />
           <NeedsAttentionWidget />
           <ActiveInterventionsWidget />
-          <RecentReleasesWidget />
+          <ActiveInitiativesWidget />
           <WhoCarriesWhatWidget />
         </div>
       </div>

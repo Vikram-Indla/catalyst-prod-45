@@ -60,7 +60,7 @@ export type { WidgetSpan, WidgetProps, WidgetDefinition };
 
 // Lazy imports for widget components
 import DemandFulfilmentGadget from './widgets/DemandFulfilmentGadget';
-import ReleaseHealthWidget from './widgets/ReleaseHealthWidget';
+import ActiveSprintsWidget from './widgets/ActiveSprintsWidget';
 import ItemsByStatusWidget from './widgets/ItemsByStatusWidget';
 import OverdueWidget from './widgets/OverdueWidget';
 import OnHoldWidget from './widgets/OnHoldWidget';
@@ -94,18 +94,14 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     hideOnIncident: true,
   },
   {
-    id: 'release-health',
-    title: 'Release Health',
-    subtitle: 'Active releases on track or at risk',
+    id: 'sprint-timelines',
+    title: 'Sprint Timelines',
+    subtitle: 'Active sprints grouped by release — Gantt view',
     group: 'delivery',
     defaultSpan: 12,
     minSpan: 12,
     defaultPosition: 1,
-    component: ReleaseHealthWidget,
-    /* Releases (rh_releases) are scoped per project — incidents are
-       cross-project, so there's no meaningful aggregation. Hidden on
-       incident hub. Product dashboard has Health Radar renamed "Release
-       Health" — this project-scoped widget is redundant there. */
+    component: ActiveSprintsWidget,
     hideOnIncident: true,
     hideOnProduct: true,
   },
