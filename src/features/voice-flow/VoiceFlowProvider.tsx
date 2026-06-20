@@ -351,7 +351,11 @@ export function VoiceFlowProvider({ children }: Props) {
 
   // ─── Activation ──────────────────────────────────────────────────────
   const handleActivate = useCallback(async (field: ActiveField) => {
-    if (statusRef.current !== 'idle') return;
+    if (statusRef.current !== 'idle') {
+      // Allow re-activation from terminal non-active states (error, committing)
+      if (statusRef.current === 'error' || statusRef.current === 'committing') reset();
+      else return;
+    }
 
     fieldRef.current = field;
     setStatusBoth('arming');
@@ -461,7 +465,9 @@ export function VoiceFlowProvider({ children }: Props) {
   // ─── Keyboard shortcuts ───────────────────────────────────────────────
   useVoiceHotkey({
     enabled: featureEnabled,
-    isVoiceActive: status !== 'idle' && status !== 'cancelled',
+    // Only block hotkeys while actively recording/processing/reviewing.
+    // 'error' and 'committing' are terminal transitions — allow re-activation.
+    isVoiceActive: status === 'arming' || status === 'listening' || status === 'processing' || status === 'ready' || status === 'review',
     onActivate: handleActivate,
     onCommit: commit,
     onCancel: cancel,
