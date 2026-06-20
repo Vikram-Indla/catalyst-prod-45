@@ -1393,6 +1393,94 @@ export const useReleaseBits = (releaseId: string | null) =>
     },
   });
 
+// ── Link / unlink scope items ─────────────────────────────────────────────────
+export const useReleaseLinkWorkItem = (releaseId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (workItemKey: string) => {
+      const { error } = await supabase.from('rh_release_work_items').insert({
+        release_id: releaseId,
+        work_item_key: workItemKey,
+        inclusion_source: 'manual',
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['release-hub', 'releases', releaseId, 'work-items-detail'] });
+      qc.invalidateQueries({ queryKey: ['release-hub', 'releases', releaseId, 'scope'] });
+    },
+  });
+};
+
+export const useReleaseLinkBr = (releaseId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (businessRequestId: string) => {
+      const { error } = await supabase.from('rh_release_brs').insert({
+        release_id: releaseId,
+        business_request_id: businessRequestId,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['release-hub', 'releases', releaseId, 'scope'] });
+    },
+  });
+};
+
+// ── Release scope work items with ph_issues details ──────────────────────────
+export interface ReleaseWorkItem {
+  id: string;
+  workItemKey: string;
+  inclusionSource: string;
+  summary: string | null;
+  issueType: string | null;
+  status: string | null;
+  statusCategory: string | null;
+  assigneeAccountId: string | null;
+  assigneeName: string | null;
+  assigneeAvatar: string | null;
+  priority: string | null;
+}
+
+export const useReleaseWorkItems = (releaseId: string) =>
+  useQuery({
+    queryKey: ['release-hub', 'releases', releaseId, 'work-items-detail'],
+    enabled: !!releaseId,
+    queryFn: async (): Promise<ReleaseWorkItem[]> => {
+      const { data: links, error: linkErr } = await supabase
+        .from('rh_release_work_items')
+        .select('id, work_item_key, inclusion_source')
+        .eq('release_id', releaseId)
+        .neq('inclusion_source', 'excluded');
+      if (linkErr) throw linkErr;
+      if (!links || links.length === 0) return [];
+      const keys = links.map((l: any) => l.work_item_key);
+      const { data: issues } = await supabase
+        .from('ph_issues')
+        .select('issue_key, summary, issue_type, status, status_category, assignee_account_id, assignee_name, assignee_avatar_url, priority')
+        .in('issue_key', keys);
+      const issueMap: Record<string, any> = {};
+      (issues ?? []).forEach((i: any) => { issueMap[i.issue_key] = i; });
+      return links.map((l: any) => {
+        const i = issueMap[l.work_item_key] ?? {};
+        return {
+          id: l.id,
+          workItemKey: l.work_item_key,
+          inclusionSource: l.inclusion_source,
+          summary: i.summary ?? null,
+          issueType: i.issue_type ?? null,
+          status: i.status ?? null,
+          statusCategory: i.status_category ?? null,
+          assigneeAccountId: i.assignee_account_id ?? null,
+          assigneeName: i.assignee_name ?? null,
+          assigneeAvatar: i.assignee_avatar_url ?? null,
+          priority: i.priority ?? null,
+        };
+      });
+    },
+  });
+
 export const useGenerateReleaseNotes = () => {
   const qc = useQueryClient();
   return useMutation({

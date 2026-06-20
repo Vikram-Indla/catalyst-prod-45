@@ -29,6 +29,8 @@ interface BoardProps {
   onMove?: (issueId: string, status: string, category: StatusCategory) => Promise<void>;
   onAddColumn?: (name: string) => void;
   onEditSummary?: (issue: BoardIssue, summary: string) => void;
+  /** Returns a health request key for a card (product mode). Null/undefined = no badge. */
+  cardHealthKey?: (issue: BoardIssue) => string | null | undefined;
 }
 
 const AddColumnSlot: React.FC<{ onAdd: (name: string) => void }> = ({ onAdd }) => {
@@ -116,7 +118,7 @@ function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
 }
 
 export const Board: React.FC<BoardProps> = ({
-  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onAddColumn, onEditSummary,
+  boardConfig, issues, avatars, visibleFields, selectedId, groupBy, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onAddColumn, onEditSummary, cardHealthKey,
 }) => {
   const [overKey, setOverKey] = useState<string | null>(null);
   const [overrides, setOverrides] = useState<Map<string, string>>(new Map());
@@ -178,6 +180,7 @@ export const Board: React.FC<BoardProps> = ({
       onAvatarClick={onAvatarClick}
       onEditSummary={onEditSummary}
       menuSlot={renderMenu?.(issue)}
+      healthRequestKey={cardHealthKey?.(issue)}
     />
   );
 

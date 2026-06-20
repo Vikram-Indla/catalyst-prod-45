@@ -64,4 +64,10 @@ export interface WidgetDefinition {
    * a sub-stat), Production Incidents (the data already IS incidents).
    */
   hideOnIncident?: boolean;
+  /**
+   * 2026-06-19: when true, this widget is HIDDEN on project-hub dashboards.
+   * Used for product-only Date Pulse health widgets that have no ph_issues
+   * equivalent.
+   */
+  hideOnProject?: boolean;
 }

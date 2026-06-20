@@ -288,6 +288,8 @@ interface CatalystSidebarDetailsProps {
    * and removes the inline leftContent render.
    */
   statusPill?: React.ReactNode;
+  /** Optional health badge rendered next to statusPill in the header row (BR detail view). */
+  healthBadge?: React.ReactNode;
   /** Label for the work item type in the delete confirmation */
   typeLabel?: string;
   /** External trigger to open the delete confirmation */
@@ -323,7 +325,7 @@ interface CatalystSidebarDetailsProps {
 
 export function CatalystSidebarDetails({
   issue, itemId, projectId, onStatusChange, onClose, onDelete,
-  children, improveDropdown, statusPill, typeLabel = 'item',
+  children, improveDropdown, statusPill, healthBadge, typeLabel = 'item',
   deleteRequested, onDeleteDismiss,
   parentSource, projectKey, onOpenItem,
   dataSource,
@@ -429,12 +431,13 @@ export function CatalystSidebarDetails({
           The lightning-bolt Automate button is removed (not present in Jira BAU view,
           and Vikram directive §9 says remove flash icon). flexWrap so narrow rails
           gracefully push Improve Story to a second line rather than overflow. */}
-      {(statusPill || improveDropdown) && (
+      {(statusPill || improveDropdown || healthBadge) && (
         <div
           data-cv-sidebar-status-header="true"
           style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}
         >
           {statusPill}
+          {healthBadge}
           {improveDropdown}
           {issue?.issue_key && <DiscussTicketButton issueKey={issue.issue_key} variant="full" />}
         </div>

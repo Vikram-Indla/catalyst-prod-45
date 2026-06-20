@@ -32,6 +32,17 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
 import Avatar from '@atlaskit/avatar';
 import type { WorkItem } from '@/types/workItem.types';
+import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
+import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
+
+function WorkListHealthBadge({ requestKey }: { requestKey: string }) {
+  const { health, isLoading } = useBusinessRequestHealth(requestKey);
+  if (isLoading) return (
+    <div style={{ width: 72, height: 18, borderRadius: 3, background: 'var(--ds-background-neutral, #F1F2F4)', opacity: 0.6 }} />
+  );
+  if (!health) return null;
+  return <HealthStatusBadge health={health} />;
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -76,6 +87,11 @@ interface Props {
    */
   hideFooter?: boolean;
   /**
+   * In product mode, returns the BR id/key for health lookup per item.
+   * When provided, each card shows a compact health badge below the metadata row.
+   */
+  getHealthKey?: (item: WorkItem) => string | null | undefined;
+  /**
    * Show a centered spinner instead of cards/empty-state while a parent gate is
    * still resolving (e.g. a saved filter's JQL on first paint — CAT-DEF-013), so
    * the panel never flashes "No work items" or stale rows during that window.
@@ -95,6 +111,7 @@ export function WorkListPanel({
   disableAssigneePicker = false,
   hideFooter = false,
   isLoading = false,
+  getHealthKey,
 }: Props) {
   const [innerQuery, setInnerQuery] = useState('');
   const query = externalQuery !== undefined ? externalQuery : innerQuery;
@@ -424,10 +441,15 @@ export function WorkListPanel({
               )}
             </div>
           </div>
+          {/* Health badge — product mode only */}
+          {getHealthKey && (() => {
+            const hk = getHealthKey(item);
+            return hk ? <div style={{ marginTop: 6 }}><WorkListHealthBadge requestKey={hk} /></div> : null;
+          })()}
         </div>
       );
     },
-    [selectedKey, onSelect, onKeyClick, projectId, disableAssigneePicker],
+    [selectedKey, onSelect, onKeyClick, projectId, disableAssigneePicker, getHealthKey],
   );
 
   // ── Render ────────────────────────────────────────────────────────────────

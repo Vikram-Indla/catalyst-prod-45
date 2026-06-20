@@ -9,6 +9,7 @@ import { filterDemandsCanonical, countMatchingDemands, filterByViewportOverlap }
 import { Scale, Demand } from '@/types/product-roadmap';
 import { useProductRoadmapData } from '@/hooks/useProductRoadmapData';
 import { useProductRoadmapFilters } from '@/hooks/useProductRoadmapFilters';
+import { useBatchBusinessRequestHealth } from '@/hooks/useBatchBusinessRequestHealth';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { Loader2 } from '@/lib/atlaskit-icons';
 import { RoadmapViewport, RoadmapDebugOverlay } from '@/components/roadmaps/RoadmapDateFilterV2';
@@ -116,6 +117,12 @@ export const ProductRoadmapPage: React.FC = () => {
   // Derive scale from viewport
   const scale = appliedViewport.scale;
   
+  const [colorByHealth, setColorByHealth] = useState(false);
+
+  // Batch health for all demands
+  const demandIds = useMemo(() => demands.map(d => d.id), [demands]);
+  const { data: healthMap } = useBatchBusinessRequestHealth(demandIds);
+
   const [showMilestones, setShowMilestones] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [visibleCount, setVisibleCount] = useState(20);
@@ -299,6 +306,31 @@ export const ProductRoadmapPage: React.FC = () => {
         matchingDemands={draftMatchingCount}
       />
       
+      {/* Date Pulse health toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)' }}>
+        <button
+          onClick={() => setColorByHealth(v => !v)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '4px 10px', borderRadius: 4, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+            border: `1px solid ${colorByHealth ? 'var(--ds-border-focused, #1868DB)' : 'var(--ds-border, #DFE1E6)'}`,
+            background: colorByHealth ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)',
+            color: colorByHealth ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+          }}
+        >
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: colorByHealth ? 'var(--ds-background-accent-green-bolder, #1F845A)' : 'var(--ds-background-neutral-hovered, #DCDFE4)', display: 'inline-block' }} />
+          Date Pulse health
+        </button>
+        {colorByHealth && (
+          <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>
+            <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: '#C9372C', marginRight: 4 }} />Overdue</span>
+            <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: '#C25100', marginRight: 4 }} />At Risk</span>
+            <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: '#1F845A', marginRight: 4 }} />Healthy</span>
+            <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: '#DCDFE4', marginRight: 4 }} />Uncommitted</span>
+          </div>
+        )}
+      </div>
+
       <div className="relative flex flex-1 min-h-0 overflow-hidden">
         <DemandColumn
           ref={demandListRef}
@@ -320,6 +352,8 @@ export const ProductRoadmapPage: React.FC = () => {
           timelineStart={timelineStart}
           timelineEnd={timelineEnd}
           onDemandClick={handleDemandClick}
+          healthMap={healthMap}
+          colorByHealth={colorByHealth}
         />
         
         {/* Legend */}

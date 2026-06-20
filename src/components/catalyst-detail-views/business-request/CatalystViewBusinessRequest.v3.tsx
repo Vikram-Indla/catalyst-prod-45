@@ -40,6 +40,8 @@ import { BrMoveProductDialog } from './BrMoveProductDialog';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { BUSINESS_REQUEST_SUBTASK_TYPES } from '../shared/parent-rules';
 import type { CatalystViewBaseProps } from '../shared/types';
+import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
+import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
@@ -49,6 +51,8 @@ export default function CatalystViewBusinessRequestV3({
 }: CatalystViewBaseProps) {
   const { request, resolvedId, isLoading, updateField, deleteRequest } =
     useProductHubBusinessRequest({ requestKey: itemId });
+
+  const { health } = useBusinessRequestHealth(itemId);
 
   const isNewlyCreated = !!(
     request &&
@@ -160,6 +164,7 @@ export default function CatalystViewBusinessRequestV3({
             issueType="Business Request"
           />
         }
+        healthBadge={health ? <HealthStatusBadge health={health} /> : undefined}
         watchersChip={<WatchersChip issueKey={request?.request_key ?? null} />}
         improveDropdown={
           <ImproveIssueDropdown
@@ -170,7 +175,7 @@ export default function CatalystViewBusinessRequestV3({
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [request, updateField, brAsIssueLike, handleApplyDescription],
+    [request, updateField, brAsIssueLike, handleApplyDescription, health],
   );
 
   return (

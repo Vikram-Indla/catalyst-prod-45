@@ -29,8 +29,12 @@ function getDisplayName(status: string): string {
     in_production: "In Production",
     ready_for_qa: "Ready for QA",
     on_hold: "On Hold",
-    // Release Operations lifecycle (release 9-stage)
+    // Release Operations lifecycle (5-stage)
     draft: "Draft",
+    qa: "QA",
+    beta: "Beta",
+    production: "Production",
+    // legacy 9-stage labels (backward compat for any un-migrated rows)
     planned: "Planned",
     in_readiness: "In Readiness",
     ready_for_signoff: "Ready for Sign-off",

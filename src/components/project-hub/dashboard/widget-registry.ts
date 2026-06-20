@@ -69,6 +69,11 @@ import ProductionIncidentsWidget from './widgets/ProductionIncidentsWidget';
 import QADefectsWidget from './widgets/QADefectsWidget';
 import TeamWorkloadWidget from './widgets/TeamWorkloadWidget';
 import TimeInStatusWidget from './widgets/TimeInStatusWidget';
+import BrPulseMapWidget from './widgets/BrPulseMapWidget';
+import HealthRadarWidget from './widgets/HealthRadarWidget';
+import ReleaseConfidenceWidget from './widgets/ReleaseConfidenceWidget';
+import StakeholderLensWidget from './widgets/StakeholderLensWidget';
+import DeliveryCompositionWidget from './widgets/DeliveryCompositionWidget';
 
 export const WIDGET_REGISTRY: WidgetDefinition[] = [
   // ─── §1 STRATEGIC DELIVERY ──────────────────────────────────────────
@@ -99,8 +104,10 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     component: ReleaseHealthWidget,
     /* Releases (rh_releases) are scoped per project — incidents are
        cross-project, so there's no meaningful aggregation. Hidden on
-       incident hub. */
+       incident hub. Product dashboard has Health Radar renamed "Release
+       Health" — this project-scoped widget is redundant there. */
     hideOnIncident: true,
+    hideOnProduct: true,
   },
 
   // ─── §2 VOLUME & SHAPE ──────────────────────────────────────────────
@@ -214,6 +221,69 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     hideOnProduct: true,
     hideOnIncident: true,
   },
+
+  // ─── §6 DATE PULSE HEALTH (product-only) ────────────────────────────
+  // Health visibility for Business Requests via DatePulseEngine.
+  {
+    id: 'br-pulse-map',
+    title: 'BR Pulse Map',
+    subtitle: 'Health distribution across Business Requests',
+    group: 'delivery',
+    defaultSpan: 12,
+    minSpan: 6,
+    defaultPosition: 10,
+    component: BrPulseMapWidget,
+    hideOnProject: true,
+    hideOnIncident: true,
+  },
+  {
+    id: 'health-radar',
+    title: 'Release Health',
+    subtitle: 'At-risk business requests sorted by severity',
+    group: 'delivery',
+    defaultSpan: 12,
+    minSpan: 6,
+    defaultPosition: 11,
+    component: HealthRadarWidget,
+    hideOnProject: true,
+    hideOnIncident: true,
+  },
+  {
+    id: 'release-confidence',
+    title: 'Release Confidence',
+    subtitle: 'Delivery confidence score for this product',
+    group: 'delivery',
+    defaultSpan: 12,
+    minSpan: 6,
+    defaultPosition: 12,
+    component: ReleaseConfidenceWidget,
+    hideOnProject: true,
+    hideOnIncident: true,
+  },
+  {
+    id: 'stakeholder-lens',
+    title: 'Stakeholder Lens',
+    subtitle: 'Health distribution by owner',
+    group: 'team',
+    defaultSpan: 12,
+    minSpan: 6,
+    defaultPosition: 13,
+    component: StakeholderLensWidget,
+    hideOnProject: true,
+    hideOnIncident: true,
+  },
+  {
+    id: 'delivery-composition',
+    title: 'Delivery Composition',
+    subtitle: 'Business requests by process step and health',
+    group: 'delivery',
+    defaultSpan: 12,
+    minSpan: 6,
+    defaultPosition: 14,
+    component: DeliveryCompositionWidget,
+    hideOnProject: true,
+    hideOnIncident: true,
+  },
 ];
 
 /**
@@ -233,7 +303,8 @@ export function getWidgetRegistry(mode: DashboardRegistryMode = 'project'): Widg
   if (mode === 'incident') {
     return WIDGET_REGISTRY.filter((w) => !w.hideOnIncident);
   }
-  return WIDGET_REGISTRY;
+  // project (and tasks) mode: drop product-only Date Pulse widgets
+  return WIDGET_REGISTRY.filter((w) => !w.hideOnProject);
 }
 
 export const WIDGET_GROUPS = [

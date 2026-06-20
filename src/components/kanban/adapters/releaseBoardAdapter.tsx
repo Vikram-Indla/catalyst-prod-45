@@ -31,15 +31,11 @@ import type {
 import type { ReleaseListRow } from '@/hooks/useReleaseHub';
 
 export const RELEASE_BOARD_COLUMNS: KanbanColumnDef[] = [
-  { id: 'col-draft',          name: 'DRAFT',               category: 'todo',        statuses: ['draft', 'todo'] },
-  { id: 'col-planned',        name: 'PLANNED',             category: 'todo',        statuses: ['planned', 'planning'] },
-  { id: 'col-readiness',      name: 'IN READINESS',        category: 'todo',        statuses: ['in_readiness'] },
-  { id: 'col-ready-signoff',  name: 'READY FOR SIGN-OFF',  category: 'in_progress', statuses: ['ready_for_signoff'] },
-  { id: 'col-approved',       name: 'APPROVED',            category: 'in_progress', statuses: ['approved'] },
-  { id: 'col-scheduled',      name: 'SCHEDULED',           category: 'in_progress', statuses: ['scheduled'] },
-  { id: 'col-deploying',      name: 'DEPLOYING',           category: 'in_progress', statuses: ['deploying', 'in_progress'] },
-  { id: 'col-monitoring',     name: 'MONITORING',          category: 'in_progress', statuses: ['monitoring'] },
-  { id: 'col-completed',      name: 'COMPLETED',           category: 'done',        statuses: ['completed', 'released', 'done'] },
+  { id: 'col-draft',        name: 'DRAFT',       category: 'todo',        statuses: ['draft', 'todo', 'planned', 'planning'] },
+  { id: 'col-in-progress',  name: 'IN PROGRESS', category: 'in_progress', statuses: ['in_progress', 'in_readiness', 'ready_for_signoff'] },
+  { id: 'col-qa',           name: 'QA',          category: 'in_progress', statuses: ['qa', 'approved', 'scheduled'] },
+  { id: 'col-beta',         name: 'BETA',        category: 'in_progress', statuses: ['beta', 'deploying', 'monitoring'] },
+  { id: 'col-production',   name: 'PRODUCTION',  category: 'done',        statuses: ['production', 'completed', 'released', 'done'] },
 ];
 
 const STATUS_TO_COL = new Map<string, string>();
@@ -54,8 +50,8 @@ export function releaseColumnIdToStatus(columnId: string): string | null {
 }
 
 function statusCategory(status: string): 'todo' | 'in_progress' | 'done' {
-  if (['completed', 'released', 'done'].includes(status)) return 'done';
-  if (['draft', 'todo', 'planned', 'planning', 'in_readiness'].includes(status)) return 'todo';
+  if (['production', 'completed', 'released', 'done'].includes(status)) return 'done';
+  if (['draft', 'todo', 'planned', 'planning'].includes(status)) return 'todo';
   return 'in_progress';
 }
 

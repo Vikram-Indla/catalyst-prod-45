@@ -14,7 +14,6 @@
  */
 import React, { useState } from "react";
 import { IconButton } from "@atlaskit/button/new";
-import Tooltip from "@atlaskit/tooltip";
 import AddIcon from "@atlaskit/icon/core/add";
 import GrowDiagonalIcon from "@atlaskit/icon/core/grow-diagonal";
 import CloseIcon from "@atlaskit/icon/core/close";
@@ -90,27 +89,11 @@ function relativeTime(iso: string | null): string {
 }
 
 function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
-  const tileBase = {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    flex: "0 0 auto",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "var(--ds-text-inverse, #FFFFFF)",
-    fontWeight: 600,
-  } as const;
-
   if (conversation.kind === "channel") {
     return (
       <span
-        style={{
-          ...tileBase,
-          fontSize: 14,
-          background:
-            TILE_PALETTE[hashIndex(conversation.id, TILE_PALETTE.length)],
-        }}
+        className="cc-conv-glyph cc-conv-glyph--channel"
+        style={{ background: TILE_PALETTE[hashIndex(conversation.id, TILE_PALETTE.length)] }}
       >
         #
       </span>
@@ -121,11 +104,8 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
       (conversation.ticketKey ?? conversation.title ?? "").split("-").pop() ?? "";
     return (
       <span
-        style={{
-          ...tileBase,
-          fontSize: 9,
-          background: "var(--ds-background-brand-bold, #0C66E4)",
-        }}
+        className="cc-conv-glyph cc-conv-glyph--ticket"
+        style={{ background: "var(--ds-background-brand-bold, #0C66E4)" }}
       >
         {num.slice(0, 4)}
       </span>
@@ -133,23 +113,10 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
   }
   // dm — circular avatar
   return (
-    <span
-      style={{ position: "relative", flex: "0 0 32px", width: 32, height: 32 }}
-    >
+    <span className="cc-conv-glyph--dm">
       <span
-        style={{
-          width: 32,
-          height: 32,
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "var(--ds-text-inverse, #FFFFFF)",
-          fontSize: 12,
-          fontWeight: 600,
-          background:
-            TILE_PALETTE[hashIndex(conversation.id, TILE_PALETTE.length)],
-        }}
+        className="cc-conv-glyph__inner"
+        style={{ background: TILE_PALETTE[hashIndex(conversation.id, TILE_PALETTE.length)] }}
       >
         {initials(conversation.title ?? "")}
       </span>
@@ -241,8 +208,8 @@ export function ChatDock({
   return (
     <div
       className={`cc-dock${dockMode === "caty" && catyView === "sidebar" ? " cc-dock--sidebar" : ""}`}
-      role="dialog"
-      aria-label={dockMode === "caty" ? "Assistant" : "CATY"}
+      role="complementary"
+      aria-label={dockMode === "caty" ? "Caty assistant" : "Messages"}
     >
       {/* Shared header — Option C: AI-forward two-row title bar */}
       <div className="cc-dock__headerwrap" role="banner">
@@ -256,41 +223,36 @@ export function ChatDock({
             <CatyMoodFace state="content" size={26} />
           </span>
           <div className="cc-dock__title">
-            <span className="cc-dock__wordmark">CATY</span>
+            <span className="cc-dock__wordmark">{dockMode === "caty" ? "Assistant" : "Messages"}</span>
           </div>
           <div className="cc-dock__actions">
-            <Tooltip content="New conversation" position="bottom">
-              <IconButton
-                icon={(p) => <AddIcon {...p} LEGACY_size="small" />}
-                label="New conversation"
-                appearance="subtle"
-                spacing="compact"
-                onClick={() => {
-                  // If a conversation is open, go back to directory.
-                  // Either way, signal directory to focus search so user can type a name.
-                  onFocusDirectory?.();
-                  setDirFocusTick((t) => t + 1);
-                }}
-              />
-            </Tooltip>
-            <Tooltip content="Open full screen" position="bottom">
-              <IconButton
-                icon={(p) => <GrowDiagonalIcon {...p} LEGACY_size="small" />}
-                label="Open full screen"
-                appearance="subtle"
-                spacing="compact"
-                onClick={onPopOut}
-              />
-            </Tooltip>
-            <Tooltip content="Close" position="bottom">
-              <IconButton
-                icon={(p) => <CloseIcon {...p} LEGACY_size="small" />}
-                label="Close"
-                appearance="subtle"
-                spacing="compact"
-                onClick={onToggleCollapsed}
-              />
-            </Tooltip>
+            <IconButton
+              icon={(p) => <AddIcon {...p} LEGACY_size="small" />}
+              label="New conversation"
+              appearance="subtle"
+              spacing="compact"
+              title="New conversation"
+              onClick={() => {
+                onFocusDirectory?.();
+                setDirFocusTick((t) => t + 1);
+              }}
+            />
+            <IconButton
+              icon={(p) => <GrowDiagonalIcon {...p} LEGACY_size="small" />}
+              label="Open full screen"
+              appearance="subtle"
+              spacing="compact"
+              title="Open full screen"
+              onClick={onPopOut}
+            />
+            <IconButton
+              icon={(p) => <CloseIcon {...p} LEGACY_size="small" />}
+              label="Close"
+              appearance="subtle"
+              spacing="compact"
+              title="Close"
+              onClick={onToggleCollapsed}
+            />
           </div>
         </div>
 
@@ -324,8 +286,8 @@ export function ChatDock({
 
       {/* Messages mode — directory OR conversation pane */}
       {dockMode === "messages" && (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-          <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        <div className="cc-dock__messages-body">
+          <div className="cc-dock__messages-inner">
             {activeId ? (
               // Render pane immediately when activeId is set, even before the
               // conversations query refetches (race condition fix). Stub fills
@@ -356,7 +318,7 @@ export function ChatDock({
             )}
           </div>
 
-          <div className="cc-tabs">
+          {openConversationIds.length > 0 && <div className="cc-tabs" role="tablist" aria-label="Open conversations">
             {openConversationIds.map((id) => {
               const conv = byId.get(id);
               const label = conv
@@ -369,8 +331,9 @@ export function ChatDock({
                 <div
                   key={id}
                   className={isActive ? "cc-tab cc-tab--active" : "cc-tab"}
-                  role="button"
-                  tabIndex={0}
+                  role="tab"
+                  aria-selected={isActive}
+                  tabIndex={isActive ? 0 : -1}
                   onClick={() => onSelect(id)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
@@ -386,21 +349,11 @@ export function ChatDock({
                     />
                   )}
                   <span>
-                    {label.length > 12 ? `${label.slice(0, 11)}…` : label}
+                    {label.length > 18 ? `${label.slice(0, 17)}…` : label}
                   </span>
                   {/* Unread indicator — blue dot when conversation has unread messages and is not active */}
                   {!isActive && (conv?.unreadCount ?? 0) > 0 && (
-                    <span
-                      aria-label="Unread messages"
-                      style={{
-                        width: 7,
-                        height: 7,
-                        borderRadius: "50%",
-                        background: "var(--ds-background-brand-bold, #0C66E4)",
-                        flexShrink: 0,
-                        marginLeft: 4,
-                      }}
-                    />
+                    <span className="cc-tab__unread-dot" aria-label="Unread messages" />
                   )}
                   {/* × dismiss tab — closes the conversation tab without leaving/archiving */}
                   <button
@@ -440,22 +393,13 @@ export function ChatDock({
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
             </button>
-          </div>
+          </div>}
         </div>
       )}
 
       {/* Caty AI mode — new panel, messages mode is paused but state preserved */}
       {dockMode === "caty" && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            flex: 1,
-            minHeight: 0,
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
+        <div className="cc-dock__caty-body">
           <CatyPanel viewMode={catyView} onViewModeChange={setCatyView} />
         </div>
       )}

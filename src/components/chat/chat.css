@@ -454,9 +454,20 @@
 /* ---------- composer ---------- */
 .cc-composer {
   flex: 0 0 auto;
+  position: relative;
   border-top: 1px solid var(--ds-border, #DFE1E6);
   background: var(--ds-surface, #FFFFFF);
   padding: 8px 16px;
+}
+.cc-composer__hint {
+  font-size: 11px;
+  color: var(--ds-text-subtlest, #6B778C);
+  padding: 2px 4px;
+  text-align: right;
+  user-select: none;
+}
+.cc-composer__hint--error {
+  color: var(--ds-text-danger, #AE2A19);
 }
 .cc-composer-box {
   border: 1px solid var(--ds-border, #DFE1E6);

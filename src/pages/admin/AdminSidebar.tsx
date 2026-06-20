@@ -41,6 +41,7 @@ const navItems: NavItem[] = [
   { id: 'configuration', label: 'Configuration', path: '/admin/overview', icon: SettingsIcon },
   { id: 'reference-data', label: 'Reference Data', path: '/admin/departments', icon: DatabaseIcon },
   { id: 'users-access', label: 'Users & Access', path: '/admin/access', icon: ShieldIcon },
+  { id: 'release-ops', label: 'Release Operations', path: '/admin/release-ops', icon: DashboardIcon },
 ];
 
 const collapsibleSections: CollapsibleSection[] = [
