@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { startTransition, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChatRealtimeProvider } from '@/hooks/chat/ChatRealtimeProvider';
 import { ChatDock } from '@/components/chat/dock/ChatDock';
@@ -27,6 +27,11 @@ export default function ChatDockMount() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(true);
+  // dockMounted: false until first open. Once true, dock subtree stays mounted forever.
+  // This + startTransition means first open renders DockDirectory incrementally (yields
+  // every 5ms) instead of a SyncLane commit that freezes the thread. Subsequent toggles
+  // are instant display:none flips — no re-mount, no hook re-run.
+  const [dockMounted, setDockMounted] = useState(false);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeId, setActiveId] = useState<string | undefined>(undefined);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -51,7 +56,10 @@ export default function ChatDockMount() {
   const handleSelect = useCallback((id: string) => {
     setOpenIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
     setActiveId(id);
-    setCollapsed(false);
+    startTransition(() => {
+      setDockMounted(true);
+      setCollapsed(false);
+    });
   }, []);
 
   const handleClose = useCallback((id: string) => {
@@ -78,7 +86,11 @@ export default function ChatDockMount() {
         onSelect={handleSelect}
         onClose={handleClose}
         collapsed={collapsed}
-        onToggleCollapsed={() => setCollapsed((v) => !v)}
+        dockMounted={dockMounted}
+        onToggleCollapsed={() => startTransition(() => {
+          setDockMounted(true);
+          setCollapsed((v) => !v);
+        })}
         onFocusDirectory={() => setActiveId(undefined)}
         onPopOut={() => navigate('/chat')}
       />

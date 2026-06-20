@@ -34,6 +34,14 @@ interface ChatDockProps {
   onSelect: (id: string) => void;
   onClose: (id: string) => void;
   collapsed?: boolean;
+  /**
+   * True once the user has opened the dock at least once. Dock subtree
+   * (including DockDirectory with its 10+ hooks) only mounts after this flag
+   * is set — prevents heavy initialization on page load. Set by ChatDockMount
+   * via startTransition so the first mount is non-blocking (TransitionLane,
+   * not SyncLane — yields every 5ms, never freezes the thread).
+   */
+  dockMounted?: boolean;
   onToggleCollapsed: () => void;
   /**
    * Clears the active conversation so the inline DockDirectory becomes
@@ -134,6 +142,7 @@ export function ChatDock({
   onSelect,
   onClose,
   collapsed = false,
+  dockMounted = false,
   onToggleCollapsed,
   onFocusDirectory,
   onPopOut,
@@ -163,41 +172,45 @@ export function ChatDock({
   // Full list passed to DockDirectory so archived section works.
   const listConversations = conversations ?? [];
 
-  // FAB and dock are ALWAYS rendered from initial mount; display:none controls visibility.
-  // The previous if(collapsed) early-return caused React to delete the FAB node and insert
-  // a new dock subtree on every toggle. Something in that first-time dock mount caused
-  // performSyncWorkOnRoot to not set finishedWork (0 commits). Always rendering both means
-  // the toggle is a trivial style prop update on existing DOM nodes — no subtree creation.
+  const fab = (
+    <button
+      ref={fabRef}
+      type="button"
+      className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}`}
+      style={{ top: pos.y, left: pos.x, display: dockMounted && !collapsed ? 'none' : undefined }}
+      onClick={() => { if (!didMove.current) onToggleCollapsed(); }}
+      onPointerDown={dragHandlers.onPointerDown}
+      onPointerMove={dragHandlers.onPointerMove}
+      onPointerUp={dragHandlers.onPointerUp}
+      aria-label={totalUnread > 0
+        ? `Caty online, ${totalUnread > 99 ? '99+' : totalUnread} unread. Open messages.`
+        : 'Caty online. Open messages.'}
+      title="Open messages"
+    >
+      <span className="cc-wake-disc">
+        <CatyPulseIcon size={28} />
+        {totalUnread > 0 ? (
+          <span
+            className="cc-wake-count"
+            aria-label={`${totalUnread > 99 ? '99+' : totalUnread} unread messages`}
+          >
+            {totalUnread > 99 ? '99+' : totalUnread}
+          </span>
+        ) : (
+          <span className="cc-fab__presence" />
+        )}
+      </span>
+    </button>
+  );
+
+  // Before first open: render only the FAB (no DockDirectory = no 10+ Supabase queries).
+  // startTransition in ChatDockMount sets dockMounted=true on first toggle, causing React
+  // to mount the dock subtree incrementally (TransitionLane, yields every 5ms).
+  if (!dockMounted) return fab;
+
   return (
     <>
-      <button
-        ref={fabRef}
-        type="button"
-        className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}`}
-        style={{ top: pos.y, left: pos.x, display: collapsed ? undefined : 'none' }}
-        onClick={() => { if (!didMove.current) onToggleCollapsed(); }}
-        onPointerDown={dragHandlers.onPointerDown}
-        onPointerMove={dragHandlers.onPointerMove}
-        onPointerUp={dragHandlers.onPointerUp}
-        aria-label={totalUnread > 0
-          ? `Caty online, ${totalUnread > 99 ? '99+' : totalUnread} unread. Open messages.`
-          : 'Caty online. Open messages.'}
-        title="Open messages"
-      >
-        <span className="cc-wake-disc">
-          <CatyPulseIcon size={28} />
-          {totalUnread > 0 ? (
-            <span
-              className="cc-wake-count"
-              aria-label={`${totalUnread > 99 ? '99+' : totalUnread} unread messages`}
-            >
-              {totalUnread > 99 ? '99+' : totalUnread}
-            </span>
-          ) : (
-            <span className="cc-fab__presence" />
-          )}
-        </span>
-      </button>
+      {fab}
       <div
         className={`cc-dock${dockMode === "caty" && catyView === "sidebar" ? " cc-dock--sidebar" : ""}`}
         role="complementary"
