@@ -63,18 +63,20 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/release-ops',
   },
   {
-    // 2026-05-19 — Section renamed from "WorkHub" to "Jira". Every leaf
-    // under this pocket is a Jira-integration setting; "WorkHub" was a
-    // historical codename that confused users.
-    //
-    // 2026-06-20 — User mapping + sync-logs removed (deprecated).
-    id: 'jira',
-    label: 'Jira',
+    // 2026-06-21 — Generalised from "Jira" pocket to "Connections" so all
+    // third-party integrations live under one section. Jira routes migrated
+    // from /admin/workhub/* → /admin/connections/*. Slack, Notion, and Vercel
+    // are placeholder pages (coming soon) wired and ready for future activation.
+    id: 'connections',
+    label: 'Connections',
     iconName: 'Cable',
-    path: '/admin/jira',
+    path: '/admin/connections',
     children: [
-      { label: 'Connection', path: '/admin/workhub/jira-connection' },
-      { label: 'Hierarchy mapping', path: '/admin/workhub/hierarchy-mapping' },
+      { label: 'Jira', path: '/admin/connections/jira' },
+      { label: 'Hierarchy mapping', path: '/admin/connections/jira/hierarchy' },
+      { label: 'Slack', path: '/admin/connections/slack' },
+      { label: 'Notion', path: '/admin/connections/notion' },
+      { label: 'Vercel', path: '/admin/connections/vercel' },
     ],
   },
   {
@@ -100,8 +102,11 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/avatars',
   '/admin/workflows',
   '/admin/release-ops',
-  '/admin/workhub/jira-connection',
-  '/admin/workhub/hierarchy-mapping',
+  '/admin/connections/jira',
+  '/admin/connections/jira/hierarchy',
+  '/admin/connections/slack',
+  '/admin/connections/notion',
+  '/admin/connections/vercel',
   '/admin/ai-governance/translations',
 ]);
 
