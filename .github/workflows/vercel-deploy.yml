@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+env:
+  VERCEL_ORG_ID: team_Du0X963eQg3ApToexQcuPwnr
+  VERCEL_PROJECT_ID: prj_SyNNCEXxBmGSqlWNs9uYTQJ4403W
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -32,9 +36,6 @@ jobs:
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
-
-      - name: Link Vercel project
-        run: vercel link --yes --scope=catalyst45 --project=catalyst-prod-45 --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Create Vercel output structure
         run: |
