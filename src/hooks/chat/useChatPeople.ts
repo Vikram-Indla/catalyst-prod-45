@@ -99,6 +99,7 @@ export function useChatPeople(): { groups: ChatPeopleGroup[]; isLoading: boolean
   const { data, isLoading } = useQuery({
     queryKey: ['chat', 'people'],
     queryFn: fetchPeople,
+    staleTime: 5 * 60 * 1000,
   });
 
   return { groups: data ?? [], isLoading };

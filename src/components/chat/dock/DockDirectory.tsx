@@ -348,6 +348,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   const { data: myProjects } = useQuery({
     queryKey: ['chat', 'my-projects', user?.id],
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       if (!user) return [] as { id: string; key: string; name: string }[];
       const { data: memberRows } = await supabase
@@ -374,6 +375,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
 
   const { data: idMap } = useQuery({
     queryKey: ['chat', 'resource-to-profile'],
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data } = await supabase
         .from('resource_inventory')
@@ -390,6 +392,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
 
   const { data: lastSeen } = useQuery({
     queryKey: ['chat', 'last-seen'],
+    staleTime: 30 * 1000,
     queryFn: async () => {
       const { data } = await (supabase as any)
         .from('user_presence')
@@ -403,6 +406,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   const { data: customChannelCount = 0 } = useQuery({
     queryKey: ['chat', 'custom-channel-count', user?.id],
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       if (!user) return 0;
       const { count } = await supabase

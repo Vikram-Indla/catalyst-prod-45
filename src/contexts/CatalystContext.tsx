@@ -287,7 +287,9 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     if (snapshotId) params.set('snapshotId', snapshotId);
     else params.delete('snapshotId');
     
-    setSearchParams(params, { replace: true });
+    if (params.toString() !== searchParams.toString()) {
+      setSearchParams(params, { replace: true });
+    }
   }, [portfolioId, programId, projectId, teamIds, piIds, snapshotId]);
   
   const value = useMemo<CatalystContextState>(() => ({
