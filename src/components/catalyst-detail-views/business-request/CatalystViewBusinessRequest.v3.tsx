@@ -14,7 +14,7 @@
  *   - CatalystDetailRouter (primary)
  *   - KanbanPage, CardsPage, RequestListingPage, ProductRoadmapPage
  */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
@@ -42,6 +42,7 @@ import { BUSINESS_REQUEST_SUBTASK_TYPES } from '../shared/parent-rules';
 import type { CatalystViewBaseProps } from '../shared/types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
 import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
+import { ReplayOverlay } from '@/components/replay/ReplayOverlay';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
@@ -63,6 +64,7 @@ export default function CatalystViewBusinessRequestV3({
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showReplay, setShowReplay] = useState(false);
 
   const openDetail = useGlobalSearchStore((s) => s.openDetail);
 
@@ -167,10 +169,35 @@ export default function CatalystViewBusinessRequestV3({
         healthBadge={health ? <HealthStatusBadge health={health} /> : undefined}
         watchersChip={<WatchersChip issueKey={request?.request_key ?? null} />}
         improveDropdown={
-          <ImproveIssueDropdown
-            issue={brAsIssueLike}
-            onApplyDescription={handleApplyDescription}
-          />
+          <>
+            <ImproveIssueDropdown
+              issue={brAsIssueLike}
+              onApplyDescription={handleApplyDescription}
+            />
+            {request?.request_key && (
+              <button
+                onClick={() => setShowReplay(true)}
+                title="Replay lifecycle"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  padding: '4px 8px',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRadius: 3,
+                  background: 'var(--ds-surface, #FFFFFF)',
+                  color: 'var(--ds-text-subtle, #42526E)',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  fontFamily: 'var(--ds-font-family-body)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ▶ Replay
+              </button>
+            )}
+          </>
         }
       />
     ),
@@ -236,6 +263,12 @@ export default function CatalystViewBusinessRequestV3({
           currentProductId={request?.product_id ?? null}
           onUpdate={updateField}
           onMoved={onClose}
+        />
+      )}
+      {showReplay && request?.request_key && (
+        <ReplayOverlay
+          rootKey={request.request_key}
+          onClose={() => setShowReplay(false)}
         />
       )}
     </>

@@ -4,7 +4,7 @@
  * Canonical sections: Title, Description, Acceptance Criteria, Activity, Sidebar.
  * Epic-unique: Child work items table (Jira-parity with inline CRUD).
  */
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { catalystToast } from '@/lib/catalystToast';
 import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
@@ -22,6 +22,7 @@ import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
+import { ReplayOverlay } from '@/components/replay/ReplayOverlay';
 
 export default function CatalystViewEpic({
   isOpen, onClose, itemId, projectId, projectKey,
@@ -36,6 +37,7 @@ export default function CatalystViewEpic({
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [showReplay, setShowReplay] = useState(false);
 
   const handleClone = React.useCallback(() => {
     if (!issue?.issue_key) return;
@@ -107,7 +109,7 @@ export default function CatalystViewEpic({
   ), [issue, itemId, projectKey, onOpenItem, isOpen]);
 
   const rightContent = useMemo(() => (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<><ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />{issue?.issue_key && (<button onClick={() => setShowReplay(true)} title="Replay lifecycle" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text-subtle, #42526E)', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap' }}>▶ Replay</button>)}</>} />
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [issue, itemId, projectId, projectKey, onOpenItem, onClose]);
 
@@ -173,6 +175,12 @@ export default function CatalystViewEpic({
       typeLabel="epic"
       onConfirm={() => mutations.deleteIssue.mutate()}
     />
+    {showReplay && issue?.issue_key && (
+      <ReplayOverlay
+        rootKey={issue.issue_key}
+        onClose={() => setShowReplay(false)}
+      />
+    )}
     </>
   );
 }
