@@ -8,7 +8,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { AdminGuard } from '@/components/guards/AdminGuard';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import { useUsers, UserProfile } from '@/hooks/useUsers';
 import { UserDrawer } from '@/pages/admin/components/UserDrawer';
 import { BulkEditModal } from '@/pages/admin/components/BulkEditModal';

@@ -192,7 +192,7 @@ export default function CapacityDepartmentsPage() {
               ))}
               {departments.length === 0 && (
                 <tr>
-                  <td colSpan={4} style={{ padding: "32px 16px", textAlign: "center" }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                  <td colSpan={4} style={{ padding: "32px 16px", textAlign: "center", color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                     No departments configured. Click "Add Department" to create one.
                   </td>
                 </tr>
