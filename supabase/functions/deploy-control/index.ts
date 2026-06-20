@@ -44,7 +44,7 @@ async function handleGet(supabase: ReturnType<typeof createClient>) {
     supabase.from('deploy_settings').select('*').eq('id', 1).maybeSingle(),
   ]);
 
-  const gate = gateRes.data ?? { production_deploy_enabled: true };
+  const gate = gateRes.data ?? { production_deploy_enabled: false };
   const settings = settingsRes.data ?? {};
 
   // Fetch disabled_by email if present
@@ -279,6 +279,45 @@ async function handlePost(
       return err(`GitHub API error ${res.status}: ${txt}`, 502);
     }
     return json({ ok: true, message: 'Workflow dispatch triggered' });
+  }
+
+  if (body.action === 'get_run_jobs') {
+    const { data: settings } = await supabase
+      .from('deploy_settings')
+      .select('github_pat, github_repo')
+      .eq('id', 1)
+      .maybeSingle();
+    if (!settings?.github_pat) return err('GitHub PAT not configured', 400);
+
+    const res = await fetch(
+      `https://api.github.com/repos/${settings.github_repo}/actions/runs/${body.run_id}/jobs`,
+      {
+        headers: {
+          Authorization: `Bearer ${settings.github_pat}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+    if (!res.ok) return err(`GitHub API error ${res.status}`, 502);
+    const jobsBody = await res.json();
+    const jobs = (jobsBody.jobs ?? []).map((j: Record<string, unknown>) => ({
+      id: j.id,
+      name: j.name,
+      status: j.status,
+      conclusion: j.conclusion,
+      started_at: j.started_at,
+      completed_at: j.completed_at,
+      steps: ((j.steps ?? []) as Record<string, unknown>[]).map((s) => ({
+        name: s.name,
+        status: s.status,
+        conclusion: s.conclusion,
+        number: s.number,
+        started_at: s.started_at,
+        completed_at: s.completed_at,
+      })),
+    }));
+    return json({ jobs });
   }
 
   if (body.action === 'save_config') {
