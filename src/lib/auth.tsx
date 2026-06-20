@@ -51,6 +51,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         safeFinalize(nextSession, nextSession?.user ?? null);
         if (event === 'SIGNED_IN') {
           detectAndCacheGeoPresence(); // fire-and-forget; non-fatal
+          // Stamp last_login_at so admins can see real "Last active" times.
+          void supabase.rpc('stamp_last_login');
         }
       }
     });
@@ -187,28 +189,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error: { message: data?.error || "Invalid credentials" } };
       }
 
-      // Successfully logged in - set the session
+      // Successfully logged in - set the session.
+      // supabase-js serializes setSession/getSession behind an exclusive
+      // navigator.locks lock keyed by storageKey. When another Catalyst tab
+      // holds that lock, these calls hang forever and the sign-in spinner
+      // never clears. Bound them (mirrors the init-path Promise.race pattern)
+      // so the spinner always resolves and surfaces an actionable error.
       if (data.session) {
-        // Set complete session object
-        const setErr = await supabase.auth.setSession({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token,
-          expires_in: data.session.expires_in,
-          expires_at: data.session.expires_at,
-          token_type: data.session.token_type,
-          type: data.session.type,
-        });
+        const withAuthLockTimeout = <T,>(p: Promise<T>, label: string): Promise<T> =>
+          Promise.race([
+            p,
+            new Promise<never>((_, reject) =>
+              window.setTimeout(() => reject(new Error(`${label} timeout`)), 6000)
+            ),
+          ]);
 
-        if (setErr?.error) {
-          console.error('setSession error:', setErr.error);
-          return { error: setErr.error };
-        }
+        try {
+          // Set complete session object
+          const setErr = await withAuthLockTimeout(
+            supabase.auth.setSession({
+              access_token: data.session.access_token,
+              refresh_token: data.session.refresh_token,
+              expires_in: data.session.expires_in,
+              expires_at: data.session.expires_at,
+              token_type: data.session.token_type,
+              type: data.session.type,
+            }),
+            'setSession'
+          );
 
-        // Verify session was actually set
-        const { data: session } = await supabase.auth.getSession();
-        if (!session?.session) {
-          console.error('Session not persisted after setSession');
-          return { error: { message: 'Failed to establish session' } };
+          if (setErr?.error) {
+            console.error('setSession error:', setErr.error);
+            return { error: setErr.error };
+          }
+
+          // Verify session was actually set
+          const { data: session } = await withAuthLockTimeout(supabase.auth.getSession(), 'getSession');
+          if (!session?.session) {
+            console.error('Session not persisted after setSession');
+            return { error: { message: 'Failed to establish session' } };
+          }
+        } catch (lockErr: any) {
+          console.error('Auth lock timeout during sign-in:', lockErr?.message);
+          return { error: { message: 'Sign-in is blocked by another open Catalyst tab. Close your other Catalyst tabs and try again.' } };
         }
       }
 

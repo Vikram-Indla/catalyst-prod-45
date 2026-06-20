@@ -1184,6 +1184,99 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
   );
 }
 
+// ─── BulkGenerateModal ────────────────────────────────────────────────────────
+// Generate one-time setup links in bulk for users who have a real email and have
+// never logged in. Placeholder (+jira@catalyst.internal) rows are excluded.
+
+function BulkGenerateModal({ users, onClose }: { users: CatalystUser[]; onClose: () => void }) {
+  const { inviteUser } = useInviteUser();
+  const [running, setRunning] = useState(false);
+  const [done, setDone] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [results, setResults] = useState<{ name: string; email: string; link?: string; error?: string }[]>([]);
+
+  const eligible = users.filter(u =>
+    !u.last_login_at &&
+    !!u.email && /\S+@\S+\.\S+/.test(u.email) && !u.email.includes('+jira@catalyst.internal') &&
+    u.role !== 'super_admin'
+  );
+
+  const run = async () => {
+    setRunning(true); setDone(false);
+    const out: { name: string; email: string; link?: string; error?: string }[] = [];
+    for (const u of eligible) {
+      const r = await inviteUser({
+        email: u.email!,
+        full_name: u.full_name || undefined,
+        role: u.role || 'developer',
+        module_access: u.module_access || DEFAULT_MODULE_ACCESS,
+        delivery_channel: 'manual',
+        purpose: 'invite',
+        regenerate: true,
+        ttl_seconds: 86400,
+      });
+      out.push({ name: u.full_name || u.email!, email: u.email!, link: r.ok ? r.setup_link : undefined, error: r.ok ? undefined : r.error });
+      setResults([...out]);
+    }
+    setRunning(false); setDone(true);
+  };
+
+  const copyAll = async () => {
+    const text = results.filter(r => r.link).map(r => `${r.name} <${r.email}>: ${r.link}`).join('\n');
+    try { await navigator.clipboard.writeText(text); setCopied(true); } catch { /* clipboard blocked */ }
+  };
+
+  const okCount = results.filter(r => r.link).length;
+
+  return (
+    <ModalTransition>
+      <Modal onClose={onClose} width="large" shouldScrollInViewport autoFocus={false} label="Bulk generate setup links">
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #EBECF0' }}>
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#172B4D' }}>Bulk generate setup links</h2>
+          <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6B778C' }}>
+            For users with a real email who have never logged in. Placeholder (+jira) rows are excluded — give them a real email first.
+          </p>
+        </div>
+        <div style={{ padding: 20 }}>
+          {!running && !done && (
+            <p style={{ margin: 0, fontSize: 14, color: '#172B4D' }}>
+              {eligible.length === 0
+                ? 'No eligible users — everyone has either logged in or lacks a real email.'
+                : `${eligible.length} user${eligible.length === 1 ? '' : 's'} will get a fresh single-use setup link (manual / copy).`}
+            </p>
+          )}
+          {(running || done) && (
+            <div style={{ maxHeight: 360, overflowY: 'auto', border: '1px solid #EBECF0', borderRadius: 6 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <tbody>
+                  {results.map((r, i) => (
+                    <tr key={r.email} style={{ borderTop: i === 0 ? 'none' : '1px solid #F1F2F4' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 500, color: '#172B4D', whiteSpace: 'nowrap' }}>{r.name}</td>
+                      <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, color: r.link ? '#172B4D' : '#AE2A19', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0 }}>
+                        {r.link || r.error || '…'}
+                      </td>
+                    </tr>
+                  ))}
+                  {running && results.length < eligible.length && (
+                    <tr><td colSpan={2} style={{ padding: '8px 12px', color: '#6B778C' }}>Generating… {results.length}/{eligible.length}</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {done && <p style={{ margin: '10px 0 0', fontSize: 12, color: '#6B778C' }}>{okCount} of {results.length} links generated.</p>}
+        </div>
+        <div style={{ padding: '14px 20px', borderTop: '1px solid #EBECF0', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+          {done
+            ? <Button appearance="default" isDisabled={okCount === 0} onClick={copyAll}>{copied ? '✓ Copied all' : 'Copy all links'}</Button>
+            : <Button appearance="primary" isLoading={running} isDisabled={eligible.length === 0} onClick={run}>Generate {eligible.length} link{eligible.length === 1 ? '' : 's'}</Button>}
+          <Button appearance="subtle" onClick={onClose} isDisabled={running}>Close</Button>
+        </div>
+      </Modal>
+    </ModalTransition>
+  );
+}
+
 // ─── PeopleTab ────────────────────────────────────────────────────────────────
 
 /**
@@ -1242,6 +1335,7 @@ function PeopleTab() {
   );
   const [editUser, setEditUser] = useState<CatalystUser | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const { data: users = [], isLoading } = useQuery<CatalystUser[]>({
     queryKey: ['admin-access-people'],
@@ -1328,7 +1422,8 @@ function PeopleTab() {
             menuPortalTarget={document.body}
           />
         </div>
-        <div style={{ marginLeft: 'auto' }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+          <Button appearance="subtle" onClick={() => setBulkOpen(true)}>Generate links</Button>
           <Button appearance="primary" iconBefore={PersonAddIcon} onClick={() => setInviteOpen(v => !v)} isSelected={inviteOpen}>
             Create access
           </Button>
@@ -1345,6 +1440,7 @@ function PeopleTab() {
           }}
         />
       )}
+      {bulkOpen && <BulkGenerateModal users={users} onClose={() => setBulkOpen(false)} />}
 
       {/* Table */}
       {isLoading ? (
