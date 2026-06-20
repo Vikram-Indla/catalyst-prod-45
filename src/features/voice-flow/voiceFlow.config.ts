@@ -5,8 +5,8 @@ export const VOICE_FLOW_CONFIG = {
   doubleSpaceThresholdMs: 350,
   /** Max recording duration before auto-stop (3 minutes). */
   maxDurationMs: 180_000,
-  /** Auto-stop after this much silence (MediaRecorder data chunk silence). */
-  silenceAutoStopMs: 3_000,
+  /** Auto-stop after this much true silence (amplitude-based via AnalyserNode). */
+  silenceAutoStopMs: 1_800,
   /** Run Gemini cleanup/polish pass on final result. */
   cleanupEnabled: true,
   /** Auto-commit result without user confirmation step. */
