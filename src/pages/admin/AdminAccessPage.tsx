@@ -19,6 +19,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useInviteUser } from '@/hooks/useInviteUser';
 import { useAuth } from '@/lib/auth';
 import { catalystToast } from '@/lib/catalystToast';
+import { HUB_ICON_REGISTRY, type HubKey } from '@/components/icons';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -31,6 +32,7 @@ interface CatalystUser {
   created_at: string | null;
   module_access: Record<string, boolean> | null;
   approval_status: string | null;
+  last_login_at: string | null;
 }
 
 interface PendingInvite {
@@ -97,6 +99,64 @@ const DEFAULT_MODULE_ACCESS: Record<string, boolean> = Object.fromEntries(
 function moduleCount(moduleAccess: Record<string, boolean> | null): number {
   if (!moduleAccess) return 0;
   return MODULE_ITEMS.filter(m => moduleAccess[m.key] === true).length;
+}
+
+function enabledModuleKeys(moduleAccess: Record<string, boolean> | null): string[] {
+  if (!moduleAccess) return [];
+  return MODULE_ITEMS.filter(m => moduleAccess[m.key] === true).map(m => m.key);
+}
+
+// AdminAccessPage module keys (home, project_hub, …) → HUB_ICON_REGISTRY keys.
+function hubKeyFor(moduleKey: string): HubKey {
+  return (moduleKey === 'home' ? 'home' : moduleKey.replace('_hub', '')) as HubKey;
+}
+
+function userSource(email: string | null): 'catalyst' | 'jira' {
+  return (email || '').includes('+jira@catalyst.internal') ? 'jira' : 'catalyst';
+}
+
+// Honest lifecycle state. Jira-synced rows that never logged in are "Synced",
+// not "Active" — they are resource records, not access-holders.
+type UserState = 'active' | 'pending' | 'suspended' | 'deactivated' | 'synced';
+
+// Canonical Catalyst status-pill colours (statusPalette.ts), text always #292A2E.
+const STATE_META: Record<UserState, { label: string; bg: string }> = {
+  active:      { label: 'Active',        bg: '#94C748' },
+  pending:     { label: 'Pending setup', bg: '#8FB8F6' },
+  suspended:   { label: 'Suspended',     bg: '#FD9891' },
+  deactivated: { label: 'Deactivated',   bg: '#DDDEE1' },
+  synced:      { label: 'Synced',        bg: '#DDDEE1' },
+};
+
+function userState(u: Pick<CatalystUser, 'email' | 'approval_status' | 'last_login_at'>): UserState {
+  if (userSource(u.email) === 'jira' && !u.last_login_at) return 'synced';
+  switch (u.approval_status) {
+    case 'PENDING_APPROVAL': return 'pending';
+    case 'REJECTED': return 'suspended';
+    case 'DISABLED': return 'deactivated';
+    default: return 'active';
+  }
+}
+
+function StatusPill({ state }: { state: UserState }) {
+  const m = STATE_META[state];
+  return (
+    <span style={{ display: 'inline-block', padding: '2px 9px', borderRadius: 4, fontSize: 11, fontWeight: 600, color: '#292A2E', background: m.bg }}>
+      {m.label}
+    </span>
+  );
+}
+
+function relativeTime(iso: string | null): string {
+  if (!iso) return '—';
+  const diff = Date.now() - new Date(iso).getTime();
+  if (diff < 0) return '—';
+  const d = Math.floor(diff / 86400000);
+  if (d === 0) return 'today';
+  if (d === 1) return 'yesterday';
+  if (d < 30) return `${d}d ago`;
+  if (d < 365) return `${Math.floor(d / 30)}mo ago`;
+  return `${Math.floor(d / 365)}y ago`;
 }
 
 // ─── CreateAccessModal ──────────────────────────────────────────────────────
@@ -807,7 +867,7 @@ function PeopleTableSkeleton() {
     animation: 'cp-skeleton-shimmer 1.4s ease-in-out infinite',
     borderRadius: 3,
   };
-  const COLS = 7; // mirrors the People table header: Name, Email, Role, Modules, Status, Joined, actions
+  const COLS = 8; // mirrors the People table header: Name, Email, Role, Modules, Status, Last active, Source, actions
   return (
     <>
       <style>{`@keyframes cp-skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
@@ -841,6 +901,9 @@ function PeopleTab() {
   const [roleFilter, setRoleFilter] = useState<{ label: string; value: string } | null>(
     { label: 'All roles', value: '' }
   );
+  const [sourceFilter, setSourceFilter] = useState<{ label: string; value: string } | null>(
+    { label: 'All sources', value: '' }
+  );
   const [editUser, setEditUser] = useState<CatalystUser | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
 
@@ -848,7 +911,7 @@ function PeopleTab() {
     queryKey: ['admin-access-people'],
     queryFn: async () => {
       const [profilesRes, rolesRes] = await Promise.all([
-        supabase.from('profiles').select('id, full_name, email, avatar_url, created_at, module_access, approval_status').order('full_name'),
+        supabase.from('profiles').select('id, full_name, email, avatar_url, created_at, module_access, approval_status, last_login_at').order('full_name'),
         supabase.from('user_roles').select('user_id, role'),
       ]);
       if (profilesRes.error) throw profilesRes.error;
@@ -863,6 +926,7 @@ function PeopleTab() {
         created_at: p.created_at,
         module_access: (p.module_access as Record<string, boolean> | null) ?? null,
         approval_status: p.approval_status,
+        last_login_at: (p as { last_login_at?: string | null }).last_login_at ?? null,
       }));
     },
     staleTime: 60_000,
@@ -880,8 +944,11 @@ function PeopleTab() {
     if (roleFilter?.value) {
       result = result.filter(u => u.role === roleFilter.value);
     }
+    if (sourceFilter?.value) {
+      result = result.filter(u => userSource(u.email) === sourceFilter.value);
+    }
     return result;
-  }, [users, search, roleFilter]);
+  }, [users, search, roleFilter, sourceFilter]);
 
   return (
     <div style={{ paddingTop: 16 }}>
@@ -895,13 +962,27 @@ function PeopleTab() {
             aria-label="Search users"
           />
         </div>
-        <div style={{ width: 180 }}>
+        <div style={{ width: 160 }}>
           <Select
             options={FILTER_ROLE_OPTIONS}
             value={roleFilter}
             onChange={opt => setRoleFilter(opt as { label: string; value: string } | null)}
             placeholder="Filter by role"
             aria-label="Filter by role"
+            menuPortalTarget={document.body}
+          />
+        </div>
+        <div style={{ width: 170 }}>
+          <Select
+            options={[
+              { label: 'All sources', value: '' },
+              { label: 'Catalyst', value: 'catalyst' },
+              { label: 'Jira-synced', value: 'jira' },
+            ]}
+            value={sourceFilter}
+            onChange={opt => setSourceFilter(opt as { label: string; value: string } | null)}
+            placeholder="Filter by source"
+            aria-label="Filter by source"
             menuPortalTarget={document.body}
           />
         </div>
@@ -922,10 +1003,11 @@ function PeopleTab() {
               {[
                 { label: 'Name' },
                 { label: 'Email' },
-                { label: 'Role', width: 150 },
-                { label: 'Modules', width: 90 },
-                { label: 'Status', width: 100 },
-                { label: 'Joined', width: 100 },
+                { label: 'Role', width: 140 },
+                { label: 'Modules', width: 168 },
+                { label: 'Status', width: 116 },
+                { label: 'Last active', width: 96 },
+                { label: 'Source', width: 110 },
                 { label: '', width: 44 },
               ].map((h, i) => (
                 <th key={i} style={{
@@ -941,13 +1023,14 @@ function PeopleTab() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>
-                  {search || roleFilter?.value ? 'No users match your filters' : 'No users found'}
+                <td colSpan={8} style={{ padding: 40, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>
+                  {search || roleFilter?.value || sourceFilter?.value ? 'No users match your filters' : 'No users found'}
                 </td>
               </tr>
             ) : filtered.map(u => {
-              const isActiveRow = !u.approval_status || u.approval_status === 'APPROVED';
-              const modCount = moduleCount(u.module_access);
+              const state = userState(u);
+              const modKeys = enabledModuleKeys(u.module_access);
+              const source = userSource(u.email);
               return (
                 <tr
                   key={u.id}
@@ -974,23 +1057,34 @@ function PeopleTab() {
                       </Lozenge>
                     ) : '—'}
                   </td>
-                  <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      background: modCount > 0 ? 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : 'var(--ds-background-neutral-subtle, var(--cp-bg-sunken, #F4F5F7))',
-                      color: modCount > 0 ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-disabled, #A5ADBA)',
-                      borderRadius: 10, padding: '0 8px', fontSize: 12, fontWeight: 500,
-                    }}>
-                      {modCount}/{MODULE_ITEMS.length}
-                    </span>
+                  <td style={{ padding: '12px 16px' }}>
+                    {modKeys.length === 0 ? (
+                      <span style={{ color: 'var(--ds-text-disabled, #A5ADBA)' }}>—</span>
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }} title={modKeys.map(k => MODULE_ITEMS.find(m => m.key === k)?.label).join(', ')}>
+                        {modKeys.slice(0, 6).map(k => (
+                          <img key={k} src={HUB_ICON_REGISTRY[hubKeyFor(k)]} alt="" width={18} height={18} style={{ display: 'block' }} />
+                        ))}
+                        {modKeys.length > 6 && (
+                          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle)', fontWeight: 500 }}>+{modKeys.length - 6}</span>
+                        )}
+                      </div>
+                    )}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
-                    {isActiveRow
-                      ? <Lozenge appearance="success">Active</Lozenge>
-                      : <Lozenge appearance="removed">Suspended</Lozenge>}
+                    <StatusPill state={state} />
                   </td>
                   <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>
-                    {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
+                    {relativeTime(u.last_login_at)}
+                  </td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <span style={{
+                      fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999,
+                      border: `1px solid ${source === 'catalyst' ? 'var(--ds-border-information, #8FB8F6)' : 'var(--ds-border, #DFE1E6)'}`,
+                      color: source === 'catalyst' ? 'var(--ds-text-information, #1868DB)' : 'var(--ds-text-subtle, #6B778C)',
+                    }}>
+                      {source === 'catalyst' ? 'Catalyst' : 'Jira-synced'}
+                    </span>
                   </td>
                   <td style={{ padding: '8px 4px' }} onClick={e => { e.stopPropagation(); setEditUser(u); }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>
@@ -1218,6 +1312,7 @@ function EmailLogTab() {
 export default function AdminAccessPage() {
   return (
     <AdminGuard>
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', minHeight: '100%', width: '100%' }}>
       <div style={{ padding: '24px 32px', maxWidth: 1100 }}>
         <div style={{ marginBottom: 24 }}>
           <Heading size="large">Access Management</Heading>
@@ -1235,6 +1330,7 @@ export default function AdminAccessPage() {
           <TabPanel><InvitationsTab /></TabPanel>
           <TabPanel><EmailLogTab /></TabPanel>
         </Tabs>
+      </div>
       </div>
     </AdminGuard>
   );
