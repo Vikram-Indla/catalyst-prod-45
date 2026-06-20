@@ -1,11 +1,40 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { VOICE_FLOW_CONFIG } from '../voiceFlow.config';
+import { decideHotkeyAction } from '../useVoiceHotkey';
 
 /**
  * useVoiceHotkey — unit tests for double-space detection logic.
  *
  * Tests the timing math and guard conditions without mounting the full hook.
  */
+
+describe('decideHotkeyAction — phase-aware key routing', () => {
+  it('recording: space/enter commit, escape cancels', () => {
+    expect(decideHotkeyAction('recording', 'space')).toBe('commit');
+    expect(decideHotkeyAction('recording', 'enter')).toBe('commit');
+    expect(decideHotkeyAction('recording', 'escape')).toBe('cancel');
+    expect(decideHotkeyAction('recording', 'cmd-shift-v')).toBe('none');
+  });
+
+  // The fix: while a result is parked for review/confirm, a fresh double-space
+  // must RE-ARM a new recording — it must NOT be swallowed as a commit, which
+  // is what made the second dictation attempt on the same field do nothing.
+  it('pending: space routes to double-space re-arm, NOT commit', () => {
+    expect(decideHotkeyAction('pending', 'space')).toBe('maybe-double-space');
+  });
+
+  it('pending: enter commits, escape discards, cmd+shift+v re-activates', () => {
+    expect(decideHotkeyAction('pending', 'enter')).toBe('commit');
+    expect(decideHotkeyAction('pending', 'escape')).toBe('cancel');
+    expect(decideHotkeyAction('pending', 'cmd-shift-v')).toBe('activate');
+  });
+
+  it('idle: space detects double-space, cmd+shift+v activates', () => {
+    expect(decideHotkeyAction('idle', 'space')).toBe('maybe-double-space');
+    expect(decideHotkeyAction('idle', 'cmd-shift-v')).toBe('activate');
+    expect(decideHotkeyAction('idle', 'other')).toBe('none');
+  });
+});
 
 describe('double-space timing logic', () => {
   const THRESHOLD = VOICE_FLOW_CONFIG.doubleSpaceThresholdMs;

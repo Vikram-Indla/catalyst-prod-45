@@ -370,8 +370,16 @@ export function VoiceFlowProvider({ children }: Props) {
   const handleActivate = useCallback(async (field: ActiveField) => {
     console.log('[VF] handleActivate status=', statusRef.current, 'prefLang=', getPreferredLanguage());
     if (statusRef.current !== 'idle') {
-      // Allow re-activation from terminal non-active states (error, committing)
-      if (statusRef.current === 'error' || statusRef.current === 'committing') reset();
+      // Allow re-activation from any non-recording state. 'ready'/'review' park a
+      // result awaiting confirm — a fresh double-space means "re-dictate", so
+      // discard the parked result and start clean. 'error'/'committing' are
+      // terminal transitions. Only an in-flight recording blocks re-activation.
+      const reArmable =
+        statusRef.current === 'error' ||
+        statusRef.current === 'committing' ||
+        statusRef.current === 'ready' ||
+        statusRef.current === 'review';
+      if (reArmable) reset();
       else return;
     }
 
@@ -485,9 +493,11 @@ export function VoiceFlowProvider({ children }: Props) {
   // ─── Keyboard shortcuts ───────────────────────────────────────────────
   useVoiceHotkey({
     enabled: featureEnabled,
-    // Only block hotkeys while actively recording/processing/reviewing.
-    // 'error' and 'committing' are terminal transitions — allow re-activation.
-    isVoiceActive: status === 'arming' || status === 'listening' || status === 'processing' || status === 'ready' || status === 'review',
+    // Recording phase: mic capturing or blob transcribing — Space commits/stops.
+    isRecording: status === 'arming' || status === 'listening' || status === 'processing',
+    // Pending phase: result parked for confirm (ready/review), mic OFF — Enter
+    // commits, Escape discards, and a fresh double-space re-arms a new recording.
+    isResultPending: status === 'ready' || status === 'review',
     onActivate: handleActivate,
     onCommit: commit,
     onCancel: cancel,

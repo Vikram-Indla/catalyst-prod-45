@@ -5,37 +5,77 @@ import type { ActiveField } from './voiceFlow.types';
 
 interface UseVoiceHotkeyOptions {
   enabled: boolean;
-  isVoiceActive: boolean;
+  /** Mic is capturing or the blob is being transcribed (arming/listening/processing). */
+  isRecording: boolean;
+  /** A result is parked awaiting confirm (ready/review) — mic is OFF. */
+  isResultPending: boolean;
   onActivate: (field: ActiveField) => void;
   onCommit: () => void;
   onCancel: () => void;
 }
 
+/** Session phase as the hotkey handler sees it. */
+export type HotkeyPhase = 'idle' | 'recording' | 'pending';
+/** Normalised key the handler reacts to. */
+export type HotkeyKey = 'space' | 'enter' | 'escape' | 'cmd-shift-v' | 'other';
+/** What the handler decides to do for a (phase, key) pair. */
+export type HotkeyAction = 'commit' | 'cancel' | 'activate' | 'maybe-double-space' | 'none';
+
+/**
+ * Pure routing decision for a key press, given the current voice phase.
+ *
+ * The `pending` row is the fix for the "second dictation does nothing" bug:
+ * while a low-confidence result is parked for review, the mic is OFF, so Space
+ * must NOT commit — it routes to double-space detection so a fresh double-space
+ * re-arms a new recording on the same field. Enter still commits, Escape discards.
+ */
+export function decideHotkeyAction(phase: HotkeyPhase, key: HotkeyKey): HotkeyAction {
+  if (phase === 'recording') {
+    if (key === 'space' || key === 'enter') return 'commit';
+    if (key === 'escape') return 'cancel';
+    return 'none';
+  }
+  if (phase === 'pending') {
+    if (key === 'enter') return 'commit';
+    if (key === 'escape') return 'cancel';
+    if (key === 'cmd-shift-v') return 'activate';
+    if (key === 'space') return 'maybe-double-space';
+    return 'none';
+  }
+  // idle
+  if (key === 'cmd-shift-v') return 'activate';
+  if (key === 'space') return 'maybe-double-space';
+  return 'none';
+}
+
 /**
  * Voice activation hotkey handler.
  *
- * Activation triggers (both always active):
+ * Activation triggers (from idle, or to re-arm from a parked result):
  *   1. Double-space within doubleSpaceThresholdMs on an eligible field
  *   2. Cmd+Shift+V (Mac) / Ctrl+Shift+V (Windows/Linux) — works from any text field
  *
- * While voice active:
- *   Space or Enter → onCommit()
- *   Escape        → onCancel()
+ * While recording: Space or Enter → onCommit(); Escape → onCancel()
+ * While a result is parked: Enter → onCommit(); Escape → onCancel();
+ *   Space → re-arm a fresh recording (double-space).
  */
 export function useVoiceHotkey({
   enabled,
-  isVoiceActive,
+  isRecording,
+  isResultPending,
   onActivate,
   onCommit,
   onCancel,
 }: UseVoiceHotkeyOptions): void {
   const lastSpaceTimeRef = useRef(0);
-  const isActiveRef = useRef(isVoiceActive);
-  const enabledRef  = useRef(enabled);
+  const isRecordingRef = useRef(isRecording);
+  const isPendingRef   = useRef(isResultPending);
+  const enabledRef     = useRef(enabled);
 
   // Keep refs in sync without triggering effect re-registration
-  isActiveRef.current = isVoiceActive;
-  enabledRef.current  = enabled;
+  isRecordingRef.current = isRecording;
+  isPendingRef.current   = isResultPending;
+  enabledRef.current     = enabled;
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -51,24 +91,32 @@ export function useVoiceHotkey({
       const isEnter  = e.code === 'Enter' || e.code === 'NumpadEnter';
       const isEscape = e.code === 'Escape';
 
-      // ── While voice session is active ──────────────────────────────
-      if (isActiveRef.current) {
-        if (isSpace || isEnter) {
-          e.preventDefault();
-          e.stopPropagation();
-          onCommit();
-        } else if (isEscape) {
-          e.preventDefault();
-          e.stopPropagation();
-          onCancel();
-        }
+      const phase: HotkeyPhase = isRecordingRef.current
+        ? 'recording'
+        : isPendingRef.current ? 'pending' : 'idle';
+      const key: HotkeyKey = isCmdShiftV ? 'cmd-shift-v'
+        : isSpace ? 'space'
+        : isEnter ? 'enter'
+        : isEscape ? 'escape'
+        : 'other';
+
+      const action = decideHotkeyAction(phase, key);
+
+      if (action === 'commit') {
+        e.preventDefault();
+        e.stopPropagation();
+        onCommit();
         return;
       }
-
-      // ── Cmd+Shift+V — activate from any text field ─────────────────
-      if (isCmdShiftV) {
-        const target = document.activeElement;
-        const field = getActiveTextTarget(target);
+      if (action === 'cancel') {
+        e.preventDefault();
+        e.stopPropagation();
+        onCancel();
+        return;
+      }
+      if (action === 'activate') {
+        // Cmd+Shift+V — activate (or re-arm) from any text field
+        const field = getActiveTextTarget(document.activeElement);
         if (field) {
           e.preventDefault();
           e.stopPropagation();
@@ -76,14 +124,13 @@ export function useVoiceHotkey({
         }
         return;
       }
-
-      // ── Double-space detection ─────────────────────────────────────
-      if (!isSpace) {
-        // Any non-space key resets the timer
+      if (action === 'none') {
+        // Any non-space key resets the double-space timer
         lastSpaceTimeRef.current = 0;
         return;
       }
 
+      // action === 'maybe-double-space' — Space in idle or pending phase
       const now = performance.now();
       const delta = now - lastSpaceTimeRef.current;
 
@@ -91,7 +138,7 @@ export function useVoiceHotkey({
         // Second space within window — check if focused element is eligible
         const target = document.activeElement;
         const field = getActiveTextTarget(target);
-        console.log('[VF-HK] double-space detected delta=', Math.round(delta), 'target=', target?.tagName, 'id=', (target as HTMLElement)?.id, 'field=', field ? field.kind : 'NULL', 'isActive=', isActiveRef.current);
+        console.log('[VF-HK] double-space detected delta=', Math.round(delta), 'target=', target?.tagName, 'id=', (target as HTMLElement)?.id, 'field=', field ? field.kind : 'NULL', 'phase=', phase);
 
         if (field) {
           e.preventDefault();
@@ -101,6 +148,7 @@ export function useVoiceHotkey({
           // Remove the first space that was already typed
           removeSpaceBefore(field);
 
+          // onActivate re-arms; the provider discards any parked result first.
           onActivate(field);
           return;
         }
