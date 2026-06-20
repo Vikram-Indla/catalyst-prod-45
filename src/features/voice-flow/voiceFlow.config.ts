@@ -26,17 +26,20 @@ export const VOICE_FLOW_CONFIG = {
   confidenceReviewEnabled: true,
 } as const;
 
-// ─── Language preference ─────────────────────────────────────────────────────
-const LANG_KEY = 'catalyst.voice.language';
+// ─── Language preference (page-session scope only) ───────────────────────────
+// Intentionally NOT persisted to localStorage — persisting 'en' across page
+// loads causes Urdu/Arabic/Hindi speech to bypass Groq and land in native
+// SpeechRecognition, which produces phonetic Roman Urdu instead of translations.
+// Every page load starts with Groq; native path only activates mid-session
+// after Groq confirms the user is speaking English.
+let _sessionPreferredLang: string | null = null;
 
-/** Persist last detected language for use as hint on next session. */
 export function setPreferredLanguage(lang: string): void {
-  try { localStorage.setItem(LANG_KEY, lang); } catch { /* ignore */ }
+  _sessionPreferredLang = lang;
 }
 
-/** Returns last detected/pinned language, or null for auto. */
 export function getPreferredLanguage(): string | null {
-  try { return localStorage.getItem(LANG_KEY); } catch { return null; }
+  return _sessionPreferredLang;
 }
 
 /** Fields that must never activate voice regardless of kind. */

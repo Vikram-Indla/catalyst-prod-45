@@ -32,6 +32,12 @@ export function VoiceFlowProvider({ children }: Props) {
     import.meta.env.VITE_VOICE_DICTATION_ENABLED === 'true' &&
     isModuleEnabled('voice_dictation');
 
+  // One-time migration: remove stale localStorage language key that caused
+  // Urdu/Arabic/Hindi sessions to bypass Groq and use native SpeechRecognition.
+  useEffect(() => {
+    try { localStorage.removeItem('catalyst.voice.language'); } catch { /* ignore */ }
+  }, []);
+
   const [status, setStatus]                     = useState<VoiceStatus>('idle');
   const [result, setResult]                     = useState<VoiceResult | null>(null);
   const [errorMessage, setErrorMessage]         = useState<string | null>(null);
