@@ -4,22 +4,24 @@
  * Backfills BOTH:
  *   - catalyst_status_history  (status transitions)
  *   - work_item_changelogs     (every field — assignee, priority, etc.)
- *
- * 2026-06-10 — Pivoted from GET /rest/api/3/issue/{key}/changelog (returned
- * empty histories on this Jira instance) to the proven POST /search/jql
- * with `expand: ['changelog']` body — same shape wh-jira-bulk-sync uses,
- * which is confirmed working in prod. Reuse-first per CLAUDE.md 2026-05-16.
- *
- * Per-issue loop is retained for granular reporting but the page size is
- * conservative (25) to stay under the 60s edge-fn budget when expand:
- * changelog inflates payload.
+ *   - work_item_transitions    (Catalyst Replay canonical source)
  *
  * Invocation:
  *   POST /functions/v1/wh-jira-changelog-backfill
  *   body: { projects?: string[], limit?: number, dry_run?: boolean }
+ *
+ * `limit` caps the number of Jira issues scanned per project (not the
+ * ph_issues preload). All 2026+ ph_issues with real Jira keys are loaded
+ * into memory so the Jira-result intersection check works regardless of
+ * alphabetical ordering.
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { mapChangelogItem, type ChangelogContext } from './mapper.ts';
+import {
+  mapChangelogItem,
+  resolveStatusCategoryLabel,
+  type ChangelogContext,
+  type TransitionRow,
+} from './mapper.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,6 +33,10 @@ interface BackfillRequest {
   limit?: number;
   start_after_key?: string;
   dry_run?: boolean;
+  // JQL date window — use to split large projects across multiple calls.
+  // Format: "2026/01/01" (Jira JQL date format).
+  date_from?: string;
+  date_to?: string;
 }
 
 interface JiraIssue {
@@ -56,6 +62,10 @@ const PAGE_SIZE = 25;
 const REQUEST_DELAY_MS = 75;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// Real Jira keys are PROJECT-NUMBER. Synthetic keys (LOCAL-*, timestamp-*)
+// never appear in Jira API results and can be skipped.
+const JIRA_KEY_RE = /^[A-Z]+-\d+$/;
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
@@ -66,12 +76,11 @@ Deno.serve(async (req) => {
 
   const body: BackfillRequest = await req.json().catch(() => ({}));
   const projectFilter = body.projects ?? null;
-  const issueLimit = Math.max(1, Math.min(body.limit ?? 500, 5000));
-  const startAfterKey = body.start_after_key ?? null;
+  const jiraScanLimit = Math.max(1, Math.min(body.limit ?? 500, 5000));
   const dryRun = !!body.dry_run;
+  const dateFrom = body.date_from ?? '2026/01/01';
+  const dateTo = body.date_to ?? null;
 
-  // 1. Sync log entry — ph_sync_log has no metadata column, so we stash
-  // the summary in `warnings` (jsonb) which IS present.
   const { data: logEntry } = await supabase
     .from('ph_sync_log')
     .insert({
@@ -88,6 +97,8 @@ Deno.serve(async (req) => {
     issues_with_changelog: 0,
     transitions_inserted: 0,
     transitions_skipped_dupe: 0,
+    replay_transitions_inserted: 0,
+    replay_transitions_skipped_dupe: 0,
     changelogs_inserted: 0,
     changelogs_skipped_dupe: 0,
     errors: [] as Array<{ issue_key: string; message: string }>,
@@ -96,7 +107,6 @@ Deno.serve(async (req) => {
   };
 
   try {
-    // 2. Connection
     const { data: conn } = await supabase
       .from('ph_jira_connection')
       .select('site_url, auth_email, auth_token_encrypted, status')
@@ -109,8 +119,30 @@ Deno.serve(async (req) => {
     const baseHeaders = { Authorization: authHeader, Accept: 'application/json' };
     const postHeaders = { ...baseHeaders, 'Content-Type': 'application/json' };
 
-    // 3. Determine project scope. Default = all distinct project_keys in
-    // ph_issues (matches the legacy default).
+    let statusMappingLookup: Record<string, 'todo' | 'progress' | 'done'> = {};
+    try {
+      const { data: cfg } = await supabase
+        .from('wh_config')
+        .select('value')
+        .eq('key', 'status_mapping')
+        .single();
+      const raw = cfg?.value;
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (parsed && typeof parsed === 'object') {
+        for (const [statusName, bucket] of Object.entries(parsed)) {
+          const b = String(bucket).toLowerCase();
+          const norm = b === 'done' || b === 'complete'
+            ? 'done'
+            : b === 'progress' || b === 'in progress' || b === 'in_progress' || b === 'indeterminate'
+            ? 'progress'
+            : 'todo';
+          statusMappingLookup[statusName.toLowerCase().trim()] = norm as 'todo' | 'progress' | 'done';
+        }
+      }
+    } catch {
+      // status_mapping absent — heuristics handle it.
+    }
+
     let projectsToScan: string[] = projectFilter ?? [];
     if (!projectsToScan.length) {
       const { data: distinctProjects } = await supabase
@@ -120,53 +152,47 @@ Deno.serve(async (req) => {
       projectsToScan = Array.from(new Set((distinctProjects ?? []).map((r: any) => r.project_key)));
     }
 
-    // 4. Build a key→id (uuid) lookup for ph_issues so we can populate
-    // work_item_changelogs.work_item_id without a per-issue SELECT.
+    // Load ALL 2026+ ph_issues with real Jira keys into memory.
+    // `jiraScanLimit` only caps the Jira API scan, not this preload.
     let phQuery = supabase
       .from('ph_issues')
-      .select('id, issue_key, project_key, jira_created_at, jira_updated_at')
-      .order('issue_key', { ascending: true })
-      .limit(issueLimit);
+      .select('id, issue_key, project_key')
+      .or('jira_created_at.gte.2026-01-01,jira_updated_at.gte.2026-01-01')
+      .limit(10000);
     if (projectsToScan.length) phQuery = phQuery.in('project_key', projectsToScan);
-    if (startAfterKey) phQuery = phQuery.gt('issue_key', startAfterKey);
     const { data: tickets, error: tErr } = await phQuery;
     if (tErr) throw tErr;
 
-    // 2026+ guardrail
-    const ticketsInWindow = (tickets ?? []).filter((tk: any) => {
-      const c = tk.jira_created_at ? new Date(tk.jira_created_at).getFullYear() : null;
-      const u = tk.jira_updated_at ? new Date(tk.jira_updated_at).getFullYear() : null;
-      return (c !== null && c >= 2026) || (u !== null && u >= 2026);
-    });
+    // Filter to real Jira keys only (PROJECT-NUMBER pattern).
+    const ticketsInWindow = (tickets ?? []).filter((t: any) => JIRA_KEY_RE.test(t.issue_key));
 
     if (!ticketsInWindow.length) {
-      summary.has_more = false;
       if (logId) await supabase.from('ph_sync_log').update({
         status: 'completed',
         completed_at: new Date().toISOString(),
         warnings: summary as any,
       }).eq('id', logId);
-      return new Response(JSON.stringify({ success: true, summary, message: 'No tickets to process (2026+ window).' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      return new Response(
+        JSON.stringify({ success: true, summary, message: 'No real Jira keys found in 2026+ window.' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
     }
 
-    // key → { uuid, project_key } map for O(1) lookup post-fetch
     const ticketMap = new Map<string, { id: string; project_key: string }>();
     for (const t of ticketsInWindow) ticketMap.set(t.issue_key, { id: t.id, project_key: t.project_key });
+    const allKeysSet = new Set(ticketMap.keys());
+
+    console.log(`[backfill] loaded ${allKeysSet.size} real Jira keys from ph_issues`);
 
     const searchUrl = `${base}/rest/api/3/search/jql`;
-
-    // 5. Scan projects, page through search/jql with expand:changelog.
-    //    Only process issues that ALSO appear in our 2026+ ph_issues set.
-    const allKeysSet = new Set(ticketsInWindow.map((t: any) => t.issue_key));
 
     for (const projectKey of projectsToScan) {
       let nextPageToken: string | undefined;
       let projectIssueCount = 0;
       do {
         const reqBody: Record<string, unknown> = {
-          jql: `project = "${projectKey}" AND (created >= "2026/01/01" OR updated >= "2026/01/01")`,
-          fields: ['summary'], // minimum — we only need keys + embedded changelog
+          jql: `project = "${projectKey}" AND (created >= "${dateFrom}" OR updated >= "${dateFrom}")${dateTo ? ` AND (created < "${dateTo}" OR updated < "${dateTo}")` : ''}`,
+          fields: ['summary'],
           expand: 'changelog',
           maxResults: PAGE_SIZE,
         };
@@ -187,7 +213,6 @@ Deno.serve(async (req) => {
         const data = await res.json();
         const issues: JiraIssue[] = Array.isArray(data.issues) ? data.issues : [];
 
-        // 6. Per-issue: collect rows, dual-upsert.
         for (const issue of issues) {
           if (!allKeysSet.has(issue.key)) continue;
           const meta = ticketMap.get(issue.key)!;
@@ -198,6 +223,14 @@ Deno.serve(async (req) => {
 
           const transitionsForIssue: Array<Record<string, unknown>> = [];
           const changelogsForIssue: Array<Record<string, unknown>> = [];
+          const statusEvents: Array<{
+            jira_history_id: string;
+            created: string;
+            from_status: string | null;
+            to_status: string;
+            author: string | null;
+            avatar: string | null;
+          }> = [];
 
           for (const h of histories) {
             const ctx: ChangelogContext = {
@@ -214,17 +247,67 @@ Deno.serve(async (req) => {
               const rows = mapChangelogItem(item, ctx);
               if (rows.status_history) transitionsForIssue.push(rows.status_history);
               if (rows.changelog) changelogsForIssue.push(rows.changelog);
+              if (item.field === 'status' && (item.toString ?? null)) {
+                statusEvents.push({
+                  jira_history_id: h.id,
+                  created: h.created,
+                  from_status: item.fromString ?? null,
+                  to_status: item.toString as string,
+                  author: h.author?.displayName ?? null,
+                  avatar: h.author?.avatarUrls?.['48x48'] ?? h.author?.avatarUrls?.['24x24'] ?? null,
+                });
+              }
             }
           }
 
-          if (!transitionsForIssue.length && !changelogsForIssue.length) continue;
+          statusEvents.sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
+          const replayRows: TransitionRow[] = [];
+          for (let si = 0; si < statusEvents.length; si++) {
+            const ev = statusEvents[si];
+            const prev = si > 0 ? statusEvents[si - 1] : null;
+            const timeInFromMs = prev
+              ? new Date(ev.created).getTime() - new Date(prev.created).getTime()
+              : null;
+            const toCat = resolveStatusCategoryLabel(ev.to_status, statusMappingLookup);
+            replayRows.push({
+              work_item_id: meta.id,
+              from_status: ev.from_status,
+              to_status: ev.to_status,
+              from_status_category: resolveStatusCategoryLabel(ev.from_status, statusMappingLookup),
+              to_status_category: toCat ?? 'In Progress',
+              transitioned_by: ev.author ?? 'Unknown',
+              transitioned_by_avatar: ev.avatar,
+              transitioned_at: ev.created,
+              time_in_from_status_ms: timeInFromMs,
+              jira_changelog_id: ev.jira_history_id,
+            });
+          }
+
+          if (!transitionsForIssue.length && !changelogsForIssue.length && !replayRows.length) continue;
           if (dryRun) {
             summary.transitions_inserted += transitionsForIssue.length;
             summary.changelogs_inserted += changelogsForIssue.length;
+            summary.replay_transitions_inserted += replayRows.length;
             continue;
           }
 
-          // 6a. catalyst_status_history
+          // work_item_transitions (Replay)
+          for (let i = 0; i < replayRows.length; i += 200) {
+            const chunk = replayRows.slice(i, i + 200);
+            const { data: inserted, error: insErr } = await supabase
+              .from('work_item_transitions')
+              .upsert(chunk, { onConflict: 'work_item_id,jira_changelog_id', ignoreDuplicates: true })
+              .select('id');
+            if (insErr) {
+              summary.errors.push({ issue_key: issue.key, message: `replay_transition_insert_failed: ${insErr.message}` });
+            } else {
+              const insertedCount = inserted?.length ?? 0;
+              summary.replay_transitions_inserted += insertedCount;
+              summary.replay_transitions_skipped_dupe += chunk.length - insertedCount;
+            }
+          }
+
+          // catalyst_status_history
           for (let i = 0; i < transitionsForIssue.length; i += 200) {
             const chunk = transitionsForIssue.slice(i, i + 200);
             const { data: inserted, error: insErr } = await supabase
@@ -240,7 +323,7 @@ Deno.serve(async (req) => {
             summary.transitions_skipped_dupe += chunk.length - insertedCount;
           }
 
-          // 6b. work_item_changelogs
+          // work_item_changelogs
           for (let i = 0; i < changelogsForIssue.length; i += 200) {
             const chunk = changelogsForIssue.slice(i, i + 200);
             const { data: inserted, error: insErr } = await supabase
@@ -260,12 +343,12 @@ Deno.serve(async (req) => {
         projectIssueCount += issues.length;
         nextPageToken = data.nextPageToken;
         await sleep(REQUEST_DELAY_MS);
-      } while (nextPageToken && projectIssueCount < issueLimit);
+      } while (nextPageToken && projectIssueCount < jiraScanLimit);
 
-      console.log(`[backfill] project=${projectKey} issues_scanned=${projectIssueCount}`);
+      console.log(`[backfill] project=${projectKey} jira_scanned=${projectIssueCount} processed=${summary.issues_processed}`);
     }
 
-    summary.has_more = false; // search/jql exhausts pagination per-project
+    summary.has_more = false;
 
     if (logId) await supabase.from('ph_sync_log').update({
       status: summary.errors.length ? 'completed_with_errors' : 'completed',
