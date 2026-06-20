@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     const delivery_channel = CHANNELS.includes(body.delivery_channel) ? body.delivery_channel : 'email';
     const regenerate = body.regenerate === true;
 
-    // Safe-landing guard (server-side): invites must grant ≥1 safe module.
+    // Safe-landing guard (server-side): invites must grant at least 1 safe module.
     if (purpose === 'invite') {
       const safe = ['home', 'project_hub', 'product_hub'];
       const hasSafe = safe.some((k) => module_access?.[k] === true);
@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
       const { error: emailErr } = await supabaseAdmin.functions.invoke('email-send', {
         body: {
           to: email, recipient: email, channel: 'email', subject: subj,
-          text: `${subj}\n\n${setupLink}\n\nThis link is single-use and expires soon.`,
+          text: `${subj} — open this single-use link (expires soon): ${setupLink}`,
           html: linkHtml(subj, inviterName, setupLink, expiresAt, purpose),
           template_name: purpose,
           template_props: { inviterName, acceptUrl: setupLink },
