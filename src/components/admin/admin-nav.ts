@@ -33,7 +33,7 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/users-access',
     children: [
       { label: 'Access Management', path: '/admin/access' },
-      { label: 'Resource Names', path: '/admin/users' },
+      { label: 'Resource Planner', path: '/admin/users' },
       { label: 'Resource Departments', path: '/admin/capacity-departments' },
     ],
   },
