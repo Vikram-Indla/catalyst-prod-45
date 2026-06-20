@@ -586,6 +586,23 @@ export function CatalystReplay({ rootKey: propKey, embedded }: CatalystReplayPro
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll to where the data lives when lanes load
+  useEffect(() => {
+    if (!data || !lanes.length || !containerRef.current) return;
+    // Find the earliest segment start across all lanes
+    let earliest = Infinity;
+    for (const lane of lanes) {
+      for (const seg of lane.segments) {
+        const x = dateToX(new Date(seg.startAt), GRANULARITY);
+        if (x < earliest) earliest = x;
+      }
+    }
+    if (earliest === Infinity) return;
+    // Scroll so earliest segment is ~80px from the left edge of the timeline area
+    const target = Math.max(0, earliest - 80);
+    containerRef.current.scrollLeft = target;
+  }, [data]);
+
   return (
     <div
       style={{
