@@ -282,7 +282,7 @@ const ReleaseSettingsPage = lazy(() => import("../pages/releasehub/ReleaseSettin
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 // AdminGuard was used by /admin/v2 shell (deprecated 2026-05-09) — removed
 
-const UsersManagement = lazy(() => import("../pages/admin/UsersManagement"));
+const ResourcePlannerPage = lazy(() => import("../modules/plan").then(m => ({ default: m.ResourcePlannerPage })));
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
@@ -969,7 +969,7 @@ export default function FullAppRoutes() {
           <Route path="departments" element={<Navigate to="/admin/access" replace />} />
           <Route path="business-owners" element={<Navigate to="/admin/access" replace />} />
           <Route path="access" element={<S><AdminAccessPage /></S>} />
-          <Route path="users" element={<S><UsersManagement /></S>} />
+          <Route path="users" element={<S><ResourcePlannerPage /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
