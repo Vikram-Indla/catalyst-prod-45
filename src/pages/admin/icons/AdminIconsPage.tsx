@@ -155,7 +155,7 @@ const cardOuterStyle: React.CSSProperties = {
   flexDirection: 'column',
   padding: 10,
   borderRadius: 6,
-  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  backgroundColor: 'var(--ds-surface, #FFFFFF)',
   border: '1px solid var(--ds-border, #DCDFE4)',
   transition: 'all 150ms ease',
   minWidth: 0,
@@ -167,7 +167,7 @@ const previewWellLightStyle: React.CSSProperties = {
   justifyContent: 'center',
   height: 64,
   borderRadius: 4,
-  backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+  backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
   marginBottom: 8,
 };
 
@@ -683,15 +683,13 @@ export default function AdminIconsPage() {
         <button
           type="button"
           onClick={() => {
-             
-            console.log('[AdminIcons] + New category clicked');
             setNewCategoryOpen(true);
           }}
           style={{
             padding: '6px 14px',
             borderRadius: 4,
             background: 'var(--ds-background-brand-bold, #1868DB)',
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            color: 'var(--ds-surface, #FFFFFF)',
             border: 'none',
             fontWeight: 500,
             fontSize: 14,
@@ -809,7 +807,7 @@ export default function AdminIconsPage() {
             padding: '8px 12px',
             borderRadius: 4,
             fontSize: 12,
-            fontFamily: 'var(--cp-font-mono)',
+            fontFamily: 'var(--ds-font-family-code, monospace)',
           }}
         >
           [debug] newCategoryOpen=true — modal should be visible

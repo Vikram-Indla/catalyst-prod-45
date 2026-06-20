@@ -181,45 +181,34 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
         : Promise.resolve(),
     ]);
 
-    const conversations = await Promise.all(
-      rows.map(async ({ member, conv }) => {
-        let unreadCount = 0;
-        try {
-          let q = db
-            .from('chat_messages')
-            .select('id', { count: 'exact', head: true })
-            .eq('conversation_id', conv.id)
-            .is('deleted_at', null)
-            .neq('author_id', userId);
-          if (member.last_read_at) q = q.gt('created_at', member.last_read_at);
-          const { count, error: cErr } = await q;
-          if (!cErr && typeof count === 'number') unreadCount = count;
-        } catch {
-          unreadCount = 0;
-        }
-
-        const mapped: ChatConversation = {
-          id: conv.id,
-          kind: (conv.kind ?? 'channel') as ChatConversationKind,
-          ticketKey: conv.ticket_key ?? null,
-          ticketType: conv.ticket_key ? (ticketTypeMap[conv.ticket_key] ?? null) : null,
-          projectKey: conv.project_key ?? null,
-          projectName: conv.project_key ? (projectNameMap[conv.project_key] ?? null) : null,
-          title: conv.kind === 'channel' && conv.project_key
-            ? (projectNameMap[conv.project_key] ?? conv.title ?? '')
-            : (conv.title ?? ''),
-          description: (conv as any).description ?? null,
-          isArchived: !!conv.is_archived,
-          isPrivate: !!conv.is_private,
-          isPinned: !!member.is_pinned,
-          isStarred: !!member.is_starred,
-          lastMessageAt: conv.last_message_at ?? null,
-          lastMessagePreview: conv.last_message_preview ?? null,
-          unreadCount,
-        };
-        return mapped;
-      }),
-    );
+    const conversations = rows.map(({ member, conv }) => {
+      // Derive unread from already-fetched last_read_at vs last_message_at.
+      // Avoids any extra network call. When last_read_at is null the conversation
+      // is entirely unread (1+). When both exist compare timestamps.
+      const lastMsg = conv.last_message_at ? new Date(conv.last_message_at).getTime() : 0;
+      const lastRead = member.last_read_at ? new Date(member.last_read_at).getTime() : 0;
+      const unreadCount = lastMsg > lastRead ? 1 : 0;
+      const mapped: ChatConversation = {
+        id: conv.id,
+        kind: (conv.kind ?? 'channel') as ChatConversationKind,
+        ticketKey: conv.ticket_key ?? null,
+        ticketType: conv.ticket_key ? (ticketTypeMap[conv.ticket_key] ?? null) : null,
+        projectKey: conv.project_key ?? null,
+        projectName: conv.project_key ? (projectNameMap[conv.project_key] ?? null) : null,
+        title: conv.kind === 'channel' && conv.project_key
+          ? (projectNameMap[conv.project_key] ?? conv.title ?? '')
+          : (conv.title ?? ''),
+        description: (conv as any).description ?? null,
+        isArchived: !!conv.is_archived,
+        isPrivate: !!conv.is_private,
+        isPinned: !!member.is_pinned,
+        isStarred: !!member.is_starred,
+        lastMessageAt: conv.last_message_at ?? null,
+        lastMessagePreview: conv.last_message_preview ?? null,
+        unreadCount,
+      };
+      return mapped;
+    });
 
     // Resolve DM + group_dm display titles from member profile names (both
     // are stored with title=null and otherwise render blank).
@@ -245,9 +234,15 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
       }
     }
 
+    const timestampMap = new Map<string, number>();
+    for (const c of conversations) {
+      if (c.lastMessageAt) {
+        timestampMap.set(c.id, Date.parse(c.lastMessageAt));
+      }
+    }
     conversations.sort((a, b) => {
-      const ta = a.lastMessageAt ? Date.parse(a.lastMessageAt) : 0;
-      const tb = b.lastMessageAt ? Date.parse(b.lastMessageAt) : 0;
+      const ta = timestampMap.get(a.id) ?? 0;
+      const tb = timestampMap.get(b.id) ?? 0;
       return tb - ta;
     });
 

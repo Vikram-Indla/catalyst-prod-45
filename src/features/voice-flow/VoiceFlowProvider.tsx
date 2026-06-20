@@ -368,6 +368,7 @@ export function VoiceFlowProvider({ children }: Props) {
 
   // ─── Activation ──────────────────────────────────────────────────────
   const handleActivate = useCallback(async (field: ActiveField) => {
+    console.log('[VF] handleActivate status=', statusRef.current, 'prefLang=', getPreferredLanguage());
     if (statusRef.current !== 'idle') {
       // Allow re-activation from terminal non-active states (error, committing)
       if (statusRef.current === 'error' || statusRef.current === 'committing') reset();
@@ -398,7 +399,7 @@ export function VoiceFlowProvider({ children }: Props) {
       const sessionStart = Date.now();
       let finalTranscript = '';
 
-      recognition.onstart = () => setStatusBoth('listening');
+      recognition.onstart = () => { console.log('[VF] native SR onstart'); setStatusBoth('listening'); };
 
       recognition.onresult = (event) => {
         let interim = '';
@@ -430,6 +431,7 @@ export function VoiceFlowProvider({ children }: Props) {
         nativeModeRef.current = false;
         recognitionRef.current = null;
         const err = (event as SpeechRecognitionErrorEvent).error;
+        console.error('[VF] native SR onerror=', err, 'status=', statusRef.current);
         const msg = err === 'not-allowed'
           ? 'Microphone access denied. Check browser permissions.'
           : err === 'no-speech' ? 'No speech detected' : `Speech recognition error: ${err}`;
@@ -439,6 +441,7 @@ export function VoiceFlowProvider({ children }: Props) {
       };
 
       try {
+        console.log('[VF] calling recognition.start() nativeModeRef=', nativeModeRef.current);
         recognition.start();
       } catch {
         nativeModeRef.current = false;

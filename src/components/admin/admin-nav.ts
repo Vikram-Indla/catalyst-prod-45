@@ -33,7 +33,6 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/users-access',
     children: [
       { label: 'Access Management', path: '/admin/access' },
-      { label: 'Resource Planner', path: '/admin/users' },
       { label: 'Resource Departments', path: '/admin/capacity-departments' },
     ],
   },
@@ -95,7 +94,6 @@ export const adminPockets: AdminNavPocket[] = [
  * The sidebar parity test enforces: every leaf path in adminPockets ⊆ REGISTERED_ADMIN_ROUTES.
  */
 export const REGISTERED_ADMIN_ROUTES = new Set([
-  '/admin/users',
   '/admin/capacity-departments',
   '/admin/access',
   '/admin/icons',

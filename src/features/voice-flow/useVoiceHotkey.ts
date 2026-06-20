@@ -91,6 +91,7 @@ export function useVoiceHotkey({
         // Second space within window — check if focused element is eligible
         const target = document.activeElement;
         const field = getActiveTextTarget(target);
+        console.log('[VF-HK] double-space detected delta=', Math.round(delta), 'target=', target?.tagName, 'id=', (target as HTMLElement)?.id, 'field=', field ? field.kind : 'NULL', 'isActive=', isActiveRef.current);
 
         if (field) {
           e.preventDefault();

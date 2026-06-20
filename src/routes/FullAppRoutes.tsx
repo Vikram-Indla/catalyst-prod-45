@@ -282,7 +282,7 @@ const ReleaseSettingsPage = lazy(() => import("../pages/releasehub/ReleaseSettin
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 // AdminGuard was used by /admin/v2 shell (deprecated 2026-05-09) — removed
 
-const ResourcePlannerPage = lazy(() => import("../modules/plan").then(m => ({ default: m.ResourcePlannerPage })));
+const PlanResourcePlannerPage = lazy(() => import("../modules/plan/ResourcePlannerPage"));
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
@@ -672,6 +672,9 @@ export default function FullAppRoutes() {
         <Route path="/taskhub/boards" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub/task-list" element={<Navigate to="/tasks/list" replace />} />
         <Route path="/taskhub/dashboard" element={<Navigate to="/tasks/overview" replace />} />
+
+        {/* Plan module — resource planning */}
+        <Route path="/plan/resources" element={<S><PlanResourcePlannerPage /></S>} />
         <Route path="/taskhub/settings" element={<Navigate to="/tasks/settings" replace />} />
         <Route path="/taskhub/:view" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub-kanban" element={<Navigate to="/tasks/board" replace />} />
@@ -969,7 +972,6 @@ export default function FullAppRoutes() {
           <Route path="departments" element={<Navigate to="/admin/access" replace />} />
           <Route path="business-owners" element={<Navigate to="/admin/access" replace />} />
           <Route path="access" element={<S><AdminAccessPage /></S>} />
-          <Route path="users" element={<S><ResourcePlannerPage /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />

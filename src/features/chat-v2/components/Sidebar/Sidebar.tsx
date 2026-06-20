@@ -64,9 +64,15 @@ export function Sidebar({
     }
     const sortAlpha = (a: ChatConversation, b: ChatConversation) =>
       a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+    const timestampMap = new Map<string, number>();
+    for (const c of list) {
+      if (c.lastMessageAt) {
+        timestampMap.set(c.id, new Date(c.lastMessageAt).getTime());
+      }
+    }
     const sortRecent = (a: ChatConversation, b: ChatConversation) => {
-      const at = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0;
-      const bt = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0;
+      const at = timestampMap.get(a.id) ?? 0;
+      const bt = timestampMap.get(b.id) ?? 0;
       return bt - at;
     };
     const isUnstarred = (c: ChatConversation) => !c.isStarred;
@@ -87,13 +93,19 @@ export function Sidebar({
       const q = search.trim().toLowerCase();
       list = list.filter(c => {
         if (c.title.toLowerCase().includes(q)) return true;
-        const names = c.dmMemberNames ?? [];
+        const names = (c.dmMemberNames ?? []).filter(Boolean);
         return names.some(n => n.toLowerCase().includes(q));
       });
     }
+    const timestampMap = new Map<string, number>();
+    for (const c of list) {
+      if (c.lastMessageAt) {
+        timestampMap.set(c.id, new Date(c.lastMessageAt).getTime());
+      }
+    }
     return list.slice().sort((a, b) => {
-      const at = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0;
-      const bt = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0;
+      const at = timestampMap.get(a.id) ?? 0;
+      const bt = timestampMap.get(b.id) ?? 0;
       return bt - at;
     });
   }, [conversations, unreadsOnly, search]);
