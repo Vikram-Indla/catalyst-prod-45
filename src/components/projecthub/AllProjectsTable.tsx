@@ -200,7 +200,7 @@ function useFixedPopupPosition(
 // FIX 2 + FIX 4: Lead cell with click-anywhere-on-chip → reassign popup.
 // @atlaskit/popup v4.16 renders empty portals in this codebase, so we use a
 // self-rolled positioned div + useClickOutside instead. Atlaskit token styling.
-function LeadReassignPopover({ project, currentUserId }: { project: ProjectListItem; currentUserId?: string | null }) {
+function LeadReassignPopover({ project }: { project: ProjectListItem }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -214,18 +214,6 @@ function LeadReassignPopover({ project, currentUserId }: { project: ProjectListI
   const [optimisticLead, setOptimisticLead] = useState<{ id: string; name: string; avatar_url: string | null } | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // Default lead fallback: when no lead is set on the project, fall back to
-  // the current authenticated user as the implicit lead (design-critique
-  // 2026-05-17 — "while there is no lead, the default lead always must be
-  // Vikram"). The DB still holds lead_id = null; this is a display fallback
-  // so the row never reads as "unassigned" for the user who's looking at it.
-  // Clicking the picker still opens reassign — that's how you'd explicitly
-  // set a different lead and persist it.
-  const currentUserProfile = useMemo(
-    () => currentUserId ? profiles.find(p => p.id === currentUserId) ?? null : null,
-    [profiles, currentUserId],
-  );
-
   const handleSearchChange = useCallback((val: string) => {
     setSearch(val);
     clearTimeout(searchTimerRef.current);
@@ -237,13 +225,14 @@ function LeadReassignPopover({ project, currentUserId }: { project: ProjectListI
     p.display_name?.toLowerCase().includes(debouncedSearch.toLowerCase())
   ), [profiles, debouncedSearch]);
 
+  // Lead is read straight from the project record. When lead_id is null the
+  // project is genuinely unassigned — render the "Assign lead" empty state
+  // (zero-assumption: silence beats showing whoever happens to be logged in).
   const displayLead = optimisticLead
-    ? { name: optimisticLead.name, avatar_url: optimisticLead.avatar_url, id: optimisticLead.id, isDefault: false }
+    ? { name: optimisticLead.name, avatar_url: optimisticLead.avatar_url, id: optimisticLead.id }
     : project.lead_id
-      ? { name: project.lead_name, avatar_url: project.lead_avatar_url, id: project.lead_id, isDefault: false }
-      : currentUserProfile
-        ? { name: currentUserProfile.display_name, avatar_url: currentUserProfile.avatar_url, id: currentUserProfile.id, isDefault: true }
-        : { name: null, avatar_url: null, id: null, isDefault: false };
+      ? { name: project.lead_name, avatar_url: project.lead_avatar_url, id: project.lead_id }
+      : { name: null, avatar_url: null, id: null };
 
   const handleLeadChange = useCallback((newLeadId: string) => {
     const selectedProfile = profiles.find(p => p.id === newLeadId);
@@ -308,18 +297,12 @@ function LeadReassignPopover({ project, currentUserId }: { project: ProjectListI
               <Avatar src={displayLead.avatar_url || undefined} name={displayLead.name || '??'} size="small" />
             </span>
             <span
-              title={displayLead.isDefault ? `Default lead — ${displayLead.name} (no lead assigned yet)` : displayLead.name}
+              title={displayLead.name || undefined}
               style={{
                 pointerEvents: 'none',
                 fontSize: 14,
-                // Default-fallback rows render at slightly subtler color +
-                // italic so users can tell at a glance which projects have
-                // an explicitly-set lead vs the fallback to themselves.
                 fontWeight: 500,
-                fontStyle: displayLead.isDefault ? 'italic' : 'normal',
-                color: displayLead.isDefault
-                  ? token('color.text.subtle')
-                  : token('color.text'),
+                color: token('color.text'),
                 fontFamily: 'var(--cp-font-body)',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -1239,7 +1222,7 @@ export function AllProjectsTable({
       // left-aligned start, breaking the row's visual grid.
       case 'project_key': return <td key={colKey} style={{ textAlign: 'left' }}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
       // 'type' column is permanently banned from the Projects list view.
-      case 'lead': return <td key={colKey}><LeadReassignPopover project={p} currentUserId={currentUserId} /></td>;
+      case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} currentUserId={currentUserId} /></td>;
       case 'sync': return (
         <td key={colKey}>
