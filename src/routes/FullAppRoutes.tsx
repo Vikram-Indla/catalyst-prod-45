@@ -195,6 +195,7 @@ const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPag
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 // UserNotificationSettingsPage DEPRECATED 2026-06-20 — route removed
 const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
+const ReplayPage = lazy(() => import("../pages/replay/ReplayPage"));
 const TasksDetailPage = lazy(() => import("../modules/tasks/pages/TasksDetailPage"));
 const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
 /* 2026-06-17: Tasks Hub filters — canonical FiltersListPage / FilterDetailPage
@@ -810,6 +811,8 @@ export default function FullAppRoutes() {
         {/* Backward-compat redirects from old /planner routes */}
         <Route path="/planner" element={<Navigate to="/tasks/overview" replace />} />
         <Route path="/planner/*" element={<Navigate to="/tasks/overview" replace />} />
+
+        <Route path="/replay" element={<S><ReplayPage /></S>} />
 
         <Route path="/planhub" element={<ModuleGuard moduleCode="planner"><S><PlanLibraryPage /></S></ModuleGuard>} />
         <Route path="/planhub/plan/:planId" element={<S><PlanEditorPage /></S>} />
