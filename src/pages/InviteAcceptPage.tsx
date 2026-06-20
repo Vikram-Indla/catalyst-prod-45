@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { INVITE_CTX_KEY } from '@/pages/ShortLinkResolverPage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,8 +14,23 @@ type PageState = 'invalid' | 'form' | 'success';
 export default function InviteAcceptPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
-  const email = searchParams.get('email');
+  // Short links resolve the token into sessionStorage (no token/email in the URL).
+  // Fall back to query params for any legacy long links still in flight.
+  const ctx = useMemo(() => {
+    const qToken = searchParams.get('token');
+    const qEmail = searchParams.get('email');
+    if (qToken && qEmail) return { token: qToken, email: qEmail };
+    try {
+      const raw = sessionStorage.getItem(INVITE_CTX_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { token?: string; email?: string };
+        if (parsed.token && parsed.email) return { token: parsed.token, email: parsed.email };
+      }
+    } catch { /* ignore */ }
+    return { token: null as string | null, email: null as string | null };
+  }, [searchParams]);
+  const token = ctx.token;
+  const email = ctx.email;
 
   const { acceptInvite, isLoading } = useAcceptInvite();
 
@@ -53,6 +69,7 @@ export default function InviteAcceptPage() {
       return;
     }
 
+    try { sessionStorage.removeItem(INVITE_CTX_KEY); } catch { /* ignore */ }
     setFinalState('success');
     navigate('/');
   };

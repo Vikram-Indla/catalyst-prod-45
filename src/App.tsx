@@ -40,6 +40,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 // no admin lazy imports here. See RCA 2026-05-19 in CLAUDE.md.
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const InviteAcceptPage = lazy(() => import("./pages/InviteAcceptPage"));
+const ShortLinkResolverPage = lazy(() => import("./pages/ShortLinkResolverPage"));
 const DeactivatedPage = lazy(() => import("./pages/DeactivatedPage"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
@@ -157,6 +158,7 @@ function App() {
                 <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />
                 <Route path="/reset-password" element={<S><ResetPassword /></S>} />
                 <Route path="/invite/accept" element={<S><InviteAcceptPage /></S>} />
+                <Route path="/s/:code" element={<S><ShortLinkResolverPage /></S>} />
                 <Route path="/deactivated" element={<S><DeactivatedPage /></S>} />
 
                 {/* Block A rule 1 (2026-05-01) — canonical URL prefix is

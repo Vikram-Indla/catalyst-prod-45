@@ -34,8 +34,9 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { user_id, role, module_access, approval_status } = body;
+    const { user_id, role, module_access, approval_status, full_name, email } = body;
     if (!user_id || typeof user_id !== 'string') return err('user_id is required', 400);
+    const normEmail = email !== undefined ? (email || '').toLowerCase().trim() : undefined;
 
     // Safety: cannot modify a super_admin unless caller is also super_admin
     const { data: targetRole } = await supabaseAdmin
@@ -72,6 +73,8 @@ Deno.serve(async (req) => {
     const profileUpdates: Record<string, unknown> = {};
     if (module_access !== undefined) profileUpdates.module_access = module_access;
     if (approval_status !== undefined) profileUpdates.approval_status = approval_status;
+    if (full_name !== undefined) profileUpdates.full_name = (full_name || '').trim() || null;
+    if (normEmail) profileUpdates.email = normEmail;
 
     if (Object.keys(profileUpdates).length > 0) {
       const { error: profileErr } = await supabaseAdmin
@@ -83,6 +86,14 @@ Deno.serve(async (req) => {
         return err('Failed to update user profile', 500);
       }
       Object.assign(changes, profileUpdates);
+    }
+
+    // Best-effort: keep the auth email in sync for real auth users. Placeholder
+    // rows (never registered) aren't auth users — that's fine, profiles.email is
+    // what the invite flow reads.
+    if (normEmail) {
+      try { await supabaseAdmin.auth.admin.updateUserById(user_id, { email: normEmail }); }
+      catch (_) { /* not an auth user yet */ }
     }
 
     // Audit log

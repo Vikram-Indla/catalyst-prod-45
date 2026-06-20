@@ -102,9 +102,34 @@ Deno.serve(async (req) => {
       return err('Failed to create link', 500);
     }
 
-    const appUrl = Deno.env.get('APP_URL') || 'https://catalyst.lovable.app';
-    const path = purpose === 'invite' ? '/invite/accept' : '/auth/reset-password';
-    const setupLink = `${appUrl}${path}?token=${rawToken}&email=${encodeURIComponent(email)}`;
+    const appUrl = Deno.env.get('APP_URL') || 'https://ksa-catalyst.com';
+
+    // Mint an opaque short code. The raw token + email are stored server-side in
+    // short_links (RLS-locked, service-role only) and handed to the invitee's
+    // browser transiently via invite-resolve — they NEVER appear in the URL.
+    const genCode = () => {
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const bytes = crypto.getRandomValues(new Uint8Array(10));
+      return Array.from(bytes).map((b) => alphabet[b % alphabet.length]).join('');
+    };
+    let code = genCode();
+    let linkErr: { code?: string; message?: string } | null = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { error } = await supabaseAdmin.from('short_links').insert({
+        code, invitation_id: invitation.id, raw_token: rawToken, email,
+        purpose, expires_at: expiresAt,
+      });
+      if (!error) { linkErr = null; break; }
+      linkErr = error;
+      if (error.code === '23505') { code = genCode(); continue; } // code collision — retry
+      break;
+    }
+    if (linkErr) {
+      console.error('[invite-send] short_link:', linkErr);
+      await supabaseAdmin.from('user_invitations').delete().eq('id', invitation.id);
+      return err('Failed to create link', 500);
+    }
+    const setupLink = `${appUrl}/s/${code}`;
 
     const { data: inviter } = await supabaseAdmin
       .from('profiles').select('full_name, email').eq('id', user.id).maybeSingle();

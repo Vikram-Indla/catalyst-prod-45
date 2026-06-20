@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Button from '@atlaskit/button/new';
@@ -8,6 +7,7 @@ import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
+import Modal, { ModalTransition } from '@atlaskit/modal-dialog';
 import { token } from '@atlaskit/tokens';
 import PersonAddIcon from '@atlaskit/icon/core/person-add';
 import EditIcon from '@atlaskit/icon/core/edit';
@@ -34,6 +34,9 @@ interface CatalystUser {
   approval_status: string | null;
   last_login_at: string | null;
   department_name?: string | null;
+  failed_login_count?: number | null;
+  locked_until?: string | null;
+  must_change_password?: boolean | null;
 }
 
 interface PendingInvite {
@@ -144,7 +147,7 @@ function userSource(email: string | null): 'catalyst' | 'jira' {
 
 // Honest lifecycle state. Jira-synced rows that never logged in are "Synced",
 // not "Active" — they are resource records, not access-holders.
-type UserState = 'active' | 'pending' | 'suspended' | 'deactivated' | 'synced';
+type UserState = 'active' | 'pending' | 'suspended' | 'deactivated' | 'locked';
 
 // Canonical Catalyst status-pill colours (statusPalette.ts), text always #292A2E.
 const STATE_META: Record<UserState, { label: string; bg: string }> = {
@@ -152,17 +155,17 @@ const STATE_META: Record<UserState, { label: string; bg: string }> = {
   pending:     { label: 'Pending setup', bg: '#8FB8F6' },
   suspended:   { label: 'Suspended',     bg: '#FD9891' },
   deactivated: { label: 'Deactivated',   bg: '#DDDEE1' },
-  synced:      { label: 'Synced',        bg: '#DDDEE1' },
+  locked:      { label: 'Locked',        bg: '#F87168' },
 };
 
-function userState(u: Pick<CatalystUser, 'email' | 'approval_status' | 'last_login_at'>): UserState {
-  if (userSource(u.email) === 'jira' && !u.last_login_at) return 'synced';
-  switch (u.approval_status) {
-    case 'PENDING_APPROVAL': return 'pending';
-    case 'REJECTED': return 'suspended';
-    case 'DISABLED': return 'deactivated';
-    default: return 'active';
-  }
+function userState(u: Pick<CatalystUser, 'email' | 'approval_status' | 'last_login_at' | 'locked_until'>): UserState {
+  if (u.approval_status === 'PENDING_APPROVAL') return 'pending';
+  if (u.approval_status === 'REJECTED') return 'suspended';
+  if (u.approval_status === 'DISABLED') return 'deactivated';
+  // Account locked out from too many failed password attempts.
+  if (u.locked_until && new Date(u.locked_until) > new Date()) return 'locked';
+  // Honest: a user who has never logged in is still "Pending setup", not Active.
+  return u.last_login_at ? 'active' : 'pending';
 }
 
 function StatusPill({ state }: { state: UserState }) {
@@ -186,19 +189,57 @@ function relativeTime(iso: string | null): string {
   return `${Math.floor(d / 365)}y ago`;
 }
 
-// ─── CreateAccessDrawer ───────────────────────────────────────────────────────
-// Right-side 520px slide-in panel. WhatsApp is the primary channel.
-// Guest TTL hard-capped to 48 h server-side; UI enforces it too.
+// ─── CreateAccessInline ───────────────────────────────────────────────────────
+// Inline create-access surface rendered directly on the People tab (no drawer).
+// WhatsApp is the primary channel. Guest TTL hard-capped to 48 h server-side.
 
 const SAFE_KEYS = ['home', 'project_hub', 'product_hub'];
 const GUEST_MAX_TTL = 172800; // 48 h in seconds
 
-interface ChannelDef { value: 'whatsapp' | 'email' | 'sms' | 'manual'; label: string; icon: string; sub: string }
+// ─── Channel glyphs (real brand/line SVGs — never emoji) ──────────────────────
+
+// Official WhatsApp brand mark (simple-icons path), brand green #25D366.
+function WhatsAppGlyph({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false" style={{ display: 'block' }}>
+      <path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+    </svg>
+  );
+}
+
+function EmailGlyph({ size = 22, color }: { size?: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" style={{ display: 'block' }}>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </svg>
+  );
+}
+
+function SmsGlyph({ size = 22, color }: { size?: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" style={{ display: 'block' }}>
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z" />
+    </svg>
+  );
+}
+
+function LinkGlyph({ size = 22, color }: { size?: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" style={{ display: 'block' }}>
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
+  );
+}
+
+interface ChannelDef { value: 'whatsapp' | 'email' | 'sms' | 'manual'; label: string; sub: string; render: (color: string) => React.ReactNode }
+// Manual first (default), WhatsApp last — per Vikram 2026-06-20.
 const CHANNEL_DEFS: ChannelDef[] = [
-  { value: 'whatsapp', label: 'WhatsApp', icon: '💬', sub: 'Primary' },
-  { value: 'email',    label: 'Email',    icon: '✉️',  sub: 'Traditional' },
-  { value: 'sms',      label: 'SMS',      icon: '📱',  sub: 'Fallback' },
-  { value: 'manual',   label: 'Manual',   icon: '🔗',  sub: 'Copy link' },
+  { value: 'manual',   label: 'Manual',   sub: 'Copy link',  render: (c) => <LinkGlyph color={c} /> },
+  { value: 'email',    label: 'Email',    sub: 'Send email', render: (c) => <EmailGlyph color={c} /> },
+  { value: 'sms',      label: 'SMS',      sub: 'Fallback',   render: (c) => <SmsGlyph color={c} /> },
+  { value: 'whatsapp', label: 'WhatsApp', sub: 'Business',   render: () => <WhatsAppGlyph /> },
 ];
 
 interface TtlDef { value: number; label: string; sub: string }
@@ -213,15 +254,31 @@ const TTL_DEFS: TtlDef[] = [
 
 interface LinkResult { link: string; expiresAt?: string; invitationId?: string; channelPending?: boolean; channel: string }
 
-function CreateAccessDrawer({ onClose }: { onClose: () => void }) {
+// ─── Module multi-select options (real hub-switcher icons) ────────────────────
+// Each option renders the SAME asset the HubSwitcher renders (HUB_ICON_REGISTRY).
+interface ModuleOption { label: string; value: string; isFixed?: boolean }
+const MODULE_SELECT_OPTIONS: ModuleOption[] = MODULE_ITEMS.map(m => ({
+  label: m.label, value: m.key, isFixed: m.key === 'home',
+}));
+
+function renderModuleOption(o: ModuleOption) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+      <img src={HUB_ICON_REGISTRY[hubKeyFor(o.value)]} alt="" width={18} height={18} style={{ display: 'block', flexShrink: 0 }} />
+      {o.label}
+    </span>
+  );
+}
+
+function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCreated?: () => void }) {
   const { inviteUser, expireInvitation, isLoading } = useInviteUser();
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [roleOpt, setRoleOpt] = useState<{ label: string; value: string } | null>({ label: 'Developer', value: 'developer' });
+  const [roleOpt, setRoleOpt] = useState<{ label: string; value: string } | null>(null);
   const [deptId, setDeptId] = useState<string | null>(null);
   const [moduleAccess, setModuleAccess] = useState<Record<string, boolean>>(DEFAULT_MODULE_ACCESS);
-  const [channel, setChannel] = useState<'whatsapp' | 'email' | 'sms' | 'manual'>('whatsapp');
+  const [channel, setChannel] = useState<'whatsapp' | 'email' | 'sms' | 'manual'>('manual');
   const [ttl, setTtl] = useState(3600);
   const [result, setResult] = useState<LinkResult | null>(null);
   const [copied, setCopied] = useState(false);
@@ -263,22 +320,14 @@ function CreateAccessDrawer({ onClose }: { onClose: () => void }) {
     return `Expires ${d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })} at ${timeStr}`;
   }, [effectiveTtl]);
 
-  const toggleModule = (key: string, forced?: boolean) => {
-    if (forced !== undefined) { setModuleAccess(prev => ({ ...prev, [key]: forced })); return; }
-    setModuleAccess(prev => ({ ...prev, [key]: !prev[key] }));
-  };
   const safeOk = SAFE_KEYS.some(k => moduleAccess[k]);
   const emailOk = /\S+@\S+\.\S+/.test(email.trim());
+  const nameOk = !!fullName.trim();
+  const roleOk = !!roleOpt?.value;
+  // Phone is shown for whatsapp/sms (where it would be used) but is NEVER
+  // required — the admin can always generate without it.
   const needsPhone = channel === 'whatsapp' || channel === 'sms';
-  const canCreate = emailOk && safeOk && !isLoading;
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey, true);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.removeEventListener('keydown', onKey, true); document.body.style.overflow = prev; };
-  }, [onClose]);
+  const canCreate = nameOk && emailOk && roleOk && safeOk && !isLoading;
 
   const submit = async (regenerate = false) => {
     if (!canCreate && !regenerate) return;
@@ -297,6 +346,7 @@ function CreateAccessDrawer({ onClose }: { onClose: () => void }) {
     if (r.ok) {
       setResult({ link: r.setup_link || '', expiresAt: r.expires_at, invitationId: r.invitation_id, channelPending: r.channel_pending, channel });
       setCopied(false);
+      onCreated?.();
       catalystToast.success(r.dispatched ? `Access created · sent via ${channel}` : 'Access created · copy the link');
     } else {
       catalystToast.error(r.error || 'Failed to create access');
@@ -317,152 +367,167 @@ function CreateAccessDrawer({ onClose }: { onClose: () => void }) {
 
   const lbl: React.CSSProperties = { display: 'block', fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 6, letterSpacing: '0.04em' };
 
-  return createPortal(
-    <>
-      {/* Backdrop */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(9,30,66,0.45)' }} />
-      {/* Drawer */}
-      <div
-        role="dialog" aria-modal="true" aria-labelledby="drawer-title"
-        style={{ position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 10000, width: 520, background: '#fff', display: 'flex', flexDirection: 'column', boxShadow: '-4px 0 24px rgba(9,30,66,0.18)' }}
-      >
-        {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #EBECF0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-          <div>
-            <h2 id="drawer-title" style={{ margin: 0, fontSize: 18, fontWeight: 600, color: '#172B4D' }}>
-              {result ? 'Setup link ready' : 'Invite someone'}
-            </h2>
-            {!result && <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6B778C' }}>One-time secure link · {expiryPreview}</p>}
-          </div>
-          <button onClick={onClose} aria-label="Close" style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: '#6B778C', display: 'flex' }}>
-            <CloseIcon label="Close" size="medium" />
-          </button>
+  const selectStyles = { menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 10000 }) };
+  const deptOptions = [{ label: 'No department', value: '' }, ...departments.map(d => ({ label: d.name, value: d.id }))];
+  const ttlOptions = availableTtls.map(t => ({ label: t.sub ? `${t.label} · ${t.sub}` : t.label, value: t.value }));
+  const moduleValue = MODULE_SELECT_OPTIONS.filter(o => moduleAccess[o.value]);
+
+  return (
+    <ModalTransition>
+      <Modal onClose={onClose} width="medium" shouldScrollInViewport autoFocus={false} label="Create access">
+      {/* Header */}
+      <div style={{ padding: '16px 20px', borderBottom: '1px solid #EBECF0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#172B4D', letterSpacing: '-0.01em' }}>
+            {result ? 'Setup link ready' : 'Create access'}
+          </h2>
+          {!result && <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6B778C' }}>Creates the user and a one-time setup link</p>}
         </div>
+        <button onClick={onClose} aria-label="Close" style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: '#6B778C', display: 'flex' }}>
+          <CloseIcon label="Close" size="medium" />
+        </button>
+      </div>
 
-        {!result ? (
-          <>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {!result ? (
+        <>
+          <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 18 }}>
 
-              {/* Contact */}
+            {/* Identity */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
                 <label style={lbl}>EMAIL ADDRESS <span style={{ color: '#AE2A19' }}>*</span></label>
                 <Textfield value={email} onChange={e => setEmail((e.target as HTMLInputElement).value)} placeholder="name@company.com" aria-label="Email address" isRequired />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div>
-                  <label style={lbl}>FULL NAME</label>
-                  <Textfield value={fullName} onChange={e => setFullName((e.target as HTMLInputElement).value)} placeholder="Jane Doe" aria-label="Full name" />
-                </div>
-                <div>
-                  <label style={lbl}>PHONE {needsPhone ? <span style={{ color: '#AE2A19' }}>*</span> : <span style={{ color: '#97A0AF' }}>(optional)</span>}</label>
-                  <Textfield value={phone} onChange={e => setPhone((e.target as HTMLInputElement).value)} placeholder="+966 5x xxx xxxx" aria-label="Phone" />
-                </div>
-              </div>
-
-              {/* Role */}
               <div>
-                <label style={lbl}>ROLE</label>
+                <label style={lbl}>FULL NAME <span style={{ color: '#AE2A19' }}>*</span></label>
+                <Textfield value={fullName} onChange={e => setFullName((e.target as HTMLInputElement).value)} placeholder="Jane Doe" aria-label="Full name" />
+              </div>
+            </div>
+
+            {/* Role + Department — proper grouped dropdowns (no pills) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div>
+                <label style={lbl}>ROLE <span style={{ color: '#AE2A19' }}>*</span></label>
                 <Select
+                  inputId="ca-role"
                   options={ROLE_GROUPS}
                   value={roleOpt}
                   onChange={opt => setRoleOpt(opt as { label: string; value: string } | null)}
                   menuPortalTarget={document.body}
-                  styles={{ menuPortal: base => ({ ...base, zIndex: 10001 }) }}
+                  styles={selectStyles}
+                  aria-label="Role"
                   placeholder="Select a role…"
                 />
-                {isGuest && (
-                  <div style={{ marginTop: 6, padding: '6px 10px', background: '#FFF7D6', borderRadius: 4, fontSize: 11, color: '#974F0C' }}>
-                    Guest access is read-only. Link lifetime is capped at 48 hours.
-                  </div>
-                )}
               </div>
-
-              {/* Department chips */}
-              {departments.length > 0 && (
-                <div>
-                  <label style={lbl}>DEPARTMENT</label>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    <button type="button" onClick={() => setDeptId(null)} style={{ padding: '4px 12px', borderRadius: 999, fontSize: 12, cursor: 'pointer', border: `1px solid ${!deptId ? '#0C66E4' : '#DFE1E6'}`, background: !deptId ? '#E9F2FE' : 'transparent', color: !deptId ? '#0C66E4' : '#42526E', fontWeight: !deptId ? 600 : 400 }}>
-                      None
-                    </button>
-                    {departments.map(d => (
-                      <button key={d.id} type="button" onClick={() => setDeptId(prev => prev === d.id ? null : d.id)} style={{ padding: '4px 12px', borderRadius: 999, fontSize: 12, cursor: 'pointer', border: `1px solid ${deptId === d.id ? '#0C66E4' : '#DFE1E6'}`, background: deptId === d.id ? '#E9F2FE' : 'transparent', color: deptId === d.id ? '#0C66E4' : '#42526E', fontWeight: deptId === d.id ? 600 : 400 }}>
-                        {d.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Module access — hub icon tiles */}
               <div>
-                <label style={lbl}>MODULE ACCESS</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
-                  {MODULE_ITEMS.map(m => {
-                    const on = !!moduleAccess[m.key];
-                    const locked = !!m.default;
-                    const hubIconSrc = HUB_ICON_REGISTRY[hubKeyFor(m.key)];
-                    return (
-                      <button
-                        key={m.key} type="button"
-                        onClick={() => !locked && toggleModule(m.key)}
-                        title={locked ? `${m.label} (always on)` : m.label}
-                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 4px', borderRadius: 8, border: `1px solid ${on ? '#0C66E4' : '#DFE1E6'}`, background: on ? '#E9F2FE' : 'transparent', cursor: locked ? 'default' : 'pointer', opacity: locked ? 0.55 : 1, transition: 'all 0.1s' }}
-                      >
-                        {hubIconSrc ? <img src={hubIconSrc} alt="" width={18} height={18} style={{ opacity: on ? 1 : 0.5 }} /> : <span style={{ fontSize: 16 }}>📦</span>}
-                        <span style={{ fontSize: 10, fontWeight: 500, color: on ? '#0C66E4' : '#6B778C', lineHeight: 1.2, textAlign: 'center' }}>{m.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                {!safeOk && <p style={{ margin: '6px 0 0', fontSize: 11, color: '#AE2A19' }}>At least one of Home, Project, or Product must be enabled.</p>}
+                <label style={lbl}>DEPARTMENT</label>
+                <Select
+                  inputId="ca-dept"
+                  options={deptOptions}
+                  value={deptOptions.find(o => o.value === (deptId || ''))}
+                  onChange={opt => setDeptId((opt as { value: string } | null)?.value || null)}
+                  menuPortalTarget={document.body}
+                  styles={selectStyles}
+                  aria-label="Department"
+                  placeholder="No department"
+                />
               </div>
-
-              {/* Channel — icon cards */}
-              <div>
-                <label style={lbl}>SEND VIA</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-                  {CHANNEL_DEFS.map(c => {
-                    const active = channel === c.value;
-                    return (
-                      <button key={c.value} type="button" onClick={() => setChannel(c.value)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '12px 8px', borderRadius: 8, border: `1px solid ${active ? '#0C66E4' : '#DFE1E6'}`, background: active ? '#E9F2FE' : 'transparent', cursor: 'pointer', transition: 'all 0.1s' }}>
-                        <span style={{ fontSize: 20 }}>{c.icon}</span>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: active ? '#0C66E4' : '#172B4D' }}>{c.label}</span>
-                        <span style={{ fontSize: 10, color: '#6B778C' }}>{c.sub}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                {(channel === 'whatsapp' || channel === 'sms') && (
-                  <p style={{ margin: '6px 0 0', fontSize: 11, color: '#97A0AF' }}>Provider integration pending — the link will be recorded and displayed for manual sharing.</p>
-                )}
-              </div>
-
-              {/* Link validity — clock cards */}
-              <div>
-                <label style={lbl}>LINK VALIDITY</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {availableTtls.map(t => {
-                    const active = effectiveTtl === t.value;
-                    return (
-                      <button key={t.value} type="button" onClick={() => setTtl(t.value)} style={{ padding: '6px 14px', borderRadius: 999, fontSize: 12, cursor: 'pointer', border: `1px solid ${active ? '#0C66E4' : '#DFE1E6'}`, background: active ? '#E9F2FE' : 'transparent', color: active ? '#0C66E4' : '#42526E', fontWeight: active ? 600 : 400 }}>
-                        {t.label}{t.sub ? ` · ${t.sub}` : ''}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p style={{ margin: '8px 0 0', fontSize: 11, color: '#42526E' }}>⏰ {expiryPreview}</p>
-              </div>
-
             </div>
 
-            {/* Footer */}
-            <div style={{ padding: '14px 24px', borderTop: '1px solid #EBECF0', display: 'flex', justifyContent: 'flex-end', gap: 8, flexShrink: 0 }}>
+            {isGuest && (
+              <div style={{ padding: '8px 12px', background: '#FFF7D6', borderRadius: 6, fontSize: 12, color: '#974F0C' }}>
+                Guest access is read-only. Link lifetime is capped at 48 hours.
+              </div>
+            )}
+
+            {/* Module access — multi-select dropdown with the real hub-switcher icons */}
+            <div>
+              <label style={lbl}>
+                MODULE ACCESS{' '}
+                {!safeOk && <span style={{ color: '#974F0C', fontWeight: 500 }}>· add Home, Project, or Product</span>}
+              </label>
+              <Select
+                inputId="ca-modules"
+                isMulti
+                isClearable={false}
+                backspaceRemovesValue={false}
+                options={MODULE_SELECT_OPTIONS}
+                value={moduleValue}
+                onChange={vals => {
+                  const next: Record<string, boolean> = {};
+                  MODULE_ITEMS.forEach(m => { next[m.key] = false; });
+                  (vals as ModuleOption[] | null || []).forEach(v => { next[v.value] = true; });
+                  next.home = true; // Home is always granted — the landing dashboard
+                  setModuleAccess(next);
+                }}
+                formatOptionLabel={renderModuleOption}
+                menuPortalTarget={document.body}
+                styles={{
+                  ...selectStyles,
+                  multiValueRemove: (base: Record<string, unknown>, state: { data?: ModuleOption }) =>
+                    state.data?.isFixed ? { ...base, display: 'none' } : base,
+                }}
+                aria-label="Module access"
+                placeholder="Select modules…"
+              />
+            </div>
+
+            {/* Delivery channel — real brand/line icons (WhatsApp is the brand mark) */}
+            <div>
+              <label style={lbl}>SEND VIA</label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                {CHANNEL_DEFS.map(c => {
+                  const active = channel === c.value;
+                  const iconColor = active ? '#0C66E4' : '#42526E';
+                  return (
+                    <button key={c.value} type="button" onClick={() => setChannel(c.value)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '12px 8px', borderRadius: 8, border: `1px solid ${active ? '#0C66E4' : '#DFE1E6'}`, background: active ? '#E9F2FE' : 'transparent', cursor: 'pointer', transition: 'all 0.1s' }}>
+                      <span style={{ display: 'flex' }}>{c.render(iconColor)}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: active ? '#0C66E4' : '#172B4D' }}>{c.label}</span>
+                      <span style={{ fontSize: 10, color: '#6B778C' }}>{c.sub}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {needsPhone && (
+                <div style={{ marginTop: 12 }}>
+                  <label style={lbl}>PHONE <span style={{ color: '#97A0AF' }}>(optional)</span></label>
+                  <Textfield value={phone} onChange={e => setPhone((e.target as HTMLInputElement).value)} placeholder="+966 5x xxx xxxx" aria-label="Phone" />
+                  <p style={{ margin: '6px 0 0', fontSize: 11, color: '#97A0AF' }}>Provider integration pending — the link is recorded and shown below for manual sharing.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Link validity */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'end' }}>
+              <div>
+                <label style={lbl}>LINK VALIDITY</label>
+                <Select
+                  inputId="ca-ttl"
+                  options={ttlOptions}
+                  value={ttlOptions.find(o => o.value === effectiveTtl)}
+                  onChange={opt => setTtl((opt as { value: number } | null)?.value || 3600)}
+                  menuPortalTarget={document.body}
+                  styles={selectStyles}
+                  aria-label="Link validity"
+                />
+              </div>
+              <p style={{ margin: 0, fontSize: 12, color: '#42526E', paddingBottom: 8 }}>{expiryPreview}</p>
+            </div>
+
+          </div>
+
+          {/* Footer — amber blockHint on the left, actions on the right */}
+          <div style={{ padding: '14px 20px', borderTop: '1px solid #EBECF0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <span style={{ fontSize: 12, color: '#974F0C', fontWeight: 500 }}>
+              {!nameOk ? 'Enter the full name' : (!emailOk ? 'Enter an email' : (!roleOk ? 'Select a role' : (!safeOk ? 'Add a safe-landing module' : '')))}
+            </span>
+            <div style={{ display: 'flex', gap: 8 }}>
               <Button appearance="subtle" onClick={onClose}>Cancel</Button>
               <Button appearance="primary" isLoading={isLoading} isDisabled={!canCreate} onClick={() => submit(false)}>Create access</Button>
             </div>
-          </>
-        ) : (
+          </div>
+        </>
+      ) : (
           /* ─ Link result pane ─ */
           <>
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -505,11 +570,10 @@ function CreateAccessDrawer({ onClose }: { onClose: () => void }) {
               </div>
               <Button appearance="primary" onClick={onClose}>Done</Button>
             </div>
-          </>
-        )}
-      </div>
-    </>,
-    document.body,
+        </>
+      )}
+      </Modal>
+    </ModalTransition>
   );
 }
 
@@ -526,6 +590,9 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
   const qc = useQueryClient();
   const [roleOpt, setRoleOpt] = useState<{ label: string; value: string } | null>(null);
   const [moduleAccess, setModuleAccess] = useState<Record<string, boolean>>({});
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
   const [saving, setSaving] = useState(false);
   const [deletePhase, setDeletePhase] = useState<'idle' | 'confirm'>('idle');
   const [deleting, setDeleting] = useState(false);
@@ -542,6 +609,29 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
   const [suspending, setSuspending] = useState(false);
   const [localApprovalStatus, setLocalApprovalStatus] = useState<string | null>(null);
 
+  // Generate-setup-link state
+  const { inviteUser } = useInviteUser();
+  const [genLink, setGenLink] = useState<string | null>(null);
+  const [genLoading, setGenLoading] = useState(false);
+  const [genCopied, setGenCopied] = useState(false);
+
+  // Onboarding lifecycle — sent / opened / clicked / lockout evidence.
+  const { data: lifecycle } = useQuery({
+    queryKey: ['user-onboarding', user.id, user.email],
+    enabled: !!user.email,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const [invRes, logRes] = await Promise.all([
+        supabase.from('user_invitations').select('created_at, accepted_at, status, expires_at, delivery_channel').eq('email', user.email!).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('email_log').select('sent_at, delivered_at, opened_at, clicked_at, bounced_at, status').eq('to_email', user.email!).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      ]);
+      return {
+        inv: invRes.data as Record<string, string | null> | null,
+        log: logRes.data as Record<string, string | null> | null,
+      };
+    },
+  });
+
   // Sync state when user changes
   useEffect(() => {
     const found = ROLE_OPTIONS.find(r => r.value === user.role);
@@ -549,6 +639,12 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
     const access: Record<string, boolean> = {};
     MODULE_ITEMS.forEach(m => { access[m.key] = user.module_access?.[m.key] === true || !!m.default; });
     setModuleAccess(access);
+    const parts = (user.full_name || '').trim().split(/\s+/).filter(Boolean);
+    setFirstName(parts[0] || '');
+    setLastName(parts.length > 1 ? parts.slice(1).join(' ') : '');
+    setEmail(user.email || '');
+    setGenLink(null);
+    setGenCopied(false);
     setDeletePhase('idle');
     setPwOpen(false);
     setNewPw('');
@@ -556,25 +652,41 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
     setLocalApprovalStatus(user.approval_status ?? null);
   }, [user.id]);
 
-  // Esc closes panel (unless in delete confirm or pw form)
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (pwOpen) { setPwOpen(false); e.stopPropagation(); }
-        else if (deletePhase === 'confirm') { setDeletePhase('idle'); e.stopPropagation(); }
-        else { onClose(); }
-      }
-    };
-    document.addEventListener('keydown', handler, true);
-    return () => document.removeEventListener('keydown', handler, true);
-  }, [onClose, deletePhase, pwOpen]);
+  // Escape / blanket-click closes the nested UI first, then the modal.
+  const handleModalClose = () => {
+    if (pwOpen) { setPwOpen(false); return; }
+    if (deletePhase === 'confirm') { setDeletePhase('idle'); return; }
+    onClose();
+  };
 
   const isSelf = user.id === currentUserId;
   const isSuperAdmin = user.role === 'super_admin';
   const canDelete = !isSelf && !isSuperAdmin;
   const canModify = !isSelf && !isSuperAdmin;
   const isActive = !localApprovalStatus || localApprovalStatus === 'APPROVED';
-  const busyAny = saving || deleting || pwSaving || resetSending || suspending;
+  const busyAny = saving || deleting || pwSaving || resetSending || suspending || genLoading;
+  // Placeholder rows (never registered, +jira@catalyst.internal) cannot be invited
+  // until given a real address — gate the Generate button on a real email.
+  const isPlaceholderEmail = (email || '').includes('+jira@catalyst.internal');
+  const emailValid = /\S+@\S+\.\S+/.test(email.trim()) && !isPlaceholderEmail;
+
+  const handleGenerateLink = async () => {
+    setGenLoading(true);
+    try {
+      const r = await inviteUser({
+        email: email.trim(),
+        full_name: [firstName.trim(), lastName.trim()].filter(Boolean).join(' ') || undefined,
+        role: roleOpt?.value || 'developer',
+        module_access: moduleAccess,
+        delivery_channel: 'manual',
+        purpose: 'invite',
+        regenerate: true,
+        ttl_seconds: 86400,
+      });
+      if (r.ok) { setGenLink(r.setup_link || ''); setGenCopied(false); catalystToast.success('Setup link generated — copy it below'); }
+      else catalystToast.error(r.error || 'Failed to generate link');
+    } finally { setGenLoading(false); }
+  };
 
   const toggleModule = (key: string) => {
     const item = MODULE_ITEMS.find(m => m.key === key);
@@ -586,7 +698,13 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
     setSaving(true);
     try {
       const res = await supabase.functions.invoke('user-update', {
-        body: { user_id: user.id, role: roleOpt?.value, module_access: moduleAccess },
+        body: {
+          user_id: user.id,
+          role: roleOpt?.value,
+          module_access: moduleAccess,
+          full_name: [firstName.trim(), lastName.trim()].filter(Boolean).join(' '),
+          email: email.trim(),
+        },
       });
       if (res.error) throw new Error(res.error.message);
       const data = res.data as { ok: boolean; error?: string };
@@ -678,27 +796,9 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
     }
   };
 
-  return createPortal(
-    <>
-      {/* Backdrop */}
-      <div
-        aria-hidden="true"
-        onClick={onClose}
-        style={{ position: 'fixed', inset: 0, zIndex: 9990, background: 'var(--ds-blanket, rgba(9, 30, 66, 0.32))' }}
-      />
-      {/* Slide-over panel */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Edit user ${user.full_name || user.email}`}
-        style={{
-          position: 'fixed', right: 0, top: 0, height: '100vh',
-          width: 500, maxWidth: '100vw', zIndex: 9991,
-          background: 'var(--ds-surface, #fff)',
-          boxShadow: 'var(--ds-shadow-overlay, -4px 0 24px rgba(9,30,66,0.18))',
-          display: 'flex', flexDirection: 'column',
-        }}
-      >
+  return (
+    <ModalTransition>
+      <Modal onClose={handleModalClose} width="medium" shouldScrollInViewport autoFocus={false} label={`Edit user ${user.full_name || user.email}`}>
         {/* Header */}
         <div style={{
           padding: '16px 24px', borderBottom: '1px solid var(--ds-border, #EBECF0)',
@@ -728,8 +828,32 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
           </button>
         </div>
 
-        {/* Scrollable body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+        {/* Body — Modal handles scroll via shouldScrollInViewport */}
+        <div style={{ padding: '24px' }}>
+
+          {/* Identity */}
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>
+              Identity
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 4 }}>First name</label>
+                <Textfield value={firstName} onChange={e => setFirstName((e.target as HTMLInputElement).value)} isDisabled={isSuperAdmin || saving} placeholder="First" />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 4 }}>Last name</label>
+                <Textfield value={lastName} onChange={e => setLastName((e.target as HTMLInputElement).value)} isDisabled={isSuperAdmin || saving} placeholder="Last" />
+              </div>
+            </div>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 4 }}>Email</label>
+            <Textfield value={email} onChange={e => setEmail((e.target as HTMLInputElement).value)} isDisabled={isSuperAdmin || saving} placeholder="name@company.com" />
+            {isPlaceholderEmail && (
+              <div style={{ marginTop: 6, fontSize: 11, color: '#974F0C' }}>
+                Placeholder email — set a real address before generating a setup link.
+              </div>
+            )}
+          </div>
 
           {/* Role */}
           <div style={{ marginBottom: 24 }}>
@@ -776,6 +900,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                     onChange={() => toggleModule(m.key)}
                     style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', cursor: (m.default || saving) ? 'default' : 'pointer' }}
                   />
+                  <img src={HUB_ICON_REGISTRY[hubKeyFor(m.key)]} alt="" width={18} height={18} style={{ display: 'block', flexShrink: 0 }} />
                   {m.label}
                   {m.default && <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #97A0AF)' }}>(default)</span>}
                 </label>
@@ -824,6 +949,74 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               </span>
             </div>
           </div>
+
+          {/* Onboarding status — sent / opened / clicked / lockout evidence */}
+          {(() => {
+            const inv = lifecycle?.inv; const log = lifecycle?.log;
+            const fmt = (t?: string | null) => t ? new Date(t).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : null;
+            const lockedNow = !!user.locked_until && new Date(user.locked_until) > new Date();
+            const fails = user.failed_login_count ?? 0;
+            const steps: { label: string; at?: string | null; note?: string }[] = [
+              { label: 'Invited', at: inv?.created_at },
+              { label: 'Email sent', at: log?.sent_at, note: inv?.delivery_channel && inv.delivery_channel !== 'email' ? `via ${inv.delivery_channel}` : undefined },
+              { label: 'Delivered', at: log?.delivered_at },
+              { label: 'Opened', at: log?.opened_at },
+              { label: 'Link used', at: inv?.accepted_at },
+              { label: 'Password set / logged in', at: user.last_login_at },
+            ];
+            return (
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>
+                  Onboarding status
+                </div>
+                {(lockedNow || fails > 0) && (
+                  <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, fontSize: 12, background: lockedNow ? '#FFEDEB' : '#FFF7D6', color: lockedNow ? '#AE2A19' : '#974F0C', border: `1px solid ${lockedNow ? '#FF8F73' : '#F5CD47'}` }}>
+                    {lockedNow
+                      ? `Account locked after ${fails} failed password attempt${fails === 1 ? '' : 's'} — unlocks ${fmt(user.locked_until)}.`
+                      : `${fails} failed password attempt${fails === 1 ? '' : 's'} recorded.`}
+                  </div>
+                )}
+                <div>
+                  {steps.map(s => (
+                    <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0' }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: s.at ? '#36B37E' : '#C1C7D0' }} />
+                      <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', minWidth: 160 }}>{s.label}</span>
+                      <span style={{ fontSize: 12, color: s.at ? 'var(--ds-text-subtle, #42526E)' : 'var(--ds-text-subtlest, #97A0AF)' }}>
+                        {s.at ? fmt(s.at) : (s.note || '—')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Generate setup link — re-invite / regenerate */}
+          {canModify && (
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>
+                Setup link
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>
+                  Generate a fresh single-use link to set their password.
+                </div>
+                <Button appearance="default" isLoading={genLoading} isDisabled={busyAny || !emailValid} onClick={handleGenerateLink}>
+                  Generate link
+                </Button>
+              </div>
+              {genLink && (
+                <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+                  <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, background: '#F1F2F4', border: '1px solid #EBECF0', borderRadius: 6, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {genLink}
+                  </div>
+                  <Button appearance="primary" onClick={async () => { try { await navigator.clipboard.writeText(genLink); setGenCopied(true); } catch { /* clipboard blocked */ } }}>
+                    {genCopied ? '✓ Copied' : 'Copy'}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Security — only for non-self, non-super_admin */}
           {canModify && (
@@ -986,9 +1179,8 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
             </div>
           </div>
         </div>
-      </div>
-    </>,
-    document.body,
+      </Modal>
+    </ModalTransition>
   );
 }
 
@@ -1040,6 +1232,7 @@ function PeopleTableSkeleton() {
 
 function PeopleTab() {
   const { user: currentUser } = useAuth();
+  const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<{ label: string; value: string } | null>(
     { label: 'All roles', value: '' }
@@ -1054,7 +1247,7 @@ function PeopleTab() {
     queryKey: ['admin-access-people'],
     queryFn: async () => {
       const [profilesRes, rolesRes, deptsRes] = await Promise.all([
-        supabase.from('profiles').select('id, full_name, email, avatar_url, created_at, module_access, approval_status, last_login_at, department_id').order('full_name'),
+        supabase.from('profiles').select('id, full_name, email, avatar_url, created_at, module_access, approval_status, last_login_at, department_id, failed_login_count, locked_until, must_change_password').order('full_name'),
         supabase.from('user_roles').select('user_id, role'),
         supabase.from('capacity_departments').select('id, name'),
       ]);
@@ -1074,6 +1267,9 @@ function PeopleTab() {
         approval_status: p.approval_status,
         last_login_at: (p as { last_login_at?: string | null }).last_login_at ?? null,
         department_name: (p as { department_id?: string | null }).department_id ? deptMap[(p as { department_id?: string | null }).department_id!] ?? null : null,
+        failed_login_count: (p as { failed_login_count?: number | null }).failed_login_count ?? null,
+        locked_until: (p as { locked_until?: string | null }).locked_until ?? null,
+        must_change_password: (p as { must_change_password?: boolean | null }).must_change_password ?? null,
       }));
     },
     staleTime: 60_000,
@@ -1124,7 +1320,6 @@ function PeopleTab() {
             options={[
               { label: 'All sources', value: '' },
               { label: 'Catalyst', value: 'catalyst' },
-              { label: 'Jira-synced', value: 'jira' },
             ]}
             value={sourceFilter}
             onChange={opt => setSourceFilter(opt as { label: string; value: string } | null)}
@@ -1134,11 +1329,22 @@ function PeopleTab() {
           />
         </div>
         <div style={{ marginLeft: 'auto' }}>
-          <Button appearance="primary" iconBefore={PersonAddIcon} onClick={() => setInviteOpen(true)}>
+          <Button appearance="primary" iconBefore={PersonAddIcon} onClick={() => setInviteOpen(v => !v)} isSelected={inviteOpen}>
             Create access
           </Button>
         </div>
       </div>
+
+      {/* Inline create-access surface (no drawer) */}
+      {inviteOpen && (
+        <CreateAccessInline
+          onClose={() => setInviteOpen(false)}
+          onCreated={() => {
+            qc.invalidateQueries({ queryKey: ['admin-access-invitations'] });
+            qc.invalidateQueries({ queryKey: ['admin-access-people'] });
+          }}
+        />
+      )}
 
       {/* Table */}
       {isLoading ? (
@@ -1178,7 +1384,6 @@ function PeopleTab() {
             ) : filtered.map(u => {
               const state = userState(u);
               const modKeys = enabledModuleKeys(u.module_access);
-              const source = userSource(u.email);
               return (
                 <tr
                   key={u.id}
@@ -1231,10 +1436,10 @@ function PeopleTab() {
                   <td style={{ padding: '12px 16px' }}>
                     <span style={{
                       fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999,
-                      border: `1px solid ${source === 'catalyst' ? 'var(--ds-border-information, #8FB8F6)' : 'var(--ds-border, #DFE1E6)'}`,
-                      color: source === 'catalyst' ? 'var(--ds-text-information, #1868DB)' : 'var(--ds-text-subtle, #6B778C)',
+                      border: '1px solid var(--ds-border-information, #8FB8F6)',
+                      color: 'var(--ds-text-information, #1868DB)',
                     }}>
-                      {source === 'catalyst' ? 'Catalyst' : 'Jira-synced'}
+                      Catalyst
                     </span>
                   </td>
                   <td style={{ padding: '8px 4px' }} onClick={e => { e.stopPropagation(); setEditUser(u); }}>
@@ -1266,7 +1471,6 @@ function PeopleTab() {
           onSaved={() => setEditUser(null)}
         />
       )}
-      {inviteOpen && <CreateAccessDrawer onClose={() => setInviteOpen(false)} />}
     </div>
   );
 }
