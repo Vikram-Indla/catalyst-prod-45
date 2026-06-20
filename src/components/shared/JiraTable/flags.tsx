@@ -169,6 +169,10 @@ export function FlagsHost() {
         // a11y rule: error/warning MUST NOT auto-dismiss — user must explicitly dismiss.
         // success/info auto-dismiss after 8s (ADS/Jira parity minimum).
         const autoDismissSeconds = Math.max(8, Math.round((f.delay ?? 8000) / 1000));
+        // Persistent flags (error/warning) always get an explicit "Dismiss" action so
+        // users have a clearly visible way to close them, even if the X button is
+        // cut off by the sidebar or viewport edge.
+        const dismissAction = { content: 'Dismiss', onClick: () => dismiss(f.id) };
         const sharedProps = {
           id: f.id,
           icon: iconFor(appearance),
@@ -176,7 +180,9 @@ export function FlagsHost() {
           description: f.description,
           appearance: adsAppearance,
           onDismissed: dismiss,
-          actions: f.actions,
+          actions: f.persistent
+            ? [...(f.actions ?? []), dismissAction]
+            : f.actions,
         };
         return f.persistent ? (
           <Flag key={f.id} {...sharedProps} />
