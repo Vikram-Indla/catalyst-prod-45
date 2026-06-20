@@ -752,6 +752,7 @@ export default defineConfig(({ mode, command }) => {
     chunkSizeWarningLimit: 1200,
     reportCompressedSize: false,
     rollupOptions: {
+      maxParallelFileOps: 3,
       output: {
         manualChunks(id) {
           // Stable vendor chunks for better long-term caching
