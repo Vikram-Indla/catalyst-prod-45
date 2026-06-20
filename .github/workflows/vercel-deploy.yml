@@ -24,7 +24,6 @@ jobs:
 
       - name: Build
         env:
-          NODE_OPTIONS: --max-old-space-size=6144
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_ENABLE_FILTER_TO_KANBAN: "true"
@@ -32,7 +31,7 @@ jobs:
           VITE_ENABLE_FILTER_TO_DASHBOARD: "true"
           VITE_ENABLE_FILTER_WHATSAPP_AI_SUMMARY: "true"
           VITE_VOICE_DICTATION_ENABLED: "true"
-        run: bunx vite build
+        run: bun run build
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
