@@ -1,1 +1,1 @@
-export { ResourcePlannerPage } from './ResourcePlannerPage';
+export { default as ResourcePlannerPage } from './ResourcePlannerPage';

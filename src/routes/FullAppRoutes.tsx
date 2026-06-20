@@ -282,7 +282,7 @@ const ReleaseSettingsPage = lazy(() => import("../pages/releasehub/ReleaseSettin
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 // AdminGuard was used by /admin/v2 shell (deprecated 2026-05-09) — removed
 
-const PlanResourcePlannerPage = lazy(() => import("../modules/plan/ResourcePlannerPage").then(m => ({ default: m.ResourcePlannerPage })));
+const PlanResourcePlannerPage = lazy(() => import("../modules/plan/ResourcePlannerPage"));
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));

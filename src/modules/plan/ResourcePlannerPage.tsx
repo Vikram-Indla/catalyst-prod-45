@@ -41,7 +41,7 @@ import {
 // V8 Styles
 import '@/styles/users-module.css';
 
-export function ResourcePlannerPage() {
+export default function ResourcePlannerPage() {
   const queryClient = useQueryClient();
   const { data: users = [], isLoading } = useUsers();
 
