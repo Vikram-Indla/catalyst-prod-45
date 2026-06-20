@@ -113,7 +113,7 @@ export default function CapacityDepartmentsPage() {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <h1 style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Resource Departments</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }}>Resource Departments</h1>
           <p style={{ fontSize: 14, marginTop: 4, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
             Configure departments for resource management. Changes sync in real-time.
           </p>
@@ -128,7 +128,7 @@ export default function CapacityDepartmentsPage() {
       </div>
 
       {/* Departments List */}
-      <div style={{ borderRadius: 8, overflow: "hidden" }} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+      <div style={{ borderRadius: 8, overflow: "hidden", background: 'var(--ds-surface, #ffffff)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
           <table className="w-full">
             <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
               <tr>
@@ -144,7 +144,7 @@ export default function CapacityDepartmentsPage() {
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
-                  <td style={{ padding: "12px 16px" }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                  <td style={{ padding: "12px 16px", color: 'var(--ds-text-subtle, #44546F)' }}>
                     <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
                   </td>
                   <td style={{ padding: "12px 16px" }}>
@@ -164,7 +164,7 @@ export default function CapacityDepartmentsPage() {
                     </div>
                   </td>
                   <td style={{ padding: "12px 16px" }}>
-                    <span style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{dept.name}</span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }}>{dept.name}</span>
                   </td>
                   <td style={{ padding: "12px 16px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
@@ -192,7 +192,7 @@ export default function CapacityDepartmentsPage() {
               ))}
               {departments.length === 0 && (
                 <tr>
-                  <td colSpan={4} style={{ padding: "32px 16px", textAlign: "center" }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                  <td colSpan={4} style={{ padding: "32px 16px", textAlign: "center", color: 'var(--ds-text-subtle, #44546F)' }}>
                     No departments configured. Click "Add Department" to create one.
                   </td>
                 </tr>
