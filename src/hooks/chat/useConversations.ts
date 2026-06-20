@@ -263,6 +263,7 @@ export function useConversations(): {
     queryKey: ['chat', 'conversations', userId],
     queryFn: () => fetchConversations(userId as string),
     enabled: !!userId,
+    staleTime: 30 * 1000,
   });
 
   return { conversations: data ?? [], isLoading: !!userId && isLoading };
