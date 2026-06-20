@@ -21,7 +21,9 @@ import { useReplayData } from '@/lib/replay/useReplayData';
 import type { ReplayLane, ReplaySegment, ReplayDetour, ReplayMilestone, ReplayAnnotation } from '@/lib/replay/replayTypes';
 import Spinner from '@atlaskit/spinner';
 import Tooltip from '@atlaskit/tooltip';
+import Button from '@atlaskit/button';
 import { dateToX, getTotalWidth } from '@/components/producthub/timeline/timelineUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -542,6 +544,33 @@ export function CatalystReplay({ rootKey: propKey, embedded }: CatalystReplayPro
   const [scrubX, setScrubX] = useState(0);
   const [controlsVisible, setControlsVisible] = useState(false);
 
+  // AI narrative panel
+  const [narrativeOpen, setNarrativeOpen] = useState(false);
+  const [narrativeText, setNarrativeText] = useState<string | null>(null);
+  const [narrativeLoading, setNarrativeLoading] = useState(false);
+  const [narrativeError, setNarrativeError] = useState<string | null>(null);
+
+  async function fetchNarrative() {
+    if (!activeKey) return;
+    setNarrativeOpen(true);
+    if (narrativeText) return; // already loaded for this key
+    setNarrativeLoading(true);
+    setNarrativeError(null);
+    const { data: fn, error } = await supabase.functions.invoke('replay-narrate', {
+      body: { issue_key: activeKey.toUpperCase() },
+    });
+    setNarrativeLoading(false);
+    if (error) { setNarrativeError(error.message); return; }
+    setNarrativeText(fn?.narrative ?? '(No narrative returned)');
+  }
+
+  // Clear narrative cache when key changes
+  React.useEffect(() => {
+    setNarrativeText(null);
+    setNarrativeOpen(false);
+    setNarrativeError(null);
+  }, [activeKey]);
+
   // Convert scrubX back to date for display
   const scrubDate = React.useMemo(() => {
     const totalMs = timelineEndDate.getTime() - timelineStartDate.getTime();
@@ -584,11 +613,75 @@ export function CatalystReplay({ rootKey: propKey, embedded }: CatalystReplayPro
         <ReplayKeyInput onSubmit={setActiveKey} loading={isLoading} />
 
         {data && (
-          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', marginLeft: 'auto' }}>
-            {lanes.length} lanes · {data.lanes.reduce((n, l) => n + l.segments.length, 0)} transitions
-          </span>
+          <>
+            <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', marginLeft: 'auto' }}>
+              {lanes.length} lanes · {data.lanes.reduce((n, l) => n + l.segments.length, 0)} transitions
+            </span>
+            <Button
+              appearance="subtle"
+              onClick={fetchNarrative}
+              isDisabled={narrativeLoading}
+              style={{ marginLeft: 8 }}
+            >
+              {narrativeLoading ? 'Narrating…' : narrativeOpen ? 'Hide narrative' : '✦ Narrate'}
+            </Button>
+          </>
         )}
       </div>
+
+      {/* ── AI Narrative panel ──────────────────────────────────────── */}
+      <AnimatePresence>
+        {narrativeOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            style={{ overflow: 'hidden', flexShrink: 0 }}
+          >
+            <div style={{
+              padding: '12px 20px',
+              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-surface-sunken, #F7F8F9)',
+              fontSize: 13,
+              lineHeight: 1.7,
+              color: 'var(--ds-text, #172B4D)',
+              position: 'relative',
+            }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: 'var(--ds-text-subtlest, #6B778C)',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                display: 'block',
+                marginBottom: 6,
+              }}>
+                AI Narrative · {activeKey}
+              </span>
+              {narrativeLoading && <Spinner size="small" />}
+              {narrativeError && (
+                <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{narrativeError}</span>
+              )}
+              {narrativeText && !narrativeLoading && (
+                <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{narrativeText}</p>
+              )}
+              <button
+                onClick={() => setNarrativeOpen(false)}
+                style={{
+                  position: 'absolute', top: 10, right: 12,
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontSize: 16, color: 'var(--ds-text-subtlest, #6B778C)',
+                  lineHeight: 1,
+                }}
+                aria-label="Close narrative"
+              >
+                ×
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Body ─────────────────────────────────────────────────────── */}
       {isLoading && (
