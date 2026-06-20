@@ -83,6 +83,17 @@ export function VoiceFlowProvider({ children }: Props) {
     setPartialText(null);
   }, []);
 
+  /** Schedules reset() guarded by session ID — prevents stale error/cancel
+   *  timeouts from killing a session that started after the error fired.
+   *  Root cause of "second attempt fails": setTimeout(reset, N) was fire-and-forget;
+   *  a new session would start but the old timer would call reset() mid-flight. */
+  const scheduleReset = useCallback((delayMs: number) => {
+    const snapshotId = sessionIdRef.current;
+    setTimeout(() => {
+      if (sessionIdRef.current === snapshotId) reset();
+    }, delayMs);
+  }, [reset]);
+
   // ─── Stop recording → Gemini (streaming) → result ────────────────────
   const stopAndProcess = useCallback(async () => {
     if (nativeModeRef.current) {
@@ -103,14 +114,14 @@ export function VoiceFlowProvider({ children }: Props) {
       console.warn('[VoiceFlow] stop capture failed:', e);
       setErrorMessage('Failed to capture audio');
       setStatusBoth('error');
-      setTimeout(reset, 3000);
+      scheduleReset(3000);
       return;
     }
 
     if (blob.size < 1000) {
       setErrorMessage('No audio captured — speak after the capsule appears');
       setStatusBoth('error');
-      setTimeout(reset, 3000);
+      scheduleReset(3000);
       return;
     }
 
@@ -253,10 +264,10 @@ export function VoiceFlowProvider({ children }: Props) {
       setErrorMessage(msg);
       setStatusBoth('error');
       void updateSession('error', undefined, msg);
-      setTimeout(reset, 4000);
+      scheduleReset(4000);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reset]);
+  }, [reset, scheduleReset]);
 
   const handleResult = useCallback(async (
     englishText: string,
@@ -296,11 +307,11 @@ export function VoiceFlowProvider({ children }: Props) {
         console.warn('[VoiceFlow] auto-commit insert failed:', insertErr);
       }
       void updateSession('completed', voiceResult);
-      setTimeout(reset, 200);
+      scheduleReset(200);
     } else {
       setStatusBoth('ready');
     }
-  }, [reset]);
+  }, [reset, scheduleReset]);
 
   stopAndProcessRef.current = stopAndProcess;
 
@@ -329,8 +340,8 @@ export function VoiceFlowProvider({ children }: Props) {
     }
     setStatusBoth('cancelled');
     void updateSession('cancelled');
-    setTimeout(reset, 400);
-  }, [reset]);
+    scheduleReset(400);
+  }, [reset, scheduleReset]);
 
   // ─── Commit ──────────────────────────────────────────────────────────
   const commit = useCallback(() => {
@@ -350,10 +361,10 @@ export function VoiceFlowProvider({ children }: Props) {
         console.warn('[VoiceFlow] insert failed:', e);
       }
       void updateSession('completed', r);
-      setTimeout(reset, 200);
+      scheduleReset(200);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result, reset]);
+  }, [result, reset, scheduleReset]);
 
   // ─── Activation ──────────────────────────────────────────────────────
   const handleActivate = useCallback(async (field: ActiveField) => {
@@ -411,7 +422,7 @@ export function VoiceFlowProvider({ children }: Props) {
         } else {
           setErrorMessage('No speech detected');
           setStatusBoth('error');
-          setTimeout(reset, 3000);
+          scheduleReset(3000);
         }
       };
 
@@ -424,7 +435,7 @@ export function VoiceFlowProvider({ children }: Props) {
           : err === 'no-speech' ? 'No speech detected' : `Speech recognition error: ${err}`;
         setErrorMessage(msg);
         setStatusBoth('error');
-        setTimeout(reset, 3000);
+        scheduleReset(3000);
       };
 
       try {
@@ -434,7 +445,7 @@ export function VoiceFlowProvider({ children }: Props) {
         recognitionRef.current = null;
         setErrorMessage('Speech recognition unavailable');
         setStatusBoth('error');
-        setTimeout(reset, 3000);
+        scheduleReset(3000);
       }
       return;
     }
@@ -464,9 +475,9 @@ export function VoiceFlowProvider({ children }: Props) {
         ? 'Microphone access denied. Check browser permissions.'
         : msg);
       setStatusBoth('error');
-      setTimeout(reset, 3000);
+      scheduleReset(3000);
     }
-  }, [reset]);
+  }, [reset, scheduleReset]);
 
   // ─── Keyboard shortcuts ───────────────────────────────────────────────
   useVoiceHotkey({
