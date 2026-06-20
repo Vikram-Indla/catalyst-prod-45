@@ -145,7 +145,7 @@ export function ChatDock({
   const [catyView, setCatyView] = useState<CatyView>("floating");
   const [dirFocusTick, setDirFocusTick] = useState(0);
 
-  const { pos, isDragging, isSnapping, handlers: dragHandlers } = useDraggableFab();
+  const { pos, isDragging, isSnapping, didMove, handlers: dragHandlers } = useDraggableFab();
 
   // Collapsed: render only the FAB. No data hook subscription is created here; callers
   // gate realtime on !collapsed. We still need an unread total for the badge — read it
@@ -174,8 +174,7 @@ export function ChatDock({
         type="button"
         className={`cc-fab${isDragging ? ' cc-fab--dragging' : ''}${isSnapping ? ' cc-fab--snapping' : ''}`}
         style={{ top: pos.y, left: pos.x }}
-        onClick={onToggleCollapsed}
-        onClickCapture={dragHandlers.onClickCapture}
+        onClick={() => { if (!didMove.current) onToggleCollapsed(); }}
         onPointerDown={dragHandlers.onPointerDown}
         onPointerMove={dragHandlers.onPointerMove}
         onPointerUp={dragHandlers.onPointerUp}

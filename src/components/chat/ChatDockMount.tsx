@@ -78,7 +78,7 @@ export default function ChatDockMount() {
         onSelect={handleSelect}
         onClose={handleClose}
         collapsed={collapsed}
-        onToggleCollapsed={() => { console.debug('[ChatDockMount] toggle — was', collapsed); setCollapsed((v) => !v); }}
+        onToggleCollapsed={() => setCollapsed((v) => !v)}
         onFocusDirectory={() => setActiveId(undefined)}
         onPopOut={() => navigate('/chat')}
       />

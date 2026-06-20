@@ -6,6 +6,10 @@ const RETURN_MS = 5 * 60 * 1000;
 const SNAP_EASING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
 const STORAGE_KEY = 'catalyst-fab-position';
 
+// Minimum pixels of movement before a pointer interaction is classified as a drag.
+// 8px chosen to tolerate Mac trackpad finger-settle micro-movement without false positives.
+const DRAG_THRESHOLD = 8;
+
 export { SNAP_EASING };
 
 function defaultPos() {
@@ -18,10 +22,7 @@ function defaultPos() {
 function loadPos() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
-      if (import.meta.env.DEV) console.debug('[useDraggableFab] no saved pos, using default');
-      return defaultPos();
-    }
+    if (!saved) return defaultPos();
     const pos = JSON.parse(saved);
     const isValid =
       typeof pos.x === 'number' &&
@@ -30,15 +31,9 @@ function loadPos() {
       pos.x <= window.innerWidth - FAB_SIZE &&
       pos.y >= 0 &&
       pos.y <= window.innerHeight - FAB_SIZE;
-
-    if (isValid) {
-      if (import.meta.env.DEV) console.debug('[useDraggableFab] loaded saved pos', pos);
-      return pos;
-    } else {
-      if (import.meta.env.DEV) console.debug('[useDraggableFab] saved pos out of bounds, using default', pos);
-    }
-  } catch (err) {
-    console.error('[useDraggableFab] localStorage load failed:', err);
+    if (isValid) return pos;
+  } catch {
+    // ignore
   }
   return defaultPos();
 }
@@ -46,23 +41,13 @@ function loadPos() {
 function savePos(pos: { x: number; y: number }) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(pos));
-    if (import.meta.env.DEV) console.debug('[useDraggableFab] saved pos', pos);
-  } catch (err) {
-    console.error('[useDraggableFab] localStorage save failed:', err);
+  } catch {
+    // ignore
   }
 }
 
-function snapCorner(x: number, y: number) {
-  const right = x + FAB_SIZE / 2 > window.innerWidth / 2;
-  const bottom = y + FAB_SIZE / 2 > window.innerHeight / 2;
-  return {
-    x: right ? window.innerWidth - FAB_SIZE - EDGE : EDGE,
-    y: bottom ? window.innerHeight - FAB_SIZE - EDGE : EDGE,
-  };
-}
-
 export function useDraggableFab() {
-  const [pos, setPos] = useState(defaultPos);
+  const [pos, setPos] = useState(loadPos);
   const [isDragging, setIsDragging] = useState(false);
   const [isSnapping, setIsSnapping] = useState(false);
 
@@ -96,14 +81,13 @@ export function useDraggableFab() {
       ox: livePos.current.x, oy: livePos.current.y,
     };
     setIsDragging(true);
-    console.debug('[FAB] pointerDown — didMove reset');
   }, []);
 
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
     if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
     const dx = e.clientX - dragOrigin.current.px;
     const dy = e.clientY - dragOrigin.current.py;
-    if (!didMove.current && Math.hypot(dx, dy) > 4) didMove.current = true;
+    if (!didMove.current && Math.hypot(dx, dy) > DRAG_THRESHOLD) didMove.current = true;
     setPos({
       x: Math.max(0, Math.min(window.innerWidth - FAB_SIZE, dragOrigin.current.ox + dx)),
       y: Math.max(0, Math.min(window.innerHeight - FAB_SIZE, dragOrigin.current.oy + dy)),
@@ -114,18 +98,11 @@ export function useDraggableFab() {
     if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
     e.currentTarget.releasePointerCapture(e.pointerId);
     setIsDragging(false);
-    const moved = didMove.current;
-    if (moved) {
-      scheduleReturn();
-    }
-    return moved; // caller can use this to suppress click
+    if (didMove.current) scheduleReturn();
   }, [scheduleReturn]);
 
-  const onClickCapture = useCallback((e: React.MouseEvent) => {
-    // suppress click if pointer moved (drag release)
-    console.debug('[FAB] onClickCapture — didMove=', didMove.current);
-    if (didMove.current) e.stopPropagation();
-  }, []);
-
-  return { pos, isDragging, isSnapping, handlers: { onPointerDown, onPointerMove, onPointerUp, onClickCapture } };
+  // didMove exposed so ChatDock can guard onClick without a capture-phase suppression.
+  // (capture-phase stopPropagation in React 18 also kills the bubble-phase onClick on
+  // the same element — the original bug causing FAB clicks to be silently dropped.)
+  return { pos, isDragging, isSnapping, didMove, handlers: { onPointerDown, onPointerMove, onPointerUp } };
 }
