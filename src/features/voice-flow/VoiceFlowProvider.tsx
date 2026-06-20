@@ -369,19 +369,18 @@ export function VoiceFlowProvider({ children }: Props) {
   // ─── Activation ──────────────────────────────────────────────────────
   const handleActivate = useCallback(async (field: ActiveField) => {
     console.log('[VF] handleActivate status=', statusRef.current, 'prefLang=', getPreferredLanguage());
-    if (statusRef.current !== 'idle') {
-      // Allow re-activation from any non-recording state. 'ready'/'review' park a
-      // result awaiting confirm — a fresh double-space means "re-dictate", so
-      // discard the parked result and start clean. 'error'/'committing' are
-      // terminal transitions. Only an in-flight recording blocks re-activation.
-      const reArmable =
-        statusRef.current === 'error' ||
-        statusRef.current === 'committing' ||
-        statusRef.current === 'ready' ||
-        statusRef.current === 'review';
-      if (reArmable) reset();
-      else return;
-    }
+    // Block re-activation ONLY while a recording is genuinely in flight. Every
+    // other non-idle state (ready/review parked result, committing, cancelled,
+    // error) is terminal for that session — a fresh double-space means
+    // "re-dictate", so discard whatever is parked and start clean. This is the
+    // fix for "voice only works once": low-confidence Arabic parks at 'review'
+    // and the session never returned to idle, so the next activation was blocked.
+    const recordingInFlight =
+      statusRef.current === 'arming' ||
+      statusRef.current === 'listening' ||
+      statusRef.current === 'processing';
+    if (recordingInFlight) return;
+    if (statusRef.current !== 'idle') reset();
 
     fieldRef.current = field;
     setStatusBoth('arming');
