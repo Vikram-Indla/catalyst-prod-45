@@ -16,6 +16,28 @@ interface UserModulePermission {
 }
 
 /**
+ * The Access Management UI grants per-user module access using `_hub`-suffixed
+ * keys (MODULE_ITEMS in AdminAccessPage → profiles.module_access). The gates,
+ * admin_role_module_permissions, and admin_nav_modules use a DIFFERENT canonical
+ * vocabulary (enterprise/product/workhub/…). Without translation, a grant of
+ * `strategy_hub` never satisfies a gate asking for `enterprise`, so access is
+ * silently denied. This map is the single bridge between the two vocabularies.
+ * Unknown / already-canonical keys pass through unchanged.
+ */
+const OVERRIDE_KEY_TO_CANONICAL: Record<string, string> = {
+  home: 'home',
+  strategy_hub: 'enterprise',
+  product_hub: 'product',
+  project_hub: 'workhub',
+  release_hub: 'releases',
+  test_hub: 'testhub',
+  incident_hub: 'operations',
+  task_hub: 'tasks',
+  plan_hub: 'planner',
+  wiki_hub: 'wiki',
+};
+
+/**
  * Fetches the current user's module access permissions based on their product roles,
  * merged with any per-user override stored on profiles.module_access.
  *
@@ -95,7 +117,10 @@ export function useUserModulePermissions() {
         // Keys absent from the override keep their role-based value.
         const merged = new Map<string, ModuleAccessLevel>(roleMap);
         Object.entries(userOverride).forEach(([key, granted]) => {
-          merged.set(key, granted ? 'full' : 'hidden');
+          // Translate the admin-UI `_hub` key to the canonical gate vocabulary
+          // so the grant actually matches what getModuleAccess() looks up.
+          const canonical = OVERRIDE_KEY_TO_CANONICAL[key] ?? key;
+          merged.set(canonical, granted ? 'full' : 'hidden');
         });
         return Array.from(merged.entries()).map(([module_key, access_level]) => ({
           module_key,
