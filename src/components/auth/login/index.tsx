@@ -471,7 +471,7 @@ export function CatalystLoginPage() {
         <span className="clmp-ai-watermark"><CPathSvg /></span>
         <div className="clmp-container clmp-ai-grid">
           <div className="clmp-rv">
-            <span className="clmp-ai-kicker"><CatyPulseIcon size={48} />{t(lang, 'ai.kicker')}</span>
+            <span className="clmp-ai-kicker"><CatyPulseIcon size={16} />{t(lang, 'ai.kicker')}</span>
             <h2>{t(lang, 'ai.title1')} <span className="clmp-ai-hl">{t(lang, 'ai.title2')}</span><br />{t(lang, 'ai.title3')}</h2>
             <p className="clmp-ai-sub">{t(lang, 'ai.sub')}</p>
             <div className="clmp-agent-list">
@@ -485,14 +485,14 @@ export function CatalystLoginPage() {
           </div>
           <div className="clmp-chat clmp-rv" aria-hidden="true">
             <div className="clmp-chat-top">
-              <span className="clmp-chat-av"><CatyPulseIcon size={24} /></span>
-              <span className="clmp-chat-ttl">Ask <i>CATY</i></span>
+              <span className="clmp-chat-av"><CatyPulseIcon size={18} /></span>
+              <span className="clmp-chat-ttl">Assistant</span>
               <span className="clmp-chat-on"><span className="clmp-pulse clmp-pulse-mint" />{t(lang, 'chat.online')}</span>
             </div>
             <div className="clmp-chat-body">
               <div className="clmp-msg clmp-msg-user">{t(lang, 'chat.q')}</div>
               <div className="clmp-msg clmp-msg-caty">
-                <span className="clmp-msg-who"><CatyPulseIcon size={18} />ASK CATY</span>
+                <span className="clmp-msg-who"><CatyPulseIcon size={12} />ASSISTANT</span>
                 {t(lang, 'chat.a')}
                 <span className="clmp-msg-act">
                   <span>{t(lang, 'chat.c1')}</span><span>{t(lang, 'chat.c2')}</span><span>{t(lang, 'chat.c3')}</span>

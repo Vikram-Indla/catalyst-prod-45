@@ -163,16 +163,26 @@ Cleanup is safe to begin on:
 
 ---
 
-## Approve to Proceed
+## ✅ APPROVED — PHASE -1 UNDERWAY
 
-Reply with:
-```
-APPROVED: Proceed with Phase -1 cleanup.
-Answers: [your responses to the 5 questions above]
-```
+**Decisions locked 2026-06-20:**
 
-Or:
+| Question | Answer | Action |
+|----------|--------|--------|
+| 1. Workflow tables | Consolidate — keep `catalyst_workflow_*` only | Drop `injira_workflow_*` references from UI |
+| 2. Hierarchy schema | 2026+ data + linked items (transitive closure) | Migrations created: hierarchy schema finalized |
+| 3. ID sequence | Jira 4-digit (BAU-1234), Catalyst 5-digit (BAU-12345) | Migration created: 5-digit sequence + conflict guard |
+| 4. Conflict resolution | Prevent Jira IDs from reaching 5-digit | Conflict detection table created + monitoring function |
+| 5. Sync admin UI | Webhook-only in connection panel (no live reads) | Hierarchy + sync live in `/admin/workhub/jira-connection` |
 
-```
-BLOCKED: Additional investigation needed on [topics].
-```
+**Architecture confirmed:**
+- Catalyst = system of record (UI reads ONLY Catalyst tables)
+- Jira = historical reference (one-time bulk migration)
+- Sync = webhook + manual trigger (admin-only)
+- Hierarchy = admin panel section (not separate route)
+
+**Migrations created:**
+✅ `20260620000001_catalyst_native_id_sequence.sql` — 5-digit sequences + conflict detection
+✅ `20260620000002_finalize_hierarchy_schema.sql` — canonical hierarchy levels + versioning
+
+**Next: Apply migrations and begin Phase -1 cleanup code**

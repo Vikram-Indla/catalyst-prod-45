@@ -1,3 +1,10 @@
+/**
+ * ⚠️ DEPRECATED (Phase -1 Cleanup, 2026-06-20)
+ * This page is soft-deprecated via router redirect to /admin/access.
+ * Hard removal scheduled after 1-release grace period (2026-08-20).
+ * Reexport: BusinessOwnersContent from @/components/admin/BusinessOwnersContent
+ */
+
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';

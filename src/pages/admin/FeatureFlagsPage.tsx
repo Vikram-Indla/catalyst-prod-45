@@ -1,5 +1,10 @@
 // @ts-nocheck
 /**
+ * ⚠️ DEPRECATED (Phase -1 Cleanup, 2026-06-20)
+ * This page is soft-deprecated via router redirect to /admin/access.
+ * Hard removal scheduled after 1-release grace period (2026-08-20).
+ * Reexport: FeatureFlagsContent from @/components/admin/FeatureFlagsContent
+ *
  * FeatureFlagsPage — Nuclear Fix: 11 Critical Defects
  * V12 Hybrid Precision. All data from Supabase.
  */

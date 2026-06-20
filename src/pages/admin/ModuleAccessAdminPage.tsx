@@ -4,7 +4,7 @@
 import React from 'react';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import { ModuleAccessMatrix } from '@/components/admin/module-access/ModuleAccessMatrix';
-import FeatureFlagsPage from './FeatureFlagsPage';
+import { FeatureFlagsContent } from '@/components/admin/FeatureFlagsContent';
 
 export default function ModuleAccessAdminPage() {
   return (
@@ -27,7 +27,7 @@ export default function ModuleAccessAdminPage() {
         </TabPanel>
         <TabPanel>
           <div style={{ width: '100%', paddingTop: 16 }}>
-            <FeatureFlagsPage />
+            <FeatureFlagsContent />
           </div>
         </TabPanel>
       </Tabs>

@@ -1,4 +1,9 @@
 /**
+ * ⚠️ DEPRECATED (Phase -1 Cleanup, 2026-06-20)
+ * This page is soft-deprecated via router redirect to /admin/access.
+ * Hard removal scheduled after 1-release grace period (2026-08-20).
+ * Reexport: NotificationTriggersContent from @/components/admin/NotificationTriggersContent
+ *
  * ═══════════════════════════════════════════════════════════════════
  * Admin — Notification Triggers Page
  * Configure which CRUD events trigger notifications, who receives
