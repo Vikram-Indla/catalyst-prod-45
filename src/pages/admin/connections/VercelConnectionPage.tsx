@@ -584,6 +584,78 @@ export default function VercelConnectionPage() {
         )}
       </div>
 
+      {/* ── Token validity warning ── */}
+      {!config.vercel_token_set && (
+        <div
+          style={{
+            marginBottom: 24,
+            padding: '12px 16px',
+            background: 'var(--ds-background-danger, #FFEDEB)',
+            border: '1px solid var(--ds-border-danger, #AE2A19)',
+            borderRadius: 6,
+            fontSize: 13,
+            color: 'var(--ds-text-danger, #AE2A19)',
+            lineHeight: '18px',
+          }}
+        >
+          <strong>VERCEL_TOKEN not configured.</strong> Deploys will fail at the "Deploy to Vercel" step.
+          {' '}Add it at{' '}
+          <a
+            href={`https://github.com/${config.github_repo}/settings/secrets/actions`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'inherit', fontWeight: 600 }}
+          >
+            GitHub → Settings → Secrets → Actions → VERCEL_TOKEN
+          </a>
+          {'. '}Get a token from{' '}
+          <a
+            href="https://vercel.com/account/tokens"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'inherit', fontWeight: 600 }}
+          >
+            vercel.com/account/tokens
+          </a>.
+        </div>
+      )}
+      {config.vercel_token_set && latestRun?.conclusion === 'failure' && stats.success === 0 && (
+        <div
+          style={{
+            marginBottom: 24,
+            padding: '12px 16px',
+            background: 'var(--ds-background-warning, #FFF7D6)',
+            border: '1px solid var(--ds-border-warning, #F18D13)',
+            borderRadius: 6,
+            fontSize: 13,
+            color: 'var(--ds-text-warning, #974F0C)',
+            lineHeight: '18px',
+          }}
+        >
+          <strong>All recent deploys failed.</strong>{' '}
+          Most likely cause: <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>VERCEL_TOKEN</code> in GitHub Actions secrets is expired or invalid.
+          {' '}Rotate it at{' '}
+          <a
+            href="https://vercel.com/account/tokens"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'inherit', fontWeight: 600 }}
+          >
+            vercel.com/account/tokens
+          </a>
+          {', then update '}
+          <a
+            href={`https://github.com/${config.github_repo}/settings/secrets/actions`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'inherit', fontWeight: 600 }}
+          >
+            GitHub → Secrets → VERCEL_TOKEN
+          </a>.
+          {' Then save the new token here in Configuration below and re-trigger a deploy.'}
+        </div>
+      )}
+
       {/* ── Stats row ── */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
         <StatCard label="Today" value={stats.today} sub="deploys triggered" />
