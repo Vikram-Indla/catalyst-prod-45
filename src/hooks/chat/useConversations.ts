@@ -181,29 +181,13 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
         : Promise.resolve(),
     ]);
 
-    const unreadCountMap = new Map<string, number>();
-    try {
-      const allConvIds = rows.map(r => r.conv.id);
-      if (allConvIds.length > 0) {
-        const { data: unreadRows, error: uErr } = await db
-          .from('chat_messages')
-          .select('conversation_id', { count: 'exact' })
-          .in('conversation_id', allConvIds)
-          .is('deleted_at', null)
-          .neq('author_id', userId);
-
-        if (!uErr && unreadRows) {
-          (unreadRows as Array<{ conversation_id: string }>).forEach(row => {
-            unreadCountMap.set(row.conversation_id, (unreadCountMap.get(row.conversation_id) ?? 0) + 1);
-          });
-        }
-      }
-    } catch {
-      // fallback: empty map, all unread counts default to 0
-    }
-
     const conversations = rows.map(({ member, conv }) => {
-      const unreadCount = unreadCountMap.get(conv.id) ?? 0;
+      // Derive unread from already-fetched last_read_at vs last_message_at.
+      // Avoids any extra network call. When last_read_at is null the conversation
+      // is entirely unread (1+). When both exist compare timestamps.
+      const lastMsg = conv.last_message_at ? new Date(conv.last_message_at).getTime() : 0;
+      const lastRead = member.last_read_at ? new Date(member.last_read_at).getTime() : 0;
+      const unreadCount = lastMsg > lastRead ? 1 : 0;
       const mapped: ChatConversation = {
         id: conv.id,
         kind: (conv.kind ?? 'channel') as ChatConversationKind,
