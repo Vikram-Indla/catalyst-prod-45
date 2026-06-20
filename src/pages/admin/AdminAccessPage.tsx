@@ -75,6 +75,12 @@ const ROLE_OPTIONS = ROLE_GROUPS.flatMap(g => g.options);
 
 const FILTER_ROLE_OPTIONS = [{ label: 'All roles', value: '' }, ...ROLE_OPTIONS];
 
+const STATUS_FILTER_OPTIONS = [
+  { label: 'Active & pending', value: 'active_pending' },
+  { label: 'Suspended', value: 'suspended' },
+  { label: 'All users', value: '' },
+];
+
 const ROLE_APPEARANCE: Record<string, 'default' | 'success' | 'inprogress' | 'moved' | 'removed' | 'new'> = {
   admin: 'new', super_admin: 'removed',
   product_owner: 'inprogress', product_manager: 'inprogress', business_owner: 'inprogress',
@@ -164,7 +170,7 @@ const STATE_META: Record<UserState, { label: string; appearance: LozengeAppearan
 function userState(u: Pick<CatalystUser, 'email' | 'approval_status' | 'last_login_at' | 'locked_until'>): UserState {
   if (u.approval_status === 'PENDING_APPROVAL') return 'pending';
   if (u.approval_status === 'REJECTED') return 'suspended';
-  if (u.approval_status === 'DISABLED') return 'deactivated';
+  if (u.approval_status === 'DISABLED') return 'suspended';
   // Account locked out from too many failed password attempts.
   if (u.locked_until && new Date(u.locked_until) > new Date()) return 'locked';
   // Honest: a user who has never logged in is still "Pending setup", not Active.
@@ -585,11 +591,12 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
 interface UserEditPanelProps {
   user: CatalystUser;
   currentUserId: string;
+  adminCount: number;
   onClose: () => void;
   onSaved: () => void;
 }
 
-function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelProps) {
+function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: UserEditPanelProps) {
   const qc = useQueryClient();
   const [roleOpt, setRoleOpt] = useState<{ label: string; value: string } | null>(null);
   const [moduleAccess, setModuleAccess] = useState<Record<string, boolean>>({});
@@ -762,7 +769,11 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
   };
 
   const handleToggleSuspend = async () => {
-    const newStatus = isActive ? 'SUSPENDED' : 'APPROVED';
+    const newStatus = isActive ? 'DISABLED' : 'APPROVED';
+    if (newStatus === 'DISABLED' && user.role === 'admin' && adminCount <= 1) {
+      catalystToast.error('Cannot suspend the only admin. Promote another user to admin first.');
+      return;
+    }
     setSuspending(true);
     try {
       const res = await supabase.functions.invoke('user-update', {
@@ -772,7 +783,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
       const data = res.data as { ok: boolean; error?: string };
       if (!data?.ok) throw new Error(data?.error || 'Failed to update account status');
       setLocalApprovalStatus(newStatus);
-      catalystToast.success(newStatus === 'SUSPENDED' ? 'Account suspended' : 'Account reactivated');
+      catalystToast.success(newStatus === 'DISABLED' ? 'Account suspended' : 'Account reactivated');
       qc.invalidateQueries({ queryKey: ['admin-access-people'] });
     } catch (e) {
       catalystToast.error(e instanceof Error ? e.message : 'Failed to update account status');
@@ -782,14 +793,17 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
   };
 
   const handleDelete = async () => {
+    if (user.role === 'admin' && adminCount <= 1) {
+      catalystToast.error('Cannot delete the only admin. Promote another user to admin first.');
+      return;
+    }
     setDeleting(true);
     try {
       const res = await supabase.functions.invoke('user-delete', {
         body: { user_id: user.id },
       });
-      if (res.error) throw new Error(res.error.message);
-      const data = res.data as { ok: boolean; error?: string };
-      if (!data?.ok) throw new Error(data?.error || 'Delete failed');
+      const data = res.data as { ok: boolean; error?: string } | null;
+      if (!data?.ok) throw new Error(data?.error || res.error?.message || 'Delete failed');
       catalystToast.success(`${user.full_name || user.email} has been removed`);
       qc.invalidateQueries({ queryKey: ['admin-access-people'] });
       onClose();
@@ -1285,6 +1299,9 @@ function PeopleTab() {
   const [sourceFilter, setSourceFilter] = useState<{ label: string; value: string } | null>(
     { label: 'All sources', value: '' }
   );
+  const [statusFilter, setStatusFilter] = useState<{ label: string; value: string }>(
+    STATUS_FILTER_OPTIONS[0]
+  );
   const [editUser, setEditUser] = useState<CatalystUser | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -1321,8 +1338,15 @@ function PeopleTab() {
     staleTime: 60_000,
   });
 
+  const adminCount = useMemo(() => users.filter(u => u.role === 'admin').length, [users]);
+
   const filtered = useMemo(() => {
     let result = users;
+    if (statusFilter.value === 'active_pending') {
+      result = result.filter(u => { const s = userState(u); return s === 'active' || s === 'pending' || s === 'locked'; });
+    } else if (statusFilter.value === 'suspended') {
+      result = result.filter(u => userState(u) === 'suspended');
+    }
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(u =>
@@ -1337,7 +1361,7 @@ function PeopleTab() {
       result = result.filter(u => userSource(u.email) === sourceFilter.value);
     }
     return result;
-  }, [users, search, roleFilter, sourceFilter]);
+  }, [users, search, roleFilter, sourceFilter, statusFilter]);
 
   return (
     <div style={{ paddingTop: 16 }}>
@@ -1358,6 +1382,16 @@ function PeopleTab() {
             onChange={opt => setRoleFilter(opt as { label: string; value: string } | null)}
             placeholder="Filter by role"
             aria-label="Filter by role"
+            menuPortalTarget={document.body}
+          />
+        </div>
+        <div style={{ width: 160 }}>
+          <Select
+            options={STATUS_FILTER_OPTIONS}
+            value={statusFilter}
+            onChange={opt => setStatusFilter((opt as { label: string; value: string }) ?? STATUS_FILTER_OPTIONS[0])}
+            placeholder="Filter by status"
+            aria-label="Filter by status"
             menuPortalTarget={document.body}
           />
         </div>
@@ -1427,7 +1461,11 @@ function PeopleTab() {
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={9} style={{ padding: 40, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>
-                  {search || roleFilter?.value || sourceFilter?.value ? 'No users match your filters' : 'No users found'}
+                  {statusFilter.value === 'suspended' && !search && !roleFilter?.value && !sourceFilter?.value
+                    ? 'No suspended users'
+                    : (search || roleFilter?.value || sourceFilter?.value || statusFilter.value)
+                      ? 'No users match your filters'
+                      : 'No users found'}
                 </td>
               </tr>
             ) : filtered.map(u => {
@@ -1510,6 +1548,10 @@ function PeopleTab() {
           {filtered.length === users.length
             ? `${users.length} user${users.length !== 1 ? 's' : ''}`
             : `${filtered.length} of ${users.length} users`}
+          {statusFilter.value === 'active_pending' && (() => {
+            const suspendedCount = users.filter(u => userState(u) === 'suspended').length;
+            return suspendedCount > 0 ? ` · ${suspendedCount} suspended hidden` : null;
+          })()}
         </div>
       )}
 
@@ -1517,6 +1559,7 @@ function PeopleTab() {
         <UserEditPanel
           user={editUser}
           currentUserId={currentUser.id}
+          adminCount={adminCount}
           onClose={() => setEditUser(null)}
           onSaved={() => setEditUser(null)}
         />
