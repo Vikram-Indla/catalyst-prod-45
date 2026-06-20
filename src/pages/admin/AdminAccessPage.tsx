@@ -33,6 +33,7 @@ interface CatalystUser {
   module_access: Record<string, boolean> | null;
   approval_status: string | null;
   last_login_at: string | null;
+  department_name?: string | null;
 }
 
 interface PendingInvite {
@@ -55,25 +56,51 @@ interface EmailLogEntry {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ROLE_OPTIONS = [
-  { label: 'Admin', value: 'admin' },
-  { label: 'Program Manager', value: 'program_manager' },
-  { label: 'Team Lead', value: 'team_lead' },
-  { label: 'User', value: 'user' },
+// Grouped role options for @atlaskit/select (supports optgroups natively)
+const ROLE_GROUPS = [
+  { label: 'Admin',      options: [{ label: 'Admin', value: 'admin' }] },
+  { label: 'Product',    options: [{ label: 'Product Owner', value: 'product_owner' }, { label: 'Product Manager', value: 'product_manager' }, { label: 'Business Owner', value: 'business_owner' }] },
+  { label: 'Delivery',   options: [{ label: 'Project Manager', value: 'project_manager' }, { label: 'Project Coordinator', value: 'project_coordinator' }, { label: 'Release Manager', value: 'release_manager' }, { label: 'Architect', value: 'architect' }, { label: 'Developer', value: 'developer' }, { label: 'QA Tester', value: 'qa_tester' }] },
+  { label: 'Operations', options: [{ label: 'Operations Engineer', value: 'operations_engineer' }, { label: 'Technical Support', value: 'technical_support' }, { label: 'Support', value: 'support' }] },
+  { label: 'Governance', options: [{ label: 'Governance', value: 'governance' }, { label: 'PMO', value: 'pmo' }] },
+  { label: 'Guest',      options: [{ label: 'Guest (read-only · 48 h max)', value: 'guest' }] },
 ];
 
-const FILTER_ROLE_OPTIONS = [
-  { label: 'All roles', value: '' },
-  { label: 'Super Admin', value: 'super_admin' },
-  ...ROLE_OPTIONS,
-];
+// Flat list for filter dropdowns and lookup
+const ROLE_OPTIONS = ROLE_GROUPS.flatMap(g => g.options);
+
+const FILTER_ROLE_OPTIONS = [{ label: 'All roles', value: '' }, ...ROLE_OPTIONS];
 
 const ROLE_APPEARANCE: Record<string, 'default' | 'success' | 'inprogress' | 'moved' | 'removed' | 'new'> = {
-  admin: 'new',
-  super_admin: 'removed',
-  program_manager: 'inprogress',
-  team_lead: 'moved',
-  user: 'default',
+  admin: 'new', super_admin: 'removed',
+  product_owner: 'inprogress', product_manager: 'inprogress', business_owner: 'inprogress',
+  project_manager: 'moved', project_coordinator: 'moved', release_manager: 'moved', architect: 'moved',
+  developer: 'success', qa_tester: 'success',
+  operations_engineer: 'default', technical_support: 'default', support: 'default',
+  governance: 'new', pmo: 'new',
+  guest: 'default',
+  // legacy (not shown in UI, may exist in old rows)
+  program_manager: 'inprogress', team_lead: 'moved', user: 'default',
+};
+
+// Default module access per role — auto-suggested when a role is selected in the drawer
+const ROLE_DEFAULT_MODULES: Record<string, string[]> = {
+  admin:                ['home','project_hub','product_hub','strategy_hub','release_hub','test_hub','incident_hub','task_hub','plan_hub','wiki_hub'],
+  product_owner:        ['home','project_hub','product_hub','strategy_hub'],
+  product_manager:      ['home','project_hub','product_hub','strategy_hub'],
+  business_owner:       ['home','project_hub','product_hub','strategy_hub'],
+  project_manager:      ['home','project_hub','release_hub','task_hub'],
+  project_coordinator:  ['home','project_hub','task_hub'],
+  release_manager:      ['home','project_hub','release_hub'],
+  architect:            ['home','project_hub','product_hub','strategy_hub'],
+  developer:            ['home','project_hub','task_hub'],
+  qa_tester:            ['home','project_hub','test_hub'],
+  operations_engineer:  ['home','incident_hub','task_hub'],
+  technical_support:    ['home','incident_hub','task_hub'],
+  support:              ['home','project_hub'],
+  governance:           ['home','project_hub','product_hub','strategy_hub'],
+  pmo:                  ['home','project_hub','product_hub','strategy_hub','release_hub'],
+  guest:                ['home','project_hub'],
 };
 
 // home + project_hub are always-on defaults
@@ -159,42 +186,90 @@ function relativeTime(iso: string | null): string {
   return `${Math.floor(d / 365)}y ago`;
 }
 
-// ─── CreateAccessModal ──────────────────────────────────────────────────────
-// MVP onboarding: admin creates a user + a one-time, TTL-bound setup link, on the
-// chosen channel. The link is always returned for manual copy. WhatsApp/SMS are
-// stubbed until provider verification (link still copyable meanwhile).
+// ─── CreateAccessDrawer ───────────────────────────────────────────────────────
+// Right-side 520px slide-in panel. WhatsApp is the primary channel.
+// Guest TTL hard-capped to 48 h server-side; UI enforces it too.
 
 const SAFE_KEYS = ['home', 'project_hub', 'product_hub'];
-const CHANNEL_OPTS: { value: 'email' | 'whatsapp' | 'sms' | 'manual'; label: string }[] = [
-  { value: 'email', label: 'Email' },
-  { value: 'whatsapp', label: 'WhatsApp' },
-  { value: 'sms', label: 'SMS' },
-  { value: 'manual', label: 'Manual' },
+const GUEST_MAX_TTL = 172800; // 48 h in seconds
+
+interface ChannelDef { value: 'whatsapp' | 'email' | 'sms' | 'manual'; label: string; icon: string; sub: string }
+const CHANNEL_DEFS: ChannelDef[] = [
+  { value: 'whatsapp', label: 'WhatsApp', icon: '💬', sub: 'Primary' },
+  { value: 'email',    label: 'Email',    icon: '✉️',  sub: 'Traditional' },
+  { value: 'sms',      label: 'SMS',      icon: '📱',  sub: 'Fallback' },
+  { value: 'manual',   label: 'Manual',   icon: '🔗',  sub: 'Copy link' },
 ];
-const TTL_OPTS: { value: number; label: string }[] = [
-  { value: 300, label: '5 min' },
-  { value: 900, label: '15 min' },
-  { value: 3600, label: '1 hour' },
-  { value: 86400, label: '1 day' },
+
+interface TtlDef { value: number; label: string; sub: string }
+const TTL_DEFS: TtlDef[] = [
+  { value: 300,    label: '5 min',  sub: 'Quick' },
+  { value: 900,    label: '15 min', sub: '' },
+  { value: 3600,   label: '1 hour', sub: 'Default' },
+  { value: 28800,  label: '8 hours',sub: '' },
+  { value: 86400,  label: '1 day',  sub: 'Max (non-guest)' },
+  { value: 172800, label: '2 days', sub: 'Max (guest only)' },
 ];
 
 interface LinkResult { link: string; expiresAt?: string; invitationId?: string; channelPending?: boolean; channel: string }
 
-function CreateAccessModal({ onClose }: { onClose: () => void }) {
+function CreateAccessDrawer({ onClose }: { onClose: () => void }) {
   const { inviteUser, expireInvitation, isLoading } = useInviteUser();
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [role, setRole] = useState<{ label: string; value: string } | null>({ label: 'User', value: 'user' });
+  const [roleOpt, setRoleOpt] = useState<{ label: string; value: string } | null>({ label: 'Developer', value: 'developer' });
+  const [deptId, setDeptId] = useState<string | null>(null);
   const [moduleAccess, setModuleAccess] = useState<Record<string, boolean>>(DEFAULT_MODULE_ACCESS);
-  const [channel, setChannel] = useState<'email' | 'whatsapp' | 'sms' | 'manual'>('email');
-  const [ttl, setTtl] = useState(300);
+  const [channel, setChannel] = useState<'whatsapp' | 'email' | 'sms' | 'manual'>('whatsapp');
+  const [ttl, setTtl] = useState(3600);
   const [result, setResult] = useState<LinkResult | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const toggleModule = (key: string) => setModuleAccess(prev => ({ ...prev, [key]: !prev[key] }));
+  // Fetch departments for the chip row
+  const { data: departments = [] } = useQuery({
+    queryKey: ['capacity_departments_list'],
+    queryFn: async () => {
+      const { data } = await supabase.from('capacity_departments').select('id, name').order('name');
+      return (data || []) as { id: string; name: string }[];
+    },
+  });
+
+  // When role changes, auto-suggest modules
+  useEffect(() => {
+    const rv = roleOpt?.value || '';
+    const suggested = ROLE_DEFAULT_MODULES[rv];
+    if (suggested) {
+      const next: Record<string, boolean> = {};
+      MODULE_ITEMS.forEach(m => { next[m.key] = suggested.includes(m.key); });
+      setModuleAccess(next);
+    }
+  }, [roleOpt?.value]);
+
+  // Guest: clamp TTL to 48h
+  const isGuest = roleOpt?.value === 'guest';
+  const effectiveTtl = isGuest ? Math.min(ttl, GUEST_MAX_TTL) : ttl;
+  const availableTtls = isGuest ? TTL_DEFS : TTL_DEFS.filter(t => t.value <= 86400);
+
+  // Live expiry preview
+  const expiryPreview = useMemo(() => {
+    const d = new Date(Date.now() + effectiveTtl * 1000);
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    const isTomorrow = d.toDateString() === new Date(now.getTime() + 86400000).toDateString();
+    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (isToday) return `Expires today at ${timeStr}`;
+    if (isTomorrow) return `Expires tomorrow at ${timeStr}`;
+    return `Expires ${d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })} at ${timeStr}`;
+  }, [effectiveTtl]);
+
+  const toggleModule = (key: string, forced?: boolean) => {
+    if (forced !== undefined) { setModuleAccess(prev => ({ ...prev, [key]: forced })); return; }
+    setModuleAccess(prev => ({ ...prev, [key]: !prev[key] }));
+  };
   const safeOk = SAFE_KEYS.some(k => moduleAccess[k]);
   const emailOk = /\S+@\S+\.\S+/.test(email.trim());
+  const needsPhone = channel === 'whatsapp' || channel === 'sms';
   const canCreate = emailOk && safeOk && !isLoading;
 
   useEffect(() => {
@@ -211,12 +286,13 @@ function CreateAccessModal({ onClose }: { onClose: () => void }) {
       email: email.trim(),
       full_name: fullName.trim() || undefined,
       phone: phone.trim() || undefined,
-      role: role?.value || 'user',
+      role: roleOpt?.value || 'developer',
       module_access: moduleAccess,
       delivery_channel: channel,
-      ttl_seconds: ttl,
+      ttl_seconds: effectiveTtl,
       purpose: 'invite',
       regenerate,
+      department_id: deptId,
     });
     if (r.ok) {
       setResult({ link: r.setup_link || '', expiresAt: r.expires_at, invitationId: r.invitation_id, channelPending: r.channel_pending, channel });
@@ -239,125 +315,190 @@ function CreateAccessModal({ onClose }: { onClose: () => void }) {
     else catalystToast.error(r.error || 'Failed to expire link');
   };
 
-  const lblStyle: React.CSSProperties = { display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B778C'), marginBottom: 4 };
-  const segBtn = (active: boolean): React.CSSProperties => ({
-    padding: '6px 12px', fontSize: 13, cursor: 'pointer', border: 'none',
-    borderRight: `1px solid ${token('color.border', '#EBECF0')}`,
-    background: active ? token('color.background.selected', '#E9F2FE') : 'transparent',
-    color: active ? token('color.text.selected', '#0C66E4') : token('color.text.subtle', '#6B778C'),
-  });
+  const lbl: React.CSSProperties = { display: 'block', fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 6, letterSpacing: '0.04em' };
 
   return createPortal(
-    <div
-      role="dialog" aria-modal="true" aria-labelledby="create-access-title"
-      style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))' }}
-      onClick={onClose}
-    >
+    <>
+      {/* Backdrop */}
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(9,30,66,0.45)' }} />
+      {/* Drawer */}
       <div
-        onClick={e => e.stopPropagation()}
-        style={{ width: 520, maxWidth: 'calc(100vw - 48px)', background: token('elevation.surface.overlay', '#fff'), borderRadius: 8, boxShadow: token('elevation.shadow.overlay', '0 8px 24px rgba(9,30,66,0.25)'), display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 80px)', overflow: 'hidden' }}
+        role="dialog" aria-modal="true" aria-labelledby="drawer-title"
+        style={{ position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 10000, width: 520, background: '#fff', display: 'flex', flexDirection: 'column', boxShadow: '-4px 0 24px rgba(9,30,66,0.18)' }}
       >
-        <div style={{ padding: '24px 24px 16px', borderBottom: `1px solid ${token('color.border', '#EBECF0')}` }}>
-          <h2 id="create-access-title" style={{ margin: 0, fontSize: 20, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
-            {result ? 'Setup link' : 'Create access'}
-          </h2>
+        {/* Header */}
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid #EBECF0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <div>
+            <h2 id="drawer-title" style={{ margin: 0, fontSize: 18, fontWeight: 600, color: '#172B4D' }}>
+              {result ? 'Setup link ready' : 'Invite someone'}
+            </h2>
+            {!result && <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6B778C' }}>One-time secure link · {expiryPreview}</p>}
+          </div>
+          <button onClick={onClose} aria-label="Close" style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: '#6B778C', display: 'flex' }}>
+            <CloseIcon label="Close" size="medium" />
+          </button>
         </div>
 
         {!result ? (
           <>
-            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+              {/* Contact */}
               <div>
-                <label style={lblStyle}>Email address *</label>
-                <Textfield value={email} onChange={e => setEmail((e.target as HTMLInputElement).value)} placeholder="user@example.com" aria-label="Email address" isRequired />
+                <label style={lbl}>EMAIL ADDRESS <span style={{ color: '#AE2A19' }}>*</span></label>
+                <Textfield value={email} onChange={e => setEmail((e.target as HTMLInputElement).value)} placeholder="name@company.com" aria-label="Email address" isRequired />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
-                  <label style={lblStyle}>Full name</label>
+                  <label style={lbl}>FULL NAME</label>
                   <Textfield value={fullName} onChange={e => setFullName((e.target as HTMLInputElement).value)} placeholder="Jane Doe" aria-label="Full name" />
                 </div>
                 <div>
-                  <label style={lblStyle}>Phone {(channel === 'whatsapp' || channel === 'sms') ? '*' : '(optional)'}</label>
+                  <label style={lbl}>PHONE {needsPhone ? <span style={{ color: '#AE2A19' }}>*</span> : <span style={{ color: '#97A0AF' }}>(optional)</span>}</label>
                   <Textfield value={phone} onChange={e => setPhone((e.target as HTMLInputElement).value)} placeholder="+966 5x xxx xxxx" aria-label="Phone" />
                 </div>
               </div>
+
+              {/* Role */}
               <div>
-                <label style={lblStyle}>Role</label>
-                <Select options={ROLE_OPTIONS} value={role} onChange={opt => setRole(opt as { label: string; value: string } | null)} menuPortalTarget={document.body} styles={{ menuPortal: (base) => ({ ...base, zIndex: 10001 }) }} />
-              </div>
-              <div>
-                <label style={lblStyle}>Module access</label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 16px' }}>
-                  {MODULE_ITEMS.map(m => (
-                    <label key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), cursor: m.default ? 'default' : 'pointer', opacity: m.default ? 0.65 : 1 }}>
-                      <input type="checkbox" checked={!!moduleAccess[m.key]} disabled={!!m.default} onChange={() => !m.default && toggleModule(m.key)} style={{ accentColor: token('color.background.brand.bold', 'var(--cp-primary-60, #0052CC)'), cursor: m.default ? 'default' : 'pointer' }} />
-                      {m.label}
-                      {m.default && <span style={{ fontSize: 11, color: token('color.text.subtlest', '#97A0AF') }}>(default)</span>}
-                    </label>
-                  ))}
-                </div>
-                {!safeOk && (
-                  <p style={{ margin: '8px 0 0', fontSize: 12, color: token('color.text.danger', '#AE2A19') }}>
-                    Enable at least one safe landing module (Home, Project, or Product). Enforced on the server too.
-                  </p>
+                <label style={lbl}>ROLE</label>
+                <Select
+                  options={ROLE_GROUPS}
+                  value={roleOpt}
+                  onChange={opt => setRoleOpt(opt as { label: string; value: string } | null)}
+                  menuPortalTarget={document.body}
+                  styles={{ menuPortal: base => ({ ...base, zIndex: 10001 }) }}
+                  placeholder="Select a role…"
+                />
+                {isGuest && (
+                  <div style={{ marginTop: 6, padding: '6px 10px', background: '#FFF7D6', borderRadius: 4, fontSize: 11, color: '#974F0C' }}>
+                    Guest access is read-only. Link lifetime is capped at 48 hours.
+                  </div>
                 )}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
+
+              {/* Department chips */}
+              {departments.length > 0 && (
                 <div>
-                  <label style={lblStyle}>Send via</label>
-                  <div style={{ display: 'inline-flex', border: `1px solid ${token('color.border', '#EBECF0')}`, borderRadius: 6, overflow: 'hidden' }}>
-                    {CHANNEL_OPTS.map(c => (
-                      <button key={c.value} type="button" onClick={() => setChannel(c.value)} style={{ ...segBtn(channel === c.value), borderRight: c.value === 'manual' ? 'none' : segBtn(false).borderRight }}>{c.label}</button>
-                    ))}
-                  </div>
-                  {(channel === 'whatsapp' || channel === 'sms') && (
-                    <p style={{ margin: '6px 0 0', fontSize: 11, color: token('color.text.subtlest', '#97A0AF') }}>Provider not yet live — link is recorded and copyable; share it manually for now.</p>
-                  )}
-                </div>
-                <div>
-                  <label style={lblStyle}>Link validity</label>
+                  <label style={lbl}>DEPARTMENT</label>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {TTL_OPTS.map(t => (
-                      <button key={t.value} type="button" onClick={() => setTtl(t.value)} style={{ padding: '5px 10px', fontSize: 12, borderRadius: 999, cursor: 'pointer', border: `1px solid ${ttl === t.value ? token('color.border.selected', '#0C66E4') : token('color.border', '#EBECF0')}`, background: ttl === t.value ? token('color.background.selected', '#E9F2FE') : 'transparent', color: ttl === t.value ? token('color.text.selected', '#0C66E4') : token('color.text.subtle', '#6B778C') }}>{t.label}</button>
+                    <button type="button" onClick={() => setDeptId(null)} style={{ padding: '4px 12px', borderRadius: 999, fontSize: 12, cursor: 'pointer', border: `1px solid ${!deptId ? '#0C66E4' : '#DFE1E6'}`, background: !deptId ? '#E9F2FE' : 'transparent', color: !deptId ? '#0C66E4' : '#42526E', fontWeight: !deptId ? 600 : 400 }}>
+                      None
+                    </button>
+                    {departments.map(d => (
+                      <button key={d.id} type="button" onClick={() => setDeptId(prev => prev === d.id ? null : d.id)} style={{ padding: '4px 12px', borderRadius: 999, fontSize: 12, cursor: 'pointer', border: `1px solid ${deptId === d.id ? '#0C66E4' : '#DFE1E6'}`, background: deptId === d.id ? '#E9F2FE' : 'transparent', color: deptId === d.id ? '#0C66E4' : '#42526E', fontWeight: deptId === d.id ? 600 : 400 }}>
+                        {d.name}
+                      </button>
                     ))}
                   </div>
                 </div>
+              )}
+
+              {/* Module access — hub icon tiles */}
+              <div>
+                <label style={lbl}>MODULE ACCESS</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+                  {MODULE_ITEMS.map(m => {
+                    const on = !!moduleAccess[m.key];
+                    const locked = !!m.default;
+                    const hubIconSrc = HUB_ICON_REGISTRY[hubKeyFor(m.key)];
+                    return (
+                      <button
+                        key={m.key} type="button"
+                        onClick={() => !locked && toggleModule(m.key)}
+                        title={locked ? `${m.label} (always on)` : m.label}
+                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 4px', borderRadius: 8, border: `1px solid ${on ? '#0C66E4' : '#DFE1E6'}`, background: on ? '#E9F2FE' : 'transparent', cursor: locked ? 'default' : 'pointer', opacity: locked ? 0.55 : 1, transition: 'all 0.1s' }}
+                      >
+                        {hubIconSrc ? <img src={hubIconSrc} alt="" width={18} height={18} style={{ opacity: on ? 1 : 0.5 }} /> : <span style={{ fontSize: 16 }}>📦</span>}
+                        <span style={{ fontSize: 10, fontWeight: 500, color: on ? '#0C66E4' : '#6B778C', lineHeight: 1.2, textAlign: 'center' }}>{m.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {!safeOk && <p style={{ margin: '6px 0 0', fontSize: 11, color: '#AE2A19' }}>At least one of Home, Project, or Product must be enabled.</p>}
               </div>
+
+              {/* Channel — icon cards */}
+              <div>
+                <label style={lbl}>SEND VIA</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                  {CHANNEL_DEFS.map(c => {
+                    const active = channel === c.value;
+                    return (
+                      <button key={c.value} type="button" onClick={() => setChannel(c.value)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '12px 8px', borderRadius: 8, border: `1px solid ${active ? '#0C66E4' : '#DFE1E6'}`, background: active ? '#E9F2FE' : 'transparent', cursor: 'pointer', transition: 'all 0.1s' }}>
+                        <span style={{ fontSize: 20 }}>{c.icon}</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: active ? '#0C66E4' : '#172B4D' }}>{c.label}</span>
+                        <span style={{ fontSize: 10, color: '#6B778C' }}>{c.sub}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {(channel === 'whatsapp' || channel === 'sms') && (
+                  <p style={{ margin: '6px 0 0', fontSize: 11, color: '#97A0AF' }}>Provider integration pending — the link will be recorded and displayed for manual sharing.</p>
+                )}
+              </div>
+
+              {/* Link validity — clock cards */}
+              <div>
+                <label style={lbl}>LINK VALIDITY</label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {availableTtls.map(t => {
+                    const active = effectiveTtl === t.value;
+                    return (
+                      <button key={t.value} type="button" onClick={() => setTtl(t.value)} style={{ padding: '6px 14px', borderRadius: 999, fontSize: 12, cursor: 'pointer', border: `1px solid ${active ? '#0C66E4' : '#DFE1E6'}`, background: active ? '#E9F2FE' : 'transparent', color: active ? '#0C66E4' : '#42526E', fontWeight: active ? 600 : 400 }}>
+                        {t.label}{t.sub ? ` · ${t.sub}` : ''}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p style={{ margin: '8px 0 0', fontSize: 11, color: '#42526E' }}>⏰ {expiryPreview}</p>
+              </div>
+
             </div>
-            <div style={{ padding: '12px 24px', display: 'flex', justifyContent: 'flex-end', gap: 8, borderTop: `1px solid ${token('color.border', '#EBECF0')}` }}>
+
+            {/* Footer */}
+            <div style={{ padding: '14px 24px', borderTop: '1px solid #EBECF0', display: 'flex', justifyContent: 'flex-end', gap: 8, flexShrink: 0 }}>
               <Button appearance="subtle" onClick={onClose}>Cancel</Button>
               <Button appearance="primary" isLoading={isLoading} isDisabled={!canCreate} onClick={() => submit(false)}>Create access</Button>
             </div>
           </>
         ) : (
+          /* ─ Link result pane ─ */
           <>
-            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto' }}>
-              <p style={{ margin: 0, fontSize: 13, color: token('color.text.subtle', '#6B778C') }}>
-                Access created for <strong style={{ color: token('color.text', '#172B4D') }}>{email}</strong> · <Lozenge appearance="inprogress">Pending setup</Lozenge>
-              </p>
-              <div>
-                <label style={lblStyle}>One-time setup link</label>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12, background: token('color.background.neutral', '#F1F2F4'), border: `1px solid ${token('color.border', '#EBECF0')}`, borderRadius: 6, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {result.link || 'Link expired — regenerate to issue a new one'}
-                  </div>
-                  <Button appearance="primary" isDisabled={!result.link} onClick={copyLink}>{copied ? 'Copied' : 'Copy link'}</Button>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ padding: 12, background: '#F3F9FF', borderRadius: 8, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 24, flexShrink: 0 }}>✅</span>
+                <div>
+                  <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#172B4D' }}>Access created for {email}</p>
+                  <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6B778C' }}>
+                    Role: <strong>{roleOpt?.label}</strong> · Channel: <strong style={{ textTransform: 'capitalize' }}>{result.channel}{result.channelPending ? ' (manual share)' : ''}</strong>
+                  </p>
                 </div>
               </div>
+
+              <div>
+                <label style={lbl}>ONE-TIME SETUP LINK</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, background: '#F1F2F4', border: '1px solid #EBECF0', borderRadius: 6, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {result.link || 'Link expired — regenerate below'}
+                  </div>
+                  <Button appearance="primary" isDisabled={!result.link} onClick={copyLink}>{copied ? '✓ Copied' : 'Copy'}</Button>
+                </div>
+              </div>
+
               <div style={{ display: 'flex', gap: 24, fontSize: 13 }}>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtlest', '#97A0AF') }}>Expires</div>
-                  <div style={{ color: token('color.text', '#172B4D') }}>{result.expiresAt ? new Date(result.expiresAt).toLocaleString() : '—'}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtlest', '#97A0AF') }}>Channel</div>
-                  <div style={{ color: token('color.text', '#172B4D'), textTransform: 'capitalize' }}>{result.channel}{result.channelPending ? ' (manual share)' : ''}</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#97A0AF', marginBottom: 2 }}>Expires</div>
+                  <div style={{ color: '#172B4D' }}>{result.expiresAt ? new Date(result.expiresAt).toLocaleString() : '—'}</div>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: 12, background: token('color.background.warning', '#FFF7D6'), borderRadius: 6, fontSize: 12, color: token('color.text.warning', '#974F0C') }}>
-                Single-use link. If the number/email was wrong, expire it now and regenerate. Catalyst never stores the raw token.
+
+              <div style={{ padding: '10px 12px', background: '#FFF7D6', borderRadius: 6, fontSize: 11, color: '#974F0C', lineHeight: 1.5 }}>
+                This link is single-use and expires after one click. If the recipient's contact details were wrong, expire it below and regenerate. Catalyst never stores the raw token.
               </div>
             </div>
-            <div style={{ padding: '12px 24px', display: 'flex', justifyContent: 'space-between', gap: 8, borderTop: `1px solid ${token('color.border', '#EBECF0')}` }}>
+
+            <div style={{ padding: '14px 24px', borderTop: '1px solid #EBECF0', display: 'flex', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
               <div style={{ display: 'flex', gap: 8 }}>
                 <Button appearance="default" isLoading={isLoading} onClick={() => submit(true)}>Regenerate</Button>
                 <Button appearance="subtle" isDisabled={!result.link} onClick={expireNow}>Expire now</Button>
@@ -367,7 +508,7 @@ function CreateAccessModal({ onClose }: { onClose: () => void }) {
           </>
         )}
       </div>
-    </div>,
+    </>,
     document.body,
   );
 }
@@ -602,7 +743,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               </div>
             ) : (
               <Select
-                options={ROLE_OPTIONS}
+                options={ROLE_GROUPS}
                 value={roleOpt}
                 onChange={opt => setRoleOpt(opt as { label: string; value: string } | null)}
                 menuPortalTarget={document.body}
@@ -867,7 +1008,7 @@ function PeopleTableSkeleton() {
     animation: 'cp-skeleton-shimmer 1.4s ease-in-out infinite',
     borderRadius: 3,
   };
-  const COLS = 8; // mirrors the People table header: Name, Email, Role, Modules, Status, Last active, Source, actions
+  const COLS = 9; // Name, Email, Role, Department, Modules, Status, Last active, Source, actions
   return (
     <>
       <style>{`@keyframes cp-skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
@@ -883,9 +1024,11 @@ function PeopleTableSkeleton() {
               </td>
               <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 160, height: 12 }} /></td>
               <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 80, height: 18, borderRadius: 3 }} /></td>
+              <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 90, height: 12 }} /></td>
               <td style={{ padding: '12px 16px', textAlign: 'center' }}><div style={{ ...SHIMMER, width: 36, height: 18, borderRadius: 9, margin: '0 auto' }} /></td>
               <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 60, height: 18, borderRadius: 3 }} /></td>
               <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 72, height: 12 }} /></td>
+              <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 50, height: 12 }} /></td>
               <td style={{ padding: '8px 4px' }}><div style={{ ...SHIMMER, width: 16, height: 16, borderRadius: 3, margin: '0 auto' }} /></td>
             </tr>
           ))}
@@ -910,13 +1053,16 @@ function PeopleTab() {
   const { data: users = [], isLoading } = useQuery<CatalystUser[]>({
     queryKey: ['admin-access-people'],
     queryFn: async () => {
-      const [profilesRes, rolesRes] = await Promise.all([
-        supabase.from('profiles').select('id, full_name, email, avatar_url, created_at, module_access, approval_status, last_login_at').order('full_name'),
+      const [profilesRes, rolesRes, deptsRes] = await Promise.all([
+        supabase.from('profiles').select('id, full_name, email, avatar_url, created_at, module_access, approval_status, last_login_at, department_id').order('full_name'),
         supabase.from('user_roles').select('user_id, role'),
+        supabase.from('capacity_departments').select('id, name'),
       ]);
       if (profilesRes.error) throw profilesRes.error;
       const roleMap: Record<string, string> = {};
       (rolesRes.data || []).forEach(r => { roleMap[r.user_id] = r.role; });
+      const deptMap: Record<string, string> = {};
+      (deptsRes.data || []).forEach(d => { deptMap[d.id] = d.name; });
       return (profilesRes.data || []).map(p => ({
         id: p.id,
         full_name: p.full_name,
@@ -927,6 +1073,7 @@ function PeopleTab() {
         module_access: (p.module_access as Record<string, boolean> | null) ?? null,
         approval_status: p.approval_status,
         last_login_at: (p as { last_login_at?: string | null }).last_login_at ?? null,
+        department_name: (p as { department_id?: string | null }).department_id ? deptMap[(p as { department_id?: string | null }).department_id!] ?? null : null,
       }));
     },
     staleTime: 60_000,
@@ -1004,7 +1151,8 @@ function PeopleTab() {
                 { label: 'Name' },
                 { label: 'Email' },
                 { label: 'Role', width: 140 },
-                { label: 'Modules', width: 168 },
+                { label: 'Department', width: 130 },
+                { label: 'Modules', width: 160 },
                 { label: 'Status', width: 116 },
                 { label: 'Last active', width: 96 },
                 { label: 'Source', width: 110 },
@@ -1023,7 +1171,7 @@ function PeopleTab() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ padding: 40, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>
+                <td colSpan={9} style={{ padding: 40, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>
                   {search || roleFilter?.value || sourceFilter?.value ? 'No users match your filters' : 'No users found'}
                 </td>
               </tr>
@@ -1056,6 +1204,9 @@ function PeopleTab() {
                         {u.role.replace(/_/g, ' ')}
                       </Lozenge>
                     ) : '—'}
+                  </td>
+                  <td style={{ padding: '12px 16px', fontSize: 12, color: 'var(--ds-text-subtle)' }}>
+                    {u.department_name ?? '—'}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     {modKeys.length === 0 ? (
@@ -1115,7 +1266,7 @@ function PeopleTab() {
           onSaved={() => setEditUser(null)}
         />
       )}
-      {inviteOpen && <CreateAccessModal onClose={() => setInviteOpen(false)} />}
+      {inviteOpen && <CreateAccessDrawer onClose={() => setInviteOpen(false)} />}
     </div>
   );
 }

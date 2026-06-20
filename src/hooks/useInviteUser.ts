@@ -15,10 +15,12 @@ interface InviteUserParams {
   purpose?: ArtifactPurpose;
   /** How the link is delivered. Defaults to 'email'. */
   delivery_channel?: DeliveryChannel;
-  /** Link lifetime in seconds. Default 300 (5 min), clamped server-side to [60, 86400]. */
+  /** Link lifetime in seconds. Default 300 (5 min), clamped server-side to [60, 86400] (48h for guest). */
   ttl_seconds?: number;
   /** Revoke any existing pending link for this email+purpose, then mint a fresh one. */
   regenerate?: boolean;
+  /** Department to associate with the invite (references capacity_departments.id). */
+  department_id?: string | null;
 }
 
 interface InviteUserResult {

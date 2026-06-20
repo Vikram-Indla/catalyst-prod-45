@@ -13,8 +13,9 @@ const corsHeaders = {
 
 const CHANNELS = ['manual', 'email', 'whatsapp', 'sms'];
 const PURPOSES = ['invite', 'reset', 'unlock'];
-const MAX_TTL = 24 * 60 * 60; // 1 day
-const MIN_TTL = 60;           // 1 min floor
+const MAX_TTL = 24 * 60 * 60;        // 1 day (non-guest)
+const GUEST_MAX_TTL = 48 * 60 * 60; // 48 hours (guest hard cap)
+const MIN_TTL = 60;                  // 1 min floor
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -42,13 +43,14 @@ Deno.serve(async (req) => {
     const email: string = (body.email || '').toLowerCase().trim();
     if (!email) return err('email is required', 400);
 
-    const role = body.role || 'user';
+    const role = body.role || 'developer';
     const module_access = body.module_access || {};
     const full_name = body.full_name ?? null;
     const phone = body.phone ?? null;
     const purpose = PURPOSES.includes(body.purpose) ? body.purpose : 'invite';
     const delivery_channel = CHANNELS.includes(body.delivery_channel) ? body.delivery_channel : 'email';
     const regenerate = body.regenerate === true;
+    const department_id = body.department_id ?? null;
 
     // Safe-landing guard (server-side): invites must grant at least 1 safe module.
     if (purpose === 'invite') {
@@ -57,9 +59,10 @@ Deno.serve(async (req) => {
       if (!hasSafe) return err('At least one safe landing module (Home, Project, or Product) is required', 422);
     }
 
-    // TTL: default 5 minutes, admin-selectable, clamped to [1m, 1d].
+    // TTL: default 5 minutes, admin-selectable. Guest hard cap: 48h. Others: 24h.
     let ttl = Number.isFinite(body.ttl_seconds) ? Math.floor(body.ttl_seconds) : 300;
-    ttl = Math.min(MAX_TTL, Math.max(MIN_TTL, ttl));
+    const effectiveMax = role === 'guest' ? GUEST_MAX_TTL : MAX_TTL;
+    ttl = Math.min(effectiveMax, Math.max(MIN_TTL, ttl));
 
     // Existing pending artifact for this email+purpose.
     const { data: existing } = await supabaseAdmin
@@ -91,6 +94,7 @@ Deno.serve(async (req) => {
       .insert({
         email, invited_by: user.id, token_hash: tokenHash, role, module_access,
         full_name, phone, purpose, delivery_channel, ttl_seconds: ttl, expires_at: expiresAt,
+        department_id,
       })
       .select('id').single();
     if (insertErr || !invitation) {
