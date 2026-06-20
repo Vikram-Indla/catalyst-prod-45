@@ -21,7 +21,17 @@ import {
   useReleaseAudit,
   useGenerateReleaseNotes,
   useSaveReleaseNotes,
+  useReleaseWorkItems,
+  useReleaseLinkWorkItem,
+  useReleaseLinkBr,
 } from '@/hooks/useReleaseHub';
+import Button from '@atlaskit/button';
+import Spinner from '@atlaskit/spinner';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Textfield from '@atlaskit/textfield';
+import { catalystToast } from '@/lib/catalystToast';
+import { JiraTable, makeKeyCell, makeStatusCell, makeAssigneeCell, makePriorityCell, type Column } from '@/components/shared/JiraTable';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import TextArea from '@atlaskit/textarea';
 import { Sparkles } from '@/lib/atlaskit-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
@@ -97,33 +107,255 @@ function ScopeSection({ title, children }: { title: string; children: React.Reac
   );
 }
 
+// ── Link Work Item Modal ───────────────────────────────────────────────────────
+function LinkWorkItemModal({ releaseId, onClose }: { releaseId: string; onClose: () => void }) {
+  const [query, setQuery] = React.useState('');
+  const [options, setOptions] = React.useState<{ label: string; value: string; issueType: string | null }[]>([]);
+  const [selected, setSelected] = React.useState<{ label: string; value: string } | null>(null);
+  const [searching, setSearching] = React.useState(false);
+  const link = useReleaseLinkWorkItem(releaseId);
+
+  const search = async (q: string) => {
+    if (!q.trim()) { setOptions([]); return; }
+    setSearching(true);
+    const { data } = await supabase
+      .from('ph_issues')
+      .select('issue_key, summary, issue_type')
+      .or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`)
+      .limit(20);
+    setOptions((data ?? []).map((r: any) => ({
+      value: r.issue_key,
+      label: `${r.issue_key} — ${r.summary ?? ''}`,
+      issueType: r.issue_type ?? null,
+    })));
+    setSearching(false);
+  };
+
+  const handleSave = async () => {
+    if (!selected) return;
+    try {
+      await link.mutateAsync(selected.value);
+      catalystToast.success(`Linked ${selected.value}`);
+      onClose();
+    } catch (e: any) {
+      catalystToast.error(e?.message ?? 'Failed to link work item');
+    }
+  };
+
+  return (
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Link work item</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <div style={{ marginBottom: 8 }}>
+          <Textfield
+            placeholder="Search by key or summary…"
+            value={query}
+            onChange={(e) => { setQuery((e.target as HTMLInputElement).value); search((e.target as HTMLInputElement).value); }}
+            autoFocus
+          />
+        </div>
+        <Select
+          options={options}
+          value={selected}
+          onChange={(opt) => setSelected(opt as any)}
+          isLoading={searching}
+          placeholder="Select a work item"
+          formatOptionLabel={(opt: any) => (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {opt.issueType ? <JiraIssueTypeIcon type={opt.issueType} size={14} /> : null}
+              <span style={{ fontFamily: T.mono, fontSize: 12, color: T.link, whiteSpace: 'nowrap' }}>{opt.value}</span>
+              <span style={{ fontSize: 13, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label.split(' — ')[1]}</span>
+            </span>
+          )}
+          menuPortalTarget={document.body}
+        />
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+        <Button appearance="primary" isDisabled={!selected || link.isPending} isLoading={link.isPending} onClick={handleSave}>
+          Link
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
+  );
+}
+
+// ── Link BR Modal ──────────────────────────────────────────────────────────────
+function LinkBrModal({ releaseId, alreadyLinked, onClose }: { releaseId: string; alreadyLinked: string[]; onClose: () => void }) {
+  const [options, setOptions] = React.useState<{ label: string; value: string }[]>([]);
+  const [selected, setSelected] = React.useState<{ label: string; value: string } | null>(null);
+  const link = useReleaseLinkBr(releaseId);
+
+  React.useEffect(() => {
+    supabase.from('business_requests').select('id, title, request_key').order('created_at', { ascending: false }).limit(100)
+      .then(({ data }) => {
+        setOptions(
+          (data ?? [])
+            .filter((b: any) => !alreadyLinked.includes(b.id))
+            .map((b: any) => ({ value: b.id, label: b.title ?? b.request_key ?? b.id }))
+        );
+      });
+  }, [alreadyLinked]);
+
+  const handleSave = async () => {
+    if (!selected) return;
+    try {
+      await link.mutateAsync(selected.value);
+      catalystToast.success(`Linked business request`);
+      onClose();
+    } catch (e: any) {
+      catalystToast.error(e?.message ?? 'Failed to link BR');
+    }
+  };
+
+  return (
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Link business request</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <Select
+          options={options}
+          value={selected}
+          onChange={(opt) => setSelected(opt as any)}
+          placeholder="Select a business request"
+          formatOptionLabel={(opt: any) => (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <JiraIssueTypeIcon type="Business Request" size={14} />
+              <span style={{ fontSize: 13, color: T.text }}>{opt.label}</span>
+            </span>
+          )}
+          menuPortalTarget={document.body}
+          autoFocus
+        />
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+        <Button appearance="primary" isDisabled={!selected || link.isPending} isLoading={link.isPending} onClick={handleSave}>
+          Link
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
+  );
+}
+
+const SCOPE_WI_COLUMNS: Column<any>[] = [
+  {
+    id: 'key',
+    label: 'Key',
+    width: 10,
+    alwaysVisible: true,
+    defaultVisible: true,
+    accessor: (r) => r.workItemKey ?? '',
+    cell: makeKeyCell(
+      (r) => r.workItemKey,
+      undefined,
+      undefined,
+      (r) => r.issueType ? <JiraIssueTypeIcon type={r.issueType} size={14} /> : undefined,
+    ),
+  },
+  {
+    id: 'summary',
+    label: 'Summary',
+    flex: true,
+    defaultVisible: true,
+    accessor: (r) => r.summary ?? '',
+    cell: ({ row }) => (
+      <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {row.summary ?? '—'}
+      </span>
+    ),
+  },
+  {
+    id: 'status',
+    label: 'Status',
+    width: 12,
+    defaultVisible: true,
+    accessor: (r) => r.status ?? '',
+    cell: makeStatusCell((r) => r.status, () => 'default' as any),
+  },
+  {
+    id: 'assignee',
+    label: 'Assignee',
+    width: 10,
+    defaultVisible: true,
+    accessor: (r) => r.assigneeName ?? '',
+    cell: makeAssigneeCell((r) => r.assigneeName ? { name: r.assigneeName, avatarUrl: r.assigneeAvatar } : null),
+  },
+  {
+    id: 'priority',
+    label: 'Priority',
+    width: 8,
+    defaultVisible: true,
+    accessor: (r) => r.priority ?? '',
+    cell: makePriorityCell((r) => r.priority),
+  },
+];
+
 export function ScopeTab({ releaseId }: { releaseId: string }) {
-  const { data, isLoading } = useReleaseScope(releaseId);
-  if (isLoading) return <Loading />;
-  const scope = data ?? { brs: [], sprints: [], workItems: [] };
+  const { data: scope, isLoading: scopeLoading } = useReleaseScope(releaseId);
+  const { data: workItems = [], isLoading: wiLoading } = useReleaseWorkItems(releaseId);
+  const [showLinkWI, setShowLinkWI] = React.useState(false);
+  const [showLinkBR, setShowLinkBR] = React.useState(false);
+  if (scopeLoading) return <Loading />;
+  const { brs = [], sprints = [] } = scope ?? {};
+  const linkedBrIds = brs.map((b) => b.businessRequestId);
+
   return (
     <div style={{ padding: '8px 0' }}>
+      {/* Business requests */}
       <ScopeSection title="Business requests">
-        {scope.brs.length === 0 ? <Empty text="No business requests linked." /> : scope.brs.map((b) => (
-          <div key={b.id} style={rowStyle}><span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text }}>{b.title ?? b.businessRequestId}</span></div>
-        ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+          {brs.length === 0
+            ? <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No linked business requests</span>
+            : brs.map((b) => (
+              <span key={b.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 16, background: T.sunken, border: `1px solid ${T.border}`, fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>
+                <JiraIssueTypeIcon type="Business Request" size={14} />
+                {b.title ?? b.businessRequestId}
+              </span>
+            ))}
+        </div>
+        <Button appearance="default" spacing="compact" onClick={() => setShowLinkBR(true)}>
+          + Link BR
+        </Button>
       </ScopeSection>
+
+      {/* Sprints */}
       <ScopeSection title="Sprints">
-        {scope.sprints.length === 0 ? <Empty text="No sprints linked." /> : scope.sprints.map((s) => (
-          <div key={s.id} style={rowStyle}>
-            <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.link }}>{s.code ?? '—'}</span>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text }}>{s.name ?? ''}</span>
-          </div>
-        ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {sprints.length === 0
+            ? <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No sprints linked</span>
+            : sprints.map((s) => (
+              <span key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 16, background: T.sunken, border: `1px solid ${T.border}`, fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>
+                {s.code ? <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{s.code}</span> : null}
+                {s.name ?? '—'}
+              </span>
+            ))}
+        </div>
       </ScopeSection>
+
+      {/* Work items */}
       <ScopeSection title="Work items">
-        {scope.workItems.length === 0 ? <Empty text="No work items in scope. Linked sprints contribute their items automatically." /> : scope.workItems.map((w) => (
-          <div key={w.id} style={rowStyle}>
-            <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.link }}>{w.workItemKey}</span>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>{w.inclusionSource}</span>
-          </div>
-        ))}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          <Button appearance="default" spacing="compact" onClick={() => setShowLinkWI(true)}>
+            + Link work item
+          </Button>
+          <Button appearance="default" spacing="compact" onClick={() => setShowLinkBR(true)}>
+            + Link BR
+          </Button>
+        </div>
+        {wiLoading
+          ? <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 0' }}><Spinner size="small" /><span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading work items…</span></div>
+          : workItems.length === 0
+            ? <Empty text="No work items in scope." />
+            : <JiraTable columns={SCOPE_WI_COLUMNS} rows={workItems} getRowKey={(r) => r.id} density="compact" />
+        }
       </ScopeSection>
+
+      {showLinkWI && <LinkWorkItemModal releaseId={releaseId} onClose={() => setShowLinkWI(false)} />}
+      {showLinkBR && <LinkBrModal releaseId={releaseId} alreadyLinked={linkedBrIds} onClose={() => setShowLinkBR(false)} />}
     </div>
   );
 }

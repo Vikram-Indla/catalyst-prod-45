@@ -288,7 +288,7 @@
 /* chat mock */
 .clmp-chat { border: 1.5px solid var(--clmp-brand-line); border-radius: 16px; background: var(--clmp-surface); box-shadow: 0 8px 32px rgba(9,30,66,.10); overflow: hidden; }
 .clmp-chat-top { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-block-end: 1.5px solid var(--clmp-line-subtle); background: var(--clmp-sunken); }
-.clmp-chat-av { width: 32px; height: 32px; border-radius: 9px; background: var(--clmp-sunken); padding: 4px; }
+.clmp-chat-av { width: 32px; height: 32px; border-radius: 9px; background: var(--clmp-sunken); padding: 4px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .clmp-chat-ttl { font-size: 13px; font-weight: 700; color: var(--clmp-text); }
 .clmp-chat-ttl i { font-style: italic; }
 .clmp-chat-on { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--clmp-success); }
@@ -325,8 +325,8 @@
 .clmp-cap:hover { background: var(--clmp-brand-subtle); }
 .clmp-cap-ic { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: var(--clmp-ink); color: var(--clmp-surface); margin-block-end: 16px; }
 .clmp-cap:hover .clmp-cap-ic { background: var(--clmp-brand); color: var(--clmp-white); }
-.clmp-cap-ic.caty { background: var(--clmp-brand-subtle); border: 1.5px solid var(--clmp-brand-line); padding: 4px; --caty-body: var(--clmp-brand); --caty-inner: var(--clmp-white); --caty-face: var(--clmp-white); }
-.clmp-cap:hover .clmp-cap-ic.caty { background: var(--clmp-brand); --caty-body: var(--clmp-white); --caty-inner: var(--clmp-brand); --caty-face: var(--clmp-brand); }
+.clmp-cap-ic.caty { background: var(--clmp-brand-subtle); border: 1.5px solid var(--clmp-brand-line); padding: 4px; }
+.clmp-cap:hover .clmp-cap-ic.caty { background: var(--clmp-brand); }
 .clmp-cap-t { font-size: 16px; font-weight: 700; letter-spacing: -.3px; margin-block-end: 4px; }
 .clmp-cap-b { font-size: 13px; color: var(--clmp-text-subtle); line-height: 1.55; font-weight: 500; }
 

@@ -16,9 +16,11 @@ interface Props {
   onAvatarClick?: (issue: BoardIssue, anchor: HTMLElement) => void;
   onEditSummary?: (issue: BoardIssue, summary: string) => void;
   menuSlot?: React.ReactNode;
+  healthRequestKey?: string | null;
 }
 
 export const DraggableCard: React.FC<Props> = (props) => {
+  const { healthRequestKey } = props;
   const ref = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -45,6 +47,7 @@ export const DraggableCard: React.FC<Props> = (props) => {
         onAvatarClick={props.onAvatarClick}
         onEditSummary={props.onEditSummary}
         menuSlot={props.menuSlot}
+        healthRequestKey={healthRequestKey}
       />
     </div>
   );

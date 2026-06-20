@@ -122,7 +122,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
     const sendHint = isMac ? '⌘↵ to send · ⇧↵ new line' : 'Ctrl+Enter to send · Shift+Enter new line';
 
     return (
-      <div className="cc-composer" data-cc-compact style={{ position: 'relative' }}>
+      <div className="cc-composer" data-cc-compact>
         <input
           ref={fileInputRef}
           type="file"
@@ -135,25 +135,15 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
           key={resetKey}
           initialAdf={null}
           onSave={handleSave}
-          onCancel={handleCancel}
           onChange={onTyping ? () => onTyping() : undefined}
           placeholder={placeholder}
           saveLabel="Send"
           isSaving={sending || uploading || disabled}
           minHeight={minHeight}
         />
-        <div
-          aria-live="off"
-          style={{
-            fontSize: 11,
-            color: 'var(--ds-text-subtlest, #6B778C)',
-            padding: '2px 4px',
-            textAlign: 'right',
-            userSelect: 'none',
-          }}
-        >
+        <div aria-live="off" className="cc-composer__hint">
           {sendError ? (
-            <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>✕ {sendError}</span>
+            <span className="cc-composer__hint--error">✕ {sendError}</span>
           ) : (
             sendHint
           )}

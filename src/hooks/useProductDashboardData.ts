@@ -35,6 +35,8 @@ export interface ProductBrRow {
   poName: string | null;
   isFlagged: boolean;
   tags: string[];
+  /** Materialized health status from nightly cron — null until first run. */
+  healthStatus: string | null;
 }
 
 export interface ProductDashboardData {
@@ -81,7 +83,7 @@ export function useProductDashboardData(productId: string | null | undefined) {
 
       const { data: brs } = await (supabase as any)
         .from('business_requests')
-        .select('id, request_key, title, process_step, urgency, planned_quarter, end_date, start_date, created_at, updated_at, project_manager_user_id, po_user_id, is_flagged, tags')
+        .select('id, request_key, title, process_step, urgency, planned_quarter, end_date, start_date, created_at, updated_at, project_manager_user_id, po_user_id, is_flagged, tags, health_status')
         .eq('product_id', productId)
         .is('deleted_at', null)
         .limit(2000);
@@ -117,6 +119,7 @@ export function useProductDashboardData(productId: string | null | undefined) {
         poName: r.po_user_id ? (nameMap.get(r.po_user_id) ?? null) : null,
         isFlagged: !!r.is_flagged,
         tags: Array.isArray(r.tags) ? r.tags : [],
+        healthStatus: r.health_status ?? null,
       }));
 
       let done = 0, inProgress = 0, todo = 0, blocked = 0;

@@ -123,7 +123,8 @@ export type FilterFacet =
   | "resolution"
   | "sprint"
   | "storyPoints"
-  | "severity";
+  | "severity"
+  | "health";
 
 export type FilterState = Record<FilterFacet, string[]>;
 
@@ -140,6 +141,7 @@ export const EMPTY_FILTERS: FilterState = {
   sprint: [],
   storyPoints: [],
   severity: [],
+  health: [],
 };
 
 const FACET_ORDER: FilterFacet[] = [
@@ -155,6 +157,7 @@ const FACET_ORDER: FilterFacet[] = [
   "sprint",
   "storyPoints",
   "severity",
+  "health",
 ];
 
 
@@ -179,6 +182,7 @@ export const MORE_FILTERS_FACETS: FilterFacet[] = [
   "sprint",
   "storyPoints",
   "severity",
+  "health",
 ];
 
 export const FACET_LABELS: Record<FilterFacet, string> = {
@@ -194,6 +198,7 @@ export const FACET_LABELS: Record<FilterFacet, string> = {
   sprint: "Sprint",
   storyPoints: "Story points",
   severity: "Severity",
+  health: "Health",
 };
 
 interface Props {
@@ -361,6 +366,11 @@ export function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOpt
         if (sv && !map.has(sv)) map.set(sv, { value: sv, label: sv });
         break;
       }
+      case "health": {
+        const hs = toLabel((i as any).healthStatus);
+        if (hs && !map.has(hs)) map.set(hs, { value: hs, label: hs });
+        break;
+      }
     }
   }
   return Array.from(map.values()).sort((a, b) =>
@@ -405,6 +415,8 @@ export function itemPassesFilters(item: WorkItem, f: FilterState): boolean {
   )
     return false;
   if (f.severity.length > 0 && !f.severity.includes(toLabel(item.severity)))
+    return false;
+  if (f.health?.length > 0 && !f.health.includes(toLabel((item as any).healthStatus)))
     return false;
   return true;
 }

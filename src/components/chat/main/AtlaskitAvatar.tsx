@@ -17,7 +17,7 @@ import AtlaskitAvatar from '@atlaskit/avatar';
 import Tooltip from '@atlaskit/tooltip';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
-export type AvatarPresenceColor = 'green' | 'red' | 'amber' | 'grey';
+export type AvatarPresenceColor = 'green' | 'red' | 'amber' | 'grey' | 'blue';
 
 /**
  * Atlaskit avatar size strings mapped to approximate pixel sizes
@@ -163,6 +163,7 @@ export function AtlaskitAvatar({
     red: 'var(--ds-background-danger, #AE2A19)',
     amber: 'var(--ds-background-warning, #974F0C)',
     grey: 'var(--ds-background-neutral, #626F86)',
+    blue: 'var(--ds-background-brand-bold, #0C66E4)',
   };
 
   const avatarElement = (

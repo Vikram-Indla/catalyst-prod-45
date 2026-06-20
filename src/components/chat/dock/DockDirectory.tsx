@@ -31,7 +31,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ChatConversation, ChatPerson, ChatPresence } from '@/types/chat';
-import { Avatar } from '@/components/chat/main/avatar';
+import { AtlaskitAvatar } from '@/components/chat/main/AtlaskitAvatar';
 import { NewChannelModal, ChannelCreatedFlag } from './NewChannelModal';
 
 const EXCLUDED_PROJECT_KEYS = new Set(['INV', 'TH-DEFAULT', 'MDT']);
@@ -110,22 +110,8 @@ function CatyStatusPill({ status, statusCategory }: { status: string; statusCate
 
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        height: 16,
-        padding: '0 5px',
-        borderRadius: 3,
-        fontSize: 11,
-        fontWeight: 653,
-        lineHeight: 1,
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
-        background: BG[lozengeKey] ?? BG.default,
-        color: 'rgb(41, 42, 46)',
-        whiteSpace: 'nowrap',
-        flexShrink: 0,
-      }}
+      className="cc-dir__caty-status-pill"
+      style={{ background: BG[lozengeKey] ?? BG.default }}
     >
       {status}
     </span>
@@ -164,6 +150,7 @@ function SectionHeader({ label, count, collapsed, unreadInSection, onToggle, act
         className="cc-dir__section-toggle"
         onClick={onToggle}
         aria-expanded={!collapsed}
+        aria-label={`${collapsed ? 'Expand' : 'Collapse'} ${label} section`}
       >
         <svg
           width={12}
@@ -172,7 +159,7 @@ function SectionHeader({ label, count, collapsed, unreadInSection, onToggle, act
           fill="none"
           stroke="currentColor"
           strokeWidth={2.5}
-          style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}
+          className={collapsed ? 'cc-dir__chevron cc-dir__chevron--collapsed' : 'cc-dir__chevron'}
           aria-hidden
         >
           <polyline points="6 9 12 15 18 9" />
@@ -197,22 +184,17 @@ function DmStackAvatar({ c }: { c: ChatConversation }) {
   const names = c.dmMemberNames ?? [];
   if (c.kind === 'group_dm' && names.length >= 2) {
     return (
-      <span
-        aria-label={c.title}
-        style={{ position: 'relative', width: 28, height: 28, flex: '0 0 auto', display: 'inline-block' }}
-      >
-        <span style={{ position: 'absolute', top: 0, left: 0 }}>
-          <Avatar name={names[0]} seed={names[0]} size={18} />
+      <span aria-label={c.title} className="cc-dir__dm-stack">
+        <span className="cc-dir__dm-stack__top">
+          <AtlaskitAvatar name={names[0]} seed={names[0]} pixelSize={18} />
         </span>
-        <span
-          style={{ position: 'absolute', bottom: 0, right: 0, borderRadius: '50%', boxShadow: '0 0 0 2px var(--ds-surface, #FFFFFF)' }}
-        >
-          <Avatar name={names[1]} seed={names[1]} size={18} />
+        <span className="cc-dir__dm-stack__bottom">
+          <AtlaskitAvatar name={names[1]} seed={names[1]} pixelSize={18} />
         </span>
       </span>
     );
   }
-  return <Avatar name={c.title} seed={c.id} className="cc-dir__avatar" />;
+  return <AtlaskitAvatar name={c.title} seed={c.id} className="cc-dir__avatar" />;
 }
 
 interface ConvRowProps {
@@ -239,7 +221,8 @@ function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, 
     >
       <button
         type="button"
-        className="cc-dir__row"
+        className={`cc-dir__row${c.unreadCount > 0 ? ' cc-dir__row--unread' : ''}`}
+        aria-label={`${titleOverride ?? c.title}${c.unreadCount > 0 ? `, ${c.unreadCount} unread` : ''}`}
         onClick={() => onSelect(c.id)}
       >
         {glyph}
@@ -248,7 +231,7 @@ function ConvRow({ conversation: c, isActive, onSelect, onArchive, onUnarchive, 
             <span className="cc-dir__name">
               {titleOverride ?? c.title}
               {c.isMuted && (
-                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={2} style={{ marginLeft: 4, verticalAlign: 'middle' }} aria-label="Muted">
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={2} className="cc-dir__muted-icon" aria-label="Muted">
                   <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                   <path d="M18.63 13A17.89 17.89 0 0 1 18 8" />
                   <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14" />
@@ -558,7 +541,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
       return c.ticketType ? (
         <span className="cc-dir__ticket-icon"><JiraIssueTypeIcon type={c.ticketType} size={20} /></span>
       ) : (
-        <Avatar name={c.ticketKey ?? c.title} seed={c.id} className="cc-dir__avatar" />
+        <AtlaskitAvatar name={c.ticketKey ?? c.title} seed={c.id} className="cc-dir__avatar" />
       );
     }
     if (c.kind === 'channel') {
@@ -618,9 +601,11 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
         </svg>
         <input
           ref={searchRef}
-          type="text"
+          type="search"
+          role="searchbox"
+          aria-label="Search conversations, people and channels"
           className="cc-dir__search-input"
-          placeholder="Search work items, channels, people"
+          placeholder="Search conversations, people, channels"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -642,7 +627,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                 <div className="cc-dir__section">Messages<span className="cc-dir__section-count">{searchGroups.messages.length}</span></div>
                 {searchGroups.messages.map((h) => (
                   <button key={`m:${h.id}`} type="button" className="cc-dir__row" onClick={() => h.conversationId && onSelectConversation(h.conversationId)}>
-                    <Avatar name={h.subtitle ?? '?'} seed={h.conversationId ?? h.id} className="cc-dir__avatar" />
+                    <AtlaskitAvatar name={h.subtitle ?? '?'} seed={h.conversationId ?? h.id} className="cc-dir__avatar" />
                     <div className="cc-dir__body">
                       <div className="cc-dir__top"><span className="cc-dir__name">{h.subtitle ?? 'Conversation'}</span></div>
                       <div className="cc-dir__preview">{h.title}</div>
@@ -690,7 +675,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                       .catch((e) => { console.error('Start DM (search) failed:', e); setDmError('Could not start conversation. Try again.'); setTimeout(() => setDmError(null), 4000); })
                       .finally(() => setBusyId(null));
                   }}>
-                    <Avatar name={h.title} seed={h.id} className="cc-dir__avatar" />
+                    <AtlaskitAvatar name={h.title} seed={h.id} className="cc-dir__avatar" />
                     <div className="cc-dir__body">
                       <div className="cc-dir__top"><span className="cc-dir__name">{h.title}</span></div>
                       <div className="cc-dir__preview">{h.subtitle ?? ''}</div>
@@ -704,35 +689,25 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
 
         {/* Smart archive suggestion (finding 55) */}
         {!archiveDismissed && staleConversations.length > 0 && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            margin: '8px 8px 4px',
-            padding: '8px',
-            borderRadius: 6,
-            background: 'var(--ds-background-neutral, #F1F2F4)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
-            fontSize: 11,
-          }}>
-            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={2} aria-hidden>
+          <div className="cc-dir__archive-suggest" role="status">
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden className="cc-dir__archive-suggest-icon">
               <polyline points="21 8 21 21 3 21 3 8" /><rect x="1" y="3" width="22" height="5" />
               <line x1="10" y1="12" x2="14" y2="12" />
             </svg>
-            <span style={{ flex: 1, color: 'var(--ds-text-subtle, #44546F)' }}>
+            <span className="cc-dir__archive-suggest-text">
               {staleConversations.length} inactive conversation{staleConversations.length > 1 ? 's' : ''} — archive to clean up?
             </span>
             <button
               type="button"
-              style={{ background: 'transparent', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, padding: '4px 8px', fontSize: 11, cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}
+              className="cc-dir__archive-suggest-btn"
               onClick={() => staleConversations.forEach(c => archive.mutate(c.id))}
             >
               Archive all
             </button>
             <button
               type="button"
-              aria-label="Dismiss"
-              style={{ background: 'transparent', border: 'none', color: 'var(--ds-text-subtlest, #6B778C)', cursor: 'pointer', fontSize: 14, padding: 0 }}
+              className="cc-dir__archive-suggest-dismiss"
+              aria-label="Dismiss archive suggestion"
               onClick={() => setArchiveDismissed(true)}
             >×</button>
           </div>
@@ -838,10 +813,15 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
             onSelect={onSelectConversation}
             onArchive={(id) => archive.mutate(id)}
             onTogglePin={handleTogglePin}
-      
+
             glyph={<DmStackAvatar c={c} />}
           />
         ))}
+        {!collapsed['dms'] && !query && filtered.dms.length === 0 && (
+          <div className="cc-dir__section-empty">
+            Select someone from People below to start a direct message
+          </div>
+        )}
 
         {/* Custom channels */}
         <>
@@ -868,14 +848,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
             }
           />
           {!collapsed['channels'] && filtered.customChannels.length === 0 && (
-            <div
-              style={{
-                padding: '8px 16px',
-                fontSize: 12,
-                color: 'var(--ds-text-subtlest, #6B778C)',
-              }}
-            >
-              No channels yet. Create one with +
+            <div className="cc-dir__section-empty">
+              No channels yet — create one with +
             </div>
           )}
           {!collapsed['channels'] && filtered.customChannels.map((c) => (
@@ -886,23 +860,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
               onSelect={onSelectConversation}
               onArchive={(id) => archive.mutate(id)}
               onTogglePin={handleTogglePin}
-              glyph={
-                <span
-                  style={{
-                    width: 24,
-                    height: 24,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 15,
-                    color: 'var(--ds-text-subtle, #44546F)',
-                    flexShrink: 0,
-                  }}
-                  aria-hidden
-                >
-                  #
-                </span>
-              }
+              glyph={<span className="cc-dir__channel-hash" aria-hidden>#</span>}
             />
           ))}
         </>
@@ -1035,16 +993,16 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                   className="cc-dir__row"
                   disabled={busyId === p.id}
                   onClick={() => handleStartDm(p)}
-                  title={`Message ${p.name}`}
+                  aria-label={`Message ${p.name}`}
                 >
-                  <Avatar name={p.name} seed={p.id} className="cc-dir__avatar" presence={PRESENCE_TONE[p.presence]} />
+                  <AtlaskitAvatar name={p.name} seed={p.id} className="cc-dir__avatar" presence={PRESENCE_TONE[p.presence]} />
                   <div className="cc-dir__body">
                     <div className="cc-dir__top">
                       <span className="cc-dir__name">{p.name}</span>
                     </div>
                     <div className="cc-dir__preview">{statusLine}</div>
                   </div>
-                  {busyId === p.id && <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>…</span>}
+                  {busyId === p.id && <span className="cc-dir__people-busy" aria-label="Starting conversation">…</span>}
                 </button>
               );
             })}
@@ -1082,8 +1040,44 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
         {!isLoading && query && filtered.dms.length === 0 && filtered.tickets.length === 0 && filtered.channelRows.length === 0 && filtered.people.length === 0 && (
           <div className="cc-dir__empty">No matches for "{query}".</div>
         )}
+        {/* First-run welcome — shown when user has no live conversations yet */}
+        {!isLoading && !query && live.length === 0 && (
+          <div className="cc-dir__first-run">
+            <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={1.2} aria-hidden>
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <div className="cc-dir__first-run-title">Welcome to Messages</div>
+            <div className="cc-dir__first-run-sub">
+              Send a direct message to a teammate or join a project channel to get started.
+            </div>
+            <div className="cc-dir__first-run-actions">
+              <button
+                type="button"
+                className="cc-dir__first-run-btn"
+                onClick={() => setBrowseChannelsOpen(true)}
+              >
+                Browse channels
+              </button>
+              <button
+                type="button"
+                className="cc-dir__first-run-btn cc-dir__first-run-btn--secondary"
+                onClick={() => {
+                  setCollapsed((prev) => {
+                    const next = { ...prev, people: false };
+                    saveCollapsed(next);
+                    return next;
+                  });
+                  setTimeout(() => searchRef.current?.focus(), 50);
+                }}
+              >
+                Find a teammate
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Collapsed-all nudge — visible only when no rows are visible and search is empty */}
-        {!isLoading && !query && collapsed['dms'] && collapsed['tickets'] && collapsed['projects'] && collapsed['people'] && (
+        {!isLoading && !query && live.length > 0 && collapsed['dms'] && collapsed['tickets'] && collapsed['projects'] && collapsed['people'] && (
           <div className="cc-dir__collapsed-nudge">
             <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth={1.5} aria-hidden>
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />

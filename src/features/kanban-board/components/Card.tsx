@@ -13,6 +13,8 @@ import { IssueTypeIcon } from './IssueTypeIcon';
 import { PriorityIcon } from './PriorityIcon';
 import { SIZES, STRINGS, LABEL_COLORS } from '../constants';
 import type { BoardIssue, CardVisibleFields } from '../types';
+import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
+import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
 
 interface CardProps {
   issue: BoardIssue;
@@ -24,6 +26,17 @@ interface CardProps {
   menuSlot?: React.ReactNode;
   onAvatarClick?: (issue: BoardIssue, anchor: HTMLElement) => void;
   onEditSummary?: (issue: BoardIssue, summary: string) => void;
+  /** When set (product mode), renders a health badge using this BR id/key. */
+  healthRequestKey?: string | null;
+}
+
+function HealthBadge({ requestKey }: { requestKey: string }) {
+  const { health, isLoading } = useBusinessRequestHealth(requestKey);
+  if (isLoading) return (
+    <div style={{ width: 80, height: 20, borderRadius: 3, background: 'var(--ds-background-neutral, #F1F2F4)', opacity: 0.7 }} />
+  );
+  if (!health) return null;
+  return <HealthStatusBadge health={health} />;
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -36,7 +49,7 @@ function fmtDue(iso: string): { label: string; overdue: boolean } {
 }
 
 export const Card: React.FC<CardProps> = ({
-  issue, isSelected, isDragging, avatarUrl, visibleFields, onSelect, menuSlot, onAvatarClick, onEditSummary,
+  issue, isSelected, isDragging, avatarUrl, visibleFields, onSelect, menuSlot, onAvatarClick, onEditSummary, healthRequestKey,
 }) => {
   const [hover, setHover] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -143,6 +156,9 @@ export const Card: React.FC<CardProps> = ({
           )}
         </p>
       )}
+
+      {/* Health badge (product mode only) */}
+      {healthRequestKey && <HealthBadge requestKey={healthRequestKey} />}
 
       {/* Due date chip */}
       {due && due.label && (

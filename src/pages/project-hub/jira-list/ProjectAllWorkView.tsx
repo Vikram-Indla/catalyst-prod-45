@@ -51,6 +51,7 @@ import { useBusinessRequestsByProduct } from '@/hooks/useBusinessRequests';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
 import { jqlToFilterState } from '@/lib/jql/jqlToFilterState';
 import type { BusinessRequest } from '@/types/business-request';
+import { useBatchBusinessRequestHealth } from '@/hooks/useBatchBusinessRequestHealth';
 
 interface ProductProfileRow { id: string; full_name: string | null; avatar_url: string | null; }
 
@@ -278,6 +279,22 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
     [productBrs, productProfileMap, productStatusCategoryMap],
   );
 
+  /* Batch health — product mode only. Fetches all BR health statuses in one
+     query so the "Health" filter facet can work without per-item waterfalls. */
+  const productBrIds = useMemo(
+    () => (isProduct ? productItems.map((i) => i.dbId).filter(Boolean) as string[] : []),
+    [isProduct, productItems],
+  );
+  const { data: healthMap = new Map<string, string>() } = useBatchBusinessRequestHealth(productBrIds);
+
+  /* Enrich product items with healthStatus so itemPassesFilters + distinctOptions can read it. */
+  const enrichedProductItems: WorkItem[] = useMemo(
+    () => isProduct && healthMap.size > 0
+      ? productItems.map((i) => ({ ...i, healthStatus: healthMap.get(i.dbId ?? '') ?? null }))
+      : productItems,
+    [isProduct, productItems, healthMap],
+  );
+
   /* Uniform shape consumed by the rest of the component. Product / tasks /
      incident modes use a single "page" with all items — no server-side
      pagination. */
@@ -287,7 +304,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
     : isIncident
       ? incidentItems
       : isProduct
-        ? productItems
+        ? enrichedProductItems
         : (projectQuery.items ?? []);
   const isSinglePageMode = isTasks || isProduct || isIncident;
   const rowsPerPage = isSinglePageMode ? Math.max(1, items.length) : projectQuery.rowsPerPage;
@@ -631,6 +648,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
         onAssigneesChange={setToolbarAssignees}
         onSaveFilter={() => setSaveModalOpen(true)}
         saveFilterLabel={urlFilterId ? 'Update filter' : 'Save filter'}
+        facetOptionItems={isProduct ? enrichedProductItems : undefined}
       />
 
       {/* Save filter modal — opened from toolbar's Save filter button.
@@ -708,6 +726,8 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
               /* 2026-06-02: AllWork owns the canonical @atlaskit/pagination
                  footer — suppress WorkListPanel's competing "N of M" count. */
               hideFooter
+              /* Product mode: show health badge per card using BR UUID (dbId) */
+              getHealthKey={isProduct ? (item) => item.dbId : undefined}
             />
 
             {/* Pagination footer — offset/range pagination (2026-06-02).
