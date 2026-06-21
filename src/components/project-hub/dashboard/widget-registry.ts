@@ -74,6 +74,7 @@ import HealthRadarWidget from './widgets/HealthRadarWidget';
 import ReleaseConfidenceWidget from './widgets/ReleaseConfidenceWidget';
 import StakeholderLensWidget from './widgets/StakeholderLensWidget';
 import DeliveryCompositionWidget from './widgets/DeliveryCompositionWidget';
+import ReplayWidget from './widgets/ReplayWidget';
 
 export const WIDGET_REGISTRY: WidgetDefinition[] = [
   // ─── §1 STRATEGIC DELIVERY ──────────────────────────────────────────
@@ -278,6 +279,20 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     defaultPosition: 14,
     component: DeliveryCompositionWidget,
     hideOnProject: true,
+    hideOnIncident: true,
+  },
+
+  // ─── §7 LIFECYCLE THEATRE ────────────────────────────────────────────
+  // Replay the full lifecycle story of this item tree.
+  {
+    id: 'replay',
+    title: 'Replay',
+    subtitle: 'Lifecycle theatre — watch the story unfold',
+    group: 'delivery',
+    defaultSpan: 12,
+    minSpan: 6,
+    defaultPosition: 15,
+    component: ReplayWidget,
     hideOnIncident: true,
   },
 ];
