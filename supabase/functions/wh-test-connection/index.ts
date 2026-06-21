@@ -93,11 +93,13 @@ Deno.serve(async (req) => {
   });
   checks.push(projectCheck);
 
-  // 3. Issue Read
+  // 3. Issue Read — scope to first project; ORDER BY cannot follow AND
   const issueCheck = await runCheck('Issue Read', async () => {
-    const projectFilter = firstProjectKey ? `project = "${firstProjectKey}" AND ` : '';
+    const jql = firstProjectKey
+      ? `project = "${firstProjectKey}" ORDER BY created DESC`
+      : 'ORDER BY created DESC';
     const data = await jira('/rest/api/3/search/jql', {
-      jql: `${projectFilter}ORDER BY created DESC`,
+      jql,
       maxResults: 1,
       fields: ['summary', 'issuetype'],
     });
@@ -142,8 +144,8 @@ Deno.serve(async (req) => {
   // Count issues
   let totalIssueCount = 0;
   if (issueCheck.passed) {
-    const projectFilter = firstProjectKey ? `project = "${firstProjectKey}" AND ` : '';
-    const data = await jira('/rest/api/3/search/jql', { jql: `${projectFilter}ORDER BY created DESC`, maxResults: 1 }).catch(() => null);
+    const jql = firstProjectKey ? `project = "${firstProjectKey}" ORDER BY created DESC` : 'ORDER BY created DESC';
+    const data = await jira('/rest/api/3/search/jql', { jql, maxResults: 1 }).catch(() => null);
     totalIssueCount = data?.total ?? 0;
   }
 
