@@ -5,7 +5,7 @@
  * Shows project picker first, then hands off to WorkItemPlannerModal.
  */
 import React, { useState, useCallback } from 'react';
-import { CatyButton } from '@/components/ui/CatyButton';
+import { CatyButton } from '@/components/for-you/atlaskit/CatyButton';
 import { ProjectPickerModal } from './ProjectPickerModal';
 import { WorkItemPlannerModal } from '../shared/WorkItemPlannerModal';
 import type { PickedProject } from './useEpicGeneration';
