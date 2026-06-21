@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { AdminGuard } from '@/components/guards/AdminGuard';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import {
   useAllFieldLayouts,
