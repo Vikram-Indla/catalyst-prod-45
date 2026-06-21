@@ -299,7 +299,8 @@ export default function TestSetsPage() {
           title="Test Sets"
           breadcrumbs={
             <Breadcrumbs items={[
-              { key: 'testhub', text: 'Test Hub', onClick: () => navigate('/testhub/dashboard') },
+              { key: 'home', text: 'Home', href: '/for-you' },
+              { key: 'testhub', text: 'Test Hub', href: '/testhub' },
               { key: 'sets', text: 'Test Sets', isCurrent: true },
             ]} />
           }

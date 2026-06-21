@@ -26,6 +26,7 @@ import { catalystToast } from '@/lib/catalystToast';
 export default function CycleDetailPage() {
   const { id: cycleId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { data: projects = [] } = useProjects();
   const projectId = projects[0]?.id;
 
@@ -38,6 +39,10 @@ export default function CycleDetailPage() {
   const completeCycle = useCompleteCycle();
 
   const [showAddCases, setShowAddCases] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkStatusOpen, setBulkStatusOpen] = useState(false);
+  const bulkStatusBtnRef = React.useRef<HTMLButtonElement>(null);
 
   if (cycleLoading) {
     return (
@@ -58,6 +63,34 @@ export default function CycleDetailPage() {
   const executed = passed + failed + blocked;
   const pct = total > 0 ? Math.round((executed / total) * 100) : 0;
 
+  // Filter
+  const filteredItems = statusFilter === 'ALL' ? scopeItems : scopeItems.filter(i => i.status === statusFilter);
+
+  // Bulk select helpers
+  const allSelected = filteredItems.length > 0 && filteredItems.every(i => selectedIds.has(i.id));
+  const toggleAll = () => setSelectedIds(() => allSelected ? new Set() : new Set(filteredItems.map(i => i.id)));
+  const toggleOne = (id: string) => setSelectedIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+
+  const STATUS_PILLS: { value: string; label: string }[] = [
+    { value: 'ALL', label: 'All' },
+    { value: 'NOT_RUN', label: 'Not run' },
+    { value: 'PASSED', label: 'Pass' },
+    { value: 'FAILED', label: 'Fail' },
+    { value: 'BLOCKED', label: 'Blocked' },
+    { value: 'IN_PROGRESS', label: 'In progress' },
+    { value: 'SKIPPED', label: 'Skip' },
+  ];
+
+  const handleBulkStatusChange = async (newStatus: RunStatus) => {
+    setBulkStatusOpen(false);
+    const ids = Array.from(selectedIds);
+    const { error } = await (supabase.from('tm_cycle_scope') as any).update({ status: newStatus }).in('id', ids);
+    if (error) { catalystToast.error(error.message); return; }
+    qc.invalidateQueries({ queryKey: ['cycle-scope', cycleId] });
+    setSelectedIds(new Set());
+    catalystToast.success(`Updated ${ids.length} case${ids.length > 1 ? 's' : ''}`);
+  };
+
   return (
     <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24 }}>
@@ -65,13 +98,37 @@ export default function CycleDetailPage() {
           title={cycle.name}
           breadcrumbs={
             <Breadcrumbs items={[
-              { key: 'testhub', text: 'Test Hub', onClick: () => navigate('/testhub/dashboard') },
-              { key: 'cycles', text: 'Cycles', onClick: () => navigate('/testhub/cycles') },
+              { key: 'home', text: 'Home', href: '/for-you' },
+              { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+              { key: 'cycles', text: 'Test Cycles', href: '/testhub/cycles' },
               { key: 'detail', text: cycle.name, isCurrent: true },
             ]} />
           }
           actions={
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <button
+                onClick={() => {
+                  const headers = ['Key', 'Title', 'Status', 'Assignee'];
+                  const rows = scopeItems.map(i => [
+                    i.test_case?.key ?? '',
+                    i.test_case?.title ?? '',
+                    i.status,
+                    i.assignee?.full_name ?? 'Unassigned',
+                  ]);
+                  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+                  const blob = new Blob([csv], { type: 'text/csv' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url; a.download = `cycle-${cycle.name}-report.csv`; a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                style={{
+                  padding: '6px 12px', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRadius: 4, cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                }}
+              >
+                Export CSV
+              </button>
               {cycle.status === 'PLANNED' && (
                 <button
                   onClick={() => startCycle.mutate({ id: cycle.id, project_id: cycle.project_id })}
@@ -167,9 +224,11 @@ export default function CycleDetailPage() {
       </div>
 
       {/* Scope section header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
-          Scope ({scopeItems.length} {scopeItems.length === 1 ? 'case' : 'cases'})
+          {statusFilter === 'ALL'
+            ? `Scope (${scopeItems.length} ${scopeItems.length === 1 ? 'case' : 'cases'})`
+            : `Scope (${filteredItems.length} of ${scopeItems.length})`}
         </h2>
         <button
           onClick={() => setShowAddCases(true)}
@@ -189,6 +248,100 @@ export default function CycleDetailPage() {
           <Plus size={13} />
           Add cases
         </button>
+      </div>
+
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div style={{
+          background: 'var(--ds-background-selected, #E9F2FF)',
+          border: '1px solid var(--ds-border-selected, #4C9AFF)',
+          borderRadius: 6, padding: '8px 16px', marginBottom: 8,
+          display: 'flex', alignItems: 'center', gap: 12, fontSize: 13,
+          color: 'var(--ds-text, #172B4D)',
+        }}>
+          <span style={{ fontWeight: 500 }}>{selectedIds.size} case{selectedIds.size > 1 ? 's' : ''} selected</span>
+          <button
+            onClick={() => {
+              removeCases.mutate({ cycle_id: cycleId!, scope_ids: Array.from(selectedIds) });
+              setSelectedIds(new Set());
+            }}
+            style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)' }}
+          >
+            Remove from scope
+          </button>
+          <div style={{ position: 'relative' }}>
+            <button
+              ref={bulkStatusBtnRef}
+              onClick={() => setBulkStatusOpen(v => !v)}
+              style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)' }}
+            >
+              Change status ▾
+            </button>
+            {bulkStatusOpen && bulkStatusBtnRef.current && createPortal(
+              <div
+                style={{
+                  position: 'fixed',
+                  top: bulkStatusBtnRef.current.getBoundingClientRect().bottom + 4,
+                  left: bulkStatusBtnRef.current.getBoundingClientRect().left,
+                  background: 'var(--ds-surface-overlay, #FFFFFF)',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRadius: 6,
+                  boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+                  padding: '4px 0',
+                  minWidth: 160,
+                  zIndex: 9999,
+                }}
+                onMouseDown={e => e.stopPropagation()}
+              >
+                {(['PASSED', 'FAILED', 'BLOCKED', 'SKIPPED'] as RunStatus[]).map(s => (
+                  <button
+                    key={s}
+                    role="menuitem"
+                    onClick={() => handleBulkStatusChange(s)}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '8px 16px', background: 'none', border: 'none',
+                      cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                  >
+                    {s.charAt(0) + s.slice(1).toLowerCase().replace('_', ' ')}
+                  </button>
+                ))}
+              </div>,
+              document.body
+            )}
+          </div>
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)', marginLeft: 'auto' }}
+          >
+            ✕ Clear
+          </button>
+        </div>
+      )}
+
+      {/* Status filter pills */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+        {STATUS_PILLS.map(pill => (
+          <button
+            key={pill.value}
+            onClick={() => setStatusFilter(pill.value)}
+            style={{
+              padding: '5px 12px',
+              borderRadius: 16,
+              cursor: 'pointer',
+              fontSize: 13,
+              fontWeight: 500,
+              border: statusFilter === pill.value ? 'none' : '1px solid var(--ds-border, #DFE1E6)',
+              background: statusFilter === pill.value ? 'var(--ds-background-brand-bold, #0052CC)' : 'none',
+              color: statusFilter === pill.value ? '#fff' : 'var(--ds-text-subtle, #42526E)',
+            }}
+          >
+            {pill.label}
+          </button>
+        ))}
       </div>
 
       {scopeLoading ? (

@@ -7,6 +7,8 @@ import { useTestCases } from '@/hooks/test-management/useTestCases';
 import { useCycleScope } from '@/hooks/test-management/useTestCycles';
 import Spinner from '@atlaskit/spinner';
 import { TMCycle } from '@/types/test-management';
+import { PageHeader } from '@/components/ads/PageHeader';
+import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 
 export default function DashboardPage() {
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
@@ -37,10 +39,17 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
-      <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', marginBottom: 24, marginTop: 0 }}>
-        Test Hub Dashboard
-      </h1>
+    <div style={{ maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
+      <PageHeader
+        title="Dashboard"
+        breadcrumbs={
+          <Breadcrumbs items={[
+            { key: 'home', text: 'Home', href: '/for-you' },
+            { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+            { key: 'dashboard', text: 'Dashboard', isCurrent: true },
+          ]} />
+        }
+      />
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridColumns: 'repeat(4, 1fr)', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>

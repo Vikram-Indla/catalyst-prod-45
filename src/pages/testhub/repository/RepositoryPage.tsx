@@ -678,11 +678,17 @@ export default function RepositoryPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--ds-font-family-body)' }}>
-      <Breadcrumbs items={[
-        { key: 'testhub', text: 'Test Hub', onClick: () => navigate('/testhub/dashboard') },
-        { key: 'repository', text: 'Repository', isCurrent: true },
-      ]} />
-      <PageHeader title="Test Repository" actions={createCaseButton} />
+      <PageHeader
+        title="Test Repository"
+        breadcrumbs={
+          <Breadcrumbs items={[
+            { key: 'home', text: 'Home', href: '/for-you' },
+            { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+            { key: 'repository', text: 'Repository', isCurrent: true },
+          ]} />
+        }
+        actions={createCaseButton}
+      />
 
       {/* Bulk action bar (visible when items selected) */}
       {selectMode && selectedIds.size > 0 && (

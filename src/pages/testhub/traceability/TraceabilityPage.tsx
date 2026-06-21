@@ -163,6 +163,7 @@ export default function TraceabilityPage() {
   const breadcrumbs = (
     <Breadcrumbs
       items={[
+        { key: 'home', text: 'Home', href: '/for-you' },
         { key: 'testhub', text: 'Test Hub', href: '/testhub' },
         { key: 'traceability', text: 'Traceability', isCurrent: true },
       ]}

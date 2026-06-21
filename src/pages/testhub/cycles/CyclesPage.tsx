@@ -50,7 +50,8 @@ export default function CyclesPage() {
           title="Test Cycles"
           breadcrumbs={
             <Breadcrumbs items={[
-              { key: 'testhub', text: 'Test Hub', onClick: () => navigate('/testhub/dashboard') },
+              { key: 'home', text: 'Home', href: '/for-you' },
+              { key: 'testhub', text: 'Test Hub', href: '/testhub' },
               { key: 'cycles', text: 'Test Cycles', isCurrent: true },
             ]} />
           }

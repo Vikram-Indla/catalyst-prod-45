@@ -5,6 +5,8 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
+import { PageHeader } from '@/components/ads/PageHeader';
+import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 import {
   CaseStatus, CycleStatus, RunStatus, DefectStatus, DefectSeverity,
   TMTestCase, TMCycle, TMDefect,
@@ -39,13 +41,17 @@ export default function MyWorkPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--ds-font-family-body)' }}>
-      <div style={{ padding: '24px 24px 0' }}>
-        <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: '0 0 4px' }}>
-          My Work
-        </h1>
-        <p style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 14, margin: '0 0 20px' }}>
-          Your test cases, cycles and defects
-        </p>
+      <PageHeader
+        title="My Work"
+        breadcrumbs={
+          <Breadcrumbs items={[
+            { key: 'home', text: 'Home', href: '/for-you' },
+            { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+            { key: 'mywork', text: 'My Work', isCurrent: true },
+          ]} />
+        }
+      />
+      <div style={{ padding: '0 24px 0' }}>
 
         {/* Tab bar */}
         <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid var(--ds-border, #DFE1E6)' }}>

@@ -147,6 +147,7 @@ export default function DefectsPage() {
   const breadcrumbs = (
     <Breadcrumbs
       items={[
+        { key: 'home', text: 'Home', href: '/for-you' },
         { key: 'testhub', text: 'Test Hub', href: '/testhub' },
         { key: 'defects', text: 'Defects', isCurrent: true },
       ]}
