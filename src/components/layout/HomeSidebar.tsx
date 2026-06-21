@@ -64,6 +64,8 @@ import SidebarClock from './SidebarClock';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 import { HUB_ICON_OUTLINE_REGISTRY, HUB_ICON_REGISTRY } from '@/components/icons';
 import { sliceVisible } from '@/lib/home-recents';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { ProductAvatar } from '@/components/icons/ProductAvatar';
 
 const RECENT_LIMIT = 16;
 
@@ -236,8 +238,11 @@ function SpaceGroupHeader({
   // Space-scoped hubs (project/product) carry a per-space KEY → show "KEY · Type".
   // Global single hubs (task/incident/release/plan) have no key → type word only.
   const isSpaceScoped = head.hub === 'project' || head.hub === 'product';
-  const coloredIconUrl =
-    HUB_ICON_REGISTRY[head.hub as keyof typeof HUB_ICON_REGISTRY] ?? undefined;
+  // Global hub icon (used only for non-space-scoped hubs: task/incident/release/plan).
+  const globalIconUrl =
+    (head.hub !== 'project' && head.hub !== 'product')
+      ? (HUB_ICON_REGISTRY[head.hub as keyof typeof HUB_ICON_REGISTRY] ?? undefined)
+      : undefined;
 
   // Whole header is the collapse affordance. The chevron sits left of the
   // avatar (Jira "Recent" group-header pattern) and rotates open→down /
@@ -271,14 +276,24 @@ function SpaceGroupHeader({
       >
         <Chevron label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
       </span>
-      {coloredIconUrl && (
+      {head.hub === 'project' ? (
+        <ProjectIcon
+          projectKey={head.projectKey}
+          iconName={head.iconName}
+          color={head.color}
+          size="small"
+          name={head.projectName}
+        />
+      ) : head.hub === 'product' ? (
+        <ProductAvatar code={head.projectKey} size={20} />
+      ) : globalIconUrl ? (
         <img
-          src={coloredIconUrl}
+          src={globalIconUrl}
           alt=""
           aria-hidden="true"
           style={{ width: 20, height: 20, flexShrink: 0, display: 'block', borderRadius: 4 }}
         />
-      )}
+      ) : null}
       <span
         title={head.projectName}
         style={{

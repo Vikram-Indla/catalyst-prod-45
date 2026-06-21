@@ -6,7 +6,7 @@
  * Callers: src/pages/chat/ChatPage.tsx only.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -54,6 +54,7 @@ function ChatFullScreenInner() {
   const { conversations, isLoading } = useConversations();
   const selfProfile = useSelfProfile();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // Deep-link hydration (first mount only): /chat?c=<conversationId>&m=<messageId>
   const didHydrateParams = useRef(false);
@@ -182,6 +183,7 @@ function ChatFullScreenInner() {
               }
             }
             onOpenThread={shell.openThread}
+            onDock={() => navigate(-1)}
           />
         )}
       </main>

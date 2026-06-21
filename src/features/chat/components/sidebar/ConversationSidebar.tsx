@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import { IconButton } from '@atlaskit/button/new';
+import AddIcon from '@atlaskit/icon/core/add';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,6 +30,8 @@ interface ConversationSidebarProps {
   onNewConversation?: () => void;
   onToggleCollapse: () => void;
   isCollapsed: boolean;
+  onNewChannel?: () => void;
+  onNewDM?: () => void;
 }
 
 // ── DM presence: batched online status from user_presence ──────────────────
@@ -146,24 +150,44 @@ function SectionHeader({
   count,
   expanded,
   onToggle,
+  onAdd,
 }: {
   label: string;
   count: number;
   expanded: boolean;
   onToggle: () => void;
+  onAdd?: () => void;
 }) {
+  const [hovered, setHovered] = useState(false);
   return (
-    <button
-      className="c-sb-section__head"
-      onClick={onToggle}
-      aria-expanded={expanded}
+    <div
+      style={{ display: 'flex', alignItems: 'center' }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <span className="c-sb-section__chev">
-        <ChevronIcon />
-      </span>
-      <span className="c-sb-section__lbl">{label}</span>
-      {count > 0 && <span className="c-sb-section__count">{count}</span>}
-    </button>
+      <button
+        className="c-sb-section__head"
+        onClick={onToggle}
+        aria-expanded={expanded}
+        style={{ flex: 1, minWidth: 0 }}
+      >
+        <span className="c-sb-section__chev">
+          <ChevronIcon />
+        </span>
+        <span className="c-sb-section__lbl">{label}</span>
+        {count > 0 && <span className="c-sb-section__count">{count}</span>}
+      </button>
+      {onAdd && (
+        <span style={{ opacity: hovered ? 1 : 0, transition: 'opacity 150ms', flexShrink: 0, display: 'inline-flex' }}>
+          <IconButton
+            icon={AddIcon}
+            label={`New ${label.toLowerCase()}`}
+            appearance="subtle"
+            onClick={(e) => { e.stopPropagation(); onAdd(); }}
+          />
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -173,6 +197,8 @@ export function ConversationSidebar({
   onSelectConversation,
   onNewConversation,
   onToggleCollapse,
+  onNewChannel,
+  onNewDM,
   isCollapsed,
 }: ConversationSidebarProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -324,6 +350,11 @@ export function ConversationSidebar({
                   count={items.filter(c => c.unreadCount > 0).length}
                   expanded={isExpanded}
                   onToggle={() => toggleSection(section.id)}
+                  onAdd={
+                    section.id === 'channels' ? onNewChannel :
+                    section.id === 'dms' ? onNewDM :
+                    undefined
+                  }
                 />
                 {isExpanded && items.map(conv => (
                   <ConversationRow

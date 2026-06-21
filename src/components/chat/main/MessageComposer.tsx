@@ -6,6 +6,8 @@
  * saveLabel="Send" keeps the chat context; onCancel clears the editor.
  */
 import React, { useCallback, useRef, useState, forwardRef } from 'react';
+import { IconButton } from '@atlaskit/button/new';
+import MicrophoneIcon from '@atlaskit/icon/core/microphone';
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { isAdfEmpty, adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { useDraft } from '@/hooks/chat/useDraft';
@@ -20,6 +22,8 @@ export interface MessageComposerProps {
     opts?: { adf?: unknown | null; scheduled_for?: string | null },
   ) => void | Promise<void>;
   onAskCaty?: () => void;
+  /** Called when user activates mic recording. */
+  onMic?: () => void;
   /** Called on every keystroke — use to broadcast typing indicators. */
   onTyping?: () => void;
   /** Last message id created by onSend (passed back so attachments can bind). */
@@ -35,6 +39,7 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
       conversationId,
       disabled,
       onSend,
+      onMic,
       onTyping,
       lastSentMessageId,
       minHeight = 48,
@@ -141,11 +146,21 @@ export const MessageComposer = forwardRef<HTMLTextAreaElement, MessageComposerPr
           isSaving={sending || uploading || disabled}
           minHeight={minHeight}
         />
-        <div aria-live="off" className="cc-composer__hint">
-          {sendError ? (
-            <span className="cc-composer__hint--error">✕ {sendError}</span>
-          ) : (
-            sendHint
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div aria-live="off" className="cc-composer__hint" style={{ flex: 1 }}>
+            {sendError ? (
+              <span className="cc-composer__hint--error">✕ {sendError}</span>
+            ) : (
+              sendHint
+            )}
+          </div>
+          {onMic && (
+            <IconButton
+              icon={MicrophoneIcon}
+              label="Voice message"
+              appearance="subtle"
+              onClick={onMic}
+            />
           )}
         </div>
       </div>

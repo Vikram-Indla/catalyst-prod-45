@@ -7,6 +7,8 @@
  * (animation: none, 2px padding wrapper) per CLAUDE.md enterprise carve-out.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { IconButton } from '@atlaskit/button/new';
+import MinimizeIcon from '@atlaskit/icon/core/minimize';
 import type { ChatConversation, ChatPerson } from '@/types/chat';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Avatar, colorFor, initialsOf, type PresenceColor } from './avatar';
@@ -33,6 +35,8 @@ export interface ConversationHeaderProps {
   currentUserStarred?: boolean;
   /** Called after archive or leave succeeds — lets dock navigate back to directory. */
   onBack?: () => void;
+  /** Called when user clicks minimize — navigates from full-screen back to dock. */
+  onDock?: () => void;
 }
 
 const PRESENCE_MAP: Record<string, PresenceColor> = {
@@ -83,7 +87,7 @@ function ConversationMenuItem({
   );
 }
 
-export function ConversationHeader({ conversation, members = [], onAskCaty, onOpenSearch, currentUserMuted = false, currentUserStarred = false, onBack }: ConversationHeaderProps) {
+export function ConversationHeader({ conversation, members = [], onAskCaty, onOpenSearch, currentUserMuted = false, currentUserStarred = false, onBack, onDock }: ConversationHeaderProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [rosterOpen, setRosterOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -271,6 +275,16 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
+      )}
+
+      {/* Minimize to dock — only rendered in full-screen mode */}
+      {onDock && (
+        <IconButton
+          icon={MinimizeIcon}
+          label="Minimize to dock"
+          appearance="subtle"
+          onClick={onDock}
+        />
       )}
 
       {/* Bell — filled=active, crossed=muted (finding 22) */}

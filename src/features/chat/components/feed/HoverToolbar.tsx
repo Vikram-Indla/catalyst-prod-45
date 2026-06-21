@@ -421,6 +421,13 @@ export interface HoverToolbarCallbacks {
   onTogglePin: () => void;
   onToggleSave: () => void;
   onForward: () => void;
+  onAskCaty?: () => void;
+}
+
+function CatyStarIcon({ label: _ }: { label: string }) {
+  return (
+    <span aria-hidden="true" style={{ fontSize: 13, lineHeight: 1, display: 'flex', alignItems: 'center', fontFamily: 'var(--ds-font-family-body)' }}>✦</span>
+  );
 }
 
 interface Props extends HoverToolbarCallbacks {
@@ -444,6 +451,7 @@ export function HoverToolbar({
   onTogglePin,
   onToggleSave,
   onForward,
+  onAskCaty,
 }: Props) {
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -512,6 +520,16 @@ export function HoverToolbar({
         onClick={onToggleSave}
         isSelected={isSaved}
       />
+
+      {/* Caty summarize — only rendered when parent wires onAskCaty */}
+      {onAskCaty && (
+        <IconButton
+          icon={CatyStarIcon}
+          label="Summarize with Caty"
+          appearance="subtle"
+          onClick={onAskCaty}
+        />
+      )}
 
       {/* More actions */}
       <div ref={moreTriggerRef} style={{ display: 'inline-flex' }}>

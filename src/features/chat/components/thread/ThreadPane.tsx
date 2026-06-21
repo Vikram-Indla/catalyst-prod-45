@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Avatar from '@atlaskit/avatar';
+import { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/core/close';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -285,16 +286,23 @@ function MsgRow({
 
 // ── ThreadPane ─────────────────────────────────────────────────────────────
 
+function CatyStarIcon({ label: _ }: { label: string }) {
+  return (
+    <span aria-hidden="true" style={{ fontSize: 13, lineHeight: 1, display: 'flex', alignItems: 'center', fontFamily: 'var(--ds-font-family-body)' }}>✦</span>
+  );
+}
+
 interface Props {
   conversationId: string;
   parentMessageId: string;
   threadMode: ThreadMode;
   onClose: () => void;
+  onAskCaty?: () => void;
 }
 
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function ThreadPane({ conversationId, parentMessageId, threadMode, onClose }: Props) {
+export function ThreadPane({ conversationId, parentMessageId, threadMode, onClose, onAskCaty }: Props) {
   const { parent, replies, isLoading, sendReply, toggleReaction, currentUserId } =
     useThread(conversationId, parentMessageId);
 
@@ -386,6 +394,14 @@ export function ThreadPane({ conversationId, parentMessageId, threadMode, onClos
         {/* Header */}
         <header className="c-thread__hdr">
           <h2 className="c-thread__title">Thread</h2>
+          {onAskCaty && (
+            <IconButton
+              icon={CatyStarIcon}
+              label="Summarize thread with Caty"
+              appearance="subtle"
+              onClick={onAskCaty}
+            />
+          )}
           <button className="c-thread__hdr-btn" onClick={onClose} aria-label="Close thread">
             <CrossIcon label="Close" LEGACY_size="small" />
           </button>

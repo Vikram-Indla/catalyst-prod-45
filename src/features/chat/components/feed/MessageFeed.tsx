@@ -431,6 +431,7 @@ function MsgGroupBlock({
                   onTogglePin={() => onTogglePin(msg.id, isPinned)}
                   onToggleSave={() => onToggleSave(msg.id, isSaved)}
                   onForward={() => onForward(msg.id)}
+                  onAskCaty={() => void 0}
                 />
               );
             })()}
@@ -541,6 +542,8 @@ interface Props {
   onOpenThread: (messageId: string) => void;
   /** When set, scroll to and briefly highlight this message after load */
   initialMessageId?: string;
+  /** When set, renders a minimize button in the header (full-screen mode only) */
+  onDock?: () => void;
 }
 
 // ── TypingIndicator ────────────────────────────────────────────────────────
@@ -561,7 +564,7 @@ function TypingIndicator({ typers }: { typers: string[] }) {
   );
 }
 
-export function MessageFeed({ conversationId, conversation, onOpenThread, initialMessageId }: Props) {
+export function MessageFeed({ conversationId, conversation, onOpenThread, initialMessageId, onDock }: Props) {
   const { messages, isLoading, hasMore, loadMore, sendMessage, editMessage, deleteMessage, toggleReaction, currentUserId } =
     useMessages(conversationId);
   const { setTyping, recordMessage, presenceList } = usePresence({ conversationId });
@@ -755,7 +758,7 @@ export function MessageFeed({ conversationId, conversation, onOpenThread, initia
 
   return (
     <div className="c-feed" role="region" aria-label={`${conversation.title} messages`}>
-      <ConversationHeader conversation={conversation} />
+      <ConversationHeader conversation={conversation} onDock={onDock} />
 
       <div
         ref={scrollRef}
@@ -843,6 +846,7 @@ export function MessageFeed({ conversationId, conversation, onOpenThread, initia
           conversationTitle={conversation.title}
           conversationId={conversationId}
           onTyping={() => setTyping(true)}
+          onMic={() => void 0}
         />
       </div>
 

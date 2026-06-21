@@ -76,6 +76,8 @@ export function ChatShell({
         onNewConversation={onNewConversation}
         onToggleCollapse={toggleSidebar}
         isCollapsed={sidebarCollapsed}
+        onNewChannel={() => onNewConversation?.()}
+        onNewDM={() => onNewConversation?.()}
       />
 
       {/* Column 3: activity surface (shown when activeView === 'activity') */}
