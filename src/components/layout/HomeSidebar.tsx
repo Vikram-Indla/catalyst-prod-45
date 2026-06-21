@@ -181,9 +181,9 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
     >
       <span
         aria-hidden="true"
-        style={{ flexShrink: 0, color: token('color.text.subtlest', '#626F86'), display: 'inline-flex' }}
+        style={{ flexShrink: 0, color: 'var(--ds-text-subtle, #44546F)', display: 'inline-flex' }}
       >
-        <PageIcon style={{ width: 16, height: 16 }} />
+        <PageIcon style={{ width: 20, height: 20 }} />
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: '1px', minWidth: 0, flex: 1 }}>
         <span
