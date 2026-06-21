@@ -55,10 +55,12 @@ export function KeyDetailsFieldRow({
   const [hovered, setHovered] = React.useState(false);
   return (
     <div style={{ padding: '6px 0' }}>
-      <Inline space="space.250" alignBlock={alignBlock}>
+      {/* 2026-06-22 Vikram: widened label column (120→320) + gap
+          (space.250→space.800) for maximum breathing room. */}
+      <Inline space="space.800" alignBlock={alignBlock}>
         <span style={{
           fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
-          minWidth: 120, flexShrink: 0,
+          minWidth: 320, flexShrink: 0,
         }}>{label}</span>
         <div
           data-cv-keydetails-value="true"

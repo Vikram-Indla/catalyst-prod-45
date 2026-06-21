@@ -223,16 +223,23 @@ export function CatalystViewBase({
       const modalEl = document.querySelector('[data-cv-scope]') as HTMLElement;
       if (!modalEl) return;
       const rect = modalEl.getBoundingClientRect();
-      // Clamp 320..480 (2026-06-21 Vikram).
-      // Min raised 220 → 320: at 220–280px the right-rail Details card
-      // breaks (Sprint/Iteration label wraps, Assignee/Reporter avatars
-      // render as bare dotted circles because values overflow + clip).
-      // Max lowered 600 → 480: caps total rail width so left content
-      // panel keeps enough room for Description editor without forcing
-      // the rail to a layout that wastes whitespace.
-      setRightPanelWidth(Math.max(320, Math.min(480, rect.right - e.clientX)));
+      // Clamp 220..480 (2026-06-22 Vikram).
+      // Min lowered 320 → 220: with compact-rail stacked-layout context
+      // (COMPACT_RAIL_THRESHOLD=360 in CatalystSidebarDetails), the
+      // Details card switches to Jira-style stacked rows below 360px,
+      // so narrow rails no longer break.
+      // Max stays at 480 to keep the left content panel usable.
+      setRightPanelWidth(Math.max(220, Math.min(480, rect.right - e.clientX)));
     };
-    const onMouseUp = () => { isDraggingRef.current = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
+    const onMouseUp = () => {
+      isDraggingRef.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      /* Clear splitter's hover/drag hairline if cursor isn't currently
+         over it (mouse may have moved off during drag). */
+      const splitter = document.querySelector('.cv-drawer-splitter') as HTMLDivElement | null;
+      if (splitter && !splitter.matches(':hover')) splitter.style.boxShadow = 'none';
+    };
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
     return () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); };
@@ -372,9 +379,14 @@ export function CatalystViewBase({
        (flex:1) gets a fixed height and can be the scroll container.
        Prior approach (minHeight:100%, overflow:visible) assumed page-level scroll, which
        doesn't exist inside the project hub layout. */
+    /* position:relative (2026-06-22 Vikram) anchors the absolute-positioned
+       resizable splitter that spans topbar + body. */
+    position: 'relative',
     width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
   } : panelMode ? {
+    /* position:relative same reason as fullPageMode (2026-06-22 Vikram). */
+    position: 'relative',
     width: '100%', minWidth: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     // 2026-05-24 — anti-dance fix: cv-panel-in slide-in intentionally absent here.
@@ -686,18 +698,8 @@ export function CatalystViewBase({
             )}
           </div>
 
-          {/* RESIZABLE SPLITTER — Jira-parity (2026-06-21 Vikram):
-              invisible in every state. Only `cursor: col-resize`
-              indicates draggability. No hover bg, no grip glyph,
-              no drag bg, no transitions. */}
-          <div
-            className="cv-drawer-splitter"
-            onMouseDown={() => { isDraggingRef.current = true; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; }}
-            style={{
-              width: 6, minWidth: 6, cursor: 'col-resize', background: 'transparent',
-              flexShrink: 0,
-            }}
-          />
+          {/* Splitter moved to MODAL-level absolute overlay below
+              (2026-06-22 Vikram) so it spans topbar + body. */}
 
           {/* RIGHT PANEL — Sidebar
               2026-05-12: sticky within cv-drawer-body (the scroll container).
@@ -771,6 +773,34 @@ export function CatalystViewBase({
           onClick={e => e.stopPropagation()}
         >
           {cardContents}
+          {/* RESIZABLE SPLITTER (2026-06-22 Vikram) — absolute overlay at
+              MODAL level so it spans topbar + body. Sits at right edge of
+              left content (= MODAL.right - sidebar width). 6px hit area,
+              invisible idle, blue hairline on hover/drag. */}
+          {!hideSidebar && (
+            <div
+              className="cv-drawer-splitter"
+              onMouseDown={e => {
+                isDraggingRef.current = true;
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, #1868DB)';
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, #1868DB)'; }}
+              onMouseLeave={e => { if (!isDraggingRef.current) (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                right: rightPanelWidth - 3,
+                width: 6,
+                cursor: 'col-resize',
+                background: 'transparent',
+                zIndex: 100,
+                transition: 'box-shadow 120ms ease',
+              }}
+            />
+          )}
         </div>
       </div>
     </>
