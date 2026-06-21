@@ -1,43 +1,81 @@
 /**
- * AdminSidebarV2 — Admin navigation rail, Jira-admin-parity.
+ * AdminSidebarV2 — Admin navigation rail.
  *
- * Mirrors Jira's admin settings sidebar pattern probed live from
- * https://digital-transformation.atlassian.net/jira/settings/issues/issue-types
- * on 2026-05-19:
- *   - Every pocket is flat-expanded (no collapse). The pocket label is a
- *     small section header (12px / 653 / sentence case) and the children
- *     render as nav links directly inline beneath it.
- *   - Active item: blue text, faint blue background, blue left-rail.
+ * Uses SidebarBase for consistent border, collapsed rail, and tooltip behavior —
+ * same pattern as HomeSidebar, ProjectHubSidebar, etc.
  *
- * Why: Vikram directive 2026-05-19 — Design Governance and every other
- * leaf must be directly clickable in the admin sidebar without expanding
- * a parent pocket. The collapsed ButtonItem pattern hid leaves and made
- * the IA invisible at a glance.
+ * Collapsed (56px): one glyph icon per section with tooltip on right.
+ * Expanded (220px): "Admin" 16px/653 header + search + flat-expanded sections.
+ *
+ * Icon map (one per adminPockets entry):
+ *   users-access  → PeopleIcon   (people group)
+ *   design-system → DiscoverIcon (compass / explore)
+ *   workflows     → RoadmapIcon  (flow / sequence)
+ *   release-ops   → ShipIcon     (ship / deploy)
+ *   connections   → LinkIcon     (link / integration)
+ *   ai-governance → LockIcon     (lock / governance)
  *
  * Contracts pinned by:
- *   - admin-sidebar-single-chevron-contract.test.ts — no chevron-left/right
- *     imports (we removed all collapse chevrons; only the global header
- *     chevron remains).
- *   - admin-sidebar-ads-redesign.test.ts — imports from
- *     @atlaskit/side-navigation; uses Section + LinkItem primitives.
- *   - admin-sidebar-parity.test.ts — every leaf path in adminPockets
- *     resolves through admin-nav.ts (single source of truth).
- *
- * Data source: admin-nav.ts.
+ *   - admin-sidebar-single-chevron-contract.test.ts — no local collapse chevron.
+ *   - admin-sidebar-ads-redesign.test.ts — SidebarBase import; / key handler;
+ *     elemBeforeInput search; no hand-rolled hover state.
+ *   - admin-sidebar-parity.test.ts — every leaf path in adminPockets resolves.
  */
-import { useState, useMemo, useRef, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useMemo, useRef, useEffect, useState } from 'react';
+import PeopleIcon from '@atlaskit/icon/glyph/people';
+import DiscoverIcon from '@atlaskit/icon/glyph/discover';
+import RoadmapIcon from '@atlaskit/icon/glyph/roadmap';
+import ShipIcon from '@atlaskit/icon/glyph/ship';
+import LinkIcon from '@atlaskit/icon/glyph/link';
+import LockIcon from '@atlaskit/icon/glyph/lock';
+import SearchIcon from '@atlaskit/icon/core/search';
 import Textfield from '@atlaskit/textfield';
 import {
-  SideNavigation,
-  NavigationHeader,
-  NavigationContent,
-  Section,
-  LinkItem,
-} from '@atlaskit/side-navigation';
-import SearchIcon from '@atlaskit/icon/core/search';
+  SidebarBase,
+  type SidebarConfig,
+  type SidebarMenuItem,
+  type SidebarSection,
+} from '../layout/SidebarBase';
 import { adminPockets } from './admin-nav';
 
+// ---------------------------------------------------------------------------
+// Glyph icon adapter
+// SidebarBase passes the active/inactive ADS color via `style.color`; glyph
+// icons use `primaryColor` instead of CSS color. This adapter bridges them so
+// icons turn brand-blue when their row is active.
+// ---------------------------------------------------------------------------
+type SBIcon = React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+
+function adaptGlyph(
+  Glyph: React.ComponentType<{ label: string; size?: string; primaryColor?: string }>,
+): SBIcon {
+  // Named function (not arrow) so React DevTools can identify the component.
+  function GlyphAdapter({ style }: { className?: string; style?: React.CSSProperties } = {}) {
+    return (
+      <Glyph
+        label=""
+        size="small"
+        primaryColor={style?.color ?? 'var(--ds-icon, #172B4D)'}
+      />
+    );
+  }
+  return GlyphAdapter;
+}
+
+// One icon per adminPockets id — adapt at module level so each component is
+// stable across renders (no recreation on every useMemo invocation).
+const POCKET_ICONS: Record<string, SBIcon> = {
+  'users-access':  adaptGlyph(PeopleIcon),
+  'design-system': adaptGlyph(DiscoverIcon),
+  'workflows':     adaptGlyph(RoadmapIcon),
+  'release-ops':   adaptGlyph(ShipIcon),
+  'connections':   adaptGlyph(LinkIcon),
+  'ai-governance': adaptGlyph(LockIcon),
+};
+
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
 interface AdminSidebarV2Props {
   /** Controlled by CatalystShell via cycleSidebarState — single-chevron contract. */
   expanded: boolean;
@@ -45,42 +83,13 @@ interface AdminSidebarV2Props {
   className?: string;
 }
 
-interface FlatPath {
-  label: string;
-  path: string;
-  parent?: string;
-}
-
-function getAllPaths(): FlatPath[] {
-  const paths: FlatPath[] = [];
-  adminPockets.forEach(pocket => {
-    paths.push({ label: pocket.label, path: pocket.path });
-    pocket.children?.forEach(child => {
-      paths.push({ label: child.label, path: child.path, parent: pocket.label });
-    });
-  });
-  return paths;
-}
-
-export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: AdminSidebarV2Props) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2Props) {
   const [searchQuery, setSearchQuery] = useState('');
-
-  const allPaths = useMemo(() => getAllPaths(), []);
-
-  const filteredPaths = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const normalized = searchQuery.toLowerCase().replace(/[-_]/g, ' ').trim();
-    const parts = normalized.split(/\s+/);
-    return allPaths.filter(p => {
-      const label = p.label.toLowerCase();
-      const parent = p.parent?.toLowerCase() ?? '';
-      return parts.every(part => label.includes(part) || parent.includes(part));
-    });
-  }, [searchQuery, allPaths]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const searchInputRef = useRef<any>(null);
 
   // "/" focuses the search input (Jira parity).
   useEffect(() => {
@@ -92,7 +101,6 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
         t &&
         (t.tagName === 'INPUT' ||
           t.tagName === 'TEXTAREA' ||
-          t.tagName === 'SELECT' ||
           t.isContentEditable)
       ) {
         return;
@@ -104,33 +112,141 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  if (!expanded) return null;
+  // Flat list of all leaves — stable reference (adminPockets never changes).
+  const allLeaves = useMemo(
+    () =>
+      adminPockets.flatMap(pocket =>
+        pocket.children && pocket.children.length > 0
+          ? pocket.children.map(c => ({ pocket, child: c }))
+          : [{ pocket, child: { label: pocket.label, path: pocket.path } }],
+      ),
+    [],
+  );
 
-  const handleNav = (path: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate(path);
-    setSearchQuery('');
-  };
+  const config: SidebarConfig = useMemo(() => {
+    // -----------------------------------------------------------------------
+    // COLLAPSED RAIL — one icon per section
+    // -----------------------------------------------------------------------
+    if (!expanded) {
+      const items: SidebarMenuItem[] = adminPockets.map(pocket => ({
+        id: pocket.id,
+        title: pocket.label,
+        tooltip: pocket.label,
+        // Navigate to first child on click; active when any child matches.
+        path: pocket.children?.[0]?.path ?? pocket.path,
+        activeMatchPaths: [
+          pocket.path,
+          ...(pocket.children?.map(c => c.path) ?? []),
+        ],
+        icon: POCKET_ICONS[pocket.id],
+      }));
+      return { badge: '', label: 'Admin', items, showFavorites: false };
+    }
+
+    // -----------------------------------------------------------------------
+    // EXPANDED — search node + flat-expanded section tree
+    // -----------------------------------------------------------------------
+
+    // Search section: titleNode renders the Textfield; zero items so the
+    // section body is empty (only the titleNode header renders, per SidebarBase
+    // null-check: sections with titleNode are kept even when items.length === 0).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const searchSection: SidebarSection = {
+      title: '__admin_search__',
+      titleNode: (
+        <div style={{ padding: '4px 4px 8px' }}>
+          <Textfield
+            ref={searchInputRef}
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchQuery(e.target.value)
+            }
+            elemBeforeInput={
+              <div style={{ paddingLeft: 8, display: 'flex', alignItems: 'center' }}>
+                <SearchIcon label="" size="small" />
+              </div>
+            }
+            isCompact
+          />
+        </div>
+      ),
+      items: [],
+    };
+
+    const q = searchQuery.trim().toLowerCase().replace(/[-_]/g, ' ');
+
+    if (q) {
+      const parts = q.split(/\s+/);
+      const matched = allLeaves.filter(({ pocket, child }) => {
+        const text = (pocket.label + ' ' + child.label).toLowerCase();
+        return parts.every(p => text.includes(p));
+      });
+
+      return {
+        badge: '',
+        label: 'Admin',
+        sections: [
+          searchSection,
+          {
+            title: `Results (${matched.length})`,
+            items: matched.map(({ pocket, child }) => ({
+              id: `search-${child.path}`,
+              title: child.label,
+              tooltip: `${pocket.label} › ${child.label}`,
+              path: child.path,
+              icon: POCKET_ICONS[pocket.id],
+            })),
+          },
+        ],
+        showFavorites: false,
+        hideSectionDividers: true,
+      };
+    }
+
+    // Normal tree: one SidebarSection per pocket.
+    const treeSections: SidebarSection[] = adminPockets.map(pocket => {
+      const items: SidebarMenuItem[] =
+        pocket.children && pocket.children.length > 0
+          ? pocket.children.map(child => ({
+              id: `${pocket.id}-${child.path}`,
+              title: child.label,
+              path: child.path,
+              icon: POCKET_ICONS[pocket.id],
+            }))
+          : [
+              {
+                id: pocket.id,
+                title: pocket.label,
+                path: pocket.path,
+                icon: POCKET_ICONS[pocket.id],
+              },
+            ];
+
+      return { title: pocket.label, items };
+    });
+
+    return {
+      badge: '',
+      label: 'Admin',
+      sections: [searchSection, ...treeSections],
+      showFavorites: false,
+      hideSectionDividers: true,
+    };
+  }, [expanded, searchQuery, allLeaves]);
 
   return (
-    <aside
+    <SidebarBase
+      config={config}
+      expanded={expanded}
+      onToggle={onToggle}
       className={className}
-      style={{
-        width: 240,
-        minWidth: 240,
-        height: '100%',
-        background: 'var(--cp-bg-elevated, #ffffff)',
-        borderRight: '1px solid var(--ds-border, #DFE1E6)',
-        display: 'flex',
-        flexDirection: 'column',
-        flexShrink: 0,
-      }}
-    >
-      <SideNavigation label="Admin">
-        <NavigationHeader>
-          <div
+      renderHeaderSwitcher={(exp) =>
+        exp ? (
+          <span
             style={{
-              padding: '12px 16px 4px',
+              fontFamily:
+                'var(--ds-font-family-heading, var(--cp-font-heading))',
               fontSize: 16,
               fontWeight: 653,
               color: 'var(--ds-text, #292A2E)',
@@ -138,99 +254,9 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
             }}
           >
             Admin
-          </div>
-        </NavigationHeader>
-
-        <NavigationContent>
-          {/* Search — Jira parity. Leading icon via elemBeforeInput. */}
-          <div style={{ padding: '4px 12px 8px' }}>
-            <Textfield
-              ref={searchInputRef}
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setSearchQuery(e.target.value)
-              }
-              elemBeforeInput={
-                <div style={{ paddingLeft: 8, display: 'flex', alignItems: 'center' }}>
-                  <SearchIcon label="" size="small" />
-                </div>
-              }
-              isCompact
-            />
-          </div>
-
-          {/* Filtered results take over the body while a query is active. */}
-          {searchQuery.trim() ? (
-            filteredPaths.length > 0 ? (
-              <Section title={`Results (${filteredPaths.length})`}>
-                {filteredPaths.map(item => (
-                  <LinkItem
-                    key={item.path}
-                    href={item.path}
-                    onClick={handleNav(item.path)}
-                    isSelected={location.pathname === item.path}
-                    description={item.parent}
-                  >
-                    {item.label}
-                  </LinkItem>
-                ))}
-              </Section>
-            ) : (
-              <Section title="No matches">
-                <div
-                  style={{
-                    padding: '8px 16px',
-                    fontSize: 12,
-                    color: 'var(--ds-text-subtle, #6B6E76)',
-                  }}
-                >
-                  Try a different search term.
-                </div>
-              </Section>
-            )
-          ) : (
-            <>
-              {/* Jira admin pattern: every pocket renders flat-expanded.
-                  Section header (small subtle text) + children listed
-                  directly as LinkItems beneath. No collapse, no icon-before
-                  on section headers, no ButtonItem chevron. */}
-              {adminPockets.map(pocket => {
-                const hasChildren = !!pocket.children && pocket.children.length > 0;
-                if (!hasChildren) {
-                  // Leaf-only pockets (e.g. Overview) render as a single
-                  // top-level LinkItem with no section header.
-                  return (
-                    <Section key={pocket.id}>
-                      <LinkItem
-                        href={pocket.path}
-                        onClick={handleNav(pocket.path)}
-                        isSelected={location.pathname === pocket.path}
-                      >
-                        {pocket.label}
-                      </LinkItem>
-                    </Section>
-                  );
-                }
-                return (
-                  <Section key={pocket.id} title={pocket.label}>
-                    {pocket.children!.map(child => (
-                      <LinkItem
-                        key={child.path}
-                        href={child.path}
-                        onClick={handleNav(child.path)}
-                        isSelected={location.pathname === child.path}
-                      >
-                        {child.label}
-                      </LinkItem>
-                    ))}
-                  </Section>
-                );
-              })}
-            </>
-          )}
-        </NavigationContent>
-      </SideNavigation>
-    </aside>
+          </span>
+        ) : null
+      }
+    />
   );
 }

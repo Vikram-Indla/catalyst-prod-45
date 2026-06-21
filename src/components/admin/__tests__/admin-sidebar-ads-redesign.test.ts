@@ -100,22 +100,24 @@ describe('AdminSidebarV2 — ADS-grade redesign', () => {
     });
   });
 
-  describe('Nav primitives — @atlaskit/side-navigation', () => {
-    it('imports from @atlaskit/side-navigation', () => {
+  describe('Nav primitives — SidebarBase (replaces @atlaskit/side-navigation)', () => {
+    // 2026-06-21: Upgraded from @atlaskit/side-navigation to SidebarBase to get
+    // the canonical collapsed icon rail, border-right, and tooltip behavior used
+    // by every other hub sidebar (Home, ProjectHub, ProductHub).
+
+    it('imports SidebarBase from layout', () => {
       const src = source();
-      expect(src).toMatch(/from\s+['"]@atlaskit\/side-navigation['"]/);
+      expect(src).toMatch(/from\s+['"].*\/layout\/SidebarBase['"]/);
     });
 
-    it('uses Section + (LinkItem or ButtonItem) primitives in JSX', () => {
+    it('uses <SidebarBase> in JSX, not raw @atlaskit/side-navigation primitives', () => {
       const src = source();
-      expect(src).toMatch(/<Section[\s>]/);
-      expect(src).toMatch(/<(?:LinkItem|ButtonItem)[\s>]/);
+      expect(src).toMatch(/<SidebarBase[\s>]/);
+      expect(src).not.toMatch(/from\s+['"]@atlaskit\/side-navigation['"]/);
     });
 
-    it('drops the hand-rolled hover/active <Link> rows (no onMouseEnter setHoveredPath on Link)', () => {
+    it('drops the hand-rolled hover/active rows (no onMouseEnter setHoveredPath)', () => {
       const src = source();
-      // The hand-rolled rows set `hoveredPath` via onMouseEnter for hover-bg.
-      // ADS primitives handle hover natively, so this state goes away.
       expect(src).not.toMatch(/setHoveredPath\(`?\w/);
     });
   });

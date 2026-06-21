@@ -9,7 +9,7 @@ import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import { createPortal } from 'react-dom';
 import Spinner from '@atlaskit/spinner';
 import Textfield from '@atlaskit/textfield';
-import { Search } from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/core/search';
 import {
   useModuleAccessRoles, useModuleAccessModules, useModuleAccessMatrix, useSetModuleAccess,
   type AccessLevel, type MatrixModule,
@@ -183,7 +183,7 @@ export function ModuleAccessMatrix() {
             placeholder="Filter modules"
             value={filter}
             onChange={(e: any) => setFilter(e.target.value)}
-            elemBeforeInput={<span style={{ paddingLeft: 8, display: 'flex' }}><Search size={14} aria-hidden /></span>}
+            elemBeforeInput={<span style={{ paddingLeft: 8, display: 'flex' }}><SearchIcon label="" size="small" /></span>}
           />
         </div>
       </div>
