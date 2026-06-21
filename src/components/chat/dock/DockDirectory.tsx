@@ -721,26 +721,35 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
           </div>
         )}
 
-        {/* Caty suggestions — trending/active work-item nudges */}
+        {/* Suggested conversations — trending/active work-item nudges */}
         {catySuggestions.length > 0 && (
           <>
             <SectionHeader
-              label="Caty suggestions"
+              label="Suggested"
               count={catySuggestions.length}
               collapsed={!!collapsed['caty']}
               onToggle={() => toggleSection('caty')}
             />
-            {!collapsed['caty'] && catySuggestions.map((s) => (
+            {!collapsed['caty'] && catySuggestions.map((s) => {
+              const linkedConv = conversations.find((c) => c.ticketKey === s.issueKey);
+              const handleOpen = () => {
+                if (linkedConv) {
+                  onSelectConversation(linkedConv.id);
+                } else {
+                  useGlobalSearchStore.getState().openDetail({ id: s.issueKey });
+                }
+              };
+              return (
               <div
                 key={s.key}
                 className="cc-dir__caty"
                 role="button"
                 tabIndex={0}
-                onClick={() => useGlobalSearchStore.getState().openDetail({ id: s.issueKey })}
+                onClick={handleOpen}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    useGlobalSearchStore.getState().openDetail({ id: s.issueKey });
+                    handleOpen();
                   }
                 }}
               >
@@ -770,7 +779,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                   </svg>
                 </button>
               </div>
-            ))}
+              );
+            })}
             <div className="cc-dir__section-divider" />
           </>
         )}

@@ -1,0 +1,302 @@
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useCreateTestCase, useUpdateTestCase } from '@/hooks/test-management/useTestCases';
+import { TMTestCase, TMCasePriority, TMCaseType, CaseStatus } from '@/types/test-management';
+import { StepEditor, StepInput } from './StepEditor';
+import { X } from '@/lib/atlaskit-icons';
+import Spinner from '@atlaskit/spinner';
+
+interface CaseDrawerProps {
+  projectId: string;
+  folderId: string | null;
+  existingCase: TMTestCase | null;
+  onClose: () => void;
+}
+
+export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseDrawerProps) {
+  const isEdit = !!existingCase;
+
+  const [title, setTitle] = useState(existingCase?.title ?? '');
+  const [status, setStatus] = useState<CaseStatus>(existingCase?.status ?? 'DRAFT');
+  const [priorityId, setPriorityId] = useState<string>(existingCase?.priority_id ?? '');
+  const [typeId, setTypeId] = useState<string>(existingCase?.type_id ?? '');
+  const [description, setDescription] = useState(existingCase?.objective ?? '');
+  const [preconditions, setPreconditions] = useState(existingCase?.preconditions ?? '');
+  const [steps, setSteps] = useState<StepInput[]>(
+    (existingCase?.steps ?? []).map(s => ({
+      action: s.action,
+      expected_result: s.expected_result,
+      test_data: s.test_data ?? '',
+    }))
+  );
+
+  const { data: priorities = [] } = useQuery({
+    queryKey: ['tm-priorities', projectId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('tm_case_priorities')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('sort_order');
+      return (data ?? []) as TMCasePriority[];
+    },
+    enabled: !!projectId,
+  });
+
+  const { data: types = [] } = useQuery({
+    queryKey: ['tm-types', projectId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('tm_case_types')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('sort_order');
+      return (data ?? []) as TMCaseType[];
+    },
+    enabled: !!projectId,
+  });
+
+  // Set defaults when priorities/types load (only when creating, not editing)
+  useEffect(() => {
+    if (!isEdit && !priorityId && priorities.length > 0) {
+      const def = (priorities as TMCasePriority[]).find(p => p.is_default) ?? priorities[0];
+      if (def?.id) setPriorityId(def.id);
+    }
+  }, [priorities, isEdit, priorityId]);
+
+  useEffect(() => {
+    if (!isEdit && !typeId && types.length > 0) {
+      const def = (types as TMCaseType[]).find(t => t.is_default) ?? types[0];
+      if (def?.id) setTypeId(def.id);
+    }
+  }, [types, isEdit, typeId]);
+
+  const createCase = useCreateTestCase();
+  const updateCase = useUpdateTestCase();
+  const isPending = createCase.isPending || updateCase.isPending;
+
+  const handleSave = async () => {
+    if (!title.trim()) return;
+
+    const stepsPayload = steps
+      .filter(s => s.action.trim())
+      .map(s => ({
+        action: s.action,
+        expected_result: s.expected_result,
+        test_data: s.test_data || undefined,
+      }));
+
+    if (isEdit && existingCase) {
+      await updateCase.mutateAsync({
+        id: existingCase.id,
+        project_id: projectId,
+        title: title.trim(),
+        status,
+        priority_id: priorityId || undefined,
+        type_id: typeId || undefined,
+        objective: description || undefined,
+        preconditions: preconditions || undefined,
+        folder_id: folderId ?? undefined,
+        steps: stepsPayload,
+      });
+    } else {
+      await createCase.mutateAsync({
+        project_id: projectId,
+        title: title.trim(),
+        status,
+        priority_id: priorityId || undefined,
+        type_id: typeId || undefined,
+        objective: description || undefined,
+        preconditions: preconditions || undefined,
+        folder_id: folderId ?? undefined,
+        steps: stepsPayload,
+      });
+    }
+    onClose();
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    border: '1px solid var(--ds-border, #DFE1E6)',
+    borderRadius: 4,
+    padding: '6px 10px',
+    fontSize: 14,
+    fontFamily: 'var(--ds-font-family-body)',
+    color: 'var(--ds-text, #172B4D)',
+    background: 'var(--ds-surface, #FFFFFF)',
+    boxSizing: 'border-box',
+    outline: 'none',
+  };
+
+  const selectStyle: React.CSSProperties = {
+    ...inputStyle,
+    cursor: 'pointer',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: 12,
+    fontWeight: 600,
+    color: 'var(--ds-text-subtle, #42526E)',
+    marginBottom: 6,
+  };
+
+  const sectionStyle: React.CSSProperties = {
+    marginBottom: 20,
+  };
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.32)', zIndex: 300 }}
+      />
+      {/* Drawer */}
+      <div style={{
+        position: 'fixed',
+        right: 0,
+        top: 0,
+        bottom: 0,
+        width: 640,
+        background: 'var(--ds-surface, #FFFFFF)',
+        boxShadow: '-4px 0 16px rgba(9,30,66,0.16)',
+        zIndex: 301,
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: 'var(--ds-font-family-body)',
+      }}>
+        {/* Header */}
+        <div style={{
+          padding: '16px 24px',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+            {isEdit ? 'Edit test case' : 'Create test case'}
+          </h2>
+          <button
+            onClick={onClose}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', padding: 4 }}
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+          <div style={sectionStyle}>
+            <label style={labelStyle}>Title *</label>
+            <input
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Test case title"
+              style={inputStyle}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
+            <div>
+              <label style={labelStyle}>Status</label>
+              <select value={status} onChange={e => setStatus(e.target.value as CaseStatus)} style={selectStyle}>
+                <option value="DRAFT">Draft</option>
+                <option value="REVIEW">Review</option>
+                <option value="APPROVED">Approved</option>
+                <option value="DEPRECATED">Deprecated</option>
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Priority</label>
+              <select value={priorityId} onChange={e => setPriorityId(e.target.value)} style={selectStyle}>
+                <option value="">— Select —</option>
+                {(priorities as TMCasePriority[]).map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Type</label>
+              <select value={typeId} onChange={e => setTypeId(e.target.value)} style={selectStyle}>
+                <option value="">— Select —</option>
+                {(types as TMCaseType[]).map(t => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div style={sectionStyle}>
+            <label style={labelStyle}>Description / Objective</label>
+            <textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="What does this test verify?"
+              style={{ ...inputStyle, minHeight: 72, resize: 'vertical' }}
+            />
+          </div>
+
+          <div style={sectionStyle}>
+            <label style={labelStyle}>Preconditions</label>
+            <textarea
+              value={preconditions}
+              onChange={e => setPreconditions(e.target.value)}
+              placeholder="Setup required before this test..."
+              style={{ ...inputStyle, minHeight: 56, resize: 'vertical' }}
+            />
+          </div>
+
+          <div style={sectionStyle}>
+            <label style={{ ...labelStyle, marginBottom: 12 }}>Steps</label>
+            <StepEditor steps={steps} onChange={setSteps} />
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          padding: '16px 24px',
+          borderTop: '1px solid var(--ds-border, #DFE1E6)',
+          display: 'flex',
+          gap: 12,
+          justifyContent: 'flex-end',
+        }}>
+          <button onClick={onClose} style={{
+            padding: '8px 16px',
+            background: 'none',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 4,
+            fontSize: 14,
+            cursor: 'pointer',
+            color: 'var(--ds-text, #172B4D)',
+          }}>
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={isPending || !title.trim()}
+            style={{
+              padding: '8px 20px',
+              background: 'var(--ds-background-brand-bold, #0052CC)',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 4,
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: isPending || !title.trim() ? 'not-allowed' : 'pointer',
+              opacity: isPending || !title.trim() ? 0.7 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            {isPending && <Spinner size="small" appearance="invert" />}
+            {isEdit ? 'Save changes' : 'Create case'}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}

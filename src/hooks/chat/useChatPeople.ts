@@ -20,6 +20,13 @@ const db = supabase as unknown as { from: (table: string) => any };
 const PRESENCE_ORDER: ChatPresence[] = ['onsite', 'remote', 'away', 'on_leave'];
 const VALID_PRESENCE = new Set<ChatPresence>(PRESENCE_ORDER);
 
+export interface ChatDepartmentGroup {
+  department: string;
+  people: ChatPerson[];
+}
+
+const ALLOWED_DEPARTMENTS = new Set(['Product', 'Delivery']);
+
 interface ResourceRow {
   id: string;
   name: string | null;
@@ -27,6 +34,7 @@ interface ResourceRow {
   is_active: boolean | null;
   role_code: string | null;
   avatar_url: string | null;
+  department_name: string | null;
 }
 
 interface PresenceRow {
@@ -44,7 +52,7 @@ async function fetchPeople(): Promise<ChatPeopleGroup[]> {
   try {
     const { data: resources, error } = await db
       .from('resource_inventory')
-      .select('id, name, profile_id, is_active, role_code, avatar_url')
+      .select('id, name, profile_id, is_active, role_code, avatar_url, department_name')
       .eq('is_active', true)
       .not('profile_id', 'is', null)
       .order('name', { ascending: true });
@@ -81,6 +89,7 @@ async function fetchPeople(): Promise<ChatPeopleGroup[]> {
         avatarUrl: resolveAvatarUrl(r.name),
         presence: normalizePresence(pres?.state),
         presenceNote: pres?.location ?? null,
+        department: (r as any).department_name ?? null,
       };
     });
 
@@ -99,6 +108,76 @@ export function useChatPeople(): { groups: ChatPeopleGroup[]; isLoading: boolean
   const { data, isLoading } = useQuery({
     queryKey: ['chat', 'people'],
     queryFn: fetchPeople,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return { groups: data ?? [], isLoading };
+}
+
+async function fetchPeopleByDepartment(): Promise<ChatDepartmentGroup[]> {
+  try {
+    const { data: resources, error } = await db
+      .from('resource_inventory')
+      .select('id, name, profile_id, is_active, role_code, avatar_url, department_name')
+      .eq('is_active', true)
+      .not('profile_id', 'is', null)
+      .in('department_name', ['Product', 'Delivery'])
+      .order('name', { ascending: true });
+
+    if (error || !resources) return [];
+
+    const rows = resources as ResourceRow[];
+    const profileIds = Array.from(
+      new Set(rows.map((r) => r.profile_id).filter((id): id is string => !!id)),
+    );
+
+    const presenceByProfile = new Map<string, PresenceRow>();
+    if (profileIds.length > 0) {
+      try {
+        const { data: presence } = await db
+          .from('user_presence')
+          .select('user_id, state, location')
+          .in('user_id', profileIds);
+        if (presence) {
+          for (const p of presence as PresenceRow[]) presenceByProfile.set(p.user_id, p);
+        }
+      } catch { /* defaults to away */ }
+    }
+
+    const people: (ChatPerson & { department: string | null })[] = rows.map((r) => {
+      const pres = r.profile_id ? presenceByProfile.get(r.profile_id) : undefined;
+      return {
+        id: r.id,
+        profileId: r.profile_id ?? null,
+        name: r.name ?? '',
+        role: r.role_code ?? null,
+        avatarUrl: resolveAvatarUrl(r.name),
+        presence: normalizePresence(pres?.state),
+        presenceNote: pres?.location ?? null,
+        department: r.department_name ?? null,
+      };
+    });
+
+    const grouped = new Map<string, typeof people>();
+    for (const person of people) {
+      const dept = person.department ?? 'Other';
+      if (!ALLOWED_DEPARTMENTS.has(dept)) continue;
+      if (!grouped.has(dept)) grouped.set(dept, []);
+      grouped.get(dept)!.push(person);
+    }
+
+    return ['Product', 'Delivery']
+      .filter((d) => grouped.has(d))
+      .map((d) => ({ department: d, people: grouped.get(d)! }));
+  } catch {
+    return [];
+  }
+}
+
+export function useChatPeopleByDepartment(): { groups: ChatDepartmentGroup[]; isLoading: boolean } {
+  const { data, isLoading } = useQuery({
+    queryKey: ['chat', 'people', 'by-department'],
+    queryFn: fetchPeopleByDepartment,
     staleTime: 5 * 60 * 1000,
   });
 

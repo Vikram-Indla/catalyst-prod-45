@@ -1,0 +1,373 @@
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useProjects } from '@/hooks/test-management/useProjects';
+import Spinner from '@atlaskit/spinner';
+import Button from '@atlaskit/button/standard-button';
+import { catalystToast } from '@/lib/catalystToast';
+
+type SetType = 'smoke' | 'regression' | 'sanity' | 'integration' | 'e2e' | 'performance' | 'security' | 'accessibility' | 'custom';
+type MembershipType = 'static' | 'dynamic';
+
+interface TmTestSet {
+  id: string;
+  set_key: string;
+  name: string;
+  description: string | null;
+  set_type: SetType;
+  membership_type: MembershipType;
+  test_count: number;
+  is_active: boolean;
+  project_id: string;
+  created_at: string;
+}
+
+const SET_TYPE_LABELS: Record<SetType, string> = {
+  smoke: 'Smoke',
+  regression: 'Regression',
+  sanity: 'Sanity',
+  integration: 'Integration',
+  e2e: 'End-to-End',
+  performance: 'Performance',
+  security: 'Security',
+  accessibility: 'Accessibility',
+  custom: 'Custom',
+};
+
+const SET_TYPE_COLORS: Record<SetType, string> = {
+  smoke: 'var(--ds-background-accent-orange-subtler, #FFE2BD)',
+  regression: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
+  sanity: 'var(--ds-background-accent-green-subtler, #BAF3DB)',
+  integration: 'var(--ds-background-accent-purple-subtler, #DFD8FD)',
+  e2e: 'var(--ds-background-accent-teal-subtler, #C1F0F5)',
+  performance: 'var(--ds-background-accent-yellow-subtler, #F8E6A0)',
+  security: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
+  accessibility: 'var(--ds-background-accent-magenta-subtler, #FDD0EC)',
+  custom: 'var(--ds-background-neutral, #F1F2F4)',
+};
+
+function SetTypePill({ type }: { type: SetType }) {
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '2px 8px',
+      borderRadius: 3,
+      fontSize: 11,
+      fontWeight: 600,
+      background: SET_TYPE_COLORS[type] ?? 'var(--ds-background-neutral, #F1F2F4)',
+      color: 'var(--ds-text, #172B4D)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.04em',
+    }}>
+      {SET_TYPE_LABELS[type] ?? type}
+    </span>
+  );
+}
+
+function MembershipBadge({ type }: { type: MembershipType }) {
+  return (
+    <span style={{
+      fontSize: 11,
+      fontWeight: 500,
+      color: type === 'dynamic'
+        ? 'var(--ds-text-accent-blue, #0052CC)'
+        : 'var(--ds-text-subtle, #42526E)',
+    }}>
+      {type === 'dynamic' ? '⚡ Dynamic' : '📌 Static'}
+    </span>
+  );
+}
+
+interface CreateSetForm {
+  name: string;
+  description: string;
+  set_type: SetType;
+  membership_type: MembershipType;
+}
+
+const EMPTY_FORM: CreateSetForm = {
+  name: '',
+  description: '',
+  set_type: 'regression',
+  membership_type: 'static',
+};
+
+export default function TestSetsPage() {
+  const qc = useQueryClient();
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const projectId = projects[0]?.id;
+
+  const [showCreate, setShowCreate] = useState(false);
+  const [form, setForm] = useState<CreateSetForm>(EMPTY_FORM);
+
+  const { data: sets = [], isLoading } = useQuery({
+    queryKey: ['tm_test_sets', projectId],
+    enabled: !!projectId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tm_test_sets')
+        .select('id, set_key, name, description, set_type, membership_type, test_count, is_active, project_id, created_at')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as TmTestSet[];
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (input: CreateSetForm) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const { error } = await supabase.from('tm_test_sets').insert({
+        name: input.name.trim(),
+        description: input.description.trim() || null,
+        set_type: input.set_type,
+        membership_type: input.membership_type,
+        project_id: projectId,
+        created_by: user.id,
+        owner_id: user.id,
+        is_active: true,
+        test_count: 0,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tm_test_sets', projectId] });
+      setShowCreate(false);
+      setForm(EMPTY_FORM);
+      catalystToast.success('Test set created');
+    },
+    onError: (err: Error) => catalystToast.error(err.message),
+  });
+
+  const toggleActive = useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      const { error } = await supabase
+        .from('tm_test_sets')
+        .update({ is_active: !is_active })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tm_test_sets', projectId] }),
+  });
+
+  if (projectsLoading || isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+        <Spinner size="large" />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: 24, maxWidth: 1100, fontFamily: 'var(--ds-font-family-body)' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
+            Test Sets
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 0' }}>
+            {sets.length} set{sets.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+        <Button appearance="primary" onClick={() => setShowCreate(true)}>
+          + New Test Set
+        </Button>
+      </div>
+
+      {/* Create form */}
+      {showCreate && (
+        <div style={{
+          border: '1px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 8,
+          padding: 20,
+          marginBottom: 24,
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          boxShadow: '0 4px 12px rgba(9,30,66,0.12)',
+        }}>
+          <h3 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+            New Test Set
+          </h3>
+          <div style={{ display: 'grid', gap: 12 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+                Name *
+              </label>
+              <input
+                value={form.name}
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                placeholder="e.g. Regression Suite v2.0"
+                style={{
+                  width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
+                  borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                  fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box',
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+                Description
+              </label>
+              <textarea
+                value={form.description}
+                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                rows={2}
+                style={{
+                  width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
+                  borderRadius: 4, fontSize: 14, resize: 'vertical', color: 'var(--ds-text, #172B4D)',
+                  fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box',
+                }}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+                  Type
+                </label>
+                <select
+                  value={form.set_type}
+                  onChange={e => setForm(f => ({ ...f, set_type: e.target.value as SetType }))}
+                  style={{
+                    width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
+                    borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                    background: 'var(--ds-surface, #FFFFFF)',
+                  }}
+                >
+                  {(Object.keys(SET_TYPE_LABELS) as SetType[]).map(t => (
+                    <option key={t} value={t}>{SET_TYPE_LABELS[t]}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+                  Membership
+                </label>
+                <select
+                  value={form.membership_type}
+                  onChange={e => setForm(f => ({ ...f, membership_type: e.target.value as MembershipType }))}
+                  style={{
+                    width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
+                    borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                    background: 'var(--ds-surface, #FFFFFF)',
+                  }}
+                >
+                  <option value="static">Static (manual)</option>
+                  <option value="dynamic">Dynamic (criteria-based)</option>
+                </select>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <Button appearance="subtle" onClick={() => { setShowCreate(false); setForm(EMPTY_FORM); }}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!form.name.trim() || createMutation.isPending}
+                onClick={() => createMutation.mutate(form)}
+              >
+                {createMutation.isPending ? 'Creating…' : 'Create Set'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sets list */}
+      {sets.length === 0 ? (
+        <div style={{
+          textAlign: 'center', padding: '64px 32px',
+          color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14,
+          border: '1px dashed var(--ds-border, #DFE1E6)', borderRadius: 8,
+        }}>
+          <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
+          <p style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)' }}>
+            No test sets yet
+          </p>
+          <p style={{ margin: '0 0 20px' }}>
+            Group related test cases into reusable sets for faster cycle setup.
+          </p>
+          <Button appearance="primary" onClick={() => setShowCreate(true)}>
+            Create first test set
+          </Button>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gap: 1 }}>
+          {/* Header row */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '48px 1fr 120px 120px 80px 80px 80px',
+            padding: '8px 16px',
+            background: 'var(--ds-surface-sunken, #F7F8F9)',
+            borderRadius: '6px 6px 0 0',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+          }}>
+            {['Key', 'Name', 'Type', 'Membership', 'Cases', 'Active', ''].map((h, i) => (
+              <span key={i} style={{ fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)' }}>
+                {h}
+              </span>
+            ))}
+          </div>
+          {/* Rows */}
+          {sets.map((set, idx) => (
+            <div
+              key={set.id}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '48px 1fr 120px 120px 80px 80px 80px',
+                padding: '12px 16px',
+                alignItems: 'center',
+                background: 'var(--ds-surface, #FFFFFF)',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderTop: 'none',
+                borderRadius: idx === sets.length - 1 ? '0 0 6px 6px' : 0,
+              }}
+            >
+              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
+                {set.set_key ?? '—'}
+              </span>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                  {set.name}
+                </div>
+                {set.description && (
+                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
+                    {set.description}
+                  </div>
+                )}
+              </div>
+              <div><SetTypePill type={set.set_type} /></div>
+              <div><MembershipBadge type={set.membership_type} /></div>
+              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+                {set.test_count ?? 0}
+              </span>
+              <div>
+                <button
+                  onClick={() => toggleActive.mutate({ id: set.id, is_active: set.is_active })}
+                  style={{
+                    width: 36, height: 20, borderRadius: 10,
+                    border: 'none', cursor: 'pointer',
+                    background: set.is_active
+                      ? 'var(--ds-background-brand-bold, #0052CC)'
+                      : 'var(--ds-background-neutral, #DFE1E6)',
+                    position: 'relative', transition: 'background 200ms',
+                  }}
+                  aria-label={set.is_active ? 'Deactivate' : 'Activate'}
+                >
+                  <span style={{
+                    display: 'block', width: 14, height: 14, borderRadius: '50%',
+                    background: '#fff',
+                    position: 'absolute', top: 3,
+                    left: set.is_active ? 19 : 3,
+                    transition: 'left 200ms',
+                  }} />
+                </button>
+              </div>
+              <div />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
