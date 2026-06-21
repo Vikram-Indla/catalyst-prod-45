@@ -217,10 +217,33 @@ function DisconnectReadiness({ connection }: { connection: JiraConnectionData | 
   );
 }
 
+// ── Synced project keys (from ph_issues) ────────────────────────────────────
+function useSyncedProjectKeys() {
+  return useQuery({
+    queryKey: ['wh', 'synced-project-keys'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('project_key')
+        .neq('source', 'jira_parent_ref');
+      const counts: Record<string, number> = {};
+      for (const row of data ?? []) {
+        counts[row.project_key] = (counts[row.project_key] ?? 0) + 1;
+      }
+      return counts;
+    },
+    staleTime: 60_000,
+  });
+}
+
 // ── Tab: Overview ─────────────────────────────────────────────────────────────
 function OverviewTab() {
   const { data: connection } = useJiraConnection();
   const { data: health } = useSyncHealth();
+  const { data: syncedCounts } = useSyncedProjectKeys();
+
+  const projects: Array<{ key: string; name: string; type: string }> =
+    (connection?.accessible_projects as Array<{ key: string; name: string; type: string }>) ?? [];
 
   return (
     <div>
@@ -232,16 +255,61 @@ function OverviewTab() {
         <Card style={{ marginTop: 16 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
             {[
-              { label: 'Projects synced', value: connection.project_count ?? '—' },
-              { label: 'Issues cached',   value: health?.issueCachedCount ?? '—' },
-              { label: 'Last sync',       value: health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : 'Never' },
-              { label: 'Access level',    value: connection.permissions_level ?? '—' },
+              { label: 'Jira projects',    value: connection.project_count ?? '—' },
+              { label: 'Issues cached',    value: health?.issueCachedCount?.toLocaleString() ?? '—' },
+              { label: 'Projects synced',  value: syncedCounts ? Object.keys(syncedCounts).length : '—' },
+              { label: 'Last sync',        value: health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : 'Never' },
             ].map(s => (
               <div key={s.label} style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: 22, fontWeight: 500, color: T.text }}>{s.value}</div>
                 <div style={{ fontSize: 12, color: T.textSubtle, marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Project list */}
+      {connection?.status === 'connected' && projects.length > 0 && (
+        <Card style={{ marginTop: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <CardTitle>Jira projects ({projects.length})</CardTitle>
+            <span style={{ fontSize: 12, color: T.textSubtle }}>
+              {syncedCounts ? Object.keys(syncedCounts).length : 0} synced to Catalyst
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 8 }}>
+            {projects.map(p => {
+              const count = syncedCounts?.[p.key];
+              const synced = count !== undefined && count > 0;
+              return (
+                <div key={p.key} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '8px 10px',
+                  background: synced ? T.success : T.neutral,
+                  borderRadius: 6,
+                  border: `1px solid ${synced ? T.textSuccess : T.border}`,
+                }}>
+                  <span style={{
+                    width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                    background: synced ? T.textSuccess : T.textSubtlest,
+                  }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {p.name}
+                    </div>
+                    <div style={{ fontSize: 11, color: T.textSubtle }}>
+                      {p.key} · {p.type}
+                    </div>
+                  </div>
+                  {synced && (
+                    <span style={{ fontSize: 11, color: T.textSuccess, fontWeight: 500, flexShrink: 0 }}>
+                      {count?.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </Card>
       )}

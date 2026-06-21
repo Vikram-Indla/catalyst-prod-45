@@ -72,7 +72,6 @@ Deno.serve(async (req) => {
   });
   checks.push(authCheck);
   if (!authCheck.passed) {
-    // Can't continue without auth
     await supabase.from('ph_jira_connection').update({
       status: 'error',
       last_tested_at: new Date().toISOString(),
@@ -93,23 +92,22 @@ Deno.serve(async (req) => {
   });
   checks.push(projectCheck);
 
-  // 3. Issue Read — date-scoped JQL avoids project-scope zero-count trap
+  // 3. Issue Read — confirm access via date-scoped JQL (new /search/jql endpoint has no total field)
   const issueCheck = await runCheck('Issue Read', async () => {
     const data = await jira('/rest/api/3/search/jql', {
       jql: 'created >= "2026-01-01" ORDER BY created DESC',
       maxResults: 1,
       fields: ['summary', 'issuetype'],
     });
-    const total = data.total ?? 0;
-    return `${total.toLocaleString()} issue${total !== 1 ? 's' : ''} readable`;
+    if (!Array.isArray(data.issues)) throw new Error('Unexpected response from Jira search API');
+    return `Issue read access confirmed`;
   });
   checks.push(issueCheck);
 
   // 4. Version Read
   const versionCheck = await runCheck('Version Read', async () => {
     if (!firstProjectKey) throw new Error('No project available to check versions');
-    const data = await jira(`/rest/api/3/project/${firstProjectKey}/version?maxResults=1`);
-    const total = data.total ?? (Array.isArray(data) ? data.length : 0);
+    await jira(`/rest/api/3/project/${firstProjectKey}/version?maxResults=1`);
     return `Versions readable for ${firstProjectKey}`;
   });
   checks.push(versionCheck);
@@ -138,10 +136,14 @@ Deno.serve(async (req) => {
     }
   }
 
+  // Get cached issue count from Supabase — Jira's new /search/jql endpoint has no total field
   let totalIssueCount = 0;
   if (issueCheck.passed) {
-    const data = await jira('/rest/api/3/search/jql', { jql: 'created >= "2026-01-01" ORDER BY created DESC', maxResults: 1 }).catch(() => null);
-    totalIssueCount = data?.total ?? 0;
+    const { count } = await supabase
+      .from('ph_issues')
+      .select('*', { count: 'exact', head: true })
+      .neq('source', 'jira_parent_ref');
+    totalIssueCount = count ?? 0;
   }
 
   await supabase.from('ph_jira_connection').update({
