@@ -11,6 +11,7 @@ import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import { createChildIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { catalystToast } from '@/lib/catalystToast';
+import type { AssigneeChoice } from '@/components/shared/JiraTable';
 
 export type EpicGenState =
   | 'idle'
@@ -76,7 +77,7 @@ interface EpicGenerationStore {
   toggleSelection: (index: number) => void;
   selectAll: () => void;
   deselectAll: () => void;
-  createSelected: () => Promise<void>;
+  createSelected: (assignees?: Record<number, AssigneeChoice | null>) => Promise<void>;
   checkDisabled: (brId: string) => Promise<void>;
 }
 
@@ -216,7 +217,7 @@ export const useEpicGeneration = create<EpicGenerationStore>((set, get) => ({
     set({ selectedIndices: new Set() });
   },
 
-  createSelected: async () => {
+  createSelected: async (assignees?: Record<number, AssigneeChoice | null>) => {
     const { proposals, selectedIndices, brId, pickedProject } = get();
     if (selectedIndices.size === 0) return;
     if (!brId || !pickedProject) {
@@ -253,6 +254,7 @@ export const useEpicGeneration = create<EpicGenerationStore>((set, get) => ({
           projectKey: pickedProject.projectKey,
           projectId: pickedProject.projectId,
           reporterId,
+          assigneeId: assignees?.[idx]?.id ?? null,
         });
 
         if (result?.issue_key) created.push(result.issue_key);

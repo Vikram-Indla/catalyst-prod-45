@@ -81,8 +81,8 @@ export function GenerateSubtasksButton({ issue }: GenerateSubtasksButtonProps) {
     });
   }, [issue, store]);
 
-  const handleCreateSelected = useCallback(async () => {
-    await store.createSelected();
+  const handleCreateSelected = useCallback(async (assignees?: Record<number, import('@/components/shared/JiraTable').AssigneeChoice | null>) => {
+    await store.createSelected(assignees);
   }, [store]);
 
   const isGenerating = store.state === 'generating';

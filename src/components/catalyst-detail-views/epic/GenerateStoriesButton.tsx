@@ -125,13 +125,14 @@ export function GenerateStoriesButton({ issue }: GenerateStoriesButtonProps) {
     [issue?.issue_key, issue?.summary, descriptionText, store],
   );
 
-  const handleCreateSelected = useCallback(async () => {
+  const handleCreateSelected = useCallback(async (assignees?: Record<number, import('@/components/shared/JiraTable').AssigneeChoice | null>) => {
     if (!issue?.issue_key || !issue?.project_key) return;
     await store.createSelected({
       parentIssueKey: issue.issue_key,
       parentSource: (issue.source as 'jira' | 'catalyst') ?? 'catalyst',
       projectKey: issue.project_key,
       projectId: issue.project_id ?? undefined,
+      assignees,
     });
   }, [issue, store]);
 

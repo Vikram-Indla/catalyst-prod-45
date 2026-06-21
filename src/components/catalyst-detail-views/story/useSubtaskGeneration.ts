@@ -9,6 +9,7 @@ import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import { createChildIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { catalystToast } from '@/lib/catalystToast';
+import type { AssigneeChoice } from '@/components/shared/JiraTable';
 
 export type SubtaskGenState = 'idle' | 'generating' | 'reviewing' | 'creating' | 'done' | 'error';
 
@@ -44,7 +45,7 @@ interface SubtaskGenerationStore {
   toggleSelection: (index: number) => void;
   selectAll: () => void;
   deselectAll: () => void;
-  createSelected: () => Promise<void>;
+  createSelected: (assignees?: Record<number, AssigneeChoice | null>) => Promise<void>;
   reset: () => void;
   checkDisabled: (storyKey: string) => Promise<void>;
 }
@@ -145,7 +146,7 @@ export const useSubtaskGeneration = create<SubtaskGenerationStore>((set, get) =>
     set({ selectedIndices: new Set() });
   },
 
-  createSelected: async () => {
+  createSelected: async (assignees?: Record<number, AssigneeChoice | null>) => {
     const { proposals, selectedIndices, storyKey, projectKey, projectId, source } = get();
     if (selectedIndices.size === 0 || !storyKey || !projectKey) return;
 
@@ -167,6 +168,7 @@ export const useSubtaskGeneration = create<SubtaskGenerationStore>((set, get) =>
           projectKey,
           projectId: projectId ?? undefined,
           reporterId,
+          assigneeId: assignees?.[idx]?.id ?? null,
         });
 
         if (result?.issue_key) created.push(result.issue_key);

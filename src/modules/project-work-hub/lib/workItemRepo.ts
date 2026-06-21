@@ -242,6 +242,8 @@ export interface CreateChildInput {
   projectId?: string | null;
   /** Reporter — auth.user id (or Atlassian account_id for Jira children) */
   reporterId?: string | null;
+  /** Assignee — profile id (maps to assignee_account_id on ph_issues) */
+  assigneeId?: string | null;
   priority?: string;
   status?: string;
   statusCategory?: 'todo' | 'in_progress' | 'done';
@@ -263,6 +265,7 @@ export async function createChildIssue(input: CreateChildInput): Promise<Created
     projectKey,
     projectId,
     reporterId,
+    assigneeId = null,
     priority = 'Medium',
     status = 'To Do',
     statusCategory = 'todo',
@@ -290,6 +293,7 @@ export async function createChildIssue(input: CreateChildInput): Promise<Created
         priority,
         position,
         reporter_account_id: reporterId,
+        ...(assigneeId ? { assignee_account_id: assigneeId } : {}),
         source: 'catalyst',
       } as any)
       .select('issue_key')
@@ -315,6 +319,7 @@ export async function createChildIssue(input: CreateChildInput): Promise<Created
       status_category: statusCategory,
       priority,
       reporter_account_id: reporterId,
+      ...(assigneeId ? { assignee_account_id: assigneeId } : {}),
       parent_key: parent.issueKey,
       source: 'catalyst',
       jira_created_at: nowIso,
