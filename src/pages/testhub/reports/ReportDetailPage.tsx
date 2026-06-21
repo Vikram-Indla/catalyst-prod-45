@@ -1289,7 +1289,7 @@ function useSaveReport(projectId: string | undefined) {
 // ── main page ─────────────────────────────────────────────────────────────────
 
 export default function ReportDetailPage() {
-  const { type = '' } = useParams<{ type: string }>();
+  const { type = '', projectKey = 'BAU' } = useParams<{ type: string; projectKey: string }>();
   const navigate = useNavigate();
   const projectId = useActiveProject();
   const [dateRange, setDateRange] = useState<DateRange>('30d');
@@ -1320,8 +1320,10 @@ export default function ReportDetailPage() {
   const breadcrumbs = (
     <Breadcrumbs
       items={[
+        { key: 'home', text: 'Home', href: '/for-you' },
         { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-        { key: 'reports', text: 'Reports', href: '/testhub/reports' },
+        { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
+        { key: 'reports', text: 'Reports', href: `/testhub/${projectKey}/reports` },
         { key: 'detail', text: reportLabel, isCurrent: true },
       ]}
     />

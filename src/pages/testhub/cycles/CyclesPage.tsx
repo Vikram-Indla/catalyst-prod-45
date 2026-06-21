@@ -8,7 +8,7 @@ import {
   useTestCycles, useCreateCycle, useDeleteCycle, useAddCasesToScope,
   useCloneCycle, useArchiveCycle, useBulkArchiveCycles, useBulkDeleteCycles,
 } from '@/hooks/test-management/useTestCycles';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/standard-button';
@@ -21,6 +21,7 @@ import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function CyclesPage() {
+  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
   const { data: projects = [] } = useProjects();
   const projectId = projects[0]?.id;
   const { data: cycles = [], isLoading } = useTestCycles(projectId);
@@ -52,6 +53,7 @@ export default function CyclesPage() {
             <Breadcrumbs items={[
               { key: 'home', text: 'Home', href: '/for-you' },
               { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+              { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
               { key: 'cycles', text: 'Test Cycles', isCurrent: true },
             ]} />
           }
@@ -148,7 +150,7 @@ export default function CyclesPage() {
                   cycle={cycle}
                   selected={selectedIds.has(cycle.id)}
                   onToggleSelect={() => toggleSelect(cycle.id)}
-                  onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
+                  onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}`)}
                 />
               ))}
             </tbody>

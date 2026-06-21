@@ -31,7 +31,7 @@ function computeRunStatus(stepStates: StepState[]): RunStatus {
 }
 
 export default function ExecutionPage() {
-  const { id: cycleId } = useParams<{ id: string }>();
+  const { id: cycleId, projectKey = 'BAU' } = useParams<{ id: string; projectKey: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -83,7 +83,7 @@ export default function ExecutionPage() {
       }}>
         <div style={{ padding: 16, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
           <button
-            onClick={() => navigate(`/testhub/cycles/${cycleId}`)}
+            onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycleId}`)}
             style={{
               background: 'none',
               border: 'none',

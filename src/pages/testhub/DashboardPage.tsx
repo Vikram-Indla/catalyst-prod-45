@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { CheckSquare, FolderOpen, RefreshCw, Layers, AlertTriangle, FileText, GitMerge } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useTestCycles } from '@/hooks/test-management/useTestCycles';
@@ -90,6 +91,7 @@ function useRecentDefects(projectId: string | undefined) {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
   const projectId = projects[0]?.id;
 
@@ -126,6 +128,7 @@ export default function DashboardPage() {
           <Breadcrumbs items={[
             { key: 'home', text: 'Home', href: '/for-you' },
             { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+            { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
             { key: 'dashboard', text: 'Dashboard', isCurrent: true },
           ]} />
         }
@@ -133,13 +136,13 @@ export default function DashboardPage() {
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
-        <KpiCard label="Total test cases" value={totalCases} onClick={() => navigate('/testhub/repository')} />
-        <KpiCard label="Active cycles" value={activeCycles.length} onClick={() => navigate('/testhub/cycles')} />
-        <KpiCard label="Execution rate" value={`${executionRate}%`} />
+        <KpiCard label="Total test cases" value={totalCases} onClick={() => navigate(`/testhub/${projectKey}/repository`)} />
+        <KpiCard label="Active cycles" value={activeCycles.length} onClick={() => navigate(`/testhub/${projectKey}/cycles`)} />
+        <KpiCard label="Execution rate" value={totalScope === 0 ? '—' : `${executionRate}%`} />
         <KpiCard
           label="Pass rate"
-          value={`${passRate}%`}
-          color={passRate >= 80 ? 'var(--ds-text-success, #006644)' : passRate >= 50 ? 'var(--ds-text-warning, #974F0C)' : 'var(--ds-text-danger, #AE2A19)'}
+          value={totalExecuted === 0 ? '—' : `${passRate}%`}
+          color={totalExecuted === 0 ? undefined : (passRate >= 80 ? 'var(--ds-text-success, #006644)' : passRate >= 50 ? 'var(--ds-text-warning, #974F0C)' : 'var(--ds-text-danger, #AE2A19)')}
         />
       </div>
 
@@ -151,12 +154,12 @@ export default function DashboardPage() {
 
           {/* Active Cycles */}
           <section>
-            <SectionHeader label="Active cycles" action={{ label: 'View all', onClick: () => navigate('/testhub/cycles') }} />
+            <SectionHeader label="Active cycles" action={{ label: 'View all', onClick: () => navigate(`/testhub/${projectKey}/cycles`) }} />
             {activeCycles.length === 0 ? (
-              <EmptyState message="No active cycles." cta="Create cycle" onClick={() => navigate('/testhub/cycles')} />
+              <EmptyState message="No active cycles." cta="Create cycle" onClick={() => navigate(`/testhub/${projectKey}/cycles`)} />
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {activeCycles.slice(0, 4).map(cycle => <CycleProgressCard key={cycle.id} cycle={cycle} onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} />)}
+                {activeCycles.slice(0, 4).map(cycle => <CycleProgressCard key={cycle.id} cycle={cycle} onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}`)} />)}
               </div>
             )}
           </section>
@@ -167,7 +170,7 @@ export default function DashboardPage() {
             {runsLoading ? (
               <div style={{ padding: 16, display: 'flex', justifyContent: 'center' }}><Spinner size="small" /></div>
             ) : recentRuns.length === 0 ? (
-              <EmptyState message="No execution activity yet." cta="Start a cycle" onClick={() => navigate('/testhub/cycles')} />
+              <EmptyState message="No execution activity yet." cta="Start a cycle" onClick={() => navigate(`/testhub/${projectKey}/cycles`)} />
             ) : (
               <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6, overflow: 'hidden' }}>
                 {recentRuns.map((run, i) => (
@@ -204,30 +207,42 @@ export default function DashboardPage() {
           {/* Quick links */}
           <section>
             <SectionHeader label="Quick links" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6, overflow: 'hidden' }}>
               {[
-                { label: 'My work', href: '/testhub/my-work' },
-                { label: 'Test repository', href: '/testhub/repository' },
-                { label: 'Test cycles', href: '/testhub/cycles' },
-                { label: 'Test sets', href: '/testhub/sets' },
-                { label: 'Defects', href: '/testhub/defects' },
-                { label: 'Reports', href: '/testhub/reports' },
-                { label: 'Traceability', href: '/testhub/traceability' },
-              ].map(link => (
+                { label: 'My work',        href: `/testhub/${projectKey}/my-work`,      Icon: CheckSquare,    badge: null },
+                { label: 'Test repository',href: `/testhub/${projectKey}/repository`,   Icon: FolderOpen,     badge: totalCases > 0 ? String(totalCases) : null },
+                { label: 'Test cycles',    href: `/testhub/${projectKey}/cycles`,       Icon: RefreshCw,      badge: activeCycles.length > 0 ? `${activeCycles.length} active` : null },
+                { label: 'Test sets',      href: `/testhub/${projectKey}/sets`,         Icon: Layers,         badge: null },
+                { label: 'Defects',        href: `/testhub/${projectKey}/defects`,      Icon: AlertTriangle,  badge: openDefects > 0 ? `${openDefects} open` : null },
+                { label: 'Reports',        href: `/testhub/${projectKey}/reports`,      Icon: FileText,       badge: null },
+                { label: 'Traceability',   href: `/testhub/${projectKey}/traceability`, Icon: GitMerge,       badge: null },
+              ].map((link, idx, arr) => (
                 <button
                   key={link.href}
                   onClick={() => navigate(link.href)}
                   style={{
-                    textAlign: 'left', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)',
-                    borderRadius: 6, padding: '10px 14px', cursor: 'pointer', fontSize: 13,
-                    color: 'var(--ds-link, #0052CC)', fontWeight: 500,
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    textAlign: 'left', background: 'var(--ds-surface, #FFFFFF)',
+                    border: 'none',
+                    borderBottom: idx < arr.length - 1 ? '1px solid var(--ds-border-subtle, #EBECF0)' : 'none',
+                    padding: '9px 14px', cursor: 'pointer', fontSize: 13,
+                    color: 'var(--ds-text, #172B4D)', fontWeight: 400,
+                    display: 'flex', alignItems: 'center', gap: 10,
                   }}
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
                 >
-                  {link.label}
-                  <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16 }}>›</span>
+                  <link.Icon size={14} color="var(--ds-text-subtle, #42526E)" />
+                  <span style={{ flex: 1 }}>{link.label}</span>
+                  {link.badge && (
+                    <span style={{
+                      fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)',
+                      background: 'var(--ds-background-neutral, #F1F2F4)',
+                      borderRadius: 10, padding: '1px 6px', fontWeight: 500,
+                    }}>
+                      {link.badge}
+                    </span>
+                  )}
+                  <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>›</span>
                 </button>
               ))}
             </div>
@@ -237,7 +252,7 @@ export default function DashboardPage() {
           <section>
             <SectionHeader
               label={`Recent defects${openDefects > 0 ? ` · ${openDefects} open` : ''}`}
-              action={{ label: 'View all', onClick: () => navigate('/testhub/defects') }}
+              action={{ label: 'View all', onClick: () => navigate(`/testhub/${projectKey}/defects`) }}
             />
             {recentDefects.length === 0 ? (
               <EmptyState message="No defects logged." />

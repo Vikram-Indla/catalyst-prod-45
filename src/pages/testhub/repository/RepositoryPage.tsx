@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import {
@@ -641,6 +641,7 @@ function PriorityDropdown({ triggerRef, priorities, onSelect, onClose }: {
 
 export default function RepositoryPage() {
   const navigate = useNavigate();
+  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
   const { data: projects = [] } = useProjects();
   const projectId = projects[0]?.id;
 
@@ -797,6 +798,7 @@ export default function RepositoryPage() {
           <Breadcrumbs items={[
             { key: 'home', text: 'Home', href: '/for-you' },
             { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+            { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
             { key: 'repository', text: 'Repository', isCurrent: true },
           ]} />
         }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { format, startOfDay, addDays, differenceInDays, isBefore, isAfter } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import { Rocket, ChevronDown } from 'lucide-react';
+import { Rocket, ChevronDown, Check } from 'lucide-react';
 import { useProjectTimeline, SprintMilestone } from '@/hooks/useProjectTimeline';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -147,9 +147,9 @@ function Lozenge({ children, bg, color }: { children: React.ReactNode; bg: strin
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
-      padding: '0 8px', height: 20, borderRadius: 3,
-      background: bg, color, fontSize: 11, fontWeight: 700,
-      lineHeight: '20px', whiteSpace: 'nowrap',
+      padding: '0 6px', height: 18, borderRadius: 3,
+      background: bg, color, fontSize: 11, fontWeight: 500,
+      lineHeight: '18px', whiteSpace: 'nowrap', letterSpacing: '0.01em',
     }}>
       {children}
     </span>
@@ -166,8 +166,8 @@ function SectionHeader({ title, meta, action }: { title: string; meta?: string; 
       background: T.sunken, borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}`,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 11, fontWeight: 700, color: T.subtle }}>{title}</span>
-        {meta && <span style={{ fontSize: 11, color: T.subtlest, fontWeight: 400 }}>{meta}</span>}
+        <span style={{ fontSize: 11, fontWeight: 600, color: T.subtle }}>{title}</span>
+        {meta && <span style={{ fontSize: 11, color: T.subtlest, fontWeight: 400, marginLeft: 2 }}>{meta}</span>}
       </div>
       {action}
     </div>
@@ -189,8 +189,6 @@ function SprintRow({ item, rangeStart, totalDays, todayRatio, onOpen, isLast }: 
          Math.max(1, differenceInDays(item.endDate, item.startDate))) * 100))
     : item.status === 'completed' ? 100 : 0;
 
-  const isHeavy = item.loadLevel === 'heavy' && !item.isPast;
-
   return (
     <div
       role="button" tabIndex={0}
@@ -201,7 +199,7 @@ function SprintRow({ item, rangeStart, totalDays, todayRatio, onOpen, isLast }: 
       onMouseLeave={() => setHovered(false)}
       style={{
         display: 'grid',
-        gridTemplateColumns: 'minmax(200px, 28%) minmax(0, 1fr) minmax(160px, auto)',
+        gridTemplateColumns: 'minmax(200px, 28%) minmax(0, 1fr)',
         alignItems: 'center', minHeight: 48,
         borderBottom: isLast ? 'none' : `1px solid ${T.borderSub}`,
         cursor: 'pointer',
@@ -217,7 +215,10 @@ function SprintRow({ item, rangeStart, totalDays, todayRatio, onOpen, isLast }: 
           background: item.isPast ? T.doneBoldBg : sm.boldBg,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <Rocket size={11} color={T.textInverse} strokeWidth={2} />
+          {item.isPast
+            ? <Check size={11} color={T.textInverse} strokeWidth={2.5} />
+            : <Rocket size={11} color={T.textInverse} strokeWidth={2} />
+          }
         </div>
         <div style={{ overflow: 'hidden', flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4, flexWrap: 'nowrap' }}>
@@ -237,7 +238,7 @@ function SprintRow({ item, rangeStart, totalDays, todayRatio, onOpen, isLast }: 
           </div>
           <span style={{ fontSize: 11, color: T.subtlest }}>
             {formatDateRange(item.startDate, item.endDate)}
-            <span style={{ fontStyle: 'italic' }}> · est. start</span>
+            {item.status === 'upcoming' && <span style={{ fontStyle: 'italic' }}> · est. start</span>}
           </span>
         </div>
       </div>
@@ -273,30 +274,6 @@ function SprintRow({ item, rangeStart, totalDays, todayRatio, onOpen, isLast }: 
         )}
       </div>
 
-      {/* Right — workload lozenge */}
-      <div style={{
-        padding: '8px 16px 8px 8px',
-        display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {item.storyCount !== null ? (
-            <Lozenge
-              bg={isHeavy ? T.heavyBg : sm.bg}
-              color={isHeavy ? T.heavyText : sm.text}
-            >
-              {item.storyCount} {item.storyCount === 1 ? 'item' : 'items'}
-            </Lozenge>
-          ) : (
-            <span style={{ fontSize: 11, color: T.subtlest, fontStyle: 'italic' }}>—</span>
-          )}
-        </div>
-        {item.loadLevel === 'empty' && (
-          <span style={{ fontSize: 10, color: T.subtlest, fontStyle: 'italic' }}>No items</span>
-        )}
-        {hovered && (
-          <span style={{ fontSize: 10, color: T.activeSolid, fontWeight: 500 }}>Filter by sprint →</span>
-        )}
-      </div>
     </div>
   );
 }
@@ -318,7 +295,7 @@ function TimelineSkeleton() {
       <Skeleton style={{ height: 32, borderRadius: 0 }} />
       {[1, 2, 3, 4].map(i => (
         <div key={i} style={{
-          display: 'grid', gridTemplateColumns: '28% 1fr auto',
+          display: 'grid', gridTemplateColumns: '28% 1fr',
           height: 48, padding: '0 16px', gap: 16, alignItems: 'center',
           borderBottom: `1px solid ${T.borderSub}`,
         }}>
@@ -327,7 +304,6 @@ function TimelineSkeleton() {
             <div><Skeleton style={{ height: 13, width: 120, marginBottom: 4 }} /><Skeleton style={{ height: 11, width: 80 }} /></div>
           </div>
           <Skeleton style={{ height: 8, borderRadius: 4 }} />
-          <Skeleton style={{ height: 20, width: 72, borderRadius: 3 }} />
         </div>
       ))}
     </div>
@@ -358,7 +334,7 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
         >
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Sprint Execution Timeline</div>
-            <div style={{ fontSize: 12, color: T.subtle, marginTop: 4 }}>Sprint cadence, workload, and current execution window</div>
+            <div style={{ fontSize: 12, color: T.subtle, marginTop: 4 }}>Sprint / iteration cadence and current execution window</div>
           </div>
           <ChevronDown size={16} color={T.subtlest} style={{ marginTop: 4, flexShrink: 0, transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
         </div>
@@ -426,24 +402,27 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
       >
         <div>
           <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Sprint Execution Timeline</div>
-          <div style={{ fontSize: 12, color: T.subtle, marginTop: 4 }}>Sprint cadence, workload, and current execution window</div>
+          <div style={{ fontSize: 12, color: T.subtle, marginTop: 4 }}>Sprint / iteration cadence and current execution window</div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 16 }}>
-          <span style={{ fontSize: 11, color: T.subtlest, flexShrink: 0 }}>
-            {format(rangeStart, 'MMM d')} – {format(rangeEnd, 'MMM d, yyyy')}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 16 }}>
+          <span style={{
+            fontSize: 12, fontWeight: 500, color: T.subtle, flexShrink: 0,
+            background: T.neutral, borderRadius: 4, padding: '2px 8px',
+          }}>
+            {format(rangeStart, 'MMM d, yyyy')} – {format(rangeEnd, 'MMM d, yyyy')}
           </span>
-          <ChevronDown size={16} color={T.subtlest} style={{ flexShrink: 0, transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
+          <ChevronDown size={16} color={T.subtle} style={{ flexShrink: 0, transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
         </div>
       </div>
 
-      {!collapsed && <>{/* Axis header — Sprint | [timeline] | Workload */}
+      {!collapsed && <>{/* Axis header — Sprint/Iteration | [timeline] */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'minmax(200px, 28%) minmax(0, 1fr) minmax(160px, auto)',
+        gridTemplateColumns: 'minmax(200px, 28%) minmax(0, 1fr)',
         height: 32, background: T.sunken, borderBottom: `1px solid ${T.border}`,
       }}>
         <div style={{ paddingLeft: 40, display: 'flex', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: T.subtlest }}>Sprint</span>
+          <span style={{ fontSize: 11, fontWeight: 600, color: T.subtlest }}>Sprint / Iteration</span>
         </div>
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '0 8px' }}>
           {ticks.map((tick, i) => {
@@ -465,9 +444,6 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
             top: 4, bottom: 4, width: 2, borderRadius: 1,
             background: T.activeSolid, opacity: 0.5, pointerEvents: 'none',
           }} />
-        </div>
-        <div style={{ paddingRight: 16, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: T.subtlest }}>Workload</span>
         </div>
       </div>
 

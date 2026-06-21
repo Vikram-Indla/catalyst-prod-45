@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjects } from '@/hooks/test-management/useProjects';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import { PageHeader } from '@/components/ads/PageHeader';
@@ -30,7 +30,8 @@ const RUN_STATUS_COLORS: Record<RunStatus, string> = {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function MyWorkPage() {
-  const { data: projects = [] } = useProjects();
+  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
   const projectId = projects[0]?.id;
   const [tab, setTab] = useState<Tab>('cases');
   const [userId, setUserId] = useState<string | null>(null);
@@ -47,6 +48,7 @@ export default function MyWorkPage() {
           <Breadcrumbs items={[
             { key: 'home', text: 'Home', href: '/for-you' },
             { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+            { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
             { key: 'mywork', text: 'My Work', isCurrent: true },
           ]} />
         }
@@ -75,10 +77,12 @@ export default function MyWorkPage() {
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
-        {!userId || !projectId ? (
+        {projectsLoading || !userId ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
             <Spinner size="large" />
           </div>
+        ) : !projectId ? (
+          <EmptyState message="No test project found. Create a project in Test Hub settings to get started." />
         ) : tab === 'cases' ? (
           <MyCasesTab projectId={projectId} userId={userId} />
         ) : tab === 'cycles' ? (
@@ -230,7 +234,7 @@ function MyCyclesTab({ projectId, userId }: { projectId: string; userId: string 
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
             <div>
               <button
-                onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
+                onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}`)}
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: 0,
                   fontSize: 15, fontWeight: 600, color: 'var(--ds-link, #0052CC)',
@@ -246,7 +250,7 @@ function MyCyclesTab({ projectId, userId }: { projectId: string; userId: string 
               </div>
             </div>
             <button
-              onClick={() => navigate(`/testhub/cycles/${cycle.id}/execute`)}
+              onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}/execute`)}
               style={{
                 fontSize: 12, padding: '4px 12px',
                 background: 'var(--ds-background-brand-bold, #0052CC)',

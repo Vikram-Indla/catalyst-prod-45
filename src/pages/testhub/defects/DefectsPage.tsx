@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/standard-button';
@@ -92,6 +93,7 @@ function Cell({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function DefectsPage() {
+  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
   const projectId = projects[0]?.id ?? undefined;
 
@@ -149,6 +151,7 @@ export default function DefectsPage() {
       items={[
         { key: 'home', text: 'Home', href: '/for-you' },
         { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+        { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
         { key: 'defects', text: 'Defects', isCurrent: true },
       ]}
     />

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
@@ -109,6 +110,7 @@ function useWorkItems(ids: string[]) {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function TraceabilityPage() {
+  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
   const projectId = projects[0]?.id ?? undefined;
 
@@ -165,6 +167,7 @@ export default function TraceabilityPage() {
       items={[
         { key: 'home', text: 'Home', href: '/for-you' },
         { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+        { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
         { key: 'traceability', text: 'Traceability', isCurrent: true },
       ]}
     />

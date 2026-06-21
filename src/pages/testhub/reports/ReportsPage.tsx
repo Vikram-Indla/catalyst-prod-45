@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import { PageHeader } from '@/components/ads/PageHeader';
@@ -144,7 +144,7 @@ function ReportTileCard({ tile }: { tile: ReportTile }) {
   return (
     <button
       type="button"
-      onClick={() => navigate(`/testhub/reports/${tile.slug}`)}
+      onClick={() => navigate(`/testhub/${projectKey}/reports/${tile.slug}`)}
       style={{
         width: 200,
         minHeight: 120,
@@ -176,6 +176,7 @@ function ReportTileCard({ tile }: { tile: ReportTile }) {
 // ── main page ─────────────────────────────────────────────────────────────────
 
 export default function ReportsPage() {
+  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
   const projectId = useActiveProject();
   const { data: kpi, isLoading: kpiLoading } = useKpiData(projectId);
 
@@ -184,6 +185,7 @@ export default function ReportsPage() {
       items={[
         { key: 'home', text: 'Home', href: '/for-you' },
         { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+        { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
         { key: 'reports', text: 'Reports', isCurrent: true },
       ]}
     />

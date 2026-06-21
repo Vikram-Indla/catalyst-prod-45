@@ -24,7 +24,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
 export default function CycleDetailPage() {
-  const { id: cycleId } = useParams<{ id: string }>();
+  const { id: cycleId, projectKey = 'BAU' } = useParams<{ id: string; projectKey: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: projects = [] } = useProjects();
@@ -175,7 +175,8 @@ export default function CycleDetailPage() {
             <Breadcrumbs items={[
               { key: 'home', text: 'Home', href: '/for-you' },
               { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-              { key: 'cycles', text: 'Test Cycles', href: '/testhub/cycles' },
+              { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
+              { key: 'cycles', text: 'Test Cycles', href: `/testhub/${projectKey}/cycles` },
               { key: 'detail', text: cycle.name, isCurrent: true },
             ]} />
           }
@@ -229,7 +230,7 @@ export default function CycleDetailPage() {
               {cycle.status === 'IN_PROGRESS' && (
                 <>
                   <button
-                    onClick={() => navigate(`/testhub/cycles/${cycle.id}/execute`)}
+                    onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}/execute`)}
                     style={{
                       padding: '8px 16px',
                       background: 'var(--ds-background-brand-bold, #0052CC)',

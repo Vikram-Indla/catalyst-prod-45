@@ -9,7 +9,7 @@ import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import Select from '@atlaskit/select';
 import { catalystToast } from '@/lib/catalystToast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/ads/PageHeader';
 import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 import { MoreHorizontal } from '@/lib/atlaskit-icons';
@@ -222,6 +222,7 @@ function SetRowMenu({ set, projectId, onClose, onDeleted }: {
 export default function TestSetsPage() {
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
   const projectId = projects[0]?.id;
 
@@ -301,6 +302,7 @@ export default function TestSetsPage() {
             <Breadcrumbs items={[
               { key: 'home', text: 'Home', href: '/for-you' },
               { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+              { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
               { key: 'sets', text: 'Test Sets', isCurrent: true },
             ]} />
           }
@@ -430,7 +432,7 @@ export default function TestSetsPage() {
           {sets.map((set, idx) => (
             <div
               key={set.id}
-              onClick={() => navigate(`/testhub/sets/${set.id}`)}
+              onClick={() => navigate(`/testhub/${projectKey}/sets/${set.id}`)}
               style={{
                 display: 'grid',
                 gridTemplateColumns: '48px 1fr 120px 120px 80px 80px 80px',

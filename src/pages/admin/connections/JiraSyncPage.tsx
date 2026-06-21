@@ -1184,21 +1184,20 @@ export function JiraSyncPage() {
         }}>
           {TABS.map(tab => {
             const isActive = activeTab === tab.id;
-            const isDisabled = !isConnected && tab.id !== 'overview';
             return (
               <button
                 key={tab.id}
-                onClick={() => !isDisabled && setActiveTab(tab.id)}
+                onClick={() => setActiveTab(tab.id)}
                 style={{
                   padding: '8px 16px',
                   fontSize: 14,
                   fontWeight: isActive ? 500 : 400,
-                  color: isActive ? T.link : isDisabled ? T.textSubtlest : T.textSubtle,
+                  color: isActive ? T.link : T.textSubtle,
                   background: 'none',
                   border: 'none',
                   borderBottom: isActive ? `2px solid ${T.link}` : '2px solid transparent',
                   marginBottom: 0,
-                  cursor: isDisabled ? 'not-allowed' : 'pointer',
+                  cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   transition: 'color 0.15s',
                 }}
@@ -1206,25 +1205,18 @@ export function JiraSyncPage() {
                 role="tab"
               >
                 {tab.label}
-                {tab.id === 'type-mapping' && !isConnected ? null : null}
               </button>
             );
           })}
         </div>
 
-        {!isConnected && activeTab !== 'overview' && (
-          <SectionMessage appearance="warning">
-            Connect Jira first (Overview tab) before configuring sync settings.
-          </SectionMessage>
-        )}
-
         {/* Tab panels */}
         {activeTab === 'overview' && <OverviewTab />}
-        {activeTab === 'sync' && isConnected && <SyncControlTab />}
-        {activeTab === 'projects' && isConnected && <ProjectsTab />}
-        {activeTab === 'field-mapping' && isConnected && <FieldMappingTab />}
-        {activeTab === 'type-mapping' && isConnected && <TypeMappingTab />}
-        {activeTab === 'backup-logs' && isConnected && <BackupLogsTab />}
+        {activeTab === 'sync' && <SyncControlTab />}
+        {activeTab === 'projects' && <ProjectsTab />}
+        {activeTab === 'field-mapping' && <FieldMappingTab />}
+        {activeTab === 'type-mapping' && <TypeMappingTab />}
+        {activeTab === 'backup-logs' && <BackupLogsTab />}
       </div>
     </AdminGuard>
   );

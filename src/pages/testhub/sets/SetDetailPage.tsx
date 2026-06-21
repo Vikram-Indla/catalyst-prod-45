@@ -364,7 +364,7 @@ function AddToCycleDropdown({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function SetDetailPage() {
-  const { id: setId } = useParams<{ id: string }>();
+  const { id: setId, projectKey = 'BAU' } = useParams<{ id: string; projectKey: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: projects = [] } = useProjects();
@@ -474,7 +474,8 @@ export default function SetDetailPage() {
             <Breadcrumbs items={[
               { key: 'home', text: 'Home', href: '/for-you' },
               { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-              { key: 'sets', text: 'Sets', href: '/testhub/sets' },
+              { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
+              { key: 'sets', text: 'Sets', href: `/testhub/${projectKey}/sets` },
               { key: 'detail', text: set.name, isCurrent: true },
             ]} />
           }
@@ -520,7 +521,7 @@ export default function SetDetailPage() {
                 )}
               </div>
               <button
-                onClick={() => navigate(`/testhub/sets`)}
+                onClick={() => navigate(`/testhub/${projectKey}/sets`)}
                 style={{
                   padding: '7px 14px',
                   background: 'none',
@@ -695,7 +696,7 @@ export default function SetDetailPage() {
                         <td style={tdStyle}>
                           {cycle?.id && (
                             <button
-                              onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
+                              onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}`)}
                               style={{
                                 background: 'none',
                                 border: 'none',
