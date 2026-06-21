@@ -44,6 +44,15 @@ export default function CycleDetailPage() {
   const [bulkStatusOpen, setBulkStatusOpen] = useState(false);
   const bulkStatusBtnRef = React.useRef<HTMLButtonElement>(null);
 
+  useEffect(() => {
+    if (!bulkStatusOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (!bulkStatusBtnRef.current?.contains(e.target as Node)) setBulkStatusOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [bulkStatusOpen]);
+
   if (cycleLoading) {
     return (
       <div style={{ padding: 32, display: 'flex', justifyContent: 'center' }}>
@@ -350,11 +359,24 @@ export default function CycleDetailPage() {
         <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
           No cases in scope yet. Add cases to start executing.
         </div>
+      ) : filteredItems.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
+          No cases match the selected status filter.
+        </div>
       ) : (
         <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
             <thead>
               <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+                <th style={{ ...thStyle, width: 36 }}>
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    onChange={toggleAll}
+                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                    title={allSelected ? 'Deselect all' : 'Select all'}
+                  />
+                </th>
                 <th style={thStyle}>Key</th>
                 <th style={thStyle}>Title</th>
                 <th style={thStyle}>Status</th>
@@ -364,12 +386,14 @@ export default function CycleDetailPage() {
               </tr>
             </thead>
             <tbody>
-              {scopeItems.map(item => (
+              {filteredItems.map(item => (
                 <ScopeRow
                   key={item.id}
                   item={item}
                   cycleId={cycleId ?? ''}
                   onRemove={() => removeCases.mutate({ cycle_id: cycleId!, scope_ids: [item.id] })}
+                  selected={selectedIds.has(item.id)}
+                  onToggle={() => toggleOne(item.id)}
                 />
               ))}
             </tbody>
@@ -391,7 +415,13 @@ export default function CycleDetailPage() {
 
 type ScopePanel = 'defect' | 'comments' | 'evidence' | null;
 
-function ScopeRow({ item, cycleId, onRemove }: { item: TMCycleScope; cycleId: string; onRemove: () => void }) {
+function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
+  item: TMCycleScope;
+  cycleId: string;
+  onRemove: () => void;
+  selected?: boolean;
+  onToggle?: () => void;
+}) {
   const [panel, setPanel] = useState<ScopePanel>(null);
   const toggle = (p: ScopePanel) => setPanel(prev => prev === p ? null : p);
 
@@ -412,7 +442,15 @@ function ScopeRow({ item, cycleId, onRemove }: { item: TMCycleScope; cycleId: st
 
   return (
     <>
-      <tr style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+      <tr style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: selected ? 'var(--ds-background-selected, #E9F2FF)' : undefined }}>
+        <td style={{ ...tdStyle, width: 36 }}>
+          <input
+            type="checkbox"
+            checked={!!selected}
+            onChange={onToggle}
+            style={{ width: 16, height: 16, cursor: 'pointer' }}
+          />
+        </td>
         <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12 }}>
           {item.test_case?.key ?? '—'}
         </td>
