@@ -485,7 +485,7 @@ export default function HomeSidebar({
           // (var(--ds-icon-brand) when active, var(--ds-icon) when inactive) —
           // honouring it keeps the rail in step with every other sidebar icon
           // and gives active hubs the brand-blue fill for free.
-          const maskUrl = `url(${HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]})`;
+          const maskUrl = `url("${HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]}")`;
           return (
             <span
               role="img"
