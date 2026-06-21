@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useFolderTree, useCreateFolder } from '@/hooks/test-management/useFolders';
 import { useTestCases, useDeleteTestCase } from '@/hooks/test-management/useTestCases';
 import { supabase } from '@/integrations/supabase/client';
+import { PageHeader } from '@/components/ads/PageHeader';
+import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import {
@@ -19,6 +22,7 @@ import { TMFolder, TMTestCase, CaseStatus, TMCasePriority, CaseFilters } from '@
 import { CaseDrawer } from './CaseDrawer';
 
 export default function RepositoryPage() {
+  const navigate = useNavigate();
   const { data: projects = [] } = useProjects();
   const projectId = projects[0]?.id;
 
@@ -60,8 +64,36 @@ export default function RepositoryPage() {
       ? null
       : selectedFolderId;
 
+  const createCaseButton = (
+    <button
+      onClick={() => { setEditingCase(null); setDrawerOpen(true); }}
+      style={{
+        padding: '6px 12px',
+        background: 'var(--ds-background-brand-bold, #0052CC)',
+        color: '#FFFFFF',
+        border: 'none',
+        borderRadius: 4,
+        fontSize: 13,
+        fontWeight: 500,
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+      }}
+    >
+      <Plus size={14} />
+      Create case
+    </button>
+  );
+
   return (
-    <div style={{ display: 'flex', height: '100%', fontFamily: 'var(--ds-font-family-body)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--ds-font-family-body)' }}>
+      <Breadcrumbs items={[
+        { key: 'testhub', text: 'Test Hub', onClick: () => navigate('/testhub/dashboard') },
+        { key: 'repository', text: 'Repository', isCurrent: true },
+      ]} />
+      <PageHeader title="Test Repository" actions={createCaseButton} />
+    <div style={{ display: 'flex', flex: 1, overflow: 'hidden', fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Left: folder tree */}
       <div style={{
         width: 240,
@@ -123,26 +155,6 @@ export default function RepositoryPage() {
           gap: 12,
           background: 'var(--ds-surface, #FFFFFF)',
         }}>
-          <button
-            onClick={() => { setEditingCase(null); setDrawerOpen(true); }}
-            style={{
-              padding: '6px 12px',
-              background: 'var(--ds-background-brand-bold, #0052CC)',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: 4,
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            <Plus size={14} />
-            Create case
-          </button>
-
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, maxWidth: 320 }}>
             <Search size={14} style={{ color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }} />
             <input
@@ -225,9 +237,20 @@ export default function RepositoryPage() {
                       <CaseStatusPill status={c.status} />
                     </td>
                     <td style={tdStyle}>
-                      {c.priority_id && priorityMap[c.priority_id]
-                        ? <PriorityChip priority={priorityMap[c.priority_id]} />
-                        : <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>}
+                      {c.priority_ref ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12 }}>
+                          <span style={{
+                            width: 8, height: 8, borderRadius: '50%',
+                            background: c.priority_ref.color ?? 'var(--ds-background-neutral, #F1F2F4)',
+                            flexShrink: 0,
+                          }} />
+                          {c.priority_ref.name}
+                        </span>
+                      ) : c.priority_id && priorityMap[c.priority_id] ? (
+                        <PriorityChip priority={priorityMap[c.priority_id]} />
+                      ) : (
+                        <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
+                      )}
                     </td>
                     <td
                       style={{ ...tdStyle, textAlign: 'center' }}
@@ -269,6 +292,7 @@ export default function RepositoryPage() {
           onClose={() => { setDrawerOpen(false); setEditingCase(null); }}
         />
       )}
+    </div>
     </div>
   );
 }

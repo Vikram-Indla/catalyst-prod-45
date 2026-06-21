@@ -174,6 +174,7 @@ export interface TMTestCase {
   assignee?: { id: string; full_name: string; avatar_url?: string };
   // Joined relations
   priority?: TMCasePriority;
+  priority_ref?: { name: string; color: string; level?: number } | null;
   type?: TMCaseType;
   folder?: TMFolder;
   steps?: TMCaseStep[];
