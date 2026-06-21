@@ -135,6 +135,14 @@ const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentR
 const IncidentHubCommitteeQueuePage = lazy(() => import("../pages/incidenthub/CommitteeQueuePage"));
 const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
+// TestHub
+const TestHubDashboardPage = lazy(() => import("../pages/testhub/DashboardPage"));
+const TestHubMyWorkPage = lazy(() => import("../pages/testhub/MyWorkPage"));
+const TestHubRepositoryPage = lazy(() => import("../pages/testhub/repository/RepositoryPage"));
+const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
+const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
+const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
+
 const WikiHomePage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
 const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
 const WikiCategoryPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiCategoryPage")) : () => <FeatureComingSoon title="Wiki" />;
@@ -638,6 +646,15 @@ export default function FullAppRoutes() {
         <Route path="/taskhub/settings" element={<Navigate to="/tasks/settings" replace />} />
         <Route path="/taskhub/:view" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub-kanban" element={<Navigate to="/tasks/board" replace />} />
+
+        {/* TestHub */}
+        <Route path="/testhub" element={<Navigate to="/testhub/dashboard" replace />} />
+        <Route path="/testhub/dashboard" element={<S><TestHubDashboardPage /></S>} />
+        <Route path="/testhub/my-work" element={<S><TestHubMyWorkPage /></S>} />
+        <Route path="/testhub/repository" element={<S><TestHubRepositoryPage /></S>} />
+        <Route path="/testhub/cycles" element={<S><TestHubCyclesPage /></S>} />
+        <Route path="/testhub/cycles/:id" element={<S><TestHubCycleDetailPage /></S>} />
+        <Route path="/testhub/cycles/:id/execute" element={<S><TestHubExecutionPage /></S>} />
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +

@@ -21,6 +21,14 @@ import {
 } from '@/hooks/useTypeWorkflow';
 import { useResetProjectWorkflow } from '@/hooks/useWorkflowDefaults';
 import {
+  useWorkflowTemplates,
+  useTemplateDetail,
+  useProjectWorkflowAssignment,
+  useApplyTemplate,
+  usePushTemplate,
+  type WorkflowTemplate,
+} from '@/hooks/useWorkflowTemplates';
+import {
   STATUS_CATEGORY_COLORS,
   STATUS_CATEGORY_LABELS,
   type StatusCategory,
@@ -1039,10 +1047,358 @@ function StatusBoard({
   );
 }
 
+// ── Assignment badge: shows which template a project-type workflow is based on ──
+
+function AssignmentBadge({
+  projectKey,
+  workItemType,
+}: {
+  projectKey: string;
+  workItemType: string;
+}) {
+  const { data: assignment } = useProjectWorkflowAssignment(projectKey, workItemType);
+  if (!assignment?.template_id) return null;
+  const tmplName = (assignment.template as any)?.name ?? '—';
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        fontSize: 11,
+        fontWeight: 500,
+        color: assignment.is_customized ? T.textSubtlest : T.textBrand,
+        background: assignment.is_customized ? T.bgNeutral : T.bgSelected,
+        border: `1px solid ${assignment.is_customized ? T.border : 'var(--ds-border-brand, #0C66E4)'}`,
+        borderRadius: 3,
+        padding: '2px 6px',
+        flexShrink: 0,
+      }}
+      title={
+        assignment.is_customized
+          ? `Started from "${tmplName}" — customized since`
+          : `In sync with "${tmplName}" template`
+      }
+    >
+      {assignment.is_customized ? '✏ ' : '✓ '}
+      {tmplName}
+      {assignment.is_customized ? ' (customized)' : ''}
+    </span>
+  );
+}
+
+// ── Templates view ──────────────────────────────────────────────────────────
+
+function TemplateCard({
+  template,
+  projectKey,
+  activeType,
+}: {
+  template: WorkflowTemplate;
+  projectKey: string;
+  activeType: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [applying, setApplying] = useState(false);
+  const [pushed, setPushed] = useState(false);
+  const { data: detail } = useTemplateDetail(expanded ? template.id : null);
+  const applyTemplate = useApplyTemplate();
+  const pushTemplate = usePushTemplate();
+
+  const handleApply = async () => {
+    setApplying(true);
+    try {
+      await applyTemplate.mutateAsync({
+        templateId: template.id,
+        projectKey,
+        workItemType: template.work_item_type,
+      });
+    } finally {
+      setApplying(false);
+    }
+  };
+
+  const handlePush = async () => {
+    await pushTemplate.mutateAsync(template.id);
+    setPushed(true);
+    setTimeout(() => setPushed(false), 3000);
+  };
+
+  const isActiveType = template.work_item_type === activeType;
+
+  return (
+    <div
+      style={{
+        border: `1px solid ${isActiveType ? 'var(--ds-border-brand, #0C66E4)' : T.border}`,
+        borderRadius: 6,
+        background: T.surface,
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '10px 14px',
+          cursor: 'pointer',
+          background: expanded ? T.bgNeutral : 'transparent',
+        }}
+        onClick={() => setExpanded((v) => !v)}
+      >
+        <JiraIssueTypeIcon type={template.work_item_type as WorkItemType} size={16} />
+        <span style={{ fontWeight: 600, fontSize: 13, color: T.text, flex: 1 }}>
+          {template.name}
+        </span>
+        {template.is_default && (
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 600,
+              color: T.textBrand,
+              background: T.bgSelected,
+              border: `1px solid var(--ds-border-brand, #0C66E4)`,
+              borderRadius: 3,
+              padding: '1px 5px',
+            }}
+          >
+            DEFAULT
+          </span>
+        )}
+        <span style={{ fontSize: 11, color: T.textSubtlest }}>{expanded ? '▲' : '▼'}</span>
+      </div>
+
+      {expanded && (
+        <div style={{ padding: '0 14px 14px' }}>
+          {!detail ? (
+            <Spinner size="small" />
+          ) : (
+            <>
+              {/* Status list */}
+              <div style={{ marginBottom: 10 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: T.textSubtlest,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                    marginBottom: 6,
+                    paddingTop: 8,
+                  }}
+                >
+                  Statuses ({detail.statuses.length})
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                  {detail.statuses.map((s) => (
+                    <span
+                      key={s.id}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        padding: '2px 8px',
+                        borderRadius: 3,
+                        fontSize: 11,
+                        fontWeight: 500,
+                        background: STATUS_CATEGORY_COLORS[s.category as StatusCategory] ?? '#DDDEE1',
+                        color: STATUS_TEXT,
+                      }}
+                    >
+                      {s.is_initial && (
+                        <span style={{ fontSize: 9, opacity: 0.7 }}>★</span>
+                      )}
+                      {s.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Transition count */}
+              <div
+                style={{
+                  fontSize: 12,
+                  color: T.textSubtle,
+                  marginBottom: 12,
+                }}
+              >
+                {detail.transitions.length} transition{detail.transitions.length !== 1 ? 's' : ''}
+                {detail.transitions.some((t) => !t.from_status_name) && (
+                  <span style={{ color: T.textSubtlest }}> (includes global transitions)</span>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button
+                  onClick={handleApply}
+                  disabled={applying}
+                  style={{
+                    padding: '5px 12px',
+                    borderRadius: 4,
+                    border: 'none',
+                    background: 'var(--ds-background-brand-bold, #0C66E4)',
+                    color: '#FFFFFF',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: applying ? 'not-allowed' : 'pointer',
+                    opacity: applying ? 0.7 : 1,
+                    fontFamily: 'inherit',
+                  }}
+                  title={`Apply "${template.name}" to ${projectKey} project — ${template.work_item_type} workflow`}
+                >
+                  {applying ? 'Applying…' : `Apply to ${projectKey}`}
+                </button>
+                <button
+                  onClick={handlePush}
+                  disabled={pushTemplate.isPending || pushed}
+                  style={{
+                    padding: '5px 12px',
+                    borderRadius: 4,
+                    border: `1px solid ${T.border}`,
+                    background: T.surface,
+                    color: T.text,
+                    fontSize: 12,
+                    fontWeight: 500,
+                    cursor: pushTemplate.isPending || pushed ? 'not-allowed' : 'pointer',
+                    opacity: pushTemplate.isPending ? 0.7 : 1,
+                    fontFamily: 'inherit',
+                  }}
+                  title="Push to all projects that haven't customized this workflow"
+                >
+                  {pushed ? '✓ Pushed' : pushTemplate.isPending ? 'Pushing…' : 'Push to all (non-customized)'}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TemplatesView({
+  projectKey,
+  activeType,
+}: {
+  projectKey: string;
+  activeType: string;
+}) {
+  const { data: templates = [], isLoading } = useWorkflowTemplates();
+
+  // Group by work_item_type; put activeType first
+  const grouped = React.useMemo(() => {
+    const m = new Map<string, WorkflowTemplate[]>();
+    for (const t of templates) {
+      if (!m.has(t.work_item_type)) m.set(t.work_item_type, []);
+      m.get(t.work_item_type)!.push(t);
+    }
+    // Sort: activeType first, then alphabetical
+    return [...m.entries()].sort(([a], [b]) => {
+      if (a === activeType) return -1;
+      if (b === activeType) return 1;
+      return a.localeCompare(b);
+    });
+  }, [templates, activeType]);
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+        <Spinner size="medium" />
+      </div>
+    );
+  }
+
+  if (!templates.length) {
+    return (
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+          color: T.textSubtlest,
+        }}
+      >
+        <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: T.textSubtle }}>
+          No templates yet
+        </p>
+        <p style={{ margin: 0, fontSize: 13 }}>
+          Apply the migration to seed default templates for Business Request, BRD Task, and Story.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ flex: 1, overflow: 'auto', padding: '16px 24px 24px' }}>
+      <p style={{ margin: '0 0 16px', fontSize: 13, color: T.textSubtle }}>
+        Master templates define the canonical workflow for each work item type. Apply a template to
+        copy its statuses and transitions into a project. Projects with{' '}
+        <span style={{ fontWeight: 600 }}>in-sync</span> assignments update automatically when you
+        "Push to all".
+      </p>
+      {grouped.map(([type, tmplList]) => (
+        <div key={type} style={{ marginBottom: 24 }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              marginBottom: 8,
+            }}
+          >
+            <JiraIssueTypeIcon type={type as WorkItemType} size={16} />
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 653,
+                color: T.textSubtle,
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+              }}
+            >
+              {type}
+            </span>
+            {type === activeType && (
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: T.textSubtlest,
+                  background: T.bgNeutral,
+                  borderRadius: 3,
+                  padding: '1px 5px',
+                  border: `1px solid ${T.border}`,
+                }}
+              >
+                selected type
+              </span>
+            )}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {tmplList.map((tmpl) => (
+              <TemplateCard
+                key={tmpl.id}
+                template={tmpl}
+                projectKey={projectKey}
+                activeType={activeType}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function WorkflowAdminPage() {
   const [projectKey, setProjectKey] = useState('BAU');
   const [typeIdx, setTypeIdx] = useState(0);
   const [viewMode, setViewMode] = useState<'board' | 'diagram'>('board');
+  const [pageMode, setPageMode] = useState<'workflows' | 'templates'>('workflows');
   const [showOverflow, setShowOverflow] = useState(false);
   const [resetConfirm, setResetConfirm] = useState(false);
   const overflowRef = useRef<HTMLButtonElement>(null);
@@ -1097,8 +1453,43 @@ export default function WorkflowAdminPage() {
               Workflows
             </h1>
             <p style={{ margin: '4px 0 0', fontSize: '14px', color: T.textSubtle }}>
-              Status workflows per work item type
+              Status workflows and master templates per work item type
             </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', paddingTop: '4px' }}>
+            {/* Page mode toggle */}
+            <div
+              style={{
+                display: 'flex',
+                background: T.bgNeutral,
+                borderRadius: 6,
+                padding: 2,
+                gap: 2,
+              }}
+            >
+              {(['workflows', 'templates'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setPageMode(mode)}
+                  style={{
+                    padding: '3px 12px',
+                    borderRadius: 4,
+                    border: 'none',
+                    fontSize: 12,
+                    fontWeight: pageMode === mode ? 600 : 400,
+                    background: pageMode === mode ? T.surface : 'transparent',
+                    color: pageMode === mode ? T.text : T.textSubtlest,
+                    cursor: 'pointer',
+                    boxShadow: pageMode === mode ? `0 1px 2px rgba(9,30,66,0.12)` : 'none',
+                    fontFamily: 'inherit',
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  {mode}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', paddingTop: '4px' }}>
@@ -1169,82 +1560,90 @@ export default function WorkflowAdminPage() {
           </div>
         </div>
 
-        <div
-          style={{
-            padding: '16px 24px 0',
-            display: 'flex',
-            gap: '6px',
-            flexWrap: 'wrap',
-            flexShrink: 0,
-          }}
-        >
-          {WORK_ITEM_TYPES.map((t, i) => (
-            <button
-              key={t}
-              onClick={() => setTypeIdx(i)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                padding: '3px 10px 3px 8px',
-                borderRadius: '20px',
-                border: `1px solid ${typeIdx === i ? T.iconBrand : T.border}`,
-                fontSize: '12px',
-                fontWeight: typeIdx === i ? 600 : 400,
-                color: typeIdx === i ? T.textBrand : T.textSubtle,
-                background: typeIdx === i ? T.bgSelected : T.surface,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
-              <JiraIssueTypeIcon type={t} size={14} />
-              {t}
-            </button>
-          ))}
-        </div>
-
-        {/* View toggle + divider */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 24px 0',
-            flexShrink: 0,
-          }}
-        >
+        {/* Type pills — hidden in templates mode */}
+        {pageMode === 'workflows' && (
           <div
             style={{
+              padding: '16px 24px 0',
               display: 'flex',
-              background: T.bgNeutral,
-              borderRadius: 6,
-              padding: 2,
-              gap: 2,
+              gap: '6px',
+              flexWrap: 'wrap',
+              flexShrink: 0,
             }}
           >
-            {(['board', 'diagram'] as const).map((mode) => (
+            {WORK_ITEM_TYPES.map((t, i) => (
               <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
+                key={t}
+                onClick={() => setTypeIdx(i)}
                 style={{
-                  padding: '3px 12px',
-                  borderRadius: 4,
-                  border: 'none',
-                  fontSize: 12,
-                  fontWeight: viewMode === mode ? 600 : 400,
-                  background: viewMode === mode ? T.surface : 'transparent',
-                  color: viewMode === mode ? T.text : T.textSubtlest,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  padding: '3px 10px 3px 8px',
+                  borderRadius: '20px',
+                  border: `1px solid ${typeIdx === i ? T.iconBrand : T.border}`,
+                  fontSize: '12px',
+                  fontWeight: typeIdx === i ? 600 : 400,
+                  color: typeIdx === i ? T.textBrand : T.textSubtle,
+                  background: typeIdx === i ? T.bgSelected : T.surface,
                   cursor: 'pointer',
-                  boxShadow: viewMode === mode ? `0 1px 2px rgba(9,30,66,0.12)` : 'none',
                   fontFamily: 'inherit',
-                  textTransform: 'capitalize',
                 }}
               >
-                {mode}
+                <JiraIssueTypeIcon type={t} size={14} />
+                {t}
               </button>
             ))}
           </div>
-        </div>
+        )}
+
+        {/* View toggle + assignment badge — hidden in templates mode */}
+        {pageMode === 'workflows' && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 24px 0',
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  background: T.bgNeutral,
+                  borderRadius: 6,
+                  padding: 2,
+                  gap: 2,
+                }}
+              >
+                {(['board', 'diagram'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    style={{
+                      padding: '3px 12px',
+                      borderRadius: 4,
+                      border: 'none',
+                      fontSize: 12,
+                      fontWeight: viewMode === mode ? 600 : 400,
+                      background: viewMode === mode ? T.surface : 'transparent',
+                      color: viewMode === mode ? T.text : T.textSubtlest,
+                      cursor: 'pointer',
+                      boxShadow: viewMode === mode ? `0 1px 2px rgba(9,30,66,0.12)` : 'none',
+                      fontFamily: 'inherit',
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+              <AssignmentBadge projectKey={projectKey} workItemType={activeType} />
+            </div>
+          </div>
+        )}
 
         <div
           style={{
@@ -1256,7 +1655,9 @@ export default function WorkflowAdminPage() {
         />
 
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-          {viewMode === 'board' ? (
+          {pageMode === 'templates' ? (
+            <TemplatesView projectKey={projectKey} activeType={activeType} />
+          ) : viewMode === 'board' ? (
             <StatusBoard projectKey={projectKey} workItemType={activeType} />
           ) : (
             <DiagramView projectKey={projectKey} workItemType={activeType} />
