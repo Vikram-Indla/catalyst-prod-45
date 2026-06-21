@@ -170,7 +170,7 @@ export default function TraceabilityPage() {
         paddingTop: 16,
       }}
     >
-      <ProjectPageHeader hubType="testhub" />
+      <ProjectPageHeader hubType="test" />
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px' }}>
         {/* ── Loading ──────────────────────────────────────────────────── */}

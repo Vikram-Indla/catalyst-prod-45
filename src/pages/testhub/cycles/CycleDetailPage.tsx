@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -41,7 +41,10 @@ export default function CycleDetailPage() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkStatusOpen, setBulkStatusOpen] = useState(false);
-  const bulkStatusBtnRef = React.useRef<HTMLButtonElement>(null);
+  const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'scope' | 'planning'>('scope');
+  const bulkStatusBtnRef = useRef<HTMLButtonElement>(null);
+  const bulkMoveBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!bulkStatusOpen) return;
@@ -51,6 +54,40 @@ export default function CycleDetailPage() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [bulkStatusOpen]);
+
+  useEffect(() => {
+    if (!bulkMoveOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (!bulkMoveBtnRef.current?.contains(e.target as Node)) setBulkMoveOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [bulkMoveOpen]);
+
+  const { data: teamMembers = [] } = useQuery({
+    queryKey: ['team-members'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .order('full_name');
+      return data ?? [];
+    },
+  });
+
+  const { data: otherCycles = [] } = useQuery({
+    queryKey: ['cycles-for-move', projectId],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('tm_test_cycles')
+        .select('id, name, status')
+        .eq('project_id', projectId!)
+        .neq('id', cycleId!)
+        .order('created_at', { ascending: false });
+      return data ?? [];
+    },
+    enabled: !!projectId && !!cycleId,
+  });
 
   if (cycleLoading) {
     return (
@@ -99,11 +136,40 @@ export default function CycleDetailPage() {
     catalystToast.success(`Updated ${ids.length} case${ids.length > 1 ? 's' : ''}`);
   };
 
+  const handleMoveRuns = async (targetCycle: { id: string; name: string }) => {
+    setBulkMoveOpen(false);
+    const ids = Array.from(selectedIds);
+    const selectedItems = scopeItems.filter(i => ids.includes(i.id));
+
+    // Insert into target cycle
+    const inserts = selectedItems.map(i => ({
+      cycle_id: targetCycle.id,
+      test_case_id: i.case_id,
+      status: 'NOT_RUN' as const,
+    }));
+    const { error: insertErr } = await (supabase as any)
+      .from('tm_cycle_scope')
+      .upsert(inserts, { onConflict: 'cycle_id,test_case_id', ignoreDuplicates: true });
+    if (insertErr) { catalystToast.error(insertErr.message); return; }
+
+    // Remove from current cycle
+    const { error: deleteErr } = await (supabase as any)
+      .from('tm_cycle_scope')
+      .delete()
+      .in('id', ids);
+    if (deleteErr) { catalystToast.error(deleteErr.message); return; }
+
+    qc.invalidateQueries({ queryKey: ['cycle-scope', cycleId] });
+    qc.invalidateQueries({ queryKey: ['cycle-scope', targetCycle.id] });
+    setSelectedIds(new Set());
+    catalystToast.success(`${ids.length} case${ids.length > 1 ? 's' : ''} moved to ${targetCycle.name}`);
+  };
+
   return (
     <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24 }}>
         <ProjectPageHeader
-          hubType="testhub"
+          hubType="test"
           title={cycle.name}
           trail={[
             { text: 'Test cycles', href: '/testhub/cycles' },
@@ -228,6 +294,40 @@ export default function CycleDetailPage() {
         <span style={{ fontSize: 12, color: 'var(--ds-text-warning, #974F0C)' }}>{blocked} blocked</span>
       </div>
 
+      {/* Tab bar */}
+      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid var(--ds-border, #DFE1E6)', marginBottom: 16 }}>
+        {(['scope', 'planning'] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            style={{
+              padding: '8px 16px',
+              background: 'none',
+              border: 'none',
+              borderBottom: activeTab === tab ? '2px solid var(--ds-link, #0052CC)' : '2px solid transparent',
+              marginBottom: -2,
+              cursor: 'pointer',
+              fontSize: 14,
+              fontWeight: activeTab === tab ? 600 : 400,
+              color: activeTab === tab ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+            }}
+          >
+            {tab === 'scope' ? 'Scope' : 'Planning'}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'planning' && (
+        <PlanningTab
+          scopeItems={scopeItems}
+          teamMembers={teamMembers as Array<{ id: string; full_name: string; avatar_url: string | null }>}
+          cycleId={cycleId ?? ''}
+          isLoading={scopeLoading}
+        />
+      )}
+
+      {activeTab === 'scope' && (<>
+
       {/* Scope section header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
@@ -312,6 +412,59 @@ export default function CycleDetailPage() {
                     onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                   >
                     {s.charAt(0) + s.slice(1).toLowerCase().replace('_', ' ')}
+                  </button>
+                ))}
+              </div>,
+              document.body
+            )}
+          </div>
+          <div style={{ position: 'relative' }}>
+            <button
+              ref={bulkMoveBtnRef}
+              onClick={() => setBulkMoveOpen(v => !v)}
+              style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)' }}
+            >
+              Move to cycle ▾
+            </button>
+            {bulkMoveOpen && bulkMoveBtnRef.current && createPortal(
+              <div
+                style={{
+                  position: 'fixed',
+                  top: bulkMoveBtnRef.current.getBoundingClientRect().bottom + 4,
+                  left: bulkMoveBtnRef.current.getBoundingClientRect().left,
+                  background: 'var(--ds-surface-overlay, #FFFFFF)',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRadius: 6,
+                  boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+                  padding: '4px 0',
+                  minWidth: 200,
+                  maxHeight: 240,
+                  overflowY: 'auto',
+                  zIndex: 9999,
+                }}
+                onMouseDown={e => e.stopPropagation()}
+              >
+                {otherCycles.length === 0 ? (
+                  <div style={{ padding: '10px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                    No other cycles
+                  </div>
+                ) : (otherCycles as Array<{ id: string; name: string; status: string }>).map(c => (
+                  <button
+                    key={c.id}
+                    role="menuitem"
+                    onClick={() => handleMoveRuns(c)}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '8px 16px', background: 'none', border: 'none',
+                      cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                  >
+                    <span>{c.name}</span>
+                    <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                      {c.status}
+                    </span>
                   </button>
                 ))}
               </div>,
@@ -405,6 +558,7 @@ export default function CycleDetailPage() {
           onClose={() => setShowAddCases(false)}
         />
       )}
+      </>)}
     </div>
   );
 }

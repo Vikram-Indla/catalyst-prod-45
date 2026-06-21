@@ -18,6 +18,7 @@ import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import { JiraStatusLozenge } from './JiraStatusLozenge';
 import { CatalystWorkflowModal } from '../catalyst-detail-views/shared/workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
+import { toStatusCategory } from '@/components/ads';
 
 export interface StatusTransitionDropdownProps {
   /** Jira issue_type string — resolves via ALIASES in useIssueTypeWorkflow */
@@ -30,6 +31,12 @@ export interface StatusTransitionDropdownProps {
   isDisabled?: boolean;
   /** Compact trigger — smaller padding, suitable for table cells */
   size?: 'default' | 'compact';
+  /**
+   * 2026-06-21 (Vikram canonical): freeze the dropdown when the current
+   * status maps to category `done`. Default `true` everywhere. Pass `false`
+   * only on admin-override / re-open flows.
+   */
+  lockWhenDone?: boolean;
 }
 
 export function StatusTransitionDropdown({
@@ -38,6 +45,7 @@ export function StatusTransitionDropdown({
   onTransition,
   isDisabled,
   size = 'default',
+  lockWhenDone = true,
 }: StatusTransitionDropdownProps) {
   const { statusGroups, getAvailableStatuses, isLoading } = useIssueTypeWorkflow(issueType);
   const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
@@ -46,6 +54,14 @@ export function StatusTransitionDropdown({
   const currentStatusEntry = statusGroups
     .flatMap(g => g.statuses.map(s => ({ name: s.name, category: g.category })))
     .find(s => s.name === currentStatusName);
+
+  /* Canonical "done = frozen" gate. Resolves via the canonical
+     `toStatusCategory` helper so any future Catalyst alias (Closed,
+     Resolved, Released, etc.) freezes too. */
+  const isFrozen = lockWhenDone && currentStatusName
+    ? toStatusCategory(currentStatusName) === 'done'
+    : false;
+  const triggerDisabled = !!isDisabled || isFrozen;
 
   // All status names the user can transition to from the current status
   const availableStatusNames = getAvailableStatuses(currentStatusName);
@@ -84,7 +100,7 @@ export function StatusTransitionDropdown({
             type="button"
             {...triggerProps}
             ref={triggerRef as React.Ref<HTMLButtonElement>}
-            disabled={isDisabled}
+            disabled={triggerDisabled}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -93,11 +109,16 @@ export function StatusTransitionDropdown({
               padding: triggerPadding,
               borderRadius: 3,
               border: 'none',
-              cursor: isDisabled ? 'not-allowed' : 'pointer',
+              cursor: triggerDisabled ? 'not-allowed' : 'pointer',
               background: 'transparent',
               font: 'inherit',
             }}
-            aria-label={`Status: ${currentStatusName ?? 'Unknown'}. Click to change.`}
+            title={isFrozen ? `Status frozen — ${currentStatusName} is final` : undefined}
+            aria-label={
+              isFrozen
+                ? `Status: ${currentStatusName ?? 'Unknown'}. Frozen — done items cannot change status.`
+                : `Status: ${currentStatusName ?? 'Unknown'}. Click to change.`
+            }
           >
             <JiraStatusLozenge
               category={currentStatusEntry?.category ?? 'default'}

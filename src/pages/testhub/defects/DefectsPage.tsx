@@ -155,7 +155,7 @@ export default function DefectsPage() {
       }}
     >
       <ProjectPageHeader
-        hubType="testhub"
+        hubType="test"
         actions={
           <Button
             appearance="primary"

@@ -75,6 +75,8 @@ import ReleaseConfidenceWidget from './widgets/ReleaseConfidenceWidget';
 import StakeholderLensWidget from './widgets/StakeholderLensWidget';
 import DeliveryCompositionWidget from './widgets/DeliveryCompositionWidget';
 import ReplayWidget from './widgets/ReplayWidget';
+import TestCasesOverviewWidget from './widgets/TestCasesOverviewWidget';
+import TestCyclesProgressWidget from './widgets/TestCyclesProgressWidget';
 
 export const WIDGET_REGISTRY: WidgetDefinition[] = [
   // ─── §1 STRATEGIC DELIVERY ──────────────────────────────────────────
@@ -301,6 +303,35 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     defaultPosition: 1,
     component: ReplayWidget,
     hideOnIncident: true,
+    hideOnTest: true,
+  },
+  // ─── §6 TEST HUB ────────────────────────────────────────────────────
+  // 2026-06-21: TestHub-only widgets reading tm_test_cases / tm_test_cycles.
+  {
+    id: 'test-cases-overview',
+    title: 'Test cases',
+    subtitle: 'Repository overview',
+    group: 'quality',
+    defaultSpan: 12,
+    minSpan: 6,
+    defaultPosition: 0,
+    component: TestCasesOverviewWidget,
+    hideOnProject: true,
+    hideOnProduct: true,
+    hideOnIncident: true,
+  },
+  {
+    id: 'test-cycles-progress',
+    title: 'Active test cycles',
+    subtitle: 'Execution progress',
+    group: 'quality',
+    defaultSpan: 12,
+    minSpan: 6,
+    defaultPosition: 1,
+    component: TestCyclesProgressWidget,
+    hideOnProject: true,
+    hideOnProduct: true,
+    hideOnIncident: true,
   },
 ];
 
@@ -312,7 +343,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
  * 2026-06-17: same idea for incident hub — drops widgets that don't apply
  * to a Production-Incident-filtered ph_issues view.
  */
-export type DashboardRegistryMode = 'project' | 'product' | 'incident';
+export type DashboardRegistryMode = 'project' | 'product' | 'incident' | 'test';
 
 export function getWidgetRegistry(mode: DashboardRegistryMode = 'project'): WidgetDefinition[] {
   if (mode === 'product') {
@@ -320,6 +351,14 @@ export function getWidgetRegistry(mode: DashboardRegistryMode = 'project'): Widg
   }
   if (mode === 'incident') {
     return WIDGET_REGISTRY.filter((w) => !w.hideOnIncident);
+  }
+  if (mode === 'test') {
+    /* 2026-06-21: TestHub renders ONLY widgets explicitly tagged for test
+       mode (id starts with 'test-'). Every other widget is gated out — the
+       ph_issues-backed widgets all have hide flags that incidentally
+       overlapped, so the previous "AND of hide flags" approach leaked
+       ActiveSprintsWidget through. */
+    return WIDGET_REGISTRY.filter((w) => w.id.startsWith('test-') && !w.hideOnTest);
   }
   // project (and tasks) mode: drop product-only Date Pulse widgets
   return WIDGET_REGISTRY.filter((w) => !w.hideOnProject);

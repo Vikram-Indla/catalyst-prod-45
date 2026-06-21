@@ -1,4 +1,4 @@
-/* hmr-bust-2026-04-26 */
+/* hmr-bust-2026-06-21-browse-fix */
 /**
  * ProjectHubSidebar — /project-hub sidebar using SidebarBase
  *
@@ -43,11 +43,17 @@ interface ProjectHubSidebarProps {
 }
 
 function extractProjectKey(pathname: string): string | undefined {
-  const match = pathname.match(/^\/project-hub\/([^/]+)/);
-  if (!match) return undefined;
-  const segment = match[1];
-  if (['projects', 'resources', 'portfolio-health'].includes(segment)) return undefined;
-  return segment;
+  // Standard project-hub route: /project-hub/:key/...
+  const phMatch = pathname.match(/^\/project-hub\/([^/]+)/);
+  if (phMatch) {
+    const segment = phMatch[1];
+    if (['projects', 'resources', 'portfolio-health'].includes(segment)) return undefined;
+    return segment;
+  }
+  // Full-screen issue view: /browse/BAU-1234 → extract project key from issue key
+  const browseMatch = pathname.match(/^\/browse\/([A-Z][A-Z0-9]*)-\d+/);
+  if (browseMatch) return browseMatch[1];
+  return undefined;
 }
 
 export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubSidebarProps) {

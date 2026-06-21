@@ -34,11 +34,17 @@ import CommentIcon from '@atlaskit/icon/core/comment';
 import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
 import SearchIcon from '@atlaskit/icon/core/search';
 import PageIcon from '@atlaskit/icon/core/page';
+import ChildIssuesIcon from '@atlaskit/icon/core/child-issues';
 import { token } from '@atlaskit/tokens';
 import { ImproveDescriptionDialog } from './ImproveDescriptionDialog';
 import { SuggestChildIssuesDialog } from './SuggestChildIssuesDialog';
 import { LinkSimilarItemsDialog } from './LinkSimilarItemsDialog';
-import { canSuggestChildren, canGenerateStories, improveTriggerLabel } from './improve-config';
+import { canSuggestChildren, canGenerateStories, canPlanWorkItems, canGenerateSubtasks, improveTriggerLabel } from './improve-config';
+import { useSubtaskGeneration } from '../story/useSubtaskGeneration';
+import { SubtaskProposalModal } from '../story/SubtaskProposalModal';
+import { ProjectPickerModal } from '../business-request/ProjectPickerModal';
+import { WorkItemPlannerModal } from '../shared/WorkItemPlannerModal';
+import type { PickedProject } from '../business-request/useEpicGeneration';
 import { useCatyImprove, MIN_CONTENT_LENGTH, contentHash } from './catyImproveStore';
 import { useCatySummarize } from './catySummarizeStore';
 import { useStoryGeneration } from '../epic/useStoryGeneration';
@@ -49,6 +55,7 @@ import Spinner from '@atlaskit/spinner';
 import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
 
 type Mode = 'closed' | 'description' | 'children' | 'similar';
+type PlannerState = 'idle' | 'picking_project' | 'planning';
 
 /** Truthy if the description has enough content for AI improvement. */
 function hasContent(text: string | null | undefined): boolean {
@@ -97,6 +104,8 @@ export function ImproveIssueDropdown({
 }: ImproveIssueDropdownProps) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>('closed');
+  const [plannerState, setPlannerState] = useState<PlannerState>('idle');
+  const [pickedProject, setPickedProject] = useState<PickedProject | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
@@ -303,6 +312,35 @@ export function ImproveIssueDropdown({
   const triggerLabel = improveTriggerLabel(issueType);
   const showSuggestChildren = canSuggestChildren(issueType);
   const showGenerateStories = canGenerateStories(issueType);
+  const showPlanWorkItems = canPlanWorkItems(issueType);
+  const showGenerateSubtasks = canGenerateSubtasks(issueType);
+
+  const subtaskGen = useSubtaskGeneration();
+  useEffect(() => {
+    if (showGenerateSubtasks && issue?.issue_key) {
+      subtaskGen.checkDisabled(issue.issue_key);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showGenerateSubtasks, issue?.issue_key]);
+
+  const handleGenerateSubtasks = useCallback(async () => {
+    setOpen(false);
+    if (!issue?.issue_key || !issue?.summary || !issue?.project_key) return;
+    await subtaskGen.generate({
+      storyKey: issue.issue_key,
+      storySummary: issue.summary,
+      projectKey: issue.project_key,
+      projectId: issue.project_id ?? null,
+      source: (issue.source as 'jira' | 'catalyst') ?? 'jira',
+    });
+  }, [issue, subtaskGen]);
+
+  const handleSubtaskCreateSelected = useCallback(async (assignees?: Record<number, import('@/components/shared/JiraTable').AssigneeChoice | null>) => {
+    await subtaskGen.createSelected(assignees);
+  }, [subtaskGen]);
+
+  const isSubtaskGenerating = subtaskGen.state === 'generating';
+  const isSubtaskCreating = subtaskGen.state === 'creating';
 
   // Story generation flow (Epic only)
   const storyGen = useStoryGeneration();
@@ -358,6 +396,22 @@ export function ImproveIssueDropdown({
     setOpen(false);
     setMode(m);
   };
+
+  const handlePlanWorkItems = useCallback(() => {
+    setOpen(false);
+    if (!issue?.issue_key) return;
+    setPlannerState('picking_project');
+  }, [issue?.issue_key]);
+
+  const handleProjectConfirmed = useCallback((project: PickedProject) => {
+    setPickedProject(project);
+    setPlannerState('planning');
+  }, []);
+
+  const handlePlannerClose = useCallback(() => {
+    setPlannerState('idle');
+    setPickedProject(null);
+  }, []);
 
   const itemStyle: React.CSSProperties = {
     display: 'flex',
@@ -496,6 +550,41 @@ export function ImproveIssueDropdown({
               </button>
             )}
 
+            {showGenerateSubtasks && (
+              <button
+                type="button"
+                role="menuitem"
+                data-testid="catalyst-improve-issue-dropdown.generate-subtasks"
+                onClick={handleGenerateSubtasks}
+                disabled={subtaskGen.isDisabled || isSubtaskGenerating || isSubtaskCreating}
+                style={{
+                  ...itemStyle,
+                  opacity: (subtaskGen.isDisabled || isSubtaskGenerating || isSubtaskCreating) ? 0.5 : 1,
+                  cursor: (subtaskGen.isDisabled || isSubtaskGenerating || isSubtaskCreating) ? 'not-allowed' : 'pointer',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+              >
+                <ChildIssuesIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
+                <span style={{ flex: 1 }}>Generate subtasks</span>
+              </button>
+            )}
+
+            {showPlanWorkItems && (
+              <button
+                type="button"
+                role="menuitem"
+                data-testid="catalyst-improve-issue-dropdown.plan-work-items"
+                onClick={handlePlanWorkItems}
+                style={itemStyle}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+              >
+                <PageIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
+                <span style={{ flex: 1 }}>Plan work items</span>
+              </button>
+            )}
+
             <button
               type="button"
               role="menuitem"
@@ -614,6 +703,69 @@ export function ImproveIssueDropdown({
         existingLinkedKeys={existingLinkedKeys}
         onLinked={onLinked}
       />
+
+      {showGenerateSubtasks && (
+        <>
+          {(isSubtaskGenerating || isSubtaskCreating) && (
+            <div
+              style={{
+                position: 'fixed',
+                top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(255,255,255,0.75)',
+                zIndex: 99990,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'all',
+                cursor: 'wait',
+              }}
+              aria-busy="true"
+              aria-label={isSubtaskGenerating ? 'Generating subtasks…' : 'Creating subtasks…'}
+            >
+              <Spinner size="large" />
+              <div style={{ marginTop: 16, fontSize: 16, fontWeight: 500, color: token('color.text', '#172B4D') }}>
+                {isSubtaskGenerating ? 'Generating subtasks…' : 'Creating subtasks…'}
+              </div>
+            </div>
+          )}
+          <SubtaskProposalModal
+            isOpen={subtaskGen.state === 'reviewing'}
+            onClose={subtaskGen.reset}
+            proposals={subtaskGen.proposals}
+            selectedIndices={subtaskGen.selectedIndices}
+            onToggle={subtaskGen.toggleSelection}
+            onSelectAll={subtaskGen.selectAll}
+            onDeselectAll={subtaskGen.deselectAll}
+            onCreateSelected={handleSubtaskCreateSelected}
+            isCreating={isSubtaskCreating}
+            existingCount={subtaskGen.existingCount}
+            storyKey={subtaskGen.storyKey}
+          />
+        </>
+      )}
+
+      {showPlanWorkItems && issue?.issue_key && (
+        <>
+          <ProjectPickerModal
+            isOpen={plannerState === 'picking_project'}
+            onClose={handlePlannerClose}
+            brTitle={issue?.summary ?? null}
+            onConfirm={handleProjectConfirmed}
+          />
+          {plannerState === 'planning' && pickedProject && issue?.id && (
+            <WorkItemPlannerModal
+              brId={issue.id}
+              brTitle={issue.summary ?? ''}
+              brDescriptionText={issue.description_text ?? null}
+              projectKey={pickedProject.projectKey}
+              projectId={pickedProject.projectId}
+              projectName={pickedProject.projectName}
+              onClose={handlePlannerClose}
+            />
+          )}
+        </>
+      )}
 
       {showGenerateStories && (
         <>

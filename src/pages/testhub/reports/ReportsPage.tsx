@@ -195,7 +195,7 @@ export default function ReportsPage() {
         paddingTop: 16,
       }}
     >
-      <ProjectPageHeader hubType="testhub" />
+      <ProjectPageHeader hubType="test" />
 
       <div style={{ flex: 1, padding: '24px 24px 48px', maxWidth: 1200, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
 

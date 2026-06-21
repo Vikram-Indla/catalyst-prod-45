@@ -26,6 +26,14 @@ export type {
 export { toStatusCategory } from './internal/status';
 
 export { Avatar, AvatarItem, AvatarGroup } from './Avatar';
+export { UnassignedAvatar } from './UnassignedAvatar';
+export type { UnassignedAvatarProps } from './UnassignedAvatar';
+export { ProfilePicker } from './ProfilePicker';
+export type {
+  ProfilePickerProps,
+  ProfilePickerMember,
+  ProfilePickerSelection,
+} from './ProfilePicker';
 export type {
   AvatarProps,
   AvatarItemProps,

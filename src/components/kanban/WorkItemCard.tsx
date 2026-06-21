@@ -16,7 +16,8 @@ import CloseIcon from '@atlaskit/icon/core/close';
 import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { KanbanAvatar } from './KanbanAvatar';
-import { AssigneePickerPopover, type AssigneeOption } from './AssigneePickerPopover';
+import { type AssigneeOption } from './AssigneePickerPopover';
+import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
@@ -493,16 +494,65 @@ export function WorkItemCard({
           <PriorityIcon priority={issue.priority} />
         )}
         {vf?.assignee !== false && (
-          onChangeAssignee && assigneeOptions && avatarsByName ? (
-            <AssigneePickerPopover
-              currentAssignee={issue.assigneeName}
-              options={assigneeOptions}
-              avatarsByName={avatarsByName}
-              tk={tk}
-              avatarSize={d.avatarSize}
-              onSelect={(name) => onChangeAssignee(issue.id, name)}
-            />
-          ) : (
+          onChangeAssignee && assigneeOptions && avatarsByName ? (() => {
+            /* 2026-06-21 Phase 4 migration: bespoke AssigneePickerPopover swapped
+               for the canonical <ProfilePicker />. AssigneeOption uses `name` as
+               identity (no userId), so the name doubles as the picker key. */
+            const pickerMembers: ProfilePickerMember[] = assigneeOptions.map((o) => ({
+              userId: o.name,
+              name: o.name,
+              avatarUrl: avatarsByName.get(o.name?.toLowerCase()) ?? null,
+            }));
+            const pickerValue: ProfilePickerSelection = issue.assigneeName
+              ? {
+                  userId: issue.assigneeName,
+                  name: issue.assigneeName,
+                  avatarUrl: avatarsByName.get(issue.assigneeName.toLowerCase()) ?? avatarUrl ?? null,
+                }
+              : null;
+            return (
+              <ProfilePicker
+                value={pickerValue}
+                onChange={(next) => onChangeAssignee(issue.id, next?.name ?? null)}
+                members={pickerMembers}
+                fieldLabel="Assignee"
+                /* 2026-06-21 (Vikram canonical): once assigned, locked. Lock
+                   applies app-wide including kanban quick-reassign. */
+                lockWhenAssigned
+                renderTrigger={({ onClick, ref, value, disabled }) => (
+                  <button
+                    ref={ref}
+                    type="button"
+                    disabled={disabled}
+                    onClick={(e) => { if (disabled) return; e.stopPropagation(); onClick(e); }}
+                    title={
+                      disabled
+                        ? `Assignee locked: ${value?.name ?? ''}`
+                        : value?.name
+                          ? `Assignee: ${value.name} — click to change`
+                          : 'Assign'
+                    }
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      padding: 0,
+                      cursor: disabled ? 'default' : 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <KanbanAvatar
+                      name={value?.name ?? null}
+                      url={value?.avatarUrl ?? undefined}
+                      size={d.avatarSize}
+                      tk={tk}
+                    />
+                  </button>
+                )}
+              />
+            );
+          })() : (
             <KanbanAvatar name={issue.assigneeName} url={avatarUrl} size={d.avatarSize} tk={tk} />
           )
         )}

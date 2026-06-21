@@ -467,7 +467,18 @@ export function CatalystSidebarDetails({
   const labelsArray: string[] = Array.isArray(issue?.labels) ? issue.labels : [];
 
   const invalidateIssue = useCallback(
-    () => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] }),
+    () => {
+      /* 2026-06-21: cross-invalidate the AllWork rail / list so left + right
+         panels stay in sync. Without this, assignee written on the right
+         (sidebar) stays stale on the left until manual reload. `refetchType:
+         'all'` forces any currently-mounted query to refetch immediately
+         instead of waiting for the next mount. */
+      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-offset'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-count'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['project-list-items-v2'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['work-item-detail'], refetchType: 'all' });
+    },
     [queryClient, itemId],
   );
 

@@ -15,6 +15,8 @@ import {
 } from '@/lib/atlaskit-icons';
 import {
   NavDashboardIcon,
+  NavKanbanIcon,
+  NavFiltersIcon,
 } from '@/lib/nav-icons';
 import { HUB_ICON_REGISTRY } from '@/components/icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
@@ -30,7 +32,9 @@ const sections: SidebarSection[] = [
     title: '',
     items: [
       { id: 'dashboard',    title: 'Dashboard',    path: '/testhub/dashboard',     icon: NavDashboardIcon, exact: false },
+      { id: 'board',        title: 'Board',        path: '/testhub/board',         icon: NavKanbanIcon,    exact: false },
       { id: 'my-work',      title: 'My Work',      path: '/testhub/my-work',       icon: CheckSquare,      exact: false },
+      { id: 'filters',      title: 'Filters',      path: '/testhub/filters',       icon: NavFiltersIcon,   exact: false },
       { id: 'repository',   title: 'Repository',   path: '/testhub/repository',    icon: FolderOpen,       exact: false },
       { id: 'sets',         title: 'Test Sets',    path: '/testhub/sets',          icon: Layers,           exact: false },
       { id: 'cycles',       title: 'Cycles',       path: '/testhub/cycles',        icon: RefreshCw,        exact: false },

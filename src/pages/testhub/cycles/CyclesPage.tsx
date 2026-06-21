@@ -46,7 +46,7 @@ export default function CyclesPage() {
     <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24 }}>
         <ProjectPageHeader
-          hubType="testhub"
+          hubType="test"
           actions={
             <Button appearance="primary" onClick={() => setShowCreate(true)} iconBefore={<Plus size={14} label="" />}>
               Create cycle

@@ -82,9 +82,19 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
   const isProduct = mode === 'product';
   const isTasks = mode === 'tasks';
   const isRelease = mode === 'release';
+  const isTest = mode === 'test';
 
   /* ── updateStatus ──────────────────────────────────────────────────── */
   const updateStatus = useCallback(async (issueId: string, status: string, category?: StatusCategory) => {
+    if (isTest) {
+      const dbStatus = status.toLowerCase(); // DB stores lowercase
+      const { error } = await (supabase as any)
+        .from('tm_test_cases')
+        .update({ status: dbStatus, updated_at: new Date().toISOString() })
+        .eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isRelease) {
       /* Release status moves go through validateReleaseTransition so the
          canonical board enforces the same lifecycle guards the dedicated
@@ -122,10 +132,14 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     if (jiraCat) patch.status_category = jiraCat;
     const { error } = await supabase.from('ph_issues').update(patch).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── toggleFlag ────────────────────────────────────────────────────── */
   const toggleFlag = useCallback(async (issueId: string, isFlagged: boolean) => {
+    if (isTest) {
+      void isFlagged; void issueId;
+      return;
+    }
     if (isRelease) {
       /* rh_releases has no is_flagged column — silent no-op. Health is the
          canonical "needs attention" signal for releases (set elsewhere). */
@@ -141,10 +155,24 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     const table = isProduct ? 'business_requests' : 'ph_issues';
     const { error } = await (supabase as any).from(table).update({ is_flagged: isFlagged }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── updateAssignee ────────────────────────────────────────────────── */
   const updateAssignee = useCallback(async (issueId: string, displayName: string | null, accountId: string | null) => {
+    if (isTest) {
+      let profileId: string | null = null;
+      if (displayName) {
+        const { data } = await supabase
+          .from('profiles').select('id').eq('full_name', displayName).maybeSingle();
+        profileId = (data as { id: string } | null)?.id ?? null;
+      }
+      const { error } = await (supabase as any)
+        .from('tm_test_cases')
+        .update({ assigned_to: profileId, updated_at: new Date().toISOString() })
+        .eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isRelease) {
       /* Releases store the lead as release_manager_id (uuid). Resolve
          displayName → profile.id; null clears. */
@@ -197,11 +225,24 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       .update({ assignee_display_name: displayName, assignee_account_id: accountId })
       .eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── createIssue ───────────────────────────────────────────────────── */
   const createIssue = useCallback(async (input: NewIssueInput) => {
     const now = new Date().toISOString();
+    if (isTest) {
+      /* input.projectKey is the TM project UUID passed by the host page. */
+      const dbStatus = input.status.toLowerCase();
+      const { error } = await (supabase as any).from('tm_test_cases').insert({
+        project_id: input.projectKey,
+        title: input.summary,
+        status: dbStatus,
+        created_at: now,
+        updated_at: now,
+      });
+      if (error) throw error;
+      return;
+    }
     if (isRelease) {
       /* target_date is NOT NULL — seed with today; user reschedules later. */
       const todayDate = new Date().toISOString().slice(0, 10);
@@ -270,10 +311,16 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       ...(input.dueDate ? { due_date: input.dueDate } : {}),
     });
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── updateSummary ─────────────────────────────────────────────────── */
   const updateSummary = useCallback(async (issueId: string, summary: string) => {
+    if (isTest) {
+      const { error } = await (supabase as any)
+        .from('tm_test_cases').update({ title: summary, updated_at: new Date().toISOString() }).eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isRelease) {
       const { error } = await supabase
         .from('rh_releases')
@@ -296,11 +343,15 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issues').update({ summary }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── addLabel ──────────────────────────────────────────────────────── */
   const addLabel = useCallback(async (issueId: string, current: string[], label: string) => {
     const next = Array.from(new Set([...(current ?? []), label]));
+    if (isTest) {
+      void issueId; void next;
+      return;
+    }
     if (isRelease) {
       /* rh_releases has no labels/tags column today — silent no-op so the
          card menu's add-label item doesn't error in release mode. */
@@ -321,10 +372,17 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issues').update({ labels: next }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── archiveIssue ──────────────────────────────────────────────────── */
   const archiveIssue = useCallback(async (issueId: string) => {
+    if (isTest) {
+      const dbStatus = 'deprecated';
+      const { error } = await (supabase as any)
+        .from('tm_test_cases').update({ status: dbStatus, updated_at: new Date().toISOString() }).eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isRelease) {
       /* rh_releases has no archived_at — fall through to status='cancelled'
          (canonical "soft retire" for a release). Lifecycle guards still apply. */
@@ -353,10 +411,15 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issues').update({ archived_at: new Date().toISOString() }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── deleteIssue ───────────────────────────────────────────────────── */
   const deleteIssue = useCallback(async (issueId: string) => {
+    if (isTest) {
+      const { error } = await (supabase as any).from('tm_test_cases').delete().eq('id', issueId);
+      if (error) throw error;
+      return;
+    }
     if (isRelease) {
       /* rh_releases has no deleted_at — route delete through the same
          status='cancelled' soft retire as archive. Lifecycle guards apply. */
@@ -372,10 +435,14 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     const table = isTasks ? 'tasks' : isProduct ? 'business_requests' : 'ph_issues';
     const { error } = await (supabase as any).from(table).update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── setParent ─────────────────────────────────────────────────────── */
   const setParent = useCallback(async (issueId: string, parentKey: string | null, parentSummary: string | null) => {
+    if (isTest) {
+      void parentKey; void parentSummary; void issueId;
+      return;
+    }
     if (isRelease) {
       /* Releases have no parent_key hierarchy — silent no-op. */
       void parentKey; void parentSummary; void issueId;
@@ -407,10 +474,14 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       .update({ parent_key: parentKey, parent_summary: parentSummary })
       .eq('id', issueId);
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   /* ── linkIssue ─────────────────────────────────────────────────────── */
   const linkIssue = useCallback(async (sourceKey: string, targetKey: string, linkType: string) => {
+    if (isTest) {
+      void sourceKey; void targetKey; void linkType;
+      return;
+    }
     if (isRelease) {
       /* No release-link table today — no-op. */
       void sourceKey; void targetKey; void linkType;
@@ -430,7 +501,7 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
     }
     const { error } = await supabase.from('ph_issue_links').insert({ source_id: sourceKey, target_id: targetKey, link_type: linkType });
     if (error) throw error;
-  }, [isProduct, isTasks, isRelease]);
+  }, [isProduct, isTasks, isRelease, isTest]);
 
   return { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue };
 }

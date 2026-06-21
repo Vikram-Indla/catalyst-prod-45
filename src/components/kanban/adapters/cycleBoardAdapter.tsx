@@ -259,6 +259,10 @@ export function buildCycleBoardAdapter(
   const persistence: BoardPersistence = {
     onDrop: (event) => {
       if (event.sourceColId === event.destColId) return;
+      /* 2026-06-21 (Vikram canonical): freeze done items. Reject moves
+         from any 'done'-category column silently. */
+      const fromCol = CYCLE_COLUMNS.find((c) => c.id === event.sourceColId);
+      if (fromCol?.category === 'done') return;
       const status = columnIdToStatus(event.destColId) as UIStatus | null;
       if (status) return onStatusChange(event.cardId, status);
     },

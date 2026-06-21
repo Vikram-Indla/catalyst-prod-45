@@ -10,7 +10,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { IconButton } from '@atlaskit/button/new';
 import MinimizeIcon from '@atlaskit/icon/core/minimize';
 import type { ChatConversation, ChatPerson } from '@/types/chat';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Avatar, colorFor, initialsOf, type PresenceColor } from './avatar';
 import {
   useChatArchive,
@@ -144,9 +143,11 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
   const summarizeLabel = isTicket ? 'Ask Caty — summarize' : 'Ask Caty';
 
   const glyph = isTicket ? (
-    <span className="cc-typesq cc-conv-head__typesq">
-      {conversation.ticketType ? <JiraIssueTypeIcon type={conversation.ticketType} size={12} /> : null}
-    </span>
+    <Avatar
+      name={conversation.assigneeName ?? conversation.ticketKey ?? '?'}
+      seed={conversation.assigneeName ?? conversation.id}
+      size={28}
+    />
   ) : isChannel ? (
     <ProjectIcon projectKey={conversation.projectKey ?? ''} size="medium" />
   ) : (

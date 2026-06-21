@@ -33,7 +33,6 @@ import { Description } from '../shared/sections/Description';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
-import { GenerateSubtasksButton } from './GenerateSubtasksButton';
 import {
   AttachmentsSection,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
@@ -204,7 +203,7 @@ export default function CatalystViewStory({
          anchored together at the rail header. Mirrors Jira's "In QA" / "Improve
          Story" pair on the right side of BAU-5609. */
       statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
-      improveDropdown={<><GenerateSubtasksButton issue={issue ?? null} /><ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} /></>}
+      improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);

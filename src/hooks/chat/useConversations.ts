@@ -155,6 +155,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
 
     const projectNameMap: Record<string, string> = {};
     const ticketTypeMap: Record<string, string> = {};
+    const ticketAssigneeMap: Record<string, string> = {};
 
     await Promise.all([
       projectKeys.length > 0
@@ -171,11 +172,14 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
       ticketKeys.length > 0
         ? supabase
             .from('ph_issues')
-            .select('issue_key, issue_type')
+            .select('issue_key, issue_type, assignee_display_name')
             .in('issue_key', ticketKeys)
             .then(({ data }) => {
-              (data ?? []).forEach((i: { issue_key: string; issue_type: string }) => {
-                if (i.issue_key) ticketTypeMap[i.issue_key] = i.issue_type;
+              (data ?? []).forEach((i: { issue_key: string; issue_type: string; assignee_display_name?: string | null }) => {
+                if (i.issue_key) {
+                  ticketTypeMap[i.issue_key] = i.issue_type;
+                  if (i.assignee_display_name) ticketAssigneeMap[i.issue_key] = i.assignee_display_name;
+                }
               });
             })
         : Promise.resolve(),
@@ -193,6 +197,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
         kind: (conv.kind ?? 'channel') as ChatConversationKind,
         ticketKey: conv.ticket_key ?? null,
         ticketType: conv.ticket_key ? (ticketTypeMap[conv.ticket_key] ?? null) : null,
+        assigneeName: conv.ticket_key ? (ticketAssigneeMap[conv.ticket_key] ?? null) : null,
         projectKey: conv.project_key ?? null,
         projectName: conv.project_key ? (projectNameMap[conv.project_key] ?? null) : null,
         title: conv.kind === 'channel' && conv.project_key

@@ -468,7 +468,7 @@ export default function SetDetailPage() {
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <ProjectPageHeader
-          hubType="testhub"
+          hubType="test"
           title={set.name}
           trail={[
             { text: 'Test sets', href: '/testhub/sets' },

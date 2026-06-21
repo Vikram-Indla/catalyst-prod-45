@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import AddIcon from '@atlaskit/icon/core/add';
+import { UnassignedAvatar } from '@/components/ads';
 import Spinner from '@atlaskit/spinner';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { catalystToast } from '@/lib/catalystToast';
@@ -552,10 +553,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                       {target.assignee_display_name.charAt(0).toUpperCase()}
                     </div>
                   ) : (
-                    <div style={{
-                      width: 28, height: 28, borderRadius: '50%', border: '2px dashed var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-                      flexShrink: 0,
-                    }} />
+                    <UnassignedAvatar size={28} />
                   )}
                   {/* Drag handle — orange "=" icon (Jira parity) */}
                   <span style={{

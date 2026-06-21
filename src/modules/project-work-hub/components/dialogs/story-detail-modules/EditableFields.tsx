@@ -13,6 +13,7 @@ import CheckIcon from "@atlaskit/icon/glyph/check";
 import CrossCircleIcon from "@atlaskit/icon/glyph/cross-circle";
 import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import type { ProjectMember, ParentIssue } from "./types";
+import { UnassignedAvatar, ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from "@/components/ads";
 import { PRIORITY_LIST } from "./constants";
 import { getAvatarColor, getInitials } from "./helpers";
 import { resolveAvatarUrl } from "@/lib/avatars";
@@ -185,6 +186,13 @@ export function AvatarCircle({
       />
     );
   }
+  /* 2026-06-21: when there's no real user (empty userId or the "Unassigned"
+     sentinel), render the canonical gray-silhouette glyph instead of fake
+     initials. Matches Jira: gray-filled circle, no border, white-gray person
+     icon — same chrome the JiraTable assignee cell uses. */
+  if (!userId || userId === "__unassigned__" || userId === "__none__" || name === "Unassigned" || name === "None") {
+    return <UnassignedAvatar size={size} />;
+  }
   const initials = getInitials(name);
   const fontSize = Math.max(10, Math.round(size * 0.35));
   return (
@@ -261,30 +269,39 @@ export function EditableAssignee({
   onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  // Pull from `profiles` (approved users) so every user is searchable —
-  // not just the project_members row. Mirrors Jira's "assignable user"
-  // search which spans the whole org, not just project membership.
+  /* 2026-06-21: scope members to the project. Pulls project_members for
+     the issue's project + joins profiles for names/jira_account_id. Mirrors
+     WorkCardAssigneePicker so the left rail and the right panel offer the
+     same shortlist. */
   const { data: members = [] } = useQuery({
-    queryKey: ["assignee-profiles-approved"],
+    queryKey: ["assignee-project-members", projectId],
+    enabled: !!projectId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: pm, error } = await supabase
+        .from("project_members")
+        .select("user_id, role")
+        .eq("project_id", projectId);
+      if (error) throw error;
+      if (!pm?.length) return [] as ProjectMember[];
+      const ids = pm.map((r) => r.user_id);
+      const { data: profs } = await supabase
         .from("profiles")
         .select("id, full_name, email, jira_account_id")
-        .eq("approval_status", "APPROVED")
-        .order("full_name", { ascending: true });
-      if (error) throw error;
-      return (data ?? []).map((p) => {
-        const full_name = p.full_name ?? p.email ?? "Unknown";
-        return {
-          user_id: p.id,
-          full_name,
-          avatar_url: resolveAvatarUrl(full_name) ?? null,
-          role: null,
-          // Preserve jira_account_id so the assignee picker can match
-          // ph_issues.assignee_account_id (Jira account ID space, not UUID space).
-          jira_account_id: (p as any).jira_account_id ?? null,
-        };
-      }) as ProjectMember[];
+        .in("id", ids);
+      const map = new Map((profs ?? []).map((p) => [p.id, p as any]));
+      return pm
+        .map((row) => {
+          const p = map.get(row.user_id);
+          const full_name = p?.full_name ?? p?.email ?? "Unknown";
+          return {
+            user_id: row.user_id,
+            full_name,
+            avatar_url: resolveAvatarUrl(full_name) ?? null,
+            role: row.role ?? null,
+            jira_account_id: p?.jira_account_id ?? null,
+          } as ProjectMember;
+        })
+        .sort((a, b) => a.full_name.localeCompare(b.full_name));
     },
   });
 
@@ -371,135 +388,41 @@ export function EditableAssignee({
     };
   }, [currentAssigneeId, currentAssigneeName, options]);
 
-  const inputId = `assignee-${issueKey ?? issueId}`;
-  const [inputValue, setInputValue] = useState("");
+  /* 2026-06-21 Phase 3 migration: bespoke Atlaskit-Select swapped for the
+     canonical <ProfilePicker />. Vikram rule — assignee is read-only once
+     set on a work item. Reporter is NOT affected (see EditableReporter
+     below). */
+  const pickerMembers: ProfilePickerMember[] = useMemo(
+    () => members.map((m) => ({
+      userId: m.user_id,
+      name: m.full_name,
+      avatarUrl: m.avatar_url ?? null,
+    })),
+    [members],
+  );
+
+  const pickerValue: ProfilePickerSelection = selected.userId
+    ? { userId: selected.userId, name: selected.label, avatarUrl: selected.avatarUrl }
+    : null;
+
+  /* menuIsOpen is kept for layout parity with surrounding fields that still
+     rely on the focused outline; ProfilePicker owns its own open state. */
+  void menuIsOpen;
+  void setMenuIsOpen;
 
   return (
-    <div style={{
-      flex: 1,
-      minWidth: 0,
-      outline: menuIsOpen ? "2px solid var(--ds-border-focused, #388BFF)" : "none",
-      borderRadius: 4,
-    }}>
-      <Select<AssigneeOption>
-        inputId={inputId}
-        appearance="subtle"
-        spacing="compact"
-        isSearchable
-        isClearable
-        menuIsOpen={menuIsOpen}
-        onMenuOpen={() => {
-          setMenuIsOpen(true);
-          const initial =
-            selected.value === UNASSIGNED_VALUE ? "" : (selected.label ?? "");
-          setInputValue(initial);
-          if (initial.length > 0) {
-            setTimeout(() => {
-              const el = document.getElementById(inputId) as HTMLInputElement | null;
-              el?.select();
-            }, 0);
-          }
-        }}
-        onMenuClose={() => {
-          setMenuIsOpen(false);
-          setInputValue("");
-        }}
-        inputValue={inputValue}
-        onInputChange={(next, meta) => {
-          if (meta.action === "input-change") setInputValue(next);
-        }}
-        controlShouldRenderValue={!menuIsOpen}
-        classNamePrefix="cv-assignee-select"
-        placeholder="Select Assignee"
-        components={{
-          ClearIndicator: (props) => (
-            <div
-              {...props.innerProps}
-              style={{ display: "flex", alignItems: "center", padding: "0 4px", cursor: "pointer" }}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                // Clear the value (unassign)
-                updateMutation.mutate(null);
-                // Keep menu open + focus input for immediate re-search
-                setMenuIsOpen(true);
-                setInputValue("");
-                setTimeout(() => {
-                  const el = document.getElementById(inputId) as HTMLInputElement | null;
-                  el?.focus();
-                }, 0);
-              }}
-            >
-              <CrossCircleIcon label="Clear" size="small" primaryColor="var(--ds-text-subtle, #5E6C84)" />
-            </div>
-          ),
-        }}
-        styles={{
-          indicatorsContainer: (base) => ({ ...base, display: menuIsOpen ? "flex" : "none" }),
-        }}
-        options={options}
-        value={selected}
-        onChange={(v) => {
-          const nextUserId =
-            v === null
-              ? null
-              : v.value === UNASSIGNED_VALUE
-                ? null
-                : v.userId;
+    <div style={{ flex: 1, minWidth: 0, borderRadius: 4 }}>
+      <ProfilePicker
+        value={pickerValue}
+        onChange={(next) => {
+          const nextUserId = next?.userId ?? null;
           if (nextUserId === (currentAssigneeId ?? null)) return;
           updateMutation.mutate(nextUserId);
         }}
-        formatOptionLabel={(opt: AssigneeOption) => (
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              minWidth: 0,
-            }}
-          >
-            {opt.value === UNASSIGNED_VALUE ? (
-              <div
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: "50%",
-                  flexShrink: 0,
-                  border: "1px dashed var(--ds-border, #C1C7D0)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 14,
-                  color: "var(--ds-text-disabled, #C1C7D0)",
-                }}
-              >
-                ?
-              </div>
-            ) : (
-              <AvatarCircle
-                userId={opt.userId ?? opt.value}
-                name={opt.label}
-                avatarUrl={opt.avatarUrl}
-                size={24}
-              />
-            )}
-            <span
-              style={{
-                fontSize: 14,
-                color:
-                  opt.value === UNASSIGNED_VALUE
-                    ? "var(--ds-text-subtlest, #6B6E76)"
-                    : "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
-                fontWeight: 400,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {opt.label}
-            </span>
-          </span>
-        )}
+        members={pickerMembers}
+        fieldLabel="Assignee"
+        disabled={!!currentAssigneeId}
+        size={24}
       />
     </div>
   );
@@ -541,26 +464,37 @@ export function EditableReporter({
   onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  /* 2026-06-21: scoped to project_members (same shortlist as the assignee
+     picker and the AllWork rail). Cross-project users are not surfaced. */
   const { data: members = [] } = useQuery({
-    queryKey: ["reporter-profiles-approved"],
+    queryKey: ["reporter-project-members", projectId],
+    enabled: !!projectId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: pm, error } = await supabase
+        .from("project_members")
+        .select("user_id, role")
+        .eq("project_id", projectId);
+      if (error) throw error;
+      if (!pm?.length) return [] as ProjectMember[];
+      const ids = pm.map((r) => r.user_id);
+      const { data: profs } = await supabase
         .from("profiles")
         .select("id, full_name, email, jira_account_id")
-        .eq("approval_status", "APPROVED")
-        .order("full_name", { ascending: true });
-      if (error) throw error;
-      return (data ?? []).map((p) => {
-        const full_name = p.full_name ?? p.email ?? "Unknown";
-        return {
-          user_id: p.id,
-          full_name,
-          avatar_url: resolveAvatarUrl(full_name) ?? null,
-          role: null,
-          // jira_account_id bridges Catalyst UUID space ↔ Jira account ID space
-          jira_account_id: p.jira_account_id ?? null,
-        };
-      }) as ProjectMember[];
+        .in("id", ids);
+      const map = new Map((profs ?? []).map((p) => [p.id, p as any]));
+      return pm
+        .map((row) => {
+          const p = map.get(row.user_id);
+          const full_name = p?.full_name ?? p?.email ?? "Unknown";
+          return {
+            user_id: row.user_id,
+            full_name,
+            avatar_url: resolveAvatarUrl(full_name) ?? null,
+            role: row.role ?? null,
+            jira_account_id: p?.jira_account_id ?? null,
+          } as ProjectMember;
+        })
+        .sort((a, b) => a.full_name.localeCompare(b.full_name));
     },
   });
 
@@ -601,7 +535,7 @@ export function EditableReporter({
     return [
       {
         value: REPORTER_NONE_VALUE,
-        label: "None",
+        label: "Unassigned",
         userId: null,
         avatarUrl: null,
       },
@@ -613,7 +547,7 @@ export function EditableReporter({
     if (!currentReporterId) {
       return {
         value: REPORTER_NONE_VALUE,
-        label: "None",
+        label: "Unassigned",
         userId: null,
         avatarUrl: null,
       };
@@ -638,132 +572,39 @@ export function EditableReporter({
   const inputId = `reporter-${issueId}`;
   const [inputValue, setInputValue] = useState("");
 
+  /* 2026-06-21 Phase 3 migration: swap bespoke Atlaskit-Select for the
+     canonical <ProfilePicker />. Reporter is NOT locked once set — Vikram
+     directive: only assignee carries the lock. */
+  const pickerMembers: ProfilePickerMember[] = useMemo(
+    () => members.map((m) => ({
+      userId: m.user_id,
+      name: m.full_name,
+      avatarUrl: m.avatar_url ?? null,
+    })),
+    [members],
+  );
+
+  const pickerValue: ProfilePickerSelection = selected.userId
+    ? { userId: selected.userId, name: selected.label, avatarUrl: selected.avatarUrl }
+    : null;
+
+  void menuIsOpen;
+  void setInputValue;
+  void inputId;
+
   return (
-    <div style={{
-      flex: 1,
-      minWidth: 0,
-      outline: menuIsOpen ? "2px solid var(--ds-border-focused, #388BFF)" : "none",
-      borderRadius: 4,
-    }}>
-      <Select<ReporterOption>
-        inputId={inputId}
-        appearance="subtle"
-        spacing="compact"
-        isSearchable
-        isClearable
-        menuIsOpen={menuIsOpen}
-        onMenuOpen={() => {
-          setMenuIsOpen(true);
-          const initial =
-            selected.value === REPORTER_NONE_VALUE ? "" : (selected.label ?? "");
-          setInputValue(initial);
-          if (initial.length > 0) {
-            setTimeout(() => {
-              const el = document.getElementById(inputId) as HTMLInputElement | null;
-              el?.select();
-            }, 0);
-          }
-        }}
-        onMenuClose={() => {
-          setMenuIsOpen(false);
-          setInputValue("");
-        }}
-        inputValue={inputValue}
-        onInputChange={(next, meta) => {
-          if (meta.action === "input-change") setInputValue(next);
-        }}
-        controlShouldRenderValue={!menuIsOpen}
-        classNamePrefix="cv-reporter-select"
-        placeholder="Select Reporter"
-        components={{
-          ClearIndicator: (props) => (
-            <div
-              {...props.innerProps}
-              style={{ display: "flex", alignItems: "center", padding: "0 4px", cursor: "pointer" }}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                // Clear the value (unassign)
-                updateMutation.mutate(null);
-                // Keep menu open + focus input for immediate re-search
-                setMenuIsOpen(true);
-                setInputValue("");
-                setTimeout(() => {
-                  const el = document.getElementById(inputId) as HTMLInputElement | null;
-                  el?.focus();
-                }, 0);
-              }}
-            >
-              <CrossCircleIcon label="Clear" size="small" primaryColor="var(--ds-text-subtle, #5E6C84)" />
-            </div>
-          ),
-        }}
-        styles={{
-          indicatorsContainer: (base) => ({ ...base, display: menuIsOpen ? "flex" : "none" }),
-        }}
-        options={options}
-        value={selected}
-        onChange={(v) => {
-          const nextUserId =
-            v === null
-              ? null
-              : v.value === REPORTER_NONE_VALUE
-                ? null
-                : v.userId;
+    <div style={{ flex: 1, minWidth: 0, borderRadius: 4 }}>
+      <ProfilePicker
+        value={pickerValue}
+        onChange={(next) => {
+          const nextUserId = next?.userId ?? null;
           if (nextUserId === (currentReporterId ?? null)) return;
           updateMutation.mutate(nextUserId);
         }}
-        formatOptionLabel={(opt: ReporterOption) => (
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              minWidth: 0,
-            }}
-          >
-            {opt.value === REPORTER_NONE_VALUE ? (
-              <div
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: "50%",
-                  flexShrink: 0,
-                  border: "1px dashed var(--ds-border, #C1C7D0)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 14,
-                  color: "var(--ds-text-disabled, #C1C7D0)",
-                }}
-              >
-                ?
-              </div>
-            ) : (
-              <AvatarCircle
-                userId={opt.userId ?? opt.value}
-                name={opt.label}
-                avatarUrl={opt.avatarUrl}
-                size={24}
-              />
-            )}
-            <span
-              style={{
-                fontSize: 14,
-                color:
-                  opt.value === REPORTER_NONE_VALUE
-                    ? "var(--ds-text-subtlest, #6B6E76)"
-                    : "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
-                fontWeight: 400,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {opt.label}
-            </span>
-          </span>
-        )}
+        members={pickerMembers}
+        fieldLabel="Reporter"
+        /* Reporter is NOT auto-locked. Field stays editable. */
+        size={24}
       />
     </div>
   );

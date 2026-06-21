@@ -793,25 +793,42 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // products.id UUID there). resource_inventory is the canonical team
   // roster (CLAUDE.md 2026-05-11). Filter to profile_id NOT NULL so we
   // never offer an assignee we couldn't actually persist.
+  // 2026-06-21 (Vikram): backlog assignee picker must show ONLY this
+  // project's members (matches WorkCardAssigneePicker behavior). Was sourcing
+  // from resource_inventory (all active resources globally) — wrong scope.
+  // Switched to project_members joined with profiles for project-scoped UUIDs
+  // we can persist as ph_issues.assignee_account_id.
   const { data: assigneePickerMembers = [] } = useQuery({
-    queryKey: ['assignee-picker-members', 'all-active-resources'],
+    queryKey: ['assignee-picker-members', projectId],
+    enabled: !!projectId,
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('resource_inventory')
-        .select('profile_id, name, avatar_url')
-        .eq('is_active', true)
-        .not('profile_id', 'is', null)
-        .order('name');
-      if (error) throw error;
-      return (data ?? [])
-        .filter((r: any) => r.name && r.profile_id)
-        .map((r: any) => ({
-          key: r.profile_id as string,
-          name: r.name as string,
-          // Prefer the resource's stored avatar_url (Jira-CDN sync result),
-          // fall back to the name-based resolver.
-          src: (r.avatar_url as string | null) ?? resolveAvatarUrl(r.name) ?? undefined,
-        }));
+      const { data: pm, error: pmErr } = await supabase
+        .from('project_members')
+        .select('user_id, role')
+        .eq('project_id', projectId!);
+      if (pmErr) throw pmErr;
+      if (!pm?.length) return [];
+      const ids = pm.map((d: any) => d.user_id);
+      const { data: profiles, error: pErr } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', ids);
+      if (pErr) throw pErr;
+      const map = new Map<string, { id: string; full_name: string; avatar_url: string | null }>();
+      (profiles ?? []).forEach((p: any) => map.set(p.id, p));
+      return pm
+        .map((d: any) => {
+          const p = map.get(d.user_id);
+          if (!p) return null;
+          const name = p.full_name ?? 'Unknown';
+          return {
+            key: p.id as string,
+            name,
+            src: (p.avatar_url as string | null) ?? resolveAvatarUrl(name) ?? undefined,
+          };
+        })
+        .filter(Boolean)
+        .sort((a: any, b: any) => a.name.localeCompare(b.name)) as Array<{ key: string; name: string; src: string | undefined }>;
     },
     staleTime: 5 * 60_000,
   });
@@ -2063,6 +2080,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       navigate(`/release-hub/${it.id}`);
       return;
     }
+    /* 2026-06-21: test_case entityKind navigates to the Repository tab
+       with ?case=<id> so the existing CaseDrawer opens. No side-panel
+       mounting — Repository owns the case detail surface. */
+    if (dataSource?.entityKind === 'test_case') {
+      navigate(`/testhub/repository?case=${it.id}`);
+      return;
+    }
+    /* 2026-06-21: defect entityKind navigates to the dedicated TestHub
+       defect detail. No side-panel — the defect detail is its own surface. */
+    if (dataSource?.entityKind === 'defect') {
+      navigate(`/testhub/defects/${it.id}`);
+      return;
+    }
     writeTicketOrigin({
       fromUrl: `${resolvedBaseUrl}/backlog`,
       fromLabel: 'Backlog',
@@ -2657,10 +2687,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         getAssignee: (r) => r.assignee_name
           ? { id: r.assignee_name, name: r.assignee_name, avatarUrl: resolveAvatarUrl(r.assignee_name) ?? avatarsByName.get(r.assignee_name.toLowerCase()) ?? null }
           : null,
-        options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
+        // 2026-06-21 (Vikram): Project-scoped members ONLY (not items.assignee_name
+        // — that only contained already-assigned people, missing project members
+        // who haven't been assigned anything yet).
+        options: assigneePickerMembers.map<AssigneeChoice>((m) => ({ id: m.key, name: m.name, avatarUrl: m.src ?? null })),
+        // Vikram canonical rule: once assigned, locked. Handled inside
+        // ProfilePicker via `lockWhenAssigned` default true on
+        // makeAssigneeEditCell — no per-row canEdit needed here.
         onChange: (row, next) => updateField.mutate({
           id: row.id, source: row.source,
-          patch: { assignee_id: next?.id ?? null, assignee_name: next?.name ?? null },
+          // 2026-06-21: Canonical ph_issues columns are `assignee_account_id`
+          // + `assignee_display_name`. Was writing the wrong column names
+          // (`assignee_id` + `assignee_name`), causing "update failed".
+          patch: { assignee_account_id: next?.id ?? null, assignee_display_name: next?.name ?? null },
         }),
       }),
       filterable: true,
@@ -2756,11 +2795,21 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.reporter_name || '',
-      cell: makeAssigneeCell((r: BacklogItem) =>
-        r.reporter_name
-          ? { name: r.reporter_name, avatarUrl: resolveAvatarUrl(r.reporter_name) ?? avatarsByName.get(r.reporter_name.toLowerCase()) ?? null }
+      /* 2026-06-21 (Vikram): Reporter is now editable via the canonical
+         ProfilePicker (via makeAssigneeEditCell). Vikram's "lock once
+         assigned" rule applies to assignee ONLY — reporter remains
+         re-assignable so canEdit defaults to true. */
+      cell: makeAssigneeEditCell<BacklogItem>({
+        getAssignee: (r) => r.reporter_name
+          ? { id: r.reporter_name, name: r.reporter_name, avatarUrl: resolveAvatarUrl(r.reporter_name) ?? avatarsByName.get(r.reporter_name.toLowerCase()) ?? null }
           : null,
-      ),
+        options: assigneePickerMembers.map<AssigneeChoice>((m) => ({ id: m.key, name: m.name, avatarUrl: m.src ?? null })),
+        lockWhenAssigned: false,
+        onChange: (row, next) => updateField.mutate({
+          id: row.id, source: row.source,
+          patch: { reporter_account_id: next?.id ?? null, reporter_display_name: next?.name ?? null },
+        }),
+      }),
     },
     // ── 2026-06-01 Business Request adapter-only columns ────────────────
     // Surfaced only when ProductBacklogPage's adapter sets allowedColumnIds.
@@ -2927,6 +2976,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           ? { id: r.delivery_manager_id ?? r.delivery_manager_name, name: r.delivery_manager_name, avatarUrl: resolveAvatarUrl(r.delivery_manager_name) ?? avatarsByName.get(r.delivery_manager_name.toLowerCase()) ?? null }
           : null,
         options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
+        lockWhenAssigned: false,
         onChange: (row, next) => updateField.mutate({
           id: row.id, source: row.source,
           patch: { delivery_manager_id: next?.id ?? null, delivery_manager_name: next?.name ?? null },
@@ -2945,6 +2995,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           ? { id: r.product_owner_id ?? r.product_owner_name, name: r.product_owner_name, avatarUrl: resolveAvatarUrl(r.product_owner_name) ?? avatarsByName.get(r.product_owner_name.toLowerCase()) ?? null }
           : null,
         options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
+        lockWhenAssigned: false,
         onChange: (row, next) => updateField.mutate({
           id: row.id, source: row.source,
           patch: { product_owner_id: next?.id ?? null, product_owner_name: next?.name ?? null },
@@ -3018,7 +3069,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         </div>
       ),
     },
-  ]), [expandedIds, toggleExpanded, hasChildren, parentOptions, assigneeOptions, avatarsByName, updateField, rowActions, sortKey, sortDir, groupBy]);
+  ]), [expandedIds, toggleExpanded, hasChildren, parentOptions, assigneeOptions, assigneePickerMembers, avatarsByName, updateField, rowActions, sortKey, sortDir, groupBy]);
 
   // Filter columns to only allowed standard Jira fields (2026-05-12).
   // Prevents type-specific custom fields and banned fields from appearing
@@ -3960,8 +4011,20 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                        UAT Finding / Figma). Mirrors the BR detail page's
                        Subtasks panel + the product timeline picker so the
                        three create surfaces are consistent. */
-                    creatableTypes={dataSource ? (['Business Request', ...BUSINESS_REQUEST_SUBTASK_TYPES] as CreatableIssueType[]) : undefined}
-                    defaultIssueType={dataSource ? 'Business Request' : 'Story'}
+                    creatableTypes={
+                      dataSource?.creatableTypes
+                        ? (dataSource.creatableTypes as CreatableIssueType[])
+                        : dataSource
+                          ? (['Business Request', ...BUSINESS_REQUEST_SUBTASK_TYPES] as CreatableIssueType[])
+                          : undefined
+                    }
+                    defaultIssueType={
+                      dataSource?.defaultCreatableType
+                        ? (dataSource.defaultCreatableType as CreatableIssueType)
+                        : dataSource
+                          ? 'Business Request'
+                          : 'Story'
+                    }
                   />
                 );
               })() : null,
@@ -5688,7 +5751,10 @@ type CreatableIssueType =
      detail page's Subtasks panel options. */
   | 'BRD Task'
   | 'UAT Finding'
-  | 'Figma';
+  | 'Figma'
+  /* TestHub creatable types (2026-06-21) — selectable via adapter
+     `creatableTypes` override on /testhub/my-work + /testhub/defects. */
+  | 'Test Case';
 
 /**
  * 2026-05-10 Per-column filter popup body — minimal multi-select.

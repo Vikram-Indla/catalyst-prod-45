@@ -19,6 +19,7 @@ import { Check } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import { STATUS_OPTION_GROUPS } from '../../dialogs/story-detail-modules/constants';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
+import { toStatusCategory } from '@/components/ads';
 
 interface StatusPopoverProps {
   status: string;
@@ -28,6 +29,9 @@ interface StatusPopoverProps {
   children: React.ReactNode;
   /** When false, no "current value" check mark is rendered — use in bulk-edit contexts. */
   showActive?: boolean;
+  /** 2026-06-21 (Vikram canonical): freeze when current = done. Default true.
+   *  Bulk-edit contexts pass `false` so admin can re-open done items. */
+  lockWhenDone?: boolean;
 }
 
 const CATEGORY_TO_APPEARANCE: Record<string, 'default' | 'inprogress' | 'success'> = {
@@ -36,8 +40,11 @@ const CATEGORY_TO_APPEARANCE: Record<string, 'default' | 'inprogress' | 'success
   done: 'success',
 };
 
-export function StatusPopover({ status, issueType, onChange, children, showActive = true }: StatusPopoverProps) {
+export function StatusPopover({ status, issueType, onChange, children, showActive = true, lockWhenDone = true }: StatusPopoverProps) {
   const { statusGroups, hasConfig, getAvailableStatuses } = useIssueTypeWorkflow(issueType ?? null);
+  /* Canonical "done = frozen" gate. Bulk-edit contexts opt out by
+     passing `lockWhenDone={false}` (matches the assignee picker). */
+  const isFrozen = lockWhenDone && status ? toStatusCategory(status) === 'done' : false;
   const available = new Set(getAvailableStatuses(status));
   const displayGroups = hasConfig
     ? statusGroups
@@ -78,6 +85,7 @@ export function StatusPopover({ status, issueType, onChange, children, showActiv
 
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isFrozen) return;
     if (!triggerRef.current) return;
     if (isOpen) { setIsOpen(false); return; }
     const r = triggerRef.current.getBoundingClientRect();
@@ -90,7 +98,8 @@ export function StatusPopover({ status, issueType, onChange, children, showActiv
       <span
         ref={triggerRef}
         onClick={toggle}
-        style={{ display: 'inline-flex', cursor: 'pointer' }}
+        title={isFrozen ? `Status frozen — ${status} is final` : undefined}
+        style={{ display: 'inline-flex', cursor: isFrozen ? 'default' : 'pointer' }}
       >
         {children}
       </span>

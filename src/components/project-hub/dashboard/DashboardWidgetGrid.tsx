@@ -82,7 +82,7 @@ export function effectiveSpan(w: ResolvedWidget): number {
 
 export function resolveWidgets(
   configs: DashboardWidgetConfig[],
-  mode: 'project' | 'product' | 'tasks' | 'incident' = 'project',
+  mode: 'project' | 'product' | 'tasks' | 'incident' | 'test' = 'project',
   registry?: WidgetDefinition[],
 ): ResolvedWidget[] {
   const map = new Map(configs.map((c) => [c.widget_id, c]));
@@ -117,7 +117,7 @@ export function resolveWidgets(
 
 export function useDashboardWidgetConfig(
   projectId: string,
-  mode: 'project' | 'product' | 'tasks' | 'incident' = 'project',
+  mode: 'project' | 'product' | 'tasks' | 'incident' | 'test' = 'project',
   registry?: WidgetDefinition[],
 ) {
   const { user } = useAuth();

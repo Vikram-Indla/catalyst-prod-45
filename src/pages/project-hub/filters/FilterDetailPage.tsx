@@ -24,7 +24,7 @@ interface FilterDetailPageProps {
    *  links, no :key in URL. 2026-06-17: 'tasks' added — /tasks/... links,
    *  no :key in URL, 'TASKS' sentinel projectKey. Per CLAUDE.md "ADOPT
    *  CANONICAL COMPONENTS". */
-  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release';
+  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release' | 'test';
 }
 
 export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageProps = {}) {
@@ -32,17 +32,20 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
   const isIncident = mode === 'incident';
   const isTasks = mode === 'tasks';
   const isRelease = mode === 'release';
+  const isTest = mode === 'test';
   const hubBase =
     isProduct ? 'product-hub'
     : isIncident ? 'incident-hub'
     : isTasks ? 'tasks'
     : isRelease ? 'release-hub'
+    : isTest ? 'testhub'
     : 'project-hub';
   const { key: routeKey, filterId } = useParams<{ key: string; filterId: string }>();
   const projectKey =
     isIncident ? 'INCIDENTS'
     : isTasks ? 'TASKS'
     : isRelease ? 'RELEASES'
+    : isTest ? 'TESTHUB'
     : routeKey;
   const navigate = useNavigate();
   const [historyOpen, setHistoryOpen] = useState(false);

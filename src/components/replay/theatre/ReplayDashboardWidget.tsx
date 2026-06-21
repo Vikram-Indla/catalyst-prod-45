@@ -6,8 +6,7 @@ import Button from '@atlaskit/button/new';
 import Avatar from '@atlaskit/avatar';
 import { JiraTable, makeKeyCell } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { statusBg, STATUS_TEXT } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
-import type { StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
 import type { Column } from '@/components/shared/JiraTable/types';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -29,38 +28,6 @@ interface QualifyingBR {
   updated_at: string;
   assignee_name: string | null;
   assignee_avatar: string | null;
-}
-
-// ─── Status chip — canonical statusPalette colors ────────────────────────────
-
-const STEP_APPEARANCE: Record<string, StatusAppearance> = {
-  'In Requirements':    'default',
-  'Demand Validation':  'inprogress',
-  'Prioritized Backlog':'moved',
-  'In Development':     'inprogress',
-  'Done':               'success',
-  "Won't Do":           'removed',
-  'Rejected':           'removed',
-};
-
-function BRStatusChip({ status }: { status: string }) {
-  const appearance = STEP_APPEARANCE[status] ?? 'default';
-  return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '4px 8px',
-        borderRadius: 3,
-        fontSize: 11,
-        fontWeight: 500,
-        background: statusBg(appearance),
-        color: STATUS_TEXT,
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {status}
-    </span>
-  );
 }
 
 // ─── Data hook ──────────────────────────────────────────────────────────────
@@ -252,7 +219,10 @@ function TheatreView({ br, onClose }: { br: QualifyingBR; onClose: () => void })
 
           {/* Step nodes */}
           <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start' }}>
-            <div style={{ position: 'absolute', top: 19, left: 0, right: 0, height: 1, background: 'var(--ds-border, #DFE1E6)', zIndex: 0 }} />
+            {/* Track base */}
+            <div style={{ position: 'absolute', top: 18, left: 0, right: 0, height: 2, background: 'var(--ds-background-neutral, #F1F2F4)', zIndex: 0 }} />
+            {/* Track fill up to current step */}
+            <div style={{ position: 'absolute', top: 18, left: 0, height: 2, background: 'var(--ds-background-information-bold, #0055CC)', zIndex: 0, width: total > 1 ? `${(currentStep / (total - 1)) * 100}%` : '100%', transition: 'width 0.3s ease' }} />
             {steps.map((step, i) => {
               const isPast = i < currentStep;
               const isActive = i === currentStep;
@@ -260,15 +230,17 @@ function TheatreView({ br, onClose }: { br: QualifyingBR; onClose: () => void })
               return (
                 <div key={step} onClick={() => goToStep(i)} title={step} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1, cursor: 'pointer' }}>
                   <div style={{
-                    width: 38, height: 38, borderRadius: 4,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15,
-                    ...(isActive ? { background: 'var(--ds-background-information-bold, #0055CC)', color: '#FFFFFF', boxShadow: '0 0 0 3px var(--ds-border-information, #CCE0FF)' }
-                      : isPast ? { background: 'var(--ds-background-neutral, #F1F2F4)', color: 'var(--ds-text-subtle, #42526E)', border: '1px solid var(--ds-border, #DFE1E6)' }
-                      : { background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text-subtlest, #6B778C)', border: '1px dashed var(--ds-border, #DFE1E6)', opacity: 0.38 }),
+                    width: 36, height: 36, borderRadius: 6,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
+                    ...(isActive
+                      ? { background: 'var(--ds-background-information-bold, #0055CC)', color: '#FFFFFF', boxShadow: '0 0 0 3px var(--ds-border-information, #CCE0FF)', fontWeight: 700 }
+                      : isPast
+                      ? { background: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-text-success, #216E4E)', border: '1px solid var(--ds-border-success, #7EE2B8)' }
+                      : { background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text-subtlest, #6B778C)', border: '1px dashed var(--ds-border, #DFE1E6)', opacity: 0.4 }),
                   }}>
-                    {isPast ? '✓' : isActive ? '●' : '○'}
+                    {isPast ? '✓' : isActive ? (i + 1) : (i + 1)}
                   </div>
-                  <div style={{ marginTop: 8, fontSize: 11, textAlign: 'center', lineHeight: 1.3, maxWidth: 72, wordBreak: 'break-word', fontWeight: isActive ? 500 : 400, color: isActive ? 'var(--ds-text-information, #0055CC)' : isPast ? 'var(--ds-text-subtle, #42526E)' : 'var(--ds-text-subtlest, #6B778C)', opacity: isFuture ? 0.5 : 1 }}>
+                  <div style={{ marginTop: 6, fontSize: 10, textAlign: 'center', lineHeight: 1.35, width: '100%', padding: '0 4px', boxSizing: 'border-box', wordBreak: 'break-word', overflowWrap: 'break-word', hyphens: 'auto', fontWeight: isActive ? 600 : 400, color: isActive ? 'var(--ds-text-information, #0055CC)' : isPast ? 'var(--ds-text-subtle, #42526E)' : 'var(--ds-text-subtlest, #6B778C)', opacity: isFuture ? 0.5 : 1 }}>
                     {step}
                   </div>
                   {stepDate(i) && <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2, textAlign: 'center' }}>{stepDate(i)}</div>}
@@ -395,7 +367,7 @@ function JourneyView({ br, onBack, onPlayReplay }: { br: QualifyingBR; onBack: (
                   border: '2px solid var(--ds-surface, #FFFFFF)',
                 }}
               />
-              <BRStatusChip status={step} />
+              <CatalystStatusPill status={step} interactive={false} compact />
               {date && (
                 <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
                   {isFirst ? `Started ${date}` : `Last updated ${date}`}
@@ -487,7 +459,7 @@ export function ReplayDashboardWidget({ mode }: ReplayDashboardWidgetProps) {
         label: 'Status',
         width: 20,
         accessor: (row) => row.process_step,
-        cell: ({ row }) => <BRStatusChip status={row.process_step} />,
+        cell: ({ row }) => <CatalystStatusPill status={row.process_step} interactive={false} compact />,
       },
       {
         id: 'assignee',

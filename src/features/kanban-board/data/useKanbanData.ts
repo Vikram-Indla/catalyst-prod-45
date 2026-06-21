@@ -21,7 +21,19 @@ import { applyJqlToQuery } from '@/lib/jql';
 import type { BoardConfig, BoardIssue, BoardOption, KanbanColumn, StatusCategory } from '../types';
 import { DEFAULT_COLUMNS, indexColumns } from './columnConfig';
 
-export type KanbanMode = 'project' | 'product' | 'incident' | 'tasks' | 'release';
+export type KanbanMode = 'project' | 'product' | 'incident' | 'tasks' | 'release' | 'test';
+
+/* 2026-06-21: TestHub board columns — 4-stage case lifecycle. Mirrors the
+   CASE_STATUSES in releasesDataSource/testCasesDataSource so table, board,
+   and dashboard agree. */
+export const TEST_BOARD_COLUMNS: KanbanColumn[] = [
+  { id: 'col-draft',      name: 'DRAFT',      category: 'todo',        statuses: ['DRAFT'],      max: null },
+  { id: 'col-review',     name: 'IN REVIEW',  category: 'in_progress', statuses: ['REVIEW'],     max: null },
+  { id: 'col-approved',   name: 'APPROVED',   category: 'done',        statuses: ['APPROVED'],   max: null },
+  { id: 'col-deprecated', name: 'DEPRECATED', category: 'done',        statuses: ['DEPRECATED'], max: null },
+];
+
+const TEST_CASE_SELECT = 'id, key, title, status, project_id, folder_id, priority_id, type_id, assigned_to, created_at, updated_at';
 
 /* 2026-06-19: release-mode columns mirror the 9-stage release lifecycle the
    legacy releaseBoardAdapter used. Defined here (not imported from the legacy
@@ -167,6 +179,7 @@ export function useKanbanData(
   const isIncident = mode === 'incident';
   const isTasks = mode === 'tasks';
   const isRelease = mode === 'release';
+  const isTest = mode === 'test';
 
   /* ── PROJECT meta ─────────────────────────────────────────────────────── */
   const { data: projMeta } = useQuery({
@@ -177,7 +190,7 @@ export function useKanbanData(
         .from('ph_projects').select('id, key, name').eq('key', key).maybeSingle();
       return data ?? null;
     },
-    enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease,
+    enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease && !isTest,
     staleTime: 60_000,
   });
 
@@ -209,11 +222,11 @@ export function useKanbanData(
         .order('sort_order');
       return (data ?? []).map((b: any) => ({ id: b.id, name: b.name })) as BoardOption[];
     },
-    enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease,
+    enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease && !isTest,
     staleTime: 60_000,
   });
 
-  const resolvedBoardId = (isProduct || isIncident || isTasks || isRelease) ? null : (activeBoardId ?? boards[0]?.id ?? null);
+  const resolvedBoardId = (isProduct || isIncident || isTasks || isRelease || isTest) ? null : (activeBoardId ?? boards[0]?.id ?? null);
 
   /* ── Board filter JQL (CAT-DEF-003) ────────────────────────────────────────
      Boards created from a saved filter carry boards.board_query (the filter's
@@ -308,6 +321,90 @@ export function useKanbanData(
     staleTime: 60_000,
   });
 
+  /* ── TEST rows (mode='test'): tm_test_cases scoped to first TM project ── */
+  const { data: testProjectsRow = [] } = useQuery({
+    queryKey: ['kb-test-projects'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('tm_projects')
+        .select('id, key, name, is_active')
+        .eq('is_active', true)
+        .order('created_at', { ascending: true })
+        .limit(1);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: isTest,
+    staleTime: 5 * 60_000,
+  });
+  const testProjectId = (testProjectsRow as any[])[0]?.id ?? null;
+
+  const { data: testRows = [], isLoading: testLoading, refetch: refetchTest } = useQuery({
+    queryKey: ['kb-test-rows', testProjectId],
+    queryFn: async () => {
+      if (!testProjectId) return [] as any[];
+      const { data, error } = await (supabase as any)
+        .from('tm_test_cases')
+        .select(TEST_CASE_SELECT)
+        .eq('project_id', testProjectId)
+        .order('updated_at', { ascending: false })
+        .limit(2000);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: isTest && !!testProjectId,
+    staleTime: 30_000,
+  });
+
+  const testAssigneeIds = useMemo(
+    () => Array.from(new Set((testRows as any[]).map((r) => r.assigned_to).filter(Boolean))),
+    [testRows],
+  );
+  const { data: testAssigneeNames = new Map<string, string>() } = useQuery({
+    queryKey: ['kb-test-assignees', testAssigneeIds.length, testAssigneeIds.slice().sort().join(',')],
+    queryFn: async () => {
+      if (!testAssigneeIds.length) return new Map<string, string>();
+      const { data } = await supabase
+        .from('profiles').select('id, full_name').in('id', testAssigneeIds as string[]);
+      const m = new Map<string, string>();
+      ((data ?? []) as Array<{ id: string; full_name: string | null }>).forEach((p) => {
+        if (p.full_name) m.set(p.id, p.full_name);
+      });
+      return m;
+    },
+    enabled: isTest && testAssigneeIds.length > 0,
+    staleTime: 60_000,
+  });
+
+  function mapTestRow(r: any): BoardIssue {
+    const status = (r.status ?? 'DRAFT').toString();
+    const statusCategory: string =
+      status === 'APPROVED' || status === 'DEPRECATED' ? 'done'
+      : status === 'REVIEW' ? 'in_progress'
+      : 'todo';
+    return {
+      id: r.id,
+      issueKey: r.key || r.id,
+      summary: r.title ?? '',
+      issueType: 'Test Case',
+      priority: '',
+      status,
+      statusCategory,
+      assigneeName: r.assigned_to ? (testAssigneeNames.get(r.assigned_to) ?? null) : null,
+      labels: [],
+      sprintName: null,
+      storyPoints: null,
+      parentKey: null,
+      parentSummary: null,
+      sprintRelease: null,
+      isFlagged: false,
+      updatedAt: r.updated_at ?? null,
+      createdAt: r.created_at ?? null,
+      statusChangedAt: null,
+      dueDate: null,
+    };
+  }
+
   function mapReleaseRow(r: any): BoardIssue {
     const status = (r.status ?? '').toString();
     const catLc = status.toLowerCase();
@@ -377,6 +474,7 @@ export function useKanbanData(
     /* 2026-06-19: release columns are a fixed 9-stage lifecycle (no DB
        configuration yet — matches the legacy releaseBoardAdapter). */
     if (isRelease) return RELEASE_BOARD_COLUMNS;
+    if (isTest) return TEST_BOARD_COLUMNS;
     /* 2026-06-17: tasks columns come from task_statuses. Each column carries
        both the slug and the name as recognized statuses so the resolver
        matches either form on the task row. Category derived from slug
@@ -426,7 +524,7 @@ export function useKanbanData(
       });
     }
     return DEFAULT_COLUMNS;
-  }, [isProduct, isIncident, isTasks, isRelease, brWorkflow, piWorkflow, dynamicCols, tasksStatusRows]);
+  }, [isProduct, isIncident, isTasks, isRelease, isTest, brWorkflow, piWorkflow, dynamicCols, tasksStatusRows]);
 
   const boardConfig: BoardConfig = useMemo(() => {
     const idx = indexColumns(columns);
@@ -440,19 +538,21 @@ export function useKanbanData(
             ? 'Tasks board'
             : isRelease
               ? 'Release board'
-              : (boards.find((b) => b.id === resolvedBoardId)?.name ?? 'Board'),
+              : isTest
+                ? 'Test board'
+                : (boards.find((b) => b.id === resolvedBoardId)?.name ?? 'Board'),
       columns: idx.columns,
       statusToColId: idx.statusToColId,
       colPrimaryStatus: idx.colPrimaryStatus,
       columnIdSet: idx.columnIdSet,
     };
-  }, [columns, resolvedBoardId, boards, isProduct, isIncident, isTasks, isRelease, productMeta]);
+  }, [columns, resolvedBoardId, boards, isProduct, isIncident, isTasks, isRelease, isTest, productMeta]);
 
   /* ── PROJECT issues (paginated, progressive) ─────────────────────────── */
   const { data: firstPage = [], isLoading: projectLoading, refetch: refetchFirst } = useQuery({
     queryKey: ['kb-issues-p1', key, resolvedBoardQuery],
     queryFn: () => (key ? fetchIssuePage(key, 0, PAGE - 1, resolvedBoardQuery) : Promise.resolve([] as any[])),
-    enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease,
+    enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease && !isTest,
     staleTime: 5 * 60_000,
   });
   const hasMore = firstPage.length >= PAGE;
@@ -472,7 +572,7 @@ export function useKanbanData(
       }
       return all;
     },
-    enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease && hasMore,
+    enabled: !!key && !isProduct && !isIncident && !isTasks && !isRelease && !isTest && hasMore,
     staleTime: 5 * 60_000,
   });
 
@@ -624,9 +724,12 @@ export function useKanbanData(
     if (isRelease) {
       return (releaseRows as any[]).map(mapReleaseRow);
     }
+    if (isTest) {
+      return (testRows as any[]).map(mapTestRow);
+    }
     return [...firstPage, ...restPages].map(mapRow);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isProduct, isIncident, isTasks, isRelease, productRows, assigneeNames, parentKeyById, incidentRows, tasksRows, statusNameById, taskAssigneeNames, releaseRows, releaseManagerNames, firstPage, restPages]);
+  }, [isProduct, isIncident, isTasks, isRelease, isTest, productRows, assigneeNames, parentKeyById, incidentRows, tasksRows, statusNameById, taskAssigneeNames, releaseRows, releaseManagerNames, testRows, testAssigneeNames, firstPage, restPages]);
 
   const refetch = useCallback(() => {
     if (isProduct) {
@@ -637,14 +740,16 @@ export function useKanbanData(
       refetchTasks();
     } else if (isRelease) {
       refetchReleases();
+    } else if (isTest) {
+      refetchTest();
     } else {
       refetchFirst();
       refetchRest();
     }
-  }, [isProduct, isIncident, isTasks, isRelease, refetchProduct, refetchIncidents, refetchTasks, refetchReleases, refetchFirst, refetchRest]);
+  }, [isProduct, isIncident, isTasks, isRelease, isTest, refetchProduct, refetchIncidents, refetchTasks, refetchReleases, refetchTest, refetchFirst, refetchRest]);
 
   return {
-    projectId: isProduct ? productId : (projMeta?.id ?? null),
+    projectId: isProduct ? productId : isTest ? testProjectId : (projMeta?.id ?? null),
     projectName: isProduct
       ? (productMeta?.name ?? key ?? '')
       : isIncident
@@ -653,9 +758,11 @@ export function useKanbanData(
           ? 'Tasks'
           : isRelease
             ? 'Releases'
-            : (projMeta?.name ?? key ?? ''),
+            : isTest
+              ? 'Test Cases'
+              : (projMeta?.name ?? key ?? ''),
     boardConfig,
-    boards: (isProduct || isIncident || isTasks || isRelease) ? [] : boards,
+    boards: (isProduct || isIncident || isTasks || isRelease || isTest) ? [] : boards,
     issues,
     isLoading: isProduct
       ? productLoading
@@ -665,7 +772,9 @@ export function useKanbanData(
           ? tasksLoading
           : isRelease
             ? releaseLoading
-            : projectLoading,
+            : isTest
+              ? testLoading
+              : projectLoading,
     refetch,
   };
 }

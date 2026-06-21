@@ -295,7 +295,7 @@ export default function TestSetsPage() {
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <ProjectPageHeader
-          hubType="testhub"
+          hubType="test"
           actions={
             <Button appearance="primary" onClick={() => setShowCreate(true)}>
               + New Test Set

@@ -7,6 +7,7 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { PresenceRing } from '@/components/shared/PresenceRing';
+import { UnassignedAvatar } from '@/components/ads';
 import type { PresenceState } from '@/lib/presence';
 
 export interface AssigneeOption {
@@ -161,8 +162,12 @@ export const EditableAssignee = memo(function EditableAssignee({
           color: 'var(--ds-text, #172B4D)',
           textAlign: 'left',
           fontFamily: 'var(--cp-font-body)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
         }}
       >
+        {!currentAssignee && <UnassignedAvatar size={22} />}
         {currentAssignee || 'Unassigned'}
       </button>
 
@@ -302,7 +307,9 @@ export const EditableAssignee = memo(function EditableAssignee({
                   }}
                   style={{
                     width: '100%',
-                    display: 'block',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
                     padding: '8px 12px',
                     border: 'none',
                     cursor: 'pointer',
@@ -328,6 +335,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                         : 'var(--ds-surface, #ffffff)';
                   }}
                 >
+                  <UnassignedAvatar size={24} />
                   Unassigned
                 </button>
 

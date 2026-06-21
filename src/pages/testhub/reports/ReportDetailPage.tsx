@@ -1343,7 +1343,7 @@ export default function ReportDetailPage() {
       }}
     >
       <ProjectPageHeader
-        hubType="testhub"
+        hubType="test"
         title={reportLabel}
         trail={[
           { text: 'Reports', href: '/testhub/reports' },

@@ -38,7 +38,7 @@ import './styles.css';
    rows from `tasks` table, no :key in URL (sentinel 'TASKS').
    useKanbanData + useKanbanMutations branch internally on the same mode value. */
 interface KanbanPageProps {
-  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release';
+  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release' | 'test';
   /** When set, overrides the URL :key param. Used by surfaces where the
    *  board route doesn't carry a :key (e.g. /incident-hub/board, /tasks/board,
    *  /release-hub/release-kanban). */
@@ -189,7 +189,9 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
                     ? ['Task']
                     : mode === 'release'
                       ? ['Release']
-                      : undefined
+                      : mode === 'test'
+                        ? ['Test Case']
+                        : undefined
             }
             onCreateCard={() => { setOpenCreateCol(null); refetch(); }}
             onCancel={() => setOpenCreateCol(null)}
@@ -245,6 +247,10 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
       navigate(`/release-hub/${id}`);
       return;
     }
+    if (mode === 'test') {
+      navigate(`/testhub/repository?case=${id}`);
+      return;
+    }
     const issueKey = idToKey.get(id);
     if (issueKey) useGlobalSearchStore.getState().openDetail({ id: issueKey });
   }, [idToKey, mode, navigate]);
@@ -265,10 +271,12 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
             <BreadcrumbsItem text="Tasks" href="/tasks/overview" />
           ) : mode === 'release' ? (
             <BreadcrumbsItem text="Releases" href="/release-hub/overview" />
+          ) : mode === 'test' ? (
+            <BreadcrumbsItem text="Test Hub" href="/testhub/dashboard" />
           ) : (
             <BreadcrumbsItem text={STRINGS.PROJECTS} href="/project-hub/projects" />
           )}
-          {mode !== 'incident' && mode !== 'tasks' && mode !== 'release' && (
+          {mode !== 'incident' && mode !== 'tasks' && mode !== 'release' && mode !== 'test' && (
             <BreadcrumbsItem
               text={projectName}
               href={mode === 'product' ? `/product-hub/${key}` : `/project-hub/${key}`}
