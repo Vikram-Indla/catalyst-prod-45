@@ -480,7 +480,7 @@ export function ChatDock({
                   ? conv.kind === "channel"
                     ? `# ${conv.title}`
                     : conv.title
-                  : id;
+                  : '…';
                 const isActive = id === activeId;
                 return (
                   <div
