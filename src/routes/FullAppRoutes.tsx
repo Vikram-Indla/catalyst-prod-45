@@ -135,13 +135,14 @@ const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentR
 const IncidentHubCommitteeQueuePage = lazy(() => import("../pages/incidenthub/CommitteeQueuePage"));
 const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
-// TestHub — pages not yet built; routes stubbed with FeatureComingSoon.
-const TestHubDashboardPage = () => <FeatureComingSoon title="Test Hub Dashboard" />;
-const TestHubMyWorkPage = () => <FeatureComingSoon title="Test Hub — My Work" />;
-const TestHubRepositoryPage = () => <FeatureComingSoon title="Test Repository" />;
-const TestHubCyclesPage = () => <FeatureComingSoon title="Test Cycles" />;
-const TestHubCycleDetailPage = () => <FeatureComingSoon title="Test Cycle" />;
-const TestHubExecutionPage = () => <FeatureComingSoon title="Test Execution" />;
+// TestHub
+const TestHubDashboardPage = lazy(() => import("../pages/testhub/DashboardPage"));
+const TestHubMyWorkPage = lazy(() => import("../pages/testhub/MyWorkPage"));
+const TestHubRepositoryPage = lazy(() => import("../pages/testhub/repository/RepositoryPage"));
+const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
+const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
+const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
+const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"));
 
 const WikiHomePage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
 const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
@@ -267,6 +268,8 @@ const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAd
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const ReplayAdminPage = lazy(() => import("../pages/admin/ReplayAdminPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
+const FieldRegistryPage = lazy(() => import("../pages/admin/FieldRegistryPage"));
+const FieldLayoutPage = lazy(() => import("../pages/admin/FieldLayoutPage"));
 // Incident admin routes deleted 2026-05-09 (Vikram decision: delete all 7)
 
 const ValueStreamView = lazy(() => import("../pages/ValueStreamView"));
@@ -655,6 +658,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub/cycles" element={<S><TestHubCyclesPage /></S>} />
         <Route path="/testhub/cycles/:id" element={<S><TestHubCycleDetailPage /></S>} />
         <Route path="/testhub/cycles/:id/execute" element={<S><TestHubExecutionPage /></S>} />
+        <Route path="/testhub/sets" element={<S><TestHubSetsPage /></S>} />
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +
@@ -945,6 +949,9 @@ export default function FullAppRoutes() {
           <Route path="routing-taxonomy" element={<S><RoutingTaxonomyPageLazy /></S>} />
           <Route path="resources" element={<S><RouteRoleGuard><ResourceListingPageLazy /></RouteRoleGuard></S>} />
           <Route path="resources/:resourceId" element={<S><RouteRoleGuard><R360MemberDetailLazy /></RouteRoleGuard></S>} />
+          {/* Field Layout System — /admin/fields + /admin/fields/layout */}
+          <Route path="fields" element={<S><FieldRegistryPage /></S>} />
+          <Route path="fields/layout" element={<S><FieldLayoutPage /></S>} />
         </Route>
 
         {/* /ads-validator — design governance audit viewer; aliased to canonical admin governance page */}

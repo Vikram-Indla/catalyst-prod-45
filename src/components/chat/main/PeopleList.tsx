@@ -4,20 +4,13 @@
  * grouped by presence (Slack/Teams parity), click → start DM via RPC.
  */
 import React, { useMemo, useState } from 'react';
-import { useChatPeople } from '@/hooks/chat/useChatPeople';
+import { useChatPeopleByDepartment } from '@/hooks/chat/useChatPeople';
 import { useStartDm } from '@/hooks/chat/useStartDm';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar } from './avatar';
 import type { ChatPresence, ChatPerson } from '@/types/chat';
-
-const PRESENCE_LABEL: Record<ChatPresence, string> = {
-  onsite: 'In office',
-  remote: 'Remote',
-  away: 'Away',
-  on_leave: 'On leave',
-};
 
 const PRESENCE_TONE: Record<ChatPresence, 'green' | 'blue' | 'amber' | 'grey'> = {
   onsite: 'green',
@@ -32,7 +25,7 @@ interface PeopleListProps {
 
 export function PeopleList({ onConversationCreated }: PeopleListProps) {
   const { user } = useAuth();
-  const { groups, isLoading } = useChatPeople();
+  const { groups, isLoading } = useChatPeopleByDepartment();
   const startDm = useStartDm();
   const [query, setQuery] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -60,7 +53,7 @@ export function PeopleList({ onConversationCreated }: PeopleListProps) {
     return groups
       .map((g) => ({
         ...g,
-        people: g.people.filter((p) =>
+        people: g.people.filter((p: ChatPerson) =>
           p.name.toLowerCase().includes(q) || (p.role ?? '').toLowerCase().includes(q),
         ),
       }))
@@ -130,18 +123,12 @@ export function PeopleList({ onConversationCreated }: PeopleListProps) {
         )}
 
         {filtered.map((group) => (
-          <div key={group.presence}>
+          <div key={group.department}>
             <div className="cc-people-section">
-              <span
-                className="cc-people-section__dot"
-                data-tone={PRESENCE_TONE[group.presence]}
-              />
-              <span className="cc-people-section__label">
-                {PRESENCE_LABEL[group.presence]}
-              </span>
+              <span className="cc-people-section__label">{group.department}</span>
               <span className="cc-people-section__count">{group.people.length}</span>
             </div>
-            {group.people.map((person) => (
+            {group.people.map((person: ChatPerson) => (
               <button
                 key={person.id}
                 type="button"
@@ -160,12 +147,9 @@ export function PeopleList({ onConversationCreated }: PeopleListProps) {
                     <span className="cc-nm">{person.name}</span>
                   </div>
                   <div className="cc-preview">
-                    {person.role ?? PRESENCE_LABEL[person.presence]}
+                    {person.role ?? person.presence}
                   </div>
                 </div>
-                {/* Loading spinner only — Slack/Teams parity: the row IS the
-                    affordance. No hover-only "Message" button, no tooltip.
-                    (2026-06-08 design-critique.) */}
                 {busyId === person.id && (
                   <span aria-hidden style={{ display: 'inline-flex' }}>
                     <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2}>

@@ -157,6 +157,13 @@ const IncidentHubSidebar = lazyWithRetry(
     })),
   "IncidentHubSidebar",
 );
+const TestHubSidebar = lazyWithRetry(
+  () =>
+    import("./TestHubSidebar").then((m) => ({
+      default: m.TestHubSidebar,
+    })),
+  "TestHubSidebar",
+);
 const PlanHubSidebar = lazyWithRetry(
   () => import("./PlanHubSidebar").then((m) => ({ default: m.PlanHubSidebar })),
   "PlanHubSidebar",
@@ -520,6 +527,7 @@ function CatalystShellContent() {
 
   // Check if on IncidentHub route
   const isIncidentHubRoute = location.pathname.startsWith("/incident-hub");
+  const isTestHubRoute = location.pathname.startsWith("/testhub");
 
   // Decision A (Apr 2026): Jira blue canvas (#E9F2FE) + white panel on all
   // hub routes. /for-you, Home, Wiki, Admin are intentionally excluded.
@@ -672,6 +680,11 @@ function CatalystShellContent() {
     // ReleaseHub sidebar (new Release Management module)
     if (isReleaseHubRoute) {
       return <ReleaseHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
+    }
+
+    // TestHub sidebar
+    if (isTestHubRoute) {
+      return <TestHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // IncidentHub sidebar

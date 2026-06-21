@@ -10,6 +10,7 @@ import ShieldIcon from '@atlaskit/icon/core/shield';
 import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
 import StarIcon from '@atlaskit/icon/core/star-starred';
 import VidPlayIcon from '@atlaskit/icon/core/video-play';
+import FieldDropdownIcon from '@atlaskit/icon/core/field-dropdown';
 
 const T = {
   text:          'var(--ds-text, #172B4D)',
@@ -78,6 +79,15 @@ const collapsibleSections: CollapsibleSection[] = [
     ],
   },
   {
+    id: 'work-items',
+    label: 'Work items',
+    icon: FieldDropdownIcon,
+    items: [
+      { id: 'fields-registry', label: 'Fields', path: '/admin/fields', icon: FieldDropdownIcon },
+      { id: 'field-layouts', label: 'Field layouts', path: '/admin/fields/layout', icon: FieldDropdownIcon },
+    ],
+  },
+  {
     id: 'replay',
     label: 'Replay',
     icon: VidPlayIcon,
@@ -99,10 +109,12 @@ const collapsibleSections: CollapsibleSection[] = [
 export function AdminSidebar() {
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'design-system': true,  // Design System expanded by default
+    'design-system': true,
     'jira-connection': false,
     'workflows': false,
     'ai-governance': false,
+    'work-items': true,
+    'replay': false,
   });
 
   const toggleSection = (sectionId: string) => {

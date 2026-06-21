@@ -119,7 +119,7 @@ function EditKebabMenu({
    header chip flips to product, the 4 BR-incompatible widgets are filtered
    out of the gallery + never seeded. Per CLAUDE.md "ADOPT CANONICAL
    COMPONENTS — DO NOT REIMPLEMENT". */
-type DashboardMode = 'project' | 'product' | 'incident';
+type DashboardMode = 'project' | 'product' | 'incident' | 'test';
 
 interface ProjectDashboardPageProps {
   mode?: DashboardMode;
@@ -136,10 +136,12 @@ export default function ProjectDashboardPage({ mode = 'project' }: ProjectDashbo
 function ProjectDashboardPageInner({ mode }: { mode: DashboardMode }) {
   const isProduct = mode === 'product';
   const isIncident = mode === 'incident';
+  const isTest = mode === 'test';
   const params = useParams<{ key: string }>();
   /* 2026-06-17: incident hub has no :key in the URL — use the same
-     'INCIDENTS' sentinel that the filters + timeline pages use. */
-  const key = isIncident ? 'INCIDENTS' : params.key;
+     'INCIDENTS' sentinel that the filters + timeline pages use.
+     2026-06-21: testhub follows the same pattern with 'TESTHUB'. */
+  const key = isIncident ? 'INCIDENTS' : isTest ? 'TESTHUB' : params.key;
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -197,6 +199,13 @@ useEffect(() => {
           name: 'Incidents',
         } as any;
       }
+      if (isTest) {
+        return {
+          id: '00000000-0000-0000-0000-000000000002',
+          key: 'TESTHUB',
+          name: 'Test Hub',
+        } as any;
+      }
       // Resolve to canonical `public.projects` row first — the
       // dashboard_widget_config.project_id FK targets projects(id), so
       // returning a ph_projects.id (different uuid) would silently fail
@@ -232,7 +241,7 @@ useEffect(() => {
   // 2026-06-15: disabled in product mode for now — the realtime hook
   // subscribes to ph_issues tables, which aren't relevant for business_requests.
   // Phase B will rewire realtime to business_requests for product mode.
-  useDashboardRealtime({ projectId, projectKey: pKey, enabled: !!pKey && !isProduct && !isIncident });
+  useDashboardRealtime({ projectId, projectKey: pKey, enabled: !!pKey && !isProduct && !isIncident && !isTest });
 
   const {
     widgets: persistedWidgets,
@@ -523,7 +532,7 @@ useEffect(() => {
 
         {/* Dashboard content in full screen */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
-          {!isProduct && !isIncident && pKey && (
+          {!isProduct && !isIncident && !isTest && pKey && (
             <div style={{ marginBottom: 24 }}>
               <ProjectDashboardTimeline projectKey={pKey} />
             </div>
@@ -551,7 +560,7 @@ useEffect(() => {
       flush
       chromeBand={pKey ? (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <ProjectPageHeader projectKey={pKey} hubType={isProduct ? 'product' : isIncident ? 'incident' : undefined} />
+          <ProjectPageHeader projectKey={pKey} hubType={isProduct ? 'product' : isIncident ? 'incident' : isTest ? 'test' : undefined} />
           {actions && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, paddingInline: 20, paddingBottom: 8 }}>
               {actions}
@@ -604,7 +613,7 @@ useEffect(() => {
                   </SectionMessage>
                 </div>
               )}
-              {!isProduct && !isIncident && pKey && (
+              {!isProduct && !isIncident && !isTest && pKey && (
                 <div style={{ marginBottom: 24 }}>
                   <ProjectDashboardTimeline projectKey={pKey} />
                 </div>
