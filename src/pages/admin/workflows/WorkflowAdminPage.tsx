@@ -662,10 +662,21 @@ function DiagramView({
   const { data: workflow, isLoading } = useTypeWorkflow(projectKey, workItemType);
   const addTransition = useAddTransition(projectKey, workItemType);
   const deleteTransition = useDeleteTransition(projectKey, workItemType);
+  const createStatus = useCreateStatus(projectKey);
+
   const [zoom, setZoom] = useState(100);
   const [fromId, setFromId] = useState('');
   const [toId, setToId] = useState('');
   const [addLoading, setAddLoading] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+
+  // Add-status inline form state
+  const [addingStatus, setAddingStatus] = useState(false);
+  const [newStatusName, setNewStatusName] = useState('');
+  const [newStatusCat, setNewStatusCat] = useState<StatusCategory>('todo');
+  const [addStatusLoading, setAddStatusLoading] = useState(false);
+  const addStatusInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { if (addingStatus) addStatusInputRef.current?.focus(); }, [addingStatus]);
 
   if (isLoading) {
     return (
@@ -679,18 +690,62 @@ function DiagramView({
   const transitions = workflow?.transitions ?? [];
   const statusMap = new Map<string, TypeStatus>(statuses.map((s) => [s.id, s]));
 
+  // Transitions touching the selected node
+  const highlightedTransitionIds = selectedNodeId
+    ? new Set(
+        transitions
+          .filter((t) => t.from_status_id === selectedNodeId || t.to_status_id === selectedNodeId)
+          .map((t) => t.id)
+      )
+    : undefined;
+
+  // Filtered transition list — show only those involving selected node, or all
+  const visibleTransitions = selectedNodeId
+    ? transitions.filter(
+        (t) => t.from_status_id === selectedNodeId || t.to_status_id === selectedNodeId
+      )
+    : transitions;
+
+  const handleNodeClick = (id: string) => {
+    if (selectedNodeId === id) {
+      setSelectedNodeId(null);
+      setFromId('');
+    } else {
+      setSelectedNodeId(id);
+      setFromId(id);
+    }
+  };
+
+  const handleEdgeDelete = async (transitionId: string) => {
+    await deleteTransition.mutateAsync(transitionId);
+  };
+
   const submitAddTransition = async () => {
     if (!toId) return;
     setAddLoading(true);
     try {
-      await addTransition.mutateAsync({
-        fromStatusId: fromId || null,
-        toStatusId: toId,
-      });
-      setFromId('');
+      await addTransition.mutateAsync({ fromStatusId: fromId || null, toStatusId: toId });
       setToId('');
     } finally {
       setAddLoading(false);
+    }
+  };
+
+  const submitAddStatus = async () => {
+    const n = newStatusName.trim();
+    if (!n) { setAddingStatus(false); return; }
+    setAddStatusLoading(true);
+    try {
+      await createStatus.mutateAsync({
+        name: n,
+        category: newStatusCat,
+        color: STATUS_CATEGORY_COLORS[newStatusCat],
+        typeAssignments: [workItemType],
+      });
+      setNewStatusName('');
+      setAddingStatus(false);
+    } finally {
+      setAddStatusLoading(false);
     }
   };
 
@@ -709,41 +764,96 @@ function DiagramView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-      {/* Zoom + diagram */}
+      {/* Toolbar: zoom + add status */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '16px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
           <span style={{ fontSize: 11, color: T.textSubtlest }}>Zoom</span>
-          <input
-            type="range"
-            min={40}
-            max={150}
-            step={10}
-            value={zoom}
+          <input type="range" min={40} max={150} step={10} value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
-            style={{ width: 80, accentColor: 'var(--ds-link, #0C66E4)' }}
-          />
+            style={{ width: 80, accentColor: 'var(--ds-link, #0C66E4)' }} />
           <span style={{ fontSize: 11, color: T.textSubtlest, minWidth: 30 }}>{zoom}%</span>
+
+          {selectedNodeId && (
+            <span style={{ fontSize: 11, color: T.textBrand, background: T.bgSelected, borderRadius: 3, padding: '2px 8px' }}>
+              {statusMap.get(selectedNodeId)?.name} selected — click to deselect
+            </span>
+          )}
+
+          <div style={{ marginLeft: 'auto' }}>
+            {addingStatus ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <select
+                  value={newStatusCat}
+                  onChange={(e) => setNewStatusCat(e.target.value as StatusCategory)}
+                  style={{ ...selectStyle, minWidth: 100 }}
+                >
+                  {CATS.map((c) => (
+                    <option key={c} value={c}>{STATUS_CATEGORY_LABELS[c]}</option>
+                  ))}
+                </select>
+                <input
+                  ref={addStatusInputRef}
+                  value={newStatusName}
+                  onChange={(e) => setNewStatusName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') submitAddStatus();
+                    if (e.key === 'Escape') { setAddingStatus(false); setNewStatusName(''); }
+                  }}
+                  placeholder="Status name…"
+                  disabled={addStatusLoading}
+                  style={{
+                    height: 28, fontSize: 12, border: `1px solid ${T.border}`,
+                    borderRadius: 4, padding: '0 8px', fontFamily: 'inherit',
+                    color: T.text, background: T.surface, width: 160,
+                  }}
+                />
+                <button onClick={submitAddStatus} disabled={addStatusLoading || !newStatusName.trim()}
+                  style={{
+                    height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500, border: 'none',
+                    borderRadius: 3, cursor: newStatusName.trim() ? 'pointer' : 'not-allowed',
+                    background: newStatusName.trim() ? 'var(--ds-background-brand-bold, #0C66E4)' : T.bgNeutral,
+                    color: newStatusName.trim() ? '#FFFFFF' : T.textSubtlest, fontFamily: 'inherit',
+                  }}>
+                  {addStatusLoading ? '…' : 'Add'}
+                </button>
+                <button onClick={() => { setAddingStatus(false); setNewStatusName(''); }}
+                  style={{ height: 28, padding: '0 8px', fontSize: 12, border: `1px solid ${T.border}`,
+                    borderRadius: 3, cursor: 'pointer', background: T.surface, color: T.textSubtlest,
+                    fontFamily: 'inherit' }}>
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => setAddingStatus(true)}
+                style={{
+                  height: 28, padding: '0 12px', fontSize: 12, fontWeight: 500,
+                  border: `1px solid ${T.border}`, borderRadius: 3, cursor: 'pointer',
+                  background: T.surface, color: T.textSubtle, fontFamily: 'inherit',
+                  display: 'flex', alignItems: 'center', gap: 4,
+                }}>
+                <span style={{ fontSize: 14, lineHeight: 1 }}>+</span> Add status
+              </button>
+            )}
+          </div>
         </div>
-        <div
-          style={{
-            flex: 1,
-            border: `1px solid ${T.border}`,
-            borderRadius: 4,
-            background: 'var(--ds-surface-sunken, #F7F8F9)',
-            overflow: 'auto',
-            minHeight: 200,
-          }}
-        >
-          {workflow && (
+
+        <div style={{
+          flex: 1, border: `1px solid ${T.border}`, borderRadius: 4,
+          background: 'var(--ds-surface-sunken, #F7F8F9)', overflow: 'auto', minHeight: 200,
+        }}>
+          {workflow ? (
             <CatalystWorkflowDiagram
               statuses={statuses}
               transitions={transitions}
               initialStatusId={workflow.initialStatusId}
               showTransitionLabels={false}
               zoom={zoom}
+              selectedNodeId={selectedNodeId ?? undefined}
+              highlightedTransitionIds={highlightedTransitionIds}
+              onNodeClick={handleNodeClick}
+              onEdgeDelete={handleEdgeDelete}
             />
-          )}
-          {!workflow && (
+          ) : (
             <div style={{ padding: 32, textAlign: 'center', color: T.textSubtlest, fontSize: 13 }}>
               No statuses configured for {workItemType}
             </div>
@@ -752,84 +862,53 @@ function DiagramView({
       </div>
 
       {/* Transitions panel */}
-      <div
-        style={{
-          flexShrink: 0,
-          borderTop: `1px solid ${T.border}`,
-          display: 'flex',
-          flexDirection: 'column',
-          maxHeight: 260,
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            padding: '10px 24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexShrink: 0,
-            borderBottom: `1px solid ${T.border}`,
-          }}
-        >
+      <div style={{
+        flexShrink: 0, borderTop: `1px solid ${T.border}`,
+        display: 'flex', flexDirection: 'column', maxHeight: 260, overflow: 'hidden',
+      }}>
+        <div style={{
+          padding: '10px 24px', display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', flexShrink: 0, borderBottom: `1px solid ${T.border}`,
+        }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
-            Transitions
-            <span
-              style={{
-                marginLeft: 8,
-                fontSize: 11,
-                fontWeight: 500,
-                color: T.textSubtlest,
-                background: T.bgNeutral,
-                borderRadius: 10,
-                padding: '1px 7px',
-              }}
-            >
-              {transitions.length}
+            {selectedNodeId ? `Transitions for ${statusMap.get(selectedNodeId)?.name ?? '…'}` : 'Transitions'}
+            <span style={{
+              marginLeft: 8, fontSize: 11, fontWeight: 500, color: T.textSubtlest,
+              background: T.bgNeutral, borderRadius: 10, padding: '1px 7px',
+            }}>
+              {visibleTransitions.length}
+              {selectedNodeId && transitions.length !== visibleTransitions.length && ` of ${transitions.length}`}
             </span>
+            {selectedNodeId && (
+              <button onClick={() => { setSelectedNodeId(null); setFromId(''); }}
+                style={{ marginLeft: 8, fontSize: 11, color: T.textBrand, background: 'none',
+                  border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>
+                show all
+              </button>
+            )}
           </span>
 
           {/* Add transition form */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <select
-              value={fromId}
-              onChange={(e) => setFromId(e.target.value)}
-              style={selectStyle}
-              aria-label="From status"
-            >
+            <select value={fromId} onChange={(e) => setFromId(e.target.value)}
+              style={selectStyle} aria-label="From status">
               <option value="">— any —</option>
-              {statuses.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
+              {statuses.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
             <span style={{ fontSize: 14, color: T.textSubtlest }}>→</span>
-            <select
-              value={toId}
-              onChange={(e) => setToId(e.target.value)}
-              style={selectStyle}
-              aria-label="To status"
-            >
+            <select value={toId} onChange={(e) => setToId(e.target.value)}
+              style={selectStyle} aria-label="To status">
               <option value="">— target —</option>
-              {statuses.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
+              {statuses.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-            <button
-              onClick={submitAddTransition}
-              disabled={!toId || addLoading}
+            <button onClick={submitAddTransition} disabled={!toId || addLoading}
               style={{
-                height: 28,
-                padding: '0 10px',
-                fontSize: 12,
-                fontWeight: 500,
-                border: 'none',
-                borderRadius: 3,
+                height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+                border: 'none', borderRadius: 3,
                 background: toId ? 'var(--ds-background-brand-bold, #0C66E4)' : T.bgNeutral,
                 color: toId ? '#FFFFFF' : T.textSubtlest,
-                cursor: toId ? 'pointer' : 'not-allowed',
-                fontFamily: 'inherit',
-              }}
-            >
+                cursor: toId ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
+              }}>
               {addLoading ? '…' : 'Add'}
             </button>
           </div>
@@ -837,32 +916,24 @@ function DiagramView({
 
         {/* Transition rows */}
         <div style={{ overflowY: 'auto', flex: 1 }}>
-          {transitions.length === 0 && (
-            <div
-              style={{
-                padding: '20px 24px',
-                color: T.textSubtlest,
-                fontSize: 12,
-                textAlign: 'center',
-              }}
-            >
-              No transitions — add one above, or all statuses are reachable from any status
+          {visibleTransitions.length === 0 && (
+            <div style={{ padding: '20px 24px', color: T.textSubtlest, fontSize: 12, textAlign: 'center' }}>
+              {selectedNodeId
+                ? `No transitions for ${statusMap.get(selectedNodeId)?.name ?? 'this status'}`
+                : 'No transitions — add one above'}
             </div>
           )}
-          {transitions.map((t) => {
+          {visibleTransitions.map((t) => {
             const fromStatus = t.from_status_id ? statusMap.get(t.from_status_id) : null;
             const toStatus = statusMap.get(t.to_status_id);
+            const isHighlighted = highlightedTransitionIds?.has(t.id);
             return (
-              <div
-                key={t.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '6px 24px',
-                  borderBottom: `1px solid var(--ds-border-subtle, #F1F2F4)`,
-                }}
-              >
+              <div key={t.id} style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '6px 24px',
+                borderBottom: `1px solid var(--ds-border-subtle, #F1F2F4)`,
+                background: isHighlighted ? T.bgSelected : 'transparent',
+              }}>
                 {fromStatus ? (
                   <StatusPillInline name={fromStatus.name} category={fromStatus.category} />
                 ) : (
@@ -877,16 +948,9 @@ function DiagramView({
                 <button
                   onClick={() => deleteTransition.mutateAsync(t.id)}
                   style={{
-                    marginLeft: 'auto',
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                    color: T.textSubtlest,
-                    fontSize: 14,
-                    padding: '2px 4px',
-                    borderRadius: 3,
-                    lineHeight: 1,
-                    fontFamily: 'inherit',
+                    marginLeft: 'auto', border: 'none', background: 'none',
+                    cursor: 'pointer', color: T.textSubtlest, fontSize: 14,
+                    padding: '2px 4px', borderRadius: 3, lineHeight: 1, fontFamily: 'inherit',
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.color = T.textDanger;
@@ -896,9 +960,7 @@ function DiagramView({
                     (e.currentTarget as HTMLElement).style.color = T.textSubtlest;
                     (e.currentTarget as HTMLElement).style.background = 'none';
                   }}
-                  aria-label="Delete transition"
-                  title="Delete transition"
-                >
+                  aria-label="Delete transition" title="Delete transition">
                   ✕
                 </button>
               </div>
