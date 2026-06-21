@@ -2063,6 +2063,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       navigate(`/release-hub/${it.id}`);
       return;
     }
+    /* 2026-06-21: test_case entityKind navigates to the Repository tab
+       with ?case=<id> so the existing CaseDrawer opens. No side-panel
+       mounting — Repository owns the case detail surface. */
+    if (dataSource?.entityKind === 'test_case') {
+      navigate(`/testhub/repository?case=${it.id}`);
+      return;
+    }
     writeTicketOrigin({
       fromUrl: `${resolvedBaseUrl}/backlog`,
       fromLabel: 'Backlog',

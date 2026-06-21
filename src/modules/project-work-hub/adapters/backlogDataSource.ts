@@ -180,7 +180,7 @@ export interface BacklogDataSource {
    * Hub adapter — tasks live in the `tasks` table, not ph_issues.
    * Defaults to 'ph_issue' when omitted.
    */
-  entityKind?: 'task' | 'ph_issue' | 'release';
+  entityKind?: 'task' | 'ph_issue' | 'release' | 'test_case';
 }
 
 // ─── Mapper ──────────────────────────────────────────────────────────────────
