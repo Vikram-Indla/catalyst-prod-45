@@ -493,7 +493,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                       >
                         <span
                           style={{
-                            fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+                            fontFamily: 'var(--ds-font-family-code)',
                             fontSize: 12,
                             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                           }}

@@ -22,7 +22,7 @@ const CodeBlock = ({ code }: { code: string }) => (
       padding: '12px',
       overflow: 'auto',
       fontSize: '12px',
-      fontFamily: 'monospace',
+      fontFamily: 'var(--ds-font-family-code)',
       lineHeight: '1.5',
       color: T.text,
       margin: '8px 0',

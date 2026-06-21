@@ -7,7 +7,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronRight, ChevronDown, GripVertical, MoreHorizontal, Trash2 } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';
-import { canBeParentOf, HIERARCHY_LEVELS } from '@/types/hierarchy';
+import { useHierarchyConfig } from '@/contexts/HierarchyConfigContext';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
@@ -176,7 +176,8 @@ type DragState = {
 
 /* ── No children message ── */
 function NoChildrenMessage({ parentLevel, depth, onAdd, parent }: { parentLevel: number; depth: number; onAdd?: (parent: WorkItem) => void; parent: WorkItem }) {
-  const childLevel = HIERARCHY_LEVELS.find((l) => canBeParentOf(parentLevel, l.id));
+  const { levels, canBeParentOf } = useHierarchyConfig();
+  const childLevel = levels.find((l) => canBeParentOf(parentLevel, l.level));
   if (!childLevel) return null;
   return (
     <div style={{
@@ -387,6 +388,7 @@ function findParent(items: WorkItem[], targetId: string): WorkItem | null {
 
 export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete, onMove, onAddChild, allExpanded }: WorkItemTreeProps) {
   const { isDark } = useTheme();
+  const { canBeParentOf } = useHierarchyConfig();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const prevAllExpanded = useRef(allExpanded);
   const [dragState, setDragState] = useState<DragState>({ draggedItem: null, dragOverId: null, isValidDrop: false });

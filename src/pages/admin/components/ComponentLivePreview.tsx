@@ -164,7 +164,7 @@ export default function ComponentLivePreview({ entry }: ComponentLivePreviewProp
                     fontSize: 11,
                     color: token('color.text.subtle', '#44546F'),
                     textDecoration: 'none',
-                    fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", monospace',
+                    fontFamily: 'var(--ds-font-family-code)',
                   }}
                 >
                   {deferred.sourceFile}

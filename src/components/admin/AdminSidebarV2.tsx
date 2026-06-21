@@ -195,7 +195,6 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
               title: child.label,
               tooltip: `${pocket.label} › ${child.label}`,
               path: child.path,
-              icon: POCKET_ICONS[pocket.id],
             })),
           },
         ],
@@ -212,14 +211,12 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
               id: `${pocket.id}-${child.path}`,
               title: child.label,
               path: child.path,
-              icon: POCKET_ICONS[pocket.id],
             }))
           : [
               {
                 id: pocket.id,
                 title: pocket.label,
                 path: pocket.path,
-                icon: POCKET_ICONS[pocket.id],
               },
             ];
 

@@ -1571,4 +1571,42 @@
 .cc-dir__loading {
   flex: 1;
   min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-text-subtlest, #6B778C);
+  font-size: 13px;
+}
+
+/* Shell-phase action buttons (plain HTML, no @atlaskit CSS-in-JS) */
+.cc-dock__shell-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ds-text-subtle, #626F86);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.cc-dock__shell-action-btn:hover {
+  background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
+  color: var(--ds-text, #172B4D);
+}
+
+/* Shell-phase loading spinner */
+@keyframes cc-dock-spin {
+  to { transform: rotate(360deg); }
+}
+.cc-dock__shell-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--ds-border, #DFE1E6);
+  border-top-color: var(--ds-border-brand, #0C66E4);
+  border-radius: 50%;
+  animation: cc-dock-spin 0.8s linear infinite;
 }

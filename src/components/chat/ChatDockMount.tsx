@@ -9,40 +9,33 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
-// How long to defer DockDirectory mount after first FAB click (ms).
-// Gives the browser a paint frame so the FAB toggle feels instant.
-const DOCK_MOUNT_DEFER_MS = 0;
-
 /**
- * ChatDockMount — the always-on chat dock for the global app shell.
+ * ChatDockMount — always-on chat dock for the global app shell.
  *
- * Mounted once for authenticated users (see ChatDockRouteGuard in
- * FullAppRoutes). Starts COLLAPSED so only the launcher FAB renders and NO
- * realtime subscriptions open until the user expands it — protects the global
- * shell's performance budget (CLAUDE.md app-shell rule). Tab/open-conversation
- * state lives here so chat persists across route changes.
+ * Two-phase mount (2026-06-21 fix for FAB freeze):
+ *   Phase 1 (synchronous on click): shellVisible=true → dock shell renders
+ *     instantly with a spinner. Zero Atlaskit CSS-in-JS, zero DockDirectory hooks.
+ *   Phase 2 (after shell paints, ~32ms): double rAF + startTransition →
+ *     contentReady=true → DockDirectory mounts with all 8+ hooks.
  *
- * The legacy NewMessageModal was removed 2026-06-08 — its function is now
- * fully covered by the inline DockDirectory (unified people + conversations
- * list, commit cbffd9f2c). The two surfaces were stacking, producing the
- * "broken chat" double-modal collision.
+ * This eliminates the 45-second CDP freeze caused by React synchronously
+ * reconciling DockDirectory's entire hook tree (+ Atlaskit CSS-in-JS injection)
+ * during the FAB click handler.
  */
 export default function ChatDockMount() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(true);
-  // dockMounted: false until first open. Once true, dock subtree stays mounted forever.
-  // This + startTransition means first open renders DockDirectory incrementally (yields
-  // every 5ms) instead of a SyncLane commit that freezes the thread. Subsequent toggles
-  // are instant display:none flips — no re-mount, no hook re-run.
-  const [dockMounted, setDockMounted] = useState(false);
+  const [shellVisible, setShellVisible] = useState(false);
+  const [contentReady, setContentReady] = useState(false);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeId, setActiveId] = useState<string | undefined>(undefined);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const mountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rafRef = useRef<number | null>(null);
   const [, startTransition] = useTransition();
 
-  // Presence heartbeat — upsert user_presence every 30s when dock is expanded (finding 41)
+  // Presence heartbeat — upsert user_presence every 30s when dock is expanded
   useEffect(() => {
     if (collapsed || !user) {
       if (heartbeatRef.current) clearInterval(heartbeatRef.current);
@@ -59,26 +52,41 @@ export default function ChatDockMount() {
     return () => { if (heartbeatRef.current) clearInterval(heartbeatRef.current); };
   }, [collapsed, user]);
 
-  // Cleanup deferred mount timer on unmount
-  useEffect(() => () => { if (mountTimerRef.current) clearTimeout(mountTimerRef.current); }, []);
+  // Cancel pending timers on unmount
+  useEffect(() => () => {
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    if (timerRef.current !== null) clearTimeout(timerRef.current);
+  }, []);
 
-  // Schedule DockDirectory mount in next event loop tick so the FAB animation
-  // paints before the heavy subtree initializes.
-  const scheduleDockMount = useCallback(() => {
-    if (dockMounted) return;
-    if (mountTimerRef.current) return; // already scheduled
-    mountTimerRef.current = setTimeout(() => {
-      startTransition(() => setDockMounted(true));
-      mountTimerRef.current = null;
-    }, DOCK_MOUNT_DEFER_MS);
-  }, [dockMounted, startTransition]);
+  // Open dock: shell appears synchronously on this tick, heavy content mounts
+  // ~50ms later so shell paints first.
+  // Uses both rAF (visible tabs) and setTimeout fallback (hidden/CDP tabs — rAF
+  // pauses when document.hidden=true, but setTimeout always fires).
+  const openDock = useCallback(() => {
+    setCollapsed(false);
+    if (shellVisible) return; // already initialized, just uncollapse
+    setShellVisible(true);
+    let settled = false;
+    const settle = () => {
+      if (settled) return;
+      settled = true;
+      rafRef.current = null;
+      timerRef.current = null;
+      startTransition(() => setContentReady(true));
+    };
+    // rAF path: fires on next paint (~16ms) when tab is visible
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = requestAnimationFrame(settle);
+    });
+    // Fallback: fires at 50ms regardless of tab visibility
+    timerRef.current = setTimeout(settle, 50);
+  }, [shellVisible, startTransition]);
 
   const handleSelect = useCallback((id: string) => {
     setOpenIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
     setActiveId(id);
-    setCollapsed(false);
-    scheduleDockMount();
-  }, [scheduleDockMount]);
+    openDock();
+  }, [openDock]);
 
   const handleClose = useCallback((id: string) => {
     setOpenIds((prev) => prev.filter((x) => x !== id));
@@ -104,17 +112,13 @@ export default function ChatDockMount() {
         onSelect={handleSelect}
         onClose={handleClose}
         collapsed={collapsed}
-        dockMounted={dockMounted}
+        dockMounted={shellVisible}
+        contentReady={contentReady}
         onToggleCollapsed={() => {
-          // Toggle collapse IMMEDIATELY so the FAB responds in the same frame.
-          // No isPending guard — second click always works.
           if (collapsed) {
-            // Opening: reset to directory view, defer heavy mount
             setActiveId(undefined);
-            setCollapsed(false);
-            scheduleDockMount();
+            openDock();
           } else {
-            // Closing: instant hide
             setCollapsed(true);
           }
         }}

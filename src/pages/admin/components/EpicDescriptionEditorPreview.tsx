@@ -422,7 +422,7 @@ export function EpicDescriptionEditorPreview() {
             overflow: 'auto',
             maxHeight: 200,
             fontSize: 11,
-            fontFamily: 'monospace',
+            fontFamily: 'var(--ds-font-family-code)',
           }}
         >
           {editorContent[selectedVariantId]}

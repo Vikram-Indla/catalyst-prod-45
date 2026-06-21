@@ -48,6 +48,7 @@ const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
 const IssueFullPage = lazy(() => import("./pages/IssueFullPage"));
 const ChatDockMountLazy = lazy(() => import("./components/chat/ChatDockMount"));
 import { VoiceFlowProvider } from './features/voice-flow';
+import { HierarchyConfigProvider } from './contexts/HierarchyConfigContext';
 
 // Full app routes — only imported when ENABLE_FULL_APP=true
 const FullAppRoutes = ENABLE_FULL_APP
@@ -122,8 +123,14 @@ function App() {
       maxAge: THIRTY_DAYS_MS,
       buster: CACHE_VERSION,
       dehydrateOptions: {
-        // Don't persist mutations or pending queries
-        shouldDehydrateQuery: (q) => q.state.status === 'success',
+        // Exclude chat queries — they are session-scoped and never need
+        // 30-day persistence. Also prevents the localStorage serialization
+        // spike when 10+ chat queries complete simultaneously on dock open.
+        shouldDehydrateQuery: (q) => {
+          const k0 = q.queryKey[0];
+          if (k0 === 'chat' || k0 === 'chat-v2' || k0 === 'caty-suggestions') return false;
+          return q.state.status === 'success';
+        },
       },
     }}
   >
@@ -148,6 +155,7 @@ function App() {
       <UWVProvider>
       <AuthProvider>
         
+        <HierarchyConfigProvider>
         <LanguageProvider>
         <FeatureFlagProvider>
         <NavigationProvider>
@@ -242,6 +250,7 @@ function App() {
         </NavigationProvider>
         </FeatureFlagProvider>
         </LanguageProvider>
+        </HierarchyConfigProvider>
       </AuthProvider>
       </UWVProvider>
       </IntlProvider>

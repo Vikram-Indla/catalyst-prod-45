@@ -99,7 +99,7 @@ function VscodeLink({ path }: { path: string }) {
       style={{
         color: token('color.link', '#0C66E4'),
         textDecoration: 'none',
-        fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+        fontFamily: 'var(--ds-font-family-code)',
         fontSize: 12,
       }}
     >

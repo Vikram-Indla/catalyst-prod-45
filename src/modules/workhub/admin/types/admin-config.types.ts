@@ -3,6 +3,14 @@ export interface HierarchyLevel {
   level: number
   name: string
   jiraTypes: string[]
+  /** CSS color value for tree/badge visualization */
+  color?: string
+  /**
+   * Which levels are valid parents for items at this level.
+   * Empty array = root (no parent allowed).
+   * undefined = inherit sequential default (parent = level - 1).
+   */
+  parentLevels?: number[]
 }
 
 // Status mapping

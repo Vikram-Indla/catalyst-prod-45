@@ -121,7 +121,7 @@ function CategoryAccordion({
             <ChevronRightIcon label="" size="small" />
           )}
 
-          <span className="text-sm font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] font-['Inter']">
+          <span className="text-sm font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">
             {group.label}
           </span>
 

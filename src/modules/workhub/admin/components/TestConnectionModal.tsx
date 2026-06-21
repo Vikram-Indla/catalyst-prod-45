@@ -120,6 +120,15 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
 
         {/* Body */}
         <div style={{ padding: '20px' }}>
+          {isRunning && (
+            <div style={{
+              fontSize: 12, color: 'var(--wh-tx3)', marginBottom: 16,
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              <Spinner size="small" />
+              Connecting to Jira… this takes 3–5 seconds
+            </div>
+          )}
           {error && (
             <div style={{
               background: 'var(--wh-dng-bg)', border: '1px solid var(--wh-dng)',

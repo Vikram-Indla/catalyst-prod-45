@@ -11,7 +11,7 @@ function useIsDark() {
   return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
 }
 import type { WorkItem } from '@/types/hierarchy';
-import { HIERARCHY_LEVELS, canBeParentOf } from '@/types/hierarchy';
+import { useHierarchyConfig } from '@/contexts/HierarchyConfigContext';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusBadge } from './StatusBadge';
 import { StatusDropdown } from './StatusDropdown';
@@ -144,6 +144,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
   const updateField = useUpdateIssueField(projectKey);
   const allAssignees = useMemo(() => collectAssignees(allItems), [allItems]);
   const dk = useIsDark();
+  const { levels, canBeParentOf } = useHierarchyConfig();
 
   if (!item) {
     return (
@@ -158,7 +159,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
   }
 
   const parentItem = findParentItem(allItems, item.id);
-  const childLevel = HIERARCHY_LEVELS.find((l) => canBeParentOf(item.hierarchyLevel, l.id));
+  const childLevel = levels.find((l) => canBeParentOf(item.hierarchyLevel, l.level));
   const pct = item.stats.totalDescendants > 0
     ? Math.round((item.stats.completedCount / item.stats.totalDescendants) * 100)
     : 0;

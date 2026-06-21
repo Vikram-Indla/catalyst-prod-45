@@ -149,7 +149,7 @@ export default function CapacityDepartmentsPage() {
                   </td>
                   <td style={{ padding: "12px 16px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 14, fontFamily: "ui-monospace, monospace", fontWeight: 500, color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_id}</span>
+                      <span style={{ fontSize: 14, fontFamily: 'var(--ds-font-family-code)', fontWeight: 500, color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_id}</span>
                       <Tooltip content="Copy DID">
                         <button
                           onClick={() => copyToClipboard(dept.department_id)}

@@ -250,7 +250,7 @@ export default function HistoryTab() {
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', whiteSpace: 'nowrap', fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                     {new Date(row.applied_at).toLocaleString()}
                   </td>
-                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace', fontSize: 12 }}>
+                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>
                     {row.component_id}
                   </td>
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top' }}>
@@ -259,7 +259,7 @@ export default function HistoryTab() {
                     ) : (
                       <span
                         style={{
-                          fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+                          fontFamily: 'var(--ds-font-family-code)',
                           fontSize: 12,
                           color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                         }}
@@ -271,7 +271,7 @@ export default function HistoryTab() {
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top' }}>
                     <ActionChip action={row.action} />
                   </td>
-                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace', fontSize: 12 }}>
+                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>
                     v{row.version}
                   </td>
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', maxWidth: 320, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
@@ -320,7 +320,7 @@ export default function HistoryTab() {
                 <tbody>
                   {rollbackDiff.map(d => (
                     <tr key={d.key} style={{ borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }}>
-                      <td style={{ padding: 8, fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace' }}>{d.key}</td>
+                      <td style={{ padding: 8, fontFamily: 'var(--ds-font-family-code)' }}>{d.key}</td>
                       <td style={{ padding: 8 }}>{String(d.from ?? '—')}</td>
                       <td style={{ padding: 8 }}>{String(d.to ?? '—')}</td>
                       <td style={{ padding: 8 }}>

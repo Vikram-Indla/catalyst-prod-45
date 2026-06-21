@@ -94,7 +94,7 @@ function VscodeLink({ path, label }: { path: string; label?: string }) {
       style={{
         color: token('color.link', '#0C66E4'),
         textDecoration: 'none',
-        fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+        fontFamily: 'var(--ds-font-family-code)',
         fontSize: 12,
       }}
     >
@@ -129,7 +129,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
                 <td
                   style={{
                     padding: token('space.100', '8px'),
-                    fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+                    fontFamily: 'var(--ds-font-family-code)',
                     fontSize: 12,
                     color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     verticalAlign: 'top',

@@ -28,17 +28,17 @@ export interface AdminNavPocket {
 export const adminPockets: AdminNavPocket[] = [
   {
     id: 'users-access',
-    label: 'Users & Access',
+    label: 'Users',
     iconName: 'Users',
     path: '/admin/users-access',
     children: [
-      { label: 'Access Management', path: '/admin/access' },
-      { label: 'Resource Departments', path: '/admin/capacity-departments' },
+      { label: 'Access', path: '/admin/access' },
+      { label: 'Departments', path: '/admin/capacity-departments' },
     ],
   },
   {
     id: 'design-system',
-    label: 'Design system',
+    label: 'Design',
     iconName: 'Palette',
     path: '/admin/design-system',
     children: [
@@ -53,12 +53,13 @@ export const adminPockets: AdminNavPocket[] = [
     iconName: 'GitBranch',
     path: '/admin/workflows',
     children: [
-      { label: 'Status & Transitions', path: '/admin/workflows' },
+      { label: 'Statuses', path: '/admin/workflows' },
+      { label: 'Hierarchy', path: '/admin/workflows/hierarchy' },
     ],
   },
   {
     id: 'release-ops',
-    label: 'Release Operations',
+    label: 'Releases',
     iconName: 'Rocket',
     path: '/admin/release-ops',
   },
@@ -73,7 +74,6 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/connections',
     children: [
       { label: 'Jira', path: '/admin/connections/jira' },
-      { label: 'Hierarchy mapping', path: '/admin/connections/jira/hierarchy' },
       { label: 'Slack', path: '/admin/connections/slack' },
       { label: 'Notion', path: '/admin/connections/notion' },
       { label: 'Vercel', path: '/admin/connections/vercel' },
@@ -81,11 +81,11 @@ export const adminPockets: AdminNavPocket[] = [
   },
   {
     id: 'ai-governance',
-    label: 'AI Governance',
+    label: 'Governance',
     iconName: 'Sparkles',
     path: '/admin/ai-governance',
     children: [
-      { label: 'Translation logs', path: '/admin/ai-governance/translations' },
+      { label: 'Translations', path: '/admin/ai-governance/translations' },
     ],
   },
 ];
@@ -102,8 +102,8 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/avatars',
   '/admin/workflows',
   '/admin/release-ops',
+  '/admin/workflows/hierarchy',
   '/admin/connections/jira',
-  '/admin/connections/jira/hierarchy',
   '/admin/connections/slack',
   '/admin/connections/notion',
   '/admin/connections/vercel',

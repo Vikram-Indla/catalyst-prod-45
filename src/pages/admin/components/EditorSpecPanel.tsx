@@ -22,7 +22,7 @@ function PropTypeChip({ type }: { type: string }) {
     <code
       style={{
         fontSize: 11,
-        fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+        fontFamily: 'var(--ds-font-family-code)',
         background: token('color.background.neutral', '#091E420F'),
         color: token('color.text', '#172B4D'),
         padding: '1px 6px',
@@ -46,7 +46,7 @@ function PropRow({ prop }: { prop: ComponentPropSpec }) {
       <td style={{ padding: token('space.100', '8px'), minWidth: 140 }}>
         <span
           style={{
-            fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+            fontFamily: 'var(--ds-font-family-code)',
             fontSize: 12,
             fontWeight: 600,
             color: token('color.text', '#172B4D'),
@@ -70,7 +70,7 @@ function PropRow({ prop }: { prop: ComponentPropSpec }) {
           padding: token('space.100', '8px'),
           fontSize: 12,
           color: token('color.text.subtle', '#44546F'),
-          fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+          fontFamily: 'var(--ds-font-family-code)',
         }}
       >
         {prop.default ?? <span style={{ fontStyle: 'italic' }}>—</span>}
@@ -185,7 +185,7 @@ function CodeBlock({ code }: { code: string }) {
           border: `1px solid ${token('color.border', '#DCDFE4')}`,
           borderRadius: 6,
           fontSize: 12,
-          fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+          fontFamily: 'var(--ds-font-family-code)',
           color: token('color.text', '#172B4D'),
           overflowX: 'auto',
           whiteSpace: 'pre',
@@ -236,7 +236,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
                 borderRadius: 3,
                 background: token('color.background.neutral', '#091E420F'),
                 color: token('color.text.subtle', '#44546F'),
-                fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+                fontFamily: 'var(--ds-font-family-code)',
               }}
             >
               {spec.atlaskit_package}
@@ -263,7 +263,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
                 color: token('color.link', '#0C66E4'),
                 fontSize: 12,
                 textDecoration: 'none',
-                fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+                fontFamily: 'var(--ds-font-family-code)',
               }}
             >
               Open in VS Code ↗

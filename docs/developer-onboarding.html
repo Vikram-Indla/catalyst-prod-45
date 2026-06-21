@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst — Developer Onboarding</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; font-size: 14px; color: #172B4D; background: #F7F8F9; line-height: 1.5; }
+  .page { max-width: 900px; margin: 0 auto; padding: 40px 32px 64px; }
+  h1 { font-size: 26px; font-weight: 700; color: #172B4D; margin-bottom: 4px; }
+  .subtitle { color: #42526E; font-size: 14px; margin-bottom: 36px; }
+  h2 { font-size: 11px; font-weight: 700; color: #6B778C; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; }
+  .section { margin-bottom: 32px; }
+  .card { background: #fff; border: 1px solid #DFE1E6; border-radius: 6px; padding: 20px 22px; }
+  .card + .card { margin-top: 12px; }
+  .env-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .env-card { background: #fff; border-radius: 6px; padding: 20px 22px; }
+  .env-card.dev { border: 2px solid #0052CC; }
+  .env-card.prod { border: 2px solid #006644; }
+  .env-title { font-size: 15px; font-weight: 700; color: #172B4D; margin-bottom: 2px; }
+  .env-sub { font-size: 12px; color: #6B778C; margin-bottom: 16px; }
+  .field { margin-bottom: 12px; }
+  .field-label { font-size: 11px; font-weight: 700; color: #6B778C; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .field-value { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: #172B4D; background: #F4F5F7; border-radius: 3px; padding: 6px 10px; word-break: break-all; display: block; }
+  .field-value a { color: #0052CC; text-decoration: none; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 3px; }
+  .badge.blue { background: #DEEBFF; color: #0052CC; }
+  .badge.green { background: #E3FCEF; color: #006644; }
+  .badge.yellow { background: #FFFAE6; color: #974F0C; }
+  .badge.red { background: #FFEBE6; color: #BF2600; }
+  .steps { counter-reset: step; display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid #F4F5F7; }
+  .step:last-child { border-bottom: none; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: #DEEBFF; color: #0052CC; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .step-body { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 600; color: #172B4D; margin-bottom: 4px; }
+  .step-detail { font-size: 13px; color: #42526E; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; background: #F4F5F7; padding: 2px 5px; border-radius: 3px; color: #172B4D; }
+  pre { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; background: #1B2638; color: #B0BEC5; padding: 14px 16px; border-radius: 5px; overflow-x: auto; margin: 8px 0; line-height: 1.6; }
+  pre .c { color: #546E7A; }
+  pre .k { color: #80CBC4; }
+  pre .s { color: #C3E88D; }
+  .branch-table { width: 100%; border-collapse: collapse; }
+  .branch-table th { text-align: left; font-size: 11px; font-weight: 700; color: #6B778C; text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 12px 8px 0; border-bottom: 2px solid #DFE1E6; }
+  .branch-table td { font-size: 13px; padding: 10px 12px 10px 0; border-bottom: 1px solid #F4F5F7; vertical-align: top; }
+  .branch-table td:first-child { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; font-weight: 700; }
+  .warn-box { background: #FFFAE6; border-left: 4px solid #FF8B00; border-radius: 0 4px 4px 0; padding: 12px 16px; font-size: 13px; color: #7A4100; margin: 12px 0; }
+  .secret-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .secret-item { background: #F4F5F7; border-radius: 4px; padding: 10px 12px; }
+  .secret-key { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; font-weight: 700; color: #172B4D; }
+  .secret-desc { font-size: 11px; color: #6B778C; margin-top: 2px; }
+  .divider { border: none; border-top: 1px solid #DFE1E6; margin: 28px 0; }
+  .header-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .logo { width: 36px; height: 36px; border-radius: 8px; background: #0052CC; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 16px; flex-shrink: 0; }
+  .pill { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; vertical-align: middle; margin-left: 6px; }
+  .pill.optional { background: #EAE6FF; color: #403294; }
+  .pill.required { background: #FFEBE6; color: #BF2600; }
+  @media (max-width: 640px) {
+    .env-grid { grid-template-columns: 1fr; }
+    .secret-grid { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: white; }
+    .page { padding: 20px; }
+    pre { border: 1px solid #DFE1E6; background: #F4F5F7; color: #172B4D; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header-bar">
+    <div class="logo">C</div>
+    <div>
+      <h1>Catalyst — Developer Onboarding</h1>
+      <p class="subtitle" style="margin:0">github.com/Vikram-Indla/catalyst-prod-45 &nbsp;·&nbsp; Last updated 2026-06-21</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ENVIRONMENTS -->
+  <div class="section">
+    <h2>Two environments</h2>
+    <div class="env-grid">
+
+      <div class="env-card dev">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div class="env-title">Local / Staging</div>
+          <span class="badge blue">Dev</span>
+        </div>
+        <div class="env-sub">Your machine → staging cloud DB</div>
+
+        <div class="field">
+          <div class="field-label">Frontend</div>
+          <code class="field-value">http://localhost:8080</code>
+        </div>
+        <div class="field">
+          <div class="field-label">Supabase project ref</div>
+          <code class="field-value">cyijbdeuehohvhnsywig</code>
+        </div>
+        <div class="field">
+          <div class="field-label">Supabase URL</div>
+          <code class="field-value">https://cyijbdeuehohvhnsywig.supabase.co</code>
+        </div>
+        <div class="field">
+          <div class="field-label">Anon key (safe to share)</div>
+          <code class="field-value" style="font-size:10px;word-break:break-all">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5aWpiZGV1ZWhvaHZobnN5d2lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTcwOTYsImV4cCI6MjA5NzU3MzA5Nn0.KglsKP0u0P6vUOEQf6P-qBf1rgOJmL6viIvWy0vUFoA</code>
+        </div>
+        <div class="field">
+          <div class="field-label">Region</div>
+          <code class="field-value">eu-central-1</code>
+        </div>
+      </div>
+
+      <div class="env-card prod">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div class="env-title">Production</div>
+          <span class="badge green">Live</span>
+        </div>
+        <div class="env-sub">ksa-catalyst.com → production DB</div>
+
+        <div class="field">
+          <div class="field-label">Frontend URL</div>
+          <code class="field-value"><a href="https://ksa-catalyst.com" target="_blank">https://ksa-catalyst.com</a></code>
+        </div>
+        <div class="field">
+          <div class="field-label">Supabase project ref</div>
+          <code class="field-value">lmqwtldpfacrrlvdnmld</code>
+        </div>
+        <div class="field">
+          <div class="field-label">Supabase URL</div>
+          <code class="field-value">https://lmqwtldpfacrrlvdnmld.supabase.co</code>
+        </div>
+        <div class="field">
+          <div class="field-label">Anon key (safe to share)</div>
+          <code class="field-value" style="font-size:10px;word-break:break-all">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxtcXd0bGRwZmFjcnJsdmRubWxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NTkwODEsImV4cCI6MjA5NDQzNTA4MX0.CITWnsiEJEd1B-G4RReYZdaTFbBNvw8NnM8OrRvDX8s</code>
+        </div>
+        <div class="field">
+          <div class="field-label">Deploy via</div>
+          <code class="field-value">/admin/connections/vercel — NOT git push</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK START -->
+  <div class="section">
+    <h2>Quick start (new dev)</h2>
+    <div class="card">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Clone &amp; install</div>
+            <pre>git clone https://github.com/Vikram-Indla/catalyst-prod-45
+cd catalyst-prod-45
+npm install</pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Create .env.local</div>
+            <div class="step-detail">Copy staging env — already points to staging DB, no changes needed.</div>
+            <pre>cp .env.staging .env.local</pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Start dev server</div>
+            <pre>npm run dev   <span class="c"># → http://localhost:8080</span></pre>
+            <div class="step-detail" style="margin-top:6px">Port is pinned to <code>8080</code>. Never change it.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Get Supabase access <span class="pill optional">Optional — only if doing DB/fn work</span></div>
+            <div class="step-detail">Ask Vikram to invite you to the staging Supabase project. Then:</div>
+            <pre>brew install supabase/tap/supabase
+supabase login</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BRANCH MODEL -->
+  <div class="section">
+    <h2>Branch model</h2>
+    <div class="card">
+      <table class="branch-table">
+        <thead>
+          <tr>
+            <th>Branch</th>
+            <th>Purpose</th>
+            <th>DB</th>
+            <th>Frontend</th>
+            <th>Deploy how</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>main</td>
+            <td>Active development — push here</td>
+            <td>Staging</td>
+            <td>localhost:8080</td>
+            <td><code>npm run dev</code></td>
+          </tr>
+          <tr>
+            <td>feature/*</td>
+            <td>Feature branches — open PR → merge to main</td>
+            <td>Staging</td>
+            <td>localhost:8080</td>
+            <td>PR review</td>
+          </tr>
+          <tr>
+            <td>production</td>
+            <td>Frozen release — CI deploys to Vercel/ksa-catalyst.com</td>
+            <td>Production</td>
+            <td>ksa-catalyst.com</td>
+            <td><strong>Admin panel only</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="warn-box" style="margin-top:16px">
+        ⚠ Never push directly to <code>production</code> branch. All production deploys go through <strong>/admin/connections/vercel</strong> → Promote branch. This runs the GitHub API merge, applies DB migrations, and triggers Vercel build automatically.
+      </div>
+    </div>
+  </div>
+
+  <!-- GITHUB -->
+  <div class="section">
+    <h2>GitHub access</h2>
+    <div class="card">
+      <div class="field">
+        <div class="field-label">Repo</div>
+        <code class="field-value"><a href="https://github.com/Vikram-Indla/catalyst-prod-45" target="_blank">github.com/Vikram-Indla/catalyst-prod-45</a></code>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <div class="field-label">GitHub PAT — needed only for deploy admin panel <span class="pill optional">Optional</span></div>
+        <div class="step-detail" style="margin-bottom:8px;font-size:13px;color:#42526E">
+          GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
+        </div>
+        <div style="background:#F4F5F7;border-radius:4px;padding:12px;font-size:13px;">
+          <strong>Repository:</strong> Vikram-Indla/catalyst-prod-45<br>
+          <strong>Required permissions:</strong>
+          <ul style="margin:6px 0 0 18px;color:#42526E">
+            <li><code>Actions</code> — Read &amp; Write (run history, trigger deploys)</li>
+            <li><code>Contents</code> — Read &amp; Write (branch list, merges)</li>
+          </ul>
+        </div>
+        <div style="font-size:12px;color:#6B778C;margin-top:8px">Paste into: /admin/connections/vercel → Configuration → GitHub PAT</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENV FILE -->
+  <div class="section">
+    <h2>.env.local contents</h2>
+    <div class="card">
+      <pre><span class="c"># Copy from .env.staging — or paste this directly</span>
+
+<span class="k">VITE_SUPABASE_URL</span>=<span class="s">https://cyijbdeuehohvhnsywig.supabase.co</span>
+<span class="k">VITE_SUPABASE_PUBLISHABLE_KEY</span>=<span class="s">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5aWpiZGV1ZWhvaHZobnN5d2lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTcwOTYsImV4cCI6MjA5NzU3MzA5Nn0.KglsKP0u0P6vUOEQf6P-qBf1rgOJmL6viIvWy0vUFoA</span>
+
+<span class="c"># Feature flags (all enabled for dev)</span>
+<span class="k">VITE_ENABLE_FILTER_TO_KANBAN</span>=<span class="s">true</span>
+<span class="k">VITE_ENABLE_FILTER_TO_ROADMAP</span>=<span class="s">true</span>
+<span class="k">VITE_ENABLE_FILTER_TO_DASHBOARD</span>=<span class="s">true</span>
+<span class="k">VITE_ENABLE_FILTER_WHATSAPP_AI_SUMMARY</span>=<span class="s">true</span>
+<span class="k">VITE_VOICE_DICTATION_ENABLED</span>=<span class="s">true</span></pre>
+    </div>
+  </div>
+
+  <!-- EDGE FUNCTION SECRETS -->
+  <div class="section">
+    <h2>Edge function secrets <span class="pill optional">Only if deploying functions</span></h2>
+    <div class="card">
+      <div class="step-detail" style="margin-bottom:14px;font-size:13px;color:#42526E">
+        Get values from Vikram. Run once per project ref (staging or prod):
+      </div>
+      <pre>supabase secrets set --project-ref cyijbdeuehohvhnsywig \
+  ANTHROPIC_API_KEY=&lt;key&gt; \
+  GEMINI_API_KEY=&lt;key&gt; \
+  JIRA_BASE_URL=https://digital-transformation.atlassian.net \
+  JIRA_EMAIL=vikramataol@gmail.com \
+  JIRA_API_TOKEN=&lt;token&gt; \
+  RESEND_API_KEY=&lt;key&gt;</pre>
+      <div class="secret-grid" style="margin-top:14px">
+        <div class="secret-item"><div class="secret-key">ANTHROPIC_API_KEY</div><div class="secret-desc">Claude AI — CATY features</div></div>
+        <div class="secret-item"><div class="secret-key">GEMINI_API_KEY</div><div class="secret-desc">Google Gemini — story improve, digests</div></div>
+        <div class="secret-item"><div class="secret-key">JIRA_BASE_URL</div><div class="secret-desc">digital-transformation.atlassian.net</div></div>
+        <div class="secret-item"><div class="secret-key">JIRA_EMAIL</div><div class="secret-desc">vikramataol@gmail.com</div></div>
+        <div class="secret-item"><div class="secret-key">JIRA_API_TOKEN</div><div class="secret-desc">Atlassian API token — get from Vikram</div></div>
+        <div class="secret-item"><div class="secret-key">RESEND_API_KEY</div><div class="secret-desc">OTP email delivery</div></div>
+      </div>
+      <div style="font-size:12px;color:#6B778C;margin-top:12px">Production secrets are already set — do not re-run against prod ref unless Vikram asks.</div>
+    </div>
+  </div>
+
+  <!-- DEPLOY EDGE FUNCTIONS -->
+  <div class="section">
+    <h2>Deploy edge functions <span class="pill optional">Only if you changed supabase/functions/</span></h2>
+    <div class="card">
+      <pre><span class="c"># Staging</span>
+SUPABASE_ACCESS_TOKEN=$(cat ~/.config/supabase/access-token) \
+  supabase functions deploy --project-ref cyijbdeuehohvhnsywig
+
+<span class="c"># Production (only Vikram does this, or via CI)</span>
+SUPABASE_ACCESS_TOKEN=$(cat ~/.config/supabase/access-token) \
+  supabase functions deploy --project-ref lmqwtldpfacrrlvdnmld</pre>
+    </div>
+  </div>
+
+  <!-- SUPABASE INVITE -->
+  <div class="section">
+    <h2>Supabase project access</h2>
+    <div class="card">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:#E3FCEF;color:#006644">1</div>
+          <div class="step-body">
+            <div class="step-title">Ask Vikram to invite you</div>
+            <div class="step-detail">Go to <a href="https://supabase.com/dashboard/project/cyijbdeuehohvhnsywig/settings/team" style="color:#0052CC">Supabase dashboard → staging project → Settings → Team</a> → Invite by email</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:#E3FCEF;color:#006644">2</div>
+          <div class="step-body">
+            <div class="step-title">Service role key <span class="pill required">Private — never commit</span></div>
+            <div class="step-detail">Get from Vikram via secure channel. Needed only for running migrations locally or debugging RLS with service-role access. Found at: Supabase dashboard → Project Settings → API → service_role key</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT NOT TO DO -->
+  <div class="section">
+    <h2>Rules — do not break these</h2>
+    <div class="card">
+      <table class="branch-table">
+        <thead>
+          <tr><th>Rule</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:#BF2600;font-family:inherit">Never push to <code>production</code> branch</td>
+            <td>CI runs DB migrations automatically on push. Wrong code = broken prod DB</td>
+          </tr>
+          <tr>
+            <td style="color:#BF2600;font-family:inherit">Never commit .env.local or service role keys</td>
+            <td>.env.local is gitignored. Service role key bypasses all RLS</td>
+          </tr>
+          <tr>
+            <td style="color:#BF2600;font-family:inherit">Never change dev server port from 8080</td>
+            <td>Pinned in vite.config — changing breaks shared tooling</td>
+          </tr>
+          <tr>
+            <td style="color:#BF2600;font-family:inherit">Never run migrations against prod without Vikram</td>
+            <td>Production DB migrations cannot be auto-rolled back</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div style="font-size:12px;color:#6B778C;text-align:center">Catalyst · Vikram-Indla/catalyst-prod-45 · generated 2026-06-21</div>
+
+</div>
+</body>
+</html>

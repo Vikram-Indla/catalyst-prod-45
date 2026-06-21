@@ -137,17 +137,17 @@ export default function RoutingTaxonomyPage() {
                   <SeverityBadge severity={v.severity} />
                 </td>
                 <td style={{ padding: '8px 12px' }}>
-                  <span style={{ fontFamily: 'monospace', fontSize: 11 }}>{v.rule_id}</span>
+                  <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>{v.rule_id}</span>
                   <br />
                   <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>{v.rule_name}</span>
                 </td>
-                <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: 11 }}>
+                <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>
                   {v.file}:{v.line}
                 </td>
-                <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: 11 }}>
+                <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>
                   {v.path || v.text}
                 </td>
-                <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: 11, color: token('color.text.success', '#216E4E') }}>
+                <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: token('color.text.success', '#216E4E') }}>
                   {v.fix || '—'}
                 </td>
               </tr>

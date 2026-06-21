@@ -398,7 +398,7 @@ const SNIPPET_STYLE: React.CSSProperties = {
   borderRadius: 4,
   padding: token('space.150', '12px'),
   overflowX: 'auto',
-  fontFamily: 'ui-monospace, "Roboto Mono", monospace',
+  fontFamily: 'var(--ds-font-family-code)',
   marginTop: token('space.150', '12px'),
   whiteSpace: 'pre',
 };
@@ -792,7 +792,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                           style={{
                             color: token('color.link', '#0C66E4'),
                             textDecoration: 'none',
-                            fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+                            fontFamily: 'var(--ds-font-family-code)',
                             fontSize: 11,
                           }}
                         >
@@ -946,7 +946,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
           style={{
             marginTop: token('space.100', '8px'),
             fontSize: 12,
-            fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", monospace',
+            fontFamily: 'var(--ds-font-family-code)',
             color: token('color.text.subtle', '#44546F'),
           }}
         >
@@ -1008,7 +1008,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
                     style={{
                       color: token('color.link', '#0C66E4'),
                       textDecoration: 'none',
-                      fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+                      fontFamily: 'var(--ds-font-family-code)',
                       fontSize: 12,
                     }}
                   >

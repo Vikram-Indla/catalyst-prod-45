@@ -437,7 +437,7 @@ export default function EpicDescriptionEditorPreview() {
               padding: token('space.200', '16px'),
               backgroundColor: token('color.background.neutral.subtle', '#F1F2F4'),
               fontSize: 11,
-              fontFamily: '"Monaco", "Courier New", monospace',
+              fontFamily: 'var(--ds-font-family-code)',
               color: token('color.text', '#172B4D'),
               overflowX: 'auto',
               maxHeight: 360,

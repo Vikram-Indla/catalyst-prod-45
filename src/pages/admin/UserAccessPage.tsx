@@ -353,8 +353,7 @@ export default function UserAccessPage() {
         padding: '24px 32px 48px',
         maxWidth: 1280,
         color: 'var(--ds-text, #292A2E)',
-        fontFamily:
-          '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
       }}
     >
       {/* Header — Jira admin parity: H1 24/653 + subtitle + right-aligned primary button */}
@@ -500,7 +499,7 @@ export default function UserAccessPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <tr key={user.id}>
-                    <td style={{ padding: '12px 12px 12px 0', fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace', fontSize: 13, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
+                    <td style={{ padding: '12px 12px 12px 0', fontFamily: 'var(--ds-font-family-code)', fontSize: 13, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
                       {user.rid || '—'}
                     </td>
                     <td style={{ padding: '12px 12px 12px 0', fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>{user.name}</td>

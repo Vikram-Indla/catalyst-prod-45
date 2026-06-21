@@ -55,7 +55,7 @@ function VscodeLink({ file, line }: { file: string; line: number }) {
       style={{
         color: token('color.link', '#0C66E4'),
         textDecoration: 'none',
-        fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+        fontFamily: 'var(--ds-font-family-code)',
         fontSize: 12,
       }}
     >
@@ -209,7 +209,7 @@ export default function ADSViolationsPanel() {
                     <div
                       style={{
                         marginTop: 4,
-                        fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+                        fontFamily: 'var(--ds-font-family-code)',
                         fontSize: 11,
                         color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                         whiteSpace: 'nowrap',

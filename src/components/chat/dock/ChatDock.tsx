@@ -35,18 +35,21 @@ interface ChatDockProps {
   onClose: (id: string) => void;
   collapsed?: boolean;
   /**
-   * True once the user has opened the dock at least once. Dock subtree
-   * (including DockDirectory with its 10+ hooks) only mounts after this flag
-   * is set — prevents heavy initialization on page load. Set by ChatDockMount
-   * via startTransition so the first mount is non-blocking (TransitionLane,
-   * not SyncLane — yields every 5ms, never freezes the thread).
+   * True once the dock shell has been shown (first FAB click). Controls whether
+   * the dock panel is mounted at all. Kept as a separate flag from contentReady
+   * so conversations start fetching during the shell phase (pre-warming cache).
    */
   dockMounted?: boolean;
+  /**
+   * True once DockDirectory is allowed to mount (~32ms after first open).
+   * Deferred via double rAF + startTransition in ChatDockMount so DockDirectory's
+   * 8+ hooks don't block the FAB click handler.
+   */
+  contentReady?: boolean;
   onToggleCollapsed: () => void;
   /**
    * Clears the active conversation so the inline DockDirectory becomes
-   * the visible surface. Replaces the legacy onNewMessage modal (removed
-   * 2026-06-08 — directory now covers both "browse" and "start new" inline).
+   * the visible surface.
    */
   onFocusDirectory?: () => void;
   onPopOut?: () => void;
@@ -143,6 +146,7 @@ export function ChatDock({
   onClose,
   collapsed = false,
   dockMounted = false,
+  contentReady = false,
   onToggleCollapsed,
   onFocusDirectory,
   onPopOut,
@@ -205,11 +209,86 @@ export function ChatDock({
     </button>
   );
 
-  // Before first open: render only the FAB (no DockDirectory = no 10+ Supabase queries).
-  // startTransition in ChatDockMount sets dockMounted=true on first toggle, causing React
-  // to mount the dock subtree incrementally (TransitionLane, yields every 5ms).
+  // Phase 0: before first FAB click — FAB only, zero dock mount cost.
   if (!dockMounted) return fab;
 
+  // Phase 1: shell visible but DockDirectory not yet ready.
+  // Plain HTML buttons + CSS spinner — zero @atlaskit CSS-in-JS injection.
+  // Dock appears on the SAME FRAME as the click. Content mounts ~32ms later.
+  if (!contentReady) {
+    return (
+      <>
+        {fab}
+        <div
+          className="cc-dock"
+          role="complementary"
+          aria-label="Messages"
+          style={{ display: collapsed ? 'none' : undefined }}
+        >
+          <div className="cc-dock__headerwrap" role="banner">
+            <div className="cc-dock__accent" aria-hidden />
+            <div className="cc-dock__titlebar">
+              <span className="cc-dock__badge" aria-hidden>
+                <CatyMoodFace state="content" size={26} />
+              </span>
+              <div className="cc-dock__title">
+                <span className="cc-dock__wordmark">Messages</span>
+              </div>
+              <div className="cc-dock__actions">
+                <button
+                  type="button"
+                  className="cc-dock__shell-action-btn"
+                  aria-label="New conversation"
+                  title="New conversation"
+                  onClick={() => { onFocusDirectory?.(); setDirFocusTick((t) => t + 1); }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden>
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className="cc-dock__shell-action-btn"
+                  aria-label="Open full screen"
+                  title="Open full screen"
+                  onClick={onPopOut}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                    <polyline points="15 3 21 3 21 9" />
+                    <polyline points="9 21 3 21 3 15" />
+                    <line x1="21" y1="3" x2="14" y2="10" />
+                    <line x1="3" y1="21" x2="10" y2="14" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className="cc-dock__shell-action-btn"
+                  aria-label="Close"
+                  title="Close"
+                  onClick={onToggleCollapsed}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="cc-mode-tabs" role="tablist" aria-label="Chat modes">
+              <button type="button" role="tab" className="cc-mode-tab cc-mode-tab--active" aria-selected={true}>Messages</button>
+              <button type="button" role="tab" className="cc-mode-tab" aria-selected={false}>Assistant</button>
+            </div>
+          </div>
+          <div className="cc-dock__messages-body" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+            <div className="cc-dock__shell-spinner" aria-label="Loading messages…" role="status" />
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Phase 2: full dock with DockDirectory and all hooks.
   return (
     <>
       {fab}
