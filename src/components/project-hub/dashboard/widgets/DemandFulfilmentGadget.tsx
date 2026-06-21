@@ -244,6 +244,8 @@ interface EpicRow {
   status_category?: string;
   assignee_display_name?: string | null;
   assignee_avatar?: string | null;
+  jira_created_at?: string | null;
+  updated_at?: string | null;
 }
 
 interface DemandRow {
@@ -429,6 +431,38 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
   });
 }
 
+// Returns distinct Epic statuses for the project ordered by workflow stage:
+// To Do < In Progress < Done (within each category, alphabetical).
+function useEpicStatusOrder(projectKey: string) {
+  return useQuery({
+    queryKey: ['epic-status-order', projectKey],
+    queryFn: async (): Promise<string[]> => {
+      const { data } = await (supabase as any)
+        .from('ph_issues')
+        .select('status, status_category')
+        .eq('project_key', projectKey)
+        .eq('issue_type', 'Epic')
+        .is('jira_removed_at', null)
+        .not('status', 'is', null)
+        .limit(500);
+      if (!data) return [];
+      const catOrder: Record<string, number> = { 'To Do': 1, 'In Progress': 2, 'Done': 3 };
+      const seen = new Set<string>();
+      const withCat: { status: string; catRank: number }[] = [];
+      for (const row of data) {
+        if (!row.status || seen.has(row.status)) continue;
+        seen.add(row.status);
+        withCat.push({ status: row.status, catRank: catOrder[row.status_category ?? ''] ?? 2 });
+      }
+      return withCat
+        .sort((a, b) => a.catRank - b.catRank || a.status.localeCompare(b.status))
+        .map((x) => x.status);
+    },
+    enabled: !!projectKey,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 function useDemandData(projectKey: string, settings: GadgetSettings) {
   return useQuery({
     queryKey: ['demand-fulfilment', projectKey, settings],
@@ -521,7 +555,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       // 3) Fetch epics (need issue_key for child lookup, summary, status).
       const { data: epics } = await (supabase as any)
         .from('ph_issues')
-        .select('id, issue_key, summary, status, project_key')
+        .select('id, issue_key, summary, status, status_category, project_key, jira_created_at, updated_at')
         .in('id', epicIds)
         .eq('issue_type', 'Epic')
         .eq('project_key', projectKey)
@@ -612,6 +646,9 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
           issue_key: epic.issue_key,
           summary: epic.summary ?? '',
           status: epic.status,
+          status_category: epic.status_category ?? null,
+          jira_created_at: epic.jira_created_at ?? null,
+          updated_at: epic.updated_at ?? null,
           ...b,
           stories: storyListByEpicKey.get(epicKey) ?? [],
         });
@@ -1090,6 +1127,7 @@ function DemandRowItem({
   onToggle,
   projectKey,
   isUnlinkedEpic,
+  epicStatusOrder = [],
 }: {
   row: DemandRow;
   threshold: number;
@@ -1097,6 +1135,7 @@ function DemandRowItem({
   onToggle: () => void;
   projectKey: string;
   isUnlinkedEpic?: boolean;
+  epicStatusOrder?: string[];
 }) {
   const { state, daysLeft } = computeRag(row.target_complete, threshold);
   const pct = row.total > 0 ? Math.round((row.done / row.total) * 100) : 0;
@@ -1113,7 +1152,6 @@ function DemandRowItem({
       else next.add(id);
       return next;
     });
-
   return (
     <div style={{ borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
       <div
@@ -1461,7 +1499,7 @@ function DemandRowItem({
                       onClick={() => hasStories && toggleEpic(epic.id)}
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: '20px 90px 1fr 80px auto',
+                        gridTemplateColumns: '20px 90px 1fr 80px auto auto',
                         alignItems: 'center',
                         gap: 8,
                         padding: '6px 16px 6px 28px',
@@ -1678,6 +1716,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
   );
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey, settings);
+  const { data: epicStatusOrder = [] } = useEpicStatusOrder(projectKey);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const toggleRow = (id: string) => setExpandedRows((prev) => {
     const next = new Set(prev);
@@ -2045,6 +2084,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                   onToggle={() => toggleRow(row.id)}
                   projectKey={projectKey}
                   isUnlinkedEpic={row.isUnlinkedEpic}
+                  epicStatusOrder={epicStatusOrder}
                 />
               ))
             )}

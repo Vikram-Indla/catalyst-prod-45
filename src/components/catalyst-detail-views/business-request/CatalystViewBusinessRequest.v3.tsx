@@ -41,7 +41,6 @@ import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { BUSINESS_REQUEST_SUBTASK_TYPES } from '../shared/parent-rules';
 import type { CatalystViewBaseProps } from '../shared/types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
-import { ReplayOverlay } from '@/components/replay/ReplayOverlay';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
@@ -66,8 +65,6 @@ export default function CatalystViewBusinessRequestV3({
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
-  const [showReplay, setShowReplay] = useState(false);
-
   const openDetail = useGlobalSearchStore((s) => s.openDetail);
 
   const brAsIssueLike = useMemo(
@@ -176,29 +173,6 @@ export default function CatalystViewBusinessRequestV3({
                 issue={brAsIssueLike}
                 onApplyDescription={handleApplyDescription}
               />
-              {request?.request_key && (
-                <button
-                  onClick={() => setShowReplay(true)}
-                  title="Replay lifecycle"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    padding: '4px 8px',
-                    border: '1px solid var(--ds-border, #DFE1E6)',
-                    borderRadius: 3,
-                    background: 'var(--ds-surface, #FFFFFF)',
-                    color: 'var(--ds-text-subtle, #42526E)',
-                    fontSize: 12,
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    fontFamily: 'var(--ds-font-family-body)',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  ▶ Replay
-                </button>
-              )}
             </>
           )
         }
@@ -267,12 +241,6 @@ export default function CatalystViewBusinessRequestV3({
           currentProductId={request?.product_id ?? null}
           onUpdate={updateField}
           onMoved={onClose}
-        />
-      )}
-      {showReplay && request?.request_key && (
-        <ReplayOverlay
-          rootKey={request.request_key}
-          onClose={() => setShowReplay(false)}
         />
       )}
     </>

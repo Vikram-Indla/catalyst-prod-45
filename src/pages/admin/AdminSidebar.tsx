@@ -9,7 +9,6 @@ import DatabaseIcon from '@atlaskit/icon/core/database';
 import ShieldIcon from '@atlaskit/icon/core/shield';
 import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
 import StarIcon from '@atlaskit/icon/core/star-starred';
-import VidPlayIcon from '@atlaskit/icon/core/video-play';
 import FieldDropdownIcon from '@atlaskit/icon/core/field-dropdown';
 
 const T = {
@@ -88,14 +87,6 @@ const collapsibleSections: CollapsibleSection[] = [
     ],
   },
   {
-    id: 'replay',
-    label: 'Replay',
-    icon: VidPlayIcon,
-    items: [
-      { id: 'replay-admin', label: 'Replay settings', path: '/admin/replay', icon: VidPlayIcon },
-    ],
-  },
-  {
     id: 'test-hub',
     label: 'Test Hub',
     icon: FieldDropdownIcon,
@@ -137,7 +128,6 @@ export function AdminSidebar() {
     'workflows': false,
     'ai-governance': false,
     'work-items': true,
-    'replay': false,
     'test-hub': true,
   });
 

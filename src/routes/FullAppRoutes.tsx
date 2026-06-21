@@ -215,7 +215,6 @@ const BoardManagerPage = lazy(() => import("../components/boards/BoardManagerPag
 const BoardCanvasPage = lazy(() => import("../components/boards/BoardCanvasPage"));
 // UserNotificationSettingsPage DEPRECATED 2026-06-20 — route removed
 const PlannerPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.PlannerPage })));
-const ReplayPage = lazy(() => import("../pages/replay/ReplayPage"));
 const TasksDetailPage = lazy(() => import("../modules/tasks/pages/TasksDetailPage"));
 const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m.KanbanPage })));
 /* 2026-06-17: Tasks Hub filters — canonical FiltersListPage / FilterDetailPage
@@ -278,7 +277,6 @@ const VercelConnectionPage = lazy(() => import("../pages/admin/connections/Verce
 // WorkHubSyncLogs DEPRECATED 2026-06-20 — route removed
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
-const ReplayAdminPage = lazy(() => import("../pages/admin/ReplayAdminPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 const FieldRegistryPage = lazy(() => import("../pages/admin/FieldRegistryPage"));
 const FieldLayoutPage = lazy(() => import("../pages/admin/FieldLayoutPage"));
@@ -663,19 +661,20 @@ export default function FullAppRoutes() {
         <Route path="/taskhub-kanban" element={<Navigate to="/tasks/board" replace />} />
 
         {/* TestHub */}
-        <Route path="/testhub" element={<Navigate to="/testhub/dashboard" replace />} />
-        <Route path="/testhub/dashboard" element={<S><TestHubDashboardPage /></S>} />
-        <Route path="/testhub/my-work" element={<S><TestHubMyWorkPage /></S>} />
-        <Route path="/testhub/repository" element={<S><TestHubRepositoryPage /></S>} />
-        <Route path="/testhub/cycles" element={<S><TestHubCyclesPage /></S>} />
-        <Route path="/testhub/cycles/:id" element={<S><TestHubCycleDetailPage /></S>} />
-        <Route path="/testhub/cycles/:id/execute" element={<S><TestHubExecutionPage /></S>} />
-        <Route path="/testhub/sets" element={<S><TestHubSetsPage /></S>} />
-        <Route path="/testhub/sets/:id" element={<S><TestHubSetDetailPage /></S>} />
-        <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
-        <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
-        <Route path="/testhub/reports" element={<S><TestHubReportsPage /></S>} />
-        <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
+        <Route path="/testhub" element={<Navigate to="/testhub/BAU/dashboard" replace />} />
+        <Route path="/testhub/dashboard" element={<Navigate to="/testhub/BAU/dashboard" replace />} />
+        <Route path="/testhub/:projectKey/dashboard" element={<S><TestHubDashboardPage /></S>} />
+        <Route path="/testhub/:projectKey/my-work" element={<S><TestHubMyWorkPage /></S>} />
+        <Route path="/testhub/:projectKey/repository" element={<S><TestHubRepositoryPage /></S>} />
+        <Route path="/testhub/:projectKey/cycles" element={<S><TestHubCyclesPage /></S>} />
+        <Route path="/testhub/:projectKey/cycles/:id" element={<S><TestHubCycleDetailPage /></S>} />
+        <Route path="/testhub/:projectKey/cycles/:id/execute" element={<S><TestHubExecutionPage /></S>} />
+        <Route path="/testhub/:projectKey/sets" element={<S><TestHubSetsPage /></S>} />
+        <Route path="/testhub/:projectKey/sets/:id" element={<S><TestHubSetDetailPage /></S>} />
+        <Route path="/testhub/:projectKey/defects" element={<S><TestHubDefectsPage /></S>} />
+        <Route path="/testhub/:projectKey/traceability" element={<S><TestHubTraceabilityPage /></S>} />
+        <Route path="/testhub/:projectKey/reports" element={<S><TestHubReportsPage /></S>} />
+        <Route path="/testhub/:projectKey/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +
@@ -768,7 +767,6 @@ export default function FullAppRoutes() {
         <Route path="/planner" element={<Navigate to="/tasks/overview" replace />} />
         <Route path="/planner/*" element={<Navigate to="/tasks/overview" replace />} />
 
-        <Route path="/replay" element={<S><ReplayPage /></S>} />
 
         <Route path="/planhub" element={<ModuleGuard moduleCode="planner"><S><PlanLibraryPage /></S></ModuleGuard>} />
         <Route path="/planhub/plan/:planId" element={<S><PlanEditorPage /></S>} />
@@ -957,7 +955,6 @@ export default function FullAppRoutes() {
           <Route path="workhub/activity-sync" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="workhub/*" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="ai-governance/translations" element={<S><AiTranslationsAuditPage /></S>} />
-          <Route path="replay" element={<S><ReplayAdminPage /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />
           <Route path="storybook" element={<S><AdminStorybookPage /></S>} />
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
