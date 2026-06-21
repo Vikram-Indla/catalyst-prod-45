@@ -105,10 +105,26 @@ interface DiffCommit {
   date: string;
 }
 
-interface BranchDiff {
+interface BranchItem {
+  name: string;
+  sha: string | null;
+}
+
+interface FileGroup {
+  label: string;
+  count: number;
+  emoji: string;
+}
+
+interface BranchSummary {
   ahead_by: number;
   behind_by: number;
   commits: DiffCommit[];
+  has_migrations: boolean;
+  migration_files: string[];
+  file_groups: FileGroup[];
+  total_files_changed: number;
+  ai_summary: string | null;
 }
 
 const FONT =
@@ -371,9 +387,9 @@ function EnvCard({
   );
 }
 
-// ─── Promote panel ────────────────────────────────────────────────────────────
+// ─── Smart promote panel ──────────────────────────────────────────────────────
 
-function PromotePanel({
+function SmartPromotePanel({
   call,
   onDone,
   gateEnabled,
@@ -382,39 +398,96 @@ function PromotePanel({
   onDone: () => void;
   gateEnabled: boolean;
 }) {
-  const [diff, setDiff] = useState<BranchDiff | null>(null);
-  const [loadingDiff, setLoadingDiff] = useState(false);
+  const [branches, setBranches] = useState<BranchItem[]>([]);
+  const [loadingBranches, setLoadingBranches] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState('main');
+  const [summary, setSummary] = useState<BranchSummary | null>(null);
+  const [loadingSummary, setLoadingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
   const [promoting, setPromoting] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
-  const [diffError, setDiffError] = useState<string | null>(null);
+  const [showCommits, setShowCommits] = useState(false);
 
-  const loadDiff = useCallback(async () => {
-    setLoadingDiff(true);
-    setDiffError(null);
+  const loadBranches = useCallback(async () => {
+    setLoadingBranches(true);
     try {
-      const d = await call('POST', { action: 'get_branch_diff' }) as BranchDiff;
-      setDiff(d);
-    } catch (e) {
-      setDiffError(e instanceof Error ? e.message : 'Failed to load diff');
+      const res = await call('POST', { action: 'list_branches' }) as { branches: BranchItem[] };
+      setBranches(res.branches ?? []);
+    } catch {
+      // non-fatal — fallback to default select
     } finally {
-      setLoadingDiff(false);
+      setLoadingBranches(false);
     }
   }, [call]);
 
-  const promote = useCallback(async () => {
+  useEffect(() => { loadBranches(); }, [loadBranches]);
+
+  const loadSummary = useCallback(async (branch: string) => {
+    setSummary(null);
+    setSummaryError(null);
+    setLoadingSummary(true);
+    try {
+      const res = await call('POST', { action: 'get_branch_summary', source_branch: branch }) as BranchSummary;
+      setSummary(res);
+    } catch (e) {
+      setSummaryError(e instanceof Error ? e.message : 'Failed to load summary');
+    } finally {
+      setLoadingSummary(false);
+    }
+  }, [call]);
+
+  useEffect(() => {
+    setShowConfirm(false);
+    setConfirmText('');
+    setResult(null);
+    setShowCommits(false);
+    const t = setTimeout(() => loadSummary(selectedBranch), 400);
+    return () => clearTimeout(t);
+  }, [selectedBranch, loadSummary]);
+
+  const handlePromote = useCallback(async () => {
     setPromoting(true);
     setResult(null);
     try {
-      const d = await call('POST', { action: 'promote_to_production' }) as { ok: boolean; message: string };
-      setResult(d);
-      setDiff(null);
-      onDone();
+      const res = await call('POST', { action: 'promote_to_production', source_branch: selectedBranch }) as { ok: boolean; message: string };
+      setResult(res);
+      setShowConfirm(false);
+      if (res.ok) onDone();
     } catch (e) {
       setResult({ ok: false, message: e instanceof Error ? e.message : 'Promotion failed' });
     } finally {
       setPromoting(false);
     }
-  }, [call, onDone]);
+  }, [call, selectedBranch, onDone]);
+
+  const canConfirm = summary?.has_migrations
+    ? confirmText.trim().toLowerCase() === 'deploy'
+    : true;
+
+  const selectStyle: React.CSSProperties = {
+    fontSize: 14,
+    color: 'var(--ds-text, #292A2E)',
+    background: 'var(--ds-surface, #FFFFFF)',
+    border: '1px solid var(--ds-border, #DCDFE4)',
+    borderRadius: 3,
+    padding: '5px 10px',
+    fontFamily: FONT,
+    cursor: 'pointer',
+    minWidth: 200,
+  };
+
+  const linkBtn: React.CSSProperties = {
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    fontSize: 13,
+    color: 'var(--ds-link, #0052CC)',
+    cursor: 'pointer',
+    fontFamily: FONT,
+    textDecoration: 'none',
+  };
 
   return (
     <div
@@ -426,62 +499,50 @@ function PromotePanel({
         background: 'var(--ds-surface, #FFFFFF)',
       }}
     >
-      {/* header */}
+      {/* Header + branch selector */}
       <div
         style={{
           padding: '14px 18px',
           background: 'var(--ds-surface-sunken, #F7F8F9)',
           borderBottom: '1px solid var(--ds-border, #DCDFE4)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 16,
-          flexWrap: 'wrap',
         }}
       >
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>
-            Promote local → production
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', marginTop: 2 }}>
-            Merges{' '}
-            <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>main</code>
-            {' → '}
-            <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>production</code>
-            {' '}on GitHub. CI applies DB migrations then deploys frontend to ksa-catalyst.com.
-          </div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 10 }}>
+          Promote branch to production
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-          <Button
-            appearance="subtle"
-            spacing="compact"
-            onClick={loadDiff}
-            isDisabled={loadingDiff}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)', whiteSpace: 'nowrap' }}>Branch to promote:</span>
+          <select
+            value={selectedBranch}
+            onChange={(e) => setSelectedBranch(e.target.value)}
+            style={selectStyle}
+            disabled={loadingBranches}
           >
-            {loadingDiff ? <Spinner size="small" /> : 'View diff'}
-          </Button>
-          <Button
-            appearance="primary"
-            onClick={promote}
-            isDisabled={promoting || !gateEnabled}
-            isLoading={promoting}
-          >
-            Promote to production
-          </Button>
+            {branches.length > 0
+              ? branches.map((b) => (
+                  <option key={b.name} value={b.name}>
+                    {b.name}{b.sha ? ` (${b.sha})` : ''}
+                  </option>
+                ))
+              : <option value="main">main</option>}
+          </select>
+          {loadingBranches && <Spinner size="small" />}
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>→</span>
+          <code style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', fontFamily: 'var(--ds-font-family-code)' }}>production</code>
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>→ CI → ksa-catalyst.com</span>
         </div>
       </div>
 
-      {/* gate lock */}
       {!gateEnabled && (
         <div style={{ padding: '10px 18px', background: 'var(--ds-background-warning-subtle, #FFF7D6)', fontSize: 13, color: 'var(--ds-text-warning, #974F0C)' }}>
           Deploy gate is OFF — enable it below before promoting
         </div>
       )}
 
-      {/* result */}
       {result && (
         <div
           style={{
-            padding: '10px 18px',
+            padding: '12px 18px',
             fontSize: 13,
             color: result.ok ? 'var(--ds-text-success, #1F845A)' : 'var(--ds-text-danger, #AE2A19)',
             background: result.ok ? 'var(--ds-background-success-subtle, #DCFFF1)' : 'var(--ds-background-danger-subtle, #FFECEB)',
@@ -491,58 +552,232 @@ function PromotePanel({
         </div>
       )}
 
-      {/* diff error */}
-      {diffError && (
-        <div style={{ padding: '10px 18px', fontSize: 13, color: 'var(--ds-text-danger, #AE2A19)' }}>
-          Could not load diff: {diffError}
+      {loadingSummary && (
+        <div style={{ padding: '20px 18px', display: 'flex', gap: 10, alignItems: 'center' }}>
+          <Spinner size="small" />
+          <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>Analysing branch…</span>
         </div>
       )}
 
-      {/* diff */}
-      {diff && (
-        <div style={{ padding: '14px 18px' }}>
-          {diff.ahead_by === 0 ? (
+      {summaryError && !loadingSummary && (
+        <div style={{ padding: '12px 18px', fontSize: 13, color: 'var(--ds-text-danger, #AE2A19)' }}>
+          Could not load summary: {summaryError}
+        </div>
+      )}
+
+      {summary && !loadingSummary && (
+        <div style={{ padding: '16px 18px' }}>
+
+          {summary.ahead_by === 0 ? (
             <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Production is up to date — no new commits to promote
+              ✓ Production is up to date — no new commits to promote from{' '}
+              <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>{selectedBranch}</code>
             </div>
           ) : (
             <>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 10 }}>
-                {diff.ahead_by} commit{diff.ahead_by !== 1 ? 's' : ''} on{' '}
-                <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>main</code>{' '}
-                not yet on production:
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {diff.commits.slice(0, 25).map((c, i) => (
-                  <div
-                    key={c.sha}
+              {summary.ai_summary && (
+                <div
+                  style={{
+                    background: 'var(--ds-background-information-subtle, #E9F2FF)',
+                    border: '1px solid var(--ds-border-information, #579DFF)',
+                    borderRadius: 4,
+                    padding: '12px 14px',
+                    marginBottom: 16,
+                  }}
+                >
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-information, #0055CC)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    What changes for users
+                  </div>
+                  <div style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)', lineHeight: '20px' }}>
+                    {summary.ai_summary}
+                  </div>
+                </div>
+              )}
+
+              {summary.has_migrations && (
+                <div
+                  style={{
+                    background: 'var(--ds-background-danger-subtle, #FFECEB)',
+                    border: '1px solid var(--ds-border-danger, #F87168)',
+                    borderRadius: 4,
+                    padding: '12px 14px',
+                    marginBottom: 16,
+                  }}
+                >
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 6 }}>
+                    ⚠ Database changes included — cannot be automatically undone
+                  </div>
+                  <div style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', marginBottom: 8 }}>
+                    These database migrations will run automatically on the production database:
+                  </div>
+                  <ul style={{ margin: 0, paddingLeft: 18 }}>
+                    {summary.migration_files.map((f) => (
+                      <li
+                        key={f}
+                        style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', fontFamily: 'var(--ds-font-family-code)', marginBottom: 2 }}
+                      >
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>
+                  {summary.ahead_by} commit{summary.ahead_by !== 1 ? 's' : ''} ahead of production
+                </span>
+                {summary.file_groups.map((g) => (
+                  <span
+                    key={g.label}
                     style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 10,
-                      padding: '7px 0',
-                      borderBottom: i < diff.commits.length - 1 ? '1px solid var(--ds-border-subtle, rgba(11,18,14,0.06))' : 'none',
+                      fontSize: 12,
+                      color: 'var(--ds-text-subtle, #505258)',
+                      background: 'var(--ds-background-neutral, #F1F2F4)',
+                      borderRadius: 3,
+                      padding: '2px 8px',
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    <code style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', fontFamily: 'var(--ds-font-family-code)', flexShrink: 0, marginTop: 1, minWidth: 48 }}>
-                      {c.sha}
-                    </code>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {c.message.split('\n')[0]}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 1 }}>
-                        {c.author} · {fmtRelative(c.date)}
+                    {g.emoji} {g.label} {g.count}
+                  </span>
+                ))}
+              </div>
+
+              <button onClick={() => setShowCommits((v) => !v)} style={linkBtn}>
+                {showCommits ? '▼' : '▶'} {showCommits ? 'Hide' : 'View'} {summary.ahead_by} commit{summary.ahead_by !== 1 ? 's' : ''}
+              </button>
+
+              {showCommits && (
+                <div style={{ marginTop: 10, marginBottom: 8 }}>
+                  {summary.commits.slice(0, 25).map((c, i) => (
+                    <div
+                      key={c.sha}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 10,
+                        padding: '6px 0',
+                        borderBottom: i < Math.min(summary.commits.length, 25) - 1
+                          ? '1px solid var(--ds-border-subtle, rgba(11,18,14,0.06))'
+                          : 'none',
+                      }}
+                    >
+                      <code style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', fontFamily: 'var(--ds-font-family-code)', flexShrink: 0, marginTop: 1, minWidth: 48 }}>
+                        {c.sha}
+                      </code>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {c.message}
+                        </div>
+                        <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 1 }}>
+                          {c.author} · {fmtRelative(c.date)}
+                        </div>
                       </div>
                     </div>
+                  ))}
+                  {summary.ahead_by > 25 && (
+                    <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', paddingTop: 8 }}>
+                      +{summary.ahead_by - 25} more not shown
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {!showConfirm && !result && (
+                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    appearance="primary"
+                    onClick={() => setShowConfirm(true)}
+                    isDisabled={!gateEnabled}
+                  >
+                    Promote {selectedBranch} to production
+                  </Button>
+                </div>
+              )}
+
+              {showConfirm && !result && (
+                <div
+                  style={{
+                    marginTop: 16,
+                    background: 'var(--ds-surface-sunken, #F7F8F9)',
+                    border: '1px solid var(--ds-border, #DCDFE4)',
+                    borderRadius: 4,
+                    padding: '16px 18px',
+                  }}
+                >
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 12 }}>
+                    What will happen:
                   </div>
-                ))}
-                {diff.ahead_by > 25 && (
-                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', paddingTop: 8 }}>
-                    +{diff.ahead_by - 25} more commits not shown
+                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <li style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                      <span style={{ color: 'var(--ds-text-success, #1F845A)', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                      <span>Branch <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>{selectedBranch}</code> will merge into <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>production</code> on GitHub</span>
+                    </li>
+                    {summary.has_migrations && (
+                      <li style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                        <span style={{ color: 'var(--ds-text-success, #1F845A)', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                        <span>GitHub CI will apply {summary.migration_files.length} database migration{summary.migration_files.length !== 1 ? 's' : ''} to the production database</span>
+                      </li>
+                    )}
+                    <li style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                      <span style={{ color: 'var(--ds-text-success, #1F845A)', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                      <span>Vercel will build and deploy the new version to ksa-catalyst.com</span>
+                    </li>
+                    {summary.has_migrations && (
+                      <li style={{ fontSize: 13, color: 'var(--ds-text-danger, #AE2A19)', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                        <span style={{ fontWeight: 700, flexShrink: 0 }}>⚠</span>
+                        <span>Database migrations cannot be automatically rolled back</span>
+                      </li>
+                    )}
+                  </ul>
+
+                  {summary.has_migrations && (
+                    <div style={{ marginBottom: 16 }}>
+                      <div style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', marginBottom: 6 }}>
+                        Type <strong>deploy</strong> to confirm the database changes:
+                      </div>
+                      <input
+                        value={confirmText}
+                        onChange={(e) => setConfirmText(e.target.value)}
+                        placeholder='Type "deploy" to confirm'
+                        onKeyDown={(e) => { if (e.key === 'Enter' && canConfirm && !promoting) handlePromote(); }}
+                        style={{
+                          fontSize: 14,
+                          fontFamily: FONT,
+                          color: 'var(--ds-text, #292A2E)',
+                          background: 'var(--ds-surface, #FFFFFF)',
+                          border: '1px solid var(--ds-border, #DCDFE4)',
+                          borderRadius: 3,
+                          padding: '7px 10px',
+                          width: '100%',
+                          boxSizing: 'border-box',
+                          outline: 'none',
+                        }}
+                        autoFocus
+                      />
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                    <Button
+                      appearance="subtle"
+                      onClick={() => { setShowConfirm(false); setConfirmText(''); }}
+                      isDisabled={promoting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      appearance="primary"
+                      onClick={handlePromote}
+                      isDisabled={!canConfirm || promoting || !gateEnabled}
+                      isLoading={promoting}
+                    >
+                      Confirm & deploy to production
+                    </Button>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -843,7 +1078,7 @@ export default function VercelConnectionPage() {
     <AdminGuard>
       <div style={{ padding: '24px 32px 48px', maxWidth: 1280, color: 'var(--ds-text, #292A2E)', fontFamily: FONT }}>
 
-        {/* ── Header ── */}
+        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 36, height: 36, borderRadius: 6, background: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#FFFFFF', fontWeight: 700, flexShrink: 0 }}>
@@ -873,11 +1108,10 @@ export default function VercelConnectionPage() {
           </p>
         )}
 
-        {/* ── 2-Environment cards ── */}
+        {/* 2-Environment cards */}
         <SectionLabel>Environments</SectionLabel>
 
         <div style={{ display: 'flex', gap: 16, marginBottom: 24, alignItems: 'stretch' }}>
-          {/* Local */}
           <EnvCard
             label="Local (your machine)"
             sublabel="Development — npm run dev"
@@ -893,12 +1127,10 @@ export default function VercelConnectionPage() {
             accent="var(--ds-border-brand, #0052CC)"
           />
 
-          {/* Arrow */}
           <div style={{ display: 'flex', alignItems: 'center', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 20, flexShrink: 0 }}>
             →
           </div>
 
-          {/* Production */}
           <EnvCard
             label="Production"
             sublabel="ksa-catalyst.com · live users"
@@ -931,14 +1163,13 @@ export default function VercelConnectionPage() {
           />
         </div>
 
-        {/* ── Promote ── */}
-        <PromotePanel
+        {/* Smart promote panel */}
+        <SmartPromotePanel
           call={call}
           onDone={() => { refresh(); refreshEnvs(); }}
           gateEnabled={gate.production_deploy_enabled}
         />
 
-        {/* ── Vercel token warning ── */}
         {!config.vercel_token_set && (
           <div style={{ marginBottom: 20 }}>
             <SectionMessage appearance="warning" title="VERCEL_TOKEN not configured">
@@ -956,7 +1187,7 @@ export default function VercelConnectionPage() {
           </div>
         )}
 
-        {/* ── Deploy gate ── */}
+        {/* Deploy gate */}
         <div
           style={{
             background: 'var(--ds-surface, #FFFFFF)',
@@ -1002,10 +1233,10 @@ export default function VercelConnectionPage() {
           </div>
         </div>
 
-        {/* ── Live progress ── */}
+        {/* Live progress */}
         {isRunInProgress && latestRun && <LiveProgress run={latestRun} call={call} />}
 
-        {/* ── Manual redeploy ── */}
+        {/* Manual redeploy */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <Button
             appearance="default"
@@ -1028,7 +1259,7 @@ export default function VercelConnectionPage() {
           </a>
         </div>
 
-        {/* ── Stats ── */}
+        {/* Stats */}
         <div
           style={{
             display: 'flex',
@@ -1062,7 +1293,7 @@ export default function VercelConnectionPage() {
           ))}
         </div>
 
-        {/* ── Deploy history ── */}
+        {/* Deploy history */}
         <SectionLabel>
           Deploy history
           {!config.github_pat_set && (
@@ -1131,7 +1362,7 @@ export default function VercelConnectionPage() {
           </div>
         )}
 
-        {/* ── Vercel deployments ── */}
+        {/* Vercel deployments */}
         {deployments.length > 0 && (
           <>
             <SectionLabel>Vercel deployments</SectionLabel>
@@ -1175,7 +1406,7 @@ export default function VercelConnectionPage() {
           </>
         )}
 
-        {/* ── Configuration ── */}
+        {/* Configuration */}
         <SectionLabel>
           <button
             onClick={() => setShowConfig((v) => !v)}

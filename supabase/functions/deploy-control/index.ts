@@ -371,6 +371,8 @@ async function handlePost(
   }
 
   if (body.action === 'get_branch_diff') {
+    const sourceBranch = (body.source_branch as string) ?? 'main';
+
     const { data: settings } = await supabase
       .from('deploy_settings')
       .select('github_pat, github_repo')
@@ -378,9 +380,8 @@ async function handlePost(
       .maybeSingle();
     if (!settings?.github_pat) return err('GitHub PAT not configured', 400);
 
-    // Compare production...main — commits on main not yet on production
     const res = await fetch(
-      `https://api.github.com/repos/${settings.github_repo}/compare/production...main`,
+      `https://api.github.com/repos/${settings.github_repo}/compare/production...${encodeURIComponent(sourceBranch)}`,
       {
         headers: {
           Authorization: `Bearer ${settings.github_pat}`,
@@ -401,6 +402,8 @@ async function handlePost(
   }
 
   if (body.action === 'promote_to_production') {
+    const sourceBranch = (body.source_branch as string) ?? 'main';
+
     const { data: settings } = await supabase
       .from('deploy_settings')
       .select('github_pat, github_repo')
@@ -408,7 +411,6 @@ async function handlePost(
       .maybeSingle();
     if (!settings?.github_pat) return err('GitHub PAT not configured', 400);
 
-    // Merge main into production branch — this triggers CI → Vercel deploy
     const res = await fetch(
       `https://api.github.com/repos/${settings.github_repo}/merges`,
       {
@@ -421,19 +423,172 @@ async function handlePost(
         },
         body: JSON.stringify({
           base: 'production',
-          head: 'main',
-          commit_message: `chore(promote): merge main → production ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC`,
+          head: sourceBranch,
+          commit_message: `chore(promote): merge ${sourceBranch} → production ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC`,
         }),
       },
     );
 
-    if (res.status === 204) return json({ ok: true, message: 'Already up to date — production is at the same commit as main' });
+    if (res.status === 204) return json({ ok: true, message: `Already up to date — production is at the same commit as ${sourceBranch}` });
     if (!res.ok) {
       const txt = await res.text();
       return err(`GitHub merge error ${res.status}: ${txt}`, 502);
     }
     const merged = await res.json();
-    return json({ ok: true, sha: (merged.sha as string)?.slice(0, 7), message: 'Merged main → production. CI will now deploy to ksa-catalyst.com.' });
+    return json({ ok: true, sha: (merged.sha as string)?.slice(0, 7), message: `Merged ${sourceBranch} → production. CI will now deploy to ksa-catalyst.com.` });
+  }
+
+  // ── list_branches: all repo branches sorted (main first) ─────────────────
+  if (body.action === 'list_branches') {
+    const { data: settings } = await supabase
+      .from('deploy_settings')
+      .select('github_pat, github_repo')
+      .eq('id', 1)
+      .maybeSingle();
+    if (!settings?.github_pat) return err('GitHub PAT not configured', 400);
+
+    const res = await fetch(
+      `https://api.github.com/repos/${settings.github_repo}/branches?per_page=100`,
+      {
+        headers: {
+          Authorization: `Bearer ${settings.github_pat}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+    if (!res.ok) return err(`GitHub API error ${res.status}`, 502);
+
+    const raw = await res.json() as Record<string, unknown>[];
+    const branches = raw.map((b) => ({
+      name: b.name as string,
+      sha: ((b.commit as Record<string, unknown>)?.sha as string)?.slice(0, 7) ?? null,
+    }));
+
+    const ORDER = ['main', 'production'];
+    branches.sort((a, b) => {
+      const ai = ORDER.indexOf(a.name), bi = ORDER.indexOf(b.name);
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      if (ai !== -1) return -1;
+      if (bi !== -1) return 1;
+      return a.name.localeCompare(b.name);
+    });
+
+    return json({ branches });
+  }
+
+  // ── get_branch_summary: diff + migration detection + AI plain-English summary
+  if (body.action === 'get_branch_summary') {
+    const sourceBranch = (body.source_branch as string) ?? 'main';
+
+    const { data: settings } = await supabase
+      .from('deploy_settings')
+      .select('github_pat, github_repo')
+      .eq('id', 1)
+      .maybeSingle();
+    if (!settings?.github_pat) return err('GitHub PAT not configured', 400);
+
+    const ghHeaders = {
+      Authorization: `Bearer ${settings.github_pat}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    };
+
+    // compare includes both commits[] and files[]
+    const res = await fetch(
+      `https://api.github.com/repos/${settings.github_repo}/compare/production...${encodeURIComponent(sourceBranch)}?per_page=100`,
+      { headers: ghHeaders },
+    );
+    if (!res.ok) {
+      const txt = await res.text();
+      return err(`GitHub API error ${res.status}: ${txt}`, 502);
+    }
+
+    const cmp = await res.json();
+    const ahead_by: number = cmp.ahead_by ?? 0;
+    const behind_by: number = cmp.behind_by ?? 0;
+
+    const commits = ((cmp.commits ?? []) as Record<string, unknown>[]).map((c) => ({
+      sha: (c.sha as string)?.slice(0, 7),
+      message: ((c.commit as Record<string, unknown>)?.message as string ?? '').split('\n')[0],
+      author: (((c.commit as Record<string, unknown>)?.author as Record<string, unknown>)?.name as string) ?? '',
+      date: (((c.commit as Record<string, unknown>)?.committer as Record<string, unknown>)?.date as string) ?? '',
+    })).reverse();
+
+    // Group changed files
+    const files = (cmp.files ?? []) as Record<string, unknown>[];
+    const groups: Record<string, { count: number; emoji: string }> = {
+      'DB migrations': { count: 0, emoji: '🗄' },
+      'Edge functions': { count: 0, emoji: '⚡' },
+      'UI': { count: 0, emoji: '🎨' },
+      'App logic': { count: 0, emoji: '⚙' },
+      'Config & CI': { count: 0, emoji: '🔧' },
+      'Other': { count: 0, emoji: '📄' },
+    };
+    const migrationFiles: string[] = [];
+
+    for (const f of files) {
+      const fn = f.filename as string;
+      if (fn.startsWith('supabase/migrations/')) {
+        groups['DB migrations'].count++;
+        migrationFiles.push(fn.split('/').pop() ?? fn);
+      } else if (fn.startsWith('supabase/functions/')) {
+        groups['Edge functions'].count++;
+      } else if (/^src\/(pages|components|modules)\//.test(fn)) {
+        groups['UI'].count++;
+      } else if (/^src\/(hooks|lib|contexts|integrations|routes|stores)\//.test(fn)) {
+        groups['App logic'].count++;
+      } else if (/\.(yml|yaml|json|toml|env)$/.test(fn) || fn.startsWith('.github/') || fn.startsWith('design-governance/')) {
+        groups['Config & CI'].count++;
+      } else {
+        groups['Other'].count++;
+      }
+    }
+
+    const file_groups = Object.entries(groups)
+      .filter(([, g]) => g.count > 0)
+      .map(([label, g]) => ({ label, count: g.count, emoji: g.emoji }));
+
+    const has_migrations = migrationFiles.length > 0;
+
+    // AI plain-English summary via Claude Haiku
+    let ai_summary: string | null = null;
+    if (ahead_by > 0) {
+      const anthropicKey = Deno.env.get('ANTHROPIC_API_KEY');
+      if (anthropicKey) {
+        try {
+          const commitList = commits.slice(0, 20).map((c) => `• ${c.message}`).join('\n');
+          const fileGroupDesc = file_groups.map((g) => `${g.label}: ${g.count} file${g.count !== 1 ? 's' : ''}`).join(', ');
+
+          const prompt = `You are helping a non-technical product owner understand what a software update will change.
+
+${commits.length} commit${commits.length !== 1 ? 's' : ''} are ready to deploy to production:
+${commitList}
+
+Files changed: ${fileGroupDesc}
+
+Write 2-3 plain English sentences. Use "users can now...", "this fixes...", "this improves..." style. No technical jargon (no git, branch, commit, TypeScript, React, API, migration, deploy). Focus only on what the person using the product will notice.`;
+
+          const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+            body: JSON.stringify({
+              model: 'claude-haiku-4-5-20251001',
+              max_tokens: 200,
+              messages: [{ role: 'user', content: prompt }],
+            }),
+          });
+          if (aiRes.ok) {
+            const aiBody = await aiRes.json();
+            ai_summary = aiBody.content?.[0]?.text?.trim() ?? null;
+          }
+        } catch (e) {
+          console.error('[deploy-control] AI summary failed:', e);
+        }
+      }
+    }
+
+    return json({ ahead_by, behind_by, commits, has_migrations, migration_files: migrationFiles, file_groups, total_files_changed: files.length, ai_summary });
   }
 
   return err('Unknown action', 400);
