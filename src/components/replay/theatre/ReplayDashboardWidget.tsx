@@ -3,8 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button/new';
+import Avatar from '@atlaskit/avatar';
 import { JiraTable, makeKeyCell } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { statusBg, STATUS_TEXT } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import type { StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 import type { Column } from '@/components/shared/JiraTable/types';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -21,25 +24,26 @@ interface QualifyingBR {
   title: string;
   process_step: string;
   hop_count: number;
-  journey_steps: string[];  // inferred: ordered step values from start to current
+  journey_steps: string[];
   created_at: string;
   updated_at: string;
+  assignee_name: string | null;
 }
 
-// ─── Status chip ────────────────────────────────────────────────────────────
+// ─── Status chip — canonical statusPalette colors ────────────────────────────
 
-const STEP_TOKEN: Record<string, { bg: string; color: string }> = {
-  'In Requirements':    { bg: 'var(--ds-background-information, #E9F2FF)', color: 'var(--ds-text-information, #0055CC)' },
-  'Demand Validation':  { bg: 'var(--ds-background-information, #E9F2FF)', color: 'var(--ds-text-information, #0055CC)' },
-  'Prioritized Backlog':{ bg: 'var(--ds-background-warning, #FFF7D6)',     color: 'var(--ds-text-warning, #7F5F01)' },
-  'In Development':     { bg: 'var(--ds-background-warning, #FFF7D6)',     color: 'var(--ds-text-warning, #7F5F01)' },
-  'Done':               { bg: 'var(--ds-background-success, #DFFCF0)',     color: 'var(--ds-text-success, #006644)' },
-  "Won't Do":           { bg: 'var(--ds-background-neutral, #F1F2F4)',     color: 'var(--ds-text-subtle, #44546F)' },
-  'Rejected':           { bg: 'var(--ds-background-danger, #FFECEB)',      color: 'var(--ds-text-danger, #AE2A19)' },
+const STEP_APPEARANCE: Record<string, StatusAppearance> = {
+  'In Requirements':    'default',
+  'Demand Validation':  'inprogress',
+  'Prioritized Backlog':'moved',
+  'In Development':     'inprogress',
+  'Done':               'success',
+  "Won't Do":           'removed',
+  'Rejected':           'removed',
 };
 
 function BRStatusChip({ status }: { status: string }) {
-  const s = STEP_TOKEN[status] ?? { bg: 'var(--ds-background-neutral, #F1F2F4)', color: 'var(--ds-text-subtle, #44546F)' };
+  const appearance = STEP_APPEARANCE[status] ?? 'default';
   return (
     <span
       style={{
@@ -48,8 +52,8 @@ function BRStatusChip({ status }: { status: string }) {
         borderRadius: 3,
         fontSize: 11,
         fontWeight: 500,
-        background: s.bg,
-        color: s.color,
+        background: statusBg(appearance),
+        color: STATUS_TEXT,
         whiteSpace: 'nowrap',
       }}
     >
@@ -63,7 +67,6 @@ function BRStatusChip({ status }: { status: string }) {
 const TERMINAL_STEPS = new Set(["Done", "Rejected", "Won't Do"]);
 
 async function fetchQualifyingBRs(): Promise<QualifyingBR[]> {
-  // 1. Load canonical step order, exclude terminal steps
   const { data: steps, error: stepsErr } = await supabase
     .from('demand_process_steps')
     .select('value, sort_order')
@@ -74,21 +77,33 @@ async function fetchQualifyingBRs(): Promise<QualifyingBR[]> {
   const progressSteps = (steps ?? []).filter(s => !TERMINAL_STEPS.has(s.value));
   const progressValues = progressSteps.map(s => s.value);
 
-  // Need at least 3 steps to qualify anything
   if (progressValues.length < 3) return [];
 
-  // 2. Load BRs currently in a progress step (not deleted, not terminal)
   const { data: brs, error: brErr } = await supabase
     .from('business_requests')
-    .select('id, request_key, title, process_step, created_at, updated_at')
+    .select('id, request_key, title, process_step, created_at, updated_at, project_manager_user_id')
     .is('deleted_at', null)
     .in('process_step', progressValues)
     .order('updated_at', { ascending: false });
   if (brErr) throw brErr;
 
-  // 3. Filter: must be at position >= 2 (0-indexed) = 3rd step or beyond
+  const rawBrs = brs ?? [];
+
+  // Batch-fetch PM profiles for assignee display
+  const pmIds = [...new Set(rawBrs.map(b => b.project_manager_user_id).filter(Boolean))] as string[];
+  const profileMap = new Map<string, string>();
+  if (pmIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .in('id', pmIds);
+    for (const p of profiles ?? []) {
+      if (p.full_name) profileMap.set(p.id, p.full_name);
+    }
+  }
+
   const qualifying: QualifyingBR[] = [];
-  for (const br of brs ?? []) {
+  for (const br of rawBrs) {
     const pos = progressValues.indexOf(br.process_step ?? '');
     if (pos < 2) continue;
     qualifying.push({
@@ -100,6 +115,7 @@ async function fetchQualifyingBRs(): Promise<QualifyingBR[]> {
       journey_steps: progressValues.slice(0, pos + 1),
       created_at: br.created_at,
       updated_at: br.updated_at,
+      assignee_name: br.project_manager_user_id ? (profileMap.get(br.project_manager_user_id) ?? null) : null,
     });
   }
   return qualifying;
@@ -122,14 +138,12 @@ function fmtDate(iso: string) {
 function JourneyView({ br, onBack }: { br: QualifyingBR; onBack: () => void }) {
   return (
     <div>
-      {/* Back */}
       <div style={{ marginBottom: 12 }}>
         <Button appearance="link" onClick={onBack}>
           ← Back to list
         </Button>
       </div>
 
-      {/* BR title */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
         <JiraIssueTypeIcon type="Business Request" size={16} />
         {br.request_key && (
@@ -137,17 +151,15 @@ function JourneyView({ br, onBack }: { br: QualifyingBR; onBack: () => void }) {
             {br.request_key}
           </span>
         )}
-        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+        <span dir="auto" style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
           {br.title}
         </span>
       </div>
 
-      {/* Section header */}
       <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
         Status journey · {br.hop_count} steps
       </div>
 
-      {/* Timeline */}
       <div
         style={{
           display: 'flex',
@@ -161,10 +173,7 @@ function JourneyView({ br, onBack }: { br: QualifyingBR; onBack: () => void }) {
           const isLast = i === br.journey_steps.length - 1;
           const date = isFirst ? fmtDate(br.created_at) : isLast ? fmtDate(br.updated_at) : null;
           return (
-            <div
-              key={step}
-              style={{ position: 'relative', paddingBottom: isLast ? 0 : 12 }}
-            >
+            <div key={step} style={{ position: 'relative', paddingBottom: isLast ? 0 : 12 }}>
               <div
                 style={{
                   position: 'absolute',
@@ -201,7 +210,6 @@ function JourneyView({ br, onBack }: { br: QualifyingBR; onBack: () => void }) {
         Journey inferred from current step — exact transition dates appear as activity is recorded.
       </div>
 
-      {/* Play Replay CTA */}
       <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
         <Button
           appearance="primary"
@@ -242,12 +250,14 @@ export function ReplayDashboardWidget({ mode }: ReplayDashboardWidgetProps) {
         id: 'key',
         label: 'Summary',
         flex: true,
+        align: 'start',
         alwaysVisible: true,
         accessor: (row) => row.request_key ?? row.id,
         cell: (props) => (
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, width: '100%' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, width: '100%', textAlign: 'left' }}>
             {keyRenderer(props)}
             <span
+              dir="auto"
               style={{
                 fontSize: 13,
                 color: 'var(--ds-text, #172B4D)',
@@ -256,6 +266,7 @@ export function ReplayDashboardWidget({ mode }: ReplayDashboardWidgetProps) {
                 whiteSpace: 'nowrap',
                 flex: 1,
                 minWidth: 0,
+                textAlign: 'left',
               }}
             >
               {props.row.title}
@@ -269,6 +280,22 @@ export function ReplayDashboardWidget({ mode }: ReplayDashboardWidgetProps) {
         width: 20,
         accessor: (row) => row.process_step,
         cell: ({ row }) => <BRStatusChip status={row.process_step} />,
+      },
+      {
+        id: 'assignee',
+        label: 'Assignee',
+        width: 12,
+        accessor: (row) => row.assignee_name,
+        cell: ({ row }) => row.assignee_name ? (
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Avatar name={row.assignee_name} size="xsmall" />
+            <span style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 80 }}>
+              {row.assignee_name}
+            </span>
+          </span>
+        ) : (
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontStyle: 'italic' }}>—</span>
+        ),
       },
       {
         id: '__replay',
