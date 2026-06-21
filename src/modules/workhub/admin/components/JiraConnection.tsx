@@ -46,7 +46,7 @@ export function JiraConnection() {
   }, [connection]);
 
   const status = connection?.status || 'not_configured';
-  const showForm = status === 'not_configured' || status === 'error' || isEditing;
+  const showForm = (status === 'not_configured' || status === 'error' || isEditing) && !updateMutation.isPending && !testMutation.isPending;
 
   const validateField = (field: 'url' | 'email' | 'token') => {
     const newErrors = { ...errors };
