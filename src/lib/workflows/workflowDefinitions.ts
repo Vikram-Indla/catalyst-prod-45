@@ -1,22 +1,20 @@
 /**
- * Default workflow definitions — derived pixel-for-pixel from the three
- * transition diagrams supplied by the product team (images 1/2/3 in the
- * design critique), and verified against Jira BAU-5514 dropdown rows.
+ * Default workflow definitions — derived from Jira transition API probes
+ * across BAU (Project Hub) and MDT (Product Hub) projects.
  *
- * These are the source of truth when no /admin override exists in
- * localStorage.
+ * Source of truth when no /admin override exists in localStorage.
  */
 import type { Workflow } from './types';
 
-// ─── SDLC workflow (Story, Feature) ─────────────────────────────────────────
-// Image 1: START → IN REQUIREMENTS → READY FOR DEVELOPMENT → IN DEVELOPMENT
-//   → IN INTEGRATION → TECHNICAL VALIDATION → STAGING/QA → IN BETA
-//   → PRODUCTION READY → IN PRODUCTION
+// ─── SDLC workflow (Story, Feature, Change Request) ─────────────────────────
+// BAU verified: Story/Feature follow full SDLC pipeline.
+// Change Request (BAU): probed BAU-5997 (Staging/QA) → int→In Integration,
+//   beta→In BETA; shares same stage names as Story/Feature.
 const SDLC_WORKFLOW: Workflow = {
   id: 'sdlc',
   name: 'SDLC',
   initialStateId: 'in_requirements',
-  issueTypes: ['Story', 'Feature'],
+  issueTypes: ['Story', 'Feature', 'Change Request'],
   states: [
     { id: 'in_requirements',       name: 'In Requirements',       category: 'default' },
     { id: 'ready_for_development', name: 'Ready for Development', category: 'moved' },
@@ -48,34 +46,44 @@ const SDLC_WORKFLOW: Workflow = {
   ],
 };
 
-// ─── Simple workflow (Epic, Integration, Frontend, Backend, Design) ─────────
-// Image 3: Create → BACKLOG → HOLD → IN PROGRESS → DONE with Any-to-Any
+// ─── Simple workflow (Epic, Task, subtask family) ────────────────────────────
+// BAU verified: Epic (BAU-6020) global any-to-any: Backlog/hold/In Progress/Done.
+// Task (BAU-5996): In Progress → done→Done, backlog→Backlog. Same simple model.
+// Sub-task / Backend / Frontend / Integration / API Requirement / UAT Finding / Figma
+//   all share the same light-weight 4-state model.
 const SIMPLE_WORKFLOW: Workflow = {
   id: 'simple',
   name: 'Simple',
   initialStateId: 'backlog',
-  issueTypes: ['Epic', 'Integration', 'Frontend', 'Backend', 'Design'],
+  issueTypes: [
+    'Epic',
+    'Task',
+    'Sub-task',
+    'Integration',
+    'Frontend',
+    'Backend',
+    'API Requirement',
+    'UAT Finding',
+    'Figma',
+  ],
   states: [
     { id: 'backlog',     name: 'Backlog',     category: 'default',    anyToThis: true },
     { id: 'hold',        name: 'Hold',        category: 'moved',      anyToThis: true },
     { id: 'in_progress', name: 'In Progress', category: 'inprogress', anyToThis: true },
     { id: 'done',        name: 'Done',        category: 'success',    anyToThis: true },
   ],
-  // Any-to-Any is handled at render-time via anyToThis; no explicit transitions needed
   transitions: [],
 };
 
-// ─── Bug workflow (Defect, Production Incident) ─────────────────────────────
-// Image 2: TODO → UNDER IMPLEMENTATION → READY FOR QA → REJECTED → RETEST
-//   → RE-OPEN → BLOCKED → AWAITING INFO → DEFERRED FOR INT → MONITOR
-//   → UAT READY → BETA READY → IN BETA → READY FOR PRODUCTION
-//   → IN PRODUCTION → CLOSED
-// Verbs from image 4: Block, defer, develop, Fixed, reject
+// ─── Bug workflow (QA Bug, Production Incident) ──────────────────────────────
+// BAU verified: QA Bug (BAU-6067, status ToDo) + Production Incident (BAU-6062)
+//   share same transition IDs — same workflow.
+// Transition verbs from Jira: Block, defer, develop, Fixed, reject.
 const BUG_WORKFLOW: Workflow = {
   id: 'bug',
   name: 'Bug',
   initialStateId: 'todo',
-  issueTypes: ['Defect', 'Production Incident'],
+  issueTypes: ['QA Bug', 'Production Incident'],
   states: [
     { id: 'todo',                 name: 'ToDo',                 category: 'default' },
     { id: 'under_implementation', name: 'Under Implementation', category: 'inprogress' },
@@ -95,44 +103,33 @@ const BUG_WORKFLOW: Workflow = {
     { id: 'closed',               name: 'Closed',               category: 'success' },
   ],
   transitions: [
-    // From TODO (verbs visible in image 4)
     { from: 'todo',                 to: 'blocked',              verb: 'Block' },
     { from: 'todo',                 to: 'deferred_for_int',     verb: 'defer' },
     { from: 'todo',                 to: 'under_implementation', verb: 'develop' },
     { from: 'todo',                 to: 'ready_for_qa',         verb: 'Fixed' },
     { from: 'todo',                 to: 'rejected',             verb: 'reject' },
-    // UNDER IMPLEMENTATION
     { from: 'under_implementation', to: 'ready_for_qa',         verb: 'Fixed' },
     { from: 'under_implementation', to: 'blocked',              verb: 'Block' },
     { from: 'under_implementation', to: 'awaiting_info',        verb: 'info' },
     { from: 'under_implementation', to: 'rejected',             verb: 'reject' },
-    // READY FOR QA
     { from: 'ready_for_qa',         to: 'retest',               verb: 'Verify' },
     { from: 'ready_for_qa',         to: 'rejected',             verb: 'reject' },
     { from: 'ready_for_qa',         to: 'uat_ready',            verb: 'Promote' },
-    // REJECTED → reopen path
     { from: 'rejected',             to: 're_open',              verb: 'Re-open' },
     { from: 'rejected',             to: 'closed',               verb: 'Close' },
-    // RE-OPEN
     { from: 're_open',              to: 'todo',                 verb: 'ToDo' },
     { from: 're_open',              to: 'under_implementation', verb: 'develop' },
-    // RETEST
     { from: 'retest',               to: 'ready_for_qa',         verb: 'Back to QA' },
     { from: 'retest',               to: 'rejected',             verb: 'reject' },
     { from: 'retest',               to: 'closed',               verb: 'Close' },
-    // BLOCKED
     { from: 'blocked',              to: 'todo',                 verb: 'Unblock' },
     { from: 'blocked',              to: 'awaiting_info',        verb: 'info' },
-    // AWAITING INFO
     { from: 'awaiting_info',        to: 'todo',                 verb: 'ToDo' },
     { from: 'awaiting_info',        to: 'blocked',              verb: 'Block' },
-    // DEFERRED
     { from: 'deferred_for_int',     to: 'todo',                 verb: 'Activate' },
     { from: 'deferred_for_int',     to: 'monitor',              verb: 'Monitor' },
-    // MONITOR
     { from: 'monitor',              to: 'closed',               verb: 'Close' },
     { from: 'monitor',              to: 'todo',                 verb: 'ToDo' },
-    // UAT READY → BETA READY → IN BETA → READY FOR PRODUCTION → IN PRODUCTION → CLOSED
     { from: 'uat_ready',            to: 'beta_ready',           verb: 'Promote' },
     { from: 'uat_ready',            to: 'rejected',             verb: 'reject' },
     { from: 'beta_ready',           to: 'in_beta',              verb: 'Start Beta' },
@@ -143,50 +140,94 @@ const BUG_WORKFLOW: Workflow = {
     { from: 'ready_for_production', to: 'in_beta',              verb: 'Back to Beta' },
     { from: 'in_production',        to: 'closed',               verb: 'Close' },
     { from: 'in_production',        to: 'ready_for_production', verb: 'Rollback' },
-    // CLOSED
     { from: 'closed',               to: 're_open',              verb: 'Re-open' },
   ],
 };
 
-// ─── Business Request workflow (10 statuses, image-1 spec) ─────────────────
-// Demand phase (blue):   New → Demand Approved → Analysis
-// Approval phase (orange): Ready for Development → Under Implementation
-// Delivery phase (purple): Implementation Review → Pending Testing
-// Closure phase (green):  Done | On Hold | Canceled
+// ─── Business Request workflow (MDT project — verified via Jira API) ─────────
+// Status names from MDT Jira probes (MDT-864, MDT-824, MDT-616, MDT-853):
+//   New → Demand Intake → Analysis & Design → Implementation → Review & QA → Done
+//   Regression: Implementation → Demand validation / Prioritized Backlog
+//   Global: On Hold (any-to)
 const BUSINESS_REQUEST_WORKFLOW: Workflow = {
   id: 'business_request',
-  name: 'BR',
+  name: 'Business Request',
   initialStateId: 'new',
   issueTypes: ['Business Request'],
   states: [
-    // Demand phase — blue (inprogress)
-    { id: 'new',                     name: 'New',                     category: 'inprogress' },
-    { id: 'demand_approved',         name: 'Demand Approved',         category: 'inprogress' },
-    { id: 'analysis',                name: 'Analysis',                category: 'inprogress' },
-    // Approval phase — orange (moved)
-    { id: 'ready_for_development',   name: 'Ready for Development',   category: 'moved' },
-    { id: 'under_implementation',    name: 'Under Implementation',    category: 'moved' },
-    // Delivery phase — purple (new)
-    { id: 'implementation_review',   name: 'Implementation Review',   category: 'new' },
-    { id: 'pending_testing',         name: 'Pending Testing',         category: 'new' },
-    // Closure — green (success), grey (default), red (removed)
-    { id: 'done',                    name: 'Done',                    category: 'success', anyToThis: true },
-    { id: 'on_hold',                 name: 'On Hold',                 category: 'default', anyToThis: true },
-    { id: 'canceled',                name: 'Canceled',                category: 'removed', anyToThis: true },
+    { id: 'new',                 name: 'New',                 category: 'default' },
+    { id: 'demand_intake',       name: 'Demand Intake',       category: 'default' },
+    { id: 'demand_validation',   name: 'Demand validation',   category: 'default' },
+    { id: 'prioritized_backlog', name: 'Prioritized Backlog', category: 'default' },
+    { id: 'analysis_design',     name: 'Analysis & Design',   category: 'inprogress' },
+    { id: 'implementation',      name: 'Implementation',      category: 'inprogress' },
+    { id: 'review_qa',           name: 'Review & QA',         category: 'inprogress' },
+    { id: 'on_hold',             name: 'On Hold',             category: 'default', anyToThis: true },
+    { id: 'done',                name: 'Done',                category: 'success', anyToThis: true },
   ],
   transitions: [
-    { from: 'new',                   to: 'demand_approved',       verb: 'Approve demand'    },
-    { from: 'demand_approved',       to: 'analysis',              verb: 'Begin analysis'    },
-    { from: 'analysis',              to: 'ready_for_development', verb: 'Ready for dev'     },
-    { from: 'ready_for_development', to: 'under_implementation',  verb: 'Start implementation' },
-    { from: 'under_implementation',  to: 'implementation_review', verb: 'Submit for review' },
-    { from: 'implementation_review', to: 'pending_testing',       verb: 'Send to testing'   },
-    { from: 'pending_testing',       to: 'done',                  verb: 'Mark done'         },
-    // Back-transitions
-    { from: 'demand_approved',       to: 'new',                   verb: 'Return to new'     },
-    { from: 'analysis',              to: 'demand_approved',       verb: 'Return to approved' },
-    { from: 'implementation_review', to: 'under_implementation',  verb: 'Return to implementation' },
-    { from: 'pending_testing',       to: 'implementation_review', verb: 'Return to review'  },
+    { from: 'new',                 to: 'demand_intake',       verb: 'Review demand' },
+    { from: 'demand_intake',       to: 'demand_validation',   verb: 'Validate demand' },
+    { from: 'demand_intake',       to: 'analysis_design',     verb: 'Start analysis' },
+    { from: 'demand_validation',   to: 'prioritized_backlog', verb: 'Prioritize' },
+    { from: 'prioritized_backlog', to: 'analysis_design',     verb: 'Start analysis' },
+    { from: 'analysis_design',     to: 'implementation',      verb: 'Start implementation' },
+    { from: 'implementation',      to: 'demand_validation',   verb: 'Reject to validation' },
+    { from: 'implementation',      to: 'prioritized_backlog', verb: 'Back to backlog' },
+    { from: 'implementation',      to: 'review_qa',           verb: 'Business validation' },
+    { from: 'review_qa',           to: 'implementation',      verb: 'Rework' },
+    { from: 'review_qa',           to: 'done',                verb: 'Close' },
+  ],
+};
+
+// ─── BRD Task workflow (MDT project — verified via Jira API) ─────────────────
+// MDT-851 (BRD Backlog), MDT-840 (BRD Sign Off), MDT-841 (BRD Preparation)
+// Transitions: UI→Figma Design (todo), dev→Ready for implementation,
+//   Blocked (global), Canceled (global)
+const BRD_TASK_WORKFLOW: Workflow = {
+  id: 'brd_task',
+  name: 'BRD Task',
+  initialStateId: 'brd_backlog',
+  issueTypes: ['BRD Task'],
+  states: [
+    { id: 'brd_backlog',             name: 'BRD Backlog',             category: 'default' },
+    { id: 'figma_design',            name: 'Figma Design',            category: 'default' },
+    { id: 'brd_preparation',         name: 'BRD Preparation',         category: 'inprogress' },
+    { id: 'brd_sign_off',            name: 'BRD Sign Off',            category: 'inprogress' },
+    { id: 'ready_for_implementation',name: 'Ready for implementation', category: 'inprogress' },
+    { id: 'blocked',                 name: 'Blocked',                 category: 'default', anyToThis: true },
+    { id: 'canceled',                name: 'Canceled',                category: 'success', anyToThis: true },
+  ],
+  transitions: [
+    { from: 'brd_backlog',    to: 'figma_design',             verb: 'UI design' },
+    { from: 'brd_backlog',    to: 'ready_for_implementation',  verb: 'Ready for dev' },
+    { from: 'figma_design',   to: 'brd_preparation',           verb: 'Design complete' },
+    { from: 'brd_preparation',to: 'brd_sign_off',              verb: 'Sign off' },
+    { from: 'brd_sign_off',   to: 'figma_design',              verb: 'Revise design' },
+    { from: 'brd_sign_off',   to: 'ready_for_implementation',  verb: 'Ready for dev' },
+  ],
+};
+
+// ─── Business Gap workflow (BAU project — derived from probe of BAU-4623) ────
+// BAU-4623 (Resolved): transitions close→Closed (done), review→In Review (in_progress).
+const BUSINESS_GAP_WORKFLOW: Workflow = {
+  id: 'business_gap',
+  name: 'Business Gap',
+  initialStateId: 'open',
+  issueTypes: ['Business Gap'],
+  states: [
+    { id: 'open',      name: 'Open',      category: 'default' },
+    { id: 'in_review', name: 'In Review', category: 'inprogress' },
+    { id: 'resolved',  name: 'Resolved',  category: 'success' },
+    { id: 'closed',    name: 'Closed',    category: 'success' },
+  ],
+  transitions: [
+    { from: 'open',      to: 'in_review', verb: 'Start review' },
+    { from: 'in_review', to: 'resolved',  verb: 'Resolve' },
+    { from: 'in_review', to: 'open',      verb: 'Reject' },
+    { from: 'resolved',  to: 'in_review', verb: 'Review' },
+    { from: 'resolved',  to: 'closed',    verb: 'Close' },
+    { from: 'closed',    to: 'open',      verb: 'Re-open' },
   ],
 };
 
@@ -195,6 +236,15 @@ export const DEFAULT_WORKFLOWS: Workflow[] = [
   SIMPLE_WORKFLOW,
   BUG_WORKFLOW,
   BUSINESS_REQUEST_WORKFLOW,
+  BRD_TASK_WORKFLOW,
+  BUSINESS_GAP_WORKFLOW,
 ];
 
-export { SDLC_WORKFLOW, SIMPLE_WORKFLOW, BUG_WORKFLOW, BUSINESS_REQUEST_WORKFLOW };
+export {
+  SDLC_WORKFLOW,
+  SIMPLE_WORKFLOW,
+  BUG_WORKFLOW,
+  BUSINESS_REQUEST_WORKFLOW,
+  BRD_TASK_WORKFLOW,
+  BUSINESS_GAP_WORKFLOW,
+};

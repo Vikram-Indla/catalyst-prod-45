@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Spinner from '@atlaskit/spinner';
+import Lozenge from '@atlaskit/lozenge';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { usePhProjects } from '@/hooks/useProjects';
 import {
@@ -12,6 +13,7 @@ import {
   useTypeWorkflow,
   useSetInitialStatus,
   useRemoveTypeStatus,
+  WORK_ITEM_TYPES,
   type WorkItemType,
   type TypeStatus,
 } from '@/hooks/useTypeWorkflow';
@@ -21,6 +23,7 @@ import {
   STATUS_CATEGORY_LABELS,
   type StatusCategory,
 } from '@/constants/statusCategoryColors';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -36,25 +39,13 @@ const T = {
   iconBrand: 'var(--ds-icon-brand, #0C66E4)',
 };
 
-type ModuleKey = 'project' | 'tasks' | 'product' | 'incident';
-
 const CATS: StatusCategory[] = ['todo', 'in_progress', 'done'];
 
-const MODULE_TYPES: Record<ModuleKey, WorkItemType[]> = {
-  project: ['Story', 'Epic', 'Feature', 'QA Bug', 'Business Gap', 'Change Request'],
-  tasks: ['Task', 'Sub-task', 'Backend', 'Frontend', 'Integration', 'API Requirement', 'Figma', 'UAT Finding'],
-  product: ['Business Request', 'BRD Task'],
-  incident: ['Production Incident'],
+const CAT_TO_LOZENGE: Record<StatusCategory, 'default' | 'inprogress' | 'success'> = {
+  todo: 'default',
+  in_progress: 'inprogress',
+  done: 'success',
 };
-
-const MODULE_LABEL: Record<ModuleKey, string> = {
-  project: 'Projects',
-  tasks: 'Tasks',
-  product: 'Product (BR)',
-  incident: 'Incidents',
-};
-
-const MODULES: ModuleKey[] = ['project', 'tasks', 'product', 'incident'];
 
 function usePortalMenu(
   triggerRef: React.RefObject<HTMLButtonElement | null>,
@@ -299,16 +290,6 @@ function StatusRow({
         ⠿
       </span>
 
-      <span
-        style={{
-          width: '8px',
-          height: '8px',
-          borderRadius: '50%',
-          background: STATUS_CATEGORY_COLORS[cat],
-          flexShrink: 0,
-        }}
-      />
-
       {editing ? (
         <input
           ref={editRef}
@@ -337,19 +318,10 @@ function StatusRow({
       ) : (
         <span
           onClick={() => setEditing(true)}
-          style={{
-            flex: 1,
-            fontSize: '13px',
-            color: T.text,
-            cursor: 'text',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            minWidth: 0,
-          }}
+          style={{ flex: 1, cursor: 'text', minWidth: 0, overflow: 'hidden' }}
           title={status.name}
         >
-          {status.name}
+          <Lozenge appearance={CAT_TO_LOZENGE[cat]}>{status.name}</Lozenge>
         </span>
       )}
 
@@ -472,18 +444,9 @@ function StatusColumn({
           flexShrink: 0,
         }}
       >
-        <span
-          style={{
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            background: catColor,
-            flexShrink: 0,
-          }}
-        />
-        <span style={{ fontSize: '13px', fontWeight: 600, color: T.text }}>
+        <Lozenge appearance={CAT_TO_LOZENGE[cat]} isBold>
           {STATUS_CATEGORY_LABELS[cat]}
-        </span>
+        </Lozenge>
         <span
           style={{
             marginLeft: 'auto',
@@ -715,7 +678,6 @@ function StatusBoard({
 
 export default function WorkflowAdminPage() {
   const [projectKey, setProjectKey] = useState('BAU');
-  const [module, setModule] = useState<ModuleKey>('project');
   const [typeIdx, setTypeIdx] = useState(0);
   const [showOverflow, setShowOverflow] = useState(false);
   const [resetConfirm, setResetConfirm] = useState(false);
@@ -724,12 +686,7 @@ export default function WorkflowAdminPage() {
   const { data: projects = [] } = usePhProjects();
   const resetMutation = useResetProjectWorkflow(projectKey);
 
-  const types = MODULE_TYPES[module];
-  const activeType = types[Math.min(typeIdx, types.length - 1)];
-
-  useEffect(() => {
-    setTypeIdx(0);
-  }, [module]);
+  const activeType = WORK_ITEM_TYPES[Math.min(typeIdx, WORK_ITEM_TYPES.length - 1)];
 
   const handleReset = async () => {
     if (!resetConfirm) {
@@ -852,46 +809,20 @@ export default function WorkflowAdminPage() {
           style={{
             padding: '16px 24px 0',
             display: 'flex',
-            gap: '2px',
-            flexShrink: 0,
-          }}
-        >
-          {MODULES.map((m) => (
-            <button
-              key={m}
-              onClick={() => setModule(m)}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '4px',
-                border: 'none',
-                fontSize: '13px',
-                fontWeight: module === m ? 600 : 400,
-                color: module === m ? T.textBrand : T.textSubtle,
-                background: module === m ? T.bgSelected : 'transparent',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
-              {MODULE_LABEL[m]}
-            </button>
-          ))}
-        </div>
-
-        <div
-          style={{
-            padding: '10px 24px 0',
-            display: 'flex',
             gap: '6px',
             flexWrap: 'wrap',
             flexShrink: 0,
           }}
         >
-          {types.map((t, i) => (
+          {WORK_ITEM_TYPES.map((t, i) => (
             <button
               key={t}
               onClick={() => setTypeIdx(i)}
               style={{
-                padding: '3px 10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '3px 10px 3px 8px',
                 borderRadius: '20px',
                 border: `1px solid ${typeIdx === i ? T.iconBrand : T.border}`,
                 fontSize: '12px',
@@ -902,6 +833,7 @@ export default function WorkflowAdminPage() {
                 fontFamily: 'inherit',
               }}
             >
+              <JiraIssueTypeIcon type={t} size={14} />
               {t}
             </button>
           ))}

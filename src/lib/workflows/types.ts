@@ -14,18 +14,25 @@ export type StatusCategory =
   | 'new'          // purple — UAT READY, BETA READY, RETEST
   | 'moved';       // yellow — DEFERRED FOR INT, STAGING/QA, TECHNICAL VALIDATION, READY FOR DEVELOPMENT, READY FOR QA
 
-/** Catalyst issue types this workflow engine supports */
+/** Catalyst issue types this workflow engine supports — mirrors WORK_ITEM_TYPES */
 export type IssueType =
   | 'Story'
   | 'Feature'
   | 'Epic'
+  | 'Task'
+  | 'Sub-task'
+  | 'QA Bug'
+  | 'Production Incident'
+  | 'Business Request'
+  | 'BRD Task'
+  | 'Business Gap'
+  | 'Change Request'
+  | 'API Requirement'
+  | 'UAT Finding'
   | 'Integration'
   | 'Frontend'
   | 'Backend'
-  | 'Design'
-  | 'Defect'
-  | 'Production Incident'
-  | 'Business Request';
+  | 'Figma';
 
 /** A single status node in a workflow */
 export interface WorkflowState {
