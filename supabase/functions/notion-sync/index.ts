@@ -105,28 +105,44 @@ Deno.serve(async (req) => {
     triggeredBy = body.triggered_by || 'manual'
   } catch (_) { /* cron call may have no body */ }
 
-  // Load config
+  // Load configs — single config_id for manual trigger, all enabled for cron
   let configQuery = db.from('notion_sync_config').select('*').eq('sync_enabled', true)
   if (configId) configQuery = configQuery.eq('id', configId)
-  const { data: configs, error: cfgErr } = await configQuery.limit(1).single()
+  const { data: configRows, error: cfgErr } = await configQuery
 
-  if (cfgErr || !configs) {
+  if (cfgErr || !configRows || configRows.length === 0) {
     return new Response(
       JSON.stringify({ ok: false, error: 'No enabled Notion sync config found' }),
       { status: 400, headers: { ...CORS, 'Content-Type': 'application/json' } }
     )
   }
-  const config = configs as any
 
+  // Run each config sequentially
+  const results: any[] = []
+  for (const config of configRows as any[]) {
+    const result = await syncOneConfig(db, config, triggeredBy)
+    results.push({ config_id: config.id, source_label: config.source_label, ...result })
+  }
+
+  const totalSynced  = results.reduce((s, r) => s + (r.synced  ?? 0), 0)
+  const totalSkipped = results.reduce((s, r) => s + (r.skipped ?? 0), 0)
+
+  return new Response(
+    JSON.stringify({ ok: true, configs: results.length, synced: totalSynced, skipped: totalSkipped, results }),
+    { headers: { ...CORS, 'Content-Type': 'application/json' } }
+  )
+})
+
+// ── Sync a single config row ──────────────────────────────────────────────────
+async function syncOneConfig(db: any, config: any, triggeredBy: string) {
   // Insert sync log (running)
   const { data: logRow } = await db.from('notion_sync_log').insert({
-    config_id:   config.id,
-    status:      'running',
+    config_id:    config.id,
+    status:       'running',
     triggered_by: triggeredBy,
   }).select('id').single()
   const logId = logRow?.id
 
-  // Mark config as running
   await db.from('notion_sync_config').update({ last_sync_status: 'running' }).eq('id', config.id)
 
   try {
@@ -136,11 +152,9 @@ Deno.serve(async (req) => {
       'Content-Type': 'application/json',
     }
 
-    // Format database ID (add dashes if missing)
-    const raw = config.database_id.replace(/-/g, '')
+    const raw  = config.database_id.replace(/-/g, '')
     const dbId = `${raw.slice(0,8)}-${raw.slice(8,12)}-${raw.slice(12,16)}-${raw.slice(16,20)}-${raw.slice(20)}`
 
-    // Fetch all pages (paginated)
     const pages: any[] = []
     let cursor: string | undefined
     do {
@@ -161,16 +175,10 @@ Deno.serve(async (req) => {
 
     const fieldMapping: Record<string, string> = config.field_mapping || {}
 
-    // Upsert each page → business_requests
     let synced = 0, skipped = 0
     for (const page of pages) {
       const br = mapNotionPageToBR(page, fieldMapping)
-
-      // Require at minimum: title mapped and present
-      if (!br.title) {
-        skipped++
-        continue
-      }
+      if (!br.title) { skipped++; continue }
 
       const { error: upsertErr } = await db
         .from('business_requests')
@@ -184,7 +192,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Update config status
     await db.from('notion_sync_config').update({
       last_sync_at:     new Date().toISOString(),
       last_sync_status: 'ok',
@@ -192,29 +199,20 @@ Deno.serve(async (req) => {
       last_sync_error:  null,
     }).eq('id', config.id)
 
-    // Close log
     if (logId) {
       await db.from('notion_sync_log').update({
-        finished_at:      new Date().toISOString(),
-        status:           'ok',
-        records_synced:   synced,
-        records_skipped:  skipped,
+        finished_at:     new Date().toISOString(),
+        status:          'ok',
+        records_synced:  synced,
+        records_skipped: skipped,
       }).eq('id', logId)
     }
 
-    return new Response(
-      JSON.stringify({ ok: true, synced, skipped, total: pages.length }),
-      { headers: { ...CORS, 'Content-Type': 'application/json' } }
-    )
+    return { ok: true, synced, skipped, total: pages.length }
 
   } catch (err: any) {
     const msg = err.message || 'Unknown error'
-
-    await db.from('notion_sync_config').update({
-      last_sync_status: 'error',
-      last_sync_error:  msg,
-    }).eq('id', config.id)
-
+    await db.from('notion_sync_config').update({ last_sync_status: 'error', last_sync_error: msg }).eq('id', config.id)
     if (logId) {
       await db.from('notion_sync_log').update({
         finished_at:   new Date().toISOString(),
@@ -222,10 +220,6 @@ Deno.serve(async (req) => {
         error_message: msg,
       }).eq('id', logId)
     }
-
-    return new Response(
-      JSON.stringify({ ok: false, error: msg }),
-      { status: 500, headers: { ...CORS, 'Content-Type': 'application/json' } }
-    )
+    return { ok: false, error: msg, synced: 0, skipped: 0 }
   }
-})
+}
