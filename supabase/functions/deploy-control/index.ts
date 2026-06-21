@@ -335,6 +335,107 @@ async function handlePost(
     return json({ ok: true });
   }
 
+  if (body.action === 'get_environments') {
+    const { data: settings } = await supabase
+      .from('deploy_settings')
+      .select('github_pat, github_repo')
+      .eq('id', 1)
+      .maybeSingle();
+
+    if (!settings?.github_pat) return json({ mainBranch: null, prodBranch: null });
+
+    const ghHeaders = {
+      Authorization: `Bearer ${settings.github_pat}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    };
+
+    const [mainBranchRes, prodBranchRes] = await Promise.all([
+      fetch(`https://api.github.com/repos/${settings.github_repo}/branches/main`, { headers: ghHeaders }),
+      fetch(`https://api.github.com/repos/${settings.github_repo}/branches/production`, { headers: ghHeaders }),
+    ]);
+
+    let mainBranch = null;
+    let prodBranch = null;
+
+    if (mainBranchRes.ok) {
+      const b = await mainBranchRes.json();
+      mainBranch = { sha: b.commit?.sha?.slice(0, 7), message: b.commit?.commit?.message?.split('\n')[0], date: b.commit?.commit?.committer?.date };
+    }
+    if (prodBranchRes.ok) {
+      const b = await prodBranchRes.json();
+      prodBranch = { sha: b.commit?.sha?.slice(0, 7), message: b.commit?.commit?.message?.split('\n')[0], date: b.commit?.commit?.committer?.date };
+    }
+
+    return json({ mainBranch, prodBranch });
+  }
+
+  if (body.action === 'get_branch_diff') {
+    const { data: settings } = await supabase
+      .from('deploy_settings')
+      .select('github_pat, github_repo')
+      .eq('id', 1)
+      .maybeSingle();
+    if (!settings?.github_pat) return err('GitHub PAT not configured', 400);
+
+    // Compare production...main — commits on main not yet on production
+    const res = await fetch(
+      `https://api.github.com/repos/${settings.github_repo}/compare/production...main`,
+      {
+        headers: {
+          Authorization: `Bearer ${settings.github_pat}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+    if (!res.ok) return err(`GitHub API error ${res.status}`, 502);
+    const cmp = await res.json();
+    const commits = (cmp.commits ?? []).map((c: Record<string, unknown>) => ({
+      sha: (c.sha as string)?.slice(0, 7),
+      message: (c.commit as Record<string, unknown>)?.message as string,
+      author: ((c.commit as Record<string, unknown>)?.author as Record<string, unknown>)?.name as string,
+      date: ((c.commit as Record<string, unknown>)?.committer as Record<string, unknown>)?.date as string,
+    })).reverse(); // newest first
+    return json({ ahead_by: cmp.ahead_by ?? 0, behind_by: cmp.behind_by ?? 0, commits });
+  }
+
+  if (body.action === 'promote_to_production') {
+    const { data: settings } = await supabase
+      .from('deploy_settings')
+      .select('github_pat, github_repo')
+      .eq('id', 1)
+      .maybeSingle();
+    if (!settings?.github_pat) return err('GitHub PAT not configured', 400);
+
+    // Merge main into production branch — this triggers CI → Vercel deploy
+    const res = await fetch(
+      `https://api.github.com/repos/${settings.github_repo}/merges`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${settings.github_pat}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          base: 'production',
+          head: 'main',
+          commit_message: `chore(promote): merge main → production ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC`,
+        }),
+      },
+    );
+
+    if (res.status === 204) return json({ ok: true, message: 'Already up to date — production is at the same commit as main' });
+    if (!res.ok) {
+      const txt = await res.text();
+      return err(`GitHub merge error ${res.status}: ${txt}`, 502);
+    }
+    const merged = await res.json();
+    return json({ ok: true, sha: (merged.sha as string)?.slice(0, 7), message: 'Merged main → production. CI will now deploy to ksa-catalyst.com.' });
+  }
+
   return err('Unknown action', 400);
 }
 

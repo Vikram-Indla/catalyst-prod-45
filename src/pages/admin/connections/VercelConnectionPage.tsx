@@ -87,8 +87,35 @@ interface JobInfo {
   steps: JobStep[];
 }
 
+interface BranchInfo {
+  sha: string | null;
+  message: string | null;
+  date: string | null;
+}
+
+interface EnvironmentsData {
+  mainBranch: BranchInfo | null;
+  prodBranch: BranchInfo | null;
+}
+
+interface DiffCommit {
+  sha: string;
+  message: string;
+  author: string;
+  date: string;
+}
+
+interface BranchDiff {
+  ahead_by: number;
+  behind_by: number;
+  commits: DiffCommit[];
+}
+
 const FONT =
   '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif';
+
+const STAGING_DB_REF = 'cyijbdeuehohvhnsywig';
+const PROD_DB_REF = 'lmqwtldpfacrrlvdnmld';
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
@@ -230,11 +257,298 @@ function RunStatusBadge({ status, conclusion }: { status: string; conclusion: st
 }
 
 function VercelStateBadge({ state }: { state: string }) {
-  if (state === 'READY') return <Lozenge appearance="success">Ready</Lozenge>;
+  if (state === 'READY') return <Lozenge appearance="success">Live</Lozenge>;
   if (state === 'ERROR') return <Lozenge appearance="removed">Error</Lozenge>;
   if (state === 'BUILDING') return <Lozenge appearance="inprogress">Building</Lozenge>;
   if (state === 'CANCELED') return <Lozenge appearance="default">Cancelled</Lozenge>;
   return <Lozenge appearance="default">{state}</Lozenge>;
+}
+
+// ─── Environment card ─────────────────────────────────────────────────────────
+
+function EnvCard({
+  label,
+  sublabel,
+  dbRef,
+  dbLabel,
+  frontendUrl,
+  frontendLabel,
+  commit,
+  commitMsg,
+  deployedAt,
+  stateChip,
+  accent,
+  loading: cardLoading,
+}: {
+  label: string;
+  sublabel: string;
+  dbRef: string;
+  dbLabel: string;
+  frontendUrl: string | null;
+  frontendLabel: string;
+  commit: string | null;
+  commitMsg: string | null;
+  deployedAt: string | null;
+  stateChip?: React.ReactNode;
+  accent?: string;
+  loading?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        minWidth: 0,
+        border: `1.5px solid ${accent ?? 'var(--ds-border, #DCDFE4)'}`,
+        borderRadius: 6,
+        padding: '16px 18px',
+        background: 'var(--ds-surface, #FFFFFF)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>{label}</div>
+          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>{sublabel}</div>
+        </div>
+        {cardLoading ? <Spinner size="small" /> : stateChip}
+      </div>
+
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          Frontend
+        </div>
+        {frontendUrl ? (
+          <a
+            href={frontendUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 12, color: 'var(--ds-link, #0052CC)', textDecoration: 'none', fontFamily: 'var(--ds-font-family-code)', wordBreak: 'break-all' }}
+          >
+            {frontendLabel}
+          </a>
+        ) : (
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', fontFamily: 'var(--ds-font-family-code)' }}>{frontendLabel}</span>
+        )}
+      </div>
+
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          Database
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)' }}>
+          {dbLabel}{' '}
+          <code style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)' }}>
+            {dbRef.slice(0, 8)}…
+          </code>
+        </div>
+      </div>
+
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          Git commit
+        </div>
+        {commit ? (
+          <>
+            <code style={{ fontSize: 11, color: 'var(--ds-text-subtle, #505258)', fontFamily: 'var(--ds-font-family-code)' }}>{commit}</code>
+            {commitMsg && (
+              <div style={{ fontSize: 12, color: 'var(--ds-text, #292A2E)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {commitMsg.split('\n')[0].slice(0, 72)}
+              </div>
+            )}
+            {deployedAt && (
+              <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>{fmtRelative(deployedAt)}</div>
+            )}
+          </>
+        ) : (
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            {cardLoading ? 'Loading…' : '—'}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Promote panel ────────────────────────────────────────────────────────────
+
+function PromotePanel({
+  call,
+  onDone,
+  gateEnabled,
+}: {
+  call: (method: string, body?: unknown) => Promise<unknown>;
+  onDone: () => void;
+  gateEnabled: boolean;
+}) {
+  const [diff, setDiff] = useState<BranchDiff | null>(null);
+  const [loadingDiff, setLoadingDiff] = useState(false);
+  const [promoting, setPromoting] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [diffError, setDiffError] = useState<string | null>(null);
+
+  const loadDiff = useCallback(async () => {
+    setLoadingDiff(true);
+    setDiffError(null);
+    try {
+      const d = await call('POST', { action: 'get_branch_diff' }) as BranchDiff;
+      setDiff(d);
+    } catch (e) {
+      setDiffError(e instanceof Error ? e.message : 'Failed to load diff');
+    } finally {
+      setLoadingDiff(false);
+    }
+  }, [call]);
+
+  const promote = useCallback(async () => {
+    setPromoting(true);
+    setResult(null);
+    try {
+      const d = await call('POST', { action: 'promote_to_production' }) as { ok: boolean; message: string };
+      setResult(d);
+      setDiff(null);
+      onDone();
+    } catch (e) {
+      setResult({ ok: false, message: e instanceof Error ? e.message : 'Promotion failed' });
+    } finally {
+      setPromoting(false);
+    }
+  }, [call, onDone]);
+
+  return (
+    <div
+      style={{
+        border: '1px solid var(--ds-border, #DCDFE4)',
+        borderRadius: 6,
+        overflow: 'hidden',
+        marginBottom: 24,
+        background: 'var(--ds-surface, #FFFFFF)',
+      }}
+    >
+      {/* header */}
+      <div
+        style={{
+          padding: '14px 18px',
+          background: 'var(--ds-surface-sunken, #F7F8F9)',
+          borderBottom: '1px solid var(--ds-border, #DCDFE4)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 200 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>
+            Promote local → production
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', marginTop: 2 }}>
+            Merges{' '}
+            <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>main</code>
+            {' → '}
+            <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>production</code>
+            {' '}on GitHub. CI applies DB migrations then deploys frontend to ksa-catalyst.com.
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+          <Button
+            appearance="subtle"
+            spacing="compact"
+            onClick={loadDiff}
+            isDisabled={loadingDiff}
+          >
+            {loadingDiff ? <Spinner size="small" /> : 'View diff'}
+          </Button>
+          <Button
+            appearance="primary"
+            onClick={promote}
+            isDisabled={promoting || !gateEnabled}
+            isLoading={promoting}
+          >
+            Promote to production
+          </Button>
+        </div>
+      </div>
+
+      {/* gate lock */}
+      {!gateEnabled && (
+        <div style={{ padding: '10px 18px', background: 'var(--ds-background-warning-subtle, #FFF7D6)', fontSize: 13, color: 'var(--ds-text-warning, #974F0C)' }}>
+          Deploy gate is OFF — enable it below before promoting
+        </div>
+      )}
+
+      {/* result */}
+      {result && (
+        <div
+          style={{
+            padding: '10px 18px',
+            fontSize: 13,
+            color: result.ok ? 'var(--ds-text-success, #1F845A)' : 'var(--ds-text-danger, #AE2A19)',
+            background: result.ok ? 'var(--ds-background-success-subtle, #DCFFF1)' : 'var(--ds-background-danger-subtle, #FFECEB)',
+          }}
+        >
+          {result.ok ? '✓' : '✗'} {result.message}
+        </div>
+      )}
+
+      {/* diff error */}
+      {diffError && (
+        <div style={{ padding: '10px 18px', fontSize: 13, color: 'var(--ds-text-danger, #AE2A19)' }}>
+          Could not load diff: {diffError}
+        </div>
+      )}
+
+      {/* diff */}
+      {diff && (
+        <div style={{ padding: '14px 18px' }}>
+          {diff.ahead_by === 0 ? (
+            <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Production is up to date — no new commits to promote
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 10 }}>
+                {diff.ahead_by} commit{diff.ahead_by !== 1 ? 's' : ''} on{' '}
+                <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>main</code>{' '}
+                not yet on production:
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {diff.commits.slice(0, 25).map((c, i) => (
+                  <div
+                    key={c.sha}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                      padding: '7px 0',
+                      borderBottom: i < diff.commits.length - 1 ? '1px solid var(--ds-border-subtle, rgba(11,18,14,0.06))' : 'none',
+                    }}
+                  >
+                    <code style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', fontFamily: 'var(--ds-font-family-code)', flexShrink: 0, marginTop: 1, minWidth: 48 }}>
+                      {c.sha}
+                    </code>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {c.message.split('\n')[0]}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 1 }}>
+                        {c.author} · {fmtRelative(c.date)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {diff.ahead_by > 25 && (
+                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', paddingTop: 8 }}>
+                    +{diff.ahead_by - 25} more commits not shown
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ─── Live progress ────────────────────────────────────────────────────────────
@@ -298,7 +612,7 @@ function LiveProgress({
             Deploying to production
           </div>
           <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)', marginTop: 2 }}>
-            <code style={{ fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace', fontSize: 11 }}>
+            <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>
               {run.head_sha}
             </code>
             {' — '}
@@ -382,7 +696,7 @@ function ConfigPanel({
           {config.github_pat_set && <span style={{ color: 'var(--ds-text-success, #1F845A)' }}>✓ saved</span>}
         </div>
         <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 6 }}>
-          Needs <code>actions:write</code> scope — for listing runs and triggering deploys
+          Needs <code>actions:write</code> scope — for run history, diff, and triggering deploys
         </div>
         <Textfield
           ref={patRef}
@@ -406,18 +720,16 @@ function ConfigPanel({
         />
       </div>
 
-      <div>
-        <Button
-          appearance="primary"
-          isLoading={saving}
-          onClick={() => onSave(
-            (patRef.current as HTMLInputElement | null)?.value || undefined,
-            (tokenRef.current as HTMLInputElement | null)?.value || undefined,
-          )}
-        >
-          Save credentials
-        </Button>
-      </div>
+      <Button
+        appearance="primary"
+        isLoading={saving}
+        onClick={() => onSave(
+          (patRef.current as HTMLInputElement | null)?.value || undefined,
+          (tokenRef.current as HTMLInputElement | null)?.value || undefined,
+        )}
+      >
+        Save credentials
+      </Button>
     </div>
   );
 }
@@ -460,6 +772,24 @@ export default function VercelConnectionPage() {
   } = useDeployControl();
 
   const [showConfig, setShowConfig] = useState(false);
+  const [envs, setEnvs] = useState<EnvironmentsData | null>(null);
+  const [envsLoading, setEnvsLoading] = useState(true);
+
+  const refreshEnvs = useCallback(async () => {
+    setEnvsLoading(true);
+    try {
+      const result = await call('POST', { action: 'get_environments' }) as EnvironmentsData;
+      setEnvs(result);
+    } catch {
+      // non-fatal
+    } finally {
+      setEnvsLoading(false);
+    }
+  }, [call]);
+
+  useEffect(() => {
+    if (!loading) refreshEnvs();
+  }, [loading, refreshEnvs]);
 
   if (loading) {
     return (
@@ -507,43 +837,20 @@ export default function VercelConnectionPage() {
     verticalAlign: 'middle',
   };
   const TD_MUTED: React.CSSProperties = { ...TD, color: 'var(--ds-text-subtle, #505258)', fontSize: 13 };
-  const MONO: React.CSSProperties = {
-    fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
-    fontSize: 12,
-  };
+  const MONO: React.CSSProperties = { fontFamily: 'var(--ds-font-family-code)', fontSize: 12 };
 
   return (
     <AdminGuard>
-      <div
-        style={{
-          padding: '24px 32px 48px',
-          maxWidth: 1280,
-          color: 'var(--ds-text, #292A2E)',
-          fontFamily: FONT,
-        }}
-      >
+      <div style={{ padding: '24px 32px 48px', maxWidth: 1280, color: 'var(--ds-text, #292A2E)', fontFamily: FONT }}>
+
         {/* ── Header ── */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 6,
-                background: '#000000',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 18,
-                color: '#FFFFFF',
-                fontWeight: 700,
-                flexShrink: 0,
-              }}
-            >
+            <div style={{ width: 36, height: 36, borderRadius: 6, background: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#FFFFFF', fontWeight: 700, flexShrink: 0 }}>
               ▲
             </div>
             <h1 style={{ fontSize: 24, fontWeight: 653, lineHeight: '28px', color: 'var(--ds-text, #292A2E)', margin: 0 }}>
-              Production deploys
+              Environment control
             </h1>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -553,7 +860,7 @@ export default function VercelConnectionPage() {
             {config.vercel_token_set
               ? <Lozenge appearance="success">Vercel ✓</Lozenge>
               : <Lozenge appearance="default">Vercel — no token</Lozenge>}
-            <Button appearance="subtle" onClick={refresh} spacing="compact">Refresh</Button>
+            <Button appearance="subtle" onClick={() => { refresh(); refreshEnvs(); }} spacing="compact">Refresh</Button>
           </div>
         </div>
 
@@ -566,18 +873,83 @@ export default function VercelConnectionPage() {
           </p>
         )}
 
+        {/* ── 2-Environment cards ── */}
+        <SectionLabel>Environments</SectionLabel>
+
+        <div style={{ display: 'flex', gap: 16, marginBottom: 24, alignItems: 'stretch' }}>
+          {/* Local */}
+          <EnvCard
+            label="Local (your machine)"
+            sublabel="Development — npm run dev"
+            dbRef={STAGING_DB_REF}
+            dbLabel="Staging DB"
+            frontendUrl="http://localhost:8080"
+            frontendLabel="localhost:8080"
+            commit={envs?.mainBranch?.sha ?? null}
+            commitMsg={envs?.mainBranch?.message ?? null}
+            deployedAt={envs?.mainBranch?.date ?? null}
+            loading={envsLoading}
+            stateChip={<Lozenge appearance="inprogress">Dev</Lozenge>}
+            accent="var(--ds-border-brand, #0052CC)"
+          />
+
+          {/* Arrow */}
+          <div style={{ display: 'flex', alignItems: 'center', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 20, flexShrink: 0 }}>
+            →
+          </div>
+
+          {/* Production */}
+          <EnvCard
+            label="Production"
+            sublabel="ksa-catalyst.com · live users"
+            dbRef={PROD_DB_REF}
+            dbLabel="Production DB"
+            frontendUrl={latestDeployment ? `https://${latestDeployment.url}` : config.production_url}
+            frontendLabel={latestDeployment?.url ?? config.production_url}
+            commit={
+              latestDeployment?.meta.github_commit_sha?.slice(0, 7) ??
+              envs?.prodBranch?.sha ??
+              null
+            }
+            commitMsg={
+              latestDeployment?.meta.github_commit_message ??
+              envs?.prodBranch?.message ??
+              null
+            }
+            deployedAt={
+              latestDeployment
+                ? String(latestDeployment.ready_at ?? latestDeployment.created_at)
+                : envs?.prodBranch?.date ?? null
+            }
+            loading={envsLoading && !latestDeployment}
+            stateChip={
+              latestDeployment
+                ? <VercelStateBadge state={latestDeployment.state} />
+                : <Lozenge appearance="default">No deploy</Lozenge>
+            }
+            accent="var(--ds-border-success, #1F845A)"
+          />
+        </div>
+
+        {/* ── Promote ── */}
+        <PromotePanel
+          call={call}
+          onDone={() => { refresh(); refreshEnvs(); }}
+          gateEnabled={gate.production_deploy_enabled}
+        />
+
         {/* ── Vercel token warning ── */}
         {!config.vercel_token_set && (
           <div style={{ marginBottom: 20 }}>
             <SectionMessage appearance="warning" title="VERCEL_TOKEN not configured">
-              Deploys will fail at the "Deploy to Vercel" step. Add it in Configuration below, then set it as a{' '}
+              Deploys will fail at the "Deploy to Vercel" step. Add it below, then set it as a{' '}
               <a
                 href={`https://github.com/${config.github_repo}/settings/secrets/actions`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: 'inherit', fontWeight: 600 }}
               >
-                GitHub secret
+                GitHub Actions secret
               </a>
               {' '}named <code>VERCEL_TOKEN</code>.
             </SectionMessage>
@@ -605,8 +977,8 @@ export default function VercelConnectionPage() {
             </div>
             <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)', lineHeight: '18px' }}>
               {gate.production_deploy_enabled
-                ? 'Gate ON — each push to main triggers a production build on GitHub Actions'
-                : 'Gate OFF — pushes to main are ignored. Enable when you want to deploy.'}
+                ? 'ON — promote button unlocked. Disable to freeze production.'
+                : 'OFF — promote button locked. Enable when ready to deploy.'}
             </div>
             {!gate.production_deploy_enabled && gate.disabled_at && (
               <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
@@ -633,36 +1005,24 @@ export default function VercelConnectionPage() {
         {/* ── Live progress ── */}
         {isRunInProgress && latestRun && <LiveProgress run={latestRun} call={call} />}
 
-        {/* ── Actions ── */}
+        {/* ── Manual redeploy ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <Button
-            appearance="primary"
+            appearance="default"
             isDisabled={!gate.production_deploy_enabled || !config.github_pat_set || triggering || isRunInProgress}
             isLoading={triggering}
             onClick={triggerDeploy}
           >
-            Deploy to production now
+            Redeploy current production commit
           </Button>
-          {!gate.production_deploy_enabled && (
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Enable the deploy gate above to deploy
-            </span>
-          )}
-          {gate.production_deploy_enabled && !config.github_pat_set && (
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Add GitHub PAT in Configuration below to enable
-            </span>
-          )}
-          {gate.production_deploy_enabled && config.github_pat_set && isRunInProgress && (
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Deploy in progress…
-            </span>
-          )}
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            Re-runs Vercel build without changing the commit — use to recover from a failed build
+          </span>
           <a
             href={`https://github.com/${config.github_repo}/actions`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
+            style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--ds-link, #0052CC)', textDecoration: 'none', flexShrink: 0 }}
           >
             View GitHub Actions ↗
           </a>
@@ -687,11 +1047,7 @@ export default function VercelConnectionPage() {
           ].map((s, i) => (
             <div
               key={s.label}
-              style={{
-                flex: 1,
-                padding: '16px 20px',
-                borderLeft: i > 0 ? '1px solid var(--ds-border, #DCDFE4)' : 'none',
-              }}
+              style={{ flex: 1, padding: '16px 20px', borderLeft: i > 0 ? '1px solid var(--ds-border, #DCDFE4)' : 'none' }}
             >
               <div style={{ fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
                 {s.label}
@@ -705,64 +1061,6 @@ export default function VercelConnectionPage() {
             </div>
           ))}
         </div>
-
-        {/* ── Current production ── */}
-        {(latestRun || latestDeployment) && (
-          <div
-            style={{
-              background: 'var(--ds-surface, #FFFFFF)',
-              border: '1px solid var(--ds-border, #DCDFE4)',
-              borderRadius: 4,
-              padding: '12px 16px',
-              marginBottom: 24,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              flexWrap: 'wrap',
-            }}
-          >
-            <span style={{ fontSize: 11, fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', flexShrink: 0 }}>
-              Production now
-            </span>
-            {latestDeployment ? (
-              <>
-                <VercelStateBadge state={latestDeployment.state} />
-                <a
-                  href={`https://${latestDeployment.url}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontSize: 13, color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
-                >
-                  {latestDeployment.url}
-                </a>
-                {latestDeployment.meta.github_commit_sha && (
-                  <code style={{ ...MONO, color: 'var(--ds-text-subtle, #505258)' }}>
-                    {latestDeployment.meta.github_commit_sha.slice(0, 7)}
-                  </code>
-                )}
-                {latestDeployment.meta.github_commit_message && (
-                  <span style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {latestDeployment.meta.github_commit_message.split('\n')[0]}
-                  </span>
-                )}
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
-                  {fmtRelative(latestDeployment.ready_at ?? latestDeployment.created_at)}
-                </span>
-              </>
-            ) : latestRun ? (
-              <>
-                <RunStatusBadge status={latestRun.status} conclusion={latestRun.conclusion} />
-                <code style={{ ...MONO, color: 'var(--ds-text-subtle, #505258)' }}>{latestRun.head_sha}</code>
-                <span style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {latestRun.head_commit_message.split('\n')[0]}
-                </span>
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
-                  {fmtRelative(latestRun.updated_at)}
-                </span>
-              </>
-            ) : null}
-          </div>
-        )}
 
         {/* ── Deploy history ── */}
         <SectionLabel>
