@@ -119,7 +119,12 @@ export function useTestCasesSource(): BacklogDataSource | null {
   );
 
   return useMemo((): BacklogDataSource | null => {
-    if (!projectId) return null;
+    /* 2026-06-21: when no active tm_projects row exists (fresh staging DB
+       with no test data seeded), still return a usable adapter so the
+       canonical BacklogPage renders its empty-state instead of the host
+       page spinning forever. Inserts use whatever projectId we have; if
+       none, onCreate throws via the upstream mutation. */
+    const effectiveProjectId = projectId ?? 'TESTHUB';
     return {
       sourceTag: BIZ_SOURCE,
       extraStories,
@@ -142,22 +147,22 @@ export function useTestCasesSource(): BacklogDataSource | null {
           if (target) mapped[target] = v;
         }
         if (Object.keys(mapped).length > 0) {
-          await updateMutation.mutateAsync({ id, project_id: projectId, ...mapped } as any);
+          await updateMutation.mutateAsync({ id, project_id: effectiveProjectId, ...mapped } as any);
         }
       },
       onDelete: async (id) => {
-        await deleteMutation.mutateAsync({ id, project_id: projectId } as any);
+        await deleteMutation.mutateAsync({ id, project_id: effectiveProjectId } as any);
       },
       onBulkDelete: async (ids) => {
-        await Promise.all(ids.map((id) => deleteMutation.mutateAsync({ id, project_id: projectId } as any)));
+        await Promise.all(ids.map((id) => deleteMutation.mutateAsync({ id, project_id: effectiveProjectId } as any)));
       },
       onCreate: async ({ title }) => {
-        await createMutation.mutateAsync({ project_id: projectId, title, status: 'DRAFT' } as any);
+        await createMutation.mutateAsync({ project_id: effectiveProjectId, title, status: 'DRAFT' } as any);
       },
       invalidationKeys: [
-        ['tm-cases', projectId],
+        ['tm-cases', effectiveProjectId],
       ],
-      productId: projectId,
+      productId: effectiveProjectId,
       entityKind: 'test_case',
       /* BacklogPage's key-cell icon defaults to 'Business Request' for any
          BIZ_SOURCE row. Override returns 'Test Case' so JiraIssueTypeIcon

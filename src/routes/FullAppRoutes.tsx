@@ -139,6 +139,7 @@ const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDe
 const TestHubDashboardPage = lazy(() => import("../pages/testhub/DashboardPage"));
 const TestHubMyWorkPage = lazy(() => import("../pages/testhub/MyWorkPage"));
 const TestHubRepositoryPage = lazy(() => import("../pages/testhub/repository/RepositoryPage"));
+const TestHubBoardPage = lazy(() => import("../pages/testhub/BoardPage"));
 const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
 const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
 const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
@@ -654,6 +655,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub" element={<Navigate to="/testhub/dashboard" replace />} />
         <Route path="/testhub/dashboard" element={<S><TestHubDashboardPage /></S>} />
         <Route path="/testhub/my-work" element={<S><TestHubMyWorkPage /></S>} />
+        <Route path="/testhub/board" element={<S><TestHubBoardPage /></S>} />
         <Route path="/testhub/repository" element={<S><TestHubRepositoryPage /></S>} />
         <Route path="/testhub/cycles" element={<S><TestHubCyclesPage /></S>} />
         <Route path="/testhub/cycles/:id" element={<S><TestHubCycleDetailPage /></S>} />

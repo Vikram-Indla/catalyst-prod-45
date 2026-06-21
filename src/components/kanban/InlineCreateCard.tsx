@@ -160,7 +160,7 @@ interface InlineCreateCardProps {
    *    'tasks'             → tasks table with status resolved by name
    *  When 'product', `projectKey` holds the product CODE (e.g. 'INV') and
    *  is used to resolve `products.id` for the insert. */
-  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release';
+  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release' | 'test';
   onCreateCard: (issue: CreatedIssue) => void;
   onCancel: () => void;
 }
@@ -355,7 +355,34 @@ function InlineCreateCardComponent({
     try {
       const nowIso = new Date().toISOString();
 
-      if (mode === 'release') {
+      if (mode === 'test') {
+        /* TEST branch — insert into tm_test_cases. projectKey holds the TM
+           project UUID passed by TestHubBoardCanonical (the host page resolved
+           it via useProjects + first active). Status converted to lowercase
+           (DB stores lower) so the new card lands in the right column. */
+        const dbStatus = (status || 'DRAFT').toLowerCase();
+        const insertRow: Record<string, any> = {
+          project_id: projectKey,
+          title: summary.trim(),
+          status: dbStatus,
+          created_at: nowIso,
+          updated_at: nowIso,
+        };
+        const { data, error: insErr } = await (supabase as any)
+          .from('tm_test_cases')
+          .insert(insertRow)
+          .select('id, key, title')
+          .single();
+        if (insErr) throw insErr;
+        const createdIssue: CreatedIssue = {
+          issueId: (data as any)?.id ?? '',
+          issueKey: (data as any)?.key ?? (data as any)?.id ?? '',
+          issueType: 'Test Case',
+          summary: summary.trim(),
+          status: status || 'DRAFT',
+        };
+        onCreateCard(createdIssue);
+      } else if (mode === 'release') {
         /* 2026-06-19: RELEASE branch — insert into rh_releases.
            - Status is the column's primary lifecycle stage (e.g. 'draft').
            - No version/product/manager wired here; the user can fill richer
