@@ -26,6 +26,35 @@ import { DockDirectory } from "./DockDirectory";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
 
+/** Isolates a directory crash — shows a retry prompt instead of a blank dock. */
+class ChatDirectoryErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null };
+  static getDerivedStateFromError(e: Error) { return { error: e }; }
+  componentDidCatch(e: Error, info: ErrorInfo) {
+    console.error('[ChatDock] directory error', e, info);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 24, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', textAlign: 'center' }}>
+          <span>Messages failed to load.</span>
+          <button
+            type="button"
+            style={{ fontSize: 12, cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px' }}
+            onClick={() => this.setState({ error: null })}
+          >
+            Retry
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 /** Isolates a single conversation pane crash from the rest of the dock. */
 class ChatPaneErrorBoundary extends Component<
   { conversationId: string; children: ReactNode },
@@ -92,7 +121,7 @@ interface ChatDockProps {
 }
 
 const PRESENCE_DOT: Record<ChatPresence, string> = {
-  on_set: "var(--ds-icon-success, #22A06B)",
+  onsite: "var(--ds-icon-success, #22A06B)",
   remote: "var(--ds-icon-information, #0C66E4)",
   away: "var(--ds-icon-disabled, #8590A2)",
   on_leave: "var(--ds-icon-disabled, #8590A2)",
@@ -171,7 +200,7 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
 function tabDotColor(conversation: ChatConversation): string {
   if (conversation.kind === "channel") return "transparent";
   if (conversation.kind === "ticket")
-    return PRESENCE_DOT.on_set.replace("success", "brand");
+    return PRESENCE_DOT.onsite.replace("success", "brand");
   return "var(--ds-background-brand-bold, #0C66E4)";
 }
 
@@ -268,7 +297,7 @@ export function ChatDock({
                 <CatyMoodFace state="content" size={26} />
               </span>
               <div className="cc-dock__title">
-                <span className="cc-dock__wordmark">Messages</span>
+                <span className="cc-dock__wordmark">CATY</span>
               </div>
               <div className="cc-dock__actions">
                 <button
@@ -345,7 +374,7 @@ export function ChatDock({
               <CatyMoodFace state="content" size={26} />
             </span>
             <div className="cc-dock__title">
-              <span className="cc-dock__wordmark">{dockMode === "caty" ? "Assistant" : "Messages"}</span>
+              <span className="cc-dock__wordmark">{dockMode === "caty" ? "Assistant" : "CATY"}</span>
             </div>
             <div className="cc-dock__actions">
               <IconButton
@@ -430,12 +459,14 @@ export function ChatDock({
                   />
                 </ChatPaneErrorBoundary>
               ) : (
-                <DockDirectory
-                  conversations={listConversations}
-                  activeId={activeId}
-                  onSelectConversation={onSelect}
-                  focusTick={dirFocusTick}
-                />
+                <ChatDirectoryErrorBoundary>
+                  <DockDirectory
+                    conversations={listConversations}
+                    activeId={activeId}
+                    onSelectConversation={onSelect}
+                    focusTick={dirFocusTick}
+                  />
+                </ChatDirectoryErrorBoundary>
               )}
             </div>
 

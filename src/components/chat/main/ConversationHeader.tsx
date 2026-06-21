@@ -36,7 +36,7 @@ export interface ConversationHeaderProps {
 }
 
 const PRESENCE_MAP: Record<string, PresenceColor> = {
-  on_set: 'green',
+  onsite: 'green',
   remote: 'blue',
   away: 'amber',
   on_leave: 'grey',

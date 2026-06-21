@@ -44,7 +44,7 @@ export default function ChatDockMount() {
     const ping = () => {
       (supabase as any)
         .from('user_presence')
-        .upsert({ user_id: user.id, last_seen_at: new Date().toISOString() }, { onConflict: 'user_id' })
+        .upsert({ user_id: user.id, last_seen_at: new Date().toISOString(), state: 'onsite' }, { onConflict: 'user_id' })
         .then(() => { /* fire-and-forget */ });
     };
     ping();

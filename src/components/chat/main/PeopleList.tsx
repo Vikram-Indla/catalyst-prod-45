@@ -13,14 +13,14 @@ import { Avatar } from './avatar';
 import type { ChatPresence, ChatPerson } from '@/types/chat';
 
 const PRESENCE_LABEL: Record<ChatPresence, string> = {
-  on_set: 'In office',
+  onsite: 'In office',
   remote: 'Remote',
   away: 'Away',
   on_leave: 'On leave',
 };
 
 const PRESENCE_TONE: Record<ChatPresence, 'green' | 'blue' | 'amber' | 'grey'> = {
-  on_set: 'green',
+  onsite: 'green',
   remote: 'blue',
   away: 'amber',
   on_leave: 'grey',

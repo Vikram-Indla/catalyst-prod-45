@@ -51,21 +51,21 @@ export function splitPinnedFavourites(live: ChatConversation[]): {
 }
 
 const PRESENCE_LABEL: Record<ChatPresence, string> = {
-  on_set: 'In office',
+  onsite: 'In office',
   remote: 'Remote',
   away: 'Away',
   on_leave: 'On leave',
 };
 
 const PRESENCE_TONE: Record<ChatPresence, 'green' | 'blue' | 'amber' | 'grey'> = {
-  on_set: 'green',
+  onsite: 'green',
   remote: 'blue',
   away: 'amber', // renders as a hollow grey ring (see .cc-dot--amber)
   on_leave: 'grey',
 };
 
 const PRESENCE_ORDER: Record<ChatPresence, number> = {
-  on_set: 0,
+  onsite: 0,
   remote: 1,
   away: 2,
   on_leave: 3,
