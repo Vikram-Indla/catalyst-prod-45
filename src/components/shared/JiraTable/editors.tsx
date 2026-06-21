@@ -20,6 +20,7 @@ import { createPortal } from 'react-dom';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
 import Avatar from '@atlaskit/avatar';
+import { UnassignedAvatar } from '@/components/ads';
 import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
@@ -762,7 +763,7 @@ export function makeAssigneeEditCell<T>({
           </>
         ) : (
           <>
-            <Avatar size="small" appearance="circle" />
+            <UnassignedAvatar size={22} />
             <span data-jira-cell-ghost>Unassigned</span>
           </>
         )}
@@ -813,7 +814,7 @@ export function makeAssigneeEditCell<T>({
               />
             </div>
             <MenuItemBtn onClick={() => { onChange(row, null); close(); }}>
-              <Avatar size="small" appearance="circle" />
+              <UnassignedAvatar size={22} />
               <span style={{ color: token('color.text.subtlest', '#7A869A') }}>Unassigned</span>
             </MenuItemBtn>
             {filtered.slice(0, 12).map((opt) => (

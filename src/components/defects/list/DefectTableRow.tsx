@@ -6,6 +6,7 @@
 import { formatDistanceToNowStrict } from 'date-fns';
 import { MoreHorizontal, Ban, RotateCcw, ExternalLink } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
+import { UnassignedAvatar } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar } from '@/components/ads';
 import {
@@ -126,7 +127,10 @@ export function DefectTableRow({
             </span>
           </div>
         ) : (
-          <span className="text-xs text-slate-400 italic">Unassigned</span>
+          <span className="flex items-center gap-2">
+            <UnassignedAvatar size={20} />
+            <span className="text-xs text-slate-500">Unassigned</span>
+          </span>
         )}
       </td>
 

@@ -11,6 +11,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Avatar from "@atlaskit/avatar";
+import { UnassignedAvatar } from "@/components/ads";
 import CommentIcon from "@atlaskit/icon/glyph/comment";
 import DragHandleIcon from "@atlaskit/icon/glyph/drag-handler";
 import MoreIcon from "@atlaskit/icon/glyph/more";
@@ -683,7 +684,7 @@ export function makeAssigneeCell(
     if (!a || !a.name) {
       return (
         <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <Avatar size="small" appearance="circle" />
+          <UnassignedAvatar size={22} />
           <span data-jira-cell-ghost>Unassigned</span>
         </span>
       );

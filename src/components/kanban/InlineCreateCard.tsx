@@ -28,6 +28,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import type { AssigneeOption } from './AssigneePickerPopover';
+import { UnassignedAvatar } from '@/components/ads';
 
 /* 2026-06-15: SmartPopover — portal-based popover that auto-positions itself
    in the direction with the most available viewport space. Flips above/below
@@ -803,23 +804,7 @@ function InlineCreateCardComponent({
                 );
               })()
             ) : (
-              /* Unassigned avatar — solid neutral fill, person silhouette
-                 inside. No dashed border (matches the rest of the app's
-                 avatar treatment). Visual footprint matches the assigned
-                 18×18 badge so the toolbar slots stay aligned. */
-              <span
-                style={{
-                  width: 18, height: 18, borderRadius: '50%',
-                  background: 'var(--ds-background-neutral, #F1F2F4)',
-                  color: 'var(--ds-text-subtle, #44546F)',
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
-                <svg width={12} height={12} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-                  <circle cx="8" cy="6.2" r="2.6" />
-                  <path d="M2.8 14c0-2.6 2.4-4.5 5.2-4.5s5.2 1.9 5.2 4.5z" />
-                </svg>
-              </span>
+              <UnassignedAvatar size={18} />
             )}
           </button>
           <SmartPopover isOpen={showAssigneeDropdown} triggerRef={assigneeTriggerRef} minWidth={240}>

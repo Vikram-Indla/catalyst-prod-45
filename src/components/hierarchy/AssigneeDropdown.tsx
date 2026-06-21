@@ -3,6 +3,7 @@
  */
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Check, Search } from '@/lib/atlaskit-icons';
+import { UnassignedAvatar } from '@/components/ads';
 
 export interface AssigneeOption {
   displayName: string;
@@ -75,7 +76,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
         onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
         onMouseLeave={(e) => (e.currentTarget.style.background = '')}
       >
-        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #CBD5E1', flexShrink: 0 }} />
+        <UnassignedAvatar size={24} />
         <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
         {!currentAssignee && <Check size={14} color="var(--cp-blue)" style={{ marginLeft: 'auto' }} />}
       </div>

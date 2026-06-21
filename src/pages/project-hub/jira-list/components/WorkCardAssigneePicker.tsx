@@ -16,6 +16,7 @@ import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { UnassignedAvatar } from '@/components/ads';
 
 interface Props {
   /** ph_issues.id (UUID PK). Required — issue_key would silent-400 (CLAUDE.md §L39). */
@@ -127,11 +128,7 @@ export function WorkCardAssigneePicker({
           fontWeight: 800, fontSize: 11,
         }}>{fallbackInitials}</div>
       ) : (
-        <div style={{
-          width: 28, height: 28, borderRadius: '50%', border: '1px dashed var(--ds-border, #DFE1E6)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 14, color: 'var(--ds-text-subtlest, #626F86)',
-        }}>?</div>
+        <UnassignedAvatar size={28} />
       )}
     </button>
   );
@@ -184,12 +181,7 @@ export function WorkCardAssigneePicker({
               cursor: 'pointer', borderBottom: '1px solid var(--cp-border-subtle, var(--cp-bg-sunken, #F4F5F7))',
               background: !currentAssigneeId ? 'var(--cp-interact-selected, #DEEBFF)' : 'transparent',
             }}>
-              <div style={{
-                width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                border: '1px dashed var(--ds-border-disabled, #C1C7D0)', display: 'flex',
-                alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, color: 'var(--ds-border-disabled, #C1C7D0)',
-              }}>?</div>
+              <UnassignedAvatar size={28} />
               <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', flex: 1 }}>Unassigned</span>
             </div>
             {filtered.map(m => (

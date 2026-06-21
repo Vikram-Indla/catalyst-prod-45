@@ -13,6 +13,7 @@ import CheckIcon from "@atlaskit/icon/glyph/check";
 import CrossCircleIcon from "@atlaskit/icon/glyph/cross-circle";
 import ChevronDownIcon from "@atlaskit/icon/glyph/chevron-down";
 import type { ProjectMember, ParentIssue } from "./types";
+import { UnassignedAvatar } from "@/components/ads";
 import { PRIORITY_LIST } from "./constants";
 import { getAvatarColor, getInitials } from "./helpers";
 import { resolveAvatarUrl } from "@/lib/avatars";
@@ -184,6 +185,13 @@ export function AvatarCircle({
         }}
       />
     );
+  }
+  /* 2026-06-21: when there's no real user (empty userId or the "Unassigned"
+     sentinel), render the canonical gray-silhouette glyph instead of fake
+     initials. Matches Jira: gray-filled circle, no border, white-gray person
+     icon — same chrome the JiraTable assignee cell uses. */
+  if (!userId || userId === "__unassigned__" || userId === "__none__" || name === "Unassigned" || name === "None") {
+    return <UnassignedAvatar size={size} />;
   }
   const initials = getInitials(name);
   const fontSize = Math.max(10, Math.round(size * 0.35));
@@ -459,22 +467,7 @@ export function EditableAssignee({
             }}
           >
             {opt.value === UNASSIGNED_VALUE ? (
-              <div
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: "50%",
-                  flexShrink: 0,
-                  border: "1px dashed var(--ds-border, #C1C7D0)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 14,
-                  color: "var(--ds-text-disabled, #C1C7D0)",
-                }}
-              >
-                ?
-              </div>
+              <UnassignedAvatar size={24} />
             ) : (
               <AvatarCircle
                 userId={opt.userId ?? opt.value}
@@ -601,7 +594,7 @@ export function EditableReporter({
     return [
       {
         value: REPORTER_NONE_VALUE,
-        label: "None",
+        label: "Unassigned",
         userId: null,
         avatarUrl: null,
       },
@@ -613,7 +606,7 @@ export function EditableReporter({
     if (!currentReporterId) {
       return {
         value: REPORTER_NONE_VALUE,
-        label: "None",
+        label: "Unassigned",
         userId: null,
         avatarUrl: null,
       };
@@ -723,22 +716,7 @@ export function EditableReporter({
             }}
           >
             {opt.value === REPORTER_NONE_VALUE ? (
-              <div
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: "50%",
-                  flexShrink: 0,
-                  border: "1px dashed var(--ds-border, #C1C7D0)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 14,
-                  color: "var(--ds-text-disabled, #C1C7D0)",
-                }}
-              >
-                ?
-              </div>
+              <UnassignedAvatar size={24} />
             ) : (
               <AvatarCircle
                 userId={opt.userId ?? opt.value}

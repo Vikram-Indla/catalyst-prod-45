@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { Search, User } from '@/lib/atlaskit-icons';
 import { KanbanAvatar } from './KanbanAvatar';
+import { UnassignedAvatar } from '@/components/ads';
 import type { KanbanThemeTokens } from './kanban-tokens';
 
 export interface AssigneeOption {
@@ -145,12 +146,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = currentAssignee === null ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
               >
-                <span style={{
-                  width: 32, height: 32, borderRadius: '50%', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                }}>
-                  <User size={18} color="#5E6C84" />
-                </span>
+                <UnassignedAvatar size={32} />
                 <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Unassigned</span>
               </button>
 

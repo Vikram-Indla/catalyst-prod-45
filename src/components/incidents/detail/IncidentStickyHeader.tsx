@@ -4,7 +4,7 @@ import {
   Check, X, Pencil, Eye, EyeOff, Plus, Users, ChevronDown 
 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
-import { Avatar, Lozenge, Tooltip } from '@/components/ads';
+import { Avatar, Lozenge, Tooltip, UnassignedAvatar } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -357,7 +357,10 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                         <span className="max-w-[80px] truncate">{assignee.full_name}</span>
                       </>
                     ) : (
-                      <span className="text-muted-foreground">Unassigned</span>
+                      <>
+                        <UnassignedAvatar size={18} />
+                        <span className="text-muted-foreground">Unassigned</span>
+                      </>
                     )}
                     <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </Button>

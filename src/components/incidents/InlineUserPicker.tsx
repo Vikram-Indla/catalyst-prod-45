@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { UnassignedAvatar } from '@/components/ads';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
 import type { IncidentUserProfile } from '@/types/incident';
 
@@ -93,7 +94,10 @@ export function InlineUserPicker({
             <span className="truncate">{value.full_name}</span>
           </>
         ) : (
-          <span className="italic text-muted-foreground">Unassigned</span>
+          <span className="flex items-center gap-2 text-muted-foreground">
+            <UnassignedAvatar size={22} />
+            <span>Unassigned</span>
+          </span>
         )}
       </div>
     );
@@ -119,7 +123,10 @@ export function InlineUserPicker({
               <span className="text-foreground truncate">{value.full_name}</span>
             </>
           ) : (
-            <span className="text-muted-foreground italic">Unassigned</span>
+            <>
+              <UnassignedAvatar size={22} />
+              <span className="text-muted-foreground">Unassigned</span>
+            </>
           )}
         </button>
       </PopoverTrigger>
