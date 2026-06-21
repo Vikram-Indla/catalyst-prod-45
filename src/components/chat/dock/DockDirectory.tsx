@@ -22,7 +22,7 @@ import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
 import { useChatSearch, groupSearchHits } from '@/hooks/chat/useChatSearch';
 import { useChatArchive, useChatUnarchive, useChatTogglePin } from '@/hooks/chat/useChatActions';
 import { useCatySuggestions, useDismissCatySuggestion } from '@/hooks/chat/useCatySuggestions';
-import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { useStartTicketThread } from '@/hooks/chat/useStartTicketThread';
 import { NewGroupDmModal } from './NewGroupDmModal';
 import { BrowseChannelsModal } from './BrowseChannelsModal';
 import ProjectIcon from '@/components/shared/ProjectIcon';
@@ -312,6 +312,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   const togglePin = useChatTogglePin();
   const { suggestions: catySuggestions } = useCatySuggestions();
   const dismissSuggestion = useDismissCatySuggestion();
+  const startTicketThread = useStartTicketThread();
   const handleTogglePin = useCallback((id: string, next: boolean) => togglePin.mutate({ convId: id, pinned: next }), [togglePin]);
   const qc = useQueryClient();
   const [query, setQuery] = useState('');
@@ -546,10 +547,12 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   // Zero-assumption: a ticket with no known type renders its avatar, never a lied type.
   const convGlyph = (c: ChatConversation) => {
     if (c.kind === 'ticket') {
-      return c.ticketType ? (
-        <span className="cc-dir__ticket-icon"><JiraIssueTypeIcon type={c.ticketType} size={20} /></span>
-      ) : (
-        <AtlaskitAvatar name={c.ticketKey ?? c.title} seed={c.id} className="cc-dir__avatar" />
+      return (
+        <AtlaskitAvatar
+          name={c.assigneeName ?? c.ticketKey ?? 'Ticket'}
+          seed={c.assigneeName ?? c.id}
+          className="cc-dir__avatar"
+        />
       );
     }
     if (c.kind === 'channel') {
@@ -736,7 +739,9 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
                 if (linkedConv) {
                   onSelectConversation(linkedConv.id);
                 } else {
-                  useGlobalSearchStore.getState().openDetail({ id: s.issueKey });
+                  startTicketThread.mutateAsync(s.issueKey)
+                    .then((convId) => onSelectConversation(convId))
+                    .catch(() => { setDmError(`Could not open conversation for ${s.issueKey}. Try again.`); setTimeout(() => setDmError(null), 4000); });
                 }
               };
               return (

@@ -27,6 +27,8 @@ export interface ChatConversation {
    *  show full names ("Adnan Ali, Mazen Yehia") instead of the compact
    *  comma-joined first-names that appear in the sidebar title. */
   dmMemberNames?: string[];
+  /** Display name of the ticket assignee. Populated for `ticket` kind only. */
+  assigneeName?: string | null;
 }
 
 export interface ChatReaction {
