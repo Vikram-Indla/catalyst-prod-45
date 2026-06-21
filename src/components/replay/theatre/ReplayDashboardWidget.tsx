@@ -28,6 +28,7 @@ interface QualifyingBR {
   created_at: string;
   updated_at: string;
   assignee_name: string | null;
+  assignee_avatar: string | null;
 }
 
 // ─── Status chip — canonical statusPalette colors ────────────────────────────
@@ -92,13 +93,15 @@ async function fetchQualifyingBRs(): Promise<QualifyingBR[]> {
   // Batch-fetch PM profiles for assignee display
   const pmIds = [...new Set(rawBrs.map(b => b.project_manager_user_id).filter(Boolean))] as string[];
   const profileMap = new Map<string, string>();
+  const avatarMap = new Map<string, string>();
   if (pmIds.length > 0) {
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('id, full_name')
+      .select('id, full_name, avatar_url')
       .in('id', pmIds);
     for (const p of profiles ?? []) {
       if (p.full_name) profileMap.set(p.id, p.full_name);
+      if (p.avatar_url) avatarMap.set(p.id, p.avatar_url);
     }
   }
 
@@ -116,6 +119,7 @@ async function fetchQualifyingBRs(): Promise<QualifyingBR[]> {
       created_at: br.created_at,
       updated_at: br.updated_at,
       assignee_name: br.project_manager_user_id ? (profileMap.get(br.project_manager_user_id) ?? null) : null,
+      assignee_avatar: br.project_manager_user_id ? (avatarMap.get(br.project_manager_user_id) ?? null) : null,
     });
   }
   return qualifying;
@@ -288,7 +292,7 @@ export function ReplayDashboardWidget({ mode }: ReplayDashboardWidgetProps) {
         accessor: (row) => row.assignee_name,
         cell: ({ row }) => row.assignee_name ? (
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Avatar name={row.assignee_name} size="xsmall" />
+            <Avatar name={row.assignee_name} src={row.assignee_avatar ?? undefined} size="xsmall" />
             <span style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 80 }}>
               {row.assignee_name}
             </span>
