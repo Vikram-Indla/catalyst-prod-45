@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
 
   // 3. Issue Read
   const issueCheck = await runCheck('Issue Read', async () => {
-    const data = await jira('/rest/api/3/search/jql?jql=ORDER+BY+created+DESC&maxResults=1&fields=summary');
+    const data = await jira('/rest/api/3/search?jql=ORDER+BY+created+DESC&maxResults=1&fields=summary');
     const total = data.total ?? 0;
     return `${total.toLocaleString()} issue${total !== 1 ? 's' : ''} readable`;
   });
@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
   // Count issues
   let totalIssueCount = 0;
   if (issueCheck.passed) {
-    const data = await jira('/rest/api/3/search/jql?jql=ORDER+BY+created+DESC&maxResults=1').catch(() => null);
+    const data = await jira('/rest/api/3/search?jql=ORDER+BY+created+DESC&maxResults=1').catch(() => null);
     totalIssueCount = data?.total ?? 0;
   }
 
