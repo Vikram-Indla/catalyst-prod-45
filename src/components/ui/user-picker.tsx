@@ -1,29 +1,25 @@
-import { useState, useMemo } from 'react';
-import { Check, ChevronsUpDown, User, X, Loader2, AlertCircle } from '@/lib/atlaskit-icons';
+/**
+ * UserPicker — 2026-06-21 Phase 8.5: rewritten as a thin adapter over the
+ * canonical <ProfilePicker />.
+ *
+ * Public API kept stable so the 6 callers (EpicDetailsViewTab,
+ * ReportDefectModal, CreateEpicModal, CreateEpicDialog, EditEpicDialog,
+ * OKRSmartFiltersDialog) need no code changes:
+ *   - value: string | string[] | null
+ *   - onChange: (string | string[] | null) => void
+ *   - multiSelect, placeholder, showUnassigned, disabled
+ *
+ * Multi-select chips below the trigger are preserved.
+ */
+import { useMemo } from 'react';
+import { ChevronsUpDown, User, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Avatar, Lozenge } from '@/components/ads';
+import { Lozenge } from '@/components/ads';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
+import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 
-interface UserProfile {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-  avatar_url: string | null;
-}
+const UNASSIGNED = 'UNASSIGNED';
 
 interface UserPickerProps {
   value?: string | string[] | null;
@@ -44,269 +40,113 @@ export function UserPicker({
   className,
   showUnassigned = false,
 }: UserPickerProps) {
-  const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const { data: users = [] } = useActiveUsers();
 
-  // Fetch APPROVED users with real-time sync
-  const { data: users, isLoading, error } = useActiveUsers();
+  /* Build the canonical members list. The "Unassigned" pseudo-member is
+     synthesized here when `showUnassigned` is on so the multi-select can
+     include UNASSIGNED as a chip alongside real users (matches the legacy
+     behavior). */
+  const members: ProfilePickerMember[] = useMemo(
+    () => {
+      const real: ProfilePickerMember[] = users.map((u) => ({
+        userId: u.id,
+        name: u.full_name ?? u.email,
+        email: u.email,
+        avatarUrl: u.avatar_url ?? null,
+      }));
+      if (showUnassigned) {
+        real.unshift({
+          userId: UNASSIGNED,
+          name: 'Unassigned',
+          email: null,
+          avatarUrl: null,
+        });
+      }
+      return real;
+    },
+    [users, showUnassigned],
+  );
 
-  // Filter users based on search query
-  const filteredUsers = useMemo(() => {
-    if (!users) return [];
-    if (!searchQuery) return users;
+  /* Normalize the array value once for multi mode. */
+  const valueArray: string[] = Array.isArray(value) ? value : [];
 
-    const query = searchQuery.toLowerCase();
-    return users.filter(
-      (user) =>
-        user.full_name?.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query)
-    );
-  }, [users, searchQuery]);
-
-  // Get selected user(s) details
-  const selectedUsers = useMemo(() => {
-    if (!users || !value) return [];
-    
-    if (multiSelect && Array.isArray(value)) {
-      return users.filter((u) => value.includes(u.id));
-    } else if (typeof value === 'string' && value !== 'UNASSIGNED') {
-      const user = users.find((u) => u.id === value);
-      return user ? [user] : [];
+  /* Resolve single-mode selection. */
+  const singleSelected = useMemo<ProfilePickerSelection>(() => {
+    if (multiSelect) return null;
+    if (value === UNASSIGNED) {
+      return { userId: UNASSIGNED, name: 'Unassigned', avatarUrl: null };
     }
-    return [];
+    if (typeof value !== 'string') return null;
+    const u = users.find((x) => x.id === value);
+    return u
+      ? { userId: u.id, name: u.full_name ?? u.email, email: u.email, avatarUrl: u.avatar_url ?? null }
+      : null;
   }, [users, value, multiSelect]);
 
-  const handleSelect = (userId: string) => {
-    if (multiSelect) {
-      const currentValue = Array.isArray(value) ? value : [];
-      if (currentValue.includes(userId)) {
-        onChange(currentValue.filter((v) => v !== userId));
-      } else {
-        onChange([...currentValue, userId]);
-      }
-    } else {
-      onChange(userId === value ? null : userId);
-      setOpen(false);
-    }
+  const handleRemoveChip = (id: string) => {
+    if (multiSelect) onChange(valueArray.filter((v) => v !== id));
+    else onChange(null);
   };
 
-  const handleUnassignedSelect = () => {
-    if (multiSelect) {
-      const currentValue = Array.isArray(value) ? value : [];
-      if (currentValue.includes('UNASSIGNED')) {
-        onChange(currentValue.filter((v) => v !== 'UNASSIGNED'));
-      } else {
-        onChange([...currentValue, 'UNASSIGNED']);
-      }
-    } else {
-      onChange(value === 'UNASSIGNED' ? null : 'UNASSIGNED');
-      setOpen(false);
-    }
-  };
-
-  const handleRemove = (userId: string) => {
-    if (multiSelect && Array.isArray(value)) {
-      onChange(value.filter((v) => v !== userId));
-    } else {
-      onChange(null);
-    }
-  };
-
-  const isSelected = (userId: string) => {
-    if (multiSelect && Array.isArray(value)) {
-      return value.includes(userId);
-    }
-    return value === userId;
-  };
-
-  // Render trigger content
-  const renderTriggerContent = () => {
-    if (isLoading) {
-      return (
-        <span className="flex items-center gap-2 text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Loading...
-        </span>
-      );
-    }
-
-    if (error) {
-      return (
-        <span className="flex items-center gap-2 text-destructive">
-          <AlertCircle className="h-4 w-4" />
-          Error loading users
-        </span>
-      );
-    }
-
-    if (value === 'UNASSIGNED') {
-      return (
-        <span className="flex items-center gap-2">
-          <User className="h-4 w-4 text-muted-foreground" />
-          Unassigned
-        </span>
-      );
-    }
-
-    if (selectedUsers.length === 0) {
-      return <span className="text-muted-foreground">{placeholder}</span>;
-    }
-
-    if (!multiSelect && selectedUsers.length === 1) {
-      const user = selectedUsers[0];
-      return (
-        <span className="flex items-center gap-2">
-          <Avatar
-            src={user.avatar_url || undefined}
-            name={user.full_name || user.email}
-            size="xxsmall"
-          />
-          <span className="truncate">{user.full_name || user.email}</span>
-        </span>
-      );
-    }
-
-    return <span className="text-muted-foreground">{placeholder}</span>;
-  };
+  /* Resolve chips for the multi-select tray. */
+  const chipMembers = useMemo(
+    () => valueArray.map((id) => {
+      if (id === UNASSIGNED) return { userId: UNASSIGNED, name: 'Unassigned' };
+      const u = users.find((x) => x.id === id);
+      return u ? { userId: u.id, name: u.full_name ?? u.email } : null;
+    }).filter(Boolean) as Array<{ userId: string; name: string }>,
+    [valueArray, users],
+  );
 
   return (
     <div className={cn('space-y-2', className)}>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+      <ProfilePicker
+        members={members}
+        fieldLabel="User"
+        disabled={disabled}
+        /* Single-select wiring */
+        value={singleSelected}
+        onChange={multiSelect ? undefined : (next) => onChange(next?.userId ?? null)}
+        /* Multi-select wiring */
+        selectedIds={multiSelect ? valueArray : undefined}
+        onChangeMulti={multiSelect ? (next) => onChange(next.length === 0 ? null : next) : undefined}
+        renderTrigger={({ onClick, ref, disabled: ppDisabled, open }) => (
           <Button
+            ref={ref as any}
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            disabled={disabled}
+            disabled={ppDisabled}
+            onClick={onClick as any}
             className={cn(
               'w-full justify-between font-normal h-9',
-              // Remove default focus-visible ring to prevent double focus
               'focus:ring-0 focus:ring-offset-0 focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-0',
-              !value && 'text-muted-foreground'
+              !value && 'text-muted-foreground',
             )}
           >
-            {renderTriggerContent()}
+            <TriggerContent
+              multiSelect={multiSelect}
+              value={value}
+              singleSelected={singleSelected}
+              placeholder={placeholder}
+            />
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
-        </PopoverTrigger>
-        <PopoverContent 
-          className="w-[300px] p-0 z-[400]" 
-          align="start"
-          style={{ 
-            backgroundColor: 'var(--dialog-section-bg, var(--surface-1))', 
-            borderColor: 'var(--dialog-input-border, var(--border-color))',
-            boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.5)'
-          }}
-        >
-          <Command shouldFilter={false}>
-            <CommandInput
-              placeholder="Search by name or email..."
-              value={searchQuery}
-              onValueChange={setSearchQuery}
-            />
-            <CommandList>
-              {isLoading ? (
-                <div className="flex items-center justify-center py-6 text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Loading users...
-                </div>
-              ) : error ? (
-                <div className="flex items-center justify-center py-6 text-destructive">
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  Failed to load users
-                </div>
-              ) : (
-                <>
-                  <CommandEmpty>No users found.</CommandEmpty>
-                  <CommandGroup>
-                    {showUnassigned && (
-                      <CommandItem
-                        value="UNASSIGNED"
-                        onSelect={handleUnassignedSelect}
-                        className="cursor-pointer"
-                      >
-                        <Check
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            isSelected('UNASSIGNED') ? 'opacity-100' : 'opacity-0'
-                          )}
-                        />
-                        <User className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span className="text-muted-foreground italic">Unassigned</span>
-                      </CommandItem>
-                    )}
-                    {filteredUsers.map((user) => (
-                      <CommandItem
-                        key={user.id}
-                        value={user.id}
-                        onSelect={() => handleSelect(user.id)}
-                        className={cn(
-                          "cursor-pointer transition-colors py-3 px-4",
-                          isSelected(user.id) && "!bg-primary/10 border-l-[3px] border-l-primary"
-                        )}
-                      >
-                        <Check
-                          className={cn(
-                            'mr-2 h-4 w-4 flex-shrink-0 text-primary',
-                            isSelected(user.id) ? 'opacity-100' : 'opacity-0'
-                          )}
-                        />
-                        <span className="mr-3 flex-shrink-0">
-                          <Avatar
-                            src={user.avatar_url || undefined}
-                            name={user.full_name || user.email}
-                            size="small"
-                          />
-                        </span>
-                        <div className="flex flex-col flex-1 min-w-0">
-                          <span 
-                            className="text-sm font-medium truncate text-foreground"
-                          >
-                            {user.full_name || 'No name'}
-                          </span>
-                          {/* Email always muted for readability - NOT gold */}
-                          <span 
-                            className="text-xs truncate text-muted-foreground"
-                          >
-                            {user.email}
-                          </span>
-                        </div>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </>
-              )}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+        )}
+      />
 
-      {/* Multi-select chips */}
-      {multiSelect && selectedUsers.length > 0 && (
+      {multiSelect && chipMembers.length > 0 && (
         <div className="flex flex-wrap gap-1">
-          {Array.isArray(value) && value.includes('UNASSIGNED') && (
-            <span className="inline-flex items-center gap-1">
-              <Lozenge appearance="default">Unassigned</Lozenge>
-              <button
-                type="button"
-                onClick={() => handleRemove('UNASSIGNED')}
-                className="rounded-full hover:bg-muted-foreground/20 p-0.5"
-                aria-label="Remove Unassigned"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          )}
-          {selectedUsers.map((user) => (
-            <span key={user.id} className="inline-flex items-center gap-1">
-              <Lozenge appearance="inprogress">
-                {user.full_name || user.email}
+          {chipMembers.map((m) => (
+            <span key={m.userId} className="inline-flex items-center gap-1">
+              <Lozenge appearance={m.userId === UNASSIGNED ? 'default' : 'inprogress'}>
+                {m.name}
               </Lozenge>
               <button
                 type="button"
-                onClick={() => handleRemove(user.id)}
-                className="rounded-full hover:bg-brand-primary/20 p-0.5"
-                aria-label={`Remove ${user.full_name || user.email}`}
+                onClick={() => handleRemoveChip(m.userId)}
+                className="rounded-full hover:bg-muted-foreground/20 p-0.5"
+                aria-label={`Remove ${m.name}`}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -315,5 +155,56 @@ export function UserPicker({
         </div>
       )}
     </div>
+  );
+}
+
+function TriggerContent({
+  multiSelect,
+  value,
+  singleSelected,
+  placeholder,
+}: {
+  multiSelect: boolean;
+  value: string | string[] | null | undefined;
+  singleSelected: ProfilePickerSelection;
+  placeholder: string;
+}) {
+  if (multiSelect) {
+    const count = Array.isArray(value) ? value.length : 0;
+    return (
+      <span className="text-muted-foreground">
+        {count === 0 ? placeholder : `${count} selected`}
+      </span>
+    );
+  }
+  if (value === UNASSIGNED) {
+    return (
+      <span className="flex items-center gap-2">
+        <User className="h-4 w-4 text-muted-foreground" />
+        Unassigned
+      </span>
+    );
+  }
+  if (!singleSelected) {
+    return <span className="text-muted-foreground">{placeholder}</span>;
+  }
+  return (
+    <span className="flex items-center gap-2">
+      {singleSelected.avatarUrl ? (
+        <img
+          src={singleSelected.avatarUrl}
+          alt={singleSelected.name}
+          className="w-5 h-5 rounded-full object-cover"
+        />
+      ) : (
+        <span
+          className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+          style={{ background: 'var(--ds-text-brand, #2563EB)' }}
+        >
+          {singleSelected.name.slice(0, 1).toUpperCase()}
+        </span>
+      )}
+      <span className="truncate">{singleSelected.name}</span>
+    </span>
   );
 }

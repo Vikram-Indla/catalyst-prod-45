@@ -11,6 +11,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Avatar from "@atlaskit/avatar";
+import { UnassignedAvatar, toStatusCategory } from "@/components/ads";
 import CommentIcon from "@atlaskit/icon/glyph/comment";
 import DragHandleIcon from "@atlaskit/icon/glyph/drag-handler";
 import MoreIcon from "@atlaskit/icon/glyph/more";
@@ -495,6 +496,8 @@ export function makeStatusEditCell<T>(opts: {
   labelFor?: (s: string) => string;
   onChange: (row: T, next: string) => void;
   canEdit?: (row: T) => boolean;
+  /** 2026-06-21 (Vikram canonical): once done, frozen. Default true. */
+  lockWhenDone?: boolean;
 }) {
   return function StatusEditCell({ row }: CellProps<T>) {
     const [open, setOpen] = React.useState(false);
@@ -502,7 +505,10 @@ export function makeStatusEditCell<T>(opts: {
     const triggerRef = React.useRef<HTMLButtonElement>(null);
     const popupRef = React.useRef<HTMLDivElement>(null);
     const status = opts.getStatus(row);
-    const editable = opts.canEdit ? opts.canEdit(row) : true;
+    const callerEditable = opts.canEdit ? opts.canEdit(row) : true;
+    const lockWhenDone = opts.lockWhenDone !== false;
+    const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
+    const editable = callerEditable && !frozen;
 
     React.useEffect(() => {
       if (!open) return;
@@ -683,7 +689,7 @@ export function makeAssigneeCell(
     if (!a || !a.name) {
       return (
         <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <Avatar size="small" appearance="circle" />
+          <UnassignedAvatar size={22} />
           <span data-jira-cell-ghost>Unassigned</span>
         </span>
       );

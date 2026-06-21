@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal, ExternalLink, UserRound, Search, X, Paperclip } from '@/lib/atlaskit-icons';
+import { UnassignedAvatar } from '@/components/ads';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { Checkbox } from '@/components/ui/checkbox';
 import '@/styles/product-backlog.css';
@@ -257,9 +258,7 @@ function AssigneeCell({ defect, nameAvatarMap }: { defect: Defect; nameAvatarMap
   if (!assigneeName || assigneeName === 'Unassigned') {
     return (
       <div className="flex items-center gap-2.5">
-        <div style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: '1px solid rgba(15,23,42,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <UserRound size={14} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-        </div>
+        <UnassignedAvatar size={28} />
         <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Unassigned</span>
       </div>
     );

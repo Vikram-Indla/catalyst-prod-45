@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { toStatusCategory } from '@/components/ads';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
@@ -141,17 +142,25 @@ function StatusSelector({
   const resolvedCurrent = statuses.find((s: any) => s.id === currentStatusId) || currentStatus;
   const slug = resolvedCurrent?.slug || 'backlog';
   const config = STATUS_CONFIG[slug] || STATUS_CONFIG.backlog;
+  /* 2026-06-21 (Vikram canonical): freeze done tasks. Detect via the
+     canonical helper using either the status slug or its display name. */
+  const isFrozen = toStatusCategory(resolvedCurrent?.name || slug) === 'done';
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isFrozen ? false : open} onOpenChange={isFrozen ? () => {} : setOpen}>
       <PopoverTrigger asChild>
-        <button className="task-modal__status-value">
+        <button
+          className="task-modal__status-value"
+          disabled={isFrozen}
+          title={isFrozen ? `Status frozen — ${resolvedCurrent?.name || config.label} is final` : undefined}
+          style={{ cursor: isFrozen ? 'default' : 'pointer' }}
+        >
           <span
             className="task-modal__status-dot"
             style={{ backgroundColor: config.color }}
           />
           <span>{resolvedCurrent?.name || config.label}</span>
-          <span className="task-modal__status-chevron">▾</span>
+          {!isFrozen && <span className="task-modal__status-chevron">▾</span>}
         </button>
       </PopoverTrigger>
       <PopoverContent

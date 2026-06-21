@@ -1,16 +1,22 @@
 /**
- * AssigneePopover — createPortal-based assignee typeahead (fixed-position dropdown).
- * Replaced @atlaskit/popup 2026-05-05 — same click-outside race fix as StatusPopover.
- * Uses Atlaskit Avatar for row glyphs.
+ * AssigneePopover — Subtasks panel assignee picker.
+ *
+ * 2026-06-21 Phase 8: rewrapped around the canonical <ProfilePicker /> in
+ * body-only `anchorRef` mode. Public API unchanged — `children` is the
+ * visible trigger, `currentAccountId` is the current value (jira account
+ * id), `onChange({ accountId, displayName })` fires when a member is
+ * picked or cleared.
+ *
+ * Lock rule: subtasks are work-items — canonical lock applies via
+ * `lockWhenAssigned`.
+ *
+ * Data source: jira_identity_map (active in Catalyst OR active in Jira).
  */
-import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import Avatar from '@atlaskit/avatar';
-import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
-import { Check, Search, UserX } from '@/lib/atlaskit-icons';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 
 export interface AssigneeOption {
   jira_account_id: string | null;
@@ -29,12 +35,9 @@ interface AssigneePopoverProps {
 
 export function AssigneePopover({ currentAccountId, onChange, children, showActive = true }: AssigneePopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
-  const [q, setQ] = useState('');
   const triggerRef = useRef<HTMLSpanElement>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
 
-  const { data: people = [], isLoading } = useQuery({
+  const { data: people = [] } = useQuery({
     queryKey: ['subtask-assignee-options-local'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -56,51 +59,32 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
     staleTime: 5 * 60 * 1000,
   });
 
-  const filtered = React.useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    if (!needle) return people.slice(0, 60);
-    return people
-      .filter((p) => p.display_name?.toLowerCase().includes(needle) || p.email?.toLowerCase().includes(needle))
-      .slice(0, 60);
-  }, [people, q]);
+  const members: ProfilePickerMember[] = useMemo(
+    () => people
+      .filter((p) => !!p.jira_account_id)
+      .map((p) => ({
+        userId: p.jira_account_id as string,
+        name: p.display_name,
+        email: p.email,
+        avatarUrl: p.avatar_url,
+      })),
+    [people],
+  );
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (triggerRef.current?.contains(e.target as Node)) return;
-      const pop = document.querySelector('[data-sp-assignee-popover]');
-      if (pop?.contains(e.target as Node)) return;
-      setIsOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [isOpen]);
+  const value: ProfilePickerSelection = currentAccountId
+    ? (() => {
+        const m = people.find((p) => p.jira_account_id === currentAccountId);
+        return m ? { userId: m.jira_account_id as string, name: m.display_name, avatarUrl: m.avatar_url } : null;
+      })()
+    : null;
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.stopImmediatePropagation();
-        setIsOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handler, { capture: true });
-    return () => window.removeEventListener('keydown', handler, { capture: true });
-  }, [isOpen]);
-
-  // Auto-focus search on open
-  useEffect(() => {
-    if (isOpen) setTimeout(() => searchRef.current?.focus(), 50);
-    else setQ('');
-  }, [isOpen]);
+  /* Stable RefObject pointing at the trigger span. */
+  const stableAnchor = useRef<HTMLElement | null>(null);
+  useEffect(() => { stableAnchor.current = triggerRef.current; }, [isOpen]);
 
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!triggerRef.current) return;
-    if (isOpen) { setIsOpen(false); return; }
-    const r = triggerRef.current.getBoundingClientRect();
-    setAnchor({ top: r.bottom + 4, left: r.left });
-    setIsOpen(true);
+    setIsOpen((o) => !o);
   };
 
   return (
@@ -108,96 +92,26 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
       <span ref={triggerRef} onClick={toggle} style={{ display: 'inline-flex', cursor: 'pointer' }}>
         {children}
       </span>
-
-      {isOpen && anchor && typeof document !== 'undefined' &&
-        createPortal(
-          <div
-            data-sp-assignee-popover
-            role="menu"
-            style={{
-              position: 'fixed',
-              top: anchor.top,
-              left: anchor.left,
-              width: 280,
-              maxHeight: 320,
-              display: 'flex',
-              flexDirection: 'column',
-              background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-              borderRadius: 6,
-              boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
-              zIndex: 9999,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Search bar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` }}>
-              <Search size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
-              <input
-                ref={searchRef}
-                type="text"
-                placeholder="Assign to..."
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, background: 'transparent', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}
-              />
-            </div>
-
-            {/* Options list */}
-            <div style={{ overflowY: 'auto', flex: 1 }}>
-              {/* Unassign option */}
-              <button
-                type="button"
-                role="menuitem"
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                  height: 36, padding: '0 10px',
-                  background: showActive && !currentAccountId ? token('color.background.selected', '#E9F2FF') : 'transparent',
-                  border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                }}
-                onMouseEnter={(e) => { if (currentAccountId) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
-                onMouseLeave={(e) => { if (currentAccountId) e.currentTarget.style.background = 'transparent'; }}
-                onClick={() => { onChange({ accountId: null, displayName: null }); setIsOpen(false); }}
-              >
-                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
-                  <UserX size={12} />
-                </span>
-                <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Unassigned</span>
-                {showActive && !currentAccountId && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
-              </button>
-
-              {isLoading && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>Loading…</div>}
-              {!isLoading && filtered.length === 0 && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No matches</div>}
-
-              {filtered.map((p) => {
-                const active = showActive && p.jira_account_id === currentAccountId;
-                return (
-                  <button
-                    key={p.jira_account_id ?? p.email ?? p.display_name}
-                    type="button"
-                    role="menuitem"
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                      height: 36, padding: '0 10px',
-                      background: active ? token('color.background.selected', '#E9F2FF') : 'transparent',
-                      border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                    }}
-                    onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
-                    onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
-                    onClick={() => { onChange({ accountId: p.jira_account_id, displayName: p.display_name }); setIsOpen(false); }}
-                  >
-                    <Avatar size="small" name={p.display_name} src={p.avatar_url ?? undefined} borderColor="transparent" />
-                    <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {p.display_name}
-                    </span>
-                    {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>,
-          document.body,
-        )}
+      {isOpen && (
+        <ProfilePicker
+          value={value}
+          onChange={(next) => {
+            if (next === null) {
+              onChange({ accountId: null, displayName: null });
+              return;
+            }
+            onChange({ accountId: next.userId, displayName: next.name });
+          }}
+          members={members}
+          fieldLabel="Assignee"
+          anchorRef={stableAnchor}
+          onClose={() => setIsOpen(false)}
+          /* Bulk-edit context (showActive=false) intentionally opts out of
+             the lock — bulk reassignment must work even when targets
+             already have an assignee. */
+          lockWhenAssigned={showActive}
+        />
+      )}
     </>
   );
 }

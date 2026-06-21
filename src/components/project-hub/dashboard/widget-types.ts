@@ -6,7 +6,7 @@ import type { ComponentType } from 'react';
 
 export type WidgetSpan = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
-export type DashboardMode = 'project' | 'product' | 'incident' | 'tasks';
+export type DashboardMode = 'project' | 'product' | 'incident' | 'tasks' | 'test';
 
 export interface WidgetProps {
   projectId: string;
@@ -70,4 +70,12 @@ export interface WidgetDefinition {
    * equivalent.
    */
   hideOnProject?: boolean;
+  /**
+   * 2026-06-21: when true, this widget is HIDDEN on test-hub dashboards.
+   * TestHub data lives in test_cases/test_cycles, not ph_issues — the
+   * default ph_issues-backed widgets render nothing meaningful. Until
+   * test-specific widgets land, the canonical grid mounts an empty,
+   * editable shell on /testhub/dashboard.
+   */
+  hideOnTest?: boolean;
 }

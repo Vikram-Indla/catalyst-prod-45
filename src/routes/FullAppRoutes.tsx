@@ -146,6 +146,11 @@ const TestAdminPermissionsPage  = lazy(() => import("../pages/admin/test/TestPer
 const TestHubDashboardPage = lazy(() => import("../pages/testhub/DashboardPage"));
 const TestHubMyWorkPage = lazy(() => import("../pages/testhub/MyWorkPage"));
 const TestHubRepositoryPage = lazy(() => import("../pages/testhub/repository/RepositoryPage"));
+const TestHubBoardPage = lazy(() => import("../pages/testhub/BoardPage"));
+const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
+const TestHubFiltersListPage = lazy(() => import("../pages/testhub/FiltersListPage"));
+const TestHubFilterPreviewPage = lazy(() => import("../pages/testhub/FilterPreviewPage"));
+const TestHubFilterDetailPage = lazy(() => import("../pages/testhub/FilterDetailPage"));
 const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
 const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
 const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
@@ -666,6 +671,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub" element={<Navigate to="/testhub/dashboard" replace />} />
         <Route path="/testhub/dashboard" element={<S><TestHubDashboardPage /></S>} />
         <Route path="/testhub/my-work" element={<S><TestHubMyWorkPage /></S>} />
+        <Route path="/testhub/board" element={<S><TestHubBoardPage /></S>} />
         <Route path="/testhub/repository" element={<S><TestHubRepositoryPage /></S>} />
         <Route path="/testhub/cycles" element={<S><TestHubCyclesPage /></S>} />
         <Route path="/testhub/cycles/:id" element={<S><TestHubCycleDetailPage /></S>} />
@@ -676,6 +682,11 @@ export default function FullAppRoutes() {
         <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
         <Route path="/testhub/reports" element={<S><TestHubReportsPage /></S>} />
         <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
+        {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.
+            Static segments BEFORE :id-style routes. */}
+        <Route path="/testhub/filters" element={<S><TestHubFiltersListPage /></S>} />
+        <Route path="/testhub/filters/create" element={<S><TestHubFilterPreviewPage /></S>} />
+        <Route path="/testhub/filters/:filterId" element={<S><TestHubFilterDetailPage /></S>} />
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +

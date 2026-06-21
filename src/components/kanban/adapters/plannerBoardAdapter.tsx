@@ -291,6 +291,9 @@ export function buildPlannerBoardAdapter(
   /* Compute target position (append to end of destination column). */
   const persistence: BoardPersistence = {
     onDrop: (event) => {
+      /* 2026-06-21 canonical: freeze done items. */
+      const fromCol = columns.find((c) => c.id === event.sourceColId);
+      if (fromCol?.category === 'done') return;
       const destStatusId = event.destColId; // column id === status id by construction
       // Use insertIndex directly; useMoveKanbanTask re-reads current state
       // and dispatches the right RPC for within-column vs cross-column.

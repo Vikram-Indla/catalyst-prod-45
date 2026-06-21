@@ -28,6 +28,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import type { AssigneeOption } from './AssigneePickerPopover';
+import { UnassignedAvatar } from '@/components/ads';
 
 /* 2026-06-15: SmartPopover — portal-based popover that auto-positions itself
    in the direction with the most available viewport space. Flips above/below
@@ -160,7 +161,7 @@ interface InlineCreateCardProps {
    *    'tasks'             → tasks table with status resolved by name
    *  When 'product', `projectKey` holds the product CODE (e.g. 'INV') and
    *  is used to resolve `products.id` for the insert. */
-  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release';
+  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release' | 'test';
   onCreateCard: (issue: CreatedIssue) => void;
   onCancel: () => void;
 }
@@ -355,7 +356,34 @@ function InlineCreateCardComponent({
     try {
       const nowIso = new Date().toISOString();
 
-      if (mode === 'release') {
+      if (mode === 'test') {
+        /* TEST branch — insert into tm_test_cases. projectKey holds the TM
+           project UUID passed by TestHubBoardCanonical (the host page resolved
+           it via useProjects + first active). Status converted to lowercase
+           (DB stores lower) so the new card lands in the right column. */
+        const dbStatus = (status || 'DRAFT').toLowerCase();
+        const insertRow: Record<string, any> = {
+          project_id: projectKey,
+          title: summary.trim(),
+          status: dbStatus,
+          created_at: nowIso,
+          updated_at: nowIso,
+        };
+        const { data, error: insErr } = await (supabase as any)
+          .from('tm_test_cases')
+          .insert(insertRow)
+          .select('id, key, title')
+          .single();
+        if (insErr) throw insErr;
+        const createdIssue: CreatedIssue = {
+          issueId: (data as any)?.id ?? '',
+          issueKey: (data as any)?.key ?? (data as any)?.id ?? '',
+          issueType: 'Test Case',
+          summary: summary.trim(),
+          status: status || 'DRAFT',
+        };
+        onCreateCard(createdIssue);
+      } else if (mode === 'release') {
         /* 2026-06-19: RELEASE branch — insert into rh_releases.
            - Status is the column's primary lifecycle stage (e.g. 'draft').
            - No version/product/manager wired here; the user can fill richer
@@ -754,7 +782,19 @@ function InlineCreateCardComponent({
           >
             {assigneeName ? (
               (() => {
-                const url = avatarsByName?.get(assigneeName.toLowerCase());
+                /* 2026-06-21: trigger was only checking avatarsByName (board-
+                   scoped Map keyed by lowercase name). When the user picked
+                   from `mergedAssignees`, the profile's avatar_url never made
+                   it into avatarsByName so the trigger fell back to initials.
+                   Now we ALSO consult the matched option's avatarUrl, matching
+                   the dropdown-row resolution order. */
+                const matchedOpt = mergedAssignees.find(
+                  (o) => o.name.toLowerCase() === assigneeName.toLowerCase(),
+                );
+                const url =
+                  avatarsByName?.get(assigneeName.toLowerCase())
+                  ?? matchedOpt?.avatarUrl
+                  ?? null;
                 return url ? (
                   <img
                     src={url}
@@ -776,23 +816,7 @@ function InlineCreateCardComponent({
                 );
               })()
             ) : (
-              /* Unassigned avatar — solid neutral fill, person silhouette
-                 inside. No dashed border (matches the rest of the app's
-                 avatar treatment). Visual footprint matches the assigned
-                 18×18 badge so the toolbar slots stay aligned. */
-              <span
-                style={{
-                  width: 18, height: 18, borderRadius: '50%',
-                  background: 'var(--ds-background-neutral, #F1F2F4)',
-                  color: 'var(--ds-text-subtle, #44546F)',
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
-                <svg width={12} height={12} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-                  <circle cx="8" cy="6.2" r="2.6" />
-                  <path d="M2.8 14c0-2.6 2.4-4.5 5.2-4.5s5.2 1.9 5.2 4.5z" />
-                </svg>
-              </span>
+              <UnassignedAvatar size={18} />
             )}
           </button>
           <SmartPopover isOpen={showAssigneeDropdown} triggerRef={assigneeTriggerRef} minWidth={240}>

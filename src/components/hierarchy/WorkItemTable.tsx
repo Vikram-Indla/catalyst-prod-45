@@ -10,6 +10,7 @@ import { ChevronRight, ChevronDown, MoreHorizontal, ArrowUp, ArrowDown } from '@
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';
+import { UnassignedAvatar } from '@/components/ads';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusBadge } from './StatusBadge';
 import { StatusDropdown } from './StatusDropdown';
@@ -202,7 +203,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
   if (!assignee) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
-        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #CBD5E1', flexShrink: 0 }} />
+        <UnassignedAvatar size={24} />
         <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
       </div>
     );

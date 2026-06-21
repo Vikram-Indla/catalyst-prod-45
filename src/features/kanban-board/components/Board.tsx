@@ -160,6 +160,11 @@ export const Board: React.FC<BoardProps> = ({
       const col = boardConfig.columns.find((c) => c.id === destColId);
       const status = idx.colPrimaryStatus[destColId];
       if (!col || !status) return;
+      /* 2026-06-21 (Vikram canonical): freeze done items. If the card's
+         CURRENT column maps to category 'done', reject the move silently —
+         the drop preview already snapped; we restore the original column. */
+      const fromCol = fromColId ? boardConfig.columns.find((c) => c.id === fromColId) : undefined;
+      if (fromCol?.category === 'done') return;
       setOverrides((m) => new Map(m).set(issueId, destColId));
       onMove?.(issueId, status, col.category).catch(() =>
         setOverrides((m) => { const n = new Map(m); n.delete(issueId); return n; }));

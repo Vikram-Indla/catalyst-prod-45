@@ -418,6 +418,9 @@ export function buildTeamProgramBoardAdapter(
     onDrop: (event) => {
       if (event.destColId === event.sourceColId) return;
       if (!validColIds.has(event.destColId)) return;
+      /* 2026-06-21 canonical: freeze done items. */
+      const fromCol = columnDefs.find((c) => c.id === event.sourceColId);
+      if (fromCol?.category === 'done') return;
       return onMoveCard(event.cardId, event.destColId);
     },
     onStatusChange: (cardId, newStatus) => {

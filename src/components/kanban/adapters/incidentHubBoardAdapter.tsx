@@ -391,6 +391,9 @@ export function buildIncidentHubBoardAdapter(
   const persistence: BoardPersistence = {
     onDrop: (event) => {
       if (event.destColId !== event.sourceColId) {
+        /* 2026-06-21 canonical: freeze done items. */
+        const fromCol = INCIDENTHUB_BOARD_COLUMNS.find((c) => c.id === event.sourceColId);
+        if (fromCol?.category === 'done') return;
         onDropAttempt(event.cardId, event.destColId);
       }
     },

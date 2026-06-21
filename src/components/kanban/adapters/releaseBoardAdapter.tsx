@@ -127,6 +127,9 @@ export function buildReleaseBoardAdapter(args: BuildReleaseBoardAdapterArgs): Bo
   const persistence: BoardPersistence = {
     onDrop: (event) => {
       if (event.destColId !== event.sourceColId) {
+        /* 2026-06-21 canonical: freeze done items. */
+        const fromCol = RELEASE_BOARD_COLUMNS.find((c) => c.id === event.sourceColId);
+        if (fromCol?.category === 'done') return;
         const next = releaseColumnIdToStatus(event.destColId);
         // Return the promise so a guard rejection rolls the card back.
         if (next && onStatusChange) return onStatusChange(event.cardId, next);
