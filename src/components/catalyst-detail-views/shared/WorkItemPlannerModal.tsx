@@ -16,6 +16,11 @@ import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { createChildIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { catalystToast } from '@/lib/catalystToast';
+import {
+  startPlannerRun,
+  completePlannerRun,
+  auditCreatedWorkItems,
+} from '@/lib/workItemPlannerService';
 import { ProposalTable, type ProposalRow } from './ProposalTable';
 import { useProposalAssignees } from '@/hooks/useProposalAssignees';
 import type { AssigneeChoice } from '@/components/shared/JiraTable';
@@ -254,6 +259,12 @@ export function WorkItemPlannerModal({
   // ── Epic creation ───────────────────────────────────────────────────────────
   const createEpics = useCallback(async () => {
     setState({ step: 'creating_epics' });
+    const runId = await startPlannerRun({
+      runType: 'epic_generation',
+      brId,
+      projectKey,
+      proposalsCount: state.epicProposals.length,
+    });
     try {
       const { data: { user } } = await supabase.auth.getUser();
       const reporterId = user?.id ?? undefined;
@@ -282,13 +293,24 @@ export function WorkItemPlannerModal({
         }
       }
 
+      if (runId) {
+        await completePlannerRun({ runId, createdCount: created.length });
+        if (created.length > 0) {
+          await auditCreatedWorkItems(runId, created.map((e) => ({
+            issueKey: e.key,
+            issueType: 'Epic',
+            parentKey: brId,
+            summary: e.summary,
+          })));
+        }
+      }
+
       if (created.length === 0) {
         setState({ step: 'done' });
         return;
       }
 
       catalystToast.success(`Created ${created.length} epic${created.length === 1 ? '' : 's'} in ${projectName}`);
-      // Auto-start story generation for first epic
       setState({
         createdEpics: created,
         currentEpicIdx: 0,
@@ -299,6 +321,7 @@ export function WorkItemPlannerModal({
       });
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to create epics';
+      if (runId) await completePlannerRun({ runId, createdCount: 0, status: 'failed', error: msg });
       setState({ step: 'error', error: msg });
     }
   }, [state.epicSelection, state.epicProposals, state.epicAssignees, brId, projectKey, projectId, projectName]);
