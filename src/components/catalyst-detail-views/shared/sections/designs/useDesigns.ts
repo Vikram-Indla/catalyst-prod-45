@@ -37,7 +37,6 @@ export function useDesigns(workItemId: string | null | undefined): UseDesignsRes
   const { data: designs = [], isLoading } = useQuery<DesignRow[]>({
     queryKey,
     enabled,
-    refetchInterval: 4000,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data, error } = await (supabase as any)

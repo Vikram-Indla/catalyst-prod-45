@@ -62,7 +62,7 @@ function generateId(): string {
   } catch {
     /* fallthrough */
   }
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return `${Date.now()}`;
 }
 
 export const SLASH_COMMANDS: SlashCommand[] = [

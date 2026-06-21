@@ -80,7 +80,7 @@ export function FeatureKanbanBoard({
   // Real-time subscription for feature_statuses changes
   useEffect(() => {
     const channel = supabase
-      .channel(`feature-statuses-realtime-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`feature-statuses-realtime`)
       .on(
         'postgres_changes',
         {

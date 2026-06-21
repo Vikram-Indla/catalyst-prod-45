@@ -207,7 +207,7 @@ export default function DependenciesPage() {
   // Real-time subscription for dependencies table
   useEffect(() => {
     const depsChannel = supabase
-      .channel(`dependencies-realtime-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`dependencies-realtime`)
       .on(
         'postgres_changes',
         {
@@ -224,7 +224,7 @@ export default function DependenciesPage() {
 
     // Also subscribe to epics for real-time name/key updates
     const epicsChannel = supabase
-      .channel(`epics-realtime-deps-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`epics-realtime-deps`)
       .on(
         'postgres_changes',
         {

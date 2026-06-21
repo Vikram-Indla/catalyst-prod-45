@@ -42,7 +42,7 @@ export function useWorkItemPresence(workItemType: string, workItemId: string) {
   // Subscribe to realtime presence changes
   useEffect(() => {
     const channel = supabase
-      .channel(`presence-${workItemType}-${workItemId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`presence-${workItemType}-${workItemId}`)
       .on(
         'postgres_changes',
         {

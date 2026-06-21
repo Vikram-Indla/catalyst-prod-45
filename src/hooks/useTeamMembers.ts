@@ -12,7 +12,7 @@ export function useTeamMembers(teamId?: string) {
     if (!teamId) return;
 
     const channel = supabase
-      .channel(`team-members-${teamId}-sync-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`team-members-${teamId}-sync`)
       .on(
         'postgres_changes',
         {

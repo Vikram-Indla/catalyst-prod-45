@@ -33,7 +33,7 @@ export const StepEvidenceSection: React.FC<StepEvidenceSectionProps> = ({
   // Real-time subscription to attachment changes
   useEffect(() => {
     const channel = supabase
-      .channel(`attachments:${stepResultId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`attachments:${stepResultId}`)
       .on(
         'postgres_changes',
         {

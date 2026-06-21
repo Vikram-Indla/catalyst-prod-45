@@ -58,7 +58,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
   // ============================================
   useEffect(() => {
     const channel = supabase
-      .channel(`resource-allocations-${resource.id}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`resource-allocations-${resource.id}`)
       .on(
         'postgres_changes',
         {

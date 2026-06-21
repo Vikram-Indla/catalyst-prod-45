@@ -57,18 +57,20 @@ const FullAppRoutes = ENABLE_FULL_APP
 
 // Apr 25, 2026 — Persistent cache layer.
 //   • staleTime 15min: data treated fresh for 15 min, no refetch
-//   • gcTime 30 days: cached entries remain in localStorage for 30 days
+//   • gcTime 5min: evict stale cache entries quickly to prevent localStorage bloat
+//     (was 30 days — caused unbounded accumulation across multi-project sessions)
 //   • Persist via SyncStorage → page reloads hydrate instantly from cache,
 //     refetch only happens after staleTime elapses
 //   • buster: bump CACHE_VERSION to invalidate ALL cached queries on deploy
+//   • Config/flag queries that need longer retention override gcTime per-query
 const CACHE_VERSION = 'v2.2026-05-16';
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+const FIVE_MIN_MS = 5 * 60 * 1000;
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 15 * 60 * 1000,
-      gcTime: THIRTY_DAYS_MS,
+      gcTime: FIVE_MIN_MS,
       refetchOnWindowFocus: false,
       retry: 1,
     },

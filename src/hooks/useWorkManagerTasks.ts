@@ -75,7 +75,7 @@ export function useWorkManagerTasks(teamId?: string | null) {
   // Set up real-time subscription
   useEffect(() => {
     const channel = supabase
-      .channel(`work-manager-tasks-changes-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`work-manager-tasks-changes`)
       .on(
         'postgres_changes',
         {

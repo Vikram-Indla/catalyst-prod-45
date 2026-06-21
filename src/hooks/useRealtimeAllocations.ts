@@ -40,7 +40,7 @@ export function useRealtimeAllocations() {
     
     // Subscribe to resource_allocations table
     const channel = supabase
-      .channel(`allocations-realtime-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`allocations-realtime`)
       .on(
         'postgres_changes',
         {

@@ -323,7 +323,7 @@ export function useUsers() {
     const invalidate = () => queryClient.invalidateQueries({ queryKey: ['users-list'] });
     
     const channel = supabase
-      .channel(`admin-users-sync-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`admin-users-sync`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, invalidate)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_product_roles' }, invalidate)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'product_roles' }, invalidate)

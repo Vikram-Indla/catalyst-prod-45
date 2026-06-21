@@ -71,7 +71,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
     };
     fetchActivity();
 
-    const channel = supabase.channel(`ra-activity-live-${Math.random().toString(36).slice(2, 10)}`)
+    const channel = supabase.channel(`ra-activity-live`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ra_activity_log' }, (payload: any) => {
         setActivityEvents(prev => [payload.new as ActivityEvent, ...prev].slice(0, 10));
       })

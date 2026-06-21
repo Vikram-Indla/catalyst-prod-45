@@ -249,7 +249,7 @@ export function useActivityFeed(projectId: string, isPaused: boolean = false) {
     if (isPaused) return;
 
     const channel = supabase
-      .channel(`cc-activity-feed-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`cc-activity-feed`)
       .on(
         'postgres_changes',
         {

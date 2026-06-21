@@ -175,7 +175,7 @@ export function useCapacityData() {
     };
 
     const channel = supabase
-      .channel(`capacity-unified-sync-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`capacity-unified-sync`)
       // Core resource tables (same as /admin/users)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, invalidateResources)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_inventory' }, invalidateResources)

@@ -252,7 +252,6 @@ export function BrActivitySection({
   const { data: comments = [], isLoading: isLoadingComments } = useQuery({
     queryKey: ['br-discussions', requestId],
     enabled,
-    refetchInterval: 4000,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data, error } = await (supabase as any)
@@ -291,7 +290,6 @@ export function BrActivitySection({
   const { data: historyItems = [], isLoading: isLoadingHistory } = useQuery({
     queryKey: ['br-audit', requestId],
     enabled,
-    refetchInterval: 4000,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data, error } = await (supabase as any)
@@ -367,7 +365,7 @@ export function BrActivitySection({
   useEffect(() => {
     if (!enabled) return;
     const channel = supabase
-      .channel(`br-activity-realtime:${requestId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`br-activity-realtime:${requestId}`)
       .on(
         'postgres_changes',
         {

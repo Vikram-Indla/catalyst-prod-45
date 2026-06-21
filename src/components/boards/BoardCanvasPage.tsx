@@ -101,7 +101,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
   useEffect(() => {
     if (!boardId) return;
     const channel = supabase
-      .channel(`board:${boardId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`board:${boardId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'board_issue_rank', filter: `board_id=eq.${boardId}` },
         () => { setTimeout(() => qc.invalidateQueries({ queryKey: ['board-cards', boardId] }), 300); })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'board_columns', filter: `board_id=eq.${boardId}` },

@@ -58,7 +58,7 @@ export function EpicFiltersDialog({
   // Realtime subscription for epic_statuses changes (sync filter dropdown immediately)
   useEffect(() => {
     const channel = supabase
-      .channel(`epic-statuses-filter-realtime-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`epic-statuses-filter-realtime`)
       .on(
         'postgres_changes',
         {

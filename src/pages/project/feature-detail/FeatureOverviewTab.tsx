@@ -121,7 +121,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
   // Real-time subscription for attachments
   useEffect(() => {
     const channel = supabase
-      .channel(`feature-attachments-${feature.id}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`feature-attachments-${feature.id}`)
       .on(
         'postgres_changes',
         {

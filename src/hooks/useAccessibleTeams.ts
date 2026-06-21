@@ -28,7 +28,7 @@ export function useAccessibleTeams() {
   // Subscribe to real-time changes (INSERT, UPDATE, DELETE) on teams table
   useEffect(() => {
     const channel = supabase
-      .channel(`teams-realtime-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`teams-realtime`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'teams' },

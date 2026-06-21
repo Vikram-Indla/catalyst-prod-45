@@ -297,7 +297,7 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
     };
 
     const channel = supabase
-      .channel(`analytics-realtime-sync-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`analytics-realtime-sync`)
       // Core resource tables
       .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_inventory' }, invalidateAll)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, invalidateAll)

@@ -9,7 +9,7 @@ export function usePlanSubscription(planId: string | null) {
     if (!planId) return;
 
     const channel = supabase
-      .channel(`plan:${planId}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`plan:${planId}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'tasks', filter: `plan_id=eq.${planId}` },
@@ -55,7 +55,7 @@ export function useSettingsSubscription() {
 
   useEffect(() => {
     const channel = supabase
-      .channel(`planhub-settings-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`planhub-settings`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'planhub_settings' },

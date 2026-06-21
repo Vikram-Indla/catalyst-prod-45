@@ -277,7 +277,7 @@ export function useProjectsRealtime() {
 
   useEffect(() => {
     const channel = supabase
-      .channel(`projecthub_changes-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`projecthub_changes`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'projects' },

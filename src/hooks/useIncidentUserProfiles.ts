@@ -11,7 +11,7 @@ export function useIncidentUserProfiles() {
   // Set up real-time subscription to sync with profiles changes
   useEffect(() => {
     const channel = supabase
-      .channel(`incident-user-profiles-sync-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`incident-user-profiles-sync`)
       .on(
         'postgres_changes',
         {
@@ -63,7 +63,7 @@ export function useAvailableApprovers() {
   // Set up real-time subscription
   useEffect(() => {
     const channel = supabase
-      .channel(`available-approvers-sync-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`available-approvers-sync`)
       .on(
         'postgres_changes',
         {

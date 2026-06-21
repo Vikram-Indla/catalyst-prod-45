@@ -33,7 +33,7 @@ export function useWorkItemIconPreferences() {
   // Real-time subscription for icon preference changes
   useEffect(() => {
     const channel = supabase
-      .channel(`work-item-icon-preferences-changes-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`work-item-icon-preferences-changes`)
       .on(
         'postgres_changes',
         {

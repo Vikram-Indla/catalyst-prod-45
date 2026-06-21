@@ -122,7 +122,7 @@ export function useTeamPulse() {
   useEffect(() => {
     const handler = () => { void queryClient.invalidateQueries({ queryKey: ['team-pulse'] }); };
     const channel = supabase
-      .channel(`team-pulse-realtime-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`team-pulse-realtime`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_presence' },     handler)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_availability' }, handler)
       .subscribe();
@@ -223,7 +223,7 @@ export function useTeamPulseManagedTeam() {
   useEffect(() => {
     const handler = () => { void queryClient.invalidateQueries({ queryKey: ['team-pulse-managed'] }); };
     const channel = supabase
-      .channel(`team-pulse-managed-rt-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`team-pulse-managed-rt`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_presence' },     handler)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_availability' }, handler)
       .subscribe();

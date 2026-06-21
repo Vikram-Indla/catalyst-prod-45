@@ -40,7 +40,7 @@ export function useKanbanStatusesRealtime() {
 
   useEffect(() => {
     const channel = supabase
-      .channel(`kanban-statuses-realtime-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`kanban-statuses-realtime`)
       .on(
         'postgres_changes',
         {

@@ -28,7 +28,6 @@ export function useWorkLogs(workItemId: string | null | undefined) {
   const { data: entries = [], isLoading } = useQuery<WorkLogRow[]>({
     queryKey,
     enabled: !!workItemId,
-    refetchInterval: 4000,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       if (!workItemId) return [];

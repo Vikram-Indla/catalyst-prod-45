@@ -39,7 +39,6 @@ export function useWebLinks(workItemId: string | null | undefined): UseWebLinksR
   const { data: links = [], isLoading } = useQuery<WebLinkRow[]>({
     queryKey,
     enabled,
-    refetchInterval: 4000,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data, error } = await (supabase as any)

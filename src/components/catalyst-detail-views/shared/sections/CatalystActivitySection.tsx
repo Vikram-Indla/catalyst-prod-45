@@ -210,14 +210,11 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   });
 
   // Comments: ph_comments (Catalyst-native + Jira-mirrored)
-  // Polling backup — keeps the feed fresh even when Realtime is not
-  // enabled on the table publication. 4s is short enough that new
-  // comments + new history rows feel near-instant without burning
-  // bandwidth.
+  // Realtime subscription (below) handles live updates — polling removed
+  // to eliminate dual-fetch heap pressure (was 4s poll + realtime).
   const { data: comments = [], isLoading: isLoadingComments } = useQuery({
     queryKey: ['cv-comments', resolvedWorkItemId],
     enabled: !!resolvedWorkItemId && isOpen,
-    refetchInterval: 4000,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       // Use SELECT * so the query stays robust whether or not the
@@ -344,11 +341,11 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   }, [resolvedWorkItemId, isOpen, queryClient]);
 
   // History: ph_activity_log (Catalyst-native + Jira-mirrored).
-  // Polling backup (see comments query above).
+  // Realtime subscription handles live updates — polling removed.
+  // Limit 200 most recent entries to bound heap allocation on long-lived issues.
   const { data: historyItems = [], isLoading: isLoadingHistory } = useQuery({
     queryKey: ['cv-activity', resolvedWorkItemId],
     enabled: !!resolvedWorkItemId && isOpen,
-    refetchInterval: 4000,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data } = await supabase
@@ -360,7 +357,8 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         // These are already rendered in the Comments feed (from ph_comments);
         // including them here creates a visual duplicate in the All tab.
         .neq('field_name', 'comment')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(200);
       if (!data?.length) return [];
       const userIds = [...new Set(data.map(e => e.user_id).filter(Boolean))];
       if (userIds.length === 0) return data.map(e => ({ ...e, actor: null }));

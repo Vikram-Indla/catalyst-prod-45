@@ -54,7 +54,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
   // Real-time subscription for assignment changes
   useEffect(() => {
     const channel = supabase
-      .channel(`my-scope-realtime-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`my-scope-realtime`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'tm_cycle_scope' },

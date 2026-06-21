@@ -208,7 +208,7 @@ export function useCapacityData() {
   // Real-time subscription
   useEffect(() => {
     const channel = supabase
-      .channel(`caty-capacity-updates-v4-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`caty-capacity-updates-v4`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_inventory' }, () => {
         fetchCapacityStats();
       })

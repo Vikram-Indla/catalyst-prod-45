@@ -35,7 +35,7 @@ export function useActiveUsers() {
     // Only create subscription if it doesn't exist
     if (!globalSubscription) {
       globalSubscription = supabase
-        .channel(`active-users-sync-global-${Math.random().toString(36).slice(2, 10)}`)
+        .channel(`active-users-sync-global`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
           const now = Date.now();
           // Debounce invalidations to prevent rapid re-fetches

@@ -98,7 +98,7 @@ export default function WorkItemsListPage() {
   useEffect(() => {
     if (!projectId) return;
     const channel = supabase
-      .channel(`project-${projectId}-sync-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`project-${projectId}-sync`)
       .on(
         'postgres_changes',
         {

@@ -694,19 +694,19 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
     if (!theme?.id || !isOpen) return;
 
     const objectivesChannel = supabase
-      .channel(`theme-objectives-${theme.id}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`theme-objectives-${theme.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'objectives', filter: `theme_id=eq.${theme.id}` },
         () => { queryClient.invalidateQueries({ queryKey: ['theme-objectives', theme.id] }); }
       ).subscribe();
 
     const epicsChannel = supabase
-      .channel(`theme-epics-${theme.id}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`theme-epics-${theme.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'epics', filter: `theme_id=eq.${theme.id}` },
         () => { queryClient.invalidateQueries({ queryKey: ['theme-epics', theme.id] }); }
       ).subscribe();
 
     const themeChannel = supabase
-      .channel(`theme-details-${theme.id}-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`theme-details-${theme.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'strategic_themes', filter: `id=eq.${theme.id}` },
         () => {
           queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
@@ -716,7 +716,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       ).subscribe();
 
     const statusesChannel = supabase
-      .channel(`theme-statuses-config-${Math.random().toString(36).slice(2, 10)}`)
+      .channel(`theme-statuses-config`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'theme_statuses' },
         () => {
           queryClient.invalidateQueries({ queryKey: ['theme-statuses'] });
