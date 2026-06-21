@@ -88,6 +88,11 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         }
       }
 
+      // Default: exclude archived cases unless caller explicitly opts in
+      if (!filters?.showArchived) {
+        query = query.eq('archived', false);
+      }
+
       const page = filters?.page || 1;
       const perPage = filters?.per_page || 25;
       const from = (page - 1) * perPage;
@@ -1094,6 +1099,117 @@ export function useBulkUpdateTestCases() {
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to bulk update test cases', error.message);
+    },
+  });
+}
+
+export function useBulkArchiveTestCases() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: { case_ids: string[]; project_id: string }): Promise<void> => {
+      const { error } = await supabase
+        .from('tm_test_cases')
+        .update({ archived: true })
+        .in('id', input.case_ids);
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        predicate: q => q.queryKey[0] === 'tm-cases' && q.queryKey[1] === variables.project_id,
+      });
+      queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
+      const count = variables.case_ids.length;
+      catalystToast.success(`${count} case${count > 1 ? 's' : ''} archived`);
+    },
+    onError: (error: Error) => {
+      catalystToast.error('Failed to archive cases', error.message);
+    },
+  });
+}
+
+export function useCreateCaseVersion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: {
+      case_id: string;
+      project_id: string;
+      replace_in_sets: boolean;
+    }): Promise<{ id: string; key: string; version: number }> => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data: original, error: fetchErr } = await supabase
+        .from('tm_test_cases')
+        .select('*')
+        .eq('id', input.case_id)
+        .single();
+      if (fetchErr) throw fetchErr;
+
+      const { data: steps } = await supabase
+        .from('tm_test_steps')
+        .select('*')
+        .eq('test_case_id', input.case_id)
+        .order('step_number');
+
+      const newVersion = (original.current_version ?? original.version ?? 1) + 1;
+      const caseKey = await generateCaseKey(input.project_id, original.folder_id);
+
+      const { data: newCase, error: insertErr } = await supabase
+        .from('tm_test_cases')
+        .insert({
+          project_id: original.project_id,
+          case_key: caseKey,
+          title: original.title,
+          description: original.description,
+          preconditions: original.preconditions,
+          status: 'draft',
+          folder_id: original.folder_id,
+          priority_id: original.priority_id,
+          case_type_id: original.case_type_id,
+          version: newVersion,
+          current_version: newVersion,
+          is_latest_version: true,
+          parent_case_id: original.parent_case_id ?? original.id,
+          cloned_from_id: original.id,
+          created_by: user.id,
+        })
+        .select()
+        .single();
+      if (insertErr) throw insertErr;
+
+      // Mark previous as not latest
+      await supabase
+        .from('tm_test_cases')
+        .update({ is_latest_version: false })
+        .eq('id', input.case_id);
+
+      // Copy steps
+      if (steps && steps.length > 0) {
+        await supabase.from('tm_test_steps').insert(
+          steps.map(s => ({
+            test_case_id: newCase.id,
+            step_number: s.step_number,
+            action: s.action,
+            test_data: s.test_data,
+            expected_result: s.expected_result,
+          }))
+        );
+      }
+
+      return { id: newCase.id, key: caseKey, version: newVersion };
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        predicate: q => q.queryKey[0] === 'tm-cases' && q.queryKey[1] === variables.project_id,
+      });
+      queryClient.invalidateQueries({ queryKey: ['tm-case', variables.case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case', data.id] });
+      catalystToast.success(`Version ${data.version} created`, `New case: ${data.key}`);
+    },
+    onError: (error: Error) => {
+      catalystToast.error('Failed to create version', error.message);
     },
   });
 }

@@ -322,6 +322,7 @@ export interface CaseFilters {
   search?: string;
   page?: number;
   per_page?: number;
+  showArchived?: boolean;
 }
 
 export interface CycleFilters {

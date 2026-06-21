@@ -10,7 +10,13 @@ import {
   useUpdateFolder,
   useDeleteFolder,
 } from '@/hooks/test-management/useFolders';
-import { useTestCases, useDeleteTestCase } from '@/hooks/test-management/useTestCases';
+import {
+  useTestCases,
+  useDeleteTestCase,
+  useBulkArchiveTestCases,
+  useBulkCopyTestCases,
+  useCreateCaseVersion,
+} from '@/hooks/test-management/useTestCases';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/ads/PageHeader';
 import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
@@ -25,6 +31,7 @@ import {
   Search,
   Trash2,
   MoreHorizontal,
+  Edit2,
 } from '@/lib/atlaskit-icons';
 import { TMFolder, TMTestCase, CaseStatus, TMCasePriority, CaseFilters } from '@/types/test-management';
 import { CaseDrawer } from './CaseDrawer';
@@ -325,6 +332,204 @@ function flattenFolders(folders: TMFolder[], depth = 0): Array<{ id: string; nam
   return result;
 }
 
+// ── Archive Confirmation Modal ────────────────────────────────────────────────
+
+function ArchiveModal({ count, onConfirm, onClose, saving }: {
+  count: number; onConfirm: () => void; onClose: () => void; saving: boolean;
+}) {
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', h, true);
+    return () => document.removeEventListener('keydown', h, true);
+  }, [onClose]);
+
+  return createPortal(
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: 'rgba(9,30,66,0.54)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        borderRadius: 8, width: 400, padding: 24,
+        boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
+        fontFamily: 'var(--ds-font-family-body)',
+      }}>
+        <h2 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          Archive {count} case{count > 1 ? 's' : ''}?
+        </h2>
+        <p style={{ margin: '0 0 20px', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+          Archived cases are hidden from the repository but can be restored later.
+        </p>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button onClick={onClose} style={cancelBtnStyle}>Cancel</button>
+          <button
+            onClick={onConfirm}
+            disabled={saving}
+            style={{
+              padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+              border: 'none',
+              background: saving ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-background-warning-bold, #0052CC)',
+              color: saving ? 'var(--ds-text-disabled, #A5ADBA)' : '#FFFFFF',
+              cursor: saving ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {saving ? 'Archiving…' : 'Archive'}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── Copy Cases Modal ──────────────────────────────────────────────────────────
+
+function CopyModal({ count, folders, onConfirm, onClose, saving }: {
+  count: number;
+  folders: TMFolder[];
+  onConfirm: (targetFolderId: string | null, addSuffix: boolean) => void;
+  onClose: () => void;
+  saving: boolean;
+}) {
+  const [targetFolderId, setTargetFolderId] = useState<string>('');
+  const [addSuffix, setAddSuffix] = useState(true);
+  const flat = flattenFolders(folders);
+
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', h, true);
+    return () => document.removeEventListener('keydown', h, true);
+  }, [onClose]);
+
+  return createPortal(
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: 'rgba(9,30,66,0.54)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        borderRadius: 8, width: 440, padding: 24,
+        boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
+        fontFamily: 'var(--ds-font-family-body)',
+      }}>
+        <h2 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          Copy {count} case{count > 1 ? 's' : ''}
+        </h2>
+
+        <label style={{ display: 'block', marginBottom: 4, fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>
+          Target folder
+        </label>
+        <select
+          value={targetFolderId}
+          onChange={e => setTargetFolderId(e.target.value)}
+          style={{
+            width: '100%', padding: '6px 8px', fontSize: 13, borderRadius: 4,
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface, #FFFFFF)',
+            color: 'var(--ds-text, #172B4D)',
+            marginBottom: 16, boxSizing: 'border-box',
+          }}
+        >
+          <option value="">Same folder</option>
+          {flat.map(f => (
+            <option key={f.id} value={f.id}>{f.indent}{f.name}</option>
+          ))}
+        </select>
+
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginBottom: 20 }}>
+          <input
+            type="checkbox"
+            checked={addSuffix}
+            onChange={e => setAddSuffix(e.target.checked)}
+            style={{ width: 16, height: 16 }}
+          />
+          <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>Add "(Copy)" suffix to titles</span>
+        </label>
+
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button onClick={onClose} style={cancelBtnStyle}>Cancel</button>
+          <button
+            onClick={() => onConfirm(targetFolderId || null, addSuffix)}
+            disabled={saving}
+            style={{
+              padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+              border: 'none',
+              background: saving ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-background-brand-bold, #0052CC)',
+              color: saving ? 'var(--ds-text-disabled, #A5ADBA)' : '#FFFFFF',
+              cursor: saving ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {saving ? 'Copying…' : 'Copy'}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── Bulk Dropdown (portal, same pattern as FolderContextMenu) ─────────────────
+
+function BulkDropdown({ triggerRef, onArchive, onCopy, onClose }: {
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  onArchive: () => void;
+  onCopy: () => void;
+  onClose: () => void;
+}) {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) &&
+          !triggerRef.current?.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey, true); };
+  }, [onClose, triggerRef]);
+
+  if (!triggerRef.current) return null;
+  const rect = triggerRef.current.getBoundingClientRect();
+
+  const itemStyle: React.CSSProperties = {
+    display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
+    border: 'none', background: 'none', cursor: 'pointer',
+    fontSize: 13, color: 'var(--ds-text, #172B4D)',
+  };
+
+  return createPortal(
+    <div ref={menuRef} role="menu" style={{
+      position: 'fixed',
+      top: rect.bottom + 4,
+      left: rect.left,
+      background: 'var(--ds-surface-overlay, #FFFFFF)',
+      border: '1px solid var(--ds-border, #DFE1E6)',
+      borderRadius: 6,
+      boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+      padding: '4px 0',
+      minWidth: 160,
+      zIndex: 9999,
+    }}>
+      <button role="menuitem" style={itemStyle}
+        onClick={() => { onClose(); onCopy(); }}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle, rgba(9,30,66,0.04))'}
+        onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
+        Copy cases
+      </button>
+      <button role="menuitem" style={{ ...itemStyle, color: 'var(--ds-text-warning, #974F0C)' }}
+        onClick={() => { onClose(); onArchive(); }}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle, rgba(9,30,66,0.04))'}
+        onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
+        Archive cases
+      </button>
+    </div>,
+    document.body
+  );
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function RepositoryPage() {
@@ -337,12 +542,24 @@ export default function RepositoryPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingCase, setEditingCase] = useState<TMTestCase | null>(null);
 
+  // Multi-select state
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkMenuOpen, setBulkMenuOpen] = useState(false);
+  const bulkBtnRef = useRef<HTMLButtonElement | null>(null);
+
+  // Bulk modal state
+  const [archiveModalOpen, setArchiveModalOpen] = useState(false);
+  const [copyModalOpen, setCopyModalOpen] = useState(false);
+
   // Folder modal state
   const [folderModalOpen, setFolderModalOpen] = useState(false);
   const [folderModalParentId, setFolderModalParentId] = useState<string | null>(null);
 
   const createFolder = useCreateFolder();
   const { data: allFolders = [] } = useFolderTree(projectId);
+  const archiveCases = useBulkArchiveTestCases();
+  const copyCases = useBulkCopyTestCases();
 
   const openFolderModal = (parentId: string | null = null) => {
     setFolderModalParentId(parentId);
@@ -390,26 +607,73 @@ export default function RepositoryPage() {
       ? null
       : selectedFolderId;
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === cases.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(cases.map(c => c.id)));
+    }
+  };
+
+  const exitSelectMode = () => {
+    setSelectMode(false);
+    setSelectedIds(new Set());
+  };
+
+  const handleArchiveConfirm = () => {
+    if (!projectId) return;
+    archiveCases.mutate(
+      { case_ids: Array.from(selectedIds), project_id: projectId },
+      { onSuccess: () => { setArchiveModalOpen(false); exitSelectMode(); } }
+    );
+  };
+
+  const handleCopyConfirm = (targetFolderId: string | null, _addSuffix: boolean) => {
+    if (!projectId) return;
+    copyCases.mutate(
+      { case_ids: Array.from(selectedIds), folder_id: targetFolderId, project_id: projectId },
+      { onSuccess: () => { setCopyModalOpen(false); exitSelectMode(); } }
+    );
+  };
+
   const createCaseButton = (
-    <button
-      onClick={() => { setEditingCase(null); setDrawerOpen(true); }}
-      style={{
-        padding: '6px 12px',
-        background: 'var(--ds-background-brand-bold, #0052CC)',
-        color: '#FFFFFF',
-        border: 'none',
-        borderRadius: 4,
-        fontSize: 13,
-        fontWeight: 500,
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6,
-      }}
-    >
-      <Plus size={14} />
-      Create case
-    </button>
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <button
+        onClick={() => { setSelectMode(s => !s); setSelectedIds(new Set()); }}
+        title={selectMode ? 'Exit select mode' : 'Select multiple'}
+        style={{
+          padding: '6px 10px', background: selectMode ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)',
+          color: selectMode ? 'var(--ds-text-selected, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+          border: '1px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 4, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: 6,
+        }}
+      >
+        <Edit2 size={13} />
+        {selectMode ? 'Cancel' : 'Select'}
+      </button>
+      <button
+        onClick={() => { setEditingCase(null); setDrawerOpen(true); }}
+        style={{
+          padding: '6px 12px',
+          background: 'var(--ds-background-brand-bold, #0052CC)',
+          color: '#FFFFFF', border: 'none', borderRadius: 4,
+          fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: 6,
+        }}
+      >
+        <Plus size={14} />
+        Create case
+      </button>
+    </div>
   );
 
   return (
@@ -419,17 +683,50 @@ export default function RepositoryPage() {
         { key: 'repository', text: 'Repository', isCurrent: true },
       ]} />
       <PageHeader title="Test Repository" actions={createCaseButton} />
+
+      {/* Bulk action bar (visible when items selected) */}
+      {selectMode && selectedIds.size > 0 && (
+        <div style={{
+          padding: '8px 16px',
+          background: 'var(--ds-background-information, #DEEBFF)',
+          borderBottom: '1px solid var(--ds-border-information, #4C9AFF)',
+          display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-information, #0747A6)' }}>
+            {selectedIds.size} selected
+          </span>
+          <button
+            ref={bulkBtnRef}
+            onClick={() => setBulkMenuOpen(o => !o)}
+            style={{
+              padding: '5px 12px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+              border: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-surface, #FFFFFF)',
+              color: 'var(--ds-text, #172B4D)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}
+          >
+            Bulk <MoreHorizontal size={13} />
+          </button>
+          {bulkMenuOpen && (
+            <BulkDropdown
+              triggerRef={bulkBtnRef}
+              onArchive={() => setArchiveModalOpen(true)}
+              onCopy={() => setCopyModalOpen(true)}
+              onClose={() => setBulkMenuOpen(false)}
+            />
+          )}
+        </div>
+      )}
+
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {/* Left: folder tree */}
         <div style={{
-          width: 240,
-          minWidth: 240,
+          width: 240, minWidth: 240,
           borderRight: '1px solid var(--ds-border, #DFE1E6)',
           background: 'var(--ds-surface-sunken, #F7F8F9)',
-          overflowY: 'auto',
-          padding: '12px 0',
+          overflowY: 'auto', padding: '12px 0',
         }}>
-          {/* Folders header */}
           <div style={{
             padding: '0 12px', marginBottom: 4,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -454,7 +751,6 @@ export default function RepositoryPage() {
             </button>
           </div>
 
-          {/* System folders */}
           <SystemFolderItem
             label="All"
             selected={selectedFolderId === null}
@@ -465,8 +761,6 @@ export default function RepositoryPage() {
             selected={selectedFolderId === 'unfiled'}
             onClick={() => setSelectedFolderId('unfiled')}
           />
-
-          {/* User folders */}
           <FolderTreeView
             projectId={projectId}
             selectedId={selectedFolderId as string | null}
@@ -520,70 +814,104 @@ export default function RepositoryPage() {
                     position: 'sticky', top: 0,
                     background: 'var(--ds-surface-sunken, #F7F8F9)', zIndex: 1,
                   }}>
+                    {selectMode && (
+                      <th style={{ ...thStyle, width: 40 }}>
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.size === cases.length && cases.length > 0}
+                          onChange={toggleSelectAll}
+                          style={{ cursor: 'pointer' }}
+                        />
+                      </th>
+                    )}
                     <th style={thStyle}>Key</th>
                     <th style={thStyle}>Title</th>
                     <th style={thStyle}>Status</th>
                     <th style={thStyle}>Priority</th>
-                    <th style={{ ...thStyle, width: 48 }}></th>
+                    {!selectMode && <th style={{ ...thStyle, width: 48 }}></th>}
                   </tr>
                 </thead>
                 <tbody>
-                  {cases.map(c => (
-                    <tr
-                      key={c.id}
-                      style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)', cursor: 'pointer' }}
-                      onClick={() => { setEditingCase(c); setDrawerOpen(true); }}
-                      onMouseEnter={e => {
-                        (e.currentTarget as HTMLTableRowElement).style.background =
-                          'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
-                      }}
-                      onMouseLeave={e => {
-                        (e.currentTarget as HTMLTableRowElement).style.background = 'transparent';
-                      }}
-                    >
-                      <td style={{
-                        ...tdStyle,
-                        fontFamily: 'var(--ds-font-family-code)',
-                        color: 'var(--ds-text-subtlest, #6B778C)',
-                        fontSize: 12, whiteSpace: 'nowrap',
-                      }}>
-                        {c.key ?? '—'}
-                      </td>
-                      <td style={{ ...tdStyle, color: 'var(--ds-text, #172B4D)', fontWeight: 500 }}>
-                        {c.title}
-                      </td>
-                      <td style={tdStyle}><CaseStatusPill status={c.status} /></td>
-                      <td style={tdStyle}>
-                        {c.priority_ref ? (
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12 }}>
-                            <span style={{
-                              width: 8, height: 8, borderRadius: '50%',
-                              background: c.priority_ref.color ?? 'var(--ds-background-neutral, #F1F2F4)',
-                              flexShrink: 0,
-                            }} />
-                            {c.priority_ref.name}
-                          </span>
-                        ) : c.priority_id && priorityMap[c.priority_id] ? (
-                          <PriorityChip priority={priorityMap[c.priority_id]} />
-                        ) : (
-                          <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
+                  {cases.map(c => {
+                    const isSelected = selectedIds.has(c.id);
+                    return (
+                      <tr
+                        key={c.id}
+                        style={{
+                          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+                          cursor: 'pointer',
+                          background: isSelected ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                        }}
+                        onClick={() => {
+                          if (selectMode) { toggleSelect(c.id); return; }
+                          setEditingCase(c); setDrawerOpen(true);
+                        }}
+                        onMouseEnter={e => {
+                          if (!isSelected)
+                            (e.currentTarget as HTMLTableRowElement).style.background =
+                              'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                        }}
+                        onMouseLeave={e => {
+                          if (!isSelected)
+                            (e.currentTarget as HTMLTableRowElement).style.background = 'transparent';
+                        }}
+                      >
+                        {selectMode && (
+                          <td style={{ ...tdStyle, width: 40 }} onClick={e => e.stopPropagation()}>
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => toggleSelect(c.id)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          </td>
                         )}
-                      </td>
-                      <td style={{ ...tdStyle, textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-                        <button
-                          onClick={() => { if (projectId) deleteCase.mutate({ id: c.id, project_id: projectId }); }}
-                          style={{
-                            background: 'none', border: 'none', cursor: 'pointer',
-                            color: 'var(--ds-text-subtlest, #6B778C)',
-                            padding: 4, display: 'flex', alignItems: 'center',
-                          }}
-                          title="Delete case"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                        <td style={{
+                          ...tdStyle,
+                          fontFamily: 'var(--ds-font-family-code)',
+                          color: 'var(--ds-text-subtlest, #6B778C)',
+                          fontSize: 12, whiteSpace: 'nowrap',
+                        }}>
+                          {c.key ?? '—'}
+                        </td>
+                        <td style={{ ...tdStyle, color: 'var(--ds-text, #172B4D)', fontWeight: 500 }}>
+                          {c.title}
+                        </td>
+                        <td style={tdStyle}><CaseStatusPill status={c.status} /></td>
+                        <td style={tdStyle}>
+                          {c.priority_ref ? (
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12 }}>
+                              <span style={{
+                                width: 8, height: 8, borderRadius: '50%',
+                                background: c.priority_ref.color ?? 'var(--ds-background-neutral, #F1F2F4)',
+                                flexShrink: 0,
+                              }} />
+                              {c.priority_ref.name}
+                            </span>
+                          ) : c.priority_id && priorityMap[c.priority_id] ? (
+                            <PriorityChip priority={priorityMap[c.priority_id]} />
+                          ) : (
+                            <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
+                          )}
+                        </td>
+                        {!selectMode && (
+                          <td style={{ ...tdStyle, textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+                            <button
+                              onClick={() => { if (projectId) deleteCase.mutate({ id: c.id, project_id: projectId }); }}
+                              style={{
+                                background: 'none', border: 'none', cursor: 'pointer',
+                                color: 'var(--ds-text-subtlest, #6B778C)',
+                                padding: 4, display: 'flex', alignItems: 'center',
+                              }}
+                              title="Delete case"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
@@ -609,6 +937,27 @@ export default function RepositoryPage() {
           onClose={() => setFolderModalOpen(false)}
           saving={createFolder.isPending}
           onSave={handleCreateFolder}
+        />
+      )}
+
+      {/* Archive modal */}
+      {archiveModalOpen && (
+        <ArchiveModal
+          count={selectedIds.size}
+          onConfirm={handleArchiveConfirm}
+          onClose={() => setArchiveModalOpen(false)}
+          saving={archiveCases.isPending}
+        />
+      )}
+
+      {/* Copy modal */}
+      {copyModalOpen && (
+        <CopyModal
+          count={selectedIds.size}
+          folders={allFolders}
+          onConfirm={handleCopyConfirm}
+          onClose={() => setCopyModalOpen(false)}
+          saving={copyCases.isPending}
         />
       )}
     </div>
