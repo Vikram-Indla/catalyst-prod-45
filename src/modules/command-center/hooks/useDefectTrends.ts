@@ -101,7 +101,8 @@ export function useDefectTrends(timeRange: TimeRange = '30d', projectId?: string
 
       return trendData;
     },
-    refetchInterval: 60000,
+    refetchInterval: 60000 + Math.floor(Math.random() * 10000),
+    refetchIntervalInBackground: false,
     staleTime: 30000,
   });
 }

@@ -117,7 +117,8 @@ export function useQualityGates(releaseId?: string) {
 
       return gates;
     },
-    refetchInterval: 60000,
+    refetchInterval: 60000 + Math.floor(Math.random() * 10000),
+    refetchIntervalInBackground: false,
     staleTime: 30000,
   });
 }

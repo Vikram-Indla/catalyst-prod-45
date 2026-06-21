@@ -91,7 +91,8 @@ export function useReleaseHealth(limit: number = 5) {
 
       return releaseHealthData;
     },
-    refetchInterval: 60000, // Refresh every minute
+    refetchInterval: 60000 + Math.floor(Math.random() * 10000),
+    refetchIntervalInBackground: false,
     staleTime: 30000,
   });
 }

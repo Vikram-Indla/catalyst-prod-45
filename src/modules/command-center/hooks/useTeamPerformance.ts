@@ -94,7 +94,8 @@ export function useTeamPerformance(limit: number = 5, projectId?: string) {
 
       return teamPerformance;
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 30000 + Math.floor(Math.random() * 10000),
+    refetchIntervalInBackground: false,
     staleTime: 15000,
   });
 }

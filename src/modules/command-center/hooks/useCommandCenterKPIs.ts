@@ -159,7 +159,8 @@ export function useCommandCenterKPIs(projectId?: string) {
 
       return kpis;
     },
-    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    refetchInterval: 30000 + Math.floor(Math.random() * 10000),
+    refetchIntervalInBackground: false,
     staleTime: 10000,
   });
 }
