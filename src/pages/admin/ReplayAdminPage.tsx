@@ -3,8 +3,6 @@ import Button from '@atlaskit/button';
 import Toggle from '@atlaskit/toggle';
 import Spinner from '@atlaskit/spinner';
 import { supabase } from '@/integrations/supabase/client';
-import { ReplayTheatreOverlay } from '@/components/replay/theatre/ReplayTheatreOverlay';
-import { SEED_BR_SCRIPT } from '@/lib/replay/theatre/seedData';
 import { DEFAULT_THEATRE_CONFIG } from '@/lib/replay/theatre/theatreTypes';
 
 // Displayed transition count + date-range backfill trigger for the Replay engine.
@@ -47,7 +45,6 @@ interface BackfillState {
 
 export default function ReplayAdminPage() {
   const [theatre, setTheatre] = useState<TheatreAdminConfig>(DEFAULT_THEATRE);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const [transitionCount, setTransitionCount] = useState<number | null>(null);
   const [issueCount, setIssueCount] = useState<number | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
@@ -331,14 +328,10 @@ export default function ReplayAdminPage() {
         <p style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 16 }}>
           Preview Replay Theatre with the MDT-742 demo seed script — no live Jira data required.
         </p>
-        <Button appearance="primary" onClick={() => setPreviewOpen(true)}>
-          Preview Replay
+        <Button appearance="default" isDisabled>
+          Preview Replay (portal removed — use dashboard widget)
         </Button>
       </div>
-
-      {previewOpen && (
-        <ReplayTheatreOverlay script={SEED_BR_SCRIPT} onClose={() => setPreviewOpen(false)} />
-      )}
     </div>
   );
 }
