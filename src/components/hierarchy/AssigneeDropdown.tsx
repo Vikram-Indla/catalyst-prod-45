@@ -70,6 +70,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
         fieldLabel="Assignee"
         anchorRef={anchorRef}
         onClose={onClose}
+        lockWhenAssigned
       />
     </div>
   );

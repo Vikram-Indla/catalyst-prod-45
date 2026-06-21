@@ -58,6 +58,7 @@ export const AssigneePicker: React.FC<Props> = ({ issue, anchor, members, avatar
       fieldLabel="Assignee"
       anchorRef={anchorRef}
       onClose={onClose}
+      lockWhenAssigned
     />
   );
 };

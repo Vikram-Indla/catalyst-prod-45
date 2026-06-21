@@ -41,15 +41,27 @@ export interface ProfilePickerMember {
   avatarUrl?: string | null;
   /** Optional presence string for visual hint ('on_leave' shows on-leave badge). */
   presenceState?: 'available' | 'on_leave' | 'busy' | null;
+  /** Optional trailing content rendered after the name (e.g. workload count,
+   *  custom badge). 2026-06-21: added for test-cycles workload display. */
+  rightSlot?: React.ReactNode;
 }
 
 export type ProfilePickerSelection = ProfilePickerMember | null;
 
 export interface ProfilePickerProps {
-  /** Currently selected member (`null` = unassigned). */
-  value: ProfilePickerSelection;
-  /** Fired when the user picks a member or clears. */
-  onChange: (next: ProfilePickerSelection) => void;
+  /** Currently selected member (`null` = unassigned). Single-select mode. */
+  value?: ProfilePickerSelection;
+  /** Fired when the user picks a member or clears (single-select mode). */
+  onChange?: (next: ProfilePickerSelection) => void;
+  /**
+   * Multi-select mode (2026-06-21). When set, the picker treats the array as
+   * the source of truth. Selecting a row toggles inclusion; popover stays
+   * open so the user can pick several. "Unassigned" + "Assign to me" rows
+   * are hidden. The `value`/`onChange` props are ignored.
+   */
+  selectedIds?: string[];
+  /** Fired with the next array when a member is toggled (multi-select mode). */
+  onChangeMulti?: (next: string[]) => void;
   /** All selectable members. */
   members: ProfilePickerMember[];
   /** Current viewer's userId — enables the "Assign to me" row. */
@@ -91,11 +103,26 @@ export interface ProfilePickerProps {
   anchorRef?: React.RefObject<HTMLElement | null>;
   /** Required when `anchorRef` is set. Called when the popover dismisses. */
   onClose?: () => void;
+  /**
+   * 2026-06-21 (Vikram canonical rule): once `value` is set, lock the
+   * picker. Reverting an assignee requires a backend admin. Default `false`
+   * so non-work-item pickers (tasks form, test-cycles workload, chat
+   * recipients) keep their normal re-assignment UX. Work-item assignee
+   * pickers (sidebar, kanban, hierarchy, JiraTable inline editor, etc.)
+   * MUST pass `lockWhenAssigned={true}`.
+   *
+   * Trigger mode: when locked, the trigger is rendered disabled.
+   * Body-only mode: when locked, the popover does not open and `onClose`
+   * fires immediately so the parent can unmount.
+   */
+  lockWhenAssigned?: boolean;
 }
 
 export function ProfilePicker({
-  value,
+  value = null,
   onChange,
+  selectedIds,
+  onChangeMulti,
   members,
   currentUserId,
   fieldLabel,
@@ -107,9 +134,21 @@ export function ProfilePicker({
   triggerVariant = 'inline',
   anchorRef,
   onClose,
+  lockWhenAssigned,
 }: ProfilePickerProps) {
   const bodyOnly = !!anchorRef;
-  const [open, setOpen] = useState(bodyOnly);
+  const multi = !!selectedIds && !!onChangeMulti;
+  /* Canonical lock: once a value is set AND `lockWhenAssigned` is on,
+     treat the picker as fully disabled. Body-only mode additionally tells
+     the parent to unmount via onClose. Lock does NOT apply in multi mode
+     (filter / recipient pickers have different semantics). */
+  const isLocked = !multi && !!lockWhenAssigned && !!value;
+  const effectivelyDisabled = !!disabled || isLocked;
+  const [open, setOpen] = useState(bodyOnly && !isLocked);
+  useEffect(() => {
+    if (bodyOnly && isLocked) onClose?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   /* Tick state — forces a re-render after mount so body-only mode can read
      `anchorRef.current.getBoundingClientRect()` (ref is null during the
      first render of the popover when parent + body-only ProfilePicker mount
@@ -125,13 +164,13 @@ export function ProfilePicker({
 
   const handleToggle = useCallback(
     (e: React.MouseEvent) => {
-      if (disabled) return;
+      if (effectivelyDisabled) return;
       e.stopPropagation();
       e.preventDefault();
       setOpen((o) => !o);
       setSearch('');
     },
-    [disabled],
+    [effectivelyDisabled],
   );
 
   /* Internal close — also notifies parent if running in body-only mode. */
@@ -188,11 +227,20 @@ export function ProfilePicker({
 
   const handleSelect = useCallback(
     (m: ProfilePickerMember | null) => {
-      onChange(m);
+      if (multi) {
+        if (!m) return;
+        const next = (selectedIds ?? []).includes(m.userId)
+          ? (selectedIds ?? []).filter((id) => id !== m.userId)
+          : [...(selectedIds ?? []), m.userId];
+        onChangeMulti?.(next);
+        /* In multi mode keep popover open so user can pick several. */
+        return;
+      }
+      onChange?.(m);
       setSearch('');
       closePopover();
     },
-    [onChange, closePopover],
+    [onChange, closePopover, multi, selectedIds, onChangeMulti],
   );
 
   /* "Assign to me" row — only when currentUserId present, not already selected,
@@ -204,19 +252,39 @@ export function ProfilePicker({
   const showAssignToMe = !hideAssignToMe && !!meMember && value?.userId !== meMember.userId;
 
   /* ───── Trigger ───── */
+  const multiSelectedMembers = useMemo(
+    () => (multi ? members.filter((m) => (selectedIds ?? []).includes(m.userId)) : []),
+    [multi, members, selectedIds],
+  );
+  const multiLabel = multi
+    ? multiSelectedMembers.length === 0
+      ? (fieldLabel ?? 'Select people')
+      : multiSelectedMembers.length === 1
+        ? multiSelectedMembers[0].name
+        : `${multiSelectedMembers.length} selected`
+    : null;
+
   const defaultTrigger = (
     <button
       ref={triggerRef}
       type="button"
       onClick={handleToggle}
-      disabled={disabled}
-      aria-label={`${fieldLabel ? `Change ${fieldLabel.toLowerCase()}` : 'Change user'} (${value?.name ?? 'Unassigned'})`}
-      title={value?.name ?? 'Unassigned'}
+      disabled={effectivelyDisabled}
+      aria-label={multi
+        ? `${fieldLabel ?? 'People'} (${multiSelectedMembers.length} selected)`
+        : `${fieldLabel ? `Change ${fieldLabel.toLowerCase()}` : 'Change user'} (${value?.name ?? 'Unassigned'})`}
+      title={
+        multi
+          ? (multiLabel ?? '')
+          : isLocked
+            ? `Locked: ${value?.name ?? ''}`
+            : (value?.name ?? 'Unassigned')
+      }
       style={{
         background: 'none',
         border: 'none',
         padding: triggerVariant === 'cell' ? '2px 4px' : '4px 8px',
-        cursor: disabled ? 'default' : 'pointer',
+        cursor: effectivelyDisabled ? 'default' : 'pointer',
         borderRadius: 3,
         fontSize: 14,
         fontWeight: 500,
@@ -228,11 +296,13 @@ export function ProfilePicker({
         gap: 6,
       }}
     >
-      {value
-        ? <AkAvatar appearance="circle" size="small" name={value.name} src={value.avatarUrl ?? undefined} label={value.name} />
-        : <UnassignedAvatar size={size} />}
+      {multi
+        ? <UnassignedAvatar size={size} />
+        : value
+          ? <AkAvatar appearance="circle" size="small" name={value.name} src={value.avatarUrl ?? undefined} label={value.name} />
+          : <UnassignedAvatar size={size} />}
       <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {value?.name ?? 'Unassigned'}
+        {multi ? multiLabel : (value?.name ?? 'Unassigned')}
       </span>
     </button>
   );
@@ -242,7 +312,7 @@ export function ProfilePicker({
   const triggerNode = bodyOnly
     ? null
     : renderTrigger
-      ? renderTrigger({ open, value, disabled: !!disabled, onClick: handleToggle, ref: triggerRef })
+      ? renderTrigger({ open, value, disabled: effectivelyDisabled, onClick: handleToggle, ref: triggerRef })
       : defaultTrigger;
 
   /* ───── Popover ───── */
@@ -302,7 +372,7 @@ export function ProfilePicker({
             </div>
 
             <div role="listbox" style={{ maxHeight: 280, overflowY: 'auto' }}>
-              {showAssignToMe && meMember && (
+              {!multi && showAssignToMe && meMember && (
                 <PickerRow
                   member={meMember}
                   isSelected={false}
@@ -311,7 +381,7 @@ export function ProfilePicker({
                 />
               )}
 
-              {!hideUnassignedRow && (
+              {!multi && !hideUnassignedRow && (
                 <UnassignedRow
                   isSelected={value === null}
                   onClick={() => handleSelect(null)}
@@ -320,7 +390,14 @@ export function ProfilePicker({
 
               {filtered.length === 0 && (
                 <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>
-                  No people match
+                  {/* 2026-06-21: distinguish "no source" from "search filtered them all out".
+                     "No people match" was confusing when the picker was empty BEFORE the user typed
+                     anything — usually means the project has no project_members rows yet. */}
+                  {members.length === 0
+                    ? 'No people available'
+                    : q
+                      ? `No matches for "${search}"`
+                      : 'No people available'}
                 </div>
               )}
 
@@ -328,7 +405,11 @@ export function ProfilePicker({
                 <PickerRow
                   key={m.userId}
                   member={m}
-                  isSelected={value?.userId === m.userId}
+                  isSelected={
+                    multi
+                      ? (selectedIds ?? []).includes(m.userId)
+                      : value?.userId === m.userId
+                  }
                   onClick={() => handleSelect(m)}
                 />
               ))}
@@ -452,6 +533,11 @@ function PickerRow({
       {member.presenceState === 'on_leave' && (
         <span style={{ fontSize: 11, color: 'var(--ds-text-warning, #B65C02)', flexShrink: 0 }}>
           On leave
+        </span>
+      )}
+      {member.rightSlot && (
+        <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center' }}>
+          {member.rightSlot}
         </span>
       )}
       {badge && (

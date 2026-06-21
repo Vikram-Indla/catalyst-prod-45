@@ -782,7 +782,19 @@ function InlineCreateCardComponent({
           >
             {assigneeName ? (
               (() => {
-                const url = avatarsByName?.get(assigneeName.toLowerCase());
+                /* 2026-06-21: trigger was only checking avatarsByName (board-
+                   scoped Map keyed by lowercase name). When the user picked
+                   from `mergedAssignees`, the profile's avatar_url never made
+                   it into avatarsByName so the trigger fell back to initials.
+                   Now we ALSO consult the matched option's avatarUrl, matching
+                   the dropdown-row resolution order. */
+                const matchedOpt = mergedAssignees.find(
+                  (o) => o.name.toLowerCase() === assigneeName.toLowerCase(),
+                );
+                const url =
+                  avatarsByName?.get(assigneeName.toLowerCase())
+                  ?? matchedOpt?.avatarUrl
+                  ?? null;
                 return url ? (
                   <img
                     src={url}

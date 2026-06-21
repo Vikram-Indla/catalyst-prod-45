@@ -516,20 +516,27 @@ export function WorkItemCard({
                 onChange={(next) => onChangeAssignee(issue.id, next?.name ?? null)}
                 members={pickerMembers}
                 fieldLabel="Assignee"
-                /* Kanban card: keep editable always — Vikram lock rule applies
-                   to work-item assignee fields written via list / sidebar paths,
-                   not the kanban quick-reassign. */
-                renderTrigger={({ onClick, ref, value }) => (
+                /* 2026-06-21 (Vikram canonical): once assigned, locked. Lock
+                   applies app-wide including kanban quick-reassign. */
+                lockWhenAssigned
+                renderTrigger={({ onClick, ref, value, disabled }) => (
                   <button
                     ref={ref}
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); onClick(e); }}
-                    title={value?.name ? `Assignee: ${value.name}` : 'Assign'}
+                    disabled={disabled}
+                    onClick={(e) => { if (disabled) return; e.stopPropagation(); onClick(e); }}
+                    title={
+                      disabled
+                        ? `Assignee locked: ${value?.name ?? ''}`
+                        : value?.name
+                          ? `Assignee: ${value.name} — click to change`
+                          : 'Assign'
+                    }
                     style={{
                       background: 'transparent',
                       border: 'none',
                       padding: 0,
-                      cursor: 'pointer',
+                      cursor: disabled ? 'default' : 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',

@@ -177,6 +177,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
       fieldLabel="Assignee"
       anchorRef={anchorRef}
       onClose={onClose}
+      lockWhenAssigned
     />
   );
 }

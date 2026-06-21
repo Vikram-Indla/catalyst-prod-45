@@ -20,7 +20,7 @@ import { createPortal } from 'react-dom';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
 import Avatar from '@atlaskit/avatar';
-import { UnassignedAvatar } from '@/components/ads';
+import { UnassignedAvatar, ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
@@ -722,28 +722,48 @@ export interface AssigneeChoice {
   avatarUrl?: string | null;
 }
 
+/**
+ * 2026-06-21 Phase 7: rewrapped around the canonical <ProfilePicker />.
+ * Display cell unchanged (avatar + name OR UnassignedAvatar + ghost text).
+ * Trigger preserves `data-jira-cell-editor` attribute (used by table
+ * keyboard nav). Read-only rows (canEdit=false) return the display node
+ * directly, no picker mounted.
+ *
+ * `lockWhenAssigned` (default `true`) — Vikram's canonical rule: once an
+ * assignee is set on a work item, the field is locked. Pass `false` for
+ * non-work-item columns (e.g. reporter, delivery manager, product owner).
+ */
 export function makeAssigneeEditCell<T>({
   getAssignee,
   options,
   canEdit,
   onChange,
+  lockWhenAssigned = true,
 }: {
   getAssignee: (row: T) => AssigneeChoice | null;
   options: AssigneeChoice[];
   canEdit?: (row: T) => boolean;
   onChange: (row: T, next: AssigneeChoice | null) => void;
+  lockWhenAssigned?: boolean;
 }) {
   return function AssigneeEditCell({ row }: CellProps<T>) {
-    // All hooks FIRST (Rules of Hooks — no early returns before hooks).
-    const [search, setSearch] = useState('');
-    const q = search.trim().toLowerCase();
-    const filtered = useMemo(
-      () => (q ? options.filter((o) => o.name.toLowerCase().includes(q)) : options),
-      [q, options],
-    );
-
     const a = getAssignee(row);
     const editable = canEdit ? canEdit(row) : true;
+
+    const members: ProfilePickerMember[] = useMemo(
+      () => options.map((o) => ({
+        userId: o.id,
+        name: o.name,
+        avatarUrl: o.avatarUrl ?? null,
+      })),
+      // `options` is the closure value at hook-factory time; safe identity.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [],
+    );
+
+    const selected: ProfilePickerSelection = a
+      ? { userId: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null }
+      : null;
 
     const display = (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
@@ -770,17 +790,45 @@ export function makeAssigneeEditCell<T>({
       </span>
     );
 
-    if (!editable) return display;
+    if (!editable) {
+      /* 2026-06-21: locked cell still needs `data-jira-cell-editor` so the
+         row-click handler in JiraTable doesn't fire and open the detail
+         panel on click. */
+      return (
+        <span
+          data-jira-cell-editor
+          title="Locked"
+          style={{ cursor: 'default', display: 'inline-flex', alignItems: 'center' }}
+        >
+          {display}
+        </span>
+      );
+    }
 
     return (
-      <EditorPopover
-        width={280}
-        trigger={({ onClick, isOpen, ref }) => (
+      <ProfilePicker
+        value={selected}
+        onChange={(next) => {
+          if (next === null) {
+            onChange(row, null);
+            return;
+          }
+          const matched = options.find((o) => o.id === next.userId) ?? {
+            id: next.userId,
+            name: next.name,
+            avatarUrl: next.avatarUrl ?? null,
+          };
+          onChange(row, matched);
+        }}
+        members={members}
+        fieldLabel="Assignee"
+        lockWhenAssigned={lockWhenAssigned}
+        renderTrigger={({ onClick, ref, disabled }) => (
           <button
             ref={ref}
             type="button"
             onClick={onClick}
-            aria-expanded={isOpen}
+            disabled={disabled}
             data-jira-cell-editor
             style={{
               background: 'transparent',
@@ -796,43 +844,7 @@ export function makeAssigneeEditCell<T>({
             {display}
           </button>
         )}
-      >
-        {(close) => (
-          <>
-            <div style={{ padding: 4 }}>
-              <Textfield
-                isCompact
-                autoFocus
-                placeholder="Search people"
-                value={search}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-                elemBeforeInput={
-                  <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-                    <AkSearchIcon label="" size="small" />
-                  </span>
-                }
-              />
-            </div>
-            <MenuItemBtn onClick={() => { onChange(row, null); close(); }}>
-              <UnassignedAvatar size={22} />
-              <span style={{ color: token('color.text.subtlest', '#7A869A') }}>Unassigned</span>
-            </MenuItemBtn>
-            {filtered.slice(0, 12).map((opt) => (
-              <MenuItemBtn
-                key={opt.id}
-                active={a?.id === opt.id}
-                onClick={() => { onChange(row, opt); close(); }}
-              >
-                <Avatar size="small" name={opt.name} src={opt.avatarUrl || undefined} appearance="circle" />
-                <span>{opt.name}</span>
-              </MenuItemBtn>
-            ))}
-            {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 13, color: token('color.text.subtlest', '#7A869A') }}>No matches</div>
-            )}
-          </>
-        )}
-      </EditorPopover>
+      />
     );
   };
 }
@@ -888,7 +900,20 @@ export function makePriorityEditCell<T>({
     const editable = canEdit ? canEdit(row) : true;
     const display = <PriorityBars priority={p} />;
 
-    if (!editable) return display;
+    if (!editable) {
+      /* 2026-06-21: locked cell still needs `data-jira-cell-editor` so the
+         row-click handler in JiraTable doesn't fire and open the detail
+         panel on click. */
+      return (
+        <span
+          data-jira-cell-editor
+          title="Locked"
+          style={{ cursor: 'default', display: 'inline-flex', alignItems: 'center' }}
+        >
+          {display}
+        </span>
+      );
+    }
 
     return (
       <EditorPopover
@@ -1409,7 +1434,20 @@ export function makeDateEditCell<T>({
       ? <span style={{ fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{formatted}</span>
       : <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />;
 
-    if (!editable) return display;
+    if (!editable) {
+      /* 2026-06-21: locked cell still needs `data-jira-cell-editor` so the
+         row-click handler in JiraTable doesn't fire and open the detail
+         panel on click. */
+      return (
+        <span
+          data-jira-cell-editor
+          title="Locked"
+          style={{ cursor: 'default', display: 'inline-flex', alignItems: 'center' }}
+        >
+          {display}
+        </span>
+      );
+    }
 
     return (
       <EditorPopover
@@ -1515,7 +1553,20 @@ export function makeLabelsEditCell<T>({
       </span>
     );
 
-    if (!editable) return display;
+    if (!editable) {
+      /* 2026-06-21: locked cell still needs `data-jira-cell-editor` so the
+         row-click handler in JiraTable doesn't fire and open the detail
+         panel on click. */
+      return (
+        <span
+          data-jira-cell-editor
+          title="Locked"
+          style={{ cursor: 'default', display: 'inline-flex', alignItems: 'center' }}
+        >
+          {display}
+        </span>
+      );
+    }
 
     return (
       <EditorPopover

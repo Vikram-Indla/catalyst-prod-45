@@ -35,21 +35,23 @@ export interface RequestRow {
  */
 export function useRequestsByKeys(keys: string[]) {
   const stableKey = keys.slice().sort().join('|');
+  /* 2026-06-21: persist as entries array; select() rehydrates to Map. */
   return useQuery({
     queryKey: ['backlog-initiatives-by-keys', stableKey],
     enabled: keys.length > 0,
-    queryFn: async (): Promise<Map<string, RequestRow>> => {
-      const out = new Map<string, RequestRow>();
+    queryFn: async (): Promise<Array<[string, RequestRow]>> => {
+      const out: Array<[string, RequestRow]> = [];
       if (keys.length === 0) return out;
       const { data, error } = await typedQuery('ph_backlog_requests_view')
         .select('id, initiative_key, title')
         .in('initiative_key', keys);
       if (error) throw error;
       for (const row of (data || []) as any[]) {
-        out.set(row.initiative_key, row as RequestRow);
+        out.push([row.initiative_key, row as RequestRow]);
       }
       return out;
     },
+    select: (rows): Map<string, RequestRow> => new Map(Array.isArray(rows) ? rows : []),
   });
 }
 
@@ -65,11 +67,15 @@ export function useRequestsByKeys(keys: string[]) {
  */
 export function useRequestLinksByEpicKeys(epicKeys: string[]) {
   const stableKey = epicKeys.slice().sort().join('|');
-  return useQuery({
+  const q = useQuery({
     queryKey: ['backlog-initiative-links-by-epic-keys', stableKey],
     enabled: epicKeys.length > 0,
-    queryFn: async (): Promise<Map<string, string>> => {
-      const out = new Map<string, string>();
+    /* 2026-06-21: react-query persistence (localStorage) serializes via
+       JSON.stringify which converts Map → {} on persist. On rehydrate the
+       cached value loses .get → TypeError on next render. Persist as a
+       plain entries array; rehydrate to Map inside `select`. */
+    queryFn: async (): Promise<Array<[string, string]>> => {
+      const out: Array<[string, string]> = [];
       if (epicKeys.length === 0) return out;
       const { data, error } = await supabase
         .from('ph_issue_links')
@@ -84,12 +90,14 @@ export function useRequestLinksByEpicKeys(epicKeys: string[]) {
         const t = String(row.target_id ?? '');
         const sIsInit = s.startsWith('MIM-') || s.startsWith('MDT-');
         const tIsInit = t.startsWith('MIM-') || t.startsWith('MDT-');
-        if (sIsInit && epicSet.has(t)) out.set(t, s);
-        else if (tIsInit && epicSet.has(s)) out.set(s, t);
+        if (sIsInit && epicSet.has(t)) out.push([t, s]);
+        else if (tIsInit && epicSet.has(s)) out.push([s, t]);
       }
       return out;
     },
+    select: (rows): Map<string, string> => new Map(Array.isArray(rows) ? rows : []),
   });
+  return q;
 }
 /**
  * Epic Backlog — pulls from ph_issues where issue_type = 'Epic',

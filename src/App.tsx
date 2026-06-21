@@ -63,7 +63,11 @@ const FullAppRoutes = ENABLE_FULL_APP
 //     refetch only happens after staleTime elapses
 //   • buster: bump CACHE_VERSION to invalidate ALL cached queries on deploy
 //   • Config/flag queries that need longer retention override gcTime per-query
-const CACHE_VERSION = 'v2.2026-05-16';
+// 2026-06-21: bumped to invalidate stale localStorage entries that contain
+// Map values serialized as plain {} (default JSON.stringify behavior). The
+// new persister below uses a Map-aware serializer so future cache rounds
+// rehydrate correctly. Existing cache from older versions is discarded.
+const CACHE_VERSION = 'v3.2026-06-21';
 const FIVE_MIN_MS = 5 * 60 * 1000;
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -78,10 +82,35 @@ const queryClient = new QueryClient({
   },
 });
 
+/* 2026-06-21: Map/Set-aware serializer. Default `JSON.stringify` converts
+   Map → {} which loses .get() on rehydrate (caused `epicLinkedInitiativeByKey?.get
+   is not a function`, `parentTypeMap.get is not a function`, etc.). The custom
+   serializer tags Map/Set values during persist and reconstructs them on load.
+   Survives any query whose result is a Map/Set without per-hook code. */
+const RQ_TAG_MAP = '__rq_map__';
+const RQ_TAG_SET = '__rq_set__';
+
+function rqReplacer(_key: string, value: unknown): unknown {
+  if (value instanceof Map) return { [RQ_TAG_MAP]: Array.from(value.entries()) };
+  if (value instanceof Set) return { [RQ_TAG_SET]: Array.from(value.values()) };
+  return value;
+}
+
+function rqReviver(_key: string, value: unknown): unknown {
+  if (value && typeof value === 'object') {
+    const v = value as Record<string, unknown>;
+    if (Array.isArray(v[RQ_TAG_MAP])) return new Map(v[RQ_TAG_MAP] as Array<[unknown, unknown]>);
+    if (Array.isArray(v[RQ_TAG_SET])) return new Set(v[RQ_TAG_SET] as unknown[]);
+  }
+  return value;
+}
+
 const persister = createSyncStoragePersister({
   storage: typeof window !== 'undefined' ? window.localStorage : undefined,
   key: 'catalyst-rq-cache',
   throttleTime: 1000,
+  serialize: (data) => JSON.stringify(data, rqReplacer),
+  deserialize: (str) => JSON.parse(str, rqReviver),
 });
 
 const S = ({ children }: { children: React.ReactNode }) => (

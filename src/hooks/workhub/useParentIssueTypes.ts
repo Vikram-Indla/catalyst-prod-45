@@ -33,17 +33,25 @@ export function useParentIssueTypes(
     new Set(parentKeys.filter((k): k is string => !!k)),
   ).sort();
 
-  const { data } = useQuery({
+  /* 2026-06-21: persist as entries array; `select` rehydrates to Map.
+     react-query persistence serializes Map → {} via JSON.stringify, which
+     loses .get on rehydrate (CLAUDE.md persistence-Map bug). */
+  const { data } = useQuery<Array<[string, string]>, Error, Map<string, string>>({
     queryKey: ['parent-issue-types', keys],
     enabled: keys.length > 0,
     staleTime: 5 * 60 * 1000,
-    queryFn: async () => {
+    queryFn: async (): Promise<Array<[string, string]>> => {
       const { data: rows } = await (supabase as any)
         .from('ph_issues')
         .select('issue_key, issue_type')
         .in('issue_key', keys);
-      return buildParentTypeMap((rows ?? []) as any[]);
+      const out: Array<[string, string]> = [];
+      for (const r of ((rows ?? []) as Array<{ issue_key: string | null; issue_type: string | null }>)) {
+        if (r.issue_key && r.issue_type) out.push([r.issue_key, r.issue_type]);
+      }
+      return out;
     },
+    select: (rows): Map<string, string> => new Map(Array.isArray(rows) ? rows : []),
   });
 
   return data ?? new Map<string, string>();
