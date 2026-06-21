@@ -504,6 +504,40 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
      selects the array head while the user sees a different row at
      the top of the rail. If WorkListPanel's sort/filter ever
      changes, this needs to track. */
+  /* Initial auto-open — on first load (no ?issue= param, nothing selected),
+     select the first DOM-visible item: mirror WorkListPanel's subtask-filter
+     + created-date-desc sort so the highlighted card matches the top row.
+     The hook's memo-based autoSelectFirst uses filteredItems[0] which may be
+     a subtask (hidden by WorkListPanel), causing the right panel to show
+     content the user cannot see highlighted on the left. Explicit selectItem
+     call sets activeItemId state + writes the URL param so everything is
+     consistent. A ref guards against re-firing when filteredItems updates
+     (e.g. filter applied) while an item is already selected. */
+  const initialAutoSelectDoneRef = useRef(false);
+  useEffect(() => {
+    if (initialAutoSelectDoneRef.current) return;
+    if (filteredItems.length === 0) return;
+    if (searchParams.get('issue')) return; // deep-link present — let hydration handle it
+    if (activeItem) return; // something already selected
+    const SUBTASK_RE = /^(sub-?task|backend|frontend|figma|entity figma|integration)$/i;
+    const topLevel = filteredItems.filter((i) => {
+      const t = (i.type ?? '').toLowerCase();
+      const rawType = (i.rawType ?? '').toLowerCase();
+      return !SUBTASK_RE.test(t) && !SUBTASK_RE.test(rawType);
+    });
+    const sorted = [...topLevel].sort((a, b) => {
+      const av = (a as { jira_created_at?: string }).jira_created_at ?? a.createdAt ?? a.id ?? '';
+      const bv = (b as { jira_created_at?: string }).jira_created_at ?? b.createdAt ?? b.id ?? '';
+      const cmp = String(av) < String(bv) ? -1 : String(av) > String(bv) ? 1 : 0;
+      return -cmp;
+    });
+    const top = sorted[0];
+    if (top) {
+      initialAutoSelectDoneRef.current = true;
+      selectItem(top.id);
+    }
+  }, [filteredItems, searchParams, activeItem, selectItem]);
+
   const lastCatyFilterRef = useRef<unknown>(null);
   useEffect(() => {
     if (

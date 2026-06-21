@@ -18,16 +18,19 @@
 import { useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import type { BusinessRequest } from '@/types/business-request';
+import type { BusinessRequestHealth } from '@/types/date-pulse';
 import { RichTextEditor } from '@/components/catalyst-detail-views/shared/sections/Description/RichTextEditor';
 import { DisplayView } from '@/components/catalyst-detail-views/shared/sections/Description/_components/DisplayView/DisplayView';
 import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description/utils/adfToTiptap';
+import { BrHealthStatusIndicator } from '@/components/business-request/BrHealthStatusIndicator';
 
 interface Props {
   request: BusinessRequest | null;
   onUpdate: (field: string, value: unknown) => Promise<void>;
+  health?: BusinessRequestHealth | null;
 }
 
-export function BrDescriptionSection({ request, onUpdate }: Props) {
+export function BrDescriptionSection({ request, onUpdate, health }: Props) {
   const [editing, setEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -68,6 +71,7 @@ export function BrDescriptionSection({ request, onUpdate }: Props) {
       style={{ marginBottom: 16 }}
       aria-label="Description"
     >
+      {health && <BrHealthStatusIndicator health={health} />}
       <h2
         style={{
           margin: '0 0 8px 0',

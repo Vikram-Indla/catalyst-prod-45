@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useCycleScope } from '@/hooks/test-management/useTestCycles';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
@@ -6,6 +7,7 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
+import Textarea from '@atlaskit/textarea';
 import { ArrowLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { TMCycleScope, TMCaseStep, RunStatus } from '@/types/test-management';
 import { catalystToast } from '@/lib/catalystToast';
@@ -152,6 +154,127 @@ export default function ExecutionPage() {
   );
 }
 
+// ─── Timer hook ────────────────────────────────────────────────────────────
+function useTimer() {
+  const [elapsed, setElapsed] = useState(0);
+  const [running, setRunning] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startedAtRef = useRef<number>(0);
+
+  const start = useCallback(() => {
+    if (running) return;
+    startedAtRef.current = Date.now() - elapsed * 1000;
+    intervalRef.current = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startedAtRef.current) / 1000));
+    }, 1000);
+    setRunning(true);
+  }, [running, elapsed]);
+
+  const pause = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    setRunning(false);
+  }, []);
+
+  const reset = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    setElapsed(0);
+    setRunning(false);
+  }, []);
+
+  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
+
+  const fmt = (s: number) => {
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    return h > 0
+      ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+      : `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+  };
+
+  return { elapsed, running, start, pause, reset, fmt };
+}
+
+// ─── Save modal ────────────────────────────────────────────────────────────
+function SaveRunModal({
+  onConfirm,
+  onCancel,
+  saving,
+}: {
+  onConfirm: (notes: string) => void;
+  onCancel: () => void;
+  saving: boolean;
+}) {
+  const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onCancel(); }
+    };
+    document.addEventListener('keydown', handler, true);
+    return () => document.removeEventListener('keydown', handler, true);
+  }, [onCancel]);
+
+  return createPortal(
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9000,
+      background: 'rgba(9,30,66,0.54)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        borderRadius: 8, padding: 24, width: 480,
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+      }}>
+        <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          Save execution
+        </h3>
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+          Optionally add notes before saving this run result.
+        </p>
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', display: 'block', marginBottom: 4 }}>
+            Notes (optional)
+          </label>
+          <Textarea
+            value={notes}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)}
+            placeholder="Environment details, blockers, observations…"
+            minimumRows={3}
+          />
+        </div>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button
+            onClick={onCancel}
+            style={{
+              padding: '8px 16px', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onConfirm(notes)}
+            disabled={saving}
+            style={{
+              padding: '8px 16px', borderRadius: 4, border: 'none',
+              background: 'var(--ds-background-brand-bold, #0052CC)',
+              color: '#fff', cursor: saving ? 'not-allowed' : 'pointer',
+              fontSize: 14, fontWeight: 500, opacity: saving ? 0.7 : 1,
+              display: 'flex', alignItems: 'center', gap: 8,
+            }}
+          >
+            {saving && <Spinner size="small" appearance="invert" />}
+            {saving ? 'Saving…' : 'Save run'}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ─── Step runner ────────────────────────────────────────────────────────────
 function StepRunner({
   scope,
   cycleId,
@@ -165,6 +288,8 @@ function StepRunner({
   const steps: TMCaseStep[] = caseDetail?.steps ?? [];
   const [stepStates, setStepStates] = useState<StepState[]>([]);
   const [saving, setSaving] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const timer = useTimer();
 
   // Init step states when case loads
   useEffect(() => {
@@ -173,16 +298,29 @@ function StepRunner({
     }
   }, [steps]);
 
+  // Reset step states when scope changes
+  useEffect(() => {
+    setStepStates([]);
+    timer.reset();
+  }, [scope.id]);
+
   const updateStepStatus = (idx: number, status: StepStatus) => {
     setStepStates(prev => prev.map((s, i) => i === idx ? { ...s, status } : s));
+    if (!timer.running) timer.start();
   };
 
   const updateActualResult = (idx: number, value: string) => {
     setStepStates(prev => prev.map((s, i) => i === idx ? { ...s, actualResult: value } : s));
   };
 
-  const handleSave = async () => {
+  const handleReset = () => {
+    setStepStates(steps.map(s => ({ stepId: s.id, status: 'NOT_RUN', actualResult: '' })));
+    timer.reset();
+  };
+
+  const handleSave = async (notes: string) => {
     setSaving(true);
+    timer.pause();
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -201,6 +339,8 @@ function StepRunner({
           run_number: 1,
           status: dbStatus,
           executed_by: user.id,
+          notes: notes || null,
+          duration_seconds: timer.elapsed,
           started_at: new Date().toISOString(),
           completed_at: isTerminal ? new Date().toISOString() : null,
         })
@@ -228,7 +368,9 @@ function StepRunner({
         .update({ current_status: dbStatus })
         .eq('id', scope.id);
 
+      setShowSaveModal(false);
       catalystToast.success(`Saved: ${runStatus}`);
+      timer.reset();
       onSaved();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Unknown error';
@@ -252,6 +394,45 @@ function StepRunner({
 
   return (
     <div style={{ padding: 24 }}>
+      {/* Timer bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20,
+        padding: '10px 16px', borderRadius: 8,
+        background: timer.running
+          ? 'var(--ds-background-information-subtle, #E9F2FF)'
+          : 'var(--ds-surface-sunken, #F7F8F9)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+      }}>
+        <span style={{
+          fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 18, fontWeight: 600,
+          color: timer.running ? 'var(--ds-text-information, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+          minWidth: 72,
+        }}>
+          {timer.fmt(timer.elapsed)}
+        </span>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {!timer.running ? (
+            <button onClick={timer.start} style={timerBtnStyle('#006644')}>▶ Start</button>
+          ) : (
+            <button onClick={timer.pause} style={timerBtnStyle('#974F0C')}>⏸ Pause</button>
+          )}
+          <button onClick={timer.reset} disabled={timer.elapsed === 0 && !timer.running} style={timerBtnStyle('#42526E')}>
+            ↺ Reset
+          </button>
+        </div>
+        <div style={{ flex: 1 }} />
+        <button
+          onClick={handleReset}
+          style={{
+            padding: '4px 12px', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'none', cursor: 'pointer', fontSize: 12,
+            color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-body)',
+          }}
+        >
+          Reset run
+        </button>
+      </div>
+
       {/* Case header */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)', marginBottom: 4 }}>
@@ -387,33 +568,38 @@ function StepRunner({
         </div>
       )}
 
-      {/* Save button */}
+      {/* Action row */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
         <button
-          onClick={handleSave}
-          disabled={saving}
+          onClick={() => setShowSaveModal(true)}
           style={{
             padding: '10px 24px',
             background: 'var(--ds-background-brand-bold, #0052CC)',
             color: 'var(--ds-text-inverse, #FFFFFF)',
-            border: 'none',
-            borderRadius: 4,
-            fontSize: 14,
-            fontWeight: 500,
-            cursor: saving ? 'not-allowed' : 'pointer',
-            opacity: saving ? 0.7 : 1,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
+            border: 'none', borderRadius: 4, fontSize: 14, fontWeight: 500,
+            cursor: 'pointer',
           }}
         >
-          {saving && <Spinner size="small" appearance="invert" />}
-          {saving ? 'Saving...' : 'Save execution'}
+          Save execution
         </button>
       </div>
+
+      {showSaveModal && (
+        <SaveRunModal
+          saving={saving}
+          onCancel={() => setShowSaveModal(false)}
+          onConfirm={handleSave}
+        />
+      )}
     </div>
   );
 }
+
+const timerBtnStyle = (color: string): React.CSSProperties => ({
+  padding: '3px 10px', borderRadius: 4, border: `1px solid ${color}`,
+  background: 'none', cursor: 'pointer', fontSize: 12, color,
+  fontFamily: 'var(--ds-font-family-body)',
+});
 
 function RunStatusDot({ status }: { status: RunStatus }) {
   const colors: Record<RunStatus, string> = {

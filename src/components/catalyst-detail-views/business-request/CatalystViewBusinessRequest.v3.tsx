@@ -41,7 +41,6 @@ import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { BUSINESS_REQUEST_SUBTASK_TYPES } from '../shared/parent-rules';
 import type { CatalystViewBaseProps } from '../shared/types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
-import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
 import { ReplayOverlay } from '@/components/replay/ReplayOverlay';
 
 export default function CatalystViewBusinessRequestV3({
@@ -59,6 +58,9 @@ export default function CatalystViewBusinessRequestV3({
     request &&
     request.status === 'New' &&
     !request.description
+  );
+  const isClosed = ['done', 'canceled'].includes(
+    (request?.process_step ?? '').toLowerCase(),
   );
   const duplicateMutation = useDuplicateBusinessRequest();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
@@ -122,7 +124,7 @@ export default function CatalystViewBusinessRequestV3({
         <BrTitleSection request={request} onUpdate={updateField} />
         <CatalystQuickActions />
         <BrCenterDetails request={request} onUpdate={updateField} productId={request?.product_id ?? null} />
-        <BrDescriptionSection request={request} onUpdate={updateField} />
+        <BrDescriptionSection request={request} onUpdate={updateField} health={health} />
         {!isNewlyCreated && <BrAttachmentsSection request={request} />}
         {!isNewlyCreated && <BrLinkedItemsSection request={request} />}
         {!isNewlyCreated && request?.request_key && resolvedId && (
@@ -166,43 +168,45 @@ export default function CatalystViewBusinessRequestV3({
             issueType="Business Request"
           />
         }
-        healthBadge={health ? <HealthStatusBadge health={health} /> : undefined}
         watchersChip={<WatchersChip issueKey={request?.request_key ?? null} />}
         improveDropdown={
-          <>
-            <ImproveIssueDropdown
-              issue={brAsIssueLike}
-              onApplyDescription={handleApplyDescription}
-            />
-            {request?.request_key && (
-              <button
-                onClick={() => setShowReplay(true)}
-                title="Replay lifecycle"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: '4px 8px',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 3,
-                  background: 'var(--ds-surface, #FFFFFF)',
-                  color: 'var(--ds-text-subtle, #42526E)',
-                  fontSize: 12,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  fontFamily: 'var(--ds-font-family-body)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                ▶ Replay
-              </button>
-            )}
-          </>
+          isClosed ? undefined : (
+            <>
+              <ImproveIssueDropdown
+                issue={brAsIssueLike}
+                onApplyDescription={handleApplyDescription}
+              />
+              {request?.request_key && (
+                <button
+                  onClick={() => setShowReplay(true)}
+                  title="Replay lifecycle"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    padding: '4px 8px',
+                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    borderRadius: 3,
+                    background: 'var(--ds-surface, #FFFFFF)',
+                    color: 'var(--ds-text-subtle, #42526E)',
+                    fontSize: 12,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    fontFamily: 'var(--ds-font-family-body)',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  ▶ Replay
+                </button>
+              )}
+            </>
+          )
         }
+        hideDiscuss={isClosed}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [request, updateField, brAsIssueLike, handleApplyDescription, health],
+    [request, updateField, brAsIssueLike, handleApplyDescription, health, isClosed],
   );
 
   return (

@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button/standard-button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
 import { catalystToast } from '@/lib/catalystToast';
+import { useNavigate } from 'react-router-dom';
+import { PageHeader } from '@/components/ads/PageHeader';
+import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { MoreHorizontal } from '@/lib/atlaskit-icons';
 
 type SetType = 'smoke' | 'regression' | 'sanity' | 'integration' | 'e2e' | 'performance' | 'security' | 'accessibility' | 'custom';
 type MembershipType = 'static' | 'dynamic';
@@ -92,13 +100,137 @@ const EMPTY_FORM: CreateSetForm = {
   membership_type: 'static',
 };
 
+// ── Row ⋯ menu ─────────────────────────────────────────────────────────────────
+function SetRowMenu({ set, projectId, onClose, onDeleted }: {
+  set: TmTestSet; projectId: string; onClose: () => void; onDeleted: () => void;
+}) {
+  const qc = useQueryClient();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const trigRef = useRef<HTMLButtonElement | null>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    if (trigRef.current) {
+      const r = trigRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 4, left: r.right - 160 });
+    }
+    const down = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) && !trigRef.current?.contains(e.target as Node)) onClose();
+    };
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
+    document.addEventListener('mousedown', down);
+    document.addEventListener('keydown', key, true);
+    return () => { document.removeEventListener('mousedown', down); document.removeEventListener('keydown', key, true); };
+  }, [onClose]);
+
+  const deleteMut = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('tm_test_sets').delete().eq('id', set.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tm_test_sets', projectId] });
+      catalystToast.success('Set deleted');
+      onDeleted();
+    },
+    onError: (e: Error) => catalystToast.error(e.message),
+  });
+
+  const copyMut = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const { error } = await supabase.from('tm_test_sets').insert({
+        name: `${set.name} (Copy)`,
+        description: set.description,
+        set_type: set.set_type,
+        membership_type: set.membership_type,
+        project_id: projectId,
+        created_by: user.id,
+        owner_id: user.id,
+        is_active: false,
+        test_count: 0,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tm_test_sets', projectId] });
+      catalystToast.success('Set copied');
+      onClose();
+    },
+    onError: (e: Error) => catalystToast.error(e.message),
+  });
+
+  const archiveMut = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('tm_test_sets').update({ is_active: false }).eq('id', set.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tm_test_sets', projectId] });
+      catalystToast.success('Set archived');
+      onClose();
+    },
+    onError: (e: Error) => catalystToast.error(e.message),
+  });
+
+  const item: React.CSSProperties = {
+    display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
+    border: 'none', background: 'none', cursor: 'pointer', fontSize: 13,
+    color: 'var(--ds-text, #172B4D)',
+  };
+
+  return (
+    <>
+      <button ref={trigRef} onClick={e => e.stopPropagation()}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <MoreHorizontal size={14} />
+      </button>
+      {pos && createPortal(
+        <div ref={menuRef} role="menu" style={{
+          position: 'fixed', top: pos.top, left: pos.left,
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          border: '1px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+          padding: '4px 0', minWidth: 160, zIndex: 9999,
+        }}>
+          <button role="menuitem" style={item}
+            onClick={e => { e.stopPropagation(); copyMut.mutate(); }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
+            Copy set
+          </button>
+          <button role="menuitem" style={{ ...item, color: 'var(--ds-text-warning, #974F0C)' }}
+            onClick={e => { e.stopPropagation(); archiveMut.mutate(); }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
+            Archive set
+          </button>
+          <button role="menuitem" style={{ ...item, color: 'var(--ds-text-danger, #AE2A19)' }}
+            onClick={e => { e.stopPropagation(); deleteMut.mutate(); }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
+            Delete set
+          </button>
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
 export default function TestSetsPage() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
   const projectId = projects[0]?.id;
 
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState<CreateSetForm>(EMPTY_FORM);
+  const [rowMenuId, setRowMenuId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const bulkBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [bulkMenuOpen, setBulkMenuOpen] = useState(false);
 
   const { data: sets = [], isLoading } = useQuery({
     queryKey: ['tm_test_sets', projectId],
@@ -162,18 +294,25 @@ export default function TestSetsPage() {
   return (
     <div style={{ padding: 24, maxWidth: 1100, fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
-            Test Sets
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 0' }}>
-            {sets.length} set{sets.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-        <Button appearance="primary" onClick={() => setShowCreate(true)}>
-          + New Test Set
-        </Button>
+      <div style={{ marginBottom: 24 }}>
+        <PageHeader
+          title="Test Sets"
+          breadcrumbs={
+            <Breadcrumbs items={[
+              { key: 'home', text: 'Home', href: '/for-you' },
+              { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+              { key: 'sets', text: 'Test Sets', isCurrent: true },
+            ]} />
+          }
+          actions={
+            <Button appearance="primary" onClick={() => setShowCreate(true)}>
+              + New Test Set
+            </Button>
+          }
+        />
+        <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 24px 0' }}>
+          {sets.length} set{sets.length !== 1 ? 's' : ''}
+        </p>
       </div>
 
       {/* Create form */}
@@ -194,30 +333,21 @@ export default function TestSetsPage() {
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                 Name *
               </label>
-              <input
+              <Textfield
                 value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Regression Suite v2.0"
-                style={{
-                  width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
-                  borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                  fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box',
-                }}
+                autoFocus
               />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                 Description
               </label>
-              <textarea
+              <TextArea
                 value={form.description}
-                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                rows={2}
-                style={{
-                  width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
-                  borderRadius: 4, fontSize: 14, resize: 'vertical', color: 'var(--ds-text, #172B4D)',
-                  fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box',
-                }}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setForm(f => ({ ...f, description: e.target.value }))}
+                minimumRows={2}
               />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -225,36 +355,24 @@ export default function TestSetsPage() {
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                   Type
                 </label>
-                <select
-                  value={form.set_type}
-                  onChange={e => setForm(f => ({ ...f, set_type: e.target.value as SetType }))}
-                  style={{
-                    width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
-                    borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                    background: 'var(--ds-surface, #FFFFFF)',
-                  }}
-                >
-                  {(Object.keys(SET_TYPE_LABELS) as SetType[]).map(t => (
-                    <option key={t} value={t}>{SET_TYPE_LABELS[t]}</option>
-                  ))}
-                </select>
+                <Select
+                  value={{ value: form.set_type, label: SET_TYPE_LABELS[form.set_type] }}
+                  onChange={opt => opt && setForm(f => ({ ...f, set_type: opt.value as SetType }))}
+                  options={(Object.keys(SET_TYPE_LABELS) as SetType[]).map(t => ({ value: t, label: SET_TYPE_LABELS[t] }))}
+                />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                   Membership
                 </label>
-                <select
-                  value={form.membership_type}
-                  onChange={e => setForm(f => ({ ...f, membership_type: e.target.value as MembershipType }))}
-                  style={{
-                    width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
-                    borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                    background: 'var(--ds-surface, #FFFFFF)',
-                  }}
-                >
-                  <option value="static">Static (manual)</option>
-                  <option value="dynamic">Dynamic (criteria-based)</option>
-                </select>
+                <Select
+                  value={{ value: form.membership_type, label: form.membership_type === 'dynamic' ? 'Dynamic (criteria-based)' : 'Static (manual)' }}
+                  onChange={opt => opt && setForm(f => ({ ...f, membership_type: opt.value as MembershipType }))}
+                  options={[
+                    { value: 'static', label: 'Static (manual)' },
+                    { value: 'dynamic', label: 'Dynamic (criteria-based)' },
+                  ]}
+                />
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
@@ -312,6 +430,7 @@ export default function TestSetsPage() {
           {sets.map((set, idx) => (
             <div
               key={set.id}
+              onClick={() => navigate(`/testhub/sets/${set.id}`)}
               style={{
                 display: 'grid',
                 gridTemplateColumns: '48px 1fr 120px 120px 80px 80px 80px',
@@ -321,13 +440,16 @@ export default function TestSetsPage() {
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 borderTop: 'none',
                 borderRadius: idx === sets.length - 1 ? '0 0 6px 6px' : 0,
+                cursor: 'pointer',
               }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)')}
             >
               <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
                 {set.set_key ?? '—'}
               </span>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>
                   {set.name}
                 </div>
                 {set.description && (
@@ -341,7 +463,7 @@ export default function TestSetsPage() {
               <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
                 {set.test_count ?? 0}
               </span>
-              <div>
+              <div onClick={e => e.stopPropagation()}>
                 <button
                   onClick={() => toggleActive.mutate({ id: set.id, is_active: set.is_active })}
                   style={{
@@ -363,7 +485,22 @@ export default function TestSetsPage() {
                   }} />
                 </button>
               </div>
-              <div />
+              <div onClick={e => e.stopPropagation()}>
+                {rowMenuId === set.id
+                  ? <SetRowMenu
+                      set={set}
+                      projectId={projectId!}
+                      onClose={() => setRowMenuId(null)}
+                      onDeleted={() => setRowMenuId(null)}
+                    />
+                  : <button
+                      onClick={e => { e.stopPropagation(); setRowMenuId(set.id); }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest, #6B778C)' }}
+                    >
+                      <MoreHorizontal size={14} />
+                    </button>
+                }
+              </div>
             </div>
           ))}
         </div>

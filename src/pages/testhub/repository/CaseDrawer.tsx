@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
+import Button from '@atlaskit/button/standard-button';
+import Spinner from '@atlaskit/spinner';
 import { supabase } from '@/integrations/supabase/client';
-import { useCreateTestCase, useUpdateTestCase } from '@/hooks/test-management/useTestCases';
+import { useCreateTestCase, useUpdateTestCase, useCreateCaseVersion } from '@/hooks/test-management/useTestCases';
 import { TMTestCase, TMCasePriority, TMCaseType, CaseStatus } from '@/types/test-management';
 import { StepEditor, StepInput } from './StepEditor';
 import { X } from '@/lib/atlaskit-icons';
-import Spinner from '@atlaskit/spinner';
 
 interface CaseDrawerProps {
   projectId: string;
@@ -30,6 +32,18 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
       test_data: s.test_data ?? '',
     }))
   );
+
+  // Escape key — capture phase so it doesn't propagate to parent modals
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handler, true);
+    return () => document.removeEventListener('keydown', handler, true);
+  }, [onClose]);
 
   const { data: priorities = [] } = useQuery({
     queryKey: ['tm-priorities', projectId],
@@ -74,7 +88,11 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
 
   const createCase = useCreateTestCase();
   const updateCase = useUpdateTestCase();
+  const createVersion = useCreateCaseVersion();
   const isPending = createCase.isPending || updateCase.isPending;
+
+  const [versionModalOpen, setVersionModalOpen] = useState(false);
+  const [replaceInSets, setReplaceInSets] = useState(false);
 
   const handleSave = async () => {
     if (!title.trim()) return;
@@ -116,6 +134,19 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
     onClose();
   };
 
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: 12,
+    fontWeight: 600,
+    color: 'var(--ds-text-subtle, #42526E)',
+    marginBottom: 6,
+    fontFamily: 'var(--ds-font-family-body)',
+  };
+
+  const sectionStyle: React.CSSProperties = {
+    marginBottom: 20,
+  };
+
   const inputStyle: React.CSSProperties = {
     width: '100%',
     border: '1px solid var(--ds-border, #DFE1E6)',
@@ -134,169 +165,261 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
     cursor: 'pointer',
   };
 
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontSize: 12,
-    fontWeight: 600,
-    color: 'var(--ds-text-subtle, #42526E)',
-    marginBottom: 6,
-  };
-
-  const sectionStyle: React.CSSProperties = {
-    marginBottom: 20,
-  };
-
-  return (
-    <>
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.32)', zIndex: 300 }}
-      />
-      {/* Drawer */}
-      <div style={{
+  const panel = (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={isEdit ? 'Edit test case' : 'Create test case'}
+      style={{
         position: 'fixed',
-        right: 0,
         top: 0,
-        bottom: 0,
+        right: 0,
         width: 640,
-        background: 'var(--ds-surface, #FFFFFF)',
-        boxShadow: '-4px 0 16px rgba(9,30,66,0.16)',
-        zIndex: 301,
+        height: '100vh',
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        boxShadow: '-4px 0 20px rgba(9,30,66,0.25)',
+        zIndex: 400,
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
-      }}>
-        {/* Header */}
-        <div style={{
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
           padding: '16px 24px',
           borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-        }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
-            {isEdit ? 'Edit test case' : 'Create test case'}
-          </h2>
-          <button
-            onClick={onClose}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', padding: 4 }}
-          >
-            <X size={20} />
-          </button>
+          flexShrink: 0,
+        }}
+      >
+        <h2
+          style={{
+            margin: 0,
+            fontSize: 18,
+            fontWeight: 600,
+            color: 'var(--ds-text, #172B4D)',
+            fontFamily: 'var(--ds-font-family-body)',
+          }}
+        >
+          {isEdit ? 'Edit test case' : 'Create test case'}
+        </h2>
+        <button
+          onClick={onClose}
+          aria-label="Close panel"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--ds-text-subtle, #42526E)',
+            padding: 4,
+            display: 'flex',
+            alignItems: 'center',
+            borderRadius: 4,
+          }}
+        >
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+        <div style={sectionStyle}>
+          <label style={labelStyle}>Title *</label>
+          <input
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="Test case title"
+            style={inputStyle}
+            autoFocus
+          />
         </div>
 
-        {/* Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-          <div style={sectionStyle}>
-            <label style={labelStyle}>Title *</label>
-            <input
-              type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Test case title"
-              style={inputStyle}
-            />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
+          <div>
+            <label style={labelStyle}>Status</label>
+            <select
+              value={status}
+              onChange={e => setStatus(e.target.value as CaseStatus)}
+              style={selectStyle}
+            >
+              <option value="DRAFT">Draft</option>
+              <option value="REVIEW">Review</option>
+              <option value="APPROVED">Approved</option>
+              <option value="DEPRECATED">Deprecated</option>
+            </select>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
-            <div>
-              <label style={labelStyle}>Status</label>
-              <select value={status} onChange={e => setStatus(e.target.value as CaseStatus)} style={selectStyle}>
-                <option value="DRAFT">Draft</option>
-                <option value="REVIEW">Review</option>
-                <option value="APPROVED">Approved</option>
-                <option value="DEPRECATED">Deprecated</option>
-              </select>
-            </div>
-            <div>
-              <label style={labelStyle}>Priority</label>
-              <select value={priorityId} onChange={e => setPriorityId(e.target.value)} style={selectStyle}>
-                <option value="">— Select —</option>
-                {(priorities as TMCasePriority[]).map(p => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label style={labelStyle}>Type</label>
-              <select value={typeId} onChange={e => setTypeId(e.target.value)} style={selectStyle}>
-                <option value="">— Select —</option>
-                {(types as TMCaseType[]).map(t => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
-              </select>
-            </div>
+          <div>
+            <label style={labelStyle}>Priority</label>
+            <select
+              value={priorityId}
+              onChange={e => setPriorityId(e.target.value)}
+              style={selectStyle}
+            >
+              <option value="">— Select —</option>
+              {(priorities as TMCasePriority[]).map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
           </div>
-
-          <div style={sectionStyle}>
-            <label style={labelStyle}>Description / Objective</label>
-            <textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="What does this test verify?"
-              style={{ ...inputStyle, minHeight: 72, resize: 'vertical' }}
-            />
-          </div>
-
-          <div style={sectionStyle}>
-            <label style={labelStyle}>Preconditions</label>
-            <textarea
-              value={preconditions}
-              onChange={e => setPreconditions(e.target.value)}
-              placeholder="Setup required before this test..."
-              style={{ ...inputStyle, minHeight: 56, resize: 'vertical' }}
-            />
-          </div>
-
-          <div style={sectionStyle}>
-            <label style={{ ...labelStyle, marginBottom: 12 }}>Steps</label>
-            <StepEditor steps={steps} onChange={setSteps} />
+          <div>
+            <label style={labelStyle}>Type</label>
+            <select
+              value={typeId}
+              onChange={e => setTypeId(e.target.value)}
+              style={selectStyle}
+            >
+              <option value="">— Select —</option>
+              {(types as TMCaseType[]).map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
           </div>
         </div>
 
-        {/* Footer */}
-        <div style={{
+        <div style={sectionStyle}>
+          <label style={labelStyle}>Description / Objective</label>
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder="What does this test verify?"
+            style={{ ...inputStyle, minHeight: 72, resize: 'vertical' }}
+          />
+        </div>
+
+        <div style={sectionStyle}>
+          <label style={labelStyle}>Preconditions</label>
+          <textarea
+            value={preconditions}
+            onChange={e => setPreconditions(e.target.value)}
+            placeholder="Setup required before this test..."
+            style={{ ...inputStyle, minHeight: 56, resize: 'vertical' }}
+          />
+        </div>
+
+        <div style={sectionStyle}>
+          <label style={{ ...labelStyle, marginBottom: 12 }}>Steps</label>
+          <StepEditor steps={steps} onChange={setSteps} />
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div
+        style={{
           padding: '16px 24px',
           borderTop: '1px solid var(--ds-border, #DFE1E6)',
           display: 'flex',
-          gap: 12,
-          justifyContent: 'flex-end',
-        }}>
-          <button onClick={onClose} style={{
-            padding: '8px 16px',
-            background: 'none',
-            border: '1px solid var(--ds-border, #DFE1E6)',
-            borderRadius: 4,
-            fontSize: 14,
-            cursor: 'pointer',
-            color: 'var(--ds-text, #172B4D)',
-          }}>
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={isPending || !title.trim()}
-            style={{
-              padding: '8px 20px',
-              background: 'var(--ds-background-brand-bold, #0052CC)',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: 4,
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: isPending || !title.trim() ? 'not-allowed' : 'pointer',
-              opacity: isPending || !title.trim() ? 0.7 : 1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            {isPending && <Spinner size="small" appearance="invert" />}
-            {isEdit ? 'Save changes' : 'Create case'}
-          </button>
-        </div>
+          gap: 8,
+          alignItems: 'center',
+          flexShrink: 0,
+        }}
+      >
+        {isEdit && existingCase && (
+          <>
+            <button
+              onClick={() => setVersionModalOpen(true)}
+              style={{
+                padding: '6px 12px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-surface, #FFFFFF)',
+                color: 'var(--ds-text-subtle, #42526E)', cursor: 'pointer',
+              }}
+            >
+              New version
+            </button>
+            <span style={{
+              fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)',
+              marginRight: 'auto',
+            }}>
+              v{existingCase.current_version ?? existingCase.version ?? 1}
+            </span>
+          </>
+        )}
+        {!isEdit && <span style={{ flex: 1 }} />}
+        <Button appearance="subtle" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button
+          appearance="primary"
+          onClick={handleSave}
+          isDisabled={isPending || !title.trim()}
+          iconAfter={isPending ? <Spinner size="small" appearance="invert" /> : undefined}
+        >
+          {isEdit ? 'Save changes' : 'Create case'}
+        </Button>
       </div>
-    </>
+
+      {/* Create new version modal */}
+      {versionModalOpen && isEdit && existingCase && createPortal(
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'rgba(9,30,66,0.54)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            borderRadius: 8, width: 420, padding: 24,
+            boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
+            fontFamily: 'var(--ds-font-family-body)',
+          }}>
+            <h2 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+              Create new version
+            </h2>
+            <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+              A copy of this case will be created as version {(existingCase.current_version ?? existingCase.version ?? 1) + 1}.
+              The current version will be marked as superseded.
+            </p>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginBottom: 20 }}>
+              <input
+                type="checkbox"
+                checked={replaceInSets}
+                onChange={e => setReplaceInSets(e.target.checked)}
+                style={{ width: 16, height: 16 }}
+              />
+              <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
+                Replace in all test sets
+              </span>
+            </label>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setVersionModalOpen(false)}
+                style={{
+                  padding: '6px 14px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+                  border: '2px solid var(--ds-border, #DFE1E6)',
+                  background: 'var(--ds-surface, #FFFFFF)',
+                  color: 'var(--ds-text, #172B4D)', cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                disabled={createVersion.isPending}
+                onClick={() => {
+                  createVersion.mutate(
+                    { case_id: existingCase.id, project_id: projectId, replace_in_sets: replaceInSets },
+                    { onSuccess: () => { setVersionModalOpen(false); onClose(); } }
+                  );
+                }}
+                style={{
+                  padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+                  border: 'none',
+                  background: createVersion.isPending ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-background-brand-bold, #0052CC)',
+                  color: createVersion.isPending ? 'var(--ds-text-disabled, #A5ADBA)' : '#FFFFFF',
+                  cursor: createVersion.isPending ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {createVersion.isPending ? 'Creating…' : 'Create version'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
   );
+
+  return createPortal(panel, document.body);
 }

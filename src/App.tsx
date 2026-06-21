@@ -160,7 +160,13 @@ function App() {
         // spike when 10+ chat queries complete simultaneously on dock open.
         shouldDehydrateQuery: (q) => {
           const k0 = q.queryKey[0];
-          if (k0 === 'chat' || k0 === 'chat-v2' || k0 === 'caty-suggestions') return false;
+          // Exclude chat queries (session-scoped) and avatar-map queries (Map
+          // instances serialize to {} via JSON.stringify, causing a runtime
+          // TypeError on rehydration when code calls avatarsByName.get(...)).
+          if (
+            k0 === 'chat' || k0 === 'chat-v2' || k0 === 'caty-suggestions' ||
+            k0 === 'profile-avatars-local' || k0 === 'profile-avatars-by-name-local'
+          ) return false;
           return q.state.status === 'success';
         },
       },

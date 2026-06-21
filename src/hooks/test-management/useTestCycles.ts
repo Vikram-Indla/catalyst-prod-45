@@ -674,3 +674,69 @@ export function useStartCycle() {
     },
   });
 }
+
+export function useArchiveCycle() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: { id: string; project_id: string }): Promise<void> => {
+      const { error } = await supabase
+        .from('tm_test_cycles')
+        .update({ status: 'archived' })
+        .eq('id', input.id);
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-cycles', variables.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-cycle', variables.id] });
+      catalystToast.success('Cycle archived');
+    },
+    onError: (error: Error) => {
+      catalystToast.error(`Failed to archive cycle: ${error.message}`);
+    },
+  });
+}
+
+export function useBulkArchiveCycles() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: { ids: string[]; project_id: string }): Promise<void> => {
+      const { error } = await supabase
+        .from('tm_test_cycles')
+        .update({ status: 'archived' })
+        .in('id', input.ids);
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-cycles', variables.project_id] });
+      const count = variables.ids.length;
+      catalystToast.success(`${count} cycle${count > 1 ? 's' : ''} archived`);
+    },
+    onError: (error: Error) => {
+      catalystToast.error(`Failed to archive cycles: ${error.message}`);
+    },
+  });
+}
+
+export function useBulkDeleteCycles() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: { ids: string[]; project_id: string }): Promise<void> => {
+      const { error } = await supabase
+        .from('tm_test_cycles')
+        .delete()
+        .in('id', input.ids);
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-cycles', variables.project_id] });
+      const count = variables.ids.length;
+      catalystToast.success(`${count} cycle${count > 1 ? 's' : ''} deleted`);
+    },
+    onError: (error: Error) => {
+      catalystToast.error(`Failed to delete cycles: ${error.message}`);
+    },
+  });
+}

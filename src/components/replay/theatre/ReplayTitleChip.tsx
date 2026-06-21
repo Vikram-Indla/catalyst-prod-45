@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import { ReplayTheatreOverlay } from './ReplayTheatreOverlay';
-import { SEED_BR_SCRIPT, SEED_EPIC_SCRIPT } from '@/lib/replay/theatre/seedData';
-import type { TheatreScript } from '@/lib/replay/theatre/theatreTypes';
+import React from 'react';
 
 export interface ReplayTitleChipProps {
   itemKey: string;
@@ -22,41 +19,34 @@ export const REPLAY_CHIP_CSS = `
 }
 `;
 
-export function ReplayTitleChip({ itemKey, itemType, mode }: ReplayTitleChipProps) {
-  const [open, setOpen] = useState(false);
-
-  const script: TheatreScript = mode === 'product-br' ? SEED_BR_SCRIPT : SEED_EPIC_SCRIPT;
-
+// Stub — portal-based ReplayTheatreOverlay permanently removed.
+// Title-chip inline theatre integration is pending (future work item).
+export function ReplayTitleChip({ itemKey, itemType }: ReplayTitleChipProps) {
   return (
-    <>
-      <button
-        className="replay-chip"
-        onClick={(e) => { e.stopPropagation(); setOpen(true); }}
-        title={`Replay lifecycle of ${itemKey}`}
-        aria-label={`Open Replay for ${itemType} ${itemKey}`}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 4,
-          padding: '2px 8px',
-          borderRadius: 4,
-          border: 'none',
-          background: '#EEF2FF',
-          color: '#2E63D5',
-          fontSize: 11,
-          fontWeight: 600,
-          cursor: 'pointer',
-          fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-          lineHeight: 1.5,
-          verticalAlign: 'middle',
-        }}
-      >
-        ▶ Replay
-      </button>
-
-      {open && (
-        <ReplayTheatreOverlay script={script} onClose={() => setOpen(false)} />
-      )}
-    </>
+    <button
+      className="replay-chip"
+      onClick={(e) => { e.stopPropagation(); }}
+      title={`Replay lifecycle of ${itemKey}`}
+      aria-label={`Open Replay for ${itemType} ${itemKey}`}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        padding: '2px 8px',
+        borderRadius: 4,
+        border: 'none',
+        background: 'var(--ds-background-neutral, #F1F2F4)',
+        color: 'var(--ds-text-subtle, #42526E)',
+        fontSize: 11,
+        fontWeight: 600,
+        cursor: 'default',
+        fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+        lineHeight: 1.5,
+        verticalAlign: 'middle',
+        opacity: 0.5,
+      }}
+    >
+      ▶ Replay
+    </button>
   );
 }

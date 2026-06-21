@@ -72,8 +72,20 @@ const NODE_COLORS: Record<string, { bg: string; border: string; text: string }> 
 
 // ── Status node ─────────────────────────────────────────────────────────────
 function StatusNode({ data, selected }: NodeProps) {
-  const d = data as { name: string; category: string; isInitial: boolean };
+  const d = data as { name: string; category: string; isInitial: boolean; isCurrent?: boolean; readonly?: boolean };
   const colors = NODE_COLORS[d.category] ?? NODE_COLORS.todo;
+
+  const borderColor = d.isCurrent
+    ? '#0C66E4'
+    : selected
+    ? DARK.borderHover
+    : colors.border;
+
+  const boxShadow = d.isCurrent
+    ? '0 0 0 3px rgba(12,102,228,0.45), 0 0 12px rgba(12,102,228,0.25)'
+    : selected
+    ? `0 0 0 2px ${DARK.borderHover}40`
+    : 'none';
 
   return (
     <div
@@ -81,10 +93,10 @@ function StatusNode({ data, selected }: NodeProps) {
         width: 160,
         padding: '8px 12px',
         borderRadius: 4,
-        border: `1.5px solid ${selected ? DARK.borderHover : colors.border}`,
+        border: `1.5px solid ${borderColor}`,
         background: colors.bg,
-        boxShadow: selected ? `0 0 0 2px ${DARK.borderHover}40` : 'none',
-        cursor: 'grab',
+        boxShadow,
+        cursor: d.readonly ? 'default' : 'grab',
         position: 'relative',
         userSelect: 'none',
       }}
@@ -154,6 +166,24 @@ function StatusNode({ data, selected }: NodeProps) {
           whiteSpace: 'nowrap',
         }}>
           INITIAL
+        </div>
+      )}
+      {d.isCurrent && (
+        <div style={{
+          position: 'absolute',
+          bottom: -16,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: '0.08em',
+          color: '#0C66E4',
+          background: DARK.canvas,
+          padding: '1px 5px',
+          borderRadius: 2,
+          whiteSpace: 'nowrap',
+        }}>
+          CURRENT
         </div>
       )}
 
@@ -357,9 +387,18 @@ function autoLayout(
 interface CatalystWorkflowBuilderProps {
   projectKey: string;
   workItemType: WorkItemType;
+  /** Read-only view mode: no toolbar, no drag-to-connect, no edge deletion */
+  readonly?: boolean;
+  /** UUID of the current status — highlights the node with a blue glow */
+  currentStatusId?: string;
 }
 
-export function CatalystWorkflowBuilder({ projectKey, workItemType }: CatalystWorkflowBuilderProps) {
+export function CatalystWorkflowBuilder({
+  projectKey,
+  workItemType,
+  readonly: isReadonly = false,
+  currentStatusId,
+}: CatalystWorkflowBuilderProps) {
   const { data: workflow, isLoading } = useTypeWorkflow(projectKey, workItemType);
   const addTransition = useAddTransition(projectKey, workItemType);
   const deleteTransition = useDeleteTransition(projectKey, workItemType);
@@ -395,7 +434,7 @@ export function CatalystWorkflowBuilder({ projectKey, workItemType }: CatalystWo
         type: 'start',
         position: { x: (posMap.values().next().value?.x ?? 80) + 56, y: -80 },
         data: {},
-        draggable: true,
+        draggable: !isReadonly,
         selectable: false,
       },
     ];
@@ -410,16 +449,18 @@ export function CatalystWorkflowBuilder({ projectKey, workItemType }: CatalystWo
           name: s.name,
           category: s.category,
           isInitial: s.id === initialId,
+          isCurrent: s.id === currentStatusId,
+          readonly: isReadonly,
         },
-        draggable: true,
+        draggable: !isReadonly,
       });
     }
 
     const idSet = new Set(statuses.map((s) => s.id));
 
-    const handleDelete = (edgeId: string) => {
-      deleteTransition.mutateAsync(edgeId);
-    };
+    const handleDelete = isReadonly
+      ? undefined
+      : (edgeId: string) => { deleteTransition.mutateAsync(edgeId); };
 
     const allEdges: Edge[] = [];
 
@@ -505,8 +546,8 @@ export function CatalystWorkflowBuilder({ projectKey, workItemType }: CatalystWo
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: DARK.canvas }}>
-      {/* Toolbar */}
-      <div style={{
+      {/* Toolbar — hidden in readonly mode */}
+      {!isReadonly && <div style={{
         display: 'flex',
         alignItems: 'center',
         gap: 4,
@@ -638,7 +679,7 @@ export function CatalystWorkflowBuilder({ projectKey, workItemType }: CatalystWo
             {statuses.length} statuses • {workflow?.transitions.length ?? 0} transitions
           </span>
         </div>
-      </div>
+      </div>}
 
       {/* React Flow canvas */}
       <div style={{ flex: 1, position: 'relative' }}>
@@ -689,9 +730,11 @@ export function CatalystWorkflowBuilder({ projectKey, workItemType }: CatalystWo
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
+          onConnect={isReadonly ? undefined : onConnect}
           nodeTypes={NODE_TYPES}
           edgeTypes={EDGE_TYPES}
+          nodesConnectable={!isReadonly}
+          nodesDraggable={!isReadonly}
           onInit={(instance) => {
             rfInstance.current = instance;
             instance.fitView({ padding: 0.2 });

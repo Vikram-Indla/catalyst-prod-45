@@ -50,7 +50,6 @@ import { useImageToolbarController } from './imageToolbar/useImageToolbarControl
 import { ImageToolbar } from './imageToolbar/ImageToolbar';
 import type { MinimalEditorView } from './imageToolbar/imageNodeOps';
 import { useVoiceToText } from '@/lib/voiceToText/useVoiceToText';
-import { GenerateStoriesButton } from '@/components/catalyst-detail-views/epic/GenerateStoriesButton';
 
 // 2026-05-03 — CONVERTED TO STATIC IMPORT
 // TipTap was removed 2026-04-20 (USER DIRECTIVE). The lazy-load was to prevent
@@ -845,10 +844,6 @@ function EpicDescriptionEditorImpl({
           contain: 'content',
         }}
       >
-        {improveSlot && createPortal(
-          <GenerateStoriesButton issue={issue ?? null} />,
-          improveSlot,
-        )}
         {formatSlot && createPortal(
           <TextFormatDropdown getView={getEditorView} />,
           formatSlot,

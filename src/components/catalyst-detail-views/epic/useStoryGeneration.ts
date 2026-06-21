@@ -11,6 +11,7 @@ import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import { createChildIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { catalystToast } from '@/lib/catalystToast';
+import type { AssigneeChoice } from '@/components/shared/JiraTable';
 
 export type GenerationState = 'idle' | 'selecting' | 'generating' | 'reviewing' | 'creating' | 'done' | 'error';
 
@@ -65,6 +66,7 @@ interface StoryGenerationStore {
     parentSource: 'jira' | 'catalyst';
     projectKey: string;
     projectId?: string;
+    assignees?: Record<number, AssigneeChoice | null>;
   }) => Promise<void>;
   checkDisabled: (epicKey: string) => Promise<void>;
 }
@@ -231,6 +233,7 @@ export const useStoryGeneration = create<StoryGenerationStore>((set, get) => ({
           projectKey: params.projectKey,
           projectId: params.projectId,
           reporterId,
+          assigneeId: params.assignees?.[idx]?.id ?? null,
         });
 
         if (result?.issue_key) created.push(result.issue_key);

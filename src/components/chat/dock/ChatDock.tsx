@@ -173,14 +173,17 @@ function ConvGlyph({ conversation }: { conversation: ChatConversation }) {
     );
   }
   if (conversation.kind === "ticket") {
-    const num =
-      (conversation.ticketKey ?? conversation.title ?? "").split("-").pop() ?? "";
+    const assigneeName = conversation.assigneeName;
+    const seed = assigneeName ?? conversation.id;
+    const bgColor = TILE_PALETTE[hashIndex(seed, TILE_PALETTE.length)];
+    const label = assigneeName
+      ? initials(assigneeName)
+      : (conversation.ticketKey ?? conversation.title ?? "?").split("-").pop()?.slice(0, 4) ?? "?";
     return (
-      <span
-        className="cc-conv-glyph cc-conv-glyph--ticket"
-        style={{ background: "var(--ds-background-brand-bold, #0C66E4)" }}
-      >
-        {num.slice(0, 4)}
+      <span className="cc-conv-glyph--dm">
+        <span className="cc-conv-glyph__inner" style={{ background: bgColor }}>
+          {label}
+        </span>
       </span>
     );
   }
@@ -477,7 +480,7 @@ export function ChatDock({
                   ? conv.kind === "channel"
                     ? `# ${conv.title}`
                     : conv.title
-                  : id;
+                  : '…';
                 const isActive = id === activeId;
                 return (
                   <div
