@@ -149,7 +149,6 @@ const WikiAnalyticsPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wi
 const WikiTemplatesPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiTemplatesPage")) : () => <FeatureComingSoon title="Wiki" />;
 const WikiKnowledgeGraphPage = (ENABLE_AI && ENABLE_WIKI) ? lazy(() => import("../modules-dormant/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
 
-const QAAssistantFabLazy = ENABLE_AI ? lazy(() => import("../components/testhub-ai").then(m => ({ default: m.QAAssistantFab }))) : () => null;
 const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("../components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
 const ChatPageLazy = lazy(() => import("../pages/chat/ChatPage"));
@@ -204,44 +203,6 @@ const TasksFiltersListPage = lazy(() => import("../modules/tasks/pages/TasksFilt
 const TasksFilterPreviewPage = lazy(() => import("../modules/tasks/pages/TasksFilterPreviewPage"));
 const TasksFilterDetailPage = lazy(() => import("../modules/tasks/pages/TasksFilterDetailPage"));
 const NotFound = lazy(() => import("../pages/NotFound"));
-
-const TestHubPage = lazy(() => import("../modules-dormant/testhub/TestHubPage"));
-const TestHubVerifyPage = lazy(() => import("../modules-dormant/testhub/TestHubVerifyPage"));
-const TestRepositoryPage = lazy(() => import("../modules-dormant/testhub/TestRepositoryPage"));
-const TestHubDashboardPage = lazy(() => import("../modules-dormant/testhub/TestHubDashboardPage"));
-const SharedStepsPage = lazy(() => import("../modules-dormant/testhub/SharedStepsPage"));
-const SharedStepDetailPage = lazy(() => import("../modules-dormant/testhub/SharedStepDetailPage"));
-const TestSetsPage = lazy(() => import("../modules-dormant/testhub/TestSetsPage"));
-const TestSetDetailPage = lazy(() => import("../modules-dormant/testhub/TestSetDetailPage"));
-const TestCyclesPage = lazy(() => import("../modules-dormant/testhub/TestCyclesPage"));
-const TestCycleDetailPage = lazy(() => import("../modules-dormant/testhub/TestCycleDetailPage"));
-const CycleReportPage = lazy(() => import("../modules-dormant/testhub/CycleReportPage"));
-const ExecutionHubPage = lazy(() => import("../modules-dormant/testhub/ExecutionHubPage"));
-const TestHubExecutionPage = lazy(() => import("../modules-dormant/testhub/TestHubExecutionPage"));
-const TestRunsPage = lazy(() => import("../modules-dormant/testhub/TestRunsPage"));
-const TestPlansListPage = lazy(() => import("../modules-dormant/testhub/TestPlansListPage"));
-const PlanDetailPage = lazy(() => import("../modules-dormant/testhub/PlanDetailPage"));
-const TestHubDefectsPage = lazy(() => import("../modules-dormant/testhub/DefectsPage"));
-const DefectDetailPage = lazy(() => import("../modules-dormant/testhub/DefectDetailPage"));
-const TestHubRequirementsPage = lazy(() => import("../modules-dormant/testhub/RequirementsListPage"));
-const RequirementDetailPage = lazy(() => import("../modules-dormant/testhub/RequirementDetailPage"));
-const CoverageMatrixPage = lazy(() => import("../modules-dormant/testhub/CoverageMatrixPage"));
-const EnvironmentsListPage = lazy(() => import("../modules-dormant/testhub/EnvironmentsListPage"));
-const EnvironmentDetailPage = lazy(() => import("../modules-dormant/testhub/EnvironmentDetailPage"));
-const TraceabilityPage = lazy(() => import("../modules-dormant/testhub/TraceabilityPage"));
-const TestHubReportsPage = lazy(() => import("../modules-dormant/testhub/ReportsListPage"));
-const ReportDetailPage = lazy(() => import("../modules-dormant/testhub/ReportDetailPage"));
-const TagsListPage = lazy(() => import("../modules-dormant/testhub/TagsListPage"));
-const TestHubSettingsPage = lazy(() => import("../modules-dormant/testhub/SettingsPage"));
-const ActivityFeedPage = lazy(() => import("../modules-dormant/testhub/ActivityFeedPage"));
-const ImportExportPage = lazy(() => import("../modules-dormant/testhub/ImportExportPage"));
-const ReleasesListPage = lazy(() => import("../modules-dormant/testhub/ReleasesListPage"));
-const TestHubReleaseDetailPage = lazy(() => import("../modules-dormant/testhub/ReleaseDetailPage"));
-const CommandCenterPage = lazy(() => import("../modules-dormant/testhub/CommandCenterPage"));
-const CatyAIPage = ENABLE_AI ? lazy(() => import("../modules-dormant/testhub/CatyAIPage")) : () => <FeatureComingSoon title="Caty AI" />;
-const TestHubDocsPage = lazy(() => import("../modules-dormant/testhub/TestHubDocsPage"));
-const QualityGatesPage = lazy(() => import("../pages/releases/QualityGatesPage"));
-const MyTestScopePage = lazy(() => import("../modules-dormant/testhub/MyTestScopePage"));
 
 
 const PlanLibraryPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.PlanLibraryPage })));
@@ -369,7 +330,6 @@ const S = ({ children }: { children: React.ReactNode }) => (
 const MG_ROLE_KEY: Record<string, string> = {
   producthub: 'product',
   strategyhub: 'enterprise',
-  testhub: 'testhub',
   incidenthub: 'operations',
   ai_features: 'product',
 };
@@ -457,12 +417,6 @@ function LegacyKanbanRedirect() {
     window.location.replace(`/project-hub/${key}/boards`);
   }, [key]);
   return null;
-}
-
-function QAAssistantRouteGuard() {
-  const location = useLocation();
-  if (!location.pathname.startsWith('/testhub')) return null;
-  return <Suspense fallback={null}><QAAssistantFabLazy /></Suspense>;
 }
 
 function KnowledgeAssistFabRouteGuard() {
@@ -684,47 +638,6 @@ export default function FullAppRoutes() {
         <Route path="/taskhub/settings" element={<Navigate to="/tasks/settings" replace />} />
         <Route path="/taskhub/:view" element={<Navigate to="/tasks/board" replace />} />
         <Route path="/taskhub-kanban" element={<Navigate to="/tasks/board" replace />} />
-
-        {/* ═══ TestHub ═══ */}
-        <Route path="/testhub" element={<MG k="testhub" t="TestHub"><S><TestHubPage /></S></MG>}>
-          <Route index element={<Navigate to="/testhub/dashboard" replace />} />
-          <Route path="repository" element={<S><TestRepositoryPage /></S>} />
-          <Route path="dashboard" element={<S><TestHubDashboardPage /></S>} />
-          <Route path="shared-steps" element={<S><SharedStepsPage /></S>} />
-          <Route path="shared-steps/:stepId" element={<S><SharedStepDetailPage /></S>} />
-          <Route path="test-sets" element={<S><TestSetsPage /></S>} />
-          <Route path="test-sets/:setId" element={<S><TestSetDetailPage /></S>} />
-          <Route path="cycles" element={<S><TestCyclesPage /></S>} />
-          <Route path="cycles/:cycleId" element={<S><TestCycleDetailPage /></S>} />
-          <Route path="cycles/:cycleId/report" element={<S><CycleReportPage /></S>} />
-          <Route path="cycles/:cycleId/execute" element={<S><TestHubExecutionPage /></S>} />
-          <Route path="execution" element={<S><ExecutionHubPage /></S>} />
-          <Route path="runs" element={<S><TestRunsPage /></S>} />
-          <Route path="defects" element={<S><TestHubDefectsPage /></S>} />
-          <Route path="defects/:defectId" element={<S><DefectDetailPage /></S>} />
-          <Route path="requirements" element={<S><TestHubRequirementsPage /></S>} />
-          <Route path="requirements/:requirementId" element={<S><RequirementDetailPage /></S>} />
-          <Route path="coverage-matrix" element={<S><CoverageMatrixPage /></S>} />
-          <Route path="traceability" element={<S><TraceabilityPage /></S>} />
-          <Route path="environments" element={<S><EnvironmentsListPage /></S>} />
-          <Route path="environments/:environmentId" element={<S><EnvironmentDetailPage /></S>} />
-          <Route path="reports" element={<S><TestHubReportsPage /></S>} />
-          <Route path="reports/:reportId" element={<S><ReportDetailPage /></S>} />
-          <Route path="tags" element={<S><TagsListPage /></S>} />
-          <Route path="settings" element={<S><TestHubSettingsPage /></S>} />
-          <Route path="activity" element={<S><ActivityFeedPage /></S>} />
-          <Route path="my-scope" element={<S><MyTestScopePage /></S>} />
-          <Route path="import-export" element={<S><ImportExportPage /></S>} />
-          <Route path="test-plans" element={<S><TestPlansListPage /></S>} />
-          <Route path="test-plans/:planId" element={<S><PlanDetailPage /></S>} />
-          <Route path="releases" element={<S><ReleasesListPage /></S>} />
-          <Route path="releases/command-center" element={<S><CommandCenterPage /></S>} />
-          <Route path="releases/quality-gates" element={<S><QualityGatesPage /></S>} />
-          <Route path="releases/:releaseId" element={<S><TestHubReleaseDetailPage /></S>} />
-          <Route path="caty" element={<MG k="ai_features" t="Caty AI"><S><CatyAIPage /></S></MG>} />
-          <Route path="docs" element={<S><TestHubDocsPage /></S>} />
-          <Route path="verify" element={<S><TestHubVerifyPage /></S>} />
-        </Route>
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +
@@ -1093,7 +1006,6 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
         <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />
       </Routes>
-      <QAAssistantRouteGuard />
       <KnowledgeAssistFabRouteGuard />
     </>
   );

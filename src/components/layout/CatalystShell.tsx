@@ -136,13 +136,6 @@ const ReleaseRoomSidebar = lazyWithRetry(
     })),
   "ReleaseRoomSidebar",
 );
-const TestManagementSidebar = lazyWithRetry(
-  () =>
-    import("./TestManagementSidebar").then((m) => ({
-      default: m.TestManagementSidebar,
-    })),
-  "TestManagementSidebar",
-);
 const ReleasesManagementSidebar = lazyWithRetry(
   () =>
     import("./ReleasesManagementSidebar").then((m) => ({
@@ -172,11 +165,6 @@ const TasksSidebar = lazyWithRetry(
   () => import("./TasksSidebar").then((m) => ({ default: m.TasksSidebar })),
   "TasksSidebar",
 );
-const TestHubSidebar = lazyWithRetry(
-  () => import("./TestHubSidebar").then((m) => ({ default: m.TestHubSidebar })),
-  "TestHubSidebar",
-);
-
 const ProjectHubSidebar = lazyWithRetry(
   () =>
     import("./ProjectHubSidebar").then((m) => ({
@@ -248,7 +236,6 @@ const HUB_ROUTES: Record<string, string> = {
   product: '/product-hub',
   project: '/project-hub',
   release: '/release-hub/overview',
-  test: '/testhub/dashboard',
   incident: '/incident-hub',
   task: '/tasks/overview',
   plan: '/planhub',
@@ -442,7 +429,6 @@ function CatalystShellContent() {
     location.pathname.startsWith("/releasehub");
 
   // Check if on test management route
-  const isTestsRoute = location.pathname.startsWith("/tests");
 
   // Check if on PlanHub route
   const isPlanHubRoute = location.pathname.startsWith("/planhub");
@@ -451,9 +437,6 @@ function CatalystShellContent() {
   const isTaskHubRoute =
     location.pathname.startsWith("/tasks") ||
     location.pathname.startsWith("/priorities");
-
-  // Check if on TestHub route
-  const isTestHubRoute = location.pathname.startsWith("/testhub");
 
   // Check if on ProductHub V5 route (/product-hub/*)
   const isProductHubRoute = location.pathname.startsWith("/product-hub");
@@ -548,7 +531,6 @@ function CatalystShellContent() {
     location.pathname.startsWith("/project-hub") ||
     location.pathname.startsWith("/release-hub") ||
     location.pathname.startsWith("/releasehub") ||
-    location.pathname.startsWith("/testhub") ||
     location.pathname.startsWith("/incident-hub") ||
     location.pathname.startsWith("/tasks") ||
     location.pathname.startsWith("/ideation") || // peer hub Ideation
@@ -709,13 +691,6 @@ function CatalystShellContent() {
       );
     }
 
-    // Test Management sidebar (legacy)
-    if (isTestsRoute) {
-      return (
-        <TestManagementSidebar expanded={exp} onToggle={cycleSidebarState} />
-      );
-    }
-
     // Release route sidebar (Operations/Incidents)
     if (isReleaseRoute) {
       return (
@@ -744,11 +719,6 @@ function CatalystShellContent() {
     // TaskHub sidebar
     if (isTaskHubRoute) {
       return <TasksSidebar expanded={exp} onToggle={cycleSidebarState} />;
-    }
-
-    // TestHub sidebar
-    if (isTestHubRoute) {
-      return <TestHubSidebar expanded={exp} onToggle={cycleSidebarState} />;
     }
 
     // Use workspaceType to determine sidebar
