@@ -8,8 +8,7 @@ import { useTestCases } from '@/hooks/test-management/useTestCases';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import { TMCycle, RunStatus, DefectSeverity } from '@/types/test-management';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -119,17 +118,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)', paddingBottom: 32 }}>
-      <PageHeader
-        title="Dashboard"
-        breadcrumbs={
-          <Breadcrumbs items={[
-            { key: 'home', text: 'Home', href: '/for-you' },
-            { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-            { key: 'dashboard', text: 'Dashboard', isCurrent: true },
-          ]} />
-        }
-      />
+    <div style={{ maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)', paddingTop: 16, paddingBottom: 32 }}>
+      <ProjectPageHeader hubType="testhub" />
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>

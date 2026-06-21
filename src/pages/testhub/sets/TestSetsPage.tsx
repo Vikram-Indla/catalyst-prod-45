@@ -10,8 +10,7 @@ import TextArea from '@atlaskit/textarea';
 import Select from '@atlaskit/select';
 import { catalystToast } from '@/lib/catalystToast';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { MoreHorizontal } from '@/lib/atlaskit-icons';
 
 type SetType = 'smoke' | 'regression' | 'sanity' | 'integration' | 'e2e' | 'performance' | 'security' | 'accessibility' | 'custom';
@@ -295,15 +294,8 @@ export default function TestSetsPage() {
     <div style={{ padding: 24, maxWidth: 1100, fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <PageHeader
-          title="Test Sets"
-          breadcrumbs={
-            <Breadcrumbs items={[
-              { key: 'home', text: 'Home', href: '/for-you' },
-              { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-              { key: 'sets', text: 'Test Sets', isCurrent: true },
-            ]} />
-          }
+        <ProjectPageHeader
+          hubType="testhub"
           actions={
             <Button appearance="primary" onClick={() => setShowCreate(true)}>
               + New Test Set

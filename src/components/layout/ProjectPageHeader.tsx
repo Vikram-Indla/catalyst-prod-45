@@ -25,16 +25,16 @@ import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 import type { StarredItemType } from '@/hooks/home/useStarredItems';
 
 interface Props {
-  projectKey: string;
+  projectKey?: string;
   /** Horizontal padding in px. Default 20px (matches KanbanPage PAGE_PADDING_X). */
   paddingX?: number;
   /**
    * 'project' → "Projects / [name] / …"; 'product' → "Products / [name] / …"
-   * (4-crumb, entity-scoped). 'incident' / 'release' are GLOBAL hubs with no
-   * entity — they render a 3-crumb breadcrumb "Home / [Root] / [RouteWord]",
-   * skip the DB name lookup, and show no star.
+   * (4-crumb, entity-scoped). 'incident' / 'release' / 'testhub' are GLOBAL
+   * hubs with no entity — they render a 3-crumb breadcrumb
+   * "Home / [Root] / [RouteWord]", skip the DB name lookup, and show no star.
    */
-  hubType?: 'project' | 'product' | 'incident' | 'release';
+  hubType?: 'project' | 'product' | 'incident' | 'release' | 'testhub';
   /**
    * Detail-page trail. When provided, the breadcrumb renders
    * "Home / [Root] / ...trail" instead of the auto-derived route word — so a
@@ -44,6 +44,10 @@ interface Props {
   trail?: { text: string; href?: string }[];
   /** Hide the H2 title row (detail pages render their own rich header below). */
   hideTitle?: boolean;
+  /** Override the auto-derived title (e.g. entity name on detail pages). */
+  title?: React.ReactNode;
+  /** Optional actions rendered on the right side of the title row. */
+  actions?: React.ReactNode;
 }
 
 /** Root crumb label + href per hub type. Global hubs have no entity crumb. */
@@ -52,6 +56,7 @@ const HUB_ROOT: Record<NonNullable<Props['hubType']>, { label: string; href: str
   product: { label: 'Products', href: '/product-hub' },
   incident: { label: 'Incidents', href: '/incident-hub' },
   release: { label: 'Releases', href: '/release-hub/overview' },
+  testhub: { label: 'Test Hub', href: '/testhub/dashboard' },
 };
 
 // Which project/product surfaces are starrable. Only these route words get a
@@ -65,9 +70,9 @@ export function surfaceStarType(routeWord: string): StarredItemType | undefined 
   return SURFACE_STAR_TYPE[routeWord.trim().toLowerCase()];
 }
 
-export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'project', trail, hideTitle }: Props) {
+export function ProjectPageHeader({ projectKey = '', paddingX = 20, hubType = 'project', trail, hideTitle, title, actions }: Props) {
   const { pathname } = useLocation();
-  const isGlobalHub = hubType === 'incident' || hubType === 'release';
+  const isGlobalHub = hubType === 'incident' || hubType === 'release' || hubType === 'testhub';
 
   const { data: project } = useQuery({
     queryKey: ['project-page-header', hubType, projectKey],
@@ -143,18 +148,25 @@ export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'projec
           : <BreadcrumbsItem text={routeWord} />}
       </Breadcrumbs>
       {!hideTitle && (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Heading size="large">{routeWord}</Heading>
-        {starType && (
-          // Star this surface instance. item_id = pathname (unique per surface);
-          // metadata carries label/route so the Starred hub can render + open it.
-          <WorkItemStarButton
-            itemId={pathname}
-            itemType={starType}
-            metadata={{ label: routeWord, subtitle: projectName, route: pathname }}
-            size="md"
-            showTooltip
-          />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <Heading size="large">{title ?? routeWord}</Heading>
+          {starType && (
+            // Star this surface instance. item_id = pathname (unique per surface);
+            // metadata carries label/route so the Starred hub can render + open it.
+            <WorkItemStarButton
+              itemId={pathname}
+              itemType={starType}
+              metadata={{ label: routeWord, subtitle: projectName, route: pathname }}
+              size="md"
+              showTooltip
+            />
+          )}
+        </div>
+        {actions && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            {actions}
+          </div>
         )}
       </div>
       )}

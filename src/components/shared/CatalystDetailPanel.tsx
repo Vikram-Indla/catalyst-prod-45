@@ -136,12 +136,9 @@ export function CatalystDetailPanel({
             onResizeCommit?.(next);
           }
         }}
-        onMouseEnter={(e) => {
-          if (!resizing) e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)';
-        }}
-        onMouseLeave={(e) => {
-          if (!resizing) e.currentTarget.style.background = 'transparent';
-        }}
+        /* Jira-parity (2026-06-21 Vikram): splitter is INVISIBLE in every
+           state — idle, hover, drag. Only `cursor: col-resize` indicates
+           it can be grabbed. No hover bg, no drag bg, no transitions. */
         style={{
           position: 'absolute',
           top: 0,
@@ -149,9 +146,8 @@ export function CatalystDetailPanel({
           bottom: 0,
           width: 6,
           cursor: 'col-resize',
-          background: resizing ? 'var(--ds-border-selected, #388BFF)' : 'transparent',
+          background: 'transparent',
           zIndex: 51,
-          transition: resizing ? 'none' : 'background 120ms ease',
         }}
       />
 

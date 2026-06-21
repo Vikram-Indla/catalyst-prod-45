@@ -43,10 +43,11 @@ const PRODUCT_ROUTE_WORD_MAP: Record<string, string> = {
 };
 
 /**
- * Global-hub route segment → display word. Incident- and release-hub routes
- * have NO :key segment (e.g. `/incident-hub/dashboard`), so the first segment
- * after the hub IS the route word. Sentence-case labels (ADS), with explicit
- * overrides where bare title-case would read wrong (acronyms, multi-word).
+ * Global-hub route segment → display word. Incident-, release-, and testhub
+ * routes have NO :key segment (e.g. `/incident-hub/dashboard`, `/testhub/cycles`),
+ * so the first segment after the hub IS the route word. Sentence-case labels
+ * (ADS), with explicit overrides where bare title-case would read wrong
+ * (acronyms, multi-word).
  */
 const GLOBAL_HUB_ROUTE_WORD_MAP: Record<string, string> = {
   // incident-hub
@@ -77,6 +78,13 @@ const GLOBAL_HUB_ROUTE_WORD_MAP: Record<string, string> = {
   'command-center': 'Command center',
   compare: 'Compare',
   triage: 'Triage',
+  // testhub
+  'my-work': 'My work',
+  repository: 'Test repository',
+  cycles: 'Test cycles',
+  sets: 'Test sets',
+  defects: 'Defects',
+  traceability: 'Traceability',
 };
 
 /** Sentence-case an unknown segment: hyphens → spaces, capitalise first letter only. */
@@ -88,16 +96,17 @@ function sentenceCaseSegment(seg: string): string {
 /**
  * Derive the route word from a hub pathname.
  * Matches `/project-hub/:key/<segment>`, `/product-hub/:key/<segment>`, and the
- * global hubs `/incident-hub/<segment>` + `/release-hub/<segment>` (no :key).
+ * global hubs `/incident-hub/<segment>`, `/release-hub/<segment>`, and
+ * `/testhub/<segment>` (no :key).
  * Product-hub routes use bare nouns (same map shape as project-hub).
  * Returns null when the pathname is not a hub route or has no segment
  * after the key/hub (e.g. the bare `/project-hub/:key` or `/incident-hub`).
  */
 export function deriveRouteWord(pathname: string): string | null {
   // Global hubs first — no :key segment between hub and route word.
-  const g = pathname.match(/\/(incident|release)-hub\/([^/?#]+)/);
+  const g = pathname.match(/\/(?:(incident|release)-hub|(testhub))\/([^/?#]+)/);
   if (g) {
-    const seg = g[2].toLowerCase();
+    const seg = g[3].toLowerCase();
     return GLOBAL_HUB_ROUTE_WORD_MAP[seg] ?? sentenceCaseSegment(seg);
   }
   const m = pathname.match(/\/(project|product)-hub\/[^/]+\/([^/?#]+)/);

@@ -18,8 +18,7 @@ import {
   useCreateCaseVersion,
 } from '@/hooks/test-management/useTestCases';
 import { supabase } from '@/integrations/supabase/client';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import {
@@ -677,16 +676,9 @@ export default function RepositoryPage() {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--ds-font-family-body)' }}>
-      <PageHeader
-        title="Test Repository"
-        breadcrumbs={
-          <Breadcrumbs items={[
-            { key: 'home', text: 'Home', href: '/for-you' },
-            { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-            { key: 'repository', text: 'Repository', isCurrent: true },
-          ]} />
-        }
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--ds-font-family-body)', paddingTop: 16 }}>
+      <ProjectPageHeader
+        hubType="testhub"
         actions={createCaseButton}
       />
 

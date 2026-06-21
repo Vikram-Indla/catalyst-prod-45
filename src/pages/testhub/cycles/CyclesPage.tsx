@@ -16,8 +16,7 @@ import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import { Plus, Trash2, X, Copy, MoreHorizontal, Search } from '@/lib/atlaskit-icons';
 import { TMCycle, CycleStatus } from '@/types/test-management';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function CyclesPage() {
@@ -46,15 +45,8 @@ export default function CyclesPage() {
   return (
     <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <PageHeader
-          title="Test Cycles"
-          breadcrumbs={
-            <Breadcrumbs items={[
-              { key: 'home', text: 'Home', href: '/for-you' },
-              { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-              { key: 'cycles', text: 'Test Cycles', isCurrent: true },
-            ]} />
-          }
+        <ProjectPageHeader
+          hubType="testhub"
           actions={
             <Button appearance="primary" onClick={() => setShowCreate(true)} iconBefore={<Plus size={14} label="" />}>
               Create cycle
