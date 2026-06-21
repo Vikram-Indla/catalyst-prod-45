@@ -371,10 +371,18 @@ export function WorkItemPlannerModal({
     const epic = state.createdEpics[state.currentEpicIdx];
     if (!epic) return;
     setState({ step: 'creating_stories' });
+    const runId = await startPlannerRun({
+      runType: 'story_generation',
+      brId,
+      parentKey: epic.key,
+      projectKey: epic.projectKey,
+      proposalsCount: state.storyProposals.length,
+    });
     try {
       const { data: { user } } = await supabase.auth.getUser();
       const reporterId = user?.id ?? undefined;
       const created: CreatedStory[] = [...state.createdStories];
+      const newlyCreated: CreatedStory[] = [];
 
       for (const idx of [...state.storySelection].sort()) {
         const story = state.storyProposals[idx];
@@ -389,26 +397,38 @@ export function WorkItemPlannerModal({
           assigneeId: state.storyAssignees[idx]?.id ?? null,
         });
         if (result?.issue_key) {
-          created.push({
+          const s: CreatedStory = {
             key: result.issue_key,
             summary: story.title,
             parentKey: epic.key,
             projectKey: epic.projectKey,
             projectId: epic.projectId,
             source: 'catalyst',
-          });
+          };
+          created.push(s);
+          newlyCreated.push(s);
         }
       }
 
-      catalystToast.success(`Created ${state.storySelection.size} stor${state.storySelection.size === 1 ? 'y' : 'ies'} for ${epic.key}`);
+      if (runId) {
+        await completePlannerRun({ runId, createdCount: newlyCreated.length });
+        if (newlyCreated.length > 0) {
+          await auditCreatedWorkItems(runId, newlyCreated.map((s) => ({
+            issueKey: s.key,
+            issueType: 'Story',
+            parentKey: s.parentKey,
+            summary: s.summary,
+          })));
+        }
+      }
 
-      // Move to next epic or to subtask phase
+      catalystToast.success(`Created ${newlyCreated.length} stor${newlyCreated.length === 1 ? 'y' : 'ies'} for ${epic.key}`);
+
       const nextEpicIdx = state.currentEpicIdx + 1;
       if (nextEpicIdx < state.createdEpics.length) {
         setState({ createdStories: created });
         generateStoriesForCurrentEpic(nextEpicIdx, state.createdEpics);
       } else {
-        // All epics done — offer subtask generation
         if (created.length > 0) {
           setState({
             createdStories: created,
@@ -422,9 +442,10 @@ export function WorkItemPlannerModal({
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to create stories';
+      if (runId) await completePlannerRun({ runId, createdCount: 0, status: 'failed', error: msg });
       setState({ step: 'error', error: msg });
     }
-  }, [state, generateStoriesForCurrentEpic]);
+  }, [state, brId, generateStoriesForCurrentEpic]);
 
   // ── Subtask generation ──────────────────────────────────────────────────────
   const generateSubtasksForCurrentStory = useCallback(async (storyIdx: number, stories: CreatedStory[]) => {
@@ -473,10 +494,18 @@ export function WorkItemPlannerModal({
     const story = state.createdStories[state.currentStoryIdx];
     if (!story) return;
     setState({ step: 'creating_subtasks' });
+    const runId = await startPlannerRun({
+      runType: 'subtask_generation',
+      brId,
+      parentKey: story.key,
+      projectKey: story.projectKey,
+      proposalsCount: state.subtaskProposals.length,
+    });
     try {
       const { data: { user } } = await supabase.auth.getUser();
       const reporterId = user?.id ?? undefined;
       const createdKeys = [...state.createdSubtaskKeys];
+      const auditItems: Array<{ issueKey: string; issueType: string; parentKey: string; summary: string; assigneeId?: string | null }> = [];
 
       for (const idx of [...state.subtaskSelection].sort()) {
         const sub = state.subtaskProposals[idx];
@@ -490,10 +519,24 @@ export function WorkItemPlannerModal({
           reporterId,
           assigneeId: state.subtaskAssignees[idx]?.id ?? null,
         });
-        if (result?.issue_key) createdKeys.push(result.issue_key);
+        if (result?.issue_key) {
+          createdKeys.push(result.issue_key);
+          auditItems.push({
+            issueKey: result.issue_key,
+            issueType: sub.type,
+            parentKey: story.key,
+            summary: sub.title,
+            assigneeId: state.subtaskAssignees[idx]?.id ?? null,
+          });
+        }
       }
 
-      catalystToast.success(`Created ${state.subtaskSelection.size} subtask${state.subtaskSelection.size === 1 ? '' : 's'} for ${story.key}`);
+      if (runId) {
+        await completePlannerRun({ runId, createdCount: auditItems.length });
+        if (auditItems.length > 0) await auditCreatedWorkItems(runId, auditItems);
+      }
+
+      catalystToast.success(`Created ${auditItems.length} subtask${auditItems.length === 1 ? '' : 's'} for ${story.key}`);
 
       const nextStoryIdx = state.currentStoryIdx + 1;
       if (nextStoryIdx < state.createdStories.length) {
@@ -504,9 +547,10 @@ export function WorkItemPlannerModal({
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to create subtasks';
+      if (runId) await completePlannerRun({ runId, createdCount: 0, status: 'failed', error: msg });
       setState({ step: 'error', error: msg });
     }
-  }, [state, generateSubtasksForCurrentStory]);
+  }, [state, brId, generateSubtasksForCurrentStory]);
 
   // ── Start on mount ──────────────────────────────────────────────────────────
   useEffect(() => {
