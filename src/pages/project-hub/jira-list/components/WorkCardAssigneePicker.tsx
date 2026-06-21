@@ -1,22 +1,18 @@
 /**
  * WorkCardAssigneePicker — Compact avatar-only assignee picker for the
- * navigator card list. Click the avatar → opens the same Atlassian-style
- * member picker used in the sidebar. Writes `assignee_account_id` +
- * `assignee_display_name` to ph_issues and invalidates the list query
- * so the card refreshes in real time.
+ * navigator card list. Click avatar → opens canonical ProfilePicker. Writes
+ * `assignee_account_id` + `assignee_display_name` to ph_issues and
+ * invalidates the list query so the card refreshes in real time.
  *
- * Why a dedicated component (and not EditableAssignee directly):
- *  EditableAssignee renders avatar + name as a full row with hover
- *  background — that crowds the card footer. This wrapper renders only
- *  the avatar bubble, but reuses the same data fetching, mutation, and
- *  member-picker UX.
+ * 2026-06-21 Phase 2 migration: dropped the bespoke popover. Now delegates
+ * trigger + popover UI to <ProfilePicker /> (canonical). This file owns
+ * only the 28px avatar bubble (via renderTrigger) + the mutation glue.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { resolveAvatarUrl } from '@/lib/avatars';
-import { UnassignedAvatar } from '@/components/ads';
+import { UnassignedAvatar, ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 
 interface Props {
   /** ph_issues.id (UUID PK). Required — issue_key would silent-400 (CLAUDE.md §L39). */
@@ -33,7 +29,7 @@ interface Props {
   fallbackColor: string;
 }
 
-interface Member {
+interface MemberRow {
   user_id: string;
   full_name: string;
   avatar_url: string | null;
@@ -43,10 +39,6 @@ export function WorkCardAssigneePicker({
   dbId, currentAssigneeId, currentAssigneeName, projectId,
   fallbackInitials, fallbackColor,
 }: Props) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const popoverRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
   const localUrl = useMemo(
@@ -56,8 +48,8 @@ export function WorkCardAssigneePicker({
 
   const { data: members = [] } = useQuery({
     queryKey: ['workcard-project-members', projectId],
-    enabled: open && !!projectId,
-    queryFn: async (): Promise<Member[]> => {
+    enabled: !!projectId,
+    queryFn: async (): Promise<MemberRow[]> => {
       const { data } = await supabase
         .from('project_members')
         .select('user_id, role')
@@ -75,151 +67,92 @@ export function WorkCardAssigneePicker({
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (userId: string | null) => {
-      const name = userId ? (members.find(m => m.user_id === userId)?.full_name ?? null) : null;
+    mutationFn: async (next: ProfilePickerSelection) => {
       const { error } = await supabase
         .from('ph_issues')
-        .update({ assignee_account_id: userId, assignee_display_name: name } as any)
+        .update({ assignee_account_id: next?.userId ?? null, assignee_display_name: next?.name ?? null } as any)
         .eq('id', dbId);
       if (error) throw error;
     },
     onSuccess: () => {
-      // Real-time refresh of the navigator list AND any open detail panels.
-      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
-      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail'] });
-      setOpen(false);
+      /* 2026-06-21: refetchType 'all' forces mounted queries (right-side
+         sidebar's `cv-issue-detail`, etc.) to refetch immediately instead
+         of waiting for remount. Pre-existing 'project-all-work-items-v3'
+         key was wrong — replaced with the real offset/count keys. */
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-offset'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-count'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['project-list-items-v2'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['work-item-detail'], refetchType: 'all' });
+    },
+    onError: (err: any) => {
+      // Surface RLS / FK failures in the console instead of silently swallowing.
+      console.error('[WorkCardAssigneePicker] assignee write failed:', err?.message ?? err);
     },
   });
 
-  useEffect(() => {
-    if (!open) return;
-    const onDocMouseDown = (e: MouseEvent) => {
-      const t = e.target as Node;
-      if (triggerRef.current?.contains(t)) return;
-      if (popoverRef.current?.contains(t)) return;
-      setOpen(false);
-    };
-    document.addEventListener('mousedown', onDocMouseDown);
-    return () => document.removeEventListener('mousedown', onDocMouseDown);
-  }, [open]);
-
-  const filtered = members.filter(m => m.full_name.toLowerCase().includes(search.toLowerCase()));
-
-  // Trigger bubble — preserves card-list visual (28px circle).
-  const trigger = (
-    <button
-      ref={triggerRef}
-      type="button"
-      onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
-      title={currentAssigneeName ? `Assignee: ${currentAssigneeName} — click to change` : 'Assign'}
-      style={{
-        width: 28, height: 28, padding: 0, borderRadius: '50%', border: 'none',
-        background: 'transparent', cursor: 'pointer', flexShrink: 0,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}
-    >
-      {localUrl ? (
-        <img src={localUrl} alt={currentAssigneeName ?? ''}
-          style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
-      ) : currentAssigneeName ? (
-        <div style={{
-          width: 28, height: 28, borderRadius: '50%', background: fallbackColor,
-          color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 800, fontSize: 11,
-        }}>{fallbackInitials}</div>
-      ) : (
-        <UnassignedAvatar size={28} />
-      )}
-    </button>
+  const pickerMembers: ProfilePickerMember[] = useMemo(
+    () => members.map(m => ({ userId: m.user_id, name: m.full_name, avatarUrl: m.avatar_url })),
+    [members],
   );
 
-  if (!open) return trigger;
-
-  // Position the popover via portal — trigger lives inside a clipped/scrollable
-  // card list, so a fixed-position portal escapes the overflow:hidden ancestor.
-  // Anchor popover's RIGHT edge to the trigger's right edge so it opens
-  // leftward into the navigator panel — never bleeds into the middle pane.
-  const rect = triggerRef.current?.getBoundingClientRect();
-  const top = (rect?.bottom ?? 0) + 4;
-  const width = 260;
-  const right = Math.max(8, window.innerWidth - (rect?.right ?? 0));
-  const left = Math.max(8, (rect?.right ?? width + 8) - width);
+  const pickerValue: ProfilePickerSelection = currentAssigneeId
+    ? { userId: currentAssigneeId, name: currentAssigneeName ?? 'Unknown', avatarUrl: currentAssigneeName ? resolveAvatarUrl(currentAssigneeName) : null }
+    : null;
 
   return (
-    <>
-      {trigger}
-      {createPortal(
-        <div
-          ref={popoverRef}
-          onClick={(e) => e.stopPropagation()}
+    <ProfilePicker
+      value={pickerValue}
+      onChange={(next) => { updateMutation.mutate(next); }}
+      members={pickerMembers}
+      fieldLabel="Assignee"
+      size={28}
+      /* 2026-06-21 Vikram rule: once an assignee is set on a work item, the
+         field is locked. Reverting requires a backend admin. Reporter is NOT
+         affected by this rule. */
+      disabled={!!currentAssigneeId}
+      renderTrigger={({ onClick, ref, disabled }) => (
+        <button
+          ref={ref}
+          type="button"
+          disabled={disabled}
+          onClick={(e) => {
+            if (disabled) return;
+            e.stopPropagation();
+            onClick(e);
+          }}
+          title={
+            disabled
+              ? `Assignee: ${currentAssigneeName ?? ''} (locked once set)`
+              : currentAssigneeName
+                ? `Assignee: ${currentAssigneeName} — click to change`
+                : 'Assign'
+          }
           style={{
-            position: 'fixed', top, left, width, zIndex: 10000,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4,
-            boxShadow: 'var(--ds-shadow-overlay, 0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31))',
-            overflow: 'hidden',
-            fontFamily: 'var(--cp-font-body)',
+            width: 28, height: 28, padding: 0, borderRadius: '50%', border: 'none',
+            background: 'transparent',
+            cursor: disabled ? 'default' : 'pointer',
+            flexShrink: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
-          <div style={{ padding: '8px 8px 4px' }}>
-            <input
-              autoFocus value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search members..."
-              style={{
-                width: '100%', height: 36, padding: '0 8px',
-                border: '1px solid var(--cp-border-default, rgba(9,30,66,0.14))', borderRadius: 4,
-                fontSize: 14, fontFamily: 'inherit', outline: 'none',
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-              }}
-              onFocus={e => (e.target.style.border = '2px solid var(--ds-border-focused, #2563EB)')}
-              onBlur={e => (e.target.style.border = '1px solid var(--cp-border-default, rgba(9,30,66,0.14))')}
+          {localUrl ? (
+            <img
+              src={localUrl}
+              alt={currentAssigneeName ?? ''}
+              style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', display: 'block' }}
             />
-          </div>
-          <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-            {/* Unassigned */}
-            <div onClick={() => updateMutation.mutate(null)} style={{
-              height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
-              cursor: 'pointer', borderBottom: '1px solid var(--cp-border-subtle, var(--cp-bg-sunken, #F4F5F7))',
-              background: !currentAssigneeId ? 'var(--cp-interact-selected, #DEEBFF)' : 'transparent',
-            }}>
-              <UnassignedAvatar size={28} />
-              <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', flex: 1 }}>Unassigned</span>
-            </div>
-            {filtered.map(m => (
-              <div key={m.user_id} onClick={() => updateMutation.mutate(m.user_id)}
-                style={{
-                  height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
-                  cursor: 'pointer',
-                  background: m.user_id === currentAssigneeId ? 'var(--cp-interact-selected, #DEEBFF)' : 'transparent',
-                }}
-                onMouseEnter={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'var(--cp-interact-hover, var(--cp-bg-sunken, #F4F5F7))'; }}
-                onMouseLeave={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-              >
-                {m.avatar_url ? (
-                  <img src={m.avatar_url} alt="" loading="lazy"
-                    style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                ) : (
-                  <div style={{
-                    width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                    background: 'var(--ds-background-accent-purple-subtle, #6554C0)', color: 'var(--ds-text-inverse, #FFF)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 800,
-                  }}>{m.full_name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase()}</div>
-                )}
-                <div style={{
-                  flex: 1, minWidth: 0, fontSize: 14, color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                }}>{m.full_name}</div>
-              </div>
-            ))}
-            {filtered.length === 0 && (
-              <div style={{ padding: 16, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>
-                No members found
-              </div>
-            )}
-          </div>
-        </div>,
-        document.body,
+          ) : currentAssigneeName ? (
+            <div style={{
+              width: 28, height: 28, borderRadius: '50%', background: fallbackColor,
+              color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontWeight: 800, fontSize: 11,
+            }}>{fallbackInitials}</div>
+          ) : (
+            <UnassignedAvatar size={28} />
+          )}
+        </button>
       )}
-    </>
+    />
   );
 }
