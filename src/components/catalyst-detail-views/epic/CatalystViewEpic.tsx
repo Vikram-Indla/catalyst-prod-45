@@ -17,6 +17,7 @@ import {
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
+import { GenerateStoriesButton } from './GenerateStoriesButton';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
@@ -109,7 +110,7 @@ export default function CatalystViewEpic({
   ), [issue, itemId, projectKey, onOpenItem, isOpen]);
 
   const rightContent = useMemo(() => (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<><ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />{issue?.issue_key && (<button onClick={() => setShowReplay(true)} title="Replay lifecycle" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text-subtle, #42526E)', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap' }}>▶ Replay</button>)}</>} />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<><GenerateStoriesButton issue={issue ?? null} /><ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />{issue?.issue_key && (<button onClick={() => setShowReplay(true)} title="Replay lifecycle" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text-subtle, #42526E)', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap' }}>▶ Replay</button>)}</>} />
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [issue, itemId, projectId, projectKey, onOpenItem, onClose]);
 

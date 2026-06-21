@@ -33,6 +33,7 @@ import { mapBrToIssueLike } from './sections/BrSidebarAdapter';
 import { CatalystQuickActions } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown } from '../improve';
+import { GenerateEpicsButton } from './GenerateEpicsButton';
 import { WatchersChip } from '../shared/WatchersChip';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
@@ -170,6 +171,26 @@ export default function CatalystViewBusinessRequestV3({
         watchersChip={<WatchersChip issueKey={request?.request_key ?? null} />}
         improveDropdown={
           <>
+            <GenerateEpicsButton
+              issue={
+                request && resolvedId
+                  ? {
+                      id: resolvedId,
+                      issue_key: request.request_key ?? null,
+                      issue_type: 'Business Request',
+                      summary: request.title ?? null,
+                      description_text:
+                        typeof request.description === 'string'
+                          ? request.description
+                          : null,
+                      description_adf:
+                        typeof request.description !== 'string'
+                          ? request.description
+                          : null,
+                    }
+                  : null
+              }
+            />
             <ImproveIssueDropdown
               issue={brAsIssueLike}
               onApplyDescription={handleApplyDescription}
