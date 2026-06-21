@@ -1,8 +1,9 @@
 name: Vercel Deploy
 
+# Only runs via manual dispatch from /admin/connections/vercel.
+# Push to main does NOT trigger this workflow — the deploy gate in
+# the Catalyst admin UI is the sole entry point.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 env:
@@ -10,33 +11,7 @@ env:
   VERCEL_PROJECT_ID: prj_SyNNCEXxBmGSqlWNs9uYTQJ4403W
 
 jobs:
-  gate-check:
-    runs-on: ubuntu-latest
-    outputs:
-      enabled: ${{ steps.check.outputs.enabled }}
-    steps:
-      - name: Check production deploy gate
-        id: check
-        run: |
-          RESPONSE=$(curl -sf \
-            "${SUPABASE_URL}/rest/v1/deploy_gate?select=production_deploy_enabled&id=eq.1" \
-            -H "apikey: ${SUPABASE_ANON_KEY}" \
-            -H "Accept: application/json" 2>/dev/null \
-            || echo '[{"production_deploy_enabled":true}]')
-          ENABLED=$(echo "$RESPONSE" | jq -r '.[0].production_deploy_enabled // true')
-          echo "enabled=$ENABLED" >> $GITHUB_OUTPUT
-          if [ "$ENABLED" = "false" ]; then
-            echo "::notice::🚫 Production deploy gate is OFF. Deploy skipped. Enable at /admin/connections/vercel"
-          else
-            echo "::notice::✅ Deploy gate is ON. Proceeding with production deploy."
-          fi
-        env:
-          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-
   deploy:
-    needs: gate-check
-    if: needs.gate-check.outputs.enabled != 'false'
     runs-on: ubuntu-latest
 
     steps:

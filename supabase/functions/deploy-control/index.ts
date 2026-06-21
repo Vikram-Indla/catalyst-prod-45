@@ -252,6 +252,13 @@ async function handlePost(
   }
 
   if (body.action === 'trigger') {
+    const { data: gate } = await supabase
+      .from('deploy_gate')
+      .select('production_deploy_enabled')
+      .eq('id', 1)
+      .maybeSingle();
+    if (!gate?.production_deploy_enabled) return err('Deploy gate is OFF. Enable it at /admin/connections/vercel before deploying.', 403);
+
     const { data: settings } = await supabase
       .from('deploy_settings')
       .select('github_pat, github_repo, github_workflow_id')

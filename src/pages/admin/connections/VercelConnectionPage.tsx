@@ -637,15 +637,25 @@ export default function VercelConnectionPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <Button
             appearance="primary"
-            isDisabled={!config.github_pat_set || triggering}
+            isDisabled={!gate.production_deploy_enabled || !config.github_pat_set || triggering || isRunInProgress}
             isLoading={triggering}
             onClick={triggerDeploy}
           >
             Deploy to production now
           </Button>
-          {!config.github_pat_set && (
+          {!gate.production_deploy_enabled && (
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Enable the deploy gate above to deploy
+            </span>
+          )}
+          {gate.production_deploy_enabled && !config.github_pat_set && (
             <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Add GitHub PAT in Configuration below to enable
+            </span>
+          )}
+          {gate.production_deploy_enabled && config.github_pat_set && isRunInProgress && (
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              Deploy in progress…
             </span>
           )}
           <a
