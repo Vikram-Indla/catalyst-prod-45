@@ -1,5 +1,4 @@
 /* hmr-bust-2026-06-21-browse-fix */
-console.log('[ProjectHubSidebar] module loaded v2-browse-fix');
 /**
  * ProjectHubSidebar — /project-hub sidebar using SidebarBase
  *
