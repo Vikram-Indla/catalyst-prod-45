@@ -20,7 +20,7 @@ import { createPortal } from 'react-dom';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
 import Avatar from '@atlaskit/avatar';
-import { UnassignedAvatar, ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { UnassignedAvatar, ProfilePicker, toStatusCategory, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
@@ -201,6 +201,7 @@ export function makeStatusEditCell<T>({
   options,
   canEdit,
   onChange,
+  lockWhenDone = true,
 }: {
   getStatus: (row: T) => string | null;
   appearanceFor: (status: string | null) => LozengeAppearance;
@@ -208,6 +209,10 @@ export function makeStatusEditCell<T>({
   options: StatusOption[];
   canEdit?: (row: T) => boolean;
   onChange: (row: T, next: string) => void;
+  /** 2026-06-21 (Vikram canonical): once status category = 'done',
+   *  the cell is frozen. Default `true` everywhere; pass `false` only
+   *  for admin/bulk-edit override surfaces. */
+  lockWhenDone?: boolean;
 }) {
   // Group options by `group` field
   const grouped: Record<string, StatusOption[]> = {};
@@ -220,7 +225,9 @@ export function makeStatusEditCell<T>({
 
   return function StatusEditCell({ row }: CellProps<T>) {
     const status = getStatus(row);
-    const editable = canEdit ? canEdit(row) : true;
+    const callerEditable = canEdit ? canEdit(row) : true;
+    const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
+    const editable = callerEditable && !frozen;
 
     // Non-editable + empty: just a dash, no affordance.
     if (!status && !editable) return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
@@ -231,7 +238,19 @@ export function makeStatusEditCell<T>({
       </StatusPill>
     ) : null;
 
-    if (!editable && lozenge) return lozenge;
+    if (!editable && lozenge) {
+      /* 2026-06-21: locked cell still needs `data-jira-cell-editor` so the
+         row-click handler in JiraTable doesn't fire on a done-frozen status. */
+      return (
+        <span
+          data-jira-cell-editor
+          title={frozen ? `Status frozen — ${status} is final` : undefined}
+          style={{ cursor: 'default', display: 'inline-flex', alignItems: 'center' }}
+        >
+          {lozenge}
+        </span>
+      );
+    }
 
     // Editable trigger — renders a Lozenge if status set, or a "Set status"
     // ghost label if empty. Whole-cell hover tint is driven by the
@@ -400,6 +419,7 @@ export function makeStatusEditCellAkPopup<T>({
   options,
   canEdit,
   onChange,
+  lockWhenDone = true,
 }: {
   getStatus: (row: T) => string | null;
   appearanceFor: (status: string | null) => LozengeAppearance;
@@ -407,6 +427,8 @@ export function makeStatusEditCellAkPopup<T>({
   options: StatusOption[];
   canEdit?: (row: T) => boolean;
   onChange: (row: T, next: string) => void;
+  /** Canonical "done = frozen" rule. Default true. */
+  lockWhenDone?: boolean;
 }) {
   const grouped: Record<string, StatusOption[]> = {};
   for (const opt of options) {
@@ -421,7 +443,9 @@ export function makeStatusEditCellAkPopup<T>({
   // hook identity stable across columns-memo rebuilds.
   return function StatusEditCellAkPopupCell({ row }: CellProps<T>) {
     const status = getStatus(row);
-    const editable = canEdit ? canEdit(row) : true;
+    const callerEditable = canEdit ? canEdit(row) : true;
+    const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
+    const editable = callerEditable && !frozen;
     const lozenge = status ? (
       <StatusPill appearance={appearanceFor(status)}>
         {labelFor ? labelFor(status) : status}
