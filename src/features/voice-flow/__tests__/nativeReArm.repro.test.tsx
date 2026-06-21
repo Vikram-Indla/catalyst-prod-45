@@ -32,14 +32,18 @@ vi.mock('@/integrations/supabase/client', () => ({
 
 import { VoiceFlowProvider, useVoiceFlow } from '../VoiceFlowProvider';
 
-// ── Native SpeechRecognition mock ─────────────────────────────────────────
+// ── Native SpeechRecognition mock — HOSTILE, models real Chrome failure ────
+// On the second-session native start, real Chrome frequently throws/hangs after
+// Groq's getUserMedia held the mic. We model the worst case: start() throws and
+// onstart/onend never fire → the session can never reach 'listening' or reset.
+// OLD code routes session 2 here and breaks. NEW code never calls it (Groq only).
 const nativeStart = vi.fn();
 const nativeInstances: any[] = [];
 class MockSR {
   lang = ''; continuous = false; interimResults = false;
   onstart: any = null; onresult: any = null; onend: any = null; onerror: any = null;
   constructor() { nativeInstances.push(this); }
-  start() { nativeStart(); this.onstart?.(); }
+  start() { nativeStart(); throw new DOMException('recognition already started', 'InvalidStateError'); }
   stop() { this.onend?.(); }
   abort() {}
 }
