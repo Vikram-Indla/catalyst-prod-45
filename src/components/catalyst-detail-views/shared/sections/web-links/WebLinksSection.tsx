@@ -1,7 +1,7 @@
 /**
  * WebLinksSection — collapsible "Web Links" panel rendered below
  * Linked Work Items in every CatalystView* detail view (project hub
- * via LinkedWorkItemsSection, BR via BrLinkedItemsSection).
+ * + BR both mount canonical LinkedWorkItemsSection directly).
  *
  * Visibility:
  *   - Hidden when there are no saved links AND the form is closed.

@@ -223,8 +223,14 @@ export function CatalystViewBase({
       const modalEl = document.querySelector('[data-cv-scope]') as HTMLElement;
       if (!modalEl) return;
       const rect = modalEl.getBoundingClientRect();
-      // Clamp 220..600. Max was 480; raised to match Jira's ~549 sidebar.
-      setRightPanelWidth(Math.max(220, Math.min(600, rect.right - e.clientX)));
+      // Clamp 320..480 (2026-06-21 Vikram).
+      // Min raised 220 → 320: at 220–280px the right-rail Details card
+      // breaks (Sprint/Iteration label wraps, Assignee/Reporter avatars
+      // render as bare dotted circles because values overflow + clip).
+      // Max lowered 600 → 480: caps total rail width so left content
+      // panel keeps enough room for Description editor without forcing
+      // the rail to a layout that wastes whitespace.
+      setRightPanelWidth(Math.max(320, Math.min(480, rect.right - e.clientX)));
     };
     const onMouseUp = () => { isDraggingRef.current = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
     document.addEventListener('mousemove', onMouseMove);

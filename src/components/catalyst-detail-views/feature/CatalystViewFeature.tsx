@@ -71,9 +71,19 @@ export default function CatalystViewFeature({
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
-      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="feature" projectKey={projectKey} onOpenItem={onOpenItem} />
-      <Description issue={issue ?? null} />
+      <CatalystKeyDetails
+        issue={issue ?? null}
+        itemId={itemId}
+        itemType="feature"
+        projectKey={projectKey}
+        onOpenItem={onOpenItem}
+        afterBody={<Description issue={issue ?? null} />}
+      />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
+
+      {/* Canonical section order across all CatalystView*: Attachments
+          → Child work items → Linked work items → Activity. */}
+      <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
 
       {/* FEATURE: Child work items (canonical SubtasksPanel) */}
       {issue?.issue_key && (
@@ -92,7 +102,6 @@ export default function CatalystViewFeature({
         issueKey={issue?.issue_key ?? ''}
         projectKey={issue?.project_key || projectKey}
       />
-      <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   // eslint-disable-next-line react-hooks/exhaustive-deps

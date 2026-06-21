@@ -14,9 +14,20 @@
  *
  * The `children` slot is where type-specific sidebar fields go.
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
+
+/**
+ * Compact-rail context — flipped to true by a ResizeObserver on the
+ * sidebar wrapper when its width falls below COMPACT_RAIL_THRESHOLD
+ * (2026-06-21 Vikram). FieldRow consumes this to switch from inline
+ * (label left + value right) to stacked (label above value) layout,
+ * matching Jira's narrow-rail behaviour.
+ */
+const COMPACT_RAIL_THRESHOLD = 360;
+const CompactRailContext = createContext<boolean>(false);
 import { DiscussTicketButton } from '@/components/catalyst-detail-views/shared/DiscussTicketButton';
-import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
+import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import Tooltip from '@atlaskit/tooltip';
 // AutomationIcon removed — jira-compare 2026-05-05: Automate button between
 // status pill and Improve Story is not present in Jira. Removed per Vikram directive.
@@ -131,7 +142,10 @@ function FieldRow({
   direction?: 'column' | 'row';
   children: React.ReactNode;
 }) {
-  const isRow = direction === 'row';
+  /* Compact mode forces column regardless of explicit `direction='row'` —
+     the rail is too narrow to host both columns without truncation. */
+  const compact = useContext(CompactRailContext);
+  const isRow = !compact && direction === 'row';
   return (
     <div style={{
       display: 'flex',
@@ -142,13 +156,19 @@ function FieldRow({
       minHeight: isRow ? 32 : undefined,
     }}>
       <div style={{
-        fontSize: isRow ? 12 : 11,
+        fontSize: isRow ? 14 : 12,
         fontWeight: isRow ? 500 : 600,
         lineHeight: '20px',
         color: 'var(--ds-text-subtle, #505258)',
         flexShrink: isRow ? 0 : undefined,
         width: isRow ? 128 : undefined,
         alignSelf: isRow ? 'center' : undefined,
+        /* In column (compact) mode, indent the label so its left edge
+           aligns with the value text. Value div has `padding: 0 4px`
+           and editable controls (@atlaskit/select, chip, avatar) add
+           ~4-6px of internal control padding. Net visible offset is
+           ~8px (2026-06-21 Vikram). */
+        padding: isRow ? undefined : '0 8px',
       }}>
         {label}
       </div>
@@ -168,6 +188,36 @@ function FieldRow({
         {children}
       </div>
     </div>
+  );
+}
+
+/* "Assign to me" link rendered under the Assignee field. INLINE mode:
+   offsets by the label column width (152px) so it lines up under the
+   value column. COMPACT (column) mode: padding matches the new label
+   padding (8px) so the link sits flush-left like the field stack above
+   it (2026-06-21 Vikram). */
+function AssignToMeLink({ onClick }: { onClick: () => void }) {
+  const compact = useContext(CompactRailContext);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+      style={{
+        background: 'none',
+        border: 'none',
+        padding: compact ? '0 8px 4px 8px' : '0 0 4px 152px',
+        cursor: 'pointer',
+        color: 'var(--ds-link, #1868DB)',
+        fontSize: 12,
+        fontWeight: 400,
+        lineHeight: '16px',
+        textAlign: 'left',
+      }}
+    >
+      Assign to me
+    </button>
   );
 }
 import { useQueryClient, useQuery } from '@tanstack/react-query';
@@ -249,9 +299,10 @@ function fmtRelative(iso: string | null | undefined): string {
   if (Number.isNaN(ts)) return '';
   const diffMs = Date.now() - ts;
   const sec = Math.round(diffMs / 1000);
-  if (sec < 60) return 'just now';
+  if (sec < 5) return 'just now';
+  if (sec < 60) return `${sec} seconds ago`;
   const min = Math.round(sec / 60);
-  if (min < 60) return `${min} min ago`;
+  if (min < 60) return `${min} minute${min === 1 ? '' : 's'} ago`;
   const hr = Math.round(min / 60);
   if (hr < 24) return `${hr} hour${hr === 1 ? '' : 's'} ago`;
   const day = Math.round(hr / 24);
@@ -342,6 +393,22 @@ export function CatalystSidebarDetails({
   const [pinnedFields, setPinnedFields] = useState<string[]>(() =>
     loadPinnedFields(issue?.issue_type ?? 'Story'),
   );
+
+  /* ── Compact-rail detection ────────────────
+     Switches FieldRow to stacked (column) layout when the rail wrapper
+     is narrower than COMPACT_RAIL_THRESHOLD (Jira parity for narrow
+     rails — see context block at top of file). */
+  const railRef = useRef<HTMLDivElement>(null);
+  const [isCompact, setIsCompact] = useState(false);
+  useEffect(() => {
+    if (!railRef.current) return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width ?? 0;
+      setIsCompact(w > 0 && w < COMPACT_RAIL_THRESHOLD);
+    });
+    ro.observe(railRef.current);
+    return () => ro.disconnect();
+  }, []);
   const statusValue = localStatus || issue?.status || 'Backlog';
   const statusCategory = issue?.status_category || getStatusCategory(statusValue);
   const statusStyle = getStatusStyle(statusValue, statusCategory);
@@ -427,7 +494,8 @@ export function CatalystSidebarDetails({
   }, [user, currentProfile, itemId, invalidateIssue, dataSource]);
 
   return (
-    <>
+    <CompactRailContext.Provider value={isCompact}>
+    <div ref={railRef}>
       {/* jira-compare 2026-05-05 (re-probe BAU-5609): Status pill + Improve Story
           render on ONE horizontal row in Jira — `[In QA ▾] [✦ Improve Story]`.
           The lightning-bolt Automate button is removed (not present in Jira BAU view,
@@ -546,29 +614,62 @@ export function CatalystSidebarDetails({
       )}
 
       {/* ── Details section card ──────────────── */}
-      {/* jira-compare 2026-05-05: Details section header height 49→40px,
-          no borderRadius (Jira has square corners), no left padding on header,
-          left padding moved to the body wrapper for field rows.
-          Body padding: '8px 0' (Jira doesn't have a container left pad —
-          the field rows themselves carry 11px v-padding with 96px label col). */}
-      <div style={{ marginBottom: 8 }}>
+      {/* 2026-06-21 jira-compare re-probe: Details renders as a bordered
+          card with rounded corners. Header row hover bg = neutral fill,
+          divider line between header and body when expanded. */}
+      <div
+        style={{
+          marginBottom: 8,
+          border: '1px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 6,
+          background: 'var(--ds-surface, #FFFFFF)',
+          overflow: 'hidden',
+        }}
+      >
         <div
           onClick={() => setDetailsCollapsed(c => !c)}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #F1F2F4)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           style={{
-            display: 'flex', alignItems: 'center', gap: 6, height: 40,
-            padding: '0 0', background: 'transparent', cursor: 'pointer', userSelect: 'none',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0,
+            padding: '8px 12px',
+            background: 'transparent',
+            userSelect: 'none', cursor: 'pointer',
+            transition: 'background-color 150ms ease',
           }}
         >
-          <span style={{ display: 'inline-flex', transition: 'transform 0.15s ease', transform: detailsCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', color: 'var(--ds-icon-subtle, #626F86)' }}>
-            <ChevronRightIcon size="small" primaryColor="currentColor" />
-          </span>
-          {/* jira-compare 2026-05-11 TreeWalker probe: Details header = 16px/653 matching
-              Key details, Subtasks, LWI, Activity. All section headers share the same spec.
-              SectionHeaderTypography.test.ts verifies this from a live DOM probe. */}
-          <div style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+            <Tooltip content={detailsCollapsed ? 'Expand' : 'Collapse'} position="bottom">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setDetailsCollapsed(c => !c); }}
+                aria-expanded={!detailsCollapsed}
+                aria-label={detailsCollapsed ? 'Expand' : 'Collapse'}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 24, height: 24, marginLeft: -4,
+                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                  color: 'var(--ds-text-subtle, #505258)', borderRadius: 3,
+                  transition: 'background-color 150ms ease',
+                }}
+              >
+                {detailsCollapsed
+                  ? <ChevronRightIcon label="" color="currentColor" />
+                  : <ChevronDownIcon label="" color="currentColor" />
+                }
+              </button>
+            </Tooltip>
+            {/* jira-compare 2026-05-11 TreeWalker probe: Details header = 16px/653 matching
+                Key details, Subtasks, LWI, Activity. All section headers share the same spec. */}
+            <h2
+              style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
+            >
+              Details
+            </h2>
+          </div>
         </div>
 
-        {!detailsCollapsed && <div style={{ padding: '0' }}>
+        {!detailsCollapsed && <div style={{ padding: '8px 12px' }}>
 
           {/* ── Sprint/Iteration ────
               jira-compare 2026-05-10 Fix E-2: Epic RESTORED — Lane B probe of Epic
@@ -604,15 +705,7 @@ export function CatalystSidebarDetails({
           </FieldRow>
           {/* jira-compare 2026-05-07: hide when current user IS the assignee (Jira account ID or Supabase UUID match) */}
           {user && issue?.assignee_account_id !== user.id && issue?.assignee_account_id !== currentUserJiraId && (
-            <button
-              type="button"
-              onClick={handleAssignToMe}
-              onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
-              style={{ background: 'none', border: 'none', padding: '0 0 4px 152px', cursor: 'pointer', color: 'var(--ds-link, #1868DB)', fontSize: 12, fontWeight: 400, lineHeight: '16px', textAlign: 'left' }}
-            >
-              Assign to me
-            </button>
+            <AssignToMeLink onClick={handleAssignToMe} />
           )}
 
           {/* ── Priority (Epic only) — jira-compare 2026-05-07: re-probe BAU-5419
@@ -845,28 +938,27 @@ export function CatalystSidebarDetails({
       </div>
 
       {/* ── Timestamps (canonical) ──────────────────────────────────────
-          jira-compare 2026-05-16 re-probe of Jira BAU-1919 (TreeWalker):
-            Container  — 14px/400/rgb(41,42,46)
-            Label SMALL — 12px/400/rgb(80,82,88) inline before date
-            Date text   — inherits 14px from container, rgb(41,42,46)
-            No relative time ("days ago") — Jira does not render this.
-          Each timestamp is a single line: "<small>Created</small> May 14, 2026 at 4:21 PM"
-          Configure CTA removed — Catalyst-specific affordance not present in
-          Jira's right panel. See CatalystConfigureDrawer for the component if
-          re-enabling later. */}
+          2026-06-21 re-probe of Jira SPAC-7 (sidebar screenshot):
+            Created — absolute format: "Created May 18, 2026 at 6:07 PM"
+            Updated — relative format: "Updated 30 seconds ago"
+            Configure link with gear icon at bottom-right of the timestamp row.
+          Each timestamp is a single line. Configure link wired to the
+          same drawer as the top-right gear icon. */}
       <div style={{ marginTop: 16, padding: '12px 0 0' }}>
         {issue?.jira_created_at && (
-          <div style={{ marginBottom: 6, fontSize: 14, fontWeight: 400, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
-            title={issue.jira_created_at}>
-            <small style={{ fontSize: 12, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)', marginRight: 4 }}>Created</small>
-            {fmtJiraDate(issue.jira_created_at)}
+          <div
+            style={{ marginBottom: 4, fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
+            title={issue.jira_created_at}
+          >
+            Created {fmtJiraDate(issue.jira_created_at)}
           </div>
         )}
         {issue?.jira_updated_at && (
-          <div style={{ fontSize: 14, fontWeight: 400, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
-            title={issue.jira_updated_at}>
-            <small style={{ fontSize: 12, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)', marginRight: 4 }}>Updated</small>
-            {fmtJiraDate(issue.jira_updated_at)}
+          <div
+            style={{ fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
+            title={issue.jira_updated_at}
+          >
+            Updated {fmtRelative(issue.jira_updated_at)}
           </div>
         )}
       </div>
@@ -916,6 +1008,7 @@ export function CatalystSidebarDetails({
           </Modal>
         )}
       </ModalTransition>
-    </>
+    </div>
+    </CompactRailContext.Provider>
   );
 }

@@ -45,13 +45,12 @@
   height: 24px;
   /* Pull the chevron 4px left so its visible icon edge lines up at x=0
      with the Linked-work-items + Attachments chevrons (both of which use
-     the same negative-margin trick). Without this, the icon sits 4px
-     inset because of flex-centering within a 24px button. */
+     the same negative-margin trick). */
   margin-left: -4px;
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--ds-text-subtle, #42526E);
+  color: var(--ds-text-subtle, #505258);
   border-radius: 3px;
   padding: 0;
 }

@@ -92,9 +92,13 @@ export default function CatalystViewTask({
             />
           </KeyDetailsFieldRow>
         }
+        afterBody={<Description issue={issue ?? null} />}
       />
-      <Description issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
+
+      {/* Canonical section order across all CatalystView*: Attachments
+          → Child work items → Linked work items → Activity. */}
+      <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
 
       {issue?.issue_key && (
         <SubtasksPanel
@@ -112,7 +116,6 @@ export default function CatalystViewTask({
         issueKey={issue?.issue_key ?? ''}
         projectKey={issue?.project_key || projectKey}
       />
-      <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -28,25 +28,36 @@
   justify-content: space-between;
   gap: 8px;
   padding: 6px 0;
+  margin-bottom: 4px;
 }
 
+.lwi-header__left {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* Chevron toggle — 24x24 button with rounded hover bg, matches
+   SubtasksPanel `.sp-collapse-btn`. Title sits OUTSIDE the button
+   so the click target is just the chevron (matches Jira pattern). */
 .lwi-header__toggle {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: -4px;
   background: transparent;
   border: none;
-  padding: 4px 6px 4px 2px;
-  margin: -4px -6px -4px -2px;
+  padding: 0;
   cursor: pointer;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
-  font-family: inherit;
-  border-radius: 4px;
+  color: var(--ds-text-subtle, #505258);
+  border-radius: 3px;
   transition: background-color 150ms ease;
 }
 
 .lwi-header__toggle:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
 }
 
 .lwi-header__toggle:focus-visible {
@@ -61,6 +72,7 @@
   font-weight: 653;
   line-height: 20px;
   color: var(--ds-text, #292A2E);
+  padding: 0 4px;
 }
 
 .lwi-header__count {
@@ -128,31 +140,36 @@
 }
 
 /* ── Body / Groups ────────────────────────── */
+/* paddingLeft: 24px aligns "is blocked by" group label + table with
+   "Linked work items" title text. Chevron toggle is 24x24 with
+   margin-left: -4, title h2 has padding 0 4px → title text starts
+   24px from .lwi-header left edge. Same offset used by .lwi-add-link. */
 .lwi-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 4px 0 0;
+  gap: 4px;
+  padding: 0 0 0 24px;
 }
 
 .lwi-groups {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 .lwi-group__header {
-  font-size: 12px;
-  font-weight: 650;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
-  padding: 6px 0 4px;
-  letter-spacing: 0.02em;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ds-text-subtle, #505258);
+  padding: 0 0 2px;
+  letter-spacing: 0;
 }
 
 .lwi-group__rows {
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 4px;
   overflow: hidden;
+  padding: 6px 0;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
@@ -164,13 +181,14 @@
   gap: 10px;
   height: 40px;
   padding: 0 10px;
-  border-bottom: 1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   transition: background-color 120ms ease;
 }
 
-.lwi-row:last-child {
-  border-bottom: none;
+/* Divider ONLY between rows (Jira parity). Single-row groups get no
+   divider; N-row groups get N-1 dividers. */
+.lwi-row + .lwi-row {
+  border-top: 1px solid var(--ds-border, #DFE1E6);
 }
 
 .lwi-row:hover,
@@ -200,8 +218,8 @@
 
 .lwi-row__key {
   font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 400;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   background: transparent;
   border: none;
@@ -217,13 +235,23 @@
   text-decoration: underline;
 }
 
+.lwi-row__key[data-done='true'] {
+  text-decoration: line-through;
+  color: var(--ds-text-subtle, #505258);
+}
+
+.lwi-row__key[data-done='true']:hover {
+  text-decoration: line-through underline;
+}
+
 .lwi-row__key:focus-visible {
   outline: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   outline-offset: 2px;
 }
 
 .lwi-row__summary {
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 400;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   background: transparent;
   border: none;
@@ -250,7 +278,14 @@
 .lwi-row__status {
   display: inline-flex;
   align-items: center;
+  gap: 2px;
   flex-shrink: 0;
+}
+
+.lwi-row__status-caret {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ds-text-subtle, #505258);
 }
 
 .lwi-row__assignee {
@@ -270,11 +305,18 @@
 }
 
 .lwi-row__avatar-empty {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
+  background: var(--ds-background-neutral, #DFE1E6);
+  color: var(--ds-text-subtle, #505258);
+}
+
+.lwi-row__avatar-empty > span {
+  display: inline-flex;
 }
 
 .lwi-row__actions {
@@ -505,7 +547,8 @@
 
 .dark .lwi-group__header { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .lwi-group__rows { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .lwi-row { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-bottom-color: var(--ds-border, var(--cp-ink-1, #292929)); }
+.dark .lwi-row { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); }
+.dark .lwi-row + .lwi-row { border-top-color: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .lwi-row:hover,
 .dark .lwi-row:focus-within { background-color: var(--ds-surface-overlay, #1F1F1F); }
 .dark .lwi-row__key { color: #4C9AFF; }
@@ -560,16 +603,23 @@
   border: none;
 }
 
-/* Row density: match existing .lwi-row (40px, hover state) */
+/* Row density: match existing .lwi-row (40px, hover state). Kill
+   @atlaskit/dynamic-table's built-in `border-block-end: 2px solid
+   var(--ds-border)` (.compiled class `_179r1uh4`) on every <tr> —
+   it produces a phantom grey stripe under single-row groups inside
+   the card. Multi-row dividers come from `tr + tr { border-top }`
+   below. DOM-source confirmed via dist/esm/styled/table-row.compiled.css
+   (2026-06-21, Vikram screenshot). */
 .lwi-group__rows table tbody tr {
   height: 40px;
-  border-bottom: 1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   transition: background-color 120ms ease;
+  border-block-end: none !important;
 }
 
-.lwi-group__rows table tbody tr:last-child {
-  border-bottom: none;
+/* Divider ONLY between rows. */
+.lwi-group__rows table tbody tr + tr {
+  border-top: 1px solid var(--ds-border, #DFE1E6);
 }
 
 .lwi-group__rows table tbody tr:hover,
@@ -591,6 +641,36 @@
   padding-right: 10px;
 }
 
+/* Strip DynamicTable wrapper chrome (pagination/footer + 24px
+   margin-block-end from @atlaskit/dynamic-table LoadingContainerAdvanced)
+   — Jira parity: card hugs its rows with no trailing space below the
+   last row. */
+.lwi-group__rows > div,
+.lwi-group__rows > div > div,
+.lwi-group__rows > div > div > div { padding: 0 !important; margin: 0 !important; }
+.lwi-group__rows table { margin: 0 !important; border-spacing: 0; border-collapse: collapse; border-block-end: none !important; }
+.lwi-group__rows nav,
+.lwi-group__rows [class*="Pagination"],
+.lwi-group__rows [aria-label="pagination" i],
+.lwi-group__rows [aria-label="Pagination" i],
+.lwi-group__rows [data-testid*="pagination"] { display: none !important; }
+/* Kill atlaskit/dynamic-table LoadingContainerAdvanced wrapper margin —
+   class `_6rth1ejb` applies `margin-block-end: var(--ds-space-300, 24px)`
+   which leaves a phantom 24px gap below the table inside the card.
+   DOM confirmed via Vikram screenshot 2026-06-21. */
+.lwi-group__rows > div._6rth1ejb,
+.lwi-group__rows [class~="_6rth1ejb"],
+.lwi-group__rows > div,
+.lwi-group__rows > div > * {
+  margin: 0 !important;
+  margin-block: 0 !important;
+  margin-block-end: 0 !important;
+  margin-block-start: 0 !important;
+  padding-block: 0 !important;
+  padding-block-end: 0 !important;
+  padding-block-start: 0 !important;
+}
+
 /* Show unlink button only on row hover/focus (mirrors .lwi-row__actions opacity trick) */
 .lwi-group__rows table tbody tr .lwi-row__actions {
   opacity: 0;
@@ -605,7 +685,10 @@
 /* Dark mode DynamicTable overrides */
 .dark .lwi-group__rows table tbody tr {
   background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
-  border-bottom-color: var(--ds-border, var(--cp-ink-1, #292929));
+}
+
+.dark .lwi-group__rows table tbody tr + tr {
+  border-top-color: var(--ds-border, var(--cp-ink-1, #292929));
 }
 
 .dark .lwi-group__rows table tbody tr:hover,

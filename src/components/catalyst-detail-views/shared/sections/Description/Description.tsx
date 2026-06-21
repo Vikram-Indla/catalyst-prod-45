@@ -392,7 +392,7 @@ export function Description({ issue, label = 'Description', saveOverride, loadAd
   }, [catyActiveForThisIssue, stopCatyStream, stopCatyImprove]);
 
   return (
-    <div style={{ marginBottom: 24 }}>
+    <div style={{ marginBottom: 24, paddingLeft: 20 }}>
       <div
         className="catalyst-description-header"
         style={{
@@ -407,7 +407,7 @@ export function Description({ issue, label = 'Description', saveOverride, loadAd
           data-testid="catalyst-description.label"
           style={{
             margin: 0,
-            padding: '0 16px',
+            padding: 0,
             flex: 1,
             fontSize: 14,
             fontWeight: 500,
@@ -422,7 +422,7 @@ export function Description({ issue, label = 'Description', saveOverride, loadAd
       </div>
 
       {(editing || catyActiveForThisIssue) && issue ? (
-        <div style={{ padding: '0 16px' }}>
+        <div style={{ padding: 0 }}>
           <RichTextEditor
             initialAdf={enrichedAdf}
             onSave={(adfJson) => saveMutation.mutate(adfJson)}
@@ -484,8 +484,19 @@ export function Description({ issue, label = 'Description', saveOverride, loadAd
         </div>
       ) : isEmpty ? (
         <div
-          onClick={() => {
+          onClick={(e) => {
+            /* Clear inline hover bg BEFORE flipping state — React reuses
+               this <div> for the editor branch (no key, same tag), so
+               an imperatively-set background.style would persist behind
+               Save/Cancel (2026-06-21 Vikram). */
+            e.currentTarget.style.background = 'transparent';
             if (issue) setEditing(true);
+          }}
+          onMouseEnter={(e) => {
+            if (issue) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
           }}
           style={{
             fontSize: 14,
@@ -493,7 +504,8 @@ export function Description({ issue, label = 'Description', saveOverride, loadAd
             minHeight: 40,
             cursor: issue ? 'pointer' : 'default',
             borderRadius: 4,
-            padding: '8px 16px',
+            padding: '8px 0',
+            transition: 'background-color 120ms ease',
           }}
         >
           Add a description...
@@ -502,20 +514,32 @@ export function Description({ issue, label = 'Description', saveOverride, loadAd
         <div
           role="button"
           tabIndex={0}
-          onClick={() => {
+          onClick={(e) => {
+            /* Clear inline hover bg BEFORE flipping state — same
+               React-reuses-DOM-node bug as the isEmpty branch above
+               (2026-06-21 Vikram). */
+            e.currentTarget.style.background = 'transparent';
             if (issue) setEditing(true);
           }}
           onKeyDown={(e) => {
             if ((e.key === 'Enter' || e.key === ' ') && issue) {
               e.preventDefault();
+              e.currentTarget.style.background = 'transparent';
               setEditing(true);
             }
+          }}
+          onMouseEnter={(e) => {
+            if (issue) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
           }}
           style={{
             minHeight: 40,
             cursor: 'text',
             borderRadius: 4,
-            padding: '0 16px',
+            padding: 0,
+            transition: 'background-color 120ms ease',
           }}
           title="Click to edit"
         >
