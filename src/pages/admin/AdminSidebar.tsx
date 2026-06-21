@@ -15,6 +15,7 @@ const T = {
   text:          'var(--ds-text, #172B4D)',
   textSubtle:    'var(--ds-text-subtle, #44546F)',
   textSubtlest:  'var(--ds-text-subtlest, #626F86)',
+  textBrand:     'var(--ds-link, #0C66E4)',
   bgHover:       'var(--ds-background-neutral-hovered, #F1F2F4)',
   bgSelected:    'var(--ds-background-selected, #DFFCF0)',
   border:        'var(--ds-border, #DCDFE4)',

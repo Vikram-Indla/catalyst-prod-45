@@ -6,16 +6,19 @@ export const WORK_ITEM_TYPES = [
   'Story',
   'Epic',
   'Feature',
+  'Task',
   'Sub-task',
   'QA Bug',
   'Production Incident',
   'Business Request',
-  // BR subtask categories (2026-06-15) — shared To Do/In Progress/Done
-  // workflow. Surfaced as admin tabs; runtime uses the hardcoded fallback.
   'BRD Task',
   'Business Gap',
   'Change Request',
+  'API Requirement',
   'UAT Finding',
+  'Frontend',
+  'Backend',
+  'Integration',
   'Figma',
 ] as const;
 

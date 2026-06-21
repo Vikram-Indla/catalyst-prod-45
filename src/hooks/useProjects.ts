@@ -65,6 +65,27 @@ export function useProjects() {
   });
 }
 
+export interface PhProject {
+  id: string;
+  key: string;
+  name: string;
+}
+
+export function usePhProjects() {
+  return useQuery({
+    queryKey: ['ph-projects'],
+    queryFn: async (): Promise<PhProject[]> => {
+      const { data, error } = await supabase
+        .from('ph_projects' as any)
+        .select('id, key, name')
+        .order('name');
+      if (error) throw error;
+      return (data ?? []) as PhProject[];
+    },
+    staleTime: 60_000,
+  });
+}
+
 // Get only the default project
 export function useDefaultProject() {
   return useQuery({
