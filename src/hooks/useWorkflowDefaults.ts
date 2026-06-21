@@ -11,23 +11,6 @@ async function fetchPhProjectId(projectKey: string): Promise<string> {
   return (data as any).id as string;
 }
 
-export function useSeedProjectFromDefaults(projectKey: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async () => {
-      const projectId = await fetchPhProjectId(projectKey);
-      const { error } = await (supabase as any).rpc('fn_seed_project_workflow', {
-        p_project_id: projectId,
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workflow-statuses', projectKey] });
-      queryClient.invalidateQueries({ queryKey: ['type-workflow', projectKey] });
-    },
-  });
-}
-
 export function useResetProjectWorkflow(projectKey: string) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -41,18 +24,6 @@ export function useResetProjectWorkflow(projectKey: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workflow-statuses', projectKey] });
       queryClient.invalidateQueries({ queryKey: ['type-workflow', projectKey] });
-    },
-  });
-}
-
-export function useExportProjectAsDefault(projectKey: string) {
-  return useMutation({
-    mutationFn: async () => {
-      const projectId = await fetchPhProjectId(projectKey);
-      const { error } = await (supabase as any).rpc('fn_export_project_as_default', {
-        p_project_id: projectId,
-      });
-      if (error) throw error;
     },
   });
 }

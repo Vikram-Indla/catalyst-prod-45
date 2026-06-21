@@ -1,894 +1,924 @@
-import React, { useState, useEffect } from 'react';
-import Tabs from '@atlaskit/tabs';
-import { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import Button from '@atlaskit/button/new';
-import Select from '@atlaskit/select';
-import Textfield from '@atlaskit/textfield';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Spinner from '@atlaskit/spinner';
-import { AutoDismissFlag, FlagGroup } from '@atlaskit/flag';
-import SuccessIcon from '@atlaskit/icon/glyph/check-circle';
-import ErrorIcon from '@atlaskit/icon/glyph/error';
-import SearchIcon from '@atlaskit/icon/glyph/search';
-import ListIcon from '@atlaskit/icon/glyph/list';
-import GridIcon from '@atlaskit/icon/glyph/table';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { StatusRegistryTable } from '@/components/admin/StatusRegistryTable';
-import { StatusRegistryCards } from '@/components/admin/StatusRegistryCards';
-import { EditStatusModal } from '@/components/admin/EditStatusModal';
-import { WorkflowTypePanel } from '@/components/admin/WorkflowTypePanel';
-import { TaskStatusRegistry } from '@/components/admin/TaskStatusRegistry';
+import { usePhProjects } from '@/hooks/useProjects';
 import {
-  useWorkflowStatuses,
   useCreateStatus,
   useUpdateStatus,
   useArchiveStatus,
-  type WorkflowStatusWithTypes,
 } from '@/hooks/useWorkflowStatuses';
-import { useAllStatusConsumers } from '@/hooks/useStatusConsumers';
-import { WORK_ITEM_TYPES, type WorkItemType } from '@/hooks/useTypeWorkflow';
-import type { StatusCategory } from '@/constants/statusCategoryColors';
-import { usePhProjects } from '@/hooks/useProjects';
 import {
-  useSeedProjectFromDefaults,
-  useResetProjectWorkflow,
-  useExportProjectAsDefault,
-} from '@/hooks/useWorkflowDefaults';
+  useTypeWorkflow,
+  useSetInitialStatus,
+  useRemoveTypeStatus,
+  type WorkItemType,
+  type TypeStatus,
+} from '@/hooks/useTypeWorkflow';
+import { useResetProjectWorkflow } from '@/hooks/useWorkflowDefaults';
+import {
+  STATUS_CATEGORY_COLORS,
+  STATUS_CATEGORY_LABELS,
+  type StatusCategory,
+} from '@/constants/statusCategoryColors';
 
-// ── Module type routing ──────────────────────────────────────────────────────
+const T = {
+  surface: 'var(--ds-surface, #FFFFFF)',
+  text: 'var(--ds-text, #172B4D)',
+  textSubtle: 'var(--ds-text-subtle, #44546F)',
+  textSubtlest: 'var(--ds-text-subtlest, #626F86)',
+  textBrand: 'var(--ds-link, #0C66E4)',
+  textDanger: 'var(--ds-text-danger, #AE2A19)',
+  border: 'var(--ds-border, #DCDFE4)',
+  bgHover: 'var(--ds-background-neutral-hovered, #F1F2F4)',
+  bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
+  bgSelected: 'var(--ds-background-selected, #E9F2FE)',
+  iconBrand: 'var(--ds-icon-brand, #0C66E4)',
+};
 
-type ModuleKey = 'project' | 'product' | 'incident';
+type ModuleKey = 'project' | 'tasks' | 'product' | 'incident';
+
+const CATS: StatusCategory[] = ['todo', 'in_progress', 'done'];
 
 const MODULE_TYPES: Record<ModuleKey, WorkItemType[]> = {
-  project: WORK_ITEM_TYPES.filter(
-    (t): t is WorkItemType =>
-      !['Business Request', 'BRD Task', 'Production Incident'].includes(t)
-  ),
+  project: ['Story', 'Epic', 'Feature', 'QA Bug', 'Business Gap', 'Change Request'],
+  tasks: ['Task', 'Sub-task', 'Backend', 'Frontend', 'Integration', 'API Requirement', 'Figma', 'UAT Finding'],
   product: ['Business Request', 'BRD Task'],
   incident: ['Production Incident'],
 };
 
-// ── Types ────────────────────────────────────────────────────────────────────
+const MODULE_LABEL: Record<ModuleKey, string> = {
+  project: 'Projects',
+  tasks: 'Tasks',
+  product: 'Product (BR)',
+  incident: 'Incidents',
+};
 
-type ViewMode = 'table' | 'cards';
+const MODULES: ModuleKey[] = ['project', 'tasks', 'product', 'incident'];
 
-interface FlagItem {
-  id: number;
-  type: 'success' | 'error';
-  title: string;
-  description?: string;
-}
-
-const RESPONSIVE_BREAKPOINT = 1024;
-
-function useViewport() {
-  const [width, setWidth] = useState(() => window.innerWidth);
+function usePortalMenu(
+  triggerRef: React.RefObject<HTMLButtonElement | null>,
+  onClose: () => void,
+  isOpen: boolean
+) {
+  const menuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const h = () => setWidth(window.innerWidth);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
-  }, []);
-  return width;
+    if (!isOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (
+        !menuRef.current?.contains(e.target as Node) &&
+        !triggerRef.current?.contains(e.target as Node)
+      ) {
+        onClose();
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [isOpen, onClose, triggerRef]);
+  return menuRef;
 }
 
-// ── Inner: status registry + type tabs for a given module ────────────────────
+const menuItemBase: React.CSSProperties = {
+  display: 'block',
+  width: '100%',
+  textAlign: 'left',
+  border: 'none',
+  background: 'none',
+  padding: '6px 12px',
+  fontSize: '13px',
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  lineHeight: '20px',
+};
 
-interface WorkflowContentProps {
-  projectKey: string;
-  moduleTypes: WorkItemType[];
-  statuses: WorkflowStatusWithTypes[];
-  statusesLoading: boolean;
-  consumersMap: Record<string, string[]>;
-  searchQuery: string;
-  viewMode: ViewMode;
-  forcedCards: boolean;
-  setSearchQuery: (q: string) => void;
-  setViewMode: (v: ViewMode) => void;
-  onOpenCreate: () => void;
-  onOpenEdit: (s: WorkflowStatusWithTypes) => void;
-  onDeleteRequest: (s: WorkflowStatusWithTypes) => void;
-  onFeedback: (type: 'success' | 'error', title: string, desc?: string) => void;
-  activeTypeIndex: number;
-  setActiveTypeIndex: (i: number) => void;
-}
-
-function WorkflowContent({
-  projectKey,
-  moduleTypes,
-  statuses,
-  statusesLoading,
-  consumersMap,
-  searchQuery,
-  viewMode,
-  forcedCards,
-  setSearchQuery,
-  setViewMode,
-  onOpenCreate,
-  onOpenEdit,
-  onDeleteRequest,
-  onFeedback,
-  activeTypeIndex,
-  setActiveTypeIndex,
-}: WorkflowContentProps) {
-  const effectiveViewMode: ViewMode = forcedCards ? 'cards' : viewMode;
-
+function MenuItem({
+  onClick,
+  children,
+  danger,
+  disabled,
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+  danger?: boolean;
+  disabled?: boolean;
+}) {
   return (
-    <>
-      {/* Status registry */}
-      <section style={{ marginBottom: 40 }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            marginBottom: 16,
-            flexWrap: 'wrap',
-            gap: 8,
-          }}
-        >
-          <div>
-            <h2
-              style={{
-                fontSize: 16,
-                fontWeight: 653,
-                color: 'var(--ds-text, #292A2E)',
-                margin: 0,
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: 8,
-                flexWrap: 'wrap',
-              }}
-            >
-              Status registry
-              {statuses.length > 0 && (
-                <span
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 400,
-                    color: 'var(--ds-text-subtle, #505258)',
-                  }}
-                >
-                  ({statuses.length} status{statuses.length !== 1 ? 'es' : ''} · shared by all
-                  work item types)
-                </span>
-              )}
-            </h2>
-            <p
-              style={{
-                fontSize: 14,
-                color: 'var(--ds-text-subtle, #505258)',
-                margin: '4px 0 0',
-                maxWidth: 680,
-              }}
-            >
-              Statuses are project-scoped and defined once. Each work item type selects which
-              statuses it uses and which transitions are allowed.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <div style={{ width: 220 }}>
-              <Textfield
-                name="status-search"
-                placeholder="Search statuses…"
-                value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setSearchQuery(e.target.value)
-                }
-                elemBeforeInput={
-                  <span
-                    style={{ paddingLeft: 8, color: 'var(--ds-text-subtlest, #6B778C)' }}
-                  >
-                    <SearchIcon label="" size="small" />
-                  </span>
-                }
-              />
-            </div>
-            {!forcedCards && (
-              <div
-                style={{
-                  display: 'flex',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 4,
-                  overflow: 'hidden',
-                }}
-              >
-                <Button
-                  appearance={viewMode === 'table' ? 'primary' : 'subtle'}
-                  iconBefore={ListIcon}
-                  aria-label="Table view"
-                  onClick={() => setViewMode('table')}
-                />
-                <Button
-                  appearance={viewMode === 'cards' ? 'primary' : 'subtle'}
-                  iconBefore={GridIcon}
-                  aria-label="Card view"
-                  onClick={() => setViewMode('cards')}
-                />
-              </div>
-            )}
-            <Button appearance="primary" onClick={onOpenCreate}>
-              Create status
-            </Button>
-          </div>
-        </div>
-
-        {statusesLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
-            <Spinner size="large" />
-          </div>
-        ) : effectiveViewMode === 'table' ? (
-          <StatusRegistryTable
-            statuses={statuses}
-            consumersMap={consumersMap}
-            searchQuery={searchQuery}
-            onEdit={onOpenEdit}
-            onDelete={onDeleteRequest}
-          />
-        ) : (
-          <StatusRegistryCards
-            statuses={statuses}
-            consumersMap={consumersMap}
-            searchQuery={searchQuery}
-            onEdit={onOpenEdit}
-            onDelete={onDeleteRequest}
-          />
-        )}
-      </section>
-
-      {/* Per-type workflow tabs */}
-      <section>
-        <div style={{ marginBottom: 12 }}>
-          <h2
-            style={{
-              fontSize: 16,
-              fontWeight: 653,
-              color: 'var(--ds-text, #172B4D)',
-              margin: 0,
-              display: 'flex',
-              alignItems: 'baseline',
-              gap: 8,
-            }}
-          >
-            Workflows
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: 400,
-                color: 'var(--ds-text-subtle, #42526E)',
-              }}
-            >
-              (per work item type)
-            </span>
-          </h2>
-          <p
-            style={{
-              fontSize: 14,
-              color: 'var(--ds-text-subtle, #505258)',
-              margin: '4px 0 0',
-            }}
-          >
-            Each work item type has its own workflow: a subset of registry statuses, one initial
-            status, and its own transition rules.
-          </p>
-        </div>
-
-        <div
-          style={{
-            border: '1px solid var(--ds-border, #DFE1E6)',
-            borderRadius: 4,
-            overflow: 'clip',
-          }}
-        >
-          <Tabs
-            id={`workflow-type-tabs-${projectKey}`}
-            selected={activeTypeIndex}
-            onChange={setActiveTypeIndex}
-          >
-            <TabList>
-              {moduleTypes.map((type) => (
-                <Tab key={type}>{type}</Tab>
-              ))}
-            </TabList>
-
-            {moduleTypes.map((type, idx) => (
-              <TabPanel key={type}>
-                {activeTypeIndex === idx && (
-                  <WorkflowTypePanel
-                    projectKey={projectKey}
-                    workItemType={type}
-                    allRegistryStatuses={statuses}
-                    onFeedback={(t, title, desc) => onFeedback(t, title, desc)}
-                  />
-                )}
-              </TabPanel>
-            ))}
-          </Tabs>
-        </div>
-      </section>
-    </>
+    <button
+      role="menuitem"
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        ...menuItemBase,
+        color: danger ? T.textDanger : T.text,
+        opacity: disabled ? 0.5 : 1,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled) (e.currentTarget as HTMLElement).style.background = T.bgHover;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.background = 'none';
+      }}
+    >
+      {children}
+    </button>
   );
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
+function RowMenu({
+  triggerRef,
+  isInitial,
+  onClose,
+  onRename,
+  onSetInitial,
+  onRemove,
+  onDelete,
+}: {
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  isInitial: boolean;
+  onClose: () => void;
+  onRename: () => void;
+  onSetInitial: () => Promise<void>;
+  onRemove: () => Promise<void>;
+  onDelete: () => Promise<void>;
+}) {
+  const menuRef = usePortalMenu(triggerRef, onClose, true);
+  if (!triggerRef.current) return null;
+  const rect = triggerRef.current.getBoundingClientRect();
+  return createPortal(
+    <div
+      ref={menuRef}
+      role="menu"
+      style={{
+        position: 'fixed',
+        top: rect.bottom + 4,
+        left: rect.left,
+        background: '#FFFFFF',
+        border: `1px solid ${T.border}`,
+        borderRadius: '6px',
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        padding: '4px 0',
+        minWidth: '180px',
+        zIndex: 9999,
+      }}
+    >
+      {!isInitial && (
+        <MenuItem onClick={async () => { await onSetInitial(); onClose(); }}>
+          Set as initial status
+        </MenuItem>
+      )}
+      <MenuItem onClick={() => { onRename(); onClose(); }}>Rename</MenuItem>
+      <MenuItem onClick={async () => { await onRemove(); onClose(); }}>
+        Remove from workflow
+      </MenuItem>
+      <div style={{ borderTop: `1px solid ${T.border}`, margin: '4px 0' }} />
+      <MenuItem danger onClick={async () => { await onDelete(); onClose(); }}>
+        Delete status
+      </MenuItem>
+    </div>,
+    document.body
+  );
+}
 
-export default function WorkflowAdminPage() {
-  // Project selector
-  const { data: phProjects = [], isLoading: projectsLoading } = usePhProjects();
-  const [selectedProjectKey, setSelectedProjectKey] = useState<string>('');
+function OverflowMenu({
+  triggerRef,
+  onClose,
+  resetConfirm,
+  resetLoading,
+  onReset,
+}: {
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  onClose: () => void;
+  resetConfirm: boolean;
+  resetLoading: boolean;
+  onReset: () => void;
+}) {
+  const menuRef = usePortalMenu(triggerRef, onClose, true);
+  if (!triggerRef.current) return null;
+  const rect = triggerRef.current.getBoundingClientRect();
+  return createPortal(
+    <div
+      ref={menuRef}
+      role="menu"
+      style={{
+        position: 'fixed',
+        top: rect.bottom + 4,
+        right: window.innerWidth - rect.right,
+        background: '#FFFFFF',
+        border: `1px solid ${T.border}`,
+        borderRadius: '6px',
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        padding: '4px 0',
+        minWidth: '220px',
+        zIndex: 9999,
+      }}
+    >
+      <MenuItem onClick={onReset} disabled={resetLoading} danger={resetConfirm}>
+        {resetLoading
+          ? 'Resetting…'
+          : resetConfirm
+          ? 'Confirm — re-derive from Jira?'
+          : 'Reset from Jira data'}
+      </MenuItem>
+    </div>,
+    document.body
+  );
+}
+
+function StatusRow({
+  status,
+  isInitial,
+  cat,
+  onRename,
+  onSetInitial,
+  onRemoveFromType,
+  onDelete,
+}: {
+  status: TypeStatus;
+  isInitial: boolean;
+  cat: StatusCategory;
+  onRename: (name: string) => Promise<void>;
+  onSetInitial: () => Promise<void>;
+  onRemoveFromType: () => Promise<void>;
+  onDelete: () => Promise<void>;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(status.name);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const editRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (phProjects.length > 0 && !selectedProjectKey) {
-      const bau = phProjects.find((p) => p.key === 'BAU');
-      setSelectedProjectKey(bau?.key ?? phProjects[0].key);
+    if (editing) editRef.current?.focus();
+  }, [editing]);
+
+  const commitRename = async () => {
+    const n = editName.trim();
+    setEditing(false);
+    if (n && n !== status.name) await onRename(n);
+    else setEditName(status.name);
+  };
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        padding: '7px 8px 7px 12px',
+        background: hovered && !editing ? T.bgHover : 'transparent',
+        transition: 'background 0.1s',
+        minHeight: '36px',
+      }}
+    >
+      <span
+        style={{
+          color: T.textSubtlest,
+          opacity: hovered ? 0.5 : 0,
+          fontSize: '13px',
+          flexShrink: 0,
+          cursor: 'grab',
+          lineHeight: 1,
+          transition: 'opacity 0.1s',
+          userSelect: 'none',
+        }}
+      >
+        ⠿
+      </span>
+
+      <span
+        style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          background: STATUS_CATEGORY_COLORS[cat],
+          flexShrink: 0,
+        }}
+      />
+
+      {editing ? (
+        <input
+          ref={editRef}
+          value={editName}
+          onChange={(e) => setEditName(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commitRename();
+            if (e.key === 'Escape') {
+              setEditing(false);
+              setEditName(status.name);
+            }
+          }}
+          onBlur={commitRename}
+          style={{
+            flex: 1,
+            fontSize: '13px',
+            color: T.text,
+            border: `1px solid var(--ds-border-focused, #388BFF)`,
+            borderRadius: '3px',
+            padding: '1px 4px',
+            outline: 'none',
+            fontFamily: 'inherit',
+            minWidth: 0,
+          }}
+        />
+      ) : (
+        <span
+          onClick={() => setEditing(true)}
+          style={{
+            flex: 1,
+            fontSize: '13px',
+            color: T.text,
+            cursor: 'text',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            minWidth: 0,
+          }}
+          title={status.name}
+        >
+          {status.name}
+        </span>
+      )}
+
+      {isInitial && (
+        <span
+          title="Initial status — new items start here"
+          style={{ color: '#FFD700', fontSize: '11px', flexShrink: 0, lineHeight: 1 }}
+        >
+          ★
+        </span>
+      )}
+
+      {hovered && !editing && (
+        <button
+          ref={menuBtnRef}
+          onClick={() => setShowMenu((v) => !v)}
+          style={{
+            width: '20px',
+            height: '20px',
+            border: 'none',
+            background: 'none',
+            cursor: 'pointer',
+            color: T.textSubtlest,
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '3px',
+            flexShrink: 0,
+            padding: 0,
+          }}
+          aria-label="Status actions"
+        >
+          ⋯
+        </button>
+      )}
+
+      {showMenu && (
+        <RowMenu
+          triggerRef={menuBtnRef}
+          isInitial={isInitial}
+          onClose={() => setShowMenu(false)}
+          onRename={() => setEditing(true)}
+          onSetInitial={onSetInitial}
+          onRemove={onRemoveFromType}
+          onDelete={onDelete}
+        />
+      )}
+    </div>
+  );
+}
+
+function StatusColumn({
+  cat,
+  statuses,
+  initialId,
+  isLast,
+  onAddStatus,
+  onRename,
+  onSetInitial,
+  onRemoveFromType,
+  onDelete,
+}: {
+  cat: StatusCategory;
+  statuses: TypeStatus[];
+  initialId: string | null;
+  isLast: boolean;
+  onAddStatus: (name: string) => Promise<void>;
+  onRename: (id: string, name: string) => Promise<void>;
+  onSetInitial: (id: string) => Promise<void>;
+  onRemoveFromType: (id: string) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [addLoading, setAddLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (adding) inputRef.current?.focus();
+  }, [adding]);
+
+  const submitAdd = async () => {
+    const n = newName.trim();
+    if (!n) {
+      setAdding(false);
+      return;
     }
-  }, [phProjects, selectedProjectKey]);
+    setAddLoading(true);
+    try {
+      await onAddStatus(n);
+      setNewName('');
+      setAdding(false);
+    } finally {
+      setAddLoading(false);
+    }
+  };
 
-  const projectKey = selectedProjectKey || 'BAU';
+  const catColor = STATUS_CATEGORY_COLORS[cat];
 
-  const projectOptions = phProjects.map((p) => ({
-    value: p.key,
-    label: `${p.key} — ${p.name}`,
-  }));
-  const selectedProjectOption = projectOptions.find((o) => o.value === projectKey) ?? null;
+  return (
+    <div
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        borderRight: isLast ? 'none' : `1px solid ${T.border}`,
+        minWidth: 0,
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          borderBottom: `2px solid ${catColor}`,
+          background: T.surface,
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: catColor,
+            flexShrink: 0,
+          }}
+        />
+        <span style={{ fontSize: '13px', fontWeight: 600, color: T.text }}>
+          {STATUS_CATEGORY_LABELS[cat]}
+        </span>
+        <span
+          style={{
+            marginLeft: 'auto',
+            fontSize: '11px',
+            color: T.textSubtlest,
+            background: T.bgNeutral,
+            borderRadius: '10px',
+            padding: '1px 7px',
+            fontWeight: 500,
+          }}
+        >
+          {statuses.length}
+        </span>
+      </div>
 
-  // Workflow data
-  const { data: statuses = [], isLoading: statusesLoading } = useWorkflowStatuses(projectKey);
-  const statusIds = statuses.map((s) => s.id);
-  const { data: consumersMap = {} } = useAllStatusConsumers(statusIds);
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {statuses.length === 0 && !adding && (
+          <div
+            style={{
+              padding: '24px 16px',
+              textAlign: 'center',
+              color: T.textSubtlest,
+              fontSize: '12px',
+            }}
+          >
+            No statuses
+          </div>
+        )}
+        {statuses.map((s) => (
+          <StatusRow
+            key={s.id}
+            status={s}
+            isInitial={s.id === initialId}
+            cat={cat}
+            onRename={(name) => onRename(s.id, name)}
+            onSetInitial={() => onSetInitial(s.id)}
+            onRemoveFromType={() => onRemoveFromType(s.id)}
+            onDelete={() => onDelete(s.id)}
+          />
+        ))}
+      </div>
 
+      <div style={{ padding: '4px 8px 8px', flexShrink: 0 }}>
+        {adding ? (
+          <div
+            style={{
+              display: 'flex',
+              gap: '4px',
+              alignItems: 'center',
+              padding: '6px 8px',
+              background: T.bgNeutral,
+              borderRadius: '4px',
+            }}
+          >
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: catColor,
+                flexShrink: 0,
+              }}
+            />
+            <input
+              ref={inputRef}
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') submitAdd();
+                if (e.key === 'Escape') {
+                  setAdding(false);
+                  setNewName('');
+                }
+              }}
+              placeholder="Status name…"
+              disabled={addLoading}
+              style={{
+                flex: 1,
+                border: 'none',
+                background: 'transparent',
+                outline: 'none',
+                fontSize: '13px',
+                color: T.text,
+                fontFamily: 'inherit',
+                minWidth: 0,
+              }}
+            />
+            {addLoading ? (
+              <Spinner size="small" />
+            ) : (
+              <>
+                <button
+                  onClick={submitAdd}
+                  style={{
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    color: T.textBrand,
+                    fontSize: '14px',
+                    padding: '0 2px',
+                    lineHeight: 1,
+                  }}
+                  aria-label="Confirm"
+                >
+                  ✓
+                </button>
+                <button
+                  onClick={() => {
+                    setAdding(false);
+                    setNewName('');
+                  }}
+                  style={{
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    color: T.textSubtlest,
+                    fontSize: '14px',
+                    padding: '0 2px',
+                    lineHeight: 1,
+                  }}
+                  aria-label="Cancel"
+                >
+                  ✕
+                </button>
+              </>
+            )}
+          </div>
+        ) : (
+          <button
+            onClick={() => setAdding(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              width: '100%',
+              padding: '6px 8px',
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              color: T.textSubtlest,
+              fontSize: '13px',
+              borderRadius: '4px',
+              fontFamily: 'inherit',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.color = T.textBrand;
+              (e.currentTarget as HTMLElement).style.background = T.bgHover;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.color = T.textSubtlest;
+              (e.currentTarget as HTMLElement).style.background = 'transparent';
+            }}
+          >
+            <span style={{ fontSize: '16px', lineHeight: 1 }}>+</span>
+            Add status
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StatusBoard({
+  projectKey,
+  workItemType,
+}: {
+  projectKey: string;
+  workItemType: WorkItemType;
+}) {
+  const { data: workflow, isLoading } = useTypeWorkflow(projectKey, workItemType);
   const createStatus = useCreateStatus(projectKey);
   const updateStatus = useUpdateStatus(projectKey);
   const archiveStatus = useArchiveStatus(projectKey);
+  const setInitial = useSetInitialStatus(projectKey, workItemType);
+  const removeType = useRemoveTypeStatus(projectKey, workItemType);
 
-  // Default mutations
-  const seedMut = useSeedProjectFromDefaults(projectKey);
-  const resetMut = useResetProjectWorkflow(projectKey);
-  const exportMut = useExportProjectAsDefault(projectKey);
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flex: 1,
+        }}
+      >
+        <Spinner size="medium" />
+      </div>
+    );
+  }
 
-  // UI state
-  const [moduleTabIndex, setModuleTabIndex] = useState(0);
-  const [projectTypeIndex, setProjectTypeIndex] = useState(0);
-  const [productTypeIndex, setProductTypeIndex] = useState(0);
-  const [incidentTypeIndex, setIncidentTypeIndex] = useState(0);
+  const statuses = workflow?.statuses ?? [];
+  const initialId = workflow?.initialStatusId ?? null;
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editTarget, setEditTarget] = useState<WorkflowStatusWithTypes | null>(null);
-  const [deleteConfirmTarget, setDeleteConfirmTarget] = useState<WorkflowStatusWithTypes | null>(
-    null
+  const byCat = CATS.reduce(
+    (acc, cat) => {
+      acc[cat] = statuses.filter((s) => s.category === cat);
+      return acc;
+    },
+    {} as Record<StatusCategory, TypeStatus[]>
   );
-  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
-  const [exportConfirmOpen, setExportConfirmOpen] = useState(false);
-  const [flags, setFlags] = useState<FlagItem[]>([]);
-  const [flagCounter, setFlagCounter] = useState(0);
 
-  const viewport = useViewport();
-  const forcedCards = viewport < RESPONSIVE_BREAKPOINT;
+  return (
+    <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      {CATS.map((cat, i) => (
+        <StatusColumn
+          key={cat}
+          cat={cat}
+          statuses={byCat[cat]}
+          initialId={initialId}
+          isLast={i === CATS.length - 1}
+          onAddStatus={(name) =>
+            createStatus.mutateAsync({
+              name,
+              category: cat,
+              color: STATUS_CATEGORY_COLORS[cat],
+              typeAssignments: [workItemType],
+            })
+          }
+          onRename={(id, name) => updateStatus.mutateAsync({ id, name })}
+          onSetInitial={(id) => setInitial.mutateAsync({ statusId: id })}
+          onRemoveFromType={(id) => removeType.mutateAsync(id)}
+          onDelete={(id) => archiveStatus.mutateAsync(id)}
+        />
+      ))}
+    </div>
+  );
+}
 
-  function addFlag(type: FlagItem['type'], title: string, description?: string) {
-    const id = flagCounter + 1;
-    setFlagCounter(id);
-    setFlags((prev) => [...prev, { id, type, title, description }]);
-  }
+export default function WorkflowAdminPage() {
+  const [projectKey, setProjectKey] = useState('BAU');
+  const [module, setModule] = useState<ModuleKey>('project');
+  const [typeIdx, setTypeIdx] = useState(0);
+  const [showOverflow, setShowOverflow] = useState(false);
+  const [resetConfirm, setResetConfirm] = useState(false);
+  const overflowRef = useRef<HTMLButtonElement>(null);
 
-  function handleOpenCreate() {
-    setEditTarget(null);
-    setEditModalOpen(true);
-  }
+  const { data: projects = [] } = usePhProjects();
+  const resetMutation = useResetProjectWorkflow(projectKey);
 
-  function handleOpenEdit(status: WorkflowStatusWithTypes) {
-    setEditTarget(status);
-    setEditModalOpen(true);
-  }
+  const types = MODULE_TYPES[module];
+  const activeType = types[Math.min(typeIdx, types.length - 1)];
 
-  function handleDeleteRequest(status: WorkflowStatusWithTypes) {
-    const consumers = consumersMap[status.id] ?? [];
-    if (consumers.length > 0) return;
-    setDeleteConfirmTarget(status);
-  }
+  useEffect(() => {
+    setTypeIdx(0);
+  }, [module]);
 
-  function handleConfirmDelete() {
-    if (!deleteConfirmTarget) return;
-    archiveStatus.mutate(deleteConfirmTarget.id, {
-      onSuccess: () => {
-        addFlag('success', `Status "${deleteConfirmTarget.name}" deleted.`);
-        setDeleteConfirmTarget(null);
-      },
-      onError: (err: unknown) => {
-        addFlag('error', 'Failed to delete status.', (err as Error)?.message);
-        setDeleteConfirmTarget(null);
-      },
-    });
-  }
-
-  function handleSave(data: {
-    name: string;
-    category: StatusCategory;
-    color: string;
-    position: number;
-    isDefault: boolean;
-    typeAssignments: string[];
-  }) {
-    if (editTarget) {
-      updateStatus.mutate(
-        {
-          id: editTarget.id,
-          name: data.name,
-          category: data.category,
-          color: data.color,
-          position: data.position,
-          is_default: data.isDefault,
-          typeAssignments: data.typeAssignments,
-        },
-        {
-          onSuccess: () => {
-            addFlag('success', 'Status updated.');
-            setEditModalOpen(false);
-          },
-          onError: (err: unknown) => {
-            const msg = (err as Error)?.message ?? '';
-            addFlag(
-              'error',
-              msg.includes('uq_status_name')
-                ? `"${data.name}" already exists.`
-                : 'Failed to save status.',
-              msg
-            );
-          },
-        }
-      );
-    } else {
-      createStatus.mutate(
-        {
-          name: data.name,
-          category: data.category,
-          color: data.color,
-          position: data.position,
-          typeAssignments: data.typeAssignments,
-        },
-        {
-          onSuccess: () => {
-            addFlag('success', `Status "${data.name}" created.`);
-            setEditModalOpen(false);
-          },
-          onError: (err: unknown) => {
-            const msg = (err as Error)?.message ?? '';
-            addFlag(
-              'error',
-              msg.includes('uq_status_name')
-                ? `"${data.name}" already exists.`
-                : 'Failed to create status.',
-              msg
-            );
-          },
-        }
-      );
+  const handleReset = async () => {
+    if (!resetConfirm) {
+      setResetConfirm(true);
+      return;
     }
-  }
-
-  function handleSeed() {
-    seedMut.mutate(undefined, {
-      onSuccess: () => addFlag('success', `Default workflow seeded for ${projectKey}.`),
-      onError: (err: unknown) =>
-        addFlag('error', 'Seed failed.', (err as Error)?.message),
-    });
-  }
-
-  function handleConfirmReset() {
-    setResetConfirmOpen(false);
-    resetMut.mutate(undefined, {
-      onSuccess: () => addFlag('success', `Workflow for ${projectKey} reset to defaults.`),
-      onError: (err: unknown) =>
-        addFlag('error', 'Reset failed.', (err as Error)?.message),
-    });
-  }
-
-  function handleConfirmExport() {
-    setExportConfirmOpen(false);
-    exportMut.mutate(undefined, {
-      onSuccess: () =>
-        addFlag('success', `${projectKey} workflow exported as global default.`),
-      onError: (err: unknown) =>
-        addFlag('error', 'Export failed.', (err as Error)?.message),
-    });
-  }
-
-  const isSaving = createStatus.isPending || updateStatus.isPending;
-  const isWorkflowTab = moduleTabIndex < 3;
-
-  const contentProps = {
-    projectKey,
-    statuses,
-    statusesLoading,
-    consumersMap,
-    searchQuery,
-    viewMode,
-    forcedCards,
-    setSearchQuery,
-    setViewMode,
-    onOpenCreate: handleOpenCreate,
-    onOpenEdit: handleOpenEdit,
-    onDeleteRequest: handleDeleteRequest,
-    onFeedback: addFlag,
+    setResetConfirm(false);
+    setShowOverflow(false);
+    await resetMutation.mutateAsync();
   };
 
   return (
     <AdminGuard>
       <div
         style={{
-          minHeight: '100vh',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
           background: 'var(--ds-surface, #FFFFFF)',
-          color: 'var(--ds-text, #172B4D)',
-          fontFamily: "var(--ds-font-family-body, 'Atlassian Sans', sans-serif)",
         }}
       >
-        {/* Page header */}
         <div
           style={{
-            padding: '24px 24px 16px',
-            borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+            padding: '20px 24px 0',
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: '16px',
+            flexShrink: 0,
           }}
         >
-          <h1
-            style={{
-              fontSize: 24,
-              fontWeight: 653,
-              color: 'var(--ds-text, #172B4D)',
-              margin: 0,
-              lineHeight: '28px',
-            }}
-          >
-            Workflows
-          </h1>
-          <p
-            style={{
-              fontSize: 14,
-              color: 'var(--ds-text-subtle, #42526E)',
-              margin: '4px 0 0',
-              maxWidth: 600,
-            }}
-          >
-            One status registry per project. Each work item type selects which statuses it uses
-            and which transitions are allowed. Changes apply in real time.
-          </p>
-        </div>
-
-        <div style={{ padding: '24px' }}>
-          {/* Project selector + action strip */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              marginBottom: 24,
-              flexWrap: 'wrap',
-              padding: '12px 16px',
-              background: 'var(--ds-surface-sunken, #F7F8F9)',
-              borderRadius: 6,
-              border: '1px solid var(--ds-border, #DFE1E6)',
-            }}
-          >
-            <div style={{ width: 300 }}>
-              <Select
-                inputId="workflow-project-selector"
-                options={projectOptions}
-                value={selectedProjectOption}
-                isLoading={projectsLoading}
-                placeholder="Select project…"
-                onChange={(opt: { value: string; label: string } | null) => {
-                  if (opt) setSelectedProjectKey(opt.value);
-                }}
-              />
-            </div>
-
-            <div
+          <div>
+            <h1
               style={{
-                width: 1,
-                height: 24,
-                background: 'var(--ds-border, #DFE1E6)',
-                margin: '0 4px',
+                margin: 0,
+                fontSize: '24px',
+                fontWeight: 653,
+                color: T.text,
+                lineHeight: '28px',
+                fontFamily: "'Atlassian Sans', var(--ds-font-family-body)",
               }}
-            />
-
-            <Button
-              appearance="subtle"
-              isDisabled={!isWorkflowTab || seedMut.isPending}
-              onClick={handleSeed}
             >
-              {seedMut.isPending ? <Spinner size="small" /> : 'Seed from defaults'}
-            </Button>
-
-            <Button
-              appearance="subtle"
-              isDisabled={!isWorkflowTab || exportMut.isPending}
-              onClick={() => setExportConfirmOpen(true)}
-            >
-              Set as global default
-            </Button>
-
-            <Button
-              appearance="subtle"
-              isDisabled={!isWorkflowTab || resetMut.isPending}
-              onClick={() => setResetConfirmOpen(true)}
-            >
-              {resetMut.isPending ? <Spinner size="small" /> : 'Reset to defaults'}
-            </Button>
+              Workflows
+            </h1>
+            <p style={{ margin: '4px 0 0', fontSize: '14px', color: T.textSubtle }}>
+              Status workflows per work item type
+            </p>
           </div>
 
-          {/* Module tabs */}
-          <Tabs id="workflow-module-tabs" selected={moduleTabIndex} onChange={setModuleTabIndex}>
-            <TabList>
-              <Tab>Projects</Tab>
-              <Tab>Product (BR)</Tab>
-              <Tab>Incidents</Tab>
-              <Tab>Tasks</Tab>
-            </TabList>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', paddingTop: '4px' }}>
+            <select
+              value={projectKey}
+              onChange={(e) => {
+                setProjectKey(e.target.value);
+                setTypeIdx(0);
+              }}
+              style={{
+                fontSize: '13px',
+                fontWeight: 500,
+                color: T.text,
+                background: T.surface,
+                border: `1px solid ${T.border}`,
+                borderRadius: '4px',
+                padding: '4px 8px',
+                cursor: 'pointer',
+                height: '32px',
+                fontFamily: 'inherit',
+              }}
+            >
+              {projects.map((p) => (
+                <option key={p.key} value={p.key}>
+                  {p.name} ({p.key})
+                </option>
+              ))}
+            </select>
 
-            {/* Projects tab */}
-            <TabPanel>
-              {moduleTabIndex === 0 && (
-                <div style={{ paddingTop: 24 }}>
-                  <WorkflowContent
-                    {...contentProps}
-                    moduleTypes={MODULE_TYPES.project}
-                    activeTypeIndex={projectTypeIndex}
-                    setActiveTypeIndex={setProjectTypeIndex}
-                  />
-                </div>
+            <div style={{ position: 'relative' }}>
+              <button
+                ref={overflowRef}
+                onClick={() => {
+                  setShowOverflow((v) => !v);
+                  setResetConfirm(false);
+                }}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '4px',
+                  border: `1px solid ${T.border}`,
+                  background: showOverflow ? T.bgNeutral : T.surface,
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  color: T.textSubtle,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: 'inherit',
+                }}
+                aria-label="More actions"
+              >
+                ⋯
+              </button>
+              {showOverflow && (
+                <OverflowMenu
+                  triggerRef={overflowRef}
+                  onClose={() => {
+                    setShowOverflow(false);
+                    setResetConfirm(false);
+                  }}
+                  resetConfirm={resetConfirm}
+                  resetLoading={resetMutation.isPending}
+                  onReset={handleReset}
+                />
               )}
-            </TabPanel>
-
-            {/* Product (BR) tab */}
-            <TabPanel>
-              {moduleTabIndex === 1 && (
-                <div style={{ paddingTop: 24 }}>
-                  <WorkflowContent
-                    {...contentProps}
-                    moduleTypes={MODULE_TYPES.product}
-                    activeTypeIndex={productTypeIndex}
-                    setActiveTypeIndex={setProductTypeIndex}
-                  />
-                </div>
-              )}
-            </TabPanel>
-
-            {/* Incidents tab */}
-            <TabPanel>
-              {moduleTabIndex === 2 && (
-                <div style={{ paddingTop: 24 }}>
-                  <WorkflowContent
-                    {...contentProps}
-                    moduleTypes={MODULE_TYPES.incident}
-                    activeTypeIndex={incidentTypeIndex}
-                    setActiveTypeIndex={setIncidentTypeIndex}
-                  />
-                </div>
-              )}
-            </TabPanel>
-
-            {/* Tasks tab — Catalyst-native task statuses */}
-            <TabPanel>
-              {moduleTabIndex === 3 && (
-                <div style={{ paddingTop: 24 }}>
-                  <TaskStatusRegistry />
-                </div>
-              )}
-            </TabPanel>
-          </Tabs>
+            </div>
+          </div>
         </div>
 
-        {/* Edit / Create modal */}
-        <EditStatusModal
-          isOpen={editModalOpen}
-          onClose={() => setEditModalOpen(false)}
-          status={editTarget}
-          allStatuses={statuses}
-          consumers={editTarget ? (consumersMap[editTarget.id] ?? []) : []}
-          onSave={handleSave}
-          onDelete={
-            editTarget
-              ? () => {
-                  setEditModalOpen(false);
-                  setDeleteConfirmTarget(editTarget);
-                }
-              : undefined
-          }
-          isSaving={isSaving}
+        <div
+          style={{
+            padding: '16px 24px 0',
+            display: 'flex',
+            gap: '2px',
+            flexShrink: 0,
+          }}
+        >
+          {MODULES.map((m) => (
+            <button
+              key={m}
+              onClick={() => setModule(m)}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '4px',
+                border: 'none',
+                fontSize: '13px',
+                fontWeight: module === m ? 600 : 400,
+                color: module === m ? T.textBrand : T.textSubtle,
+                background: module === m ? T.bgSelected : 'transparent',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              {MODULE_LABEL[m]}
+            </button>
+          ))}
+        </div>
+
+        <div
+          style={{
+            padding: '10px 24px 0',
+            display: 'flex',
+            gap: '6px',
+            flexWrap: 'wrap',
+            flexShrink: 0,
+          }}
+        >
+          {types.map((t, i) => (
+            <button
+              key={t}
+              onClick={() => setTypeIdx(i)}
+              style={{
+                padding: '3px 10px',
+                borderRadius: '20px',
+                border: `1px solid ${typeIdx === i ? T.iconBrand : T.border}`,
+                fontSize: '12px',
+                fontWeight: typeIdx === i ? 600 : 400,
+                color: typeIdx === i ? T.textBrand : T.textSubtle,
+                background: typeIdx === i ? T.bgSelected : T.surface,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        <div
+          style={{
+            height: '1px',
+            background: T.border,
+            margin: '12px 0 0',
+            flexShrink: 0,
+          }}
         />
 
-        {/* Delete status confirm */}
-        {deleteConfirmTarget && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 500,
-            }}
-            onClick={() => setDeleteConfirmTarget(null)}
-          >
-            <div
-              style={{
-                background: 'var(--ds-surface, #FFFFFF)',
-                borderRadius: 8,
-                padding: 24,
-                maxWidth: 420,
-                width: '90%',
-                boxShadow: 'var(--ds-shadow-overlay, 0 4px 24px rgba(9,30,66,0.25))',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3
-                style={{
-                  margin: '0 0 8px',
-                  fontSize: 16,
-                  fontWeight: 653,
-                  color: 'var(--ds-text-danger, #AE2A19)',
-                }}
-              >
-                Delete status?
-              </h3>
-              <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
-                Delete <strong>{deleteConfirmTarget.name}</strong>? This cannot be undone.
-              </p>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                <Button appearance="subtle" onClick={() => setDeleteConfirmTarget(null)}>
-                  Cancel
-                </Button>
-                <Button
-                  appearance="danger"
-                  isLoading={archiveStatus.isPending}
-                  onClick={handleConfirmDelete}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Reset to defaults confirm */}
-        {resetConfirmOpen && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 500,
-            }}
-            onClick={() => setResetConfirmOpen(false)}
-          >
-            <div
-              style={{
-                background: 'var(--ds-surface, #FFFFFF)',
-                borderRadius: 8,
-                padding: 24,
-                maxWidth: 460,
-                width: '90%',
-                boxShadow: 'var(--ds-shadow-overlay, 0 4px 24px rgba(9,30,66,0.25))',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3
-                style={{
-                  margin: '0 0 8px',
-                  fontSize: 16,
-                  fontWeight: 653,
-                  color: 'var(--ds-text-warning, #974F0C)',
-                }}
-              >
-                Reset to defaults?
-              </h3>
-              <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
-                This clears all type-status assignments for <strong>{projectKey}</strong> and
-                re-seeds from the global default template. Custom assignments will be lost.
-              </p>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                <Button appearance="subtle" onClick={() => setResetConfirmOpen(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  appearance="warning"
-                  isLoading={resetMut.isPending}
-                  onClick={handleConfirmReset}
-                >
-                  Reset
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Set as global default confirm */}
-        {exportConfirmOpen && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 500,
-            }}
-            onClick={() => setExportConfirmOpen(false)}
-          >
-            <div
-              style={{
-                background: 'var(--ds-surface, #FFFFFF)',
-                borderRadius: 8,
-                padding: 24,
-                maxWidth: 460,
-                width: '90%',
-                boxShadow: 'var(--ds-shadow-overlay, 0 4px 24px rgba(9,30,66,0.25))',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3
-                style={{
-                  margin: '0 0 8px',
-                  fontSize: 16,
-                  fontWeight: 653,
-                  color: 'var(--ds-text, #172B4D)',
-                }}
-              >
-                Set as global default?
-              </h3>
-              <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
-                This overwrites the global default template with <strong>{projectKey}</strong>'s
-                current workflow configuration. New projects will be seeded from this template.
-              </p>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                <Button appearance="subtle" onClick={() => setExportConfirmOpen(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  appearance="primary"
-                  isLoading={exportMut.isPending}
-                  onClick={handleConfirmExport}
-                >
-                  Confirm
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Toast flags */}
-        <FlagGroup
-          onDismissed={(id) =>
-            setFlags((prev) => prev.filter((f) => f.id !== Number(id)))
-          }
-        >
-          {flags.map((flag) => (
-            <AutoDismissFlag
-              key={flag.id}
-              id={flag.id}
-              title={flag.title}
-              description={flag.description}
-              icon={
-                flag.type === 'success' ? (
-                  <SuccessIcon
-                    label="Success"
-                    primaryColor="var(--ds-icon-success, #22A06B)"
-                  />
-                ) : (
-                  <ErrorIcon
-                    label="Error"
-                    primaryColor="var(--ds-icon-danger, #AE2A19)"
-                  />
-                )
-              }
-            />
-          ))}
-        </FlagGroup>
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+          <StatusBoard projectKey={projectKey} workItemType={activeType} />
+        </div>
       </div>
     </AdminGuard>
   );
