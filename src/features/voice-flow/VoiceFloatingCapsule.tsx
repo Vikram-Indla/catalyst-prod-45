@@ -313,6 +313,7 @@ export function VoiceFloatingCapsule({
 
   useEffect(() => {
     if (!anchorElement || !anchorElement.isConnected) {
+      posRef.current = null;
       setPos(null);
       return;
     }
