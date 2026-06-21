@@ -1,13 +1,65 @@
 // @ts-nocheck
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
-import Lozenge from '@atlaskit/lozenge';
 import { PageHeader } from '@/components/ads/PageHeader';
 import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 import { supabase } from '@/integrations/supabase/client';
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ── types ─────────────────────────────────────────────────────────────────────
+
+interface ReportTile {
+  slug: string;
+  label: string;
+  description: string;
+  group: string;
+}
+
+interface KpiData {
+  totalCases: number;
+  totalCycles: number;
+  totalRuns: number;
+  passRate: number;
+}
+
+// ── report tile catalogue ─────────────────────────────────────────────────────
+
+const REPORT_TILES: ReportTile[] = [
+  // Execution group
+  { slug: 'execution-overview', label: 'Execution Overview', description: 'Status breakdown and overall progress across all runs.', group: 'Execution' },
+  { slug: 'execution-summary', label: 'Execution Summary', description: 'Per-cycle summary: total, passed, failed, blocked, pass rate.', group: 'Execution' },
+  { slug: 'execution-burndown', label: 'Execution Burndown', description: 'Cumulative runs executed over time by date.', group: 'Execution' },
+  { slug: 'execution-burnup', label: 'Execution Burnup', description: 'Cumulative passed runs over time by date.', group: 'Execution' },
+  { slug: 'execution-distribution', label: 'Execution Distribution', description: 'Count of runs broken down by status.', group: 'Execution' },
+  { slug: 'execution-history', label: 'Execution History', description: 'Full history of runs with case, executor and result.', group: 'Execution' },
+  // Case group
+  { slug: 'case-distribution', label: 'Case Distribution', description: 'Test cases grouped by current status.', group: 'Cases' },
+  { slug: 'case-usage', label: 'Case Usage', description: 'How many cycles each test case appears in.', group: 'Cases' },
+  // Defect group
+  { slug: 'defect-summary', label: 'Defect Summary', description: 'Defects grouped by severity and status.', group: 'Defects' },
+  { slug: 'defect-impact', label: 'Defect Impact', description: 'Defects linked to test cases — severity and case mapping.', group: 'Defects' },
+  { slug: 'defect-trend', label: 'Defect Trend', description: 'Defect creation rate over time by date.', group: 'Defects' },
+  // Multi-cycle group
+  { slug: 'multi-cycle-comparison', label: 'Multi-Cycle Comparison', description: 'Side-by-side pass rate comparison across cycles.', group: 'Multi-Cycle' },
+  { slug: 'multi-cycle-summary', label: 'Multi-Cycle Summary', description: 'One-row-per-cycle aggregated metrics.', group: 'Multi-Cycle' },
+  { slug: 'multi-cycle-detail', label: 'Multi-Cycle Detail', description: 'Per-case results across every cycle.', group: 'Multi-Cycle' },
+  { slug: 'multi-cycle-distribution', label: 'Multi-Cycle Distribution', description: 'Status distribution pivot: status × cycle.', group: 'Multi-Cycle' },
+  // Project group
+  { slug: 'project-overview', label: 'Project Overview', description: 'Top-level counts: cases, cycles, runs, pass rate.', group: 'Project' },
+  { slug: 'project-metrics', label: 'Project Metrics', description: 'Velocity and defect rate metrics over time.', group: 'Project' },
+  { slug: 'project-activity', label: 'Project Activity', description: 'Recent test activity: date, action, user, entity.', group: 'Project' },
+  // Traceability group
+  { slug: 'traceability-summary', label: 'Traceability Summary', description: 'Jira issues with linked test case counts.', group: 'Traceability' },
+  { slug: 'traceability-detail', label: 'Traceability Detail', description: 'Per-case detail: Jira issue → test case → status.', group: 'Traceability' },
+  // Other
+  { slug: 'run-distribution', label: 'Run Distribution', description: 'Runs broken down by executor: total, passed, failed.', group: 'Other' },
+  { slug: 'user-activity', label: 'User Activity', description: 'Activity per user: runs executed and pass rate.', group: 'Other' },
+];
+
+const GROUP_ORDER = ['Execution', 'Cases', 'Defects', 'Multi-Cycle', 'Project', 'Traceability', 'Other'];
+
+// ── data hooks ────────────────────────────────────────────────────────────────
 
 function useActiveProject(): string | undefined {
   const { data } = useQuery({
@@ -26,221 +78,122 @@ function useActiveProject(): string | undefined {
   return data;
 }
 
-interface ReportsData {
-  totalCases: number;
-  totalCycles: number;
-  totalRuns: number;
-  passedRuns: number;
-  recentCycles: Array<{
-    id: string;
-    name: string;
-    status: string;
-    start_date: string | null;
-    end_date: string | null;
-    passed: number;
-    total: number;
-  }>;
-  defectsBySeverity: Array<{ severity: string; count: number }>;
-}
-
-function useReportsData(projectId: string | undefined) {
-  return useQuery<ReportsData>({
-    queryKey: ['tm-reports', projectId],
+function useKpiData(projectId: string | undefined) {
+  return useQuery<KpiData>({
+    queryKey: ['tm-reports-kpi', projectId],
     enabled: !!projectId,
     staleTime: 60 * 1000,
-    queryFn: async (): Promise<ReportsData> => {
-      const [casesRes, cyclesRes, runsRes, defectsRes] = await Promise.all([
-        // total test cases
+    queryFn: async (): Promise<KpiData> => {
+      const [casesRes, cyclesRes, runsRes] = await Promise.all([
         supabase
           .from('tm_test_cases')
           .select('id', { count: 'exact', head: true })
           .eq('project_id', projectId!),
-
-        // recent 5 cycles
         supabase
           .from('tm_test_cycles')
-          .select('id, name, status, start_date, end_date')
-          .eq('project_id', projectId!)
-          .order('created_at', { ascending: false })
-          .limit(5),
-
-        // all runs joined via cycle → project
+          .select('id', { count: 'exact', head: true })
+          .eq('project_id', projectId!),
         supabase
           .from('tm_test_runs')
-          .select('id, status, cycle_id, tm_test_cycles!inner(project_id)')
+          .select('id, status, tm_test_cycles!inner(project_id)')
           .eq('tm_test_cycles.project_id', projectId!),
-
-        // defects grouped by severity
-        supabase
-          .from('tm_defects')
-          .select('severity')
-          .eq('project_id', projectId!),
       ]);
 
       const totalCases = casesRes.count ?? 0;
-      const cycles = cyclesRes.data ?? [];
+      const totalCycles = cyclesRes.count ?? 0;
       const runs = runsRes.data ?? [];
-      const defects = defectsRes.data ?? [];
-
       const totalRuns = runs.length;
       const passedRuns = runs.filter((r: any) => r.status === 'passed').length;
+      const passRate = totalRuns > 0 ? Math.round((passedRuns / totalRuns) * 100) : 0;
 
-      // cycle scope counts for recent cycles
-      const cycleIds = cycles.map((c: any) => c.id);
-      let scopeMap: Record<string, { passed: number; total: number }> = {};
-
-      if (cycleIds.length > 0) {
-        const { data: scopeRows } = await supabase
-          .from('tm_cycle_scope')
-          .select('cycle_id, execution_status')
-          .in('cycle_id', cycleIds);
-
-        for (const row of scopeRows ?? []) {
-          if (!scopeMap[row.cycle_id]) scopeMap[row.cycle_id] = { passed: 0, total: 0 };
-          scopeMap[row.cycle_id].total += 1;
-          if (row.execution_status === 'passed') scopeMap[row.cycle_id].passed += 1;
-        }
-      }
-
-      const recentCycles = cycles.map((c: any) => ({
-        id: c.id,
-        name: c.name,
-        status: c.status ?? 'draft',
-        start_date: c.start_date,
-        end_date: c.end_date,
-        passed: scopeMap[c.id]?.passed ?? 0,
-        total: scopeMap[c.id]?.total ?? 0,
-      }));
-
-      // defects by severity
-      const sevMap: Record<string, number> = {};
-      for (const d of defects) {
-        const sev = (d as any).severity ?? 'unknown';
-        sevMap[sev] = (sevMap[sev] ?? 0) + 1;
-      }
-      const defectsBySeverity = Object.entries(sevMap)
-        .map(([severity, count]) => ({ severity, count }))
-        .sort((a, b) => b.count - a.count);
-
-      // total cycles from full count
-      const { count: totalCycles } = await supabase
-        .from('tm_test_cycles')
-        .select('id', { count: 'exact', head: true })
-        .eq('project_id', projectId!);
-
-      return {
-        totalCases,
-        totalCycles: totalCycles ?? 0,
-        totalRuns,
-        passedRuns,
-        recentCycles,
-        defectsBySeverity,
-      };
+      return { totalCases, totalCycles, totalRuns, passRate };
     },
   });
 }
 
-// ── sub-components ────────────────────────────────────────────────────────────
+// ── styles ────────────────────────────────────────────────────────────────────
 
-const CARD_STYLE: React.CSSProperties = {
+const KPI_CARD: React.CSSProperties = {
   background: 'var(--ds-surface, #FFFFFF)',
   border: '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: 8,
-  padding: '20px 24px',
+  padding: '16px 20px',
   display: 'flex',
   flexDirection: 'column',
-  gap: 8,
+  gap: 6,
 };
 
-function KpiCard({ label, value, suffix }: { label: string; value: number | string; suffix?: string }) {
+// ── sub-components ────────────────────────────────────────────────────────────
+
+function KpiCard({ label, value }: { label: string; value: number | string }) {
   return (
-    <div style={CARD_STYLE}>
-      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+    <div style={KPI_CARD}>
+      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: '0.04em' }}>
         {label}
       </span>
-      <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text, #172B4D)', lineHeight: 1 }}>
-        {value}{suffix}
+      <span style={{ fontSize: 26, fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: 1 }}>
+        {value}
       </span>
     </div>
   );
 }
 
-function cycleStatusAppearance(status: string): 'default' | 'inprogress' | 'success' | 'moved' | 'removed' {
-  const map: Record<string, 'default' | 'inprogress' | 'success' | 'moved' | 'removed'> = {
-    draft: 'default',
-    planned: 'default',
-    active: 'inprogress',
-    in_progress: 'inprogress',
-    completed: 'success',
-    archived: 'moved',
-  };
-  return map[status] ?? 'default';
+function ReportTileCard({ tile }: { tile: ReportTile }) {
+  const navigate = useNavigate();
+
+  return (
+    <button
+      type="button"
+      onClick={() => navigate(`/testhub/reports/${tile.slug}`)}
+      style={{
+        width: 200,
+        minHeight: 120,
+        background: 'var(--ds-surface, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 6,
+        padding: '16px',
+        cursor: 'pointer',
+        textAlign: 'left',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        transition: 'background 0.1s',
+        boxSizing: 'border-box',
+      }}
+      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+    >
+      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: 1.3 }}>
+        {tile.label}
+      </span>
+      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', lineHeight: 1.5 }}>
+        {tile.description}
+      </span>
+    </button>
+  );
 }
-
-function cycleStatusLabel(status: string): string {
-  const map: Record<string, string> = {
-    draft: 'Draft',
-    planned: 'Planned',
-    active: 'In progress',
-    in_progress: 'In progress',
-    completed: 'Completed',
-    archived: 'Archived',
-  };
-  return map[status] ?? status;
-}
-
-function formatDate(d: string | null): string {
-  if (!d) return '—';
-  return new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-function severityColor(sev: string): string {
-  const map: Record<string, string> = {
-    critical: 'var(--ds-text-danger, #AE2A19)',
-    high: 'var(--ds-text-warning, #974F0C)',
-    medium: 'var(--ds-text, #172B4D)',
-    low: 'var(--ds-text-subtle, #42526E)',
-  };
-  return map[sev.toLowerCase()] ?? 'var(--ds-text, #172B4D)';
-}
-
-const TH: React.CSSProperties = {
-  padding: '8px 16px',
-  fontSize: 12,
-  fontWeight: 600,
-  color: 'var(--ds-text-subtle, #42526E)',
-  textAlign: 'left',
-  borderBottom: '2px solid var(--ds-border, #DFE1E6)',
-  whiteSpace: 'nowrap',
-};
-
-const TD: React.CSSProperties = {
-  padding: '10px 16px',
-  fontSize: 14,
-  color: 'var(--ds-text, #172B4D)',
-  borderBottom: '1px solid var(--ds-border-subtle, #F1F2F4)',
-  verticalAlign: 'middle',
-};
 
 // ── main page ─────────────────────────────────────────────────────────────────
 
 export default function ReportsPage() {
   const projectId = useActiveProject();
-  const { data, isLoading } = useReportsData(projectId);
-
-  const passRate =
-    data && data.totalRuns > 0
-      ? Math.round((data.passedRuns / data.totalRuns) * 100)
-      : 0;
+  const { data: kpi, isLoading: kpiLoading } = useKpiData(projectId);
 
   const breadcrumbs = (
     <Breadcrumbs
       items={[
-        { label: 'Test Hub', href: '/testhub' },
-        { label: 'Reports', isCurrent: true },
+        { key: 'home', text: 'Home', href: '/for-you' },
+        { key: 'testhub', text: 'Test Hub', href: '/testhub' },
+        { key: 'reports', text: 'Reports', isCurrent: true },
       ]}
     />
   );
+
+  // Group tiles
+  const groupedTiles = GROUP_ORDER.map(group => ({
+    group,
+    tiles: REPORT_TILES.filter(t => t.group === group),
+  }));
 
   return (
     <div
@@ -254,108 +207,46 @@ export default function ReportsPage() {
     >
       <PageHeader title="Reports" breadcrumbs={breadcrumbs} />
 
-      <div style={{ flex: 1, padding: '24px 24px 40px', maxWidth: 1100, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
-        {isLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}>
-            <Spinner size="large" />
+      <div style={{ flex: 1, padding: '24px 24px 48px', maxWidth: 1200, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
+
+        {/* KPI row */}
+        {kpiLoading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
+            <Spinner size="medium" />
           </div>
         ) : (
-          <>
-            {/* KPI cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
-              <KpiCard label="Total Cases" value={data?.totalCases ?? 0} />
-              <KpiCard label="Total Cycles" value={data?.totalCycles ?? 0} />
-              <KpiCard label="Total Runs" value={data?.totalRuns ?? 0} />
-              <KpiCard label="Pass Rate" value={passRate} suffix="%" />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
-              {/* Recent Cycles table */}
-              <div style={{ ...CARD_STYLE, padding: 0, overflow: 'hidden' }}>
-                <div style={{ padding: '16px 16px 0', fontWeight: 600, fontSize: 15, color: 'var(--ds-text, #172B4D)' }}>
-                  Recent cycles
-                </div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr>
-                        <th style={TH}>Name</th>
-                        <th style={TH}>Status</th>
-                        <th style={TH}>Progress</th>
-                        <th style={TH}>Start</th>
-                        <th style={TH}>End</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(data?.recentCycles ?? []).length === 0 ? (
-                        <tr>
-                          <td colSpan={5} style={{ ...TD, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                            No cycles yet
-                          </td>
-                        </tr>
-                      ) : (
-                        (data?.recentCycles ?? []).map(cycle => (
-                          <tr key={cycle.id}>
-                            <td style={{ ...TD, fontWeight: 500 }}>{cycle.name}</td>
-                            <td style={TD}>
-                              <Lozenge appearance={cycleStatusAppearance(cycle.status)} isBold={false}>
-                                {cycleStatusLabel(cycle.status)}
-                              </Lozenge>
-                            </td>
-                            <td style={TD}>
-                              {cycle.total > 0
-                                ? `${cycle.passed} / ${cycle.total}`
-                                : '—'}
-                            </td>
-                            <td style={{ ...TD, color: 'var(--ds-text-subtle, #42526E)' }}>{formatDate(cycle.start_date)}</td>
-                            <td style={{ ...TD, color: 'var(--ds-text-subtle, #42526E)' }}>{formatDate(cycle.end_date)}</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Defect Summary table */}
-              <div style={{ ...CARD_STYLE, padding: 0, overflow: 'hidden' }}>
-                <div style={{ padding: '16px 16px 0', fontWeight: 600, fontSize: 15, color: 'var(--ds-text, #172B4D)' }}>
-                  Defect summary
-                </div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr>
-                        <th style={TH}>Severity</th>
-                        <th style={{ ...TH, textAlign: 'right' }}>Count</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(data?.defectsBySeverity ?? []).length === 0 ? (
-                        <tr>
-                          <td colSpan={2} style={{ ...TD, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                            No defects
-                          </td>
-                        </tr>
-                      ) : (
-                        (data?.defectsBySeverity ?? []).map(row => (
-                          <tr key={row.severity}>
-                            <td style={{ ...TD, color: severityColor(row.severity), fontWeight: 500, textTransform: 'capitalize' }}>
-                              {row.severity}
-                            </td>
-                            <td style={{ ...TD, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                              {row.count}
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+            <KpiCard label="Total Cases" value={kpi?.totalCases ?? 0} />
+            <KpiCard label="Total Cycles" value={kpi?.totalCycles ?? 0} />
+            <KpiCard label="Total Runs" value={kpi?.totalRuns ?? 0} />
+            <KpiCard label="Pass Rate" value={`${kpi?.passRate ?? 0}%`} />
+          </div>
         )}
+
+        {/* Report tile groups */}
+        {groupedTiles.map(({ group, tiles }) => (
+          <div key={group} style={{ marginBottom: 32 }}>
+            <h2 style={{
+              fontSize: 13,
+              fontWeight: 600,
+              color: 'var(--ds-text-subtlest, #6B778C)',
+              marginBottom: 12,
+              marginTop: 0,
+              letterSpacing: '0.04em',
+            }}>
+              {group}
+            </h2>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 12,
+            }}>
+              {tiles.map(tile => (
+                <ReportTileCard key={tile.slug} tile={tile} />
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

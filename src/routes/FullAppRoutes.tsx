@@ -153,6 +153,7 @@ const TestHubSetsPage = lazy(() => import("../pages/testhub/sets/TestSetsPage"))
 const TestHubDefectsPage = lazy(() => import("../pages/testhub/defects/DefectsPage"));
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
 const TestHubReportsPage = lazy(() => import("../pages/testhub/reports/ReportsPage"));
+const TestHubReportDetailPage = lazy(() => import("../pages/testhub/reports/ReportDetailPage"));
 
 const WikiHomePage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
 const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
@@ -672,6 +673,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
         <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
         <Route path="/testhub/reports" element={<S><TestHubReportsPage /></S>} />
+        <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +
