@@ -119,6 +119,10 @@ Deno.serve(async (req) => {
     const baseHeaders = { Authorization: authHeader, Accept: 'application/json' };
     const postHeaders = { ...baseHeaders, 'Content-Type': 'application/json' };
 
+    // 2b. Load admin-managed status_mapping (lowercase status name →
+    //     'todo' | 'progress' | 'done') from wh_config so the Replay
+    //     transition rows carry the same category labels the UI shows.
+    //     Falls back to name heuristics in the mapper when a status is absent.
     let statusMappingLookup: Record<string, 'todo' | 'progress' | 'done'> = {};
     try {
       const { data: cfg } = await supabase
@@ -128,6 +132,7 @@ Deno.serve(async (req) => {
         .single();
       const raw = cfg?.value;
       const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      // wh_config.status_mapping shape: { 'To Do': 'todo', 'In Progress': 'progress', ... }
       if (parsed && typeof parsed === 'object') {
         for (const [statusName, bucket] of Object.entries(parsed)) {
           const b = String(bucket).toLowerCase();
@@ -140,9 +145,11 @@ Deno.serve(async (req) => {
         }
       }
     } catch {
-      // status_mapping absent — heuristics handle it.
+      // status_mapping absent or unparseable — heuristics handle it.
     }
 
+    // 3. Determine project scope. Default = all distinct project_keys in
+    // ph_issues (matches the legacy default).
     let projectsToScan: string[] = projectFilter ?? [];
     if (!projectsToScan.length) {
       const { data: distinctProjects } = await supabase
@@ -152,8 +159,13 @@ Deno.serve(async (req) => {
       projectsToScan = Array.from(new Set((distinctProjects ?? []).map((r: any) => r.project_key)));
     }
 
-    // Load ALL 2026+ ph_issues with real Jira keys into memory.
-    // `jiraScanLimit` only caps the Jira API scan, not this preload.
+    // 4. Build a key→id (uuid) lookup for ph_issues so we can populate
+    // work_item_changelogs.work_item_id without a per-issue SELECT.
+    // Load ALL 2026+ ph_issues into the lookup map — no artificial limit here.
+    // `issueLimit` controls how many Jira pages we scan, not how many rows we
+    // preload. Many ph_issues keys are synthetic (BAU-LOCAL-*, BAU-1781...) and
+    // would never appear in Jira results; loading all ensures real keys are
+    // covered regardless of alphabetical ordering.
     let phQuery = supabase
       .from('ph_issues')
       .select('id, issue_key, project_key')
@@ -223,6 +235,10 @@ Deno.serve(async (req) => {
 
           const transitionsForIssue: Array<Record<string, unknown>> = [];
           const changelogsForIssue: Array<Record<string, unknown>> = [];
+
+          // Raw status-change events (one per `status` item) used to build
+          // the Replay work_item_transitions rows. Collected unsorted, then
+          // ordered chronologically below.
           const statusEvents: Array<{
             jira_history_id: string;
             created: string;
@@ -260,6 +276,8 @@ Deno.serve(async (req) => {
             }
           }
 
+          // Build Replay rows: order status events chronologically, then
+          // compute dwell time as (this event - previous event).ms.
           statusEvents.sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
           const replayRows: TransitionRow[] = [];
           for (let si = 0; si < statusEvents.length; si++) {
@@ -274,6 +292,9 @@ Deno.serve(async (req) => {
               from_status: ev.from_status,
               to_status: ev.to_status,
               from_status_category: resolveStatusCategoryLabel(ev.from_status, statusMappingLookup),
+              // to_status_category is NOT NULL — fall back to 'In Progress' only
+              // if resolution somehow returns null (it never does for a non-null
+              // status, but the type allows it).
               to_status_category: toCat ?? 'In Progress',
               transitioned_by: ev.author ?? 'Unknown',
               transitioned_by_avatar: ev.avatar,
@@ -291,7 +312,9 @@ Deno.serve(async (req) => {
             continue;
           }
 
-          // work_item_transitions (Replay)
+          // 6-replay. work_item_transitions (Catalyst Replay canonical source).
+          //   Idempotent on (work_item_id, jira_changelog_id). A single Jira
+          //   history can only carry one status item, so the pair is unique.
           for (let i = 0; i < replayRows.length; i += 200) {
             const chunk = replayRows.slice(i, i + 200);
             const { data: inserted, error: insErr } = await supabase
@@ -307,7 +330,7 @@ Deno.serve(async (req) => {
             }
           }
 
-          // catalyst_status_history
+          // 6a. catalyst_status_history
           for (let i = 0; i < transitionsForIssue.length; i += 200) {
             const chunk = transitionsForIssue.slice(i, i + 200);
             const { data: inserted, error: insErr } = await supabase

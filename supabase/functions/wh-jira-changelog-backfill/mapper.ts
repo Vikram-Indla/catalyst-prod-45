@@ -77,6 +77,68 @@ export interface MapResult {
 }
 
 /**
+ * Row for work_item_transitions — the canonical data source for the Catalyst
+ * Replay module. Built from consecutive status-change pairs (see index.ts).
+ */
+export interface TransitionRow {
+  work_item_id: string;
+  from_status: string | null;
+  to_status: string;
+  from_status_category: string | null;
+  to_status_category: string;
+  transitioned_by: string;
+  transitioned_by_avatar: string | null;
+  transitioned_at: string;
+  time_in_from_status_ms: number | null;
+  jira_changelog_id: string;
+}
+
+/**
+ * Map a raw Jira status name to a 3-bucket category label:
+ * "To Do" | "In Progress" | "Done".
+ *
+ * Mirrors resolveStatusBucketStatic / useStatusMappingLookup (src) without
+ * importing the React/typedQuery-bound code into the Deno edge runtime.
+ * Callers may pass an admin-managed `status_mapping` lookup (lowercase status
+ * name → 'todo' | 'progress' | 'done') loaded from wh_config; we fall back to
+ * conservative name heuristics when a status is absent from the mapping.
+ */
+const CATEGORY_LABEL: Record<string, string> = {
+  todo: 'To Do',
+  progress: 'In Progress',
+  done: 'Done',
+};
+
+export function resolveStatusCategoryLabel(
+  statusName: string | null | undefined,
+  mappingLookup?: Record<string, 'todo' | 'progress' | 'done'>,
+): string | null {
+  if (!statusName) return null;
+  const key = statusName.toLowerCase().trim();
+
+  // 1. Admin-managed mapping (most specific, matches the UI exactly).
+  if (mappingLookup && mappingLookup[key]) return CATEGORY_LABEL[mappingLookup[key]];
+
+  // 2. Conservative name heuristics.
+  if (
+    key === 'done' || key.includes('complete') || key.includes('closed') ||
+    key.includes('resolved') || key.includes('ready for production') ||
+    key.includes('released') || key === 'cancelled' || key === 'canceled'
+  ) {
+    return 'Done';
+  }
+  if (
+    key === 'to do' || key === 'todo' || key === 'new' || key === 'open' ||
+    key === 'backlog' || key.includes('intake') || key.includes('requirement') ||
+    key === 'blocked' || key.includes('pending')
+  ) {
+    return 'To Do';
+  }
+  // Everything else (in progress / in review / analysis / implementation / qa ...).
+  return 'In Progress';
+}
+
+/**
  * Map a single Jira changelog `item` to the database rows it should
  * produce. Callers feed every item from every `histories[i].items[j]`
  * tuple through this function and accumulate the non-null results.
