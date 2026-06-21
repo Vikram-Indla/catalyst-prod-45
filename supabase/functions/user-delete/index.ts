@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
     const { data: { user: caller }, error: authErr } = await supabaseAdmin.auth.getUser(authHeader.slice(7));
     if (authErr || !caller) return err('Unauthorized', 401);
 
-    // Auth guard: caller must be admin or super_admin
+    // Auth guard: caller must be admin
     const { data: callerRole } = await supabaseAdmin
       .from('user_roles')
       .select('role')
@@ -43,14 +43,23 @@ Deno.serve(async (req) => {
       return err('Forbidden: cannot delete your own account', 403);
     }
 
-    // Safety check: cannot delete a super_admin
+    // Fetch target role
     const { data: targetRole } = await supabaseAdmin
       .from('user_roles')
       .select('role')
       .eq('user_id', user_id)
       .maybeSingle();
-    if (targetRole?.role === 'super_admin') {
-      return err('Forbidden: cannot delete a super_admin account', 403);
+
+    // Last-admin guard: cannot delete the last admin
+    if (targetRole?.role === 'admin') {
+      const { count } = await supabaseAdmin
+        .from('user_roles')
+        .select('*', { count: 'exact', head: true })
+        .eq('role', 'admin');
+      if ((count ?? 0) <= 1) {
+        // Return HTTP 200 so client can read the error body
+        return ok(false, 'Cannot delete the only admin. Promote another user to admin first.');
+      }
     }
 
     // Fetch target user email from profiles before deletion (for audit log)
@@ -61,6 +70,16 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const targetEmail = targetProfile?.email ?? null;
 
+    // Pre-flight: null out ph_projects.created_by to avoid FK constraint blocking auth.admin.deleteUser
+    const { error: projectsErr } = await supabaseAdmin
+      .from('ph_projects')
+      .update({ created_by: null })
+      .eq('created_by', user_id);
+    if (projectsErr) {
+      console.error('[user-delete] ph_projects null-out:', projectsErr);
+      return ok(false, 'Failed to reassign project ownership before deletion');
+    }
+
     // Delete sequence
     // 1. Delete from user_roles
     const { error: rolesErr } = await supabaseAdmin
@@ -69,7 +88,7 @@ Deno.serve(async (req) => {
       .eq('user_id', user_id);
     if (rolesErr) {
       console.error('[user-delete] user_roles delete:', rolesErr);
-      return err('Failed to remove user roles', 500);
+      return ok(false, 'Failed to remove user roles');
     }
 
     // 2. Delete from profiles
@@ -79,17 +98,17 @@ Deno.serve(async (req) => {
       .eq('id', user_id);
     if (profilesErr) {
       console.error('[user-delete] profiles delete:', profilesErr);
-      return err('Failed to remove user profile', 500);
+      return ok(false, 'Failed to remove user profile');
     }
 
     // 3. Delete from auth.users
     const { error: authDeleteErr } = await supabaseAdmin.auth.admin.deleteUser(user_id);
     if (authDeleteErr) {
       console.error('[user-delete] auth.admin.deleteUser:', authDeleteErr);
-      return err('Failed to delete auth user', 500);
+      return ok(false, authDeleteErr.message || 'Failed to delete user account');
     }
 
-    // Audit log
+    // Audit log (best-effort)
     await supabaseAdmin.from('auth_audit_log').insert({
       user_id,
       actor_id: caller.id,
@@ -104,10 +123,19 @@ Deno.serve(async (req) => {
     );
   } catch (e) {
     console.error('[user-delete]', e);
-    return err(e instanceof Error ? e.message : 'Unknown error', 500);
+    return ok(false, e instanceof Error ? e.message : 'Unknown error');
   }
 });
 
+// Business logic errors return HTTP 200 so the client can read { ok, error }
+function ok(success: boolean, error?: string) {
+  return new Response(JSON.stringify({ ok: success, error }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+  });
+}
+
+// Auth/permission errors stay non-2xx
 function err(message: string, status: number) {
   return new Response(JSON.stringify({ ok: false, error: message }), {
     status,

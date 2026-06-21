@@ -268,20 +268,22 @@ function OpeningPhase({
   );
 }
 
-// ─── Character rail ───────────────────────────────────────────────────────────
+// ─── Character rail (left panel — items + contributors only) ─────────────────
 
 function CharacterRail({
   script,
   revealedKeys,
   revealedPersonIds,
   focusKey,
-  currentEvent,
+  collapsed,
+  onToggleCollapse,
 }: {
   script: TheatreScript;
   revealedKeys: Set<string>;
   revealedPersonIds: Set<string>;
   focusKey: string | null;
-  currentEvent: TheatreEvent | null;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
 }) {
   const revealedChars = useMemo(
     () => script.characters.filter((c) => revealedKeys.has(c.key)),
@@ -296,235 +298,333 @@ function CharacterRail({
   return (
     <div
       style={{
+        width: collapsed ? 0 : 220,
+        flexShrink: 0,
+        background: 'var(--ds-surface, #FFFFFF)',
+        borderRight: collapsed ? 'none' : '1px solid var(--ds-border, #DFE1E6)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        transition: 'width 0.25s ease',
+        position: 'relative',
+      }}
+    >
+      {!collapsed && (
+        <>
+          {/* Section header with collapse button */}
+          <div
+            style={{
+              padding: '10px 10px 6px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              flexShrink: 0,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: 'var(--ds-text-subtlest, #6B778C)',
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.06em',
+                fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+              }}
+            >
+              Items · {revealedChars.length}
+            </span>
+            <button
+              onClick={onToggleCollapse}
+              title="Hide panel"
+              style={{
+                padding: '2px 6px',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 3,
+                background: 'transparent',
+                color: 'var(--ds-text-subtlest, #6B778C)',
+                fontSize: 11,
+                cursor: 'pointer',
+                lineHeight: 1,
+              }}
+            >
+              ◀
+            </button>
+          </div>
+
+          {/* Items list */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+            <AnimatePresence>
+              {revealedChars.map((char) => {
+                const isFocused = char.key === focusKey;
+                return (
+                  <motion.div
+                    key={char.key}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '5px 12px',
+                      borderLeft: isFocused ? `3px solid ${BRAND}` : '3px solid transparent',
+                      background: isFocused ? '#EAF0FB' : 'transparent',
+                    }}
+                  >
+                    <JiraIssueTypeIcon type={char.type} size={14} />
+                    <div style={{ minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 700,
+                          color: BRAND,
+                          fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {char.key}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 10,
+                          color: 'var(--ds-text-subtle, #42526E)',
+                          fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: 160,
+                        }}
+                      >
+                        {char.title}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+
+            {/* Contributors */}
+            {revealedPeople.length > 0 && (
+              <>
+                <div
+                  style={{
+                    padding: '10px 12px 6px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: 'var(--ds-text-subtlest, #6B778C)',
+                    textTransform: 'uppercase' as const,
+                    letterSpacing: '0.06em',
+                    fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+                    borderTop: '1px solid var(--ds-border, #DFE1E6)',
+                    marginTop: 6,
+                  }}
+                >
+                  Contributors · {revealedPeople.length}
+                </div>
+                <AnimatePresence>
+                  {revealedPeople.map((person) => (
+                    <motion.div
+                      key={person.id}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px' }}
+                    >
+                      <Avatar person={person} size={22} />
+                      <div style={{ minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: 'var(--ds-text, #172B4D)',
+                            fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {person.name}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 10,
+                            color: 'var(--ds-text-subtlest, #6B778C)',
+                            fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+                          }}
+                        >
+                          {person.roles[0]}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── Narration rail (right panel — event story) ───────────────────────────────
+
+function NarrationRail({
+  currentEvent,
+  leftCollapsed,
+  onExpandLeft,
+}: {
+  currentEvent: TheatreEvent | null;
+  leftCollapsed: boolean;
+  onExpandLeft: () => void;
+}) {
+  return (
+    <div
+      style={{
         width: 260,
         flexShrink: 0,
         background: 'var(--ds-surface, #FFFFFF)',
-        borderRight: '1px solid var(--ds-border, #DFE1E6)',
+        borderLeft: '1px solid var(--ds-border, #DFE1E6)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
       }}
     >
-      {/* Items section */}
+      {/* Header row */}
       <div
         style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '12px 0',
+          padding: '10px 12px 8px',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexShrink: 0,
         }}
       >
-        {/* Section header */}
-        {revealedChars.length > 0 && (
-          <div
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            color: 'var(--ds-text-subtlest, #6B778C)',
+            textTransform: 'uppercase' as const,
+            letterSpacing: '0.06em',
+            fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+          }}
+        >
+          Now Playing
+        </span>
+        {leftCollapsed && (
+          <button
+            onClick={onExpandLeft}
+            title="Show items panel"
             style={{
-              padding: '0 12px 8px',
-              fontSize: 11,
-              fontWeight: 600,
+              padding: '2px 6px',
+              border: '1px solid var(--ds-border, #DFE1E6)',
+              borderRadius: 3,
+              background: 'transparent',
               color: 'var(--ds-text-subtlest, #6B778C)',
-              textTransform: 'uppercase' as const,
-              letterSpacing: '0.06em',
-              fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+              fontSize: 11,
+              cursor: 'pointer',
+              lineHeight: 1,
             }}
           >
-            Items · {revealedChars.length}
-          </div>
-        )}
-
-        <AnimatePresence>
-          {revealedChars.map((char) => {
-            const isFocused = char.key === focusKey;
-            return (
-              <motion.div
-                key={char.key}
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '6px 12px',
-                  borderLeft: isFocused ? `3px solid ${BRAND}` : '3px solid transparent',
-                  background: isFocused ? '#EAF0FB' : 'transparent',
-                  cursor: 'default',
-                }}
-              >
-                <JiraIssueTypeIcon type={char.type} size={14} />
-                <div style={{ minWidth: 0 }}>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: BRAND,
-                      fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {char.key}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: 'var(--ds-text-subtle, #42526E)',
-                      fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: 190,
-                    }}
-                  >
-                    {char.title}
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-
-        {/* People section */}
-        {revealedPeople.length > 0 && (
-          <>
-            <div
-              style={{
-                padding: '12px 12px 8px',
-                fontSize: 11,
-                fontWeight: 600,
-                color: 'var(--ds-text-subtlest, #6B778C)',
-                textTransform: 'uppercase' as const,
-                letterSpacing: '0.06em',
-                fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-                borderTop: '1px solid var(--ds-border, #DFE1E6)',
-                marginTop: 8,
-              }}
-            >
-              Contributors · {revealedPeople.length}
-            </div>
-            <AnimatePresence>
-              {revealedPeople.map((person) => (
-                <motion.div
-                  key={person.id}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 12px',
-                  }}
-                >
-                  <Avatar person={person} size={22} />
-                  <div style={{ minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 500,
-                        color: 'var(--ds-text, #172B4D)',
-                        fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {person.name}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 10,
-                        color: 'var(--ds-text-subtlest, #6B778C)',
-                        fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-                      }}
-                    >
-                      {person.roles[0]}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </>
+            ▶ Items
+          </button>
         )}
       </div>
 
-      {/* Current event card */}
-      <AnimatePresence mode="wait">
-        {currentEvent && (
-          <motion.div
-            key={currentEvent.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              borderTop: '1px solid var(--ds-border, #DFE1E6)',
-              padding: '12px 14px',
-              background: 'var(--ds-surface-sunken, #F7F8F9)',
-              flexShrink: 0,
-              maxHeight: 220,
-              overflowY: 'auto',
-            }}
-          >
-            {/* Date */}
+      {/* Event narrative */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0' }}>
+        <AnimatePresence mode="wait">
+          {currentEvent ? (
+            <motion.div
+              key={currentEvent.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35 }}
+              style={{ padding: '14px 14px 16px' }}
+            >
+              {/* Date — prominent */}
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: BRAND,
+                  fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+                  marginBottom: 6,
+                  letterSpacing: '0.02em',
+                }}
+              >
+                {formatDate(currentEvent.date)}
+              </div>
+
+              {/* Headline — large, dark, readable */}
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: 'var(--ds-text, #172B4D)',
+                  fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+                  lineHeight: 1.45,
+                  marginBottom: 12,
+                }}
+              >
+                {currentEvent.headline}
+              </div>
+
+              {/* Bullets — clear dark text */}
+              {currentEvent.bullets.map((b, i) => (
+                <div
+                  key={i}
+                  style={{
+                    fontSize: 12,
+                    color: 'var(--ds-text-subtle, #42526E)',
+                    fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+                    lineHeight: 1.6,
+                    paddingLeft: 10,
+                    position: 'relative',
+                  }}
+                >
+                  <span style={{ position: 'absolute', left: 0, color: BRAND }}>·</span>
+                  {b}
+                </div>
+              ))}
+
+              {/* Why it matters — italic, visible */}
+              {currentEvent.whyItMatters && (
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: 'var(--ds-text-subtle, #42526E)',
+                    fontStyle: 'italic',
+                    fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
+                    lineHeight: 1.5,
+                    marginTop: 12,
+                    paddingTop: 10,
+                    borderTop: '1px solid var(--ds-border, #DFE1E6)',
+                  }}
+                >
+                  {currentEvent.whyItMatters}
+                </div>
+              )}
+            </motion.div>
+          ) : (
             <div
               style={{
-                fontSize: 11,
+                padding: '24px 14px',
+                fontSize: 12,
                 color: 'var(--ds-text-subtlest, #6B778C)',
                 fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-                marginBottom: 6,
+                fontStyle: 'italic',
               }}
             >
-              {formatDate(currentEvent.date)}
+              Press ▶ to begin the story.
             </div>
-
-            {/* Headline */}
-            <div
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: 'var(--ds-text, #172B4D)',
-                fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-                lineHeight: 1.4,
-                marginBottom: 8,
-              }}
-            >
-              {currentEvent.headline}
-            </div>
-
-            {/* Bullets */}
-            {currentEvent.bullets.slice(0, 3).map((b, i) => (
-              <div
-                key={i}
-                style={{
-                  fontSize: 11,
-                  color: 'var(--ds-text-subtle, #42526E)',
-                  fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-                  lineHeight: 1.5,
-                  paddingLeft: 8,
-                }}
-              >
-                · {b}
-              </div>
-            ))}
-
-            {/* Why it matters */}
-            {currentEvent.whyItMatters && (
-              <div
-                style={{
-                  fontSize: 11,
-                  color: 'var(--ds-text-subtlest, #6B778C)',
-                  fontStyle: 'italic',
-                  fontFamily: "'Atlassian Sans', ui-sans-serif, system-ui, sans-serif",
-                  lineHeight: 1.4,
-                  marginTop: 8,
-                  paddingTop: 8,
-                  borderTop: '1px solid var(--ds-border, #DFE1E6)',
-                }}
-              >
-                {currentEvent.whyItMatters}
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
@@ -682,6 +782,7 @@ export function ReplayTheatreOverlay({ script, onClose }: ReplayTheatreOverlayPr
   const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
   const [revealedPersonIds, setRevealedPersonIds] = useState<Set<string>>(new Set());
   const [focusKey, setFocusKey] = useState<string | null>(null);
+  const [leftCollapsed, setLeftCollapsed] = useState(false);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -935,38 +1036,51 @@ export function ReplayTheatreOverlay({ script, onClose }: ReplayTheatreOverlayPr
           <OpeningPhase script={script} onStart={handleStart} />
         ) : phase === 'credits' ? (
           <>
-            {/* Character rail stays visible */}
             <CharacterRail
               script={script}
               revealedKeys={revealedKeys}
               revealedPersonIds={revealedPersonIds}
               focusKey={focusKey}
-              currentEvent={currentEvent}
+              collapsed={leftCollapsed}
+              onToggleCollapse={() => setLeftCollapsed((v) => !v)}
             />
             <ReplayCredits
               contributions={script.contributions}
               script={script}
               onDone={handleCreditsReplay}
             />
+            <NarrationRail
+              currentEvent={currentEvent}
+              leftCollapsed={leftCollapsed}
+              onExpandLeft={() => setLeftCollapsed(false)}
+            />
           </>
         ) : (
           <>
-            {/* Character rail */}
+            {/* Left: items + contributors */}
             <CharacterRail
               script={script}
               revealedKeys={revealedKeys}
               revealedPersonIds={revealedPersonIds}
               focusKey={focusKey}
-              currentEvent={currentEvent}
+              collapsed={leftCollapsed}
+              onToggleCollapse={() => setLeftCollapsed((v) => !v)}
             />
 
-            {/* Stage */}
+            {/* Centre: timeline canvas */}
             <ReplayBranchCanvas
               script={script}
               revealedKeys={revealedKeys}
               focusKey={focusKey}
               phase={phase}
               zoom={zoom}
+            />
+
+            {/* Right: narration */}
+            <NarrationRail
+              currentEvent={currentEvent}
+              leftCollapsed={leftCollapsed}
+              onExpandLeft={() => setLeftCollapsed(false)}
             />
           </>
         )}

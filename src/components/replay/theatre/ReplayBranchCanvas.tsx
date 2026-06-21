@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TheatreScript, TheatreCharacter } from '@/lib/replay/theatre/theatreTypes';
 
@@ -8,9 +8,9 @@ const NODE_W = 180;
 const NODE_H = 44;
 const LEVEL_GAP_Y = 110;
 const SIBLING_GAP_Y = 70;
-const TIME_SCALE = 2; // pixels per day (reduced to fit more content)
 const CANVAS_PADDING_LEFT = 60;
 const CANVAS_PADDING_TOP = 60;
+const MIN_TIME_SCALE = 2;
 
 // ─── Type color map ───────────────────────────────────────────────────────────
 
@@ -44,6 +44,7 @@ interface NodePosition {
 function computeLayout(
   characters: TheatreCharacter[],
   scriptStart: Date,
+  timeScale: number,
 ): NodePosition[] {
   // Group by hierarchy level
   const byLevel = new Map<number, TheatreCharacter[]>();
@@ -70,7 +71,7 @@ function computeLayout(
     const startMs = scriptStart.getTime();
     const daysSinceStart = Math.max(0, (createdMs - startMs) / 86400000);
 
-    const x = CANVAS_PADDING_LEFT + daysSinceStart * TIME_SCALE;
+    const x = CANVAS_PADDING_LEFT + daysSinceStart * timeScale;
     const siblingIdx = siblingIndexByKey.get(c.key) ?? 0;
     const y =
       CANVAS_PADDING_TOP +
@@ -114,6 +115,18 @@ export function ReplayBranchCanvas({
   phase,
 }: ReplayBranchCanvasProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(900);
+
+  // Measure container width for dynamic time scale
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width;
+      if (w && w > 0) setContainerWidth(w);
+    });
+    observer.observe(wrapperRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const scriptStart = useMemo(
     () =>
@@ -125,9 +138,26 @@ export function ReplayBranchCanvas({
     [script.characters],
   );
 
+  // Total days span of the entire script
+  const totalScriptDays = useMemo(() => {
+    if (script.characters.length === 0) return 180;
+    const latestMs = Math.max(
+      ...script.characters.map((c) =>
+        new Date(c.completedAt ?? new Date().toISOString()).getTime(),
+      ),
+    );
+    return Math.max(1, Math.ceil((latestMs - scriptStart.getTime()) / 86400000));
+  }, [script.characters, scriptStart]);
+
+  // Dynamic time scale: fill the container width minus padding
+  const timeScale = useMemo(() => {
+    const available = containerWidth - CANVAS_PADDING_LEFT * 2 - NODE_W - 40;
+    return Math.max(MIN_TIME_SCALE, available / totalScriptDays);
+  }, [containerWidth, totalScriptDays]);
+
   const allPositions = useMemo(
-    () => computeLayout(script.characters, scriptStart),
-    [script.characters, scriptStart],
+    () => computeLayout(script.characters, scriptStart, timeScale),
+    [script.characters, scriptStart, timeScale],
   );
 
   const positionMap = useMemo(() => {
@@ -143,10 +173,10 @@ export function ReplayBranchCanvas({
 
   // Compute canvas bounding box
   const canvasW = useMemo(() => {
-    if (revealedPositions.length === 0) return 800;
-    const maxX = Math.max(...revealedPositions.map((p) => p.x + NODE_W + totalDays(p.character) * TIME_SCALE + 40));
-    return Math.max(maxX, 800);
-  }, [revealedPositions]);
+    if (revealedPositions.length === 0) return containerWidth;
+    const maxX = Math.max(...revealedPositions.map((p) => p.x + NODE_W + totalDays(p.character) * timeScale + 40));
+    return Math.max(maxX, containerWidth);
+  }, [revealedPositions, containerWidth, timeScale]);
 
   const canvasH = useMemo(() => {
     if (revealedPositions.length === 0) return 400;
@@ -188,8 +218,8 @@ export function ReplayBranchCanvas({
         style={{ display: 'block', minWidth: '100%', minHeight: '100%' }}
       >
         {/* Grid lines — week markers */}
-        {Array.from({ length: Math.ceil(canvasW / (TIME_SCALE * 7)) }, (_, i) => {
-          const xPos = CANVAS_PADDING_LEFT + i * 7 * TIME_SCALE;
+        {Array.from({ length: Math.ceil(canvasW / (timeScale * 7)) }, (_, i) => {
+          const xPos = CANVAS_PADDING_LEFT + i * 7 * timeScale;
           return (
             <line
               key={`grid-${i}`}
@@ -243,13 +273,13 @@ export function ReplayBranchCanvas({
             const isFocused = character.key === focusKey;
             const dimmed = hasFocus && !isFocused;
             const lifelineDays = totalDays(character);
-            const lifelineW = lifelineDays * TIME_SCALE;
+            const lifelineW = lifelineDays * timeScale;
 
             // Build segment widths
             let segOffset = 0;
             const segs = character.segments.map((seg) => {
               const dur = seg.durationDays ?? lifelineDays;
-              const w = Math.max(4, dur * TIME_SCALE);
+              const w = Math.max(4, dur * timeScale);
               const result = { seg, x: segOffset, w };
               segOffset += w;
               return result;
@@ -387,7 +417,7 @@ export function ReplayBranchCanvas({
                 {/* Regression arcs */}
                 {character.regressions.map((reg, ri) => {
                   const regDays = reg.durationDays ?? 14;
-                  const arcW = regDays * TIME_SCALE;
+                  const arcW = regDays * timeScale;
                   const arcX = x + NODE_W + Math.max(0, (totalSegW / 2) - arcW / 2);
                   const arcY = y + NODE_H / 2 + 3;
                   const arcColor = reg.isBoomerang ? '#FFD700' : '#FF8B00';
@@ -415,7 +445,7 @@ export function ReplayBranchCanvas({
                     0,
                     (new Date(ms.at).getTime() - new Date(character.createdAt).getTime()) / 86400000,
                   );
-                  const msX = x + NODE_W + msDay * TIME_SCALE;
+                  const msX = x + NODE_W + msDay * timeScale;
                   const isRelease = ms.type === 'release_assigned' || ms.type === 'release_date';
                   return (
                     <g key={`ms-${character.key}-${mi}`}>

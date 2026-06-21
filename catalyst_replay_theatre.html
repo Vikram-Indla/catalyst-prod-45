@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst Replay — MDT-742 Master Theatre</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 13px; background: #F4F5F7; color: #172B4D; }
+
+  #rp { min-height: 100vh; position: relative; overflow: hidden; }
+
+  .rps { position: fixed; inset: 0; display: none; flex-direction: column; z-index: 10; }
+  .rps.on { display: flex; }
+
+  /* TITLE */
+  #rpt { background: #06172E; align-items: center; justify-content: center; }
+
+  /* CAST / FINAL / CREDITS */
+  #rpc, #rpf, #rpk { background: #fff; overflow-y: auto; }
+
+  /* STAGE */
+  #rpstage { background: #F4F5F7; display: none; flex-direction: column; }
+  #rpstage.on { display: flex; }
+
+  #rpbody { flex: 1; display: flex; overflow: hidden; min-height: 0; }
+  #rprl { width: 200px; flex-shrink: 0; overflow-y: auto; border-right: 1px solid #DFE1E6; background: #fff; }
+  #rpcvwrap { flex: 1; overflow: auto; min-width: 0; background: #F4F5F7; }
+  #rpnarr { border-top: 1px solid #DFE1E6; padding: 9px 14px; min-height: 62px; flex-shrink: 0; background: #fff; }
+
+  .zbtn, .tbtn {
+    font-size: 11px; padding: 3px 9px;
+    border: 1px solid #DFE1E6; border-radius: 4px;
+    background: transparent; color: #42526E; cursor: pointer;
+  }
+  .zbtn.on { background: #E9F2FF; border-color: #0052CC; color: #0052CC; }
+  .zbtn:hover, .tbtn:hover { background: #F4F5F7; }
+
+  .icbtn {
+    width: 28px; height: 28px; padding: 0;
+    border: 1px solid #DFE1E6; border-radius: 4px;
+    background: transparent; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #42526E;
+  }
+  .icbtn:hover { background: #F4F5F7; }
+
+  .ftbtn {
+    font-size: 11px; padding: 2px 8px;
+    border: 1px solid; border-radius: 100px;
+    cursor: pointer; opacity: .35; transition: opacity .15s; font-weight: 500;
+  }
+  .ftbtn.on { opacity: 1; }
+
+  .sep { width: 1px; height: 18px; background: #DFE1E6; flex-shrink: 0; }
+
+  .rl-row {
+    display: flex; align-items: center; gap: 5px;
+    border-bottom: 1px solid #F4F5F7; overflow: hidden;
+    transition: background .1s;
+  }
+  .rl-row.hi { background: rgba(9,82,196,.06); }
+
+  .hdr {
+    display: flex; align-items: center; padding: 10px 14px;
+    border-bottom: 1px solid #DFE1E6; gap: 8px; flex-shrink: 0;
+    background: #fff; flex-wrap: wrap;
+  }
+  .ctrl {
+    display: flex; align-items: center; padding: 6px 10px;
+    border-bottom: 1px solid #DFE1E6; gap: 6px; flex-shrink: 0;
+    background: #fff; flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: #0C66E4; color: #fff; border: none;
+    padding: 10px 24px; border-radius: 6px; font-size: 13px;
+    cursor: pointer; font-weight: 500; letter-spacing: .3px;
+  }
+  .btn-primary:hover { background: #0055CC; }
+  .btn-outline {
+    border: 1px solid #DFE1E6; padding: 10px 20px;
+    border-radius: 6px; font-size: 13px; cursor: pointer;
+    background: transparent; color: #172B4D;
+  }
+  .btn-outline:hover { background: #F4F5F7; }
+
+  select {
+    font-size: 11px; padding: 3px 6px;
+    border: 1px solid #DFE1E6; border-radius: 4px;
+    background: #fff; color: #172B4D; cursor: pointer;
+  }
+
+  .tag {
+    font-size: 10px; padding: 2px 8px; border-radius: 100px;
+    font-weight: 500; border: 1px solid;
+  }
+</style>
+</head>
+<body>
+
+<div id="rp">
+
+  <!-- TITLE SCREEN -->
+  <div id="rpt" class="rps on">
+    <div style="text-align:center;padding:48px 28px">
+      <div style="font-size:9px;letter-spacing:4px;color:#5E7A94;text-transform:uppercase;margin-bottom:20px">Catalyst · Replay · Master Theatre</div>
+      <div style="font-size:48px;font-weight:300;color:#fff;margin-bottom:8px;letter-spacing:-2px">MDT-742</div>
+      <div style="font-size:20px;font-weight:400;color:#B8CFDF;margin-bottom:28px">Vendor Onboarding Automation</div>
+      <div style="font-size:12px;color:#5E7A94;margin-bottom:4px">Product · MIM · Business Request Journey</div>
+      <div style="font-size:12px;color:#5E7A94;margin-bottom:36px">Period: 01 Jan 2026 → 30 Sep 2026</div>
+      <div style="display:flex;gap:36px;justify-content:center;margin-bottom:40px">
+        <div><div style="font-size:36px;font-weight:300;color:#4C9AFF">10</div><div style="font-size:10px;color:#5E7A94;margin-top:2px">Epics</div></div>
+        <div><div style="font-size:36px;font-weight:300;color:#79F2C0">20</div><div style="font-size:10px;color:#5E7A94;margin-top:2px">Stories</div></div>
+        <div><div style="font-size:36px;font-weight:300;color:#FF8F73">3</div><div style="font-size:10px;color:#5E7A94;margin-top:2px">Bugs</div></div>
+        <div><div style="font-size:36px;font-weight:300;color:#FFBDAD">1</div><div style="font-size:10px;color:#5E7A94;margin-top:2px">Incident</div></div>
+      </div>
+      <button class="btn-primary" style="padding:14px 40px;font-size:15px" onclick="rpShowCast()">Begin Replay →</button>
+    </div>
+  </div>
+
+  <!-- CAST SCREEN -->
+  <div id="rpc" class="rps"></div>
+
+  <!-- FINAL SCREEN -->
+  <div id="rpf" class="rps"></div>
+
+  <!-- CREDITS SCREEN -->
+  <div id="rpk" class="rps"></div>
+
+  <!-- MAIN STAGE -->
+  <div id="rpstage" class="rps">
+    <div class="hdr">
+      <span style="font-size:16px;font-weight:600;color:#172B4D">MDT-742</span>
+      <span style="font-size:13px;color:#42526E">Vendor Onboarding Automation</span>
+      <span class="tag" style="background:#FFF7D6;color:#7A5200;border-color:#FFAB00">Business Request</span>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span id="rpdate" style="font-size:12px;color:#42526E;font-variant-numeric:tabular-nums;min-width:110px">01 Jan 2026</span>
+        <button class="tbtn" onclick="rpSkipEnd()">Skip to end</button>
+        <button class="tbtn" onclick="rpShowTitle()">← Title</button>
+      </div>
+    </div>
+
+    <div class="ctrl">
+      <button id="rpplaybtn" class="icbtn" onclick="rpToggle()" title="Play/Pause">
+        <i class="ti ti-player-play" style="font-size:14px"></i>
+      </button>
+      <button class="icbtn" onclick="rpStep(-1)" title="Step back"><i class="ti ti-chevron-left" style="font-size:13px"></i></button>
+      <button class="icbtn" onclick="rpStep(1)" title="Step forward"><i class="ti ti-chevron-right" style="font-size:13px"></i></button>
+      <button class="icbtn" onclick="rpRestart()" title="Restart"><i class="ti ti-refresh" style="font-size:12px"></i></button>
+      <div class="sep"></div>
+      <span style="font-size:10px;color:#6B778C">Speed</span>
+      <select onchange="rpSetSpd(this.value)">
+        <option value="2000">0.5×</option>
+        <option value="1000">1×</option>
+        <option value="500" selected>2×</option>
+        <option value="200">5×</option>
+        <option value="80">10×</option>
+      </select>
+      <div class="sep"></div>
+      <button class="zbtn on" data-z="week" onclick="rpZoom('week')">Week</button>
+      <button class="zbtn" data-z="month" onclick="rpZoom('month')">Month</button>
+      <button class="zbtn" data-z="day" onclick="rpZoom('day')">Day</button>
+      <div class="sep"></div>
+      <button class="ftbtn on" data-ft="Business Request" onclick="rpFilter('Business Request',this)" style="background:#FFF7D6;border-color:#FFAB00;color:#7A5200">BR</button>
+      <button class="ftbtn on" data-ft="Epic" onclick="rpFilter('Epic',this)" style="background:#EEE6FF;border-color:#6554C0;color:#403294">Epic</button>
+      <button class="ftbtn on" data-ft="Story" onclick="rpFilter('Story',this)" style="background:#E3FCEF;border-color:#36B37E;color:#006644">Story</button>
+      <button class="ftbtn on" data-ft="QA Bug" onclick="rpFilter('QA Bug',this)" style="background:#FFEBE6;border-color:#FF5630;color:#BF2600">Bug</button>
+      <button class="ftbtn on" data-ft="Production Incident" onclick="rpFilter('Production Incident',this)" style="background:#FFEBE6;border-color:#DE350B;color:#BF2600">Inc</button>
+      <div style="margin-left:auto">
+        <span id="rpprog" style="font-size:10px;color:#6B778C">0 / 0</span>
+      </div>
+    </div>
+
+    <div id="rpbody">
+      <div id="rprl"></div>
+      <div id="rpcvwrap"><canvas id="rpcv"></canvas></div>
+    </div>
+
+    <div id="rpnarr">
+      <div id="rpne" style="font-size:11px;font-weight:600;color:#6B778C;margin-bottom:3px">Replay ready — press Play to begin</div>
+      <div id="rpnb" style="font-size:12px;color:#172B4D;line-height:1.6"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── PRNG ──
+function mr32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+var rng=mr32(742742);
+
+// ── DATE HELPERS ──
+function dStr(d){var dt=new Date('2026-01-01');dt.setDate(dt.getDate()+Math.round(d));return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});}
+function dLong(d){var dt=new Date('2026-01-01');dt.setDate(dt.getDate()+Math.round(d));return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});}
+
+// ── LADDERS ──
+var BR_L=['New','Demand Intake','Demand Validation','Analysis & Design','In Development','Review & QA'];
+var BR_C=['todo','todo','todo','prog','prog','prog'];
+var EP_L=['Backlog','In Requirements','In Design','Ready for Dev','In Development','In QA','Done'];
+var EP_C=['todo','todo','todo','todo','prog','prog','done'];
+var ST_L=['Backlog','In Requirements','Ready for Dev','In Development','In QA','In UAT','Done'];
+var ST_C=['todo','todo','todo','prog','prog','prog','done'];
+var BG_L=['Backlog','In Development','In QA','Done'];
+var BG_C=['todo','prog','prog','done'];
+
+// ── ACTORS ──
+var ACTORS=[
+  {n:'Sarah Ahmed',i:'SA',c:'#6554C0'},
+  {n:'Omar Khan',i:'OK',c:'#0C66E4'},
+  {n:'Fatima Ali',i:'FA',c:'#006644'},
+  {n:'Vikram Rao',i:'VR',c:'#BF2600'},
+  {n:'Layla Hassan',i:'LH',c:'#7A5200'},
+];
+var TCOL={'Business Request':'#FFAB00','Epic':'#6554C0','Story':'#36B37E','QA Bug':'#FF5630','Production Incident':'#FF5630'};
+
+function segClr(cat){
+  if(cat==='done')return{f:'#DCFFF1',s:'#006644',t:'#006644'};
+  if(cat==='prog')return{f:'#CCE0FF',s:'#0052CC',t:'#0052CC'};
+  return{f:'#F1F2F4',s:'#97A0AF',t:'#42526E'};
+}
+
+function genSegs(startD,lad,cats,actor,regAt){
+  var segs=[],d=startD;
+  for(var i=0;i<lad.length;i++){
+    var dw=Math.max(2,Math.floor(rng()*14)+2);
+    segs.push({st:lad[i],cat:cats[i],s:d,e:d+dw,dw:dw,act:actor,reg:false,ret:false});
+    d+=dw;
+    if(regAt===i&&i>0&&i<lad.length-2){
+      var rd=Math.max(2,Math.floor(rng()*7)+1);
+      segs.push({st:lad[i-1],cat:cats[i-1],s:d,e:d+rd,dw:rd,act:actor,reg:true,ret:false});
+      d+=rd;
+      var rtd=Math.max(2,Math.floor(rng()*7)+1);
+      segs.push({st:lad[i],cat:cats[i],s:d,e:d+rtd,dw:rtd,act:actor,reg:false,ret:true});
+      d+=rtd;
+    }
+  }
+  return segs;
+}
+
+// ── LANES ──
+var lanes=[];
+var allEvts=[];
+
+lanes.push({key:'MDT-742',type:'Business Request',title:'Vendor Onboarding Automation',par:null,crd:0,rep:ACTORS[0],asg:ACTORS[0],segs:genSegs(0,BR_L,BR_C,ACTORS[0],-1),vis:false,lv:0});
+
+var EPT=['Portal Foundation','Approval Workflow','Integration Layer','Data Migration','User Management','Reporting Suite','Notification System','Security Hardening','Performance Tuning','Documentation Hub'];
+var EPD=[26,33,40,52,60,70,80,91,106,122];
+var EPA=[ACTORS[1],ACTORS[1],ACTORS[2],ACTORS[3],ACTORS[1],ACTORS[4],ACTORS[2],ACTORS[3],ACTORS[1],ACTORS[4]];
+var EPR=[4,-1,3,-1,-1,4,-1,-1,3,-1];
+for(var e=0;e<10;e++){
+  lanes.push({key:'BAU-'+(700+e),type:'Epic',title:EPT[e],par:'MDT-742',crd:EPD[e],rep:ACTORS[0],asg:EPA[e],segs:genSegs(EPD[e],EP_L,EP_C,EPA[e],EPR[e]),vis:false,lv:1});
+}
+
+var STT=['User auth flow','Dashboard setup','API endpoints','Form validation','Email templates','Report generation','Data export','Search feature','Notification triggers','Settings page','Profile management','Access control','Audit logging','Performance metrics','Cache layer','Error handling','Mobile responsive','Dark mode','Localisation','Help tooltips'];
+var si=0;
+for(var ep=0;ep<10;ep++){
+  for(var s=0;s<2;s++){
+    var sd=EPD[ep]+(s+1)*Math.floor(rng()*9+4);
+    var sa=ACTORS[Math.floor(rng()*5)];
+    var sr=rng()<0.3?3:-1;
+    lanes.push({key:'BAU-'+(720+si),type:'Story',title:STT[si],par:'BAU-'+(700+ep),crd:sd,rep:ACTORS[2],asg:sa,segs:genSegs(sd,ST_L,ST_C,sa,sr),vis:false,lv:2});
+    si++;
+  }
+}
+
+var bgd1=EPD[2]+22;
+lanes.push({key:'BAU-740',type:'QA Bug',title:'Login flow regression on mobile',par:'BAU-702',crd:bgd1,rep:ACTORS[2],asg:ACTORS[3],segs:genSegs(bgd1,BG_L,BG_C,ACTORS[3],1),vis:false,lv:2});
+var bgd2=EPD[5]+15;
+lanes.push({key:'BAU-741',type:'QA Bug',title:'Dashboard export corrupted data',par:'BAU-705',crd:bgd2,rep:ACTORS[4],asg:ACTORS[1],segs:genSegs(bgd2,BG_L,BG_C,ACTORS[1],-1),vis:false,lv:2});
+var bgd3=EPD[7]+10;
+lanes.push({key:'BAU-742',type:'QA Bug',title:'Security audit XSS vector',par:'BAU-707',crd:bgd3,rep:ACTORS[3],asg:ACTORS[2],segs:genSegs(bgd3,BG_L,BG_C,ACTORS[2],-1),vis:false,lv:2});
+var ind=EPD[4]+28;
+lanes.push({key:'BAU-743',type:'Production Incident',title:'Auth service outage P1',par:'BAU-704',crd:ind,rep:ACTORS[3],asg:ACTORS[1],segs:genSegs(ind,['Identified','In Progress','Monitoring','Resolved'],['todo','prog','prog','done'],ACTORS[1],-1),vis:false,lv:2});
+
+// ── BUILD EVENTS ──
+for(var li=0;li<lanes.length;li++){
+  var ln=lanes[li];
+  allEvts.push({d:ln.crd,type:'create',li:li});
+  for(var sj=0;sj<ln.segs.length;sj++){
+    var sg=ln.segs[sj];
+    if(sg.reg)allEvts.push({d:sg.s,type:'regression',li:li,si:sj});
+    else if(sg.ret)allEvts.push({d:sg.s,type:'return',li:li,si:sj});
+    else allEvts.push({d:sg.s,type:'transition',li:li,si:sj});
+  }
+}
+allEvts.sort(function(a,b){return a.d-b.d||(a.type==='create'?-1:1);});
+
+// ── PLAYBACK STATE ──
+var S={ei:-1,play:false,spd:500,zoom:'week',timer:null,filt:new Set(['Business Request','Epic','Story','QA Bug','Production Incident']),aLi:-1};
+var LH=42,SH=13,REL_D=272;
+
+function ppd(){
+  var wrap=document.getElementById('rpcvwrap');
+  var cw=wrap?wrap.clientWidth-8:700;
+  if(S.zoom==='day')return 28;
+  if(S.zoom==='week')return 13;
+  var curD=S.ei>=0&&allEvts[S.ei]?allEvts[S.ei].d:30;
+  var win=Math.max(curD+90,120);
+  return Math.max(4,cw/win);
+}
+
+function visLanes(){return lanes.filter(function(l){return l.vis&&S.filt.has(l.type);});}
+
+// ── RAIL ──
+function drawRail(){
+  var rail=document.getElementById('rprl');if(!rail)return;
+  var vis=visLanes();var html='';
+  for(var i=0;i<vis.length;i++){
+    var ln=vis[i];var col=TCOL[ln.type]||'#42526E';
+    var hi=lanes.indexOf(ln)===S.aLi;
+    html+='<div class="rl-row'+(hi?' hi':'')+'" style="height:'+LH+'px;padding:0 6px;padding-left:'+(8+ln.lv*10)+'px">';
+    html+='<div style="width:8px;height:8px;border-radius:50%;background:'+col+';flex-shrink:0"></div>';
+    html+='<div style="min-width:0;overflow:hidden">';
+    html+='<div style="font-size:10px;font-weight:600;color:#42526E;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+ln.key+'</div>';
+    html+='<div style="font-size:9px;color:#6B778C;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+ln.title+'</div>';
+    html+='</div></div>';
+  }
+  rail.innerHTML=html;
+}
+
+// ── CANVAS ──
+function drawCanvas(){
+  var cv=document.getElementById('rpcv');
+  var wrap=document.getElementById('rpcvwrap');
+  if(!cv||!wrap)return;
+  var p=ppd();
+  var curD=S.ei>=0&&allEvts[S.ei]?allEvts[S.ei].d:30;
+  var totalD=Math.max(REL_D+40,curD+120);
+  var vis=visLanes();
+  var W=Math.max(wrap.clientWidth-4,totalD*p+20);
+  var H=Math.max(vis.length*LH+30,200);
+  cv.width=W;cv.height=H;
+  var ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#F4F5F7';ctx.fillRect(0,0,W,H);
+
+  // month grid
+  ctx.strokeStyle='#DFE1E6';ctx.lineWidth=0.5;ctx.setLineDash([]);
+  for(var m=0;m<=12;m++){
+    var mx=Math.round(m*30*p);
+    if(mx>W)break;
+    ctx.beginPath();ctx.moveTo(mx,0);ctx.lineTo(mx,H);ctx.stroke();
+    var dt=new Date('2026-01-01');dt.setDate(dt.getDate()+m*30);
+    ctx.fillStyle='#97A0AF';ctx.font='8px -apple-system,system-ui';
+    ctx.fillText(dt.toLocaleDateString('en-GB',{month:'short'}),mx+2,9);
+  }
+
+  // release line
+  var rx=Math.round(REL_D*p);
+  if(rx<W){
+    ctx.strokeStyle='#FF7452';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(rx,0);ctx.lineTo(rx,H);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#FF7452';ctx.font='bold 8px -apple-system';ctx.fillText('REL',rx-14,H-4);
+  }
+
+  // lanes
+  for(var li=0;li<vis.length;li++){
+    var ln=vis[li];var y=li*LH;
+    if(li%2===0){ctx.fillStyle='rgba(255,255,255,0.6)';ctx.fillRect(0,y,W,LH);}
+    if(lanes.indexOf(ln)===S.aLi){ctx.fillStyle='rgba(9,82,196,.05)';ctx.fillRect(0,y,W,LH);}
+    var sy=y+Math.floor((LH-SH)/2);
+
+    for(var sj=0;sj<ln.segs.length;sj++){
+      var sg=ln.segs[sj];
+      var sx=Math.round(sg.s*p);var sw=Math.max(Math.round(sg.dw*p),3);
+      var cl=segClr(sg.cat);
+      if(sg.reg){
+        var ay=sy+SH+4;
+        ctx.strokeStyle='#FF7452';ctx.lineWidth=1.2;ctx.setLineDash([3,2]);
+        ctx.beginPath();ctx.moveTo(sx,sy+SH);ctx.bezierCurveTo(sx,ay+14,sx+sw,ay+14,sx+sw,sy+SH);ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle='#FF7452';ctx.font='8px -apple-system';ctx.fillText('↩',sx+sw/2-4,ay+15);
+      } else {
+        ctx.fillStyle=cl.f;ctx.fillRect(sx,sy,sw,SH);
+        ctx.strokeStyle=cl.s;ctx.lineWidth=0.8;ctx.strokeRect(sx+.5,sy+.5,sw-1,SH-1);
+        if(sg.ret){ctx.fillStyle='#006644';ctx.font='7px -apple-system';ctx.fillText('↻',sx+2,sy+SH-2);}
+        if(sw>28){ctx.fillStyle=cl.t;ctx.font='7px -apple-system';var lb=sg.dw+'d';var tw=ctx.measureText(lb).width;if(tw+3<sw)ctx.fillText(lb,sx+(sw-tw)/2,sy+SH-2);}
+      }
+    }
+
+    // open tail
+    var last=ln.segs[ln.segs.length-1];
+    if(last&&last.cat!=='done'){
+      var tx2=Math.round((last.e||last.s+last.dw)*p);var tod=Math.min(rx,W-8);
+      if(tx2<tod){ctx.strokeStyle='#97A0AF';ctx.lineWidth=0.8;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(tx2,sy+Math.floor(SH/2));ctx.lineTo(tod,sy+Math.floor(SH/2));ctx.stroke();ctx.setLineDash([]);}
+    }
+  }
+
+  // playhead
+  if(curD>0){
+    var cdx=Math.round(curD*p);
+    ctx.strokeStyle='rgba(12,102,228,0.4)';ctx.lineWidth=1.5;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(cdx,0);ctx.lineTo(cdx,H);ctx.stroke();
+  }
+}
+
+function updDate(){var d=S.ei>=0&&allEvts[S.ei]?allEvts[S.ei].d:0;var el=document.getElementById('rpdate');if(el)el.textContent=dLong(d);}
+function updProg(){var el=document.getElementById('rpprog');if(el)el.textContent=(S.ei+1)+' / '+allEvts.length;}
+function updPlayBtn(){
+  var b=document.getElementById('rpplaybtn');if(!b)return;
+  b.innerHTML=S.play?'<i class="ti ti-player-pause" style="font-size:14px"></i>':'<i class="ti ti-player-play" style="font-size:14px"></i>';
+}
+
+function narrate(evt){
+  if(!evt)return;var ln=lanes[evt.li];if(!ln)return;
+  var e1=document.getElementById('rpne'),e2=document.getElementById('rpnb');if(!e1||!e2)return;
+  var ds=dLong(evt.d);
+  if(evt.type==='create'){
+    e1.textContent=ds+' · '+ln.key+' created';
+    var kids=lanes.filter(function(l){return l.par===ln.key&&l.vis;});
+    var br=kids.length>=2?' &nbsp;<span style="color:#0052CC">▸ Split into '+kids.length+' delivery streams</span>':'';
+    e2.innerHTML='<b>'+ln.type+'</b> · '+ln.title+(ln.par?' &nbsp;↳&nbsp; '+ln.par:'')+' · Reporter: '+ln.rep.n+' · Assignee: '+ln.asg.n+br;
+  } else if(evt.type==='regression'){
+    var sg=ln.segs[evt.si];
+    e1.textContent=ds+' · BOOMERANG REGRESSION · '+ln.key;
+    e2.innerHTML='<span style="color:#FF5630">↩ Regression</span> · '+ln.title+' returned to <b>'+sg.st+'</b> · '+sg.dw+' days · Assignee: '+sg.act.n;
+  } else if(evt.type==='return'){
+    var sg2=ln.segs[evt.si];
+    e1.textContent=ds+' · BOOMERANG RETURN · '+ln.key;
+    e2.innerHTML='<span style="color:#006644">↻ Return from regression</span> · Back in <b>'+sg2.st+'</b> · '+sg2.dw+' days · Assignee: '+sg2.act.n;
+  } else if(evt.type==='transition'){
+    var sg3=ln.segs[evt.si];
+    e1.textContent=ds+' · '+ln.key+' → '+sg3.st;
+    e2.innerHTML=ln.title+' · <b>'+sg3.st+'</b> · '+sg3.dw+'d held · Assignee: '+sg3.act.n+(sg3.cat==='done'?' &nbsp;<span style="color:#006644">✓ Complete</span>':'');
+  }
+}
+
+function applyEvt(evt){
+  if(!evt)return;var ln=lanes[evt.li];if(!ln)return;
+  if(evt.type==='create')ln.vis=true;
+  S.aLi=evt.li;
+  updDate();updProg();narrate(evt);drawRail();drawCanvas();
+  var vis=visLanes();var vi=vis.indexOf(ln);
+  if(vi>=0){var rail=document.getElementById('rprl');if(rail)rail.scrollTop=Math.max(0,vi*LH-80);}
+  var curD=allEvts[S.ei]?allEvts[S.ei].d:0;
+  var p=ppd();
+  var wrap=document.getElementById('rpcvwrap');
+  if(wrap)wrap.scrollLeft=Math.max(0,curD*p-(wrap.clientWidth*0.5));
+}
+
+// ── PLAYBACK ──
+function rpTick(){S.ei++;if(S.ei>=allEvts.length){rpPause();rpShowFinal();return;}applyEvt(allEvts[S.ei]);}
+function rpPlay(){if(S.play)return;S.play=true;S.timer=setInterval(rpTick,S.spd);updPlayBtn();}
+function rpPause(){S.play=false;if(S.timer){clearInterval(S.timer);S.timer=null;}updPlayBtn();}
+function rpToggle(){S.play?rpPause():rpPlay();}
+function rpStep(n){rpPause();S.ei=Math.max(-1,Math.min(allEvts.length-1,S.ei+n));if(S.ei>=0)applyEvt(allEvts[S.ei]);}
+function rpRestart(){
+  rpPause();S.ei=-1;
+  lanes.forEach(function(l){l.vis=false;});S.aLi=-1;
+  var e1=document.getElementById('rpne');if(e1)e1.textContent='Replay ready — press Play to begin';
+  var e2=document.getElementById('rpnb');if(e2)e2.textContent='';
+  updDate();updProg();drawRail();drawCanvas();
+}
+function rpSkipEnd(){
+  S.ei=allEvts.length-1;
+  lanes.forEach(function(l){l.vis=true;});
+  applyEvt(allEvts[S.ei]);
+}
+function rpSetSpd(v){S.spd=parseInt(v);if(S.play){clearInterval(S.timer);S.timer=setInterval(rpTick,S.spd);}}
+function rpZoom(z){
+  S.zoom=z;
+  document.querySelectorAll('.zbtn').forEach(function(b){b.classList.toggle('on',b.dataset.z===z);});
+  drawCanvas();
+}
+function rpFilter(t,btn){
+  if(S.filt.has(t))S.filt.delete(t);else S.filt.add(t);
+  btn.classList.toggle('on',S.filt.has(t));
+  drawRail();drawCanvas();
+}
+
+// ── SCREEN MANAGER ──
+function rpShowScr(id){
+  document.querySelectorAll('.rps').forEach(function(s){s.classList.remove('on');});
+  var sc=document.getElementById(id);if(sc)sc.classList.add('on');
+}
+
+function rpShowTitle(){rpPause();rpShowScr('rpt');}
+
+function rpShowCast(){
+  var av=function(a){return '<div style="width:32px;height:32px;border-radius:50%;background:'+a.c+';color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+a.i+'</div>';};
+  var seen={};var people=[];
+  lanes.forEach(function(l){[l.rep,l.asg].forEach(function(a){if(a&&!seen[a.n]){seen[a.n]=true;people.push(a);}});});
+  var cnt={};lanes.forEach(function(l){cnt[l.type]=(cnt[l.type]||0)+1;});
+  var html='<div style="border-bottom:1px solid #DFE1E6;padding:24px 28px;flex-shrink:0">';
+  html+='<div style="font-size:9px;letter-spacing:3px;color:#6B778C;text-transform:uppercase;margin-bottom:10px">The Cast</div>';
+  html+='<div style="font-size:24px;font-weight:500;color:#172B4D;margin-bottom:4px">MDT-742 · Vendor Onboarding Automation</div>';
+  html+='<div style="font-size:13px;color:#6B778C">01 Jan 2026 → 30 Sep 2026 · Product MIM · Business Request Journey</div></div>';
+  html+='<div style="padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">';
+  html+='<div><div style="font-size:10px;font-weight:600;letter-spacing:2px;color:#6B778C;text-transform:uppercase;margin-bottom:12px">People</div>';
+  people.forEach(function(a){
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F4F5F7">'+av(a)+'<span style="font-size:14px;color:#172B4D;font-weight:500">'+a.n+'</span></div>';
+  });
+  html+='</div><div><div style="font-size:10px;font-weight:600;letter-spacing:2px;color:#6B778C;text-transform:uppercase;margin-bottom:12px">Scope</div>';
+  Object.keys(cnt).forEach(function(t){
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F4F5F7">';
+    html+='<div style="width:10px;height:10px;border-radius:50%;background:'+(TCOL[t]||'#42526E')+';flex-shrink:0"></div>';
+    html+='<span style="flex:1;font-size:14px;color:#42526E">'+t+'</span><b style="font-size:18px;font-weight:300;color:#172B4D">'+cnt[t]+'</b></div>';
+  });
+  html+='<div style="margin-top:16px;padding:12px;background:#F4F5F7;border-radius:6px;font-size:12px;color:#6B778C">';
+  html+='<b style="color:#172B4D">'+allEvts.length+'</b> events &nbsp;·&nbsp; <b style="color:#172B4D">Release:</b> 30 Sep 2026</div>';
+  html+='</div></div>';
+  html+='<div style="padding:16px 28px;border-top:1px solid #DFE1E6;display:flex;gap:10px">';
+  html+='<button class="btn-primary" onclick="rpStartPlay()">Start Replay →</button>';
+  html+='<button class="btn-outline" onclick="rpShowTitle()">← Back</button>';
+  html+='</div>';
+  var el=document.getElementById('rpc');if(el)el.innerHTML=html;
+  rpShowScr('rpc');
+}
+
+function rpStartPlay(){
+  rpShowScr('rpstage');
+  setTimeout(function(){rpRestart();setTimeout(function(){rpPlay();},300);},60);
+}
+
+function rpShowFinal(){
+  rpPause();
+  var done=lanes.filter(function(l){return l.vis&&l.segs.length&&l.segs[l.segs.length-1].cat==='done';}).length;
+  var open=lanes.filter(function(l){return l.vis&&l.segs.length&&l.segs[l.segs.length-1].cat!=='done';}).length;
+  var regs=lanes.filter(function(l){return l.segs.some(function(s){return s.reg;});}).length;
+  var boms=lanes.filter(function(l){return l.segs.some(function(s){return s.ret;});}).length;
+  var html='<div style="padding:32px 28px">';
+  html+='<div style="font-size:9px;letter-spacing:3px;color:#6B778C;text-transform:uppercase;margin-bottom:16px">Final Lifecycle Picture</div>';
+  html+='<div style="font-size:28px;font-weight:500;color:#172B4D;margin-bottom:24px">MDT-742 · Vendor Onboarding Automation</div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">';
+  [['Completed',done,'#006644'],['In Progress',open,'#0052CC'],['Regressions',regs,'#FF5630'],['Boomerang Returns',boms,'#006644']].forEach(function(m){
+    html+='<div style="padding:16px;border:1px solid #DFE1E6;border-radius:8px;background:#fff">';
+    html+='<div style="font-size:32px;font-weight:300;color:'+m[2]+'">'+m[1]+'</div>';
+    html+='<div style="font-size:11px;color:#6B778C;margin-top:4px">'+m[0]+'</div></div>';
+  });
+  html+='</div>';
+  html+='<div style="display:flex;gap:10px;flex-wrap:wrap">';
+  html+='<button class="btn-primary" onclick="rpShowCredits()">View Credits →</button>';
+  html+='<button class="btn-outline" onclick="rpStartPlay()">Replay Again</button>';
+  html+='<button class="btn-outline" onclick="rpShowScr(\'rpstage\')">Back to Stage</button>';
+  html+='</div></div>';
+  var el=document.getElementById('rpf');if(el)el.innerHTML=html;
+  rpShowScr('rpf');
+}
+
+function rpShowCredits(){
+  var dwells={};
+  lanes.forEach(function(l){l.segs.forEach(function(s){var k=l.asg.n;dwells[k]=(dwells[k]||0)+s.dw;});});
+  var cnt={};lanes.filter(function(l){return l.vis;}).forEach(function(l){cnt[l.type]=(cnt[l.type]||0)+1;});
+  var regs=lanes.filter(function(l){return l.segs.some(function(s){return s.reg;});}).length;
+  var boms=lanes.filter(function(l){return l.segs.some(function(s){return s.ret;});}).length;
+  var html='<div style="padding:36px 28px">';
+  html+='<div style="font-size:9px;letter-spacing:4px;color:#6B778C;text-transform:uppercase;margin-bottom:24px">Credits</div>';
+  html+='<div style="font-size:40px;font-weight:300;color:#172B4D;margin-bottom:6px">MDT-742</div>';
+  html+='<div style="font-size:18px;color:#6B778C;margin-bottom:32px">Vendor Onboarding Automation</div>';
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px">';
+  html+='<div><div style="font-size:10px;font-weight:600;letter-spacing:2px;color:#6B778C;text-transform:uppercase;margin-bottom:12px">Lifecycle Summary</div>';
+  Object.keys(cnt).forEach(function(t){
+    html+='<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F4F5F7;font-size:14px">';
+    html+='<span style="color:#42526E">'+t+'</span><b style="color:#172B4D">'+cnt[t]+'</b></div>';
+  });
+  html+='<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F4F5F7;font-size:14px"><span style="color:#42526E">Regressions</span><b style="color:#FF5630">'+regs+'</b></div>';
+  html+='<div style="display:flex;justify-content:space-between;padding:8px 0;font-size:14px"><span style="color:#42526E">Boomerang returns</span><b style="color:#006644">'+boms+'</b></div></div>';
+  html+='<div><div style="font-size:10px;font-weight:600;letter-spacing:2px;color:#6B778C;text-transform:uppercase;margin-bottom:12px">Team</div>';
+  ACTORS.forEach(function(a){
+    var d=Math.round(dwells[a.n]||0);if(!d)return;
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F4F5F7">';
+    html+='<div style="width:28px;height:28px;border-radius:50%;background:'+a.c+';color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center">'+a.i+'</div>';
+    html+='<span style="flex:1;font-size:14px;color:#172B4D;font-weight:500">'+a.n+'</span>';
+    html+='<span style="font-size:12px;color:#6B778C">'+d+'d held</span></div>';
+  });
+  html+='</div></div>';
+  html+='<div style="display:flex;gap:10px">';
+  html+='<button class="btn-outline" onclick="rpStartPlay()">Replay Again</button>';
+  html+='<button class="btn-outline" onclick="rpShowTitle()">← Title</button>';
+  html+='</div></div>';
+  var el=document.getElementById('rpk');if(el)el.innerHTML=html;
+  rpShowScr('rpk');
+}
+
+// ── SELF-TEST ──
+(function(){
+  var errs=[];
+  if(lanes.length<35)errs.push('lanes='+lanes.length+' (expected 35)');
+  if(allEvts.length<100)errs.push('events='+allEvts.length+' (expected 100+)');
+  var regLanes=lanes.filter(function(l){return l.segs.some(function(s){return s.reg;});}).length;
+  if(regLanes<5)errs.push('regression_lanes='+regLanes+' (expected 5+)');
+  if(errs.length){
+    var eb=document.createElement('div');
+    eb.style.cssText='position:fixed;top:0;left:0;right:0;background:#FF5630;color:#fff;font-size:12px;padding:6px 14px;z-index:9999;font-weight:500';
+    eb.textContent='⚠ Self-test failed: '+errs.join(' | ');
+    document.body.appendChild(eb);
+  } else {
+    console.log('✓ Self-test passed: '+lanes.length+' lanes · '+allEvts.length+' events · '+regLanes+' regression lanes');
+  }
+})();
+
+window.addEventListener('resize',function(){drawCanvas();});
+</script>
+</body>
+</html>
