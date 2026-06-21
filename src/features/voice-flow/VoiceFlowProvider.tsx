@@ -46,6 +46,25 @@ export function VoiceFlowProvider({ children }: Props) {
   const [analyserNode, setAnalyserNode]         = useState<AnalyserNode | null>(null);
   const [partialText, setPartialText]           = useState<string | null>(null);
 
+  // ─── On-screen diagnostic HUD (opt-in: ?vfdebug=1 or localStorage vfdebug=1) ──
+  // Surfaces the exact reason a double-space did or did not start a dictation, so
+  // the failure point is visible in a screenshot without opening DevTools.
+  const [debugLog, setDebugLog] = useState<string[]>([]);
+  const vfDebugRef = useRef<boolean>(false);
+  useEffect(() => {
+    try {
+      vfDebugRef.current =
+        new URLSearchParams(window.location.search).has('vfdebug') ||
+        localStorage.getItem('vfdebug') === '1';
+      if (vfDebugRef.current) setDebugLog((p) => [...p, 'voice debug HUD on — try a 2nd dictation']);
+    } catch { /* ignore */ }
+  }, []);
+  const pushDebug = useCallback((m: string) => {
+    if (!vfDebugRef.current) return;
+    const t = new Date().toLocaleTimeString();
+    setDebugLog((prev) => [...prev.slice(-13), `${t}  ${m}`]);
+  }, []);
+
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const statusRef         = useRef<VoiceStatus>('idle');
@@ -375,11 +394,15 @@ export function VoiceFlowProvider({ children }: Props) {
     // "re-dictate", so discard whatever is parked and start clean. This is the
     // fix for "voice only works once": low-confidence Arabic parks at 'review'
     // and the session never returned to idle, so the next activation was blocked.
+    pushDebug(`activate req: status=${statusRef.current} field=${field.kind}`);
     const recordingInFlight =
       statusRef.current === 'arming' ||
       statusRef.current === 'listening' ||
       statusRef.current === 'processing';
-    if (recordingInFlight) return;
+    if (recordingInFlight) {
+      pushDebug(`REFUSED: recording in flight (status=${statusRef.current}) — stuck session blocks re-arm`);
+      return;
+    }
     if (statusRef.current !== 'idle') reset();
 
     fieldRef.current = field;
@@ -466,6 +489,7 @@ export function VoiceFlowProvider({ children }: Props) {
     nativeModeRef.current = false;
     // Fresh instance every activation — guarantees clean stream/AudioContext state
     captureRef.current = new AudioCaptureService();
+    pushDebug('groq path: requesting mic…');
 
     try {
       await captureRef.current.start({
@@ -481,15 +505,17 @@ export function VoiceFlowProvider({ children }: Props) {
       setAnalyserNode(node);
 
       setStatusBoth('listening');
+      pushDebug('groq: LISTENING ✓ (re-arm OK)');
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Microphone access denied';
+      pushDebug(`groq start FAILED: ${msg}`);
       setErrorMessage(msg.includes('NotAllowedError') || msg.includes('Permission')
         ? 'Microphone access denied. Check browser permissions.'
         : msg);
       setStatusBoth('error');
       scheduleReset(3000);
     }
-  }, [reset, scheduleReset]);
+  }, [reset, scheduleReset, pushDebug]);
 
   // ─── Keyboard shortcuts ───────────────────────────────────────────────
   useVoiceHotkey({
@@ -502,6 +528,7 @@ export function VoiceFlowProvider({ children }: Props) {
     onActivate: handleActivate,
     onCommit: commit,
     onCancel: cancel,
+    onDebug: pushDebug,
   });
 
   // ─── Audit helpers ────────────────────────────────────────────────────
@@ -553,6 +580,38 @@ export function VoiceFlowProvider({ children }: Props) {
           analyserNode={analyserNode}
           partialText={partialText}
         />
+      )}
+      {debugLog.length > 0 && (
+        <div
+          role="status"
+          aria-label="Voice diagnostic log"
+          style={{
+            position: 'fixed',
+            left: 8,
+            bottom: 8,
+            zIndex: 2147483647,
+            maxWidth: 420,
+            maxHeight: 240,
+            overflowY: 'auto',
+            padding: 8,
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 4,
+            boxShadow: '0 4px 16px rgba(9,30,66,0.25)',
+            fontFamily: 'var(--ds-font-family-code, monospace)',
+            fontSize: 11,
+            lineHeight: '16px',
+            color: 'var(--ds-text, #172B4D)',
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+          <div style={{ fontWeight: 700, marginBottom: 4, color: 'var(--ds-text-subtle, #42526E)' }}>
+            voice diagnostic — screenshot this
+          </div>
+          {debugLog.map((line, i) => (
+            <div key={i}>{line}</div>
+          ))}
+        </div>
       )}
     </VoiceFlowContext.Provider>
   );

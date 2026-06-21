@@ -12,6 +12,8 @@ interface UseVoiceHotkeyOptions {
   onActivate: (field: ActiveField) => void;
   onCommit: () => void;
   onCancel: () => void;
+  /** Optional diagnostic sink — receives one line per relevant key press. */
+  onDebug?: (msg: string) => void;
 }
 
 /** Session phase as the hotkey handler sees it. */
@@ -66,16 +68,19 @@ export function useVoiceHotkey({
   onActivate,
   onCommit,
   onCancel,
+  onDebug,
 }: UseVoiceHotkeyOptions): void {
   const lastSpaceTimeRef = useRef(0);
   const isRecordingRef = useRef(isRecording);
   const isPendingRef   = useRef(isResultPending);
   const enabledRef     = useRef(enabled);
+  const onDebugRef     = useRef(onDebug);
 
   // Keep refs in sync without triggering effect re-registration
   isRecordingRef.current = isRecording;
   isPendingRef.current   = isResultPending;
   enabledRef.current     = enabled;
+  onDebugRef.current     = onDebug;
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -101,6 +106,10 @@ export function useVoiceHotkey({
         : 'other';
 
       const action = decideHotkeyAction(phase, key);
+
+      if (key !== 'other') {
+        onDebugRef.current?.(`key=${key} phase=${phase} → ${action}`);
+      }
 
       if (action === 'commit') {
         e.preventDefault();
@@ -139,6 +148,7 @@ export function useVoiceHotkey({
         const target = document.activeElement;
         const field = getActiveTextTarget(target);
         console.log('[VF-HK] double-space detected delta=', Math.round(delta), 'target=', target?.tagName, 'id=', (target as HTMLElement)?.id, 'field=', field ? field.kind : 'NULL', 'phase=', phase);
+        onDebugRef.current?.(`DBL-SPACE el=${target?.tagName ?? 'none'} eligible=${field ? field.kind : 'NO'}`);
 
         if (field) {
           e.preventDefault();
