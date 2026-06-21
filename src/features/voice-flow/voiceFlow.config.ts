@@ -24,6 +24,19 @@ export const VOICE_FLOW_CONFIG = {
   ],
   /** When confidence is low, pause for user review instead of auto-committing. */
   confidenceReviewEnabled: true,
+  /**
+   * Use the browser's native SpeechRecognition for English mid-session.
+   * DISABLED 2026-06-21: the native path was the root cause of "voice only works
+   * once" — after a Groq session pinned English, the next dictation switched to
+   * native webkitSpeechRecognition, which fails to re-arm reliably in real Chrome
+   * (single-use engine quirks + mic-handoff race after Groq's getUserMedia →
+   * onend never fires → session stuck in 'listening' → next double-space blocked
+   * at the activation guard → no capsule). Always-Groq removes the asymmetry: the
+   * exact same path that works for dictation 1 is used for every dictation.
+   * The Groq path is proven to re-arm (nativeReArm regression test). Re-enable
+   * only after the native lifecycle is fixed and verified across two sessions.
+   */
+  useNativeRecognition: false,
 } as const;
 
 // ─── Language preference (page-session scope only) ───────────────────────────

@@ -394,8 +394,10 @@ export function VoiceFlowProvider({ children }: Props) {
       (window as unknown as { SpeechRecognition?: new () => SpeechRecognition }).SpeechRecognition ??
       (window as unknown as { webkitSpeechRecognition?: new () => SpeechRecognition }).webkitSpeechRecognition;
 
-    if (prefLang === 'en' && SR) {
+    if (VOICE_FLOW_CONFIG.useNativeRecognition && prefLang === 'en' && SR) {
       // ── Native English path: zero edge-function calls, zero latency ──
+      // DISABLED by default (useNativeRecognition=false) — see voiceFlow.config.ts:
+      // this path was the "voice only works once" root cause. Always-Groq below.
       nativeModeRef.current = true;
       const recognition = new SR();
       recognition.lang = 'en-US';
