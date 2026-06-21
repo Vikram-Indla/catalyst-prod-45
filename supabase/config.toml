@@ -30,7 +30,6 @@ max_client_conn = 100
 [realtime]
 enabled = true
 ip_version = "IPv4"
-heartbeat_interval_ms = 1000
 max_header_length = 4096
 
 [studio]
