@@ -290,6 +290,8 @@ interface CatalystSidebarDetailsProps {
   statusPill?: React.ReactNode;
   /** Optional health badge rendered next to statusPill in the header row (BR detail view). */
   healthBadge?: React.ReactNode;
+  /** When true, hides the Discuss button (used for closed/done tickets). */
+  hideDiscuss?: boolean;
   /** Label for the work item type in the delete confirmation */
   typeLabel?: string;
   /** External trigger to open the delete confirmation */
@@ -325,7 +327,7 @@ interface CatalystSidebarDetailsProps {
 
 export function CatalystSidebarDetails({
   issue, itemId, projectId, onStatusChange, onClose, onDelete,
-  children, improveDropdown, statusPill, healthBadge, typeLabel = 'item',
+  children, improveDropdown, statusPill, healthBadge, hideDiscuss, typeLabel = 'item',
   deleteRequested, onDeleteDismiss,
   parentSource, projectKey, onOpenItem,
   dataSource,
@@ -439,7 +441,7 @@ export function CatalystSidebarDetails({
           {statusPill}
           {healthBadge}
           {improveDropdown}
-          {issue?.issue_key && <DiscussTicketButton issueKey={issue.issue_key} variant="full" />}
+          {!hideDiscuss && issue?.issue_key && <DiscussTicketButton issueKey={issue.issue_key} variant="full" />}
         </div>
       )}
 
