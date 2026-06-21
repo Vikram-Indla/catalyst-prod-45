@@ -31,6 +31,7 @@ import { CoverageMatrixWidget } from '@/components/releases/dashboard/CoverageMa
 import { ActivityFeedWidget } from '@/components/releases/dashboard/ActivityFeedWidget';
 import { EnvironmentComparisonWidget } from '@/components/releases/dashboard/EnvironmentComparisonWidget';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { ReplayDashboardWidget } from '@/components/replay/theatre/ReplayDashboardWidget';
 
 // Data
 import {
@@ -247,6 +248,14 @@ export default function ReleaseDashboardPage() {
               transition={{ delay: 0.4 }}
             >
               <ActivityFeedWidget activities={mockActivityFeed} />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.45 }}
+            >
+              <ReplayDashboardWidget mode="release" />
             </motion.div>
           </div>
         </div>

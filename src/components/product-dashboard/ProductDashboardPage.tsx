@@ -11,6 +11,7 @@ import { NeedsAttentionWidget } from './widgets/NeedsAttentionWidget';
 import { ActiveInterventionsWidget } from './widgets/ActiveInterventionsWidget';
 import { WhoCarriesWhatWidget } from './widgets/WhoCarriesWhatWidget';
 import { ActiveInitiativesWidget } from './widgets/ActiveInitiativesWidget';
+import { ReplayDashboardWidget } from '@/components/replay/theatre/ReplayDashboardWidget';
 
 const TIME_RANGE_OPTIONS = ['Last 30 days', 'Last 60 days', 'Last 90 days', 'Last 12 months'] as const;
 type TimeRange = typeof TIME_RANGE_OPTIONS[number];
@@ -140,6 +141,7 @@ export function ProductDashboardPage() {
           }}
         >
           {key && <ProductDashboardTimeline productId={key} />}
+          <ReplayDashboardWidget mode="product" productKey={key} />
           <AtAGlanceWidget />
           <StageOverviewWidget onStageClick={() => {}} />
           <NeedsAttentionWidget />
