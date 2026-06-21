@@ -83,23 +83,20 @@ Deno.serve(async (req) => {
     });
   }
 
-  // 2. Project Access
+  // 2. Project Access — active (live) projects only
   const projectCheck = await runCheck('Project Access', async () => {
-    const data = await jira('/rest/api/3/project?maxResults=50');
+    const data = await jira('/rest/api/3/project/search?status=live&maxResults=100');
     const projects = Array.isArray(data) ? data : data.values ?? [];
-    if (projects.length === 0) throw new Error('No accessible projects');
+    if (projects.length === 0) throw new Error('No active projects accessible');
     firstProjectKey = projects[0].key;
-    return `${projects.length} project${projects.length !== 1 ? 's' : ''} accessible`;
+    return `${projects.length} active project${projects.length !== 1 ? 's' : ''} accessible`;
   });
   checks.push(projectCheck);
 
-  // 3. Issue Read — scope to first project; ORDER BY cannot follow AND
+  // 3. Issue Read — date-scoped JQL avoids project-scope zero-count trap
   const issueCheck = await runCheck('Issue Read', async () => {
-    const jql = firstProjectKey
-      ? `project = "${firstProjectKey}" ORDER BY created DESC`
-      : 'ORDER BY created DESC';
     const data = await jira('/rest/api/3/search/jql', {
-      jql,
+      jql: 'created >= "2026-01-01" ORDER BY created DESC',
       maxResults: 1,
       fields: ['summary', 'issuetype'],
     });
@@ -134,18 +131,16 @@ Deno.serve(async (req) => {
   const accessibleProjects: Array<{ key: string; name: string; type: string }> = [];
 
   if (projectCheck.passed) {
-    const data = await jira('/rest/api/3/project?maxResults=50').catch(() => []);
+    const data = await jira('/rest/api/3/project/search?status=live&maxResults=100').catch(() => []);
     const projects = Array.isArray(data) ? data : data.values ?? [];
     for (const p of projects) {
       accessibleProjects.push({ key: p.key, name: p.name, type: p.projectTypeKey ?? 'software' });
     }
   }
 
-  // Count issues
   let totalIssueCount = 0;
   if (issueCheck.passed) {
-    const jql = firstProjectKey ? `project = "${firstProjectKey}" ORDER BY created DESC` : 'ORDER BY created DESC';
-    const data = await jira('/rest/api/3/search/jql', { jql, maxResults: 1 }).catch(() => null);
+    const data = await jira('/rest/api/3/search/jql', { jql: 'created >= "2026-01-01" ORDER BY created DESC', maxResults: 1 }).catch(() => null);
     totalIssueCount = data?.total ?? 0;
   }
 
