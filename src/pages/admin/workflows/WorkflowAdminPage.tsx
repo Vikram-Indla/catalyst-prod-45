@@ -677,6 +677,8 @@ function DiagramView({
   const [toId, setToId] = useState('');
   const [addLoading, setAddLoading] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  // Two-click connect mode: first click = source, second click on different node = create transition
+  const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
 
   // Add-status inline form state
   const [addingStatus, setAddingStatus] = useState(false);
@@ -714,13 +716,25 @@ function DiagramView({
       )
     : transitions;
 
-  const handleNodeClick = (id: string) => {
-    if (selectedNodeId === id) {
+  const handleNodeClick = async (id: string) => {
+    if (connectingFrom === null) {
+      // First click — enter connect mode
+      setConnectingFrom(id);
+      setSelectedNodeId(id);
+      setFromId(id);
+    } else if (connectingFrom === id) {
+      // Clicked same node — cancel connect mode
+      setConnectingFrom(null);
       setSelectedNodeId(null);
       setFromId('');
     } else {
-      setSelectedNodeId(id);
-      setFromId(id);
+      // Second click on different node — create transition
+      try {
+        await addTransition.mutateAsync({ fromStatusId: connectingFrom, toStatusId: id });
+      } catch (_) { /* ignore duplicate */ }
+      setConnectingFrom(null);
+      setSelectedNodeId(null);
+      setFromId('');
     }
   };
 
@@ -781,9 +795,26 @@ function DiagramView({
             style={{ width: 80, accentColor: 'var(--ds-link, #0C66E4)' }} />
           <span style={{ fontSize: 11, color: T.textSubtlest, minWidth: 30 }}>{zoom}%</span>
 
-          {selectedNodeId && (
-            <span style={{ fontSize: 11, color: T.textBrand, background: T.bgSelected, borderRadius: 3, padding: '2px 8px' }}>
-              {statusMap.get(selectedNodeId)?.name} selected — click to deselect
+          {connectingFrom ? (
+            <span style={{
+              fontSize: 11, fontWeight: 600,
+              color: '#FFFFFF',
+              background: 'var(--ds-background-brand-bold, #0C66E4)',
+              borderRadius: 3, padding: '3px 10px',
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+            }}>
+              <span>→</span>
+              <span>Click target status to add transition from <b>{statusMap.get(connectingFrom)?.name}</b></span>
+              <button
+                onClick={() => { setConnectingFrom(null); setSelectedNodeId(null); setFromId(''); }}
+                style={{ background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer',
+                  fontSize: 13, lineHeight: 1, padding: '0 2px', opacity: 0.8, fontFamily: 'inherit' }}
+                title="Cancel"
+              >✕</button>
+            </span>
+          ) : selectedNodeId && (
+            <span style={{ fontSize: 11, color: T.textSubtlest, borderRadius: 3, padding: '2px 8px' }}>
+              {statusMap.get(selectedNodeId)?.name} — click another status to add transition, or click same to deselect
             </span>
           )}
 
@@ -857,6 +888,7 @@ function DiagramView({
               showTransitionLabels={false}
               zoom={zoom}
               selectedNodeId={selectedNodeId ?? undefined}
+              connectingFromId={connectingFrom ?? undefined}
               highlightedTransitionIds={highlightedTransitionIds}
               onNodeClick={handleNodeClick}
               onEdgeDelete={handleEdgeDelete}
@@ -888,7 +920,7 @@ function DiagramView({
               {selectedNodeId && transitions.length !== visibleTransitions.length && ` of ${transitions.length}`}
             </span>
             {selectedNodeId && (
-              <button onClick={() => { setSelectedNodeId(null); setFromId(''); }}
+              <button onClick={() => { setSelectedNodeId(null); setFromId(''); setConnectingFrom(null); }}
                 style={{ marginLeft: 8, fontSize: 11, color: T.textBrand, background: 'none',
                   border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>
                 show all

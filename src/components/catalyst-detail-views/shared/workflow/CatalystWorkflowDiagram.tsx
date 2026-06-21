@@ -23,6 +23,7 @@ export interface CatalystWorkflowDiagramProps {
   showTransitionLabels: boolean;
   zoom: number;
   selectedNodeId?: string;
+  connectingFromId?: string;
   highlightedTransitionIds?: Set<string>;
   onNodeClick?: (statusId: string) => void;
   onEdgeDelete?: (transitionId: string) => void;
@@ -69,6 +70,7 @@ export function CatalystWorkflowDiagram({
   showTransitionLabels,
   zoom,
   selectedNodeId,
+  connectingFromId,
   highlightedTransitionIds,
   onNodeClick,
   onEdgeDelete,
@@ -223,6 +225,8 @@ export function CatalystWorkflowDiagram({
         {nodes.map((node) => {
           const isCurrent = node.id === currentStatusId;
           const isSelected = node.id === selectedNodeId;
+          const isConnectSource = node.id === connectingFromId;
+          const isConnectTarget = connectingFromId && node.id !== connectingFromId;
           const bgColor = node.color ? node.color : (CAT_COLOR[node.category] ?? STATUS_CATEGORY_BG.todo);
 
           return (
@@ -231,11 +235,21 @@ export function CatalystWorkflowDiagram({
               style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
               onClick={() => onNodeClick?.(node.id)}
             >
-              {/* Selection ring */}
-              {isSelected && (
+              {/* Connect-source ring — solid amber, thicker */}
+              {isConnectSource && (
+                <rect x={node.pos.x - 4} y={node.pos.y - 4} width={NODE_W + 8} height={NODE_H + 8}
+                  rx={8} fill="none" stroke="#FF991F" strokeWidth={3} />
+              )}
+              {/* Selection ring — dashed blue (non-connect-mode) */}
+              {isSelected && !isConnectSource && (
                 <rect x={node.pos.x - 3} y={node.pos.y - 3} width={NODE_W + 6} height={NODE_H + 6}
                   rx={7} fill="none" stroke="var(--ds-border-brand, #0C66E4)" strokeWidth={2}
                   strokeDasharray="4 2" />
+              )}
+              {/* Connect-target hint — faint highlight on non-source nodes */}
+              {isConnectTarget && (
+                <rect x={node.pos.x - 2} y={node.pos.y - 2} width={NODE_W + 4} height={NODE_H + 4}
+                  rx={6} fill="rgba(12,102,228,0.08)" stroke="none" />
               )}
               <rect
                 x={node.pos.x} y={node.pos.y} width={NODE_W} height={NODE_H} rx={4}
