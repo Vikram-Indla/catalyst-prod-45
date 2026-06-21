@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useProjects } from '@/hooks/test-management/useProjects';
-import { useTestCycles, useCreateCycle, useDeleteCycle } from '@/hooks/test-management/useTestCycles';
+import {
+  useTestCycles, useCreateCycle, useDeleteCycle,
+  useCloneCycle, useArchiveCycle, useBulkArchiveCycles, useBulkDeleteCycles,
+} from '@/hooks/test-management/useTestCycles';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/standard-button';
 import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
-import { Plus, Trash2, X } from '@/lib/atlaskit-icons';
+import { Plus, Trash2, X, Copy, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { TMCycle, CycleStatus } from '@/types/test-management';
 import { PageHeader } from '@/components/ads/PageHeader';
 import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
@@ -20,24 +23,90 @@ export default function CyclesPage() {
   const [showCreate, setShowCreate] = useState(false);
   const navigate = useNavigate();
 
+  // Multi-select
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkMenuOpen, setBulkMenuOpen] = useState(false);
+  const bulkBtnRef = React.useRef<HTMLButtonElement | null>(null);
+  const bulkArchive = useBulkArchiveCycles();
+  const bulkDelete = useBulkDeleteCycles();
+
+  const toggleSelect = (id: string) => setSelectedIds(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+  const toggleAll = () => setSelectedIds(
+    selectedIds.size === cycles.length && cycles.length > 0 ? new Set() : new Set(cycles.map(c => c.id))
+  );
+
   return (
     <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24 }}>
-      <PageHeader
-        title="Test Cycles"
-        breadcrumbs={
-          <Breadcrumbs items={[
-            { key: 'testhub', text: 'Test Hub', onClick: () => navigate('/testhub/dashboard') },
-            { key: 'cycles', text: 'Test Cycles', isCurrent: true },
-          ]} />
-        }
-        actions={
-          <Button appearance="primary" onClick={() => setShowCreate(true)} iconBefore={<Plus size={14} label="" />}>
-            Create cycle
-          </Button>
-        }
-      />
+        <PageHeader
+          title="Test Cycles"
+          breadcrumbs={
+            <Breadcrumbs items={[
+              { key: 'testhub', text: 'Test Hub', onClick: () => navigate('/testhub/dashboard') },
+              { key: 'cycles', text: 'Test Cycles', isCurrent: true },
+            ]} />
+          }
+          actions={
+            <Button appearance="primary" onClick={() => setShowCreate(true)} iconBefore={<Plus size={14} label="" />}>
+              Create cycle
+            </Button>
+          }
+        />
       </div>
+
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div style={{
+          padding: '8px 0 12px', display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-information, #0747A6)' }}>
+            {selectedIds.size} selected
+          </span>
+          <button
+            ref={bulkBtnRef}
+            onClick={() => setBulkMenuOpen(o => !o)}
+            style={{
+              padding: '5px 12px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+              border: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-surface, #FFFFFF)',
+              color: 'var(--ds-text, #172B4D)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}
+          >
+            Bulk <MoreHorizontal size={13} />
+          </button>
+          {bulkMenuOpen && bulkBtnRef.current && createPortal(
+            <BulkCycleMenu
+              triggerRef={bulkBtnRef}
+              onArchive={() => {
+                if (projectId) bulkArchive.mutate({ ids: Array.from(selectedIds), project_id: projectId },
+                  { onSuccess: () => setSelectedIds(new Set()) });
+                setBulkMenuOpen(false);
+              }}
+              onDelete={() => {
+                if (projectId) bulkDelete.mutate({ ids: Array.from(selectedIds), project_id: projectId },
+                  { onSuccess: () => setSelectedIds(new Set()) });
+                setBulkMenuOpen(false);
+              }}
+              onClose={() => setBulkMenuOpen(false)}
+            />,
+            document.body
+          )}
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13,
+            }}
+          >
+            Clear
+          </button>
+        </div>
+      )}
 
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
@@ -52,13 +121,19 @@ export default function CyclesPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
             <thead>
               <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+                <th style={{ ...thStyle, width: 40 }}>
+                  <input type="checkbox"
+                    checked={selectedIds.size === cycles.length && cycles.length > 0}
+                    onChange={toggleAll} style={{ cursor: 'pointer' }}
+                  />
+                </th>
                 <th style={thStyle}>Key</th>
                 <th style={thStyle}>Name</th>
                 <th style={thStyle}>Status</th>
                 <th style={thStyle}>Progress</th>
                 <th style={thStyle}>Cases</th>
                 <th style={thStyle}>Date range</th>
-                <th style={{ ...thStyle, width: 64 }}></th>
+                <th style={{ ...thStyle, width: 80 }}></th>
               </tr>
             </thead>
             <tbody>
@@ -66,6 +141,8 @@ export default function CyclesPage() {
                 <CycleRow
                   key={cycle.id}
                   cycle={cycle}
+                  selected={selectedIds.has(cycle.id)}
+                  onToggleSelect={() => toggleSelect(cycle.id)}
                   onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
                 />
               ))}
@@ -81,19 +158,146 @@ export default function CyclesPage() {
   );
 }
 
-function CycleRow({ cycle, onClick }: { cycle: TMCycle; onClick: () => void }) {
+// ── Bulk cycle menu (portal) ──────────────────────────────────────────────────
+function BulkCycleMenu({ triggerRef, onArchive, onDelete, onClose }: {
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  onArchive: () => void;
+  onDelete: () => void;
+  onClose: () => void;
+}) {
+  const menuRef = React.useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const down = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) && !triggerRef.current?.contains(e.target as Node)) onClose();
+    };
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
+    document.addEventListener('mousedown', down);
+    document.addEventListener('keydown', key, true);
+    return () => { document.removeEventListener('mousedown', down); document.removeEventListener('keydown', key, true); };
+  }, [onClose, triggerRef]);
+
+  if (!triggerRef.current) return null;
+  const rect = triggerRef.current.getBoundingClientRect();
+  const item: React.CSSProperties = {
+    display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
+    border: 'none', background: 'none', cursor: 'pointer', fontSize: 13,
+    color: 'var(--ds-text, #172B4D)',
+  };
+  return createPortal(
+    <div ref={menuRef} role="menu" style={{
+      position: 'fixed', top: rect.bottom + 4, left: rect.left,
+      background: 'var(--ds-surface-overlay, #FFFFFF)',
+      border: '1px solid var(--ds-border, #DFE1E6)',
+      borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+      padding: '4px 0', minWidth: 160, zIndex: 9999,
+    }}>
+      <button role="menuitem" style={{ ...item, color: 'var(--ds-text-warning, #974F0C)' }}
+        onClick={onArchive}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+        onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
+        Archive selected
+      </button>
+      <button role="menuitem" style={{ ...item, color: 'var(--ds-text-danger, #AE2A19)' }}
+        onClick={onDelete}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+        onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
+        Delete selected
+      </button>
+    </div>,
+    document.body
+  );
+}
+
+// ── Per-row ⋯ menu ─────────────────────────────────────────────────────────────
+function CycleRowMenu({ cycle, onClose }: { cycle: TMCycle; onClose: () => void }) {
+  const menuRef = React.useRef<HTMLDivElement>(null);
+  const [pos, setPos] = React.useState<{ top: number; left: number } | null>(null);
+  const trigRef = React.useRef<HTMLButtonElement | null>(null);
   const deleteCycle = useDeleteCycle();
+  const archiveCycle = useArchiveCycle();
+  const cloneCycle = useCloneCycle();
+
+  React.useEffect(() => {
+    if (trigRef.current) {
+      const r = trigRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 4, left: r.right - 160 });
+    }
+    const down = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) && !trigRef.current?.contains(e.target as Node)) onClose();
+    };
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
+    document.addEventListener('mousedown', down);
+    document.addEventListener('keydown', key, true);
+    return () => { document.removeEventListener('mousedown', down); document.removeEventListener('keydown', key, true); };
+  }, [onClose]);
+
+  return (
+    <>
+      <button ref={trigRef} onClick={e => { e.stopPropagation(); }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <MoreHorizontal size={14} />
+      </button>
+      {pos && createPortal(
+        <div ref={menuRef} role="menu" style={{
+          position: 'fixed', top: pos.top, left: pos.left,
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          border: '1px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+          padding: '4px 0', minWidth: 160, zIndex: 9999,
+        }}>
+          {(['Copy', 'Archive', 'Delete'] as const).map(action => (
+            <button
+              key={action}
+              role="menuitem"
+              onClick={e => {
+                e.stopPropagation();
+                if (action === 'Copy') cloneCycle.mutate({ id: cycle.id, project_id: cycle.project_id });
+                if (action === 'Archive') archiveCycle.mutate({ id: cycle.id, project_id: cycle.project_id });
+                if (action === 'Delete') deleteCycle.mutate({ id: cycle.id, project_id: cycle.project_id });
+                onClose();
+              }}
+              style={{
+                display: 'block', width: '100%', padding: '8px 16px',
+                textAlign: 'left', border: 'none', background: 'none',
+                cursor: 'pointer', fontSize: 13,
+                color: action === 'Delete' ? 'var(--ds-text-danger, #AE2A19)' :
+                       action === 'Archive' ? 'var(--ds-text-warning, #974F0C)' :
+                       'var(--ds-text, #172B4D)',
+              }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}
+            >
+              {action === 'Copy' ? 'Copy cycle' : action === 'Archive' ? 'Archive cycle' : 'Delete cycle'}
+            </button>
+          ))}
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
+function CycleRow({ cycle, selected, onToggleSelect, onClick }: {
+  cycle: TMCycle; selected: boolean; onToggleSelect: () => void; onClick: () => void;
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const total = cycle.total_cases ?? 0;
   const executed = (cycle.passed_count ?? 0) + (cycle.failed_count ?? 0) + (cycle.blocked_count ?? 0);
   const pct = total > 0 ? Math.round((executed / total) * 100) : 0;
 
   return (
     <tr
-      style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)', cursor: 'pointer' }}
+      style={{
+        borderBottom: '1px solid var(--ds-border, #DFE1E6)', cursor: 'pointer',
+        background: selected ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+      }}
       onClick={onClick}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
-      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+      onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
+      <td style={{ ...tdStyle, width: 40 }} onClick={e => e.stopPropagation()}>
+        <input type="checkbox" checked={selected} onChange={onToggleSelect} style={{ cursor: 'pointer' }} />
+      </td>
       <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12, whiteSpace: 'nowrap' }}>
         {cycle.key}
       </td>
@@ -113,14 +317,17 @@ function CycleRow({ cycle, onClick }: { cycle: TMCycle; onClick: () => void }) {
         {cycle.planned_start_date && cycle.planned_end_date ? ' – ' : ''}
         {cycle.planned_end_date ? new Date(cycle.planned_end_date).toLocaleDateString() : ''}
       </td>
-      <td style={tdStyle} onClick={e => e.stopPropagation()}>
-        <button
-          onClick={() => deleteCycle.mutate({ id: cycle.id, project_id: cycle.project_id })}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', padding: 4 }}
-          title="Delete cycle"
-        >
-          <Trash2 size={14} />
-        </button>
+      <td style={{ ...tdStyle, width: 80 }} onClick={e => e.stopPropagation()}>
+        {menuOpen
+          ? <CycleRowMenu cycle={cycle} onClose={() => setMenuOpen(false)} />
+          : <button
+              onClick={e => { e.stopPropagation(); setMenuOpen(true); }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', color: 'var(--ds-text-subtlest, #6B778C)' }}
+              title="Actions"
+            >
+              <MoreHorizontal size={14} />
+            </button>
+        }
       </td>
     </tr>
   );
