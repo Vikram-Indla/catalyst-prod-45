@@ -287,7 +287,7 @@ const PlanResourcePlannerPage = lazy(() => import("../modules/plan/ResourcePlann
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
-const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
+const JiraSyncPage = lazy(() => import("../pages/admin/connections/JiraSyncPage").then(m => ({ default: m.JiraSyncPage })));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 // Connections hub — each integration gets a page under /admin/connections/*
 const SlackConnectionPage = lazy(() => import("../pages/admin/connections/SlackConnectionPage"));
@@ -987,8 +987,9 @@ export default function FullAppRoutes() {
               Replaces the old /admin/workhub/* section. Each integration owns
               a page; old workhub paths redirect for backward compatibility.    */}
           <Route path="connections" element={<Navigate to="/admin/connections/jira" replace />} />
-          <Route path="connections/jira" element={<S><WorkHubAdminPage /></S>} />
-          <Route path="connections/jira/hierarchy" element={<S><WorkHubHierarchyPage /></S>} />
+          <Route path="connections/jira" element={<S><JiraSyncPage /></S>} />
+          <Route path="workflows/hierarchy" element={<S><WorkHubHierarchyPage /></S>} />
+          <Route path="connections/jira/hierarchy" element={<Navigate to="/admin/workflows/hierarchy" replace />} />
           <Route path="connections/slack" element={<S><SlackConnectionPage /></S>} />
           <Route path="connections/notion" element={<S><NotionConnectionPage /></S>} />
           <Route path="connections/vercel" element={<S><VercelConnectionPage /></S>} />
@@ -996,7 +997,7 @@ export default function FullAppRoutes() {
           <Route path="workhub-connection" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="workhub/jira-connection" element={<Navigate to="/admin/connections/jira" replace />} />
-          <Route path="workhub/hierarchy-mapping" element={<Navigate to="/admin/connections/jira/hierarchy" replace />} />
+          <Route path="workhub/hierarchy-mapping" element={<Navigate to="/admin/workflows/hierarchy" replace />} />
           {/* DEPRECATED — user-mapping, sync-logs, jira-user-sync */}
           <Route path="workhub/user-mapping" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="jira-user-sync" element={<Navigate to="/admin/connections/jira" replace />} />
