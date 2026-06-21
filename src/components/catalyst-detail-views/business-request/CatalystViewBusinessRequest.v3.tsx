@@ -38,6 +38,7 @@ import {
   REQUEST_TYPE_OPTIONS,
 } from '@/types/business-request';
 import { ProductReleasePicker } from '@/components/product/ProductReleasePicker';
+import { HealthStatusBadge } from '@/components/business-request/HealthStatusBadge';
 import type { AdfDoc } from '../shared/sections/Description/utils/adfToTiptap';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
@@ -238,6 +239,11 @@ export default function CatalystViewBusinessRequestV3({
             name="br-key--targeted-feature"
           />
         </KeyDetailsFieldRow>
+        {health && (
+          <KeyDetailsFieldRow label="Health" alignBlock="center">
+            <HealthStatusBadge health={health} />
+          </KeyDetailsFieldRow>
+        )}
       </>
     );
   }, [
@@ -247,6 +253,7 @@ export default function CatalystViewBusinessRequestV3({
     CATEGORY_OPTIONS,
     THEME_SELECT_OPTIONS,
     STAKEHOLDER_SELECT_OPTIONS,
+    health,
   ]);
 
   const brAsIssueLike = useMemo(

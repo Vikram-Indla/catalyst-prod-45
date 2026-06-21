@@ -136,9 +136,15 @@ export function CatalystDetailPanel({
             onResizeCommit?.(next);
           }
         }}
-        /* Jira-parity (2026-06-21 Vikram): splitter is INVISIBLE in every
-           state — idle, hover, drag. Only `cursor: col-resize` indicates
-           it can be grabbed. No hover bg, no drag bg, no transitions. */
+        /* Jira-parity splitter (2026-06-22 Vikram):
+             - idle: invisible
+             - hover/drag: blue hairline via inset box-shadow */
+        onMouseEnter={(e) => {
+          if (!resizing) e.currentTarget.style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, #1868DB)';
+        }}
+        onMouseLeave={(e) => {
+          if (!resizing) e.currentTarget.style.boxShadow = 'none';
+        }}
         style={{
           position: 'absolute',
           top: 0,
@@ -147,7 +153,9 @@ export function CatalystDetailPanel({
           width: 6,
           cursor: 'col-resize',
           background: 'transparent',
+          boxShadow: resizing ? 'inset 1px 0 0 0 var(--ds-link, #1868DB)' : 'none',
           zIndex: 51,
+          transition: 'box-shadow 120ms ease',
         }}
       />
 

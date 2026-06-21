@@ -441,11 +441,10 @@ export function WorkListPanel({
               )}
             </div>
           </div>
-          {/* Health badge — product mode only */}
-          {getHealthKey && (() => {
-            const hk = getHealthKey(item);
-            return hk ? <div style={{ marginTop: 6 }}><WorkListHealthBadge requestKey={hk} /></div> : null;
-          })()}
+          {/* Health badge removed from cards (2026-06-22 Vikram).
+              Now rendered inside the BR detail view's Key details
+              section after Targeted — see brKeyDetailsRows in
+              CatalystViewBusinessRequest.v3.tsx. */}
         </div>
       );
     },
