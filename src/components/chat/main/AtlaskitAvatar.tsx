@@ -13,7 +13,7 @@
  */
 
 import React, { useMemo } from 'react';
-import AtlaskitAvatar from '@atlaskit/avatar';
+import AKAvatar from '@atlaskit/avatar';
 import Tooltip from '@atlaskit/tooltip';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
@@ -183,7 +183,7 @@ export function AtlaskitAvatar({
           : undefined
       }
     >
-      <AtlaskitAvatar
+      <AKAvatar
         appearance={shape}
         size={atlaskitSize}
         src={photoUrl ?? undefined}
