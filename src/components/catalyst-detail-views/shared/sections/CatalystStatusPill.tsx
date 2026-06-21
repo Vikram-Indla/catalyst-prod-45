@@ -24,6 +24,7 @@ import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dial
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import { CatalystWorkflowModal } from '../workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
+import { toStatusCategory } from '@/components/ads';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import { statusBg, statusFg } from './statusPalette';
 
@@ -163,6 +164,9 @@ interface CatalystStatusPillProps {
   interactive?: boolean;
   /** When true, renders compact 24px height (table cells). Omit or false for 32px (default). */
   compact?: boolean;
+  /** 2026-06-21 (Vikram canonical): freeze the pill once status category =
+   *  done. Default true. */
+  lockWhenDone?: boolean;
 }
 
 export function CatalystStatusPill({
@@ -173,6 +177,7 @@ export function CatalystStatusPill({
   statusOptions,
   interactive = true,
   compact = false,
+  lockWhenDone = true,
 }: CatalystStatusPillProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
@@ -278,7 +283,12 @@ export function CatalystStatusPill({
 
   // ── Toggle ──────────────────────────────────────────────────────────────
 
+  /* Canonical "done = frozen" gate. When the current status maps to
+     category `done` the dropdown will not open. */
+  const isFrozen = lockWhenDone && status ? toStatusCategory(status) === 'done' : false;
+
   const toggle = () => {
+    if (isFrozen) return;
     if (!isOpen && triggerRef.current) {
       const r = triggerRef.current.getBoundingClientRect();
       setAnchor({ top: r.bottom + 4, left: r.left });
@@ -335,20 +345,32 @@ export function CatalystStatusPill({
         className={PILL_CLASS}
         data-testid="catalyst-status-pill-trigger"
         data-csp-compact={compact ? 'true' : 'false'}
-        aria-label={`Status: ${display}. Click to change.`}
+        disabled={isFrozen}
+        title={isFrozen ? `Status frozen — ${display} is final` : undefined}
+        aria-label={
+          isFrozen
+            ? `Status: ${display}. Frozen — done items cannot change status.`
+            : `Status: ${display}. Click to change.`
+        }
         aria-expanded={isOpen}
         aria-haspopup="menu"
         onClick={toggle}
         style={
-          { '--csp-bg': pillBg, '--csp-fg': pillFg } as React.CSSProperties
+          {
+            '--csp-bg': pillBg,
+            '--csp-fg': pillFg,
+            cursor: isFrozen ? 'default' : 'pointer',
+          } as React.CSSProperties
         }
       >
         {display}
-        <ChevronDownIcon
-          size="small"
-          label=""
-          primaryColor={pillFg}
-        />
+        {!isFrozen && (
+          <ChevronDownIcon
+            size="small"
+            label=""
+            primaryColor={pillFg}
+          />
+        )}
       </button>
 
       {isOpen && anchor && typeof document !== 'undefined' && createPortal(

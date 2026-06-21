@@ -622,7 +622,7 @@ interface FilterPreviewPageProps {
    *  issue_type='Production Incident' (cross-project). 2026-06-17: 'tasks'
    *  added — same chrome, `tasks` table via a client-side filter pass.
    *  Per CLAUDE.md "ADOPT CANONICAL COMPONENTS" rule. */
-  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release';
+  mode?: 'project' | 'product' | 'incident' | 'tasks' | 'release' | 'test';
 }
 
 export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps = {}) {
@@ -630,6 +630,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const isIncident = mode === 'incident';
   const isTasks = mode === 'tasks';
   const isRelease = mode === 'release';
+  const isTest = mode === 'test';
   const { key: routeKey } = useParams<{ key: string }>();
   /* `projectKey` keeps its original name through the file so we don't have to
      touch hundreds of references. In project mode it's the project key (e.g.
@@ -640,6 +641,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
     isIncident ? 'INCIDENTS'
     : isTasks ? 'TASKS'
     : isRelease ? 'RELEASES'
+    : isTest ? 'TESTHUB'
     : routeKey;
   /* Product info — only fetched when mode='product'. id is the products.id
      UUID used to filter business_requests. Name shows in the header. */

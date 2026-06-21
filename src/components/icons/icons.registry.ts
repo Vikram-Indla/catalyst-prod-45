@@ -48,6 +48,7 @@ import figmaLight from '@/assets/icons/work-type/figma.svg?url';
 import brdTaskLight from '@/assets/icons/work-type/brd-task.svg?url';
 import uatFindingLight from '@/assets/icons/work-type/uat-finding.svg?url';
 import releaseLight from '@/assets/icons/work-type/release.svg?url';
+import testCaseLight from '@/assets/icons/work-type/test-case.svg?url';
 
 import figmaDark from '@/assets/icons/work-type/_dark/figma.svg?url';
 import brdTaskDark from '@/assets/icons/work-type/_dark/brd-task.svg?url';
@@ -175,7 +176,7 @@ export type WorkItemType =
   | 'feature' | 'change-request' | 'production-incident'
   | 'business-request' | 'business-gap' | 'api-requirement'
   | 'frontend' | 'backend' | 'integration' | 'figma'
-  | 'brd-task' | 'uat-finding' | 'release';
+  | 'brd-task' | 'uat-finding' | 'release' | 'test-case';
 
 export type PriorityLevel =
   | 'highest' | 'high' | 'medium' | 'low' | 'lowest' | 'none';
@@ -268,6 +269,7 @@ export const WORK_TYPE_REGISTRY: Record<WorkItemType, WorkTypeMeta> = {
   'brd-task':            { id: 'brd-task',            label: 'BRD Task',            color: 'var(--ds-text-discovery, #6554C0)', light: brdTaskLight,             dark: brdTaskDark },
   'uat-finding':         { id: 'uat-finding',         label: 'UAT Finding',         color: 'var(--ds-text-discovery, #6554C0)', light: uatFindingLight,          dark: uatFindingDark },
   'release':             { id: 'release',             label: 'Release',             color: '#0C7A6D',                            light: releaseLight,             dark: releaseLight },
+  'test-case':           { id: 'test-case',           label: 'Test Case',           color: 'var(--ds-text-success, #1F845A)',   light: testCaseLight,            dark: testCaseLight },
 };
 
 export const PRIORITY_REGISTRY: Record<PriorityLevel, PriorityMeta> = {
@@ -527,6 +529,7 @@ export function normalizeWorkItemType(raw: string | null | undefined): WorkItemT
   if (t.includes('brd')) return 'brd-task';
   if (t.includes('uat')) return 'uat-finding';
   if (t === 'release') return 'release';
+  if (t === 'test case' || t === 'test-case' || t === 'testcase' || t === 'test') return 'test-case';
 
   return null;
 }

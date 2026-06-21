@@ -49,7 +49,7 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 /* 2026-06-17: 'tasks' added — same chrome, /tasks/filters links, no :key in
  *  URL. Saves use the 'TASKS' projectKey sentinel. Per CLAUDE.md "ADOPT
  *  CANONICAL COMPONENTS — DO NOT REIMPLEMENT". */
-export type HubType = 'project' | 'product' | 'incident' | 'tasks' | 'release';
+export type HubType = 'project' | 'product' | 'incident' | 'tasks' | 'release' | 'test';
 
 interface FiltersListPageProps {
   hubType?: HubType;
@@ -148,6 +148,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     hubType === 'incident' ? 'INCIDENTS'
     : hubType === 'tasks' ? 'TASKS'
     : hubType === 'release' ? 'RELEASES'
+    : hubType === 'test' ? 'TESTHUB'
     : routeKey;
   const navigate = useNavigate();
 
@@ -181,7 +182,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         ? `/tasks/filters/create`
         : hubType === 'release'
           ? `/release-hub/filters/create`
-          : `/project-hub/${projectKey}/filters/create`;
+          : hubType === 'test'
+            ? `/testhub/filters/create`
+            : `/project-hub/${projectKey}/filters/create`;
 
   // Keyboard shortcut: N opens the create flow (Jira pattern)
   React.useEffect(() => {
@@ -280,7 +283,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         ? `/tasks/filters/${f.id}`
         : hubType === 'release'
           ? `/release-hub/filters/${f.id}`
-          : `/project-hub/${projectKey}/filters/${f.id}`;
+          : hubType === 'test'
+            ? `/testhub/filters/${f.id}`
+            : `/project-hub/${projectKey}/filters/${f.id}`;
 
   const columns = useMemo<Column<SavedFilterFull>[]>(() => [
     {

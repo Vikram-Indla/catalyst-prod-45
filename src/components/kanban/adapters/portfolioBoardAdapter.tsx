@@ -256,6 +256,9 @@ export function buildPortfolioBoardAdapter(
   const persistence: BoardPersistence = {
     onDrop: (event) => {
       if (event.sourceColId === event.destColId) return; // within-column reorder n/a
+      /* 2026-06-21 canonical: freeze done items. */
+      const fromCol = PORTFOLIO_COLUMNS.find((c) => c.id === event.sourceColId);
+      if (fromCol?.category === 'done') return;
       const status = columnIdToStatus(event.destColId) as EpicStatus | null;
       if (status) return onStatusChange(event.cardId, status);
     },

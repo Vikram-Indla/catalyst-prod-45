@@ -30,6 +30,7 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import CopyIcon from '@atlaskit/icon/glyph/copy';
 import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
 import { catalystToast } from '@/lib/catalystToast';
+import { UnassignedAvatar } from '@/components/ads';
 import { useIdeaByKey, useUpdateIdea, useProfiles, type IdeaRow } from '@/hooks/useIdeasHub';
 import { QUARTER_BADGE } from '@/modules-dormant/ideation/ideation-data';
 import type { CatalystViewBaseProps } from '../shared/types';
@@ -490,7 +491,12 @@ export default function CatalystViewIdea({
                         placeholder="Select assignee"
                         spacing="compact"
                       />
-                    ) : <span style={{ fontSize: 13 }}>{assigneeName || 'Unassigned'}</span>}
+                    ) : (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+                        {!assigneeName && <UnassignedAvatar size={20} />}
+                        {assigneeName || 'Unassigned'}
+                      </span>
+                    )}
                   </FieldBlock>
 
                   <FieldBlock label="CREATED">

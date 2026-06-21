@@ -1,7 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { Search, X, User, Check, Loader2 } from '@/lib/atlaskit-icons';
+/**
+ * T10AssigneePicker — task10 side-panel assignee picker.
+ *
+ * 2026-06-21 Phase 8: rewrapped around the canonical <ProfilePicker /> in
+ * body-only `anchorRef` mode. Public API unchanged (currentAssigneeId,
+ * currentAssigneeName, currentAssigneeInitials, onSelect, anchorRef,
+ * isOpen, onClose) so T10SidePanel needs no edits.
+ *
+ * Lock rule: task10 items are work-item-like; canonical lock applies — once
+ * assigned, the picker auto-dismisses (via lockWhenAssigned in body-only
+ * mode, which fires onClose immediately when value is set).
+ */
+import React, { useMemo, useRef, useEffect } from 'react';
 import { useProfiles, T10Profile } from '../../hooks/useProfiles';
+import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 
 interface T10AssigneePickerProps {
   currentAssigneeId?: string;
@@ -16,163 +27,56 @@ interface T10AssigneePickerProps {
 export function T10AssigneePicker({
   currentAssigneeId,
   currentAssigneeName,
-  currentAssigneeInitials,
   onSelect,
   anchorRef,
   isOpen,
   onClose,
 }: T10AssigneePickerProps) {
-  const [search, setSearch] = useState('');
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const inputRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  /* Fetch full profile list (search '' returns all). Avoid wiring a
+     server-side search filter — canonical ProfilePicker handles client-side
+     filtering across name + email itself. */
+  const { data: profiles = [] } = useProfiles('');
 
-  const { data: profiles = [], isLoading } = useProfiles(search);
+  const members: ProfilePickerMember[] = useMemo(
+    () => profiles.map((p) => ({
+      userId: p.id,
+      name: p.full_name,
+      email: p.email,
+      avatarUrl: p.avatar_url ?? null,
+    })),
+    [profiles],
+  );
 
-  // Calculate position based on anchor
-  useEffect(() => {
-    if (isOpen && anchorRef.current) {
-      const rect = anchorRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + 4,
-        left: rect.left,
-      });
-    }
-  }, [isOpen, anchorRef]);
-
-  // Focus input when opened
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen]);
-
-  // Close on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node) &&
-        anchorRef.current &&
-        !anchorRef.current.contains(e.target as Node)
-      ) {
-        onClose();
+  const value: ProfilePickerSelection = currentAssigneeId
+    ? {
+        userId: currentAssigneeId,
+        name: currentAssigneeName ?? 'Unknown',
+        avatarUrl: null,
       }
-    };
+    : null;
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen, onClose, anchorRef]);
-
-  // Close on Escape
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
-    }
-  }, [isOpen, onClose]);
+  /* Stable RefObject pointing at the parent's anchor element. */
+  const stableAnchor = useRef<HTMLElement | null>(null);
+  useEffect(() => { stableAnchor.current = anchorRef.current; }, [anchorRef, isOpen]);
 
   if (!isOpen) return null;
 
-  const handleSelect = (profile: T10Profile) => {
-    onSelect(profile);
-    onClose();
-    setSearch('');
-  };
-
-  const handleClear = () => {
-    onSelect(null);
-    onClose();
-    setSearch('');
-  };
-
-  const dropdown = (
-    <div
-      ref={dropdownRef}
-      className="t10-assignee-dropdown"
-      style={{
-        position: 'fixed',
-        top: position.top,
-        left: position.left,
-        zIndex: 99999,
+  return (
+    <ProfilePicker
+      value={value}
+      onChange={(next) => {
+        if (next === null) {
+          onSelect(null);
+          return;
+        }
+        const matched = profiles.find((p) => p.id === next.userId);
+        if (matched) onSelect(matched);
       }}
-    >
-      {/* Search Input */}
-      <div className="t10-assignee-search">
-        <Search size={16} />
-        <input
-          ref={inputRef}
-          type="text"
-          placeholder="Search by name or email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        {search && (
-          <button onClick={() => setSearch('')} className="t10-assignee-search-clear">
-            <X size={14} />
-          </button>
-        )}
-      </div>
-
-      {/* Options */}
-      <div className="t10-assignee-options">
-        {/* Unassign option */}
-        {currentAssigneeId && (
-          <button className="t10-assignee-option unassign" onClick={handleClear}>
-            <div className="t10-assignee-avatar empty">
-              <User size={14} />
-            </div>
-            <div className="t10-assignee-info">
-              <span className="t10-assignee-name">Remove assignee</span>
-            </div>
-            <X size={14} className="t10-assignee-action" />
-          </button>
-        )}
-
-        {isLoading && (
-          <div className="t10-assignee-loading">
-            <Loader2 size={18} className="animate-spin" />
-            <span>Loading...</span>
-          </div>
-        )}
-
-        {!isLoading && profiles.length === 0 && search && (
-          <div className="t10-assignee-empty">
-            No users found matching "{search}"
-          </div>
-        )}
-
-        {profiles.map((profile) => {
-          const isSelected = profile.id === currentAssigneeId;
-          return (
-            <button
-              key={profile.id}
-              className={`t10-assignee-option ${isSelected ? 'selected' : ''}`}
-              onClick={() => handleSelect(profile)}
-            >
-              <div className="t10-assignee-avatar">
-                {profile.avatar_url ? (
-                  <img src={profile.avatar_url} alt={profile.full_name} />
-                ) : (
-                  profile.initials
-                )}
-              </div>
-              <div className="t10-assignee-info">
-                <span className="t10-assignee-name">{profile.full_name}</span>
-                <span className="t10-assignee-email">{profile.email}</span>
-              </div>
-              {isSelected && <Check size={16} className="t10-assignee-check" />}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+      members={members}
+      fieldLabel="Assignee"
+      anchorRef={stableAnchor}
+      onClose={onClose}
+      lockWhenAssigned
+    />
   );
-
-  return createPortal(dropdown, document.body);
 }

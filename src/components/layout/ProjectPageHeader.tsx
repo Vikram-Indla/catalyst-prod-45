@@ -34,7 +34,7 @@ interface Props {
    * entity — they render a 3-crumb breadcrumb "Home / [Root] / [RouteWord]",
    * skip the DB name lookup, and show no star.
    */
-  hubType?: 'project' | 'product' | 'incident' | 'release';
+  hubType?: 'project' | 'product' | 'incident' | 'release' | 'test';
   /**
    * Detail-page trail. When provided, the breadcrumb renders
    * "Home / [Root] / ...trail" instead of the auto-derived route word — so a
@@ -52,6 +52,7 @@ const HUB_ROOT: Record<NonNullable<Props['hubType']>, { label: string; href: str
   product: { label: 'Products', href: '/product-hub' },
   incident: { label: 'Incidents', href: '/incident-hub' },
   release: { label: 'Releases', href: '/release-hub/overview' },
+  test: { label: 'Test Hub', href: '/testhub/dashboard' },
 };
 
 // Which project/product surfaces are starrable. Only these route words get a
@@ -67,7 +68,7 @@ export function surfaceStarType(routeWord: string): StarredItemType | undefined 
 
 export function ProjectPageHeader({ projectKey, paddingX = 20, hubType = 'project', trail, hideTitle }: Props) {
   const { pathname } = useLocation();
-  const isGlobalHub = hubType === 'incident' || hubType === 'release';
+  const isGlobalHub = hubType === 'incident' || hubType === 'release' || hubType === 'test';
 
   const { data: project } = useQuery({
     queryKey: ['project-page-header', hubType, projectKey],
