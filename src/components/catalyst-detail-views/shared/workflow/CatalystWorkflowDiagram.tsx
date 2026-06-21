@@ -1,16 +1,12 @@
 import React, { useId, useMemo } from 'react';
 import type { TypeStatus, Transition } from '@/hooks/useTypeWorkflow';
+import { STATUS_CATEGORY_BG, STATUS_TEXT } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
-// Map DB category to Tier-1 lozenge color tokens
+// Canonical Catalyst status pill colors — derived from statusPalette.ts
 const CAT_COLOR: Record<string, string> = {
-  todo:        'var(--ds-background-neutral, #F1F2F4)',
-  in_progress: 'var(--ds-background-information, #E9F2FE)',
-  done:        'var(--ds-background-success, #DCFFF1)',
-};
-const CAT_TEXT: Record<string, string> = {
-  todo:        'var(--ds-text-subtle, #42526E)',
-  in_progress: 'var(--ds-text-information, #0052CC)',
-  done:        'var(--ds-text-success, #006644)',
+  todo:        STATUS_CATEGORY_BG.todo,        // #DDDEE1 grey
+  in_progress: STATUS_CATEGORY_BG.in_progress, // #8FB8F6 periwinkle blue
+  done:        STATUS_CATEGORY_BG.done,         // #94C748 lime green
 };
 
 const NODE_W = 155;
@@ -279,8 +275,8 @@ export function CatalystWorkflowDiagram({
           const isCurrent = node.id === currentStatusId;
           const bgColor = node.color
             ? node.color
-            : (CAT_COLOR[node.category] ?? 'var(--ds-background-neutral, #F1F2F4)');
-          const textColor = CAT_TEXT[node.category] ?? 'var(--ds-text, #172B4D)';
+            : (CAT_COLOR[node.category] ?? STATUS_CATEGORY_BG.todo);
+          const textColor = STATUS_TEXT;
 
           return (
             <g key={node.id}>
@@ -301,7 +297,7 @@ export function CatalystWorkflowDiagram({
                 dominantBaseline="middle"
                 fontSize={11}
                 fontWeight={500}
-                fill={isCurrent ? 'var(--ds-text-brand, #0052CC)' : textColor}
+                fill={textColor}
                 style={{ pointerEvents: 'none' }}
               >
                 {node.name.length > 22 ? `${node.name.slice(0, 21)}…` : node.name}

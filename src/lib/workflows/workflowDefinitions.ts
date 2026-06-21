@@ -144,67 +144,88 @@ const BUG_WORKFLOW: Workflow = {
   ],
 };
 
-// ─── Business Request workflow (MDT project — verified via Jira API) ─────────
-// Status names from MDT Jira probes (MDT-864, MDT-824, MDT-616, MDT-853):
-//   New → Demand Intake → Analysis & Design → Implementation → Review & QA → Done
-//   Regression: Implementation → Demand validation / Prioritized Backlog
-//   Global: On Hold (any-to)
+// ─── Business Request workflow (MDT project — verified via Jira screenshots) ──
+// Full status set from Jira MDT workflow screenshot (2026-06-22):
+//   New → Demand Intake → Demand Validation → Pending Approval → Prioritized Backlog
+//   → Analysis & Design → Implementation → Review & QA → Pending UAT/Beta
+//   → Ready for Production → Done
+//   Global: On Hold (any-to), Canceled (any-to)
 const BUSINESS_REQUEST_WORKFLOW: Workflow = {
   id: 'business_request',
   name: 'Business Request',
   initialStateId: 'new',
   issueTypes: ['Business Request'],
   states: [
-    { id: 'new',                 name: 'New',                 category: 'default' },
-    { id: 'demand_intake',       name: 'Demand Intake',       category: 'default' },
-    { id: 'demand_validation',   name: 'Demand validation',   category: 'default' },
-    { id: 'prioritized_backlog', name: 'Prioritized Backlog', category: 'default' },
-    { id: 'analysis_design',     name: 'Analysis & Design',   category: 'inprogress' },
-    { id: 'implementation',      name: 'Implementation',      category: 'inprogress' },
-    { id: 'review_qa',           name: 'Review & QA',         category: 'inprogress' },
-    { id: 'on_hold',             name: 'On Hold',             category: 'default', anyToThis: true },
-    { id: 'done',                name: 'Done',                category: 'success', anyToThis: true },
+    { id: 'new',                  name: 'New',                  category: 'default' },
+    { id: 'demand_intake',        name: 'Demand Intake',        category: 'default' },
+    { id: 'demand_validation',    name: 'Demand Validation',    category: 'default' },
+    { id: 'pending_approval',     name: 'Pending Approval',     category: 'default' },
+    { id: 'prioritized_backlog',  name: 'Prioritized Backlog',  category: 'default' },
+    { id: 'analysis_design',      name: 'Analysis & Design',    category: 'inprogress' },
+    { id: 'implementation',       name: 'Implementation',       category: 'inprogress' },
+    { id: 'review_qa',            name: 'Review & QA',          category: 'inprogress' },
+    { id: 'pending_uat_beta',     name: 'Pending UAT/Beta',     category: 'inprogress' },
+    { id: 'ready_for_production', name: 'Ready for Production', category: 'success' },
+    { id: 'on_hold',              name: 'On Hold',              category: 'default',  anyToThis: true },
+    { id: 'done',                 name: 'Done',                 category: 'success',  anyToThis: true },
+    { id: 'canceled',             name: 'Canceled',             category: 'success',  anyToThis: true },
   ],
   transitions: [
-    { from: 'new',                 to: 'demand_intake',       verb: 'Review demand' },
-    { from: 'demand_intake',       to: 'demand_validation',   verb: 'Validate demand' },
-    { from: 'demand_intake',       to: 'analysis_design',     verb: 'Start analysis' },
-    { from: 'demand_validation',   to: 'prioritized_backlog', verb: 'Prioritize' },
-    { from: 'prioritized_backlog', to: 'analysis_design',     verb: 'Start analysis' },
-    { from: 'analysis_design',     to: 'implementation',      verb: 'Start implementation' },
-    { from: 'implementation',      to: 'demand_validation',   verb: 'Reject to validation' },
-    { from: 'implementation',      to: 'prioritized_backlog', verb: 'Back to backlog' },
-    { from: 'implementation',      to: 'review_qa',           verb: 'Business validation' },
-    { from: 'review_qa',           to: 'implementation',      verb: 'Rework' },
-    { from: 'review_qa',           to: 'done',                verb: 'Close' },
+    { from: 'new',                  to: 'demand_intake',        verb: 'Review demand' },
+    { from: 'demand_intake',        to: 'demand_validation',    verb: 'Validate demand' },
+    { from: 'demand_intake',        to: 'analysis_design',      verb: 'Start analysis' },
+    { from: 'demand_validation',    to: 'pending_approval',     verb: 'Send for approval' },
+    { from: 'demand_validation',    to: 'prioritized_backlog',  verb: 'Prioritize' },
+    { from: 'pending_approval',     to: 'prioritized_backlog',  verb: 'Approve' },
+    { from: 'pending_approval',     to: 'analysis_design',      verb: 'Start analysis' },
+    { from: 'prioritized_backlog',  to: 'analysis_design',      verb: 'Start analysis' },
+    { from: 'analysis_design',      to: 'implementation',       verb: 'Start implementation' },
+    { from: 'implementation',       to: 'demand_validation',    verb: 'Reject to validation' },
+    { from: 'implementation',       to: 'prioritized_backlog',  verb: 'Back to backlog' },
+    { from: 'implementation',       to: 'review_qa',            verb: 'Business validation' },
+    { from: 'review_qa',            to: 'implementation',       verb: 'Rework' },
+    { from: 'review_qa',            to: 'pending_uat_beta',     verb: 'Send to UAT' },
+    { from: 'pending_uat_beta',     to: 'review_qa',            verb: 'Back to QA' },
+    { from: 'pending_uat_beta',     to: 'ready_for_production', verb: 'UAT passed' },
+    { from: 'ready_for_production', to: 'done',                 verb: 'Ship' },
   ],
 };
 
-// ─── BRD Task workflow (MDT project — verified via Jira API) ─────────────────
-// MDT-851 (BRD Backlog), MDT-840 (BRD Sign Off), MDT-841 (BRD Preparation)
-// Transitions: UI→Figma Design (todo), dev→Ready for implementation,
-//   Blocked (global), Canceled (global)
+// ─── BRD Task workflow (MDT project — verified via Jira screenshots) ─────────
+// Full status set from Jira MDT BRD Task workflow screenshot (2026-06-22):
+//   BRD Backlog → Figma Design → BRD Preparation → BRD Under Review
+//   → Demand Validation → BRD Sign Off → Ready for Implementation → Done
+//   Global: Blocked (any-to), Canceled (any-to)
 const BRD_TASK_WORKFLOW: Workflow = {
   id: 'brd_task',
   name: 'BRD Task',
   initialStateId: 'brd_backlog',
   issueTypes: ['BRD Task'],
   states: [
-    { id: 'brd_backlog',             name: 'BRD Backlog',             category: 'default' },
-    { id: 'figma_design',            name: 'Figma Design',            category: 'default' },
-    { id: 'brd_preparation',         name: 'BRD Preparation',         category: 'inprogress' },
-    { id: 'brd_sign_off',            name: 'BRD Sign Off',            category: 'inprogress' },
-    { id: 'ready_for_implementation',name: 'Ready for implementation', category: 'inprogress' },
-    { id: 'blocked',                 name: 'Blocked',                 category: 'default', anyToThis: true },
-    { id: 'canceled',                name: 'Canceled',                category: 'success', anyToThis: true },
+    { id: 'brd_backlog',              name: 'BRD Backlog',              category: 'default' },
+    { id: 'figma_design',             name: 'Figma Design',             category: 'default' },
+    { id: 'brd_preparation',          name: 'BRD Preparation',          category: 'inprogress' },
+    { id: 'brd_under_review',         name: 'BRD Under Review',         category: 'default' },
+    { id: 'brd_demand_validation',    name: 'Demand Validation',        category: 'default' },
+    { id: 'brd_sign_off',             name: 'BRD Sign Off',             category: 'inprogress' },
+    { id: 'ready_for_implementation', name: 'Ready for implementation', category: 'inprogress' },
+    { id: 'blocked',                  name: 'Blocked',                  category: 'removed', anyToThis: true },
+    { id: 'canceled',                 name: 'Canceled',                 category: 'success', anyToThis: true },
+    { id: 'brd_done',                 name: 'Done',                     category: 'success' },
   ],
   transitions: [
-    { from: 'brd_backlog',    to: 'figma_design',             verb: 'UI design' },
-    { from: 'brd_backlog',    to: 'ready_for_implementation',  verb: 'Ready for dev' },
-    { from: 'figma_design',   to: 'brd_preparation',           verb: 'Design complete' },
-    { from: 'brd_preparation',to: 'brd_sign_off',              verb: 'Sign off' },
-    { from: 'brd_sign_off',   to: 'figma_design',              verb: 'Revise design' },
-    { from: 'brd_sign_off',   to: 'ready_for_implementation',  verb: 'Ready for dev' },
+    { from: 'brd_backlog',             to: 'figma_design',             verb: 'UI design' },
+    { from: 'brd_backlog',             to: 'ready_for_implementation', verb: 'Ready for dev' },
+    { from: 'figma_design',            to: 'brd_preparation',          verb: 'Design complete' },
+    { from: 'brd_preparation',         to: 'brd_under_review',         verb: 'Send for review' },
+    { from: 'brd_under_review',        to: 'brd_demand_validation',    verb: 'Validate demand' },
+    { from: 'brd_under_review',        to: 'figma_design',             verb: 'Revise design' },
+    { from: 'brd_demand_validation',   to: 'brd_sign_off',             verb: 'Sign off' },
+    { from: 'brd_demand_validation',   to: 'figma_design',             verb: 'Revise design' },
+    { from: 'brd_sign_off',            to: 'ready_for_implementation', verb: 'Ready for dev' },
+    { from: 'brd_sign_off',            to: 'figma_design',             verb: 'Revise design' },
+    { from: 'brd_sign_off',            to: 'brd_done',                 verb: 'Done' },
+    { from: 'ready_for_implementation',to: 'brd_done',                 verb: 'Done' },
   ],
 };
 

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Spinner from '@atlaskit/spinner';
-import Lozenge from '@atlaskit/lozenge';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { usePhProjects } from '@/hooks/useProjects';
 import {
@@ -13,9 +12,12 @@ import {
   useTypeWorkflow,
   useSetInitialStatus,
   useRemoveTypeStatus,
+  useAddTransition,
+  useDeleteTransition,
   WORK_ITEM_TYPES,
   type WorkItemType,
   type TypeStatus,
+  type Transition,
 } from '@/hooks/useTypeWorkflow';
 import { useResetProjectWorkflow } from '@/hooks/useWorkflowDefaults';
 import {
@@ -23,6 +25,8 @@ import {
   STATUS_CATEGORY_LABELS,
   type StatusCategory,
 } from '@/constants/statusCategoryColors';
+import { STATUS_TEXT } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
+import { CatalystWorkflowDiagram } from '@/components/catalyst-detail-views/shared/workflow/CatalystWorkflowDiagram';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const T = {
@@ -41,11 +45,52 @@ const T = {
 
 const CATS: StatusCategory[] = ['todo', 'in_progress', 'done'];
 
-const CAT_TO_LOZENGE: Record<StatusCategory, 'default' | 'inprogress' | 'success'> = {
-  todo: 'default',
-  in_progress: 'inprogress',
-  done: 'success',
-};
+function CatPill({ cat, label, bold }: { cat: StatusCategory; label?: string; bold?: boolean }) {
+  const bg = STATUS_CATEGORY_COLORS[cat];
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: bold ? 24 : 20,
+        padding: '0 8px',
+        borderRadius: 3,
+        fontSize: bold ? 12 : 11,
+        fontWeight: bold ? 600 : 500,
+        background: bg,
+        color: STATUS_TEXT,
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {label ?? STATUS_CATEGORY_LABELS[cat]}
+    </span>
+  );
+}
+
+function StatusPillInline({ name, category }: { name: string; category: string }) {
+  const bg = STATUS_CATEGORY_COLORS[category as StatusCategory] ?? '#DDDEE1';
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: 20,
+        padding: '0 8px',
+        borderRadius: 3,
+        fontSize: 11,
+        fontWeight: 500,
+        background: bg,
+        color: STATUS_TEXT,
+        whiteSpace: 'nowrap',
+        maxWidth: 160,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+      }}
+    >
+      {name}
+    </span>
+  );
+}
 
 function usePortalMenu(
   triggerRef: React.RefObject<HTMLButtonElement | null>,
@@ -321,7 +366,7 @@ function StatusRow({
           style={{ flex: 1, cursor: 'text', minWidth: 0, overflow: 'hidden' }}
           title={status.name}
         >
-          <Lozenge appearance={CAT_TO_LOZENGE[cat]}>{status.name}</Lozenge>
+          <StatusPillInline name={status.name} category={cat} />
         </span>
       )}
 
@@ -444,9 +489,7 @@ function StatusColumn({
           flexShrink: 0,
         }}
       >
-        <Lozenge appearance={CAT_TO_LOZENGE[cat]} isBold>
-          {STATUS_CATEGORY_LABELS[cat]}
-        </Lozenge>
+        <CatPill cat={cat} bold />
         <span
           style={{
             marginLeft: 'auto',
@@ -609,6 +652,264 @@ function StatusColumn({
   );
 }
 
+function DiagramView({
+  projectKey,
+  workItemType,
+}: {
+  projectKey: string;
+  workItemType: WorkItemType;
+}) {
+  const { data: workflow, isLoading } = useTypeWorkflow(projectKey, workItemType);
+  const addTransition = useAddTransition(projectKey, workItemType);
+  const deleteTransition = useDeleteTransition(projectKey, workItemType);
+  const [zoom, setZoom] = useState(100);
+  const [fromId, setFromId] = useState('');
+  const [toId, setToId] = useState('');
+  const [addLoading, setAddLoading] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+        <Spinner size="medium" />
+      </div>
+    );
+  }
+
+  const statuses = workflow?.statuses ?? [];
+  const transitions = workflow?.transitions ?? [];
+  const statusMap = new Map<string, TypeStatus>(statuses.map((s) => [s.id, s]));
+
+  const submitAddTransition = async () => {
+    if (!toId) return;
+    setAddLoading(true);
+    try {
+      await addTransition.mutateAsync({
+        fromStatusId: fromId || null,
+        toStatusId: toId,
+      });
+      setFromId('');
+      setToId('');
+    } finally {
+      setAddLoading(false);
+    }
+  };
+
+  const selectStyle: React.CSSProperties = {
+    fontSize: '12px',
+    color: T.text,
+    background: T.surface,
+    border: `1px solid ${T.border}`,
+    borderRadius: '4px',
+    padding: '3px 6px',
+    height: '28px',
+    fontFamily: 'inherit',
+    cursor: 'pointer',
+    minWidth: 120,
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+      {/* Zoom + diagram */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '16px 24px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+          <span style={{ fontSize: 11, color: T.textSubtlest }}>Zoom</span>
+          <input
+            type="range"
+            min={40}
+            max={150}
+            step={10}
+            value={zoom}
+            onChange={(e) => setZoom(Number(e.target.value))}
+            style={{ width: 80, accentColor: 'var(--ds-link, #0C66E4)' }}
+          />
+          <span style={{ fontSize: 11, color: T.textSubtlest, minWidth: 30 }}>{zoom}%</span>
+        </div>
+        <div
+          style={{
+            flex: 1,
+            border: `1px solid ${T.border}`,
+            borderRadius: 4,
+            background: 'var(--ds-surface-sunken, #F7F8F9)',
+            overflow: 'auto',
+            minHeight: 200,
+          }}
+        >
+          {workflow && (
+            <CatalystWorkflowDiagram
+              statuses={statuses}
+              transitions={transitions}
+              initialStatusId={workflow.initialStatusId}
+              showTransitionLabels={false}
+              zoom={zoom}
+            />
+          )}
+          {!workflow && (
+            <div style={{ padding: 32, textAlign: 'center', color: T.textSubtlest, fontSize: 13 }}>
+              No statuses configured for {workItemType}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Transitions panel */}
+      <div
+        style={{
+          flexShrink: 0,
+          borderTop: `1px solid ${T.border}`,
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: 260,
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            padding: '10px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexShrink: 0,
+            borderBottom: `1px solid ${T.border}`,
+          }}
+        >
+          <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
+            Transitions
+            <span
+              style={{
+                marginLeft: 8,
+                fontSize: 11,
+                fontWeight: 500,
+                color: T.textSubtlest,
+                background: T.bgNeutral,
+                borderRadius: 10,
+                padding: '1px 7px',
+              }}
+            >
+              {transitions.length}
+            </span>
+          </span>
+
+          {/* Add transition form */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <select
+              value={fromId}
+              onChange={(e) => setFromId(e.target.value)}
+              style={selectStyle}
+              aria-label="From status"
+            >
+              <option value="">— any —</option>
+              {statuses.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+            <span style={{ fontSize: 14, color: T.textSubtlest }}>→</span>
+            <select
+              value={toId}
+              onChange={(e) => setToId(e.target.value)}
+              style={selectStyle}
+              aria-label="To status"
+            >
+              <option value="">— target —</option>
+              {statuses.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+            <button
+              onClick={submitAddTransition}
+              disabled={!toId || addLoading}
+              style={{
+                height: 28,
+                padding: '0 10px',
+                fontSize: 12,
+                fontWeight: 500,
+                border: 'none',
+                borderRadius: 3,
+                background: toId ? 'var(--ds-background-brand-bold, #0C66E4)' : T.bgNeutral,
+                color: toId ? '#FFFFFF' : T.textSubtlest,
+                cursor: toId ? 'pointer' : 'not-allowed',
+                fontFamily: 'inherit',
+              }}
+            >
+              {addLoading ? '…' : 'Add'}
+            </button>
+          </div>
+        </div>
+
+        {/* Transition rows */}
+        <div style={{ overflowY: 'auto', flex: 1 }}>
+          {transitions.length === 0 && (
+            <div
+              style={{
+                padding: '20px 24px',
+                color: T.textSubtlest,
+                fontSize: 12,
+                textAlign: 'center',
+              }}
+            >
+              No transitions — add one above, or all statuses are reachable from any status
+            </div>
+          )}
+          {transitions.map((t) => {
+            const fromStatus = t.from_status_id ? statusMap.get(t.from_status_id) : null;
+            const toStatus = statusMap.get(t.to_status_id);
+            return (
+              <div
+                key={t.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '6px 24px',
+                  borderBottom: `1px solid var(--ds-border-subtle, #F1F2F4)`,
+                }}
+              >
+                {fromStatus ? (
+                  <StatusPillInline name={fromStatus.name} category={fromStatus.category} />
+                ) : (
+                  <span style={{ fontSize: 11, color: T.textSubtlest, fontStyle: 'italic' }}>any status</span>
+                )}
+                <span style={{ fontSize: 13, color: T.textSubtlest }}>→</span>
+                {toStatus ? (
+                  <StatusPillInline name={toStatus.name} category={toStatus.category} />
+                ) : (
+                  <span style={{ fontSize: 11, color: T.textSubtlest }}>?</span>
+                )}
+                <button
+                  onClick={() => deleteTransition.mutateAsync(t.id)}
+                  style={{
+                    marginLeft: 'auto',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    color: T.textSubtlest,
+                    fontSize: 14,
+                    padding: '2px 4px',
+                    borderRadius: 3,
+                    lineHeight: 1,
+                    fontFamily: 'inherit',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = T.textDanger;
+                    (e.currentTarget as HTMLElement).style.background = T.bgHover;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = T.textSubtlest;
+                    (e.currentTarget as HTMLElement).style.background = 'none';
+                  }}
+                  aria-label="Delete transition"
+                  title="Delete transition"
+                >
+                  ✕
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StatusBoard({
   projectKey,
   workItemType,
@@ -679,6 +980,7 @@ function StatusBoard({
 export default function WorkflowAdminPage() {
   const [projectKey, setProjectKey] = useState('BAU');
   const [typeIdx, setTypeIdx] = useState(0);
+  const [viewMode, setViewMode] = useState<'board' | 'diagram'>('board');
   const [showOverflow, setShowOverflow] = useState(false);
   const [resetConfirm, setResetConfirm] = useState(false);
   const overflowRef = useRef<HTMLButtonElement>(null);
@@ -839,6 +1141,49 @@ export default function WorkflowAdminPage() {
           ))}
         </div>
 
+        {/* View toggle + divider */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '12px 24px 0',
+            flexShrink: 0,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              background: T.bgNeutral,
+              borderRadius: 6,
+              padding: 2,
+              gap: 2,
+            }}
+          >
+            {(['board', 'diagram'] as const).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                style={{
+                  padding: '3px 12px',
+                  borderRadius: 4,
+                  border: 'none',
+                  fontSize: 12,
+                  fontWeight: viewMode === mode ? 600 : 400,
+                  background: viewMode === mode ? T.surface : 'transparent',
+                  color: viewMode === mode ? T.text : T.textSubtlest,
+                  cursor: 'pointer',
+                  boxShadow: viewMode === mode ? `0 1px 2px rgba(9,30,66,0.12)` : 'none',
+                  fontFamily: 'inherit',
+                  textTransform: 'capitalize',
+                }}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div
           style={{
             height: '1px',
@@ -849,7 +1194,11 @@ export default function WorkflowAdminPage() {
         />
 
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-          <StatusBoard projectKey={projectKey} workItemType={activeType} />
+          {viewMode === 'board' ? (
+            <StatusBoard projectKey={projectKey} workItemType={activeType} />
+          ) : (
+            <DiagramView projectKey={projectKey} workItemType={activeType} />
+          )}
         </div>
       </div>
     </AdminGuard>
