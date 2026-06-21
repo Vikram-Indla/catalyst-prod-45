@@ -387,7 +387,7 @@
   background: transparent;
   border: none;
   padding: 0;
-  cursor: grab;
+  cursor: pointer;
   z-index: 600;
   filter: drop-shadow(0 2px 6px rgba(9, 30, 66, 0.28)) drop-shadow(0 1px 3px rgba(9, 30, 66, 0.14));
   transition: filter 0.15s ease;
@@ -399,6 +399,11 @@
   transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
               left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
               filter 0.15s ease;
+}
+
+/* Pointer held down but not yet confirmed as a drag — hint that drag is available. */
+.cc-fab:active:not(.cc-fab--dragging) {
+  cursor: grab;
 }
 
 .cc-fab--dragging {

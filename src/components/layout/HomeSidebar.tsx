@@ -51,10 +51,18 @@ import QueuesIcon from '@atlaskit/icon/glyph/queues';
 import RoadmapIcon from '@atlaskit/icon/glyph/roadmap';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import WarningIcon from '@atlaskit/icon/glyph/warning';
+import {
+  NavDashboardIcon,
+  NavBacklogIcon,
+  NavKanbanIcon,
+  NavWorkIcon,
+  NavFiltersIcon,
+  NavTimelineIcon,
+} from '@/lib/nav-icons';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import SidebarClock from './SidebarClock';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
-import { HUB_ICON_OUTLINE_REGISTRY } from '@/components/icons';
+import { HUB_ICON_OUTLINE_REGISTRY, HUB_ICON_REGISTRY } from '@/components/icons';
 import { sliceVisible } from '@/lib/home-recents';
 
 const RECENT_LIMIT = 16;
@@ -146,26 +154,18 @@ function formatTimestamp(visitedAtMs: number): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+
 /**
- * Row title — single line within a space group (2026-06-17 space-grouped redesign).
+ * Row title — two-line stacked layout (Option C, 2026-06-21).
  *
- *   [section glyph]  Section name ………………………… time chip
+ *   [page icon]  Section name
+ *                timestamp
  *
- * The project identity now lives in the group header (SpaceGroupHeader), so the
- * row no longer repeats the project key. Each row carries only what
- * distinguishes it WITHIN its space: the section name (primary) and when it was
- * last opened (subtlest, right-aligned). This is the Alt B "spaces, not
- * timestamps" model — time is demoted from a section axis to a quiet chip.
- *
- * ADS tokens used:
- *   color.text          (#292A2E)  — section name (primary)
- *   color.text.subtlest (#626F86)  — timestamp (tertiary)
- *   font.size.100       (14px)     — body
- *   font.size.050       (11px)     — micro/labels
- * Source: https://atlassian.design/foundations/typography
- *         https://atlassian.design/foundations/color
+ * Icon + label never fight for horizontal space. Timestamp sits below
+ * the label at 11px/subtlest so it's readable but clearly secondary.
  */
 function LocationRowTitle({ location }: { location: RecentLocation }) {
+  const PageIcon = getSectionIcon(location.sectionLabel.toLowerCase());
   return (
     <span
       style={{
@@ -174,39 +174,41 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         gap: token('space.100', '8px'),
         minWidth: 0,
         width: '100%',
+        // Rail indent: left border signals hierarchy under the group header
+        paddingLeft: token('space.150', '12px'),
+        borderLeft: '1.5px solid var(--ds-border, rgba(9,30,66,0.14))',
       }}
     >
-      {/* Section name — a CHILD of the space header above it. Deliberately
-          lighter (13px / 400 / subtle) than the 14px/500/primary space header
-          so the parent→child hierarchy reads at a glance and children never
-          look like their own space group (2026-06-19 hierarchy fix). */}
       <span
-        style={{
-          flex: 1,
-          minWidth: 0,
-          color: token('color.text.subtle', '#44546F'),
-          fontWeight: 400,
-          fontSize: token('font.size.075', '12px'),
-          lineHeight: '20px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
+        aria-hidden="true"
+        style={{ flexShrink: 0, color: token('color.text.subtlest', '#626F86'), display: 'inline-flex' }}
       >
-        {location.sectionLabel}
+        <PageIcon style={{ width: 16, height: 16 }} />
       </span>
-
-      {/* Timestamp — subtlest, pushed to the right edge */}
-      <span
-        style={{
-          flexShrink: 0,
-          color: token('color.text.subtlest', '#626F86'),
-          fontWeight: 400,
-          fontSize: token('font.size.050', '11px'),
-          lineHeight: '16px',
-        }}
-      >
-        {formatTimestamp(location.visitedAt)}
+      <span style={{ display: 'flex', flexDirection: 'column', gap: '1px', minWidth: 0, flex: 1 }}>
+        <span
+          style={{
+            color: token('color.text', '#172B4D'),
+            fontWeight: 400,
+            fontSize: '13px',
+            lineHeight: '18px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {location.sectionLabel}
+        </span>
+        <span
+          style={{
+            color: token('color.text.subtlest', '#626F86'),
+            fontWeight: 400,
+            fontSize: token('font.size.050', '11px'),
+            lineHeight: '14px',
+          }}
+        >
+          {formatTimestamp(location.visitedAt)}
+        </span>
       </span>
     </span>
   );
@@ -234,12 +236,8 @@ function SpaceGroupHeader({
   // Space-scoped hubs (project/product) carry a per-space KEY → show "KEY · Type".
   // Global single hubs (task/incident/release/plan) have no key → type word only.
   const isSpaceScoped = head.hub === 'project' || head.hub === 'product';
-  // Neutral monochrome hub-outline glyph for every space — identity is carried by
-  // the name + "· Project/Product" label, not a colourful tile. Mask-filled so the
-  // single glyph is theme-aware (no baked-in stroke colour). 2026-06-19 de-noise.
-  const outlineUrl =
-    HUB_ICON_OUTLINE_REGISTRY[head.hub as keyof typeof HUB_ICON_OUTLINE_REGISTRY];
-  const iconMask = outlineUrl ? `url(${outlineUrl})` : undefined;
+  const coloredIconUrl =
+    HUB_ICON_REGISTRY[head.hub as keyof typeof HUB_ICON_REGISTRY] ?? undefined;
 
   // Whole header is the collapse affordance. The chevron sits left of the
   // avatar (Jira "Recent" group-header pattern) and rotates open→down /
@@ -273,24 +271,14 @@ function SpaceGroupHeader({
       >
         <Chevron label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
       </span>
-      <span
-        aria-hidden="true"
-        style={{
-          width: 20,
-          height: 20,
-          flexShrink: 0,
-          display: 'block',
-          backgroundColor: 'var(--ds-text-subtle, #44546F)',
-          WebkitMaskImage: iconMask,
-          maskImage: iconMask,
-          WebkitMaskRepeat: 'no-repeat',
-          maskRepeat: 'no-repeat',
-          WebkitMaskPosition: 'center',
-          maskPosition: 'center',
-          WebkitMaskSize: 'contain',
-          maskSize: 'contain',
-        }}
-      />
+      {coloredIconUrl && (
+        <img
+          src={coloredIconUrl}
+          alt=""
+          aria-hidden="true"
+          style={{ width: 20, height: 20, flexShrink: 0, display: 'block', borderRadius: 4 }}
+        />
+      )}
       <span
         title={head.projectName}
         style={{
@@ -341,51 +329,52 @@ function SpaceGroupHeader({
 // for backlog, board icon for boards, etc.) not project avatar tiles.
 // This reduces color clutter while preserving the navigational signal.
 
-type SectionIconType = React.ComponentType<{ label: string; size?: string; primaryColor?: string }>;
+// Nav-icons use { className?, style? }; Atlaskit glyphs use { label, size?, primaryColor? }.
+// The union type lets both live in the same map — callers render with style only.
+type NavIconProps = { className?: string; style?: React.CSSProperties };
+type SectionIconType = React.ComponentType<NavIconProps>;
 
 const SECTION_ICON_MAP: Record<string, SectionIconType> = {
-  // Project / product canonical sections
-  dashboard: DashboardIcon as unknown as SectionIconType,
-  overview: DashboardIcon as unknown as SectionIconType,
-  backlog: BacklogIcon as unknown as SectionIconType,
-  'epic-backlog': BacklogIcon as unknown as SectionIconType,
-  'feature-backlog': BacklogIcon as unknown as SectionIconType,
-  'story-backlog': BacklogIcon as unknown as SectionIconType,
-  boards: BoardIcon as unknown as SectionIconType,
-  board: BoardIcon as unknown as SectionIconType,
-  allwork: ListIcon as unknown as SectionIconType,
-  work: ListIcon as unknown as SectionIconType,
-  list: ListIcon as unknown as SectionIconType,
-  calendar: CalendarIcon as unknown as SectionIconType,
-  timeline: RoadmapIcon as unknown as SectionIconType,
-  filters: FilterIcon as unknown as SectionIconType,
-  settings: SettingsIcon as unknown as SectionIconType,
-  reports: DocumentsIcon as unknown as SectionIconType,
-  analytics: GraphLineIcon as unknown as SectionIconType,
-  insights: GraphBarIcon as unknown as SectionIconType,
-  compare: GraphLineIcon as unknown as SectionIconType,
-  // Release hub sections
-  'command-center': DashboardIcon as unknown as SectionIconType,
-  releases: BulletListIcon as unknown as SectionIconType,
-  triage: QueuesIcon as unknown as SectionIconType,
-  changes: EditIcon as unknown as SectionIconType,
-  'sign-off-queue': CheckCircleIcon as unknown as SectionIconType,
-  'production-events': WarningIcon as unknown as SectionIconType,
-  'freeze-windows': LockIcon as unknown as SectionIconType,
-  // Incident hub sections
-  'all-incidents': WarningIcon as unknown as SectionIconType,
-  'committee-queue': QueuesIcon as unknown as SectionIconType,
-  // Plan hub sections
-  library: DocumentsIcon as unknown as SectionIconType,
-  master: RoadmapIcon as unknown as SectionIconType,
-  resources: PeopleIcon as unknown as SectionIconType,
-  ai: DiscoverIcon as unknown as SectionIconType,
-  capacity: GraphBarIcon as unknown as SectionIconType,
-  'budget-planner': GraphLineIcon as unknown as SectionIconType,
+  // Project / product canonical sections — use same nav-icons as ProjectHubSidebar
+  dashboard:         NavDashboardIcon,
+  overview:          NavDashboardIcon,
+  backlog:           NavBacklogIcon,
+  'epic-backlog':    NavBacklogIcon,
+  'feature-backlog': NavBacklogIcon,
+  'story-backlog':   NavBacklogIcon,
+  boards:            NavKanbanIcon,
+  board:             NavKanbanIcon,
+  allwork:           NavWorkIcon,
+  work:              NavWorkIcon,
+  list:              NavBacklogIcon,
+  timeline:          NavTimelineIcon,
+  filters:           NavFiltersIcon,
+  // Remaining sections — Atlaskit glyphs adapted to NavIconProps
+  calendar:          (p: NavIconProps) => <CalendarIcon label="" size="small" />,
+  settings:          (p: NavIconProps) => <SettingsIcon label="" size="small" />,
+  reports:           (p: NavIconProps) => <DocumentsIcon label="" size="small" />,
+  analytics:         (p: NavIconProps) => <GraphLineIcon label="" size="small" />,
+  insights:          (p: NavIconProps) => <GraphBarIcon label="" size="small" />,
+  compare:           (p: NavIconProps) => <GraphLineIcon label="" size="small" />,
+  'command-center':  NavDashboardIcon,
+  releases:          (p: NavIconProps) => <BulletListIcon label="" size="small" />,
+  triage:            (p: NavIconProps) => <QueuesIcon label="" size="small" />,
+  changes:           (p: NavIconProps) => <EditIcon label="" size="small" />,
+  'sign-off-queue':  (p: NavIconProps) => <CheckCircleIcon label="" size="small" />,
+  'production-events': (p: NavIconProps) => <WarningIcon label="" size="small" />,
+  'freeze-windows':  (p: NavIconProps) => <LockIcon label="" size="small" />,
+  'all-incidents':   (p: NavIconProps) => <WarningIcon label="" size="small" />,
+  'committee-queue': (p: NavIconProps) => <QueuesIcon label="" size="small" />,
+  library:           (p: NavIconProps) => <DocumentsIcon label="" size="small" />,
+  master:            (p: NavIconProps) => <RoadmapIcon label="" size="small" />,
+  resources:         (p: NavIconProps) => <PeopleIcon label="" size="small" />,
+  ai:                (p: NavIconProps) => <DiscoverIcon label="" size="small" />,
+  capacity:          (p: NavIconProps) => <GraphBarIcon label="" size="small" />,
+  'budget-planner':  (p: NavIconProps) => <GraphLineIcon label="" size="small" />,
 };
 
 function getSectionIcon(section: string): SectionIconType {
-  return SECTION_ICON_MAP[section] ?? (ListIcon as unknown as SectionIconType);
+  return SECTION_ICON_MAP[section] ?? NavBacklogIcon;
 }
 
 function SectionIconWrapper({ section, color }: { section: string; color?: string | null }) {
@@ -472,39 +461,63 @@ export default function HomeSidebar({
   const config: SidebarConfig = useMemo(() => {
     if (!expanded) {
       // Collapsed HOME route: render hub icons with outline styling
+      // Border color per hub — matches the colored square icons in the hub switcher (Variant A: stroke only).
+      const HUB_BORDER_COLORS: Record<string, string> = {
+        home:     '#4A7FE0',
+        strategy: '#8B5CF6',
+        ideation: '#F59E0B',
+        product:  '#38BDF8',
+        project:  '#14B8A6',
+        release:  '#EC4899',
+        test:     '#22C55E',
+        incident: '#EF4444',
+        task:     '#D97706',
+        plan:     '#6366F1',
+        wiki:     '#374151',
+      };
+
       const hubItems: SidebarMenuItem[] = HUB_NAV_ITEMS.map((hub) => ({
         id: `hub-${hub.key}`,
         title: hub.label,
         tooltip: hub.label,
         path: hub.href,
         icon: ({ style }: { className?: string; style?: React.CSSProperties } = {}) => {
-          // Mask-fill the outline asset so the icon inherits a theme-aware
-          // colour instead of the baked-in #44546F stroke. <img> bakes its
-          // colour into the file and cannot respond to dark mode. SidebarBase's
-          // renderMenuItem passes the active-aware ADS colour via style.color
-          // (var(--ds-icon-brand) when active, var(--ds-icon) when inactive) —
-          // honouring it keeps the rail in step with every other sidebar icon
-          // and gives active hubs the brand-blue fill for free.
           const maskUrl = `url("${HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]}")`;
+          const borderColor = HUB_BORDER_COLORS[hub.key] ?? 'var(--ds-border, #DFE1E6)';
           return (
             <span
-              role="img"
               aria-label={hub.label}
               style={{
-                width: '24px',
-                height: '24px',
-                display: 'block',
-                backgroundColor: style?.color ?? 'var(--ds-icon, #172B4D)',
-                WebkitMaskImage: maskUrl,
-                maskImage: maskUrl,
-                WebkitMaskRepeat: 'no-repeat',
-                maskRepeat: 'no-repeat',
-                WebkitMaskPosition: 'center',
-                maskPosition: 'center',
-                WebkitMaskSize: 'contain',
-                maskSize: 'contain',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '8px',
+                background: 'var(--ds-surface, #FFFFFF)',
+                border: `1.5px solid ${borderColor}`,
+                flexShrink: 0,
               }}
-            />
+            >
+              <span
+                role="img"
+                aria-hidden="true"
+                style={{
+                  width: '18px',
+                  height: '18px',
+                  display: 'block',
+                  backgroundColor: style?.color ?? 'var(--ds-icon, #172B4D)',
+                  WebkitMaskImage: maskUrl,
+                  maskImage: maskUrl,
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                }}
+              />
+            </span>
           );
         },
       }));
@@ -574,11 +587,8 @@ export default function HomeSidebar({
       title: <LocationRowTitle location={loc} />,
       tooltip: `${loc.sectionLabel} — ${loc.projectKey}`,
       path: loc.path,
-      // Functional nav icons are NEUTRAL — color is reserved for the project
-      // avatar (identity) and the active row (orientation). Was loc.color
-      // (uniform blue), which made every icon shout and diverged from the
-      // neutral collapsed rail (2026-06-18 sidebar color architecture).
-      icon: () => <SectionIconWrapper section={loc.section} />,
+      // No icon slot — the rail + icon live inside LocationRowTitle so the
+      // full button width is available to the two-line label/timestamp layout.
     });
 
     const sections = groupIntoSpaces(recentLocations).map((group) => {

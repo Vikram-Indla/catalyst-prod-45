@@ -6,7 +6,7 @@
  * and draft persistence as the /chat page. Header + back affordance remain
  * legacy (ConversationHeader) because they are dock-shell concerns.
  */
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +42,12 @@ interface DockConversationPaneProps {
 
 const db = supabase as unknown as { from: (table: string) => any };
 
+// Module-level ref counter: tracks how many DockConversationPane instances
+// currently own document.body[data-cv2-theme]. The attribute is set on first
+// mount and deleted only when the last pane unmounts, eliminating the race with
+// the full-screen /chat page (which also sets this attribute).
+let cv2ThemeOwners = 0;
+
 export function DockConversationPane({
   conversation,
   onBack,
@@ -50,23 +56,42 @@ export function DockConversationPane({
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { theme } = useChatTheme();
-  const scheduledByConv = useMyScheduledCountByConversation();
-  const scheduledForThisConv = scheduledByConv.get(conversation.id);
+
+  // Secondary hooks are deferred by one rAF so the message list paints first.
+  // Without this, all 8 hooks fire in the same synchronous reconciliation tick,
+  // blocking the first visible frame of the conversation pane.
+  const [secondaryReady, setSecondaryReady] = useState(false);
+  const rafRef = useRef<number | null>(null);
+  useEffect(() => {
+    rafRef.current = requestAnimationFrame(() => { setSecondaryReady(true); });
+    return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
+  }, []);
+
+  // Empty-string sentinel: secondary hooks gate on a truthy ID, so passing ''
+  // causes them to return empty data immediately without issuing any Supabase
+  // queries. They will re-fire with the real ID once secondaryReady=true.
+  const secondaryConvId = secondaryReady ? conversation.id : '';
 
   const handleSeeAllScheduled = useCallback(() => {
     navigate("/chat?view=drafts&tab=scheduled");
   }, [navigate]);
 
-  // Portal popovers (schedule menu, emoji picker, mention picker, attachment dropzone)
-  // mount to document.body, outside the cv2-chat-shell wrapper. Mirror /chat:
-  // set body[data-cv2-theme] so var(--cv2-*) tokens resolve inside portals.
+  // Portal popovers need body[data-cv2-theme] for token resolution.
+  // Ref-counted so multiple panes (or co-existing /chat page) never race:
+  // - first pane to mount writes the attribute
+  // - last pane to unmount deletes it
   useEffect(() => {
-    if (document.body.dataset.cv2Theme) return; // /chat already owns it
+    cv2ThemeOwners += 1;
     document.body.dataset.cv2Theme = theme;
     return () => {
-      delete document.body.dataset.cv2Theme;
+      cv2ThemeOwners -= 1;
+      if (cv2ThemeOwners === 0) {
+        delete document.body.dataset.cv2Theme;
+      }
     };
   }, [theme]);
+
+  // Critical path: messages fire immediately on mount.
   const {
     messages,
     isLoading,
@@ -75,15 +100,17 @@ export function DockConversationPane({
     deleteMessage,
     toggleReaction,
   } = useMessages(conversation.id);
+
+  // Secondary path: deferred until after first paint via secondaryConvId gate.
   const { data: bookmarks } = useMyBookmarks();
-  const { data: pins } = useConversationPins(conversation.id);
+  const { data: pins } = useConversationPins(secondaryConvId);
   const toggleBookmarkMut = useToggleBookmark();
   const togglePinMut = useTogglePin();
-  const staged = useStagedAttachments(conversation.id);
-  const draftState = useConversationDraft(conversation.id);
-  const { byMessage: attachmentsByMessage } = useMessageAttachments(
-    conversation.id
-  );
+  const staged = useStagedAttachments(secondaryConvId);
+  const draftState = useConversationDraft(secondaryConvId);
+  const { byMessage: attachmentsByMessage } = useMessageAttachments(secondaryConvId);
+  const scheduledByConv = useMyScheduledCountByConversation();
+  const scheduledForThisConv = scheduledByConv.get(conversation.id);
 
   const [summaryDismissed, setSummaryDismissed] = useState(false);
   const [threadParent, setThreadParent] = useState<ChatMessage | null>(null);

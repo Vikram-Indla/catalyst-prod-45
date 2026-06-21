@@ -9,7 +9,8 @@
  * ADS: @atlaskit/dropdown-menu is available for any future menu; icon buttons are @atlaskit/button
  * IconButton. Colors via var(--ds-*) tokens. Avatars are colored-initials circles (never <img>).
  */
-import React, { useState } from "react";
+import React, { useState, Component } from "react";
+import type { ErrorInfo, ReactNode } from "react";
 import { IconButton } from "@atlaskit/button/new";
 import AddIcon from "@atlaskit/icon/core/add";
 import GrowDiagonalIcon from "@atlaskit/icon/core/grow-diagonal";
@@ -24,6 +25,41 @@ import { DockConversationPane } from "./DockConversationPane";
 import { DockDirectory } from "./DockDirectory";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
+
+/** Isolates a single conversation pane crash from the rest of the dock. */
+class ChatPaneErrorBoundary extends Component<
+  { conversationId: string; children: ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null };
+  static getDerivedStateFromError(e: Error) { return { error: e }; }
+  componentDidCatch(e: Error, info: ErrorInfo) {
+    console.error('[ChatDock] pane error', e, info);
+  }
+  componentDidUpdate(prev: { conversationId: string }) {
+    // Reset error state when navigating to a different conversation.
+    if (prev.conversationId !== this.props.conversationId) {
+      this.setState({ error: null });
+    }
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <span>This conversation failed to load.</span>
+          <button
+            type="button"
+            style={{ alignSelf: 'flex-start', fontSize: 12, cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px' }}
+            onClick={() => this.setState({ error: null })}
+          >
+            Retry
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 type DockMode = "messages" | "caty";
 type CatyView = "floating" | "sidebar";
@@ -375,22 +411,24 @@ export function ChatDock({
           <div className="cc-dock__messages-body">
             <div className="cc-dock__messages-inner">
               {activeId ? (
-                <DockConversationPane
-                  conversation={byId.get(activeId) ?? {
-                    id: activeId,
-                    kind: "dm",
-                    title: "...",
-                    isArchived: false,
-                    lastMessageAt: null,
-                    lastMessagePreview: null,
-                    unreadCount: 0,
-                    ticketKey: null,
-                    ticketType: null,
-                    projectKey: null,
-                    projectName: null,
-                  }}
-                  onBack={() => onFocusDirectory?.()}
-                />
+                <ChatPaneErrorBoundary conversationId={activeId}>
+                  <DockConversationPane
+                    conversation={byId.get(activeId) ?? {
+                      id: activeId,
+                      kind: "dm",
+                      title: "...",
+                      isArchived: false,
+                      lastMessageAt: null,
+                      lastMessagePreview: null,
+                      unreadCount: 0,
+                      ticketKey: null,
+                      ticketType: null,
+                      projectKey: null,
+                      projectName: null,
+                    }}
+                    onBack={() => onFocusDirectory?.()}
+                  />
+                </ChatPaneErrorBoundary>
               ) : (
                 <DockDirectory
                   conversations={listConversations}
