@@ -38,7 +38,8 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         .from('tm_test_cases')
         .select(`
           *,
-          folder:tm_folders(id, name)
+          folder:tm_folders(id, name),
+          priority_ref:tm_case_priorities(name, color, level)
         `, { count: 'exact' })
         .eq('project_id', projectId)
         .order('updated_at', { ascending: false });

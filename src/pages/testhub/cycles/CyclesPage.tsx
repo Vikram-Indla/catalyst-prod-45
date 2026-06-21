@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useTestCycles, useCreateCycle, useDeleteCycle } from '@/hooks/test-management/useTestCycles';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
-import { Plus, Trash2 } from '@/lib/atlaskit-icons';
+import Button from '@atlaskit/button/standard-button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import { Plus, Trash2, X } from '@/lib/atlaskit-icons';
 import { TMCycle, CycleStatus } from '@/types/test-management';
+import { PageHeader } from '@/components/ads/PageHeader';
+import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 
 export default function CyclesPage() {
   const { data: projects = [] } = useProjects();
@@ -16,27 +22,21 @@ export default function CyclesPage() {
 
   return (
     <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0 }}>Test Cycles</h1>
-        <button
-          onClick={() => setShowCreate(true)}
-          style={{
-            padding: '8px 16px',
-            background: 'var(--ds-background-brand-bold, #0052CC)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
-            border: 'none',
-            borderRadius: 4,
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
-          <Plus size={14} />
-          Create cycle
-        </button>
+      <div style={{ marginBottom: 24 }}>
+      <PageHeader
+        title="Test Cycles"
+        breadcrumbs={
+          <Breadcrumbs items={[
+            { key: 'testhub', text: 'Test Hub', onClick: () => navigate('/testhub/dashboard') },
+            { key: 'cycles', text: 'Test Cycles', isCurrent: true },
+          ]} />
+        }
+        actions={
+          <Button appearance="primary" onClick={() => setShowCreate(true)} iconBefore={<Plus size={14} label="" />}>
+            Create cycle
+          </Button>
+        }
+      />
       </div>
 
       {isLoading ? (
@@ -75,7 +75,7 @@ export default function CyclesPage() {
       )}
 
       {showCreate && projectId && (
-        <CreateCycleModal projectId={projectId} onClose={() => setShowCreate(false)} />
+        <CreateCyclePanel projectId={projectId} onClose={() => setShowCreate(false)} />
       )}
     </div>
   );
@@ -126,12 +126,21 @@ function CycleRow({ cycle, onClick }: { cycle: TMCycle; onClick: () => void }) {
   );
 }
 
-function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: () => void }) {
+function CreateCyclePanel({ projectId, onClose }: { projectId: string; onClose: () => void }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const createCycle = useCreateCycle();
+
+  // Escape — capture phase so it beats any parent handler
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    };
+    document.addEventListener('keydown', handler, true);
+    return () => document.removeEventListener('keydown', handler, true);
+  }, [onClose]);
 
   const handleCreate = async () => {
     if (!name.trim()) return;
@@ -145,116 +154,118 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
     onClose();
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    border: '1px solid var(--ds-border, #DFE1E6)',
-    borderRadius: 4,
-    padding: '8px 10px',
-    fontSize: 14,
-    fontFamily: 'var(--ds-font-family-body)',
-    color: 'var(--ds-text, #172B4D)',
-    background: 'var(--ds-surface, #FFFFFF)',
-    boxSizing: 'border-box',
-    outline: 'none',
-  };
-
   const labelStyle: React.CSSProperties = {
     display: 'block',
     fontSize: 12,
     fontWeight: 600,
     color: 'var(--ds-text-subtle, #42526E)',
-    marginBottom: 6,
+    marginBottom: 4,
   };
 
-  return (
-    <>
-      <div
-        onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.32)', zIndex: 300 }}
-      />
-      <div style={{
+  const dateInputStyle: React.CSSProperties = {
+    width: '100%',
+    border: '1px solid var(--ds-border, #DFE1E6)',
+    borderRadius: 4,
+    padding: '6px 10px',
+    fontSize: 14,
+    fontFamily: 'var(--ds-font-family-body)',
+    color: 'var(--ds-text, #172B4D)',
+    background: 'var(--ds-surface, #FFFFFF)',
+    boxSizing: 'border-box',
+  };
+
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Create test cycle"
+      style={{
         position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 520,
+        top: 0,
+        right: 0,
+        width: 640,
+        height: '100vh',
         background: 'var(--ds-surface-overlay, #FFFFFF)',
-        borderRadius: 8,
-        boxShadow: '0 8px 32px rgba(9,30,66,0.32)',
-        zIndex: 301,
+        boxShadow: '-4px 0 20px rgba(9,30,66,0.25)',
+        zIndex: 400,
+        display: 'flex',
+        flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
+      }}
+    >
+      {/* Header */}
+      <div style={{
+        padding: '16px 24px',
+        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexShrink: 0,
       }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Create test cycle</h2>
+        <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          Create test cycle
+        </h2>
+        <button
+          onClick={onClose}
+          aria-label="Close panel"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', padding: 4, display: 'flex' }}
+        >
+          <X size={18} />
+        </button>
+      </div>
+
+      {/* Body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div>
+          <label style={labelStyle}>Name *</label>
+          <Textfield
+            value={name}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+            placeholder="Cycle name"
+            autoFocus
+          />
         </div>
-        <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div>
-            <label style={labelStyle}>Name *</label>
-            <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Cycle name"
-              style={inputStyle}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Description</label>
-            <textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Optional description"
-              style={{ ...inputStyle, minHeight: 72, resize: 'vertical' }}
-            />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div>
-              <label style={labelStyle}>Start date</label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={e => setStartDate(e.target.value)}
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>End date</label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={e => setEndDate(e.target.value)}
-                style={inputStyle}
-              />
-            </div>
-          </div>
+        <div>
+          <label style={labelStyle}>Description</label>
+          <TextArea
+            value={description}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+            placeholder="Optional description"
+            minimumRows={3}
+          />
         </div>
-        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ds-border, #DFE1E6)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-          <button
-            onClick={onClose}
-            style={{ padding: '8px 16px', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleCreate}
-            disabled={!name.trim() || createCycle.isPending}
-            style={{
-              padding: '8px 20px',
-              background: 'var(--ds-background-brand-bold, #0052CC)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
-              border: 'none',
-              borderRadius: 4,
-              cursor: !name.trim() || createCycle.isPending ? 'not-allowed' : 'pointer',
-              fontSize: 14,
-              fontWeight: 500,
-              opacity: !name.trim() || createCycle.isPending ? 0.7 : 1,
-            }}
-          >
-            {createCycle.isPending ? 'Creating...' : 'Create cycle'}
-          </button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div>
+            <label style={labelStyle}>Start date</label>
+            <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={dateInputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>End date</label>
+            <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} style={dateInputStyle} />
+          </div>
         </div>
       </div>
-    </>
+
+      {/* Footer */}
+      <div style={{
+        padding: '16px 24px',
+        borderTop: '1px solid var(--ds-border, #DFE1E6)',
+        display: 'flex',
+        gap: 8,
+        justifyContent: 'flex-end',
+        flexShrink: 0,
+      }}>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+        <Button
+          appearance="primary"
+          isDisabled={!name.trim() || createCycle.isPending}
+          onClick={handleCreate}
+        >
+          {createCycle.isPending ? 'Creating…' : 'Create cycle'}
+        </Button>
+      </div>
+    </div>,
+    document.body
   );
 }
 

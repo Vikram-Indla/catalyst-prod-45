@@ -1,0 +1,257 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Button from '@atlaskit/button/standard-button';
+import Spinner from '@atlaskit/spinner';
+import Textfield from '@atlaskit/textfield';
+import { PageHeader } from '@/components/ads/PageHeader';
+import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { catalystToast } from '@/lib/catalystToast';
+import {
+  useCaseTypes,
+  useCreateType,
+  useUpdateType,
+  useDeleteType,
+} from '@/hooks/test-management/useAdminConfig';
+import { useProjects } from '@/hooks/test-management/useProjects';
+import { TMCaseType } from '@/types/test-management';
+
+const ICONS = ['🔍', '⚡', '🔄', '🔗', '🖥️', '🔒', '♿', '🌐', '⚙️', '✅'];
+
+export default function TestCaseTypesPage() {
+  const navigate = useNavigate();
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const projectId = projects[0]?.id ?? null;
+
+  const { data: types = [], isLoading } = useCaseTypes(projectId);
+  const createType = useCreateType();
+  const updateType = useUpdateType();
+  const deleteType = useDeleteType();
+
+  const [showAdd, setShowAdd] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newIcon, setNewIcon] = useState(ICONS[0]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editIcon, setEditIcon] = useState('');
+
+  const handleAdd = async () => {
+    if (!newName.trim() || !projectId) return;
+    try {
+      await createType.mutateAsync({
+        project_id: projectId,
+        name: newName.trim(),
+        icon: newIcon,
+        is_default: types.length === 0,
+      });
+      setNewName('');
+      setNewIcon(ICONS[0]);
+      setShowAdd(false);
+      catalystToast.success('Case type created');
+    } catch (e: any) {
+      catalystToast.error(e.message);
+    }
+  };
+
+  const startEdit = (t: TMCaseType) => {
+    setEditingId(t.id);
+    setEditName(t.name);
+    setEditIcon(t.icon ?? ICONS[0]);
+  };
+
+  const saveEdit = async (t: TMCaseType) => {
+    if (!editName.trim()) return;
+    try {
+      await updateType.mutateAsync({
+        id: t.id,
+        project_id: t.project_id,
+        name: editName.trim(),
+        icon: editIcon,
+      });
+      setEditingId(null);
+      catalystToast.success('Case type updated');
+    } catch (e: any) {
+      catalystToast.error(e.message);
+    }
+  };
+
+  const setDefault = async (t: TMCaseType) => {
+    if (!projectId) return;
+    try {
+      for (const ty of types) {
+        if (ty.id !== t.id && ty.is_default) {
+          await updateType.mutateAsync({ id: ty.id, project_id: ty.project_id, is_default: false });
+        }
+      }
+      await updateType.mutateAsync({ id: t.id, project_id: t.project_id, is_default: true });
+      catalystToast.success(`${t.name} set as default`);
+    } catch (e: any) {
+      catalystToast.error(e.message);
+    }
+  };
+
+  const handleDelete = async (t: TMCaseType) => {
+    if (!confirm(`Delete type "${t.name}"?`)) return;
+    try {
+      await deleteType.mutateAsync({ id: t.id, projectId: t.project_id });
+      catalystToast.success('Case type deleted');
+    } catch (e: any) {
+      catalystToast.error(e.message);
+    }
+  };
+
+  if (projectsLoading || isLoading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spinner size="large" /></div>;
+  }
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4, display: 'block',
+  };
+
+  return (
+    <div style={{ padding: 24, maxWidth: 860, fontFamily: 'var(--ds-font-family-body)' }}>
+      <PageHeader
+        title="Case types"
+        breadcrumbs={
+          <Breadcrumbs items={[
+            { key: 'admin', text: 'Admin', onClick: () => navigate('/admin/overview') },
+            { key: 'test', text: 'Test Hub', isCurrent: false },
+            { key: 'types', text: 'Case types', isCurrent: true },
+          ]} />
+        }
+        actions={<Button appearance="primary" onClick={() => setShowAdd(v => !v)}>+ Add type</Button>}
+      />
+
+      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 24px' }}>
+        Define test case types (e.g. Functional, Regression, Integration). The default type is applied on new cases.
+      </p>
+
+      {showAdd && (
+        <div style={{
+          border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, padding: 20, marginBottom: 20,
+          background: 'var(--ds-surface-overlay, #FFFFFF)', boxShadow: '0 2px 8px rgba(9,30,66,0.1)',
+        }}>
+          <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>New case type</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'end' }}>
+            <div>
+              <label style={labelStyle}>Name *</label>
+              <Textfield
+                value={newName}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewName(e.target.value)}
+                placeholder="e.g. Functional"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Icon</label>
+              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                {ICONS.map(ic => (
+                  <button
+                    key={ic}
+                    onClick={() => setNewIcon(ic)}
+                    style={{
+                      width: 28, height: 28, borderRadius: 4, fontSize: 16,
+                      border: newIcon === ic ? '2px solid var(--ds-border-focused, #0052CC)' : '2px solid transparent',
+                      cursor: 'pointer', background: newIcon === ic ? 'var(--ds-background-selected, #E9F2FE)' : 'none',
+                    }}
+                  >
+                    {ic}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 16 }}>
+            <Button appearance="subtle" onClick={() => { setShowAdd(false); setNewName(''); }}>Cancel</Button>
+            <Button appearance="primary" isDisabled={!newName.trim() || createType.isPending} onClick={handleAdd}>
+              {createType.isPending ? 'Adding…' : 'Add'}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+          <thead>
+            <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+              {['Icon', 'Name', 'Default', 'Actions'].map((h, i) => (
+                <th key={i} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {types.length === 0 ? (
+              <tr>
+                <td colSpan={4} style={{ padding: '32px 12px', textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                  No case types yet.
+                </td>
+              </tr>
+            ) : types.map(t => (
+              <tr key={t.id} style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+                <td style={{ padding: '10px 12px', width: 80 }}>
+                  {editingId === t.id ? (
+                    <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                      {ICONS.map(ic => (
+                        <button
+                          key={ic}
+                          onClick={() => setEditIcon(ic)}
+                          style={{
+                            width: 24, height: 24, borderRadius: 4, fontSize: 14,
+                            border: editIcon === ic ? '2px solid var(--ds-border-focused, #0052CC)' : '2px solid transparent',
+                            cursor: 'pointer', background: editIcon === ic ? 'var(--ds-background-selected, #E9F2FE)' : 'none',
+                          }}
+                        >
+                          {ic}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <span style={{ fontSize: 20 }}>{t.icon ?? '⚙️'}</span>
+                  )}
+                </td>
+                <td style={{ padding: '10px 12px' }}>
+                  {editingId === t.id ? (
+                    <Textfield
+                      value={editName}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditName(e.target.value)}
+                      autoFocus
+                    />
+                  ) : (
+                    <span style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{t.name}</span>
+                  )}
+                </td>
+                <td style={{ padding: '10px 12px' }}>
+                  {t.is_default ? (
+                    <span style={{
+                      display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600,
+                      background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)', color: 'var(--ds-text-accent-blue, #0052CC)',
+                    }}>Default</span>
+                  ) : (
+                    <button
+                      onClick={() => setDefault(t)}
+                      style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                    >
+                      Set default
+                    </button>
+                  )}
+                </td>
+                <td style={{ padding: '10px 12px' }}>
+                  {editingId === t.id ? (
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <Button appearance="primary" spacing="compact" onClick={() => saveEdit(t)}>Save</Button>
+                      <Button appearance="subtle" spacing="compact" onClick={() => setEditingId(null)}>Cancel</Button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <Button appearance="subtle" spacing="compact" onClick={() => startEdit(t)}>Edit</Button>
+                      <Button appearance="subtle" spacing="compact" onClick={() => handleDelete(t)}>Delete</Button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

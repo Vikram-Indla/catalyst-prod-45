@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { AdminGuard } from '@/components/guards/AdminGuard';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import {
   useAllCustomFieldDefs,
   useCreateCustomField,

@@ -4,7 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button/standard-button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
 import { catalystToast } from '@/lib/catalystToast';
+import { useNavigate } from 'react-router-dom';
+import { PageHeader } from '@/components/ads/PageHeader';
+import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 
 type SetType = 'smoke' | 'regression' | 'sanity' | 'integration' | 'e2e' | 'performance' | 'security' | 'accessibility' | 'custom';
 type MembershipType = 'static' | 'dynamic';
@@ -94,6 +100,7 @@ const EMPTY_FORM: CreateSetForm = {
 
 export default function TestSetsPage() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
   const projectId = projects[0]?.id;
 
@@ -162,18 +169,24 @@ export default function TestSetsPage() {
   return (
     <div style={{ padding: 24, maxWidth: 1100, fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
-            Test Sets
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 0' }}>
-            {sets.length} set{sets.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-        <Button appearance="primary" onClick={() => setShowCreate(true)}>
-          + New Test Set
-        </Button>
+      <div style={{ marginBottom: 24 }}>
+        <PageHeader
+          title="Test Sets"
+          breadcrumbs={
+            <Breadcrumbs items={[
+              { key: 'testhub', text: 'Test Hub', onClick: () => navigate('/testhub/dashboard') },
+              { key: 'sets', text: 'Test Sets', isCurrent: true },
+            ]} />
+          }
+          actions={
+            <Button appearance="primary" onClick={() => setShowCreate(true)}>
+              + New Test Set
+            </Button>
+          }
+        />
+        <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 24px 0' }}>
+          {sets.length} set{sets.length !== 1 ? 's' : ''}
+        </p>
       </div>
 
       {/* Create form */}
@@ -194,30 +207,21 @@ export default function TestSetsPage() {
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                 Name *
               </label>
-              <input
+              <Textfield
                 value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Regression Suite v2.0"
-                style={{
-                  width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
-                  borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                  fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box',
-                }}
+                autoFocus
               />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                 Description
               </label>
-              <textarea
+              <TextArea
                 value={form.description}
-                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                rows={2}
-                style={{
-                  width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
-                  borderRadius: 4, fontSize: 14, resize: 'vertical', color: 'var(--ds-text, #172B4D)',
-                  fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box',
-                }}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setForm(f => ({ ...f, description: e.target.value }))}
+                minimumRows={2}
               />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -225,36 +229,24 @@ export default function TestSetsPage() {
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                   Type
                 </label>
-                <select
-                  value={form.set_type}
-                  onChange={e => setForm(f => ({ ...f, set_type: e.target.value as SetType }))}
-                  style={{
-                    width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
-                    borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                    background: 'var(--ds-surface, #FFFFFF)',
-                  }}
-                >
-                  {(Object.keys(SET_TYPE_LABELS) as SetType[]).map(t => (
-                    <option key={t} value={t}>{SET_TYPE_LABELS[t]}</option>
-                  ))}
-                </select>
+                <Select
+                  value={{ value: form.set_type, label: SET_TYPE_LABELS[form.set_type] }}
+                  onChange={opt => opt && setForm(f => ({ ...f, set_type: opt.value as SetType }))}
+                  options={(Object.keys(SET_TYPE_LABELS) as SetType[]).map(t => ({ value: t, label: SET_TYPE_LABELS[t] }))}
+                />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                   Membership
                 </label>
-                <select
-                  value={form.membership_type}
-                  onChange={e => setForm(f => ({ ...f, membership_type: e.target.value as MembershipType }))}
-                  style={{
-                    width: '100%', padding: '6px 8px', border: '2px solid var(--ds-border-input, #DFE1E6)',
-                    borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                    background: 'var(--ds-surface, #FFFFFF)',
-                  }}
-                >
-                  <option value="static">Static (manual)</option>
-                  <option value="dynamic">Dynamic (criteria-based)</option>
-                </select>
+                <Select
+                  value={{ value: form.membership_type, label: form.membership_type === 'dynamic' ? 'Dynamic (criteria-based)' : 'Static (manual)' }}
+                  onChange={opt => opt && setForm(f => ({ ...f, membership_type: opt.value as MembershipType }))}
+                  options={[
+                    { value: 'static', label: 'Static (manual)' },
+                    { value: 'dynamic', label: 'Dynamic (criteria-based)' },
+                  ]}
+                />
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>

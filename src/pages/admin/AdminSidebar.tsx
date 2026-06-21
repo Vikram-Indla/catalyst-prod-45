@@ -95,6 +95,18 @@ const collapsibleSections: CollapsibleSection[] = [
       { id: 'replay-admin', label: 'Replay settings', path: '/admin/replay', icon: VidPlayIcon },
     ],
   },
+  {
+    id: 'test-hub',
+    label: 'Test Hub',
+    icon: FieldDropdownIcon,
+    items: [
+      { id: 'test-priorities',    label: 'Case priorities',  path: '/admin/test/priorities',    icon: FieldDropdownIcon },
+      { id: 'test-case-types',    label: 'Case types',       path: '/admin/test/case-types',    icon: FieldDropdownIcon },
+      { id: 'test-case-statuses', label: 'Case statuses',    path: '/admin/test/case-statuses', icon: FieldDropdownIcon },
+      { id: 'test-run-statuses',  label: 'Run statuses',     path: '/admin/test/run-statuses',  icon: FieldDropdownIcon },
+      { id: 'test-permissions',   label: 'Permissions',      path: '/admin/test/permissions',   icon: FieldDropdownIcon },
+    ],
+  },
 ];
 
 /**
@@ -115,6 +127,7 @@ export function AdminSidebar() {
     'ai-governance': false,
     'work-items': true,
     'replay': false,
+    'test-hub': true,
   });
 
   const toggleSection = (sectionId: string) => {
