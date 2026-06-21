@@ -2,11 +2,12 @@
  * Floating inline editor components for table cells.
  * All use position:fixed + getBoundingClientRect() + z-index 9999.
  */
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowUp, ArrowDown, ArrowRight, ChevronsUp, Check, Search, Calendar as CalendarIcon } from '@/lib/atlaskit-icons';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 
 // ─── Utility: Fixed portal dropdown ─────────────────────────
 function FixedDropdown({ anchorRef, children, onClose, width = 180 }: {
@@ -145,6 +146,11 @@ export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: 
 }
 
 // ─── Inline Assignee Picker ─────────────────────────────────
+/**
+ * 2026-06-21 Phase 6: rewrapped around the canonical <ProfilePicker /> via
+ * its `anchorRef` body-only mode. Public API unchanged so call sites need
+ * no edits.
+ */
 export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect, onClose }: {
   currentId: string | null;
   profiles: { id: string; name: string }[];
@@ -152,46 +158,26 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
   onSelect: (id: string | null) => void;
   onClose: () => void;
 }) {
-  const [search, setSearch] = useState('');
-  const filtered = profiles.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const members: ProfilePickerMember[] = useMemo(
+    () => profiles.map(p => ({ userId: p.id, name: p.name, avatarUrl: null })),
+    [profiles],
+  );
+  const selected: ProfilePickerSelection = currentId
+    ? (() => {
+        const m = profiles.find(p => p.id === currentId);
+        return m ? { userId: m.id, name: m.name, avatarUrl: null } : null;
+      })()
+    : null;
 
   return (
-    <FixedDropdown anchorRef={anchorRef} onClose={onClose} width={220}>
-      <div className="p-2 border-b" style={{ borderColor: 'var(--cp-bd-zone)' }}>
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded" style={{ border: '1px solid var(--divider)' }}>
-          <Search size={12} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
-          <input
-            autoFocus
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="flex-1 text-[11px] outline-none bg-transparent"
-            placeholder="Search..."
-          />
-        </div>
-      </div>
-      <div className="py-1 max-h-[200px] overflow-y-auto">
-        <button
-          onClick={() => { onSelect(null); onClose(); }}
-          className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] text-left"
-          style={{ color: 'var(--fg-4)' }}
-        >
-          Unassigned
-          {!currentId && <Check size={12} className="ml-auto text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
-        </button>
-        {filtered.map(p => (
-          <button
-            key={p.id}
-            onClick={() => { onSelect(p.id); onClose(); }}
-            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] text-left"
-            style={{ color: 'var(--fg-1)' }}
-          >
-            <AvatarCircle name={p.name} size={18} />
-            <span className="flex-1 truncate">{p.name}</span>
-            {currentId === p.id && <Check size={12} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
-          </button>
-        ))}
-      </div>
-    </FixedDropdown>
+    <ProfilePicker
+      value={selected}
+      onChange={(next) => onSelect(next?.userId ?? null)}
+      members={members}
+      fieldLabel="Assignee"
+      anchorRef={anchorRef}
+      onClose={onClose}
+    />
   );
 }
 

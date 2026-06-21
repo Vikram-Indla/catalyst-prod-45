@@ -1,14 +1,18 @@
 /**
- * AssigneePicker — popover anchored to a card avatar. Search + Unassigned +
- * Assign to me + member list. Writes assignee_display_name. Popper-free.
+ * AssigneePicker — popover anchored to a kanban card avatar.
+ *
+ * 2026-06-21 Phase 6: rewrapped around the canonical <ProfilePicker /> via
+ * its `anchorRef` body-only mode. KanbanPage signature unchanged
+ * (`{ issue, anchor, members, currentUserName, onAssign, onClose }`).
+ *
+ * Identity model: this picker operates on display NAMES (BoardIssue
+ * .assigneeName is a name string, not a UUID). We use the name as the
+ * userId surrogate so ProfilePicker's value/onChange round-trip is
+ * stable. `avatars` map → avatarUrl per member.
  */
-import React, { useEffect, useRef, useState, useMemo } from 'react';
-import { createPortal } from 'react-dom';
-import { token } from '@atlaskit/tokens';
-import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import React, { useMemo, useRef, useEffect } from 'react';
+import { ProfilePicker, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
-import { UnassignedAvatar } from '@/components/ads';
-import { SIZES, STRINGS } from '../constants';
 import type { BoardIssue } from '../types';
 
 interface Props {
@@ -22,53 +26,38 @@ interface Props {
 }
 
 export const AssigneePicker: React.FC<Props> = ({ issue, anchor, members, avatars, currentUserName, onAssign, onClose }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [query, setQuery] = useState('');
-  useEffect(() => {
-    const onDown = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node) && !anchor.contains(e.target as Node)) onClose(); };
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey, true);
-    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey, true); };
-  }, [anchor, onClose]);
+  /* Wrap the parent-supplied HTMLElement into a stable RefObject so
+     ProfilePicker can read .current. The parent owns lifecycle; we just
+     point at the same node. */
+  const anchorRef = useRef<HTMLElement | null>(anchor);
+  useEffect(() => { anchorRef.current = anchor; }, [anchor]);
 
-  const list = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return members.filter((m) => !q || m.toLowerCase().includes(q)).slice(0, 30);
-  }, [members, query]);
+  const pickerMembers: ProfilePickerMember[] = useMemo(
+    () => members.map((name) => ({
+      userId: name,
+      name,
+      avatarUrl: resolveAvatarUrl(name) ?? avatars.get(name) ?? null,
+    })),
+    [members, avatars],
+  );
 
-  const rect = anchor.getBoundingClientRect();
-  const row = (name: string | null, label: string, avatarName: string | null) => {
-    const active = (issue.assigneeName ?? null) === name;
-    return (
-      <button key={label} role="menuitem" onClick={() => { onAssign(issue, name); onClose(); }}
-        style={{ width: '100%', height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8, border: 'none',
-          background: active ? token('color.background.selected', '#E9F2FF') : 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
-          color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#172B4D'), fontSize: 14 }}
-        onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
-        onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}>
-        {avatarName
-          ? <CatalystAvatar size="small" src={resolveAvatarUrl(avatarName) ?? avatars.get(avatarName) ?? undefined} name={avatarName} />
-          : <UnassignedAvatar size={22} />
-        }
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
-      </button>
-    );
-  };
+  const value: ProfilePickerSelection = issue.assigneeName
+    ? {
+        userId: issue.assigneeName,
+        name: issue.assigneeName,
+        avatarUrl: resolveAvatarUrl(issue.assigneeName) ?? avatars.get(issue.assigneeName) ?? null,
+      }
+    : null;
 
-  return createPortal(
-    <div ref={ref} role="menu" aria-label="Assign work item"
-      style={{ position: 'fixed', top: rect.bottom + 4, right: Math.max(8, window.innerWidth - rect.right),
-        width: 260, maxHeight: 360, overflowY: 'auto', background: token('elevation.surface.overlay', '#FFFFFF'),
-        border: `1px solid ${token('color.border', '#091E4224')}`, borderRadius: 4,
-        boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
-        padding: '4px 0', zIndex: SIZES.Z_DROPDOWN }}>
-      <input autoFocus placeholder="Search people…" value={query} onChange={(e) => setQuery(e.target.value)}
-        style={{ width: 'calc(100% - 16px)', margin: '4px 8px', height: 32, padding: '0 8px', border: '2px solid var(--ds-border-input, #DFE1E6)', borderRadius: 3, outline: 'none', fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} />
-      {currentUserName && issue.assigneeName !== currentUserName && row(currentUserName, STRINGS.ASSIGN_TO_ME, currentUserName)}
-      {row(null, STRINGS.UNASSIGNED, null)}
-      {list.map((m) => row(m, m, m))}
-    </div>,
-    document.body,
+  return (
+    <ProfilePicker
+      value={value}
+      onChange={(next) => onAssign(issue, next?.userId ?? null)}
+      members={pickerMembers}
+      currentUserId={currentUserName}
+      fieldLabel="Assignee"
+      anchorRef={anchorRef}
+      onClose={onClose}
+    />
   );
 };

@@ -74,6 +74,23 @@ export interface ProfilePickerProps {
   }) => React.ReactNode;
   /** Visual variant of the default trigger. 'inline' = compact text button (sidebar / table). */
   triggerVariant?: 'inline' | 'cell';
+  /**
+   * Body-only mode (2026-06-21): when set, ProfilePicker renders ONLY the
+   * popover body, positioned at `anchorRef.current.getBoundingClientRect()`.
+   * The parent owns the visible trigger and mounts/unmounts ProfilePicker
+   * conditionally. Used by hierarchy/AssigneeDropdown, kanban-board card
+   * avatar popover, project-hub inline editors — patterns where the parent
+   * already owns its trigger element.
+   *
+   * When `anchorRef` is provided:
+   *   - `renderTrigger` is ignored
+   *   - popover opens immediately on mount
+   *   - on close (Escape, outside-click, selection), `onClose` fires so the
+   *     parent can unmount ProfilePicker
+   */
+  anchorRef?: React.RefObject<HTMLElement | null>;
+  /** Required when `anchorRef` is set. Called when the popover dismisses. */
+  onClose?: () => void;
 }
 
 export function ProfilePicker({
@@ -88,8 +105,19 @@ export function ProfilePicker({
   size = 24,
   renderTrigger,
   triggerVariant = 'inline',
+  anchorRef,
+  onClose,
 }: ProfilePickerProps) {
-  const [open, setOpen] = useState(false);
+  const bodyOnly = !!anchorRef;
+  const [open, setOpen] = useState(bodyOnly);
+  /* Tick state — forces a re-render after mount so body-only mode can read
+     `anchorRef.current.getBoundingClientRect()` (ref is null during the
+     first render of the popover when parent + body-only ProfilePicker mount
+     together). */
+  const [, forceTick] = useState(0);
+  useEffect(() => {
+    if (open) forceTick((n) => n + 1);
+  }, [open]);
   const [search, setSearch] = useState('');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
@@ -106,19 +134,27 @@ export function ProfilePicker({
     [disabled],
   );
 
-  /* Click outside → close */
+  /* Internal close — also notifies parent if running in body-only mode. */
+  const closePopover = useCallback(() => {
+    setOpen(false);
+    if (bodyOnly) onClose?.();
+  }, [bodyOnly, onClose]);
+
+  /* Click outside → close. In body-only mode the trigger lives in the parent,
+     so use `anchorRef` as the no-close zone instead of the internal trigger. */
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
       const t = e.target as Node;
+      const anchorEl = bodyOnly ? anchorRef?.current : triggerRef.current;
       if (
         portalRef.current && !portalRef.current.contains(t) &&
-        triggerRef.current && !triggerRef.current.contains(t)
-      ) setOpen(false);
+        anchorEl && !anchorEl.contains(t)
+      ) closePopover();
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
-  }, [open]);
+  }, [open, bodyOnly, anchorRef, closePopover]);
 
   /* Capture-phase Escape — prevents parent modal closure. */
   useEffect(() => {
@@ -127,12 +163,12 @@ export function ProfilePicker({
       if (e.key === 'Escape') {
         e.stopPropagation();
         e.preventDefault();
-        setOpen(false);
+        closePopover();
       }
     };
     document.addEventListener('keydown', onKey, true);
     return () => document.removeEventListener('keydown', onKey, true);
-  }, [open]);
+  }, [open, closePopover]);
 
   /* Autofocus search on open */
   useEffect(() => {
@@ -153,10 +189,10 @@ export function ProfilePicker({
   const handleSelect = useCallback(
     (m: ProfilePickerMember | null) => {
       onChange(m);
-      setOpen(false);
       setSearch('');
+      closePopover();
     },
-    [onChange],
+    [onChange, closePopover],
   );
 
   /* "Assign to me" row — only when currentUserId present, not already selected,
@@ -201,13 +237,17 @@ export function ProfilePicker({
     </button>
   );
 
-  /* Custom trigger — caller passes ref + onClick wiring via the helper. */
-  const triggerNode = renderTrigger
-    ? renderTrigger({ open, value, disabled: !!disabled, onClick: handleToggle, ref: triggerRef })
-    : defaultTrigger;
+  /* Custom trigger — caller passes ref + onClick wiring via the helper.
+     Body-only mode: parent owns trigger, render nothing here. */
+  const triggerNode = bodyOnly
+    ? null
+    : renderTrigger
+      ? renderTrigger({ open, value, disabled: !!disabled, onClick: handleToggle, ref: triggerRef })
+      : defaultTrigger;
 
   /* ───── Popover ───── */
-  const rect = triggerRef.current?.getBoundingClientRect();
+  const anchorEl = bodyOnly ? anchorRef?.current : triggerRef.current;
+  const rect = anchorEl?.getBoundingClientRect();
   const portalStyle: React.CSSProperties = rect
     ? {
         position: 'fixed',
