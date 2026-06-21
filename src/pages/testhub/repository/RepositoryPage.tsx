@@ -15,6 +15,8 @@ import {
   useDeleteTestCase,
   useBulkArchiveTestCases,
   useBulkCopyTestCases,
+  useBulkUpdateTestCases,
+  useBulkDeleteTestCases,
   useCreateCaseVersion,
 } from '@/hooks/test-management/useTestCases';
 import { supabase } from '@/integrations/supabase/client';
@@ -530,6 +532,111 @@ function BulkDropdown({ triggerRef, onArchive, onCopy, onClose }: {
   );
 }
 
+// ── Change Status Dropdown (portal) ──────────────────────────────────────────
+
+const CASE_STATUSES: { label: string; value: string }[] = [
+  { label: 'Draft', value: 'DRAFT' },
+  { label: 'Review', value: 'REVIEW' },
+  { label: 'Approved', value: 'APPROVED' },
+  { label: 'Deprecated', value: 'DEPRECATED' },
+];
+
+function StatusDropdown({ triggerRef, onSelect, onClose }: {
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  onSelect: (status: string) => void;
+  onClose: () => void;
+}) {
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) && !triggerRef.current?.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey, true); };
+  }, [onClose, triggerRef]);
+
+  if (!triggerRef.current) return null;
+  const rect = triggerRef.current.getBoundingClientRect();
+  const itemStyle: React.CSSProperties = {
+    display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
+    border: 'none', background: 'none', cursor: 'pointer', fontSize: 13,
+    color: 'var(--ds-text, #172B4D)',
+  };
+  return createPortal(
+    <div ref={menuRef} role="menu" style={{
+      position: 'fixed', top: rect.bottom + 4, left: rect.left,
+      background: 'var(--ds-surface-overlay, #FFFFFF)',
+      border: '1px solid var(--ds-border, #DFE1E6)',
+      borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+      padding: '4px 0', minWidth: 140, zIndex: 9999,
+    }}>
+      {CASE_STATUSES.map(s => (
+        <button key={s.value} role="menuitem" style={itemStyle}
+          onClick={() => { onSelect(s.value); onClose(); }}
+          onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle, rgba(9,30,66,0.04))'}
+          onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
+          {s.label}
+        </button>
+      ))}
+    </div>,
+    document.body
+  );
+}
+
+// ── Change Priority Dropdown (portal) ─────────────────────────────────────────
+
+function PriorityDropdown({ triggerRef, priorities, onSelect, onClose }: {
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  priorities: TMCasePriority[];
+  onSelect: (priorityId: string) => void;
+  onClose: () => void;
+}) {
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) && !triggerRef.current?.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey, true); };
+  }, [onClose, triggerRef]);
+
+  if (!triggerRef.current) return null;
+  const rect = triggerRef.current.getBoundingClientRect();
+  const itemStyle: React.CSSProperties = {
+    display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
+    border: 'none', background: 'none', cursor: 'pointer', fontSize: 13,
+    color: 'var(--ds-text, #172B4D)',
+  };
+  return createPortal(
+    <div ref={menuRef} role="menu" style={{
+      position: 'fixed', top: rect.bottom + 4, left: rect.left,
+      background: 'var(--ds-surface-overlay, #FFFFFF)',
+      border: '1px solid var(--ds-border, #DFE1E6)',
+      borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+      padding: '4px 0', minWidth: 140, zIndex: 9999,
+    }}>
+      {priorities.length === 0 ? (
+        <div style={{ padding: '8px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>No priorities</div>
+      ) : priorities.map(p => (
+        <button key={p.id} role="menuitem" style={itemStyle}
+          onClick={() => { onSelect(p.id); onClose(); }}
+          onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle, rgba(9,30,66,0.04))'}
+          onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {p.color && <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />}
+            {p.name}
+          </span>
+        </button>
+      ))}
+    </div>,
+    document.body
+  );
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function RepositoryPage() {
@@ -551,6 +658,12 @@ export default function RepositoryPage() {
   // Bulk modal state
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [copyModalOpen, setCopyModalOpen] = useState(false);
+
+  // Bulk status/priority dropdown state
+  const [statusDropOpen, setStatusDropOpen] = useState(false);
+  const [priorityDropOpen, setPriorityDropOpen] = useState(false);
+  const statusBtnRef = useRef<HTMLButtonElement | null>(null);
+  const priorityBtnRef = useRef<HTMLButtonElement | null>(null);
 
   // Folder modal state
   const [folderModalOpen, setFolderModalOpen] = useState(false);

@@ -69,6 +69,14 @@ export function canGenerateStories(issueType?: string | null): boolean {
 }
 
 /**
+ * Whether the "Plan work items" menu item is visible.
+ * Business Requests have the full project-picker → planner wizard.
+ */
+export function canPlanWorkItems(issueType?: string | null): boolean {
+  return issueType === 'Business Request';
+}
+
+/**
  * Human-readable child-work-item label that appears in suggestion
  * dialogs ("Suggest Stories", "Suggest Tasks", etc.). The backend
  * decides the actual child issue_type — this is for display only.
