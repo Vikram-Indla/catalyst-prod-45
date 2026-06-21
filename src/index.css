@@ -6218,3 +6218,8 @@ table th[class*="css-"] {
 .catalyst-ai-dot:nth-child(2) { animation-delay: 0.2s; }
 .catalyst-ai-dot:nth-child(3) { animation-delay: 0.4s; }
 
+/* Replay Theatre — title-hover chip reveal */
+.replay-title-hover-zone:hover .replay-chip {
+  opacity: 1 !important;
+}
+
