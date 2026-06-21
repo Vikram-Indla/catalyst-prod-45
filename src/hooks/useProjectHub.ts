@@ -117,6 +117,9 @@ export function useProjectFavorites() {
       if (error) throw new Error(`Failed to fetch favorites: ${error.message}`);
       return new Set((data ?? []).map((f: { project_id: string }) => f.project_id));
     },
+    // Set is not JSON-serializable — the persist layer stores it as {}.
+    // Re-wrap stale hydrated values back into a Set on cache read.
+    select: (data) => data instanceof Set ? data : new Set<string>(),
   });
 }
 

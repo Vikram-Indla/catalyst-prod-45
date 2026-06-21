@@ -1770,6 +1770,10 @@ export function useTeamRoleMap(jiraAccountIds: (string | null)[]) {
       }
       return map;
     },
+    // Map is not JSON-serializable — persist layer stores it as {}.
+    // Re-wrap stale hydrated values back into a Map on cache read.
+    select: (data): Map<string, TeamRoleEntry> =>
+      data instanceof Map ? data : new Map(Object.entries(data ?? {}) as [string, TeamRoleEntry][]),
   });
 }
 

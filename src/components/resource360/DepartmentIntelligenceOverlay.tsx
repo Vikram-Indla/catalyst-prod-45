@@ -435,6 +435,8 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
       return map;
     },
     staleTime: 5 * 60 * 1000,
+    select: (data): Map<string, string> =>
+      data instanceof Map ? data : new Map(Object.entries(data ?? {}) as [string, string][]),
   });
 
   // Tab 1 = Executive Summary (default), Tab 2 = Weekly Digest, Tab 3 = Recommendations

@@ -1808,6 +1808,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
   return (
     <WidgetWrapper
       title="Epic Progress"
+      subtitle="Linked epic completion by initiative"
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={2}

@@ -64,6 +64,9 @@ export function useStarredItemIds() {
     },
     enabled: !!userId,
     staleTime: 1000 * 60, // 1 minute
+    // Set is not JSON-serializable — the persist layer stores it as {}.
+    // The select transformer re-wraps stale hydrated values back into a Set.
+    select: (data) => data instanceof Set ? data : new Set<string>(),
   });
 }
 

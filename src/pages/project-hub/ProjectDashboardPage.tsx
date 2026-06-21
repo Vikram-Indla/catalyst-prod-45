@@ -35,6 +35,7 @@ import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import ProjectDashboardTimeline from '@/components/projecthub/ProjectDashboardTimeline';
+import ProductDashboardTimeline from '@/components/producthub/ProductDashboardTimeline';
 
 
 // Self-rolled dropdown for edit mode actions — avoids @atlaskit/popup (0,0) bug
@@ -527,6 +528,11 @@ useEffect(() => {
               <ProjectDashboardTimeline projectKey={pKey} />
             </div>
           )}
+          {isProduct && pKey && (
+            <div style={{ marginBottom: 24 }}>
+              <ProductDashboardTimeline productId={pKey} />
+            </div>
+          )}
           <DashboardWidgetGrid
             projectId={projectId || pKey}
             projectKey={pKey}
@@ -601,6 +607,11 @@ useEffect(() => {
               {!isProduct && !isIncident && pKey && (
                 <div style={{ marginBottom: 24 }}>
                   <ProjectDashboardTimeline projectKey={pKey} />
+                </div>
+              )}
+              {isProduct && pKey && (
+                <div style={{ marginBottom: 24 }}>
+                  <ProductDashboardTimeline productId={pKey} />
                 </div>
               )}
               <DashboardWidgetGrid

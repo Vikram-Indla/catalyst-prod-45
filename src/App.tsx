@@ -65,6 +65,7 @@ const FullAppRoutes = ENABLE_FULL_APP
 //   • Config/flag queries that need longer retention override gcTime per-query
 const CACHE_VERSION = 'v2.2026-05-16';
 const FIVE_MIN_MS = 5 * 60 * 1000;
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 const queryClient = new QueryClient({
   defaultOptions: {

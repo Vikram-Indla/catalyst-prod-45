@@ -105,6 +105,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     component: ActiveSprintsWidget,
     hideOnIncident: true,
     hideOnProduct: true,
+    hideOnProject: true,
   },
 
   // ─── §2 VOLUME & SHAPE ──────────────────────────────────────────────
@@ -118,6 +119,8 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 2,
     component: ItemsByStatusWidget,
+    hideOnProject: true,
+    hideOnProduct: true,
   },
   {
     id: 'scope-change',
@@ -133,6 +136,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
        Incidents have no scope concept — hidden on incident too. */
     hideOnProduct: true,
     hideOnIncident: true,
+    hideOnProject: true,
   },
 
   // ─── §3 EXCEPTIONS ──────────────────────────────────────────────────
@@ -201,6 +205,8 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minSpan: 12,
     defaultPosition: 8,
     component: TeamWorkloadWidget,
+    hideOnProject: true,
+    hideOnProduct: true,
   },
   {
     id: 'time-in-status',
@@ -217,6 +223,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
        same constraint — hidden here too. */
     hideOnProduct: true,
     hideOnIncident: true,
+    hideOnProject: true,
   },
 
   // ─── §6 DATE PULSE HEALTH (product-only) ────────────────────────────
