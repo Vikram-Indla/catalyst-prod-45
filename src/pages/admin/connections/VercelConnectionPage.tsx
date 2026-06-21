@@ -771,7 +771,7 @@ export default function VercelConnectionPage() {
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-              <thead style={{ position: 'sticky', top: 0, background: 'var(--ds-background-accent-gray-subtlest, #F7F8F9)', zIndex: 1 }}>
+              <thead style={{ position: 'sticky', top: 0, background: 'var(--ds-surface, #FFFFFF)', zIndex: 1 }}>
                 <tr>
                   <th style={TH}>Status</th>
                   <th style={TH}>Commit</th>
@@ -829,7 +829,7 @@ export default function VercelConnectionPage() {
             <SectionLabel>Vercel deployments</SectionLabel>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-                <thead style={{ position: 'sticky', top: 0, background: 'var(--ds-background-accent-gray-subtlest, #F7F8F9)', zIndex: 1 }}>
+                <thead style={{ position: 'sticky', top: 0, background: 'var(--ds-surface, #FFFFFF)', zIndex: 1 }}>
                   <tr>
                     <th style={TH}>Status</th>
                     <th style={TH}>URL</th>
