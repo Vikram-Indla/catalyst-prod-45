@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Spinner from '@atlaskit/spinner';
@@ -133,13 +133,216 @@ function useQualifyingBRs() {
   });
 }
 
-// ─── Journey detail view ─────────────────────────────────────────────────────
+// ─── Shared helpers ───────────────────────────────────────────────────────────
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-function JourneyView({ br, onBack }: { br: QualifyingBR; onBack: () => void }) {
+const ctrlBtnStyle: React.CSSProperties = {
+  width: 28, height: 28,
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  background: 'var(--ds-background-neutral, #F1F2F4)',
+  border: '1px solid var(--ds-border, #DFE1E6)',
+  borderRadius: 3,
+  color: 'var(--ds-text, #172B4D)',
+  fontSize: 12,
+  cursor: 'pointer',
+  flexShrink: 0,
+  padding: 0,
+};
+
+// ─── Theatre inline view ──────────────────────────────────────────────────────
+
+function TheatreView({ br, onClose }: { br: QualifyingBR; onClose: () => void }) {
+  const steps = br.journey_steps;
+  const total = steps.length;
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState<1 | 2>(1);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (!isPlaying) return;
+    if (currentStep >= total - 1) { setIsPlaying(false); return; }
+    timerRef.current = setTimeout(() => setCurrentStep(s => s + 1), 2500 / speed);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [isPlaying, currentStep, speed, total]);
+
+  const handleKey = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') { e.stopPropagation(); onClose(); return; }
+    if (e.key === ' ') { e.preventDefault(); setIsPlaying(v => !v); return; }
+    if (e.key === 'ArrowLeft') { setCurrentStep(s => Math.max(0, s - 1)); setIsPlaying(false); return; }
+    if (e.key === 'ArrowRight') { setCurrentStep(s => Math.min(total - 1, s + 1)); setIsPlaying(false); return; }
+  }, [onClose, total]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKey, true);
+    return () => document.removeEventListener('keydown', handleKey, true);
+  }, [handleKey]);
+
+  const spanDays = Math.round(
+    (new Date(br.updated_at).getTime() - new Date(br.created_at).getTime()) / 86400000,
+  );
+  const stepDate = (i: number) =>
+    i === 0 ? fmtDate(br.created_at) : i === total - 1 ? fmtDate(br.updated_at) : '';
+  const scrubberPct = total > 1 ? (currentStep / (total - 1)) * 100 : 100;
+  const goToStep = (i: number) => { setCurrentStep(i); setIsPlaying(false); };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', border: '0.5px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)', minHeight: 480 }}>
+
+      {/* TOP BAR */}
+      <div style={{ height: 48, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 8, flexShrink: 0, borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)' }}>
+        <button title="Back to journey (Esc)" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', color: 'var(--ds-text-subtle, #42526E)', fontSize: 13, borderRadius: 3 }}>
+          ← Back
+        </button>
+        {br.request_key && (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 3, background: 'var(--ds-background-neutral, #F1F2F4)', fontSize: 11, fontWeight: 600, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap' }}>
+            <JiraIssueTypeIcon type="Business Request" size={12} />
+            {br.request_key}
+          </span>
+        )}
+        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
+          {br.title}
+        </span>
+
+        {/* Transport controls */}
+        <button title="Restart" onClick={() => { setCurrentStep(0); setIsPlaying(false); }} style={ctrlBtnStyle}>⏮</button>
+        <button title="Step back (←)" onClick={() => goToStep(Math.max(0, currentStep - 1))} disabled={currentStep === 0} style={{ ...ctrlBtnStyle, opacity: currentStep === 0 ? 0.38 : 1 }}>⏪</button>
+        <button
+          title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
+          onClick={() => setIsPlaying(v => !v)}
+          style={{ ...ctrlBtnStyle, background: isPlaying ? 'var(--ds-background-information, #E9F2FF)' : 'var(--ds-background-neutral, #F1F2F4)', color: isPlaying ? 'var(--ds-text-information, #0055CC)' : 'var(--ds-text, #172B4D)' }}
+        >{isPlaying ? '⏸' : '▶'}</button>
+        <button title="Step forward (→)" onClick={() => goToStep(Math.min(total - 1, currentStep + 1))} disabled={currentStep >= total - 1} style={{ ...ctrlBtnStyle, opacity: currentStep >= total - 1 ? 0.38 : 1 }}>⏩</button>
+        <button
+          title={speed === 1 ? 'Switch to 2×' : 'Switch to 1×'}
+          onClick={() => setSpeed(s => s === 1 ? 2 : 1)}
+          style={{ ...ctrlBtnStyle, fontSize: 10, background: speed === 2 ? 'var(--ds-background-information, #E9F2FF)' : 'var(--ds-background-neutral, #F1F2F4)', color: speed === 2 ? 'var(--ds-text-information, #0055CC)' : 'var(--ds-text-subtle, #42526E)' }}
+        >{speed}×</button>
+        <button title="Close replay" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16, borderRadius: 3 }}>×</button>
+      </div>
+
+      {/* METADATA STRIP */}
+      <div style={{ height: 36, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 16, flexShrink: 0, background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        {br.assignee_name && (
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Avatar name={br.assignee_name} src={br.assignee_avatar ?? undefined} size="xsmall" />
+            {br.assignee_name}
+          </span>
+        )}
+        <span>Created {fmtDate(br.created_at)}</span>
+        <span>{spanDays} days total</span>
+        <span>{total} hops</span>
+        <span style={{ flex: 1 }} />
+        <span style={{ fontSize: 10, fontStyle: 'italic' }}>Space = play · ← → = step</span>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 280 }}>
+
+        {/* LEFT 70%: Status timeline */}
+        <div style={{ flex: 7, padding: '20px 24px', borderRight: '1px solid var(--ds-border, #DFE1E6)', overflowY: 'auto' }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>Status timeline</div>
+          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 24 }}>
+            {fmtDate(br.created_at)} → {fmtDate(br.updated_at)} · step {currentStep + 1} of {total}
+          </div>
+
+          {/* Step nodes */}
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start' }}>
+            <div style={{ position: 'absolute', top: 19, left: 0, right: 0, height: 1, background: 'var(--ds-border, #DFE1E6)', zIndex: 0 }} />
+            {steps.map((step, i) => {
+              const isPast = i < currentStep;
+              const isActive = i === currentStep;
+              const isFuture = i > currentStep;
+              return (
+                <div key={step} onClick={() => goToStep(i)} title={step} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1, cursor: 'pointer' }}>
+                  <div style={{
+                    width: 38, height: 38, borderRadius: 4,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15,
+                    ...(isActive ? { background: 'var(--ds-background-information-bold, #0055CC)', color: '#FFFFFF', boxShadow: '0 0 0 3px var(--ds-border-information, #CCE0FF)' }
+                      : isPast ? { background: 'var(--ds-background-neutral, #F1F2F4)', color: 'var(--ds-text-subtle, #42526E)', border: '1px solid var(--ds-border, #DFE1E6)' }
+                      : { background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text-subtlest, #6B778C)', border: '1px dashed var(--ds-border, #DFE1E6)', opacity: 0.38 }),
+                  }}>
+                    {isPast ? '✓' : isActive ? '●' : '○'}
+                  </div>
+                  <div style={{ marginTop: 8, fontSize: 11, textAlign: 'center', lineHeight: 1.3, maxWidth: 72, wordBreak: 'break-word', fontWeight: isActive ? 500 : 400, color: isActive ? 'var(--ds-text-information, #0055CC)' : isPast ? 'var(--ds-text-subtle, #42526E)' : 'var(--ds-text-subtlest, #6B778C)', opacity: isFuture ? 0.5 : 1 }}>
+                    {step}
+                  </div>
+                  {stepDate(i) && <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2, textAlign: 'center' }}>{stepDate(i)}</div>}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Current step callout */}
+          <div style={{ marginTop: 32, padding: '10px 12px', borderLeft: '2px solid var(--ds-border-information, #0055CC)', background: 'var(--ds-background-information, #E9F2FF)', borderRadius: '0 4px 4px 0' }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{steps[currentStep]}</div>
+            <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', marginTop: 4 }}>
+              Step {currentStep + 1} of {total} · {isPlaying ? 'Playing…' : 'Paused — press ▶ or Space'}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT 30%: Journey hierarchy */}
+        <div style={{ flex: 3, padding: '20px 16px', overflowY: 'auto' }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 12 }}>Journey hierarchy</div>
+          <div style={{ padding: '8px 10px', marginBottom: 8, borderLeft: '2px solid var(--ds-border-information, #0055CC)', background: 'var(--ds-background-information, #E9F2FF)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <JiraIssueTypeIcon type="Business Request" size={14} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-link, #0055CC)' }}>{br.request_key ?? 'BR'}</span>
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', marginTop: 2, lineHeight: 1.3 }}>{br.title}</div>
+          </div>
+          <div style={{ paddingLeft: 10 }}>
+            {steps.map((step, i) => {
+              const isCur = i === currentStep;
+              const wasPast = i < currentStep;
+              return (
+                <div key={step} onClick={() => goToStep(i)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 6px', marginBottom: 2, borderRadius: 3, cursor: 'pointer', background: isCur ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent', borderLeft: isCur ? '2px solid var(--ds-border-information, #0055CC)' : '2px solid transparent' }}>
+                  <span style={{ fontSize: 10, color: wasPast ? 'var(--ds-text-subtle, #42526E)' : isCur ? 'var(--ds-text-information, #0055CC)' : 'var(--ds-text-subtlest, #6B778C)' }}>
+                    {wasPast ? '✓' : isCur ? '●' : '○'}
+                  </span>
+                  <span style={{ fontSize: 11, fontWeight: isCur ? 500 : 400, color: isCur ? 'var(--ds-text-information, #0055CC)' : wasPast ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)' }}>
+                    {step}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* BOTTOM SCRUBBER BAR */}
+      <div style={{ height: 48, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 12, flexShrink: 0, borderTop: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)' }}>
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', whiteSpace: 'nowrap', minWidth: 64 }}>Step {currentStep + 1} of {total}</span>
+        <div
+          style={{ flex: 1, height: 16, display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const target = Math.round(((e.clientX - rect.left) / rect.width) * (total - 1));
+            goToStep(Math.max(0, Math.min(total - 1, target)));
+          }}
+        >
+          <div style={{ position: 'relative', width: '100%', height: 4, borderRadius: 2, background: 'var(--ds-background-neutral, #F1F2F4)' }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${scrubberPct}%`, borderRadius: 2, background: 'var(--ds-background-information-bold, #0055CC)' }} />
+            <div style={{ position: 'absolute', top: -4, left: `calc(${scrubberPct}% - 6px)`, width: 12, height: 12, borderRadius: '50%', background: 'var(--ds-background-information-bold, #0055CC)', boxShadow: '0 0 0 2px var(--ds-surface, #FFFFFF)' }} />
+          </div>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis' }}>{steps[currentStep]}</span>
+        {stepDate(currentStep) && (
+          <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', whiteSpace: 'nowrap' }}>{stepDate(currentStep)}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Journey detail view ─────────────────────────────────────────────────────
+
+function JourneyView({ br, onBack, onPlayReplay }: { br: QualifyingBR; onBack: () => void; onPlayReplay: () => void }) {
   return (
     <div>
       <div style={{ marginBottom: 12 }}>
@@ -217,12 +420,12 @@ function JourneyView({ br, onBack }: { br: QualifyingBR; onBack: () => void }) {
       <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
         <Button
           appearance="primary"
-          iconBefore={<span style={{ fontSize: 10 }}>▶</span>}
+          onClick={onPlayReplay}
         >
-          Play Replay
+          ▶ Play Replay
         </Button>
         <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-          Full lifecycle theatre — coming next
+          Step-through lifecycle animation
         </span>
       </div>
     </div>
@@ -237,6 +440,7 @@ export function ReplayDashboardWidget({ mode }: ReplayDashboardWidgetProps) {
   const { data: brs = [], isLoading, error } = useQualifyingBRs();
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<QualifyingBR | null>(null);
+  const [theatreMode, setTheatreMode] = useState(false);
 
   const totalPages = Math.ceil(brs.length / PAGE_SIZE);
   const pageData = useMemo(() => brs.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE), [brs, page]);
@@ -309,7 +513,7 @@ export function ReplayDashboardWidget({ mode }: ReplayDashboardWidgetProps) {
         cell: ({ row }) => (
           <button
             className="replay-br-cta"
-            onClick={(e) => { e.stopPropagation(); setSelected(row); }}
+            onClick={(e) => { e.stopPropagation(); setSelected(row); setTheatreMode(false); }}
             style={{
               opacity: 0,
               transition: 'opacity 0.15s',
@@ -332,8 +536,18 @@ export function ReplayDashboardWidget({ mode }: ReplayDashboardWidgetProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  if (selected && theatreMode) {
+    return <TheatreView br={selected} onClose={() => setTheatreMode(false)} />;
+  }
+
   if (selected) {
-    return <JourneyView br={selected} onBack={() => setSelected(null)} />;
+    return (
+      <JourneyView
+        br={selected}
+        onBack={() => { setSelected(null); setTheatreMode(false); }}
+        onPlayReplay={() => setTheatreMode(true)}
+      />
+    );
   }
 
   if (isLoading) {
@@ -380,7 +594,7 @@ export function ReplayDashboardWidget({ mode }: ReplayDashboardWidgetProps) {
           columns={columns}
           data={pageData}
           getRowId={(row) => row.id}
-          onRowClick={(row) => setSelected(row)}
+          onRowClick={(row) => { setSelected(row); setTheatreMode(false); }}
           density="compact"
           showRowCount={false}
         />

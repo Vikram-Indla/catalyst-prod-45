@@ -430,6 +430,7 @@ export default function TestSetsPage() {
           {sets.map((set, idx) => (
             <div
               key={set.id}
+              onClick={() => navigate(`/testhub/sets/${set.id}`)}
               style={{
                 display: 'grid',
                 gridTemplateColumns: '48px 1fr 120px 120px 80px 80px 80px',
@@ -439,13 +440,16 @@ export default function TestSetsPage() {
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 borderTop: 'none',
                 borderRadius: idx === sets.length - 1 ? '0 0 6px 6px' : 0,
+                cursor: 'pointer',
               }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)')}
             >
               <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
                 {set.set_key ?? '—'}
               </span>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>
                   {set.name}
                 </div>
                 {set.description && (
@@ -459,7 +463,7 @@ export default function TestSetsPage() {
               <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
                 {set.test_count ?? 0}
               </span>
-              <div>
+              <div onClick={e => e.stopPropagation()}>
                 <button
                   onClick={() => toggleActive.mutate({ id: set.id, is_active: set.is_active })}
                   style={{
