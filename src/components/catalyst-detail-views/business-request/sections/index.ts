@@ -6,10 +6,15 @@
  * along with their backing columns (business_score / business_value /
  * scope_url / arabic_title). Attachments handles uploads; scoring lives only
  * in the project hub; BR titles are single-language English.
+ *
+ * 2026-06-21 (Phase 1+2, BR↔Story canonicalisation):
+ *   - BrTitleSection deleted — replaced by canonical CatalystTitleEditor.
+ *   - BrLinkedItemsSection deleted — replaced by canonical
+ *     LinkedWorkItemsSection mounted directly.
+ *   - BrDescriptionSection deleted — replaced by canonical Description
+ *     mounted with loadAdf + saveOverride adapter.
+ *   - BrCenterDetails deleted — replaced by canonical CatalystKeyDetails
+ *     with BR-specific fields injected via `extraRows`.
  */
-export { BrTitleSection } from './BrTitleSection';
-export { BrCenterDetails } from './BrCenterDetails';
-export { BrDescriptionSection } from './BrDescriptionSection';
 export { BrAttachmentsSection } from './BrAttachmentsSection';
-export { BrLinkedItemsSection } from './BrLinkedItemsSection';
 export { BrActivitySection } from './BrActivitySection';

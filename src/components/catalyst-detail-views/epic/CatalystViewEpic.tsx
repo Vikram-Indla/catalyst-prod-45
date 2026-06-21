@@ -81,9 +81,20 @@ export default function CatalystViewEpic({
           Details section (between Assignee and Reporter), never in Key details.
           showPriority={false} suppresses the Key details Priority row; the right rail
           already renders Priority via CatalystSidebarDetails. */}
-      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="epic" projectKey={projectKey} onOpenItem={onOpenItem} showPriority={false} />
-      <Description issue={issue ?? null} />
+      <CatalystKeyDetails
+        issue={issue ?? null}
+        itemId={itemId}
+        itemType="epic"
+        projectKey={projectKey}
+        onOpenItem={onOpenItem}
+        showPriority={false}
+        afterBody={<Description issue={issue ?? null} />}
+      />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
+
+      {/* Canonical section order across all CatalystView*: Attachments
+          → Child work items → Linked work items → Activity. */}
+      <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
 
       {/* EPIC: Child work items (canonical SubtasksPanel) */}
       {issue?.issue_key && (
@@ -102,7 +113,6 @@ export default function CatalystViewEpic({
         issueKey={issue?.issue_key ?? ''}
         projectKey={issue?.project_key || projectKey}
       />
-      <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   // eslint-disable-next-line react-hooks/exhaustive-deps

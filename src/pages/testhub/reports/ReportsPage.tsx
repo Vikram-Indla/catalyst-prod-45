@@ -3,8 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 
 // ── types ─────────────────────────────────────────────────────────────────────
@@ -179,16 +178,6 @@ export default function ReportsPage() {
   const projectId = useActiveProject();
   const { data: kpi, isLoading: kpiLoading } = useKpiData(projectId);
 
-  const breadcrumbs = (
-    <Breadcrumbs
-      items={[
-        { key: 'home', text: 'Home', href: '/for-you' },
-        { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-        { key: 'reports', text: 'Reports', isCurrent: true },
-      ]}
-    />
-  );
-
   // Group tiles
   const groupedTiles = GROUP_ORDER.map(group => ({
     group,
@@ -203,9 +192,10 @@ export default function ReportsPage() {
         background: 'var(--ds-surface-sunken, #F7F8F9)',
         display: 'flex',
         flexDirection: 'column',
+        paddingTop: 16,
       }}
     >
-      <PageHeader title="Reports" breadcrumbs={breadcrumbs} />
+      <ProjectPageHeader hubType="test" />
 
       <div style={{ flex: 1, padding: '24px 24px 48px', maxWidth: 1200, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
 

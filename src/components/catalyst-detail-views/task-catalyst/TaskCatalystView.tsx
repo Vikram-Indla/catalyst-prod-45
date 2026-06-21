@@ -526,13 +526,13 @@ export default function TaskCatalystView({
             priorityOptions: ['Critical', 'High', 'Medium', 'Low'],
             onPriorityChange: sidebarDataSource.onPriorityChange,
           }}
-        />
-
-        {/* Canonical Description — fed by tasks.description via saveOverride/loadAdf. */}
-        <Description
-          issue={pseudoIssue}
-          saveOverride={handleDescriptionSave}
-          loadAdf={descriptionAdf}
+          afterBody={
+            <Description
+              issue={pseudoIssue}
+              saveOverride={handleDescriptionSave}
+              loadAdf={descriptionAdf}
+            />
+          }
         />
 
         {/* Checklist — hide when empty (zero-assumption). */}

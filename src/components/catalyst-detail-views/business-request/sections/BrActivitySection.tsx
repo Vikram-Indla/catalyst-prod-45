@@ -1,5 +1,19 @@
 /**
- * BrActivitySection — Business Request activity panel.
+ * BrActivitySection — APPROVED ADAPTER (not a fork).
+ *
+ * Per CLAUDE.md `REUSE FIRST` carve-out (2026-06-21 Phase 3 assessment):
+ * mounts the canonical `ActivityPanel` UI primitive from
+ * `@/components/catalyst-ds` (same surface used by every issue type —
+ * tabs, composer, Jira-parity comment toolbar). Only the data layer is
+ * BR-specific.
+ *
+ * Canonical `CatalystActivitySection` (the Story-side wrapper around
+ * ActivityPanel) is hardwired to `ph_comments` / `ph_activity_log` /
+ * `ph_comment_reactions` with no `dataSource` knob. Extending it to
+ * accept BR's `business_request_discussions` / `business_request_audit_logs`
+ * would require a non-trivial query-layer + mutation-layer rewrite affecting
+ * all 8+ CatalystView* surfaces. Adapter wrapper here is the right reuse
+ * level until canonical CatalystActivitySection gains a dataSource knob.
  *
  * Thin BR-side data adapter that mounts the canonical `ActivityPanel`
  * UI primitive (same surface used by every issue type — tabs, composer,

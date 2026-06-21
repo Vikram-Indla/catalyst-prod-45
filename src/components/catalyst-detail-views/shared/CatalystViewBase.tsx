@@ -223,8 +223,14 @@ export function CatalystViewBase({
       const modalEl = document.querySelector('[data-cv-scope]') as HTMLElement;
       if (!modalEl) return;
       const rect = modalEl.getBoundingClientRect();
-      // Clamp 220..600. Max was 480; raised to match Jira's ~549 sidebar.
-      setRightPanelWidth(Math.max(220, Math.min(600, rect.right - e.clientX)));
+      // Clamp 320..480 (2026-06-21 Vikram).
+      // Min raised 220 → 320: at 220–280px the right-rail Details card
+      // breaks (Sprint/Iteration label wraps, Assignee/Reporter avatars
+      // render as bare dotted circles because values overflow + clip).
+      // Max lowered 600 → 480: caps total rail width so left content
+      // panel keeps enough room for Description editor without forcing
+      // the rail to a layout that wastes whitespace.
+      setRightPanelWidth(Math.max(320, Math.min(480, rect.right - e.clientX)));
     };
     const onMouseUp = () => { isDraggingRef.current = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
     document.addEventListener('mousemove', onMouseMove);
@@ -680,20 +686,18 @@ export function CatalystViewBase({
             )}
           </div>
 
-          {/* RESIZABLE SPLITTER */}
+          {/* RESIZABLE SPLITTER — Jira-parity (2026-06-21 Vikram):
+              invisible in every state. Only `cursor: col-resize`
+              indicates draggability. No hover bg, no grip glyph,
+              no drag bg, no transitions. */}
           <div
             className="cv-drawer-splitter"
             onMouseDown={() => { isDraggingRef.current = true; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; }}
             style={{
               width: 6, minWidth: 6, cursor: 'col-resize', background: 'transparent',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-              transition: 'background 0.15s',
+              flexShrink: 0,
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
-            onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
-          >
-            <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', transition: 'background 0.15s' }} />
-          </div>
+          />
 
           {/* RIGHT PANEL — Sidebar
               2026-05-12: sticky within cv-drawer-body (the scroll container).

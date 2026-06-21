@@ -24,9 +24,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { catalystToast } from '@/lib/catalystToast';
 import {
-  ChevronDown, ChevronRight, Plus,
+  ChevronDown, Plus,
   Check,
 } from '@/lib/atlaskit-icons';
+import UtilityChevronDown from '@atlaskit/icon/utility/chevron-down';
+import UtilityChevronRight from '@atlaskit/icon/utility/chevron-right';
+import Tooltip from '@atlaskit/tooltip';
 import EditIcon from '@atlaskit/icon/core/edit';
 import DeleteIcon from '@atlaskit/icon/core/delete';
 import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';
@@ -673,16 +676,24 @@ export function SubtasksPanel({
       {/* ═══ Header ═══ */}
       <div className="sp-header">
         <div className="sp-header-left">
-          <button
-            type="button"
-            className="sp-collapse-btn"
+          <Tooltip content={expanded ? 'Collapse' : 'Expand'} position="bottom">
+            <button
+              type="button"
+              className="sp-collapse-btn"
+              onClick={() => setExpanded(e => !e)}
+              aria-expanded={expanded}
+              aria-label={expanded ? 'Collapse' : 'Expand'}
+            >
+              {expanded ? <UtilityChevronDown label="" color="currentColor" /> : <UtilityChevronRight label="" color="currentColor" />}
+            </button>
+          </Tooltip>
+          <h2
+            className="sp-title"
+            style={{ margin: 0, cursor: 'pointer' }}
             onClick={() => setExpanded(e => !e)}
-            aria-expanded={expanded}
-            aria-label={expanded ? 'Collapse subtasks' : 'Expand subtasks'}
           >
-            {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-          </button>
-          <h2 className="sp-title" style={{margin:0}}>{effectiveTitle}</h2>
+            {effectiveTitle}
+          </h2>
           {totalCount > 0 && (
             <span className="sp-title-count">{doneCount}/{totalCount}</span>
           )}

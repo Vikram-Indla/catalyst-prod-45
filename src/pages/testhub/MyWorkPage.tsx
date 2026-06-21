@@ -8,17 +8,25 @@
  * group-by, URL state, Ask Caty). Row click navigates to the Repository
  * tab with ?case=<id> so the existing CaseDrawer opens.
  */
-import Spinner from '@atlaskit/spinner';
-import { BacklogPage } from '@/modules/project-work-hub/pages/BacklogPage.atlaskit';
-import { useTestCasesSource } from '@/modules/project-work-hub/adapters/testCasesDataSource';
-import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import Spinner from "@atlaskit/spinner";
+import { BacklogPage } from "@/modules/project-work-hub/pages/BacklogPage.atlaskit";
+import { useTestCasesSource } from "@/modules/project-work-hub/adapters/testCasesDataSource";
+import { ProjectPageHeader } from "@/components/layout/ProjectPageHeader";
 
 export default function MyWorkPage() {
   const adapter = useTestCasesSource();
 
   if (!adapter) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: 48 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100%",
+          padding: 48,
+        }}
+      >
         <Spinner size="large" />
       </div>
     );
@@ -26,13 +34,15 @@ export default function MyWorkPage() {
 
   const adapterWithChrome = {
     ...adapter,
-    ChromeHeader: () => <ProjectPageHeader projectKey="TESTHUB" hubType="test" />,
+    ChromeHeader: () => (
+      <ProjectPageHeader projectKey="TESTHUB" hubType="test" />
+    ),
     allowedColumnIds: [
-      'key',
-      'status',
-      'assignee',
-      'reporter',
-      'category',
+      "key",
+      "status",
+      "assignee",
+      "reporter",
+      "category",
     ] as const,
   };
 

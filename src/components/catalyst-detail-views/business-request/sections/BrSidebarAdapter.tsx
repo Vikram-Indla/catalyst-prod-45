@@ -24,8 +24,13 @@ export function mapBrToIssueLike(br: BusinessRequest | null): PhIssue | null {
     summary: br.title ?? '',
     issue_type: 'Business Request',
     status: br.process_step ?? '',
-    status_category: 'To Do',
-    priority: br.urgency ?? 'Medium',
+    /* Zero-assumption (CLAUDE.md 2026-06-11): never lie with a typed
+       fallback. Canonical CatalystSidebarDetails derives category from
+       status text via getStatusCategory() when this is null. */
+    status_category: null,
+    /* Zero-assumption: was `br.urgency ?? 'Medium'` — silently lied with
+       Medium for every BR missing an urgency. Pass through as-is. */
+    priority: br.urgency ?? null,
     assignee_display_name: null,
     assignee_account_id: null,
     reporter_display_name: null,
@@ -39,6 +44,9 @@ export function mapBrToIssueLike(br: BusinessRequest | null): PhIssue | null {
     deleted_at: br.deleted_at ?? null,
     jira_created_at: br.created_at ?? null,
     jira_updated_at: br.updated_at ?? null,
-    project_key: br.product_id ?? '',
+    /* product_id is a UUID, NOT a project_key (e.g. 'MIM'). Was used as
+       project_key fallback which is semantically wrong. Caller passes
+       the real projectKey separately. */
+    project_key: null,
   };
 }

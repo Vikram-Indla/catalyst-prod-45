@@ -18,8 +18,7 @@ import Textarea from '@atlaskit/textarea';
 import Textfield from '@atlaskit/textfield';
 import { Play, CheckCircle, Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { TMCycleScope, RunStatus } from '@/types/test-management';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
@@ -169,16 +168,13 @@ export default function CycleDetailPage() {
   return (
     <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <PageHeader
+        <ProjectPageHeader
+          hubType="test"
           title={cycle.name}
-          breadcrumbs={
-            <Breadcrumbs items={[
-              { key: 'home', text: 'Home', href: '/for-you' },
-              { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-              { key: 'cycles', text: 'Test Cycles', href: '/testhub/cycles' },
-              { key: 'detail', text: cycle.name, isCurrent: true },
-            ]} />
-          }
+          trail={[
+            { text: 'Test cycles', href: '/testhub/cycles' },
+            { text: cycle.name },
+          ]}
           actions={
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <button

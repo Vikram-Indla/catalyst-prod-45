@@ -144,9 +144,9 @@ export default function CatalystViewStory({
           onOpenItem={onOpenItem}
           showParent
           showPriority
+          afterBody={<Description issue={issue ?? null} />}
         />
       )}
-      <Description issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
       {/* STORY-UNIQUE: Attachments — Jira-parity table with full CRUD. */}

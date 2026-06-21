@@ -19,8 +19,9 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
               download-all CTA) */
 import DeleteIcon from '@atlaskit/icon/core/delete';
 import DownloadIcon from '@atlaskit/icon/core/download';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
+import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
 import {
   AlertDialog,
@@ -370,18 +371,26 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
         <div className="att-heading-inner">
           <div className="att-heading-left">
             <div className="att-heading-toggle-area">
-              <button
-                className="att-icon-btn att-collapse-btn"
-                aria-label={collapsed ? 'Expand Attachments' : 'Collapse Attachments'}
-                aria-expanded={!collapsed}
+              <Tooltip content={collapsed ? 'Expand' : 'Collapse'} position="bottom">
+                <button
+                  className="att-icon-btn att-collapse-btn"
+                  aria-label={collapsed ? 'Expand' : 'Collapse'}
+                  aria-expanded={!collapsed}
+                  onClick={() => setCollapsed(v => !v)}
+                >
+                  {collapsed
+                    ? <ChevronRightIcon label="" color="var(--ds-text-subtle, #505258)" />
+                    : <ChevronDownIcon label="" color="var(--ds-text-subtle, #505258)" />
+                  }
+                </button>
+              </Tooltip>
+              <span
+                className="att-heading-label"
                 onClick={() => setCollapsed(v => !v)}
+                style={{ cursor: 'pointer' }}
               >
-                {collapsed
-                  ? <ChevronRightIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #505258)" />
-                  : <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #505258)" />
-                }
-              </button>
-              <span className="att-heading-label">Attachments</span>
+                Attachments
+              </span>
             </div>
             {/* jira-compare 2026-05-10 — A5: gated per CLAUDE.md 2026-05-05
                 section-count-badge ban. Never render a zero badge. */}

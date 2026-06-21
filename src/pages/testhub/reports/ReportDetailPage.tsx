@@ -4,8 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button/standard-button';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 
 // ── constants ─────────────────────────────────────────────────────────────────
@@ -1317,16 +1316,6 @@ export default function ReportDetailPage() {
     }
   };
 
-  const breadcrumbs = (
-    <Breadcrumbs
-      items={[
-        { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-        { key: 'reports', text: 'Reports', href: '/testhub/reports' },
-        { key: 'detail', text: reportLabel, isCurrent: true },
-      ]}
-    />
-  );
-
   const actions = (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
       {showDateRange && (
@@ -1350,9 +1339,18 @@ export default function ReportDetailPage() {
         background: 'var(--ds-surface-sunken, #F7F8F9)',
         display: 'flex',
         flexDirection: 'column',
+        paddingTop: 16,
       }}
     >
-      <PageHeader title={reportLabel} breadcrumbs={breadcrumbs} actions={actions} />
+      <ProjectPageHeader
+        hubType="test"
+        title={reportLabel}
+        trail={[
+          { text: 'Reports', href: '/testhub/reports' },
+          { text: reportLabel },
+        ]}
+        actions={actions}
+      />
 
       <div style={{ flex: 1, padding: '24px 24px 48px', maxWidth: 1200, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
         {!projectId ? (
