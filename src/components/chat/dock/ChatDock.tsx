@@ -21,16 +21,7 @@ import { CatyMoodFace } from "../caty-mood/CatyMoodFace";
 import { useDraggableFab } from "./useDraggableFab";
 import { CatyPanel } from "./CatyPanel";
 import { DockConversationPane } from "./DockConversationPane";
-
-// Kick off DockDirectory chunk download immediately when ChatDock module evaluates
-// (at app-shell mount, before the user touches the FAB). Splitting DockDirectory
-// into its own async chunk prevents the @atlaskit/avatar + @atlaskit/modal-dialog
-// parse cost from blocking the main thread on first FAB click — that parse now
-// happens in the background while the user is looking at the idle FAB.
-const _dockDirPreload = import('./DockDirectory');
-const DockDirectoryLazy = React.lazy(() =>
-  _dockDirPreload.then((m) => ({ default: m.DockDirectory }))
-);
+import { DockDirectory } from "./DockDirectory";
 // ads-scanner:ignore-next-line — dock.css is a tokens-only stylesheet (audited clean)
 import "./dock.css";
 
@@ -162,7 +153,9 @@ export function ChatDock({
 
   const { pos, isDragging, isSnapping, didMove, handlers: dragHandlers } = useDraggableFab();
 
-  const { conversations } = useConversations();
+  // Only fetch conversations after first dock open to avoid a Supabase query
+  // (+ DM-title enrichment) on every page load for every authenticated user.
+  const { conversations } = useConversations(dockMounted);
 
   const byId = React.useMemo(() => {
     const map = new Map<string, ChatConversation>();
@@ -320,14 +313,12 @@ export function ChatDock({
                   onBack={() => onFocusDirectory?.()}
                 />
               ) : (
-                <React.Suspense fallback={<div className="cc-dir__loading" />}>
-                  <DockDirectoryLazy
-                    conversations={listConversations}
-                    activeId={activeId}
-                    onSelectConversation={onSelect}
-                    focusTick={dirFocusTick}
-                  />
-                </React.Suspense>
+                <DockDirectory
+                  conversations={listConversations}
+                  activeId={activeId}
+                  onSelectConversation={onSelect}
+                  focusTick={dirFocusTick}
+                />
               )}
             </div>
 

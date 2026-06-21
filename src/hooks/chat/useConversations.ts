@@ -252,7 +252,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
   }
 }
 
-export function useConversations(): {
+export function useConversations(fetchEnabled = true): {
   conversations: ChatConversation[];
   isLoading: boolean;
 } {
@@ -262,9 +262,9 @@ export function useConversations(): {
   const { data, isLoading } = useQuery({
     queryKey: ['chat', 'conversations', userId],
     queryFn: () => fetchConversations(userId as string),
-    enabled: !!userId,
+    enabled: !!userId && fetchEnabled,
     staleTime: 30 * 1000,
   });
 
-  return { conversations: data ?? [], isLoading: !!userId && isLoading };
+  return { conversations: data ?? [], isLoading: !!userId && fetchEnabled && isLoading };
 }

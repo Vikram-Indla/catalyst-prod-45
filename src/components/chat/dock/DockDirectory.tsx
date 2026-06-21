@@ -337,9 +337,13 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
     });
   }, []);
 
-  // Refresh presence cache when directory mounts (finding 37)
+  // Refresh presence cache 500ms after directory mounts so the initial render
+  // paint completes before triggering a refetch cascade.
   useEffect(() => {
-    qc.invalidateQueries({ queryKey: ['chat', 'last-seen'] });
+    const t = setTimeout(() => {
+      qc.invalidateQueries({ queryKey: ['chat', 'last-seen'] });
+    }, 500);
+    return () => clearTimeout(t);
   }, [qc]);
 
   const { hits: searchHits, isEnabled: searchActive } = useChatSearch(query, 'all', 25);

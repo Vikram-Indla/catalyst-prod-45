@@ -1,4 +1,4 @@
-import React, { startTransition, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useTransition, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChatRealtimeProvider } from '@/hooks/chat/ChatRealtimeProvider';
 import { ChatDock } from '@/components/chat/dock/ChatDock';
@@ -8,6 +8,10 @@ import {
 } from '@/lib/chat-dock-bridge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+
+// How long to defer DockDirectory mount after first FAB click (ms).
+// Gives the browser a paint frame so the FAB toggle feels instant.
+const DOCK_MOUNT_DEFER_MS = 0;
 
 /**
  * ChatDockMount — the always-on chat dock for the global app shell.
@@ -35,6 +39,8 @@ export default function ChatDockMount() {
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeId, setActiveId] = useState<string | undefined>(undefined);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [, startTransition] = useTransition();
 
   // Presence heartbeat — upsert user_presence every 30s when dock is expanded (finding 41)
   useEffect(() => {
@@ -53,14 +59,26 @@ export default function ChatDockMount() {
     return () => { if (heartbeatRef.current) clearInterval(heartbeatRef.current); };
   }, [collapsed, user]);
 
+  // Cleanup deferred mount timer on unmount
+  useEffect(() => () => { if (mountTimerRef.current) clearTimeout(mountTimerRef.current); }, []);
+
+  // Schedule DockDirectory mount in next event loop tick so the FAB animation
+  // paints before the heavy subtree initializes.
+  const scheduleDockMount = useCallback(() => {
+    if (dockMounted) return;
+    if (mountTimerRef.current) return; // already scheduled
+    mountTimerRef.current = setTimeout(() => {
+      startTransition(() => setDockMounted(true));
+      mountTimerRef.current = null;
+    }, DOCK_MOUNT_DEFER_MS);
+  }, [dockMounted, startTransition]);
+
   const handleSelect = useCallback((id: string) => {
     setOpenIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
     setActiveId(id);
-    startTransition(() => {
-      setDockMounted(true);
-      setCollapsed(false);
-    });
-  }, []);
+    setCollapsed(false);
+    scheduleDockMount();
+  }, [scheduleDockMount]);
 
   const handleClose = useCallback((id: string) => {
     setOpenIds((prev) => prev.filter((x) => x !== id));
@@ -87,10 +105,19 @@ export default function ChatDockMount() {
         onClose={handleClose}
         collapsed={collapsed}
         dockMounted={dockMounted}
-        onToggleCollapsed={() => startTransition(() => {
-          setDockMounted(true);
-          setCollapsed((v) => !v);
-        })}
+        onToggleCollapsed={() => {
+          // Toggle collapse IMMEDIATELY so the FAB responds in the same frame.
+          // No isPending guard — second click always works.
+          if (collapsed) {
+            // Opening: reset to directory view, defer heavy mount
+            setActiveId(undefined);
+            setCollapsed(false);
+            scheduleDockMount();
+          } else {
+            // Closing: instant hide
+            setCollapsed(true);
+          }
+        }}
         onFocusDirectory={() => setActiveId(undefined)}
         onPopOut={() => navigate('/chat')}
       />
