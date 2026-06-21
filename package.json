@@ -21,7 +21,14 @@
     "scan:components": "tsx scripts/scan-components.ts",
     "scan:ads-violations": "tsx scripts/scan-ads-violations.ts",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "promote": "bash scripts/promote-to-production.sh",
+    "sync:prod-to-local": "bash scripts/sync-prod-to-local.sh",
+    "env:setup": "bash scripts/setup-new-environment.sh",
+    "db:local": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "migrate:local": "supabase db push"
   },
   "dependencies": {
     "@atlaskit/adf-schema": "52.11.4",

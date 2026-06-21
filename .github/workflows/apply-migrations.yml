@@ -1,14 +1,47 @@
 name: Apply Supabase Migrations
 
+# ENVIRONMENT GATE — read before touching this file.
+#
+# PROD (lmqwtldpfacrrlvdnmld):
+#   - Auto-triggers only on push to `production` branch with migration changes.
+#   - `production` is a protected branch — requires PR review, never direct push.
+#
+# TEST (set SUPABASE_TEST_PROJECT_REF secret when test project is available):
+#   - Auto-triggers on push to `main` branch with migration changes.
+#   - Falls through silently if SUPABASE_TEST_PROJECT_REF secret is not set.
+#
+# Manual:
+#   - workflow_dispatch lets you target test or production explicitly.
+#   - Production target requires the secret SUPABASE_ALLOW_MANUAL_PROD_MIGRATE = "yes".
+
 on:
   push:
-    branches: [main]
+    branches:
+      - production          # → auto-migrate PROD
+      - main                # → auto-migrate TEST (if secret set)
     paths:
       - 'supabase/migrations/**'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Migration target'
+        required: true
+        type: choice
+        options:
+          - test
+          - production
+        default: test
 
 jobs:
-  migrate:
+  # ─── TEST ────────────────────────────────────────────────────────────────────
+  migrate-test:
+    name: Migrate → TEST
     runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'test')
+    environment: test
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,12 +49,58 @@ jobs:
         with:
           version: latest
 
-      - name: Link project
+      - name: Check test project configured
+        id: check
+        run: |
+          if [ -z "${{ secrets.SUPABASE_TEST_PROJECT_REF }}" ]; then
+            echo "::warning::SUPABASE_TEST_PROJECT_REF not set — skipping test migration. Add secret when test project is created."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Link to test project
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase link --project-ref ${{ secrets.SUPABASE_TEST_PROJECT_REF }}
+
+      - name: Push migrations to TEST
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase db push --linked
+
+  # ─── PRODUCTION ──────────────────────────────────────────────────────────────
+  migrate-prod:
+    name: Migrate → PRODUCTION
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/production') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'production')
+    environment: production    # GitHub environment with required reviewers
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Safety check — manual prod migration requires explicit opt-in
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ secrets.SUPABASE_ALLOW_MANUAL_PROD_MIGRATE }}" != "yes" ]; then
+            echo "::error::Manual production migration blocked. Set SUPABASE_ALLOW_MANUAL_PROD_MIGRATE=yes to allow."
+            exit 1
+          fi
+
+      - name: Link to production project
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: supabase link --project-ref lmqwtldpfacrrlvdnmld
 
-      - name: Push migrations
+      - name: Push migrations to PRODUCTION
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: supabase db push --linked
