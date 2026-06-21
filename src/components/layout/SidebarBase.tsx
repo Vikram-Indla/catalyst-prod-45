@@ -62,7 +62,6 @@ const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/project-hub/projects': () => import('../../pages/project-hub/AllProjectsPage'),
   '/admin/resources': () => import('../../pages/ResourceListingPage'),
   '/releasehub': () => import('../../pages/releasehub/AllReleasesPage'),
-  '/testhub': () => import('../../modules-dormant/testhub/TestHubPage'),
   '/planhub': () => import('../../components/planhub/PlanHubShell'),
   '/tasks': () => import('../../modules/tasks/PlannerPage'),
   '/incidenthub': () => import('../../pages/incidenthub/IncidentListPage'),

@@ -135,13 +135,13 @@ const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentR
 const IncidentHubCommitteeQueuePage = lazy(() => import("../pages/incidenthub/CommitteeQueuePage"));
 const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
-// TestHub
-const TestHubDashboardPage = lazy(() => import("../pages/testhub/DashboardPage"));
-const TestHubMyWorkPage = lazy(() => import("../pages/testhub/MyWorkPage"));
-const TestHubRepositoryPage = lazy(() => import("../pages/testhub/repository/RepositoryPage"));
-const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
-const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
-const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
+// TestHub — pages not yet built; routes stubbed with FeatureComingSoon.
+const TestHubDashboardPage = () => <FeatureComingSoon title="Test Hub Dashboard" />;
+const TestHubMyWorkPage = () => <FeatureComingSoon title="Test Hub — My Work" />;
+const TestHubRepositoryPage = () => <FeatureComingSoon title="Test Repository" />;
+const TestHubCyclesPage = () => <FeatureComingSoon title="Test Cycles" />;
+const TestHubCycleDetailPage = () => <FeatureComingSoon title="Test Cycle" />;
+const TestHubExecutionPage = () => <FeatureComingSoon title="Test Execution" />;
 
 const WikiHomePage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
 const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
