@@ -2070,6 +2070,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       navigate(`/testhub/repository?case=${it.id}`);
       return;
     }
+    /* 2026-06-21: defect entityKind navigates to the dedicated TestHub
+       defect detail. No side-panel — the defect detail is its own surface. */
+    if (dataSource?.entityKind === 'defect') {
+      navigate(`/testhub/defects/${it.id}`);
+      return;
+    }
     writeTicketOrigin({
       fromUrl: `${resolvedBaseUrl}/backlog`,
       fromLabel: 'Backlog',
@@ -3967,8 +3973,20 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                        UAT Finding / Figma). Mirrors the BR detail page's
                        Subtasks panel + the product timeline picker so the
                        three create surfaces are consistent. */
-                    creatableTypes={dataSource ? (['Business Request', ...BUSINESS_REQUEST_SUBTASK_TYPES] as CreatableIssueType[]) : undefined}
-                    defaultIssueType={dataSource ? 'Business Request' : 'Story'}
+                    creatableTypes={
+                      dataSource?.creatableTypes
+                        ? (dataSource.creatableTypes as CreatableIssueType[])
+                        : dataSource
+                          ? (['Business Request', ...BUSINESS_REQUEST_SUBTASK_TYPES] as CreatableIssueType[])
+                          : undefined
+                    }
+                    defaultIssueType={
+                      dataSource?.defaultCreatableType
+                        ? (dataSource.defaultCreatableType as CreatableIssueType)
+                        : dataSource
+                          ? 'Business Request'
+                          : 'Story'
+                    }
                   />
                 );
               })() : null,
@@ -5695,7 +5713,10 @@ type CreatableIssueType =
      detail page's Subtasks panel options. */
   | 'BRD Task'
   | 'UAT Finding'
-  | 'Figma';
+  | 'Figma'
+  /* TestHub creatable types (2026-06-21) — selectable via adapter
+     `creatableTypes` override on /testhub/my-work + /testhub/defects. */
+  | 'Test Case';
 
 /**
  * 2026-05-10 Per-column filter popup body — minimal multi-select.

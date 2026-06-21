@@ -168,6 +168,8 @@ export function useTestCasesSource(): BacklogDataSource | null {
          BIZ_SOURCE row. Override returns 'Test Case' so JiraIssueTypeIcon
          resolves to the flask icon registered above. */
       resolveItemType: () => 'Test Case',
+      creatableTypes: ['Test Case'],
+      defaultCreatableType: 'Test Case',
     };
   }, [
     projectId, extraStories, isLoading,

@@ -140,6 +140,7 @@ const TestHubDashboardPage = lazy(() => import("../pages/testhub/DashboardPage")
 const TestHubMyWorkPage = lazy(() => import("../pages/testhub/MyWorkPage"));
 const TestHubRepositoryPage = lazy(() => import("../pages/testhub/repository/RepositoryPage"));
 const TestHubBoardPage = lazy(() => import("../pages/testhub/BoardPage"));
+const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
 const TestHubCyclesPage = lazy(() => import("../pages/testhub/cycles/CyclesPage"));
 const TestHubCycleDetailPage = lazy(() => import("../pages/testhub/cycles/CycleDetailPage"));
 const TestHubExecutionPage = lazy(() => import("../pages/testhub/cycles/ExecutionPage"));
@@ -661,6 +662,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub/cycles/:id" element={<S><TestHubCycleDetailPage /></S>} />
         <Route path="/testhub/cycles/:id/execute" element={<S><TestHubExecutionPage /></S>} />
         <Route path="/testhub/sets" element={<S><TestHubSetsPage /></S>} />
+        <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
 
         {/* ═══ IncidentHub ═══ */}
         {/* 2026-06-17: default landing is now Dashboard (matches project +

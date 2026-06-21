@@ -180,7 +180,17 @@ export interface BacklogDataSource {
    * Hub adapter — tasks live in the `tasks` table, not ph_issues.
    * Defaults to 'ph_issue' when omitted.
    */
-  entityKind?: 'task' | 'ph_issue' | 'release' | 'test_case';
+  entityKind?: 'task' | 'ph_issue' | 'release' | 'test_case' | 'defect';
+
+  /**
+   * 2026-06-21: optional override for the bottom InlineGroupCreateRow
+   * picker. When provided, BacklogPage uses ONLY these types in the bottom
+   * create dropdown (and pre-selects defaultCreatableType when set).
+   * TestHub adapters (test cases / defects) pass a single-entry list so
+   * the dropdown collapses to one item instead of the BR-flavoured default.
+   */
+  creatableTypes?: string[];
+  defaultCreatableType?: string;
 }
 
 // ─── Mapper ──────────────────────────────────────────────────────────────────
