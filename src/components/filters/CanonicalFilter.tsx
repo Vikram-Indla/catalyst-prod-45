@@ -52,6 +52,12 @@ export interface CanonicalFilterValue {
   status: string[];
   labels: string[];
   workType: string[];
+  /** Exclude variants — populated when the Advanced chip operator is `!=`. */
+  parentExclude: string[];
+  assigneeExclude: string[];
+  statusExclude: string[];
+  labelsExclude: string[];
+  workTypeExclude: string[];
 }
 
 export const emptyCanonicalFilterValue: CanonicalFilterValue = {
@@ -60,15 +66,20 @@ export const emptyCanonicalFilterValue: CanonicalFilterValue = {
   status: [],
   labels: [],
   workType: [],
+  parentExclude: [],
+  assigneeExclude: [],
+  statusExclude: [],
+  labelsExclude: [],
+  workTypeExclude: [],
 };
 
 export function countCanonicalActiveFields(v: CanonicalFilterValue): number {
   let n = 0;
-  if (v.parent.length) n++;
-  if (v.assignee.length) n++;
-  if (v.status.length) n++;
-  if (v.labels.length) n++;
-  if (v.workType.length) n++;
+  if (v.parent.length || v.parentExclude.length) n++;
+  if (v.assignee.length || v.assigneeExclude.length) n++;
+  if (v.status.length || v.statusExclude.length) n++;
+  if (v.labels.length || v.labelsExclude.length) n++;
+  if (v.workType.length || v.workTypeExclude.length) n++;
   return n;
 }
 
@@ -136,7 +147,14 @@ export function CanonicalFilter({
     if (onChange) onChange(next);
     else setInnerValue(next);
   }, [onChange]);
-  const activeFieldCount = countCanonicalActiveFields(effValue);
+  // ProjectChip selections live at this level so the trigger badge can
+  // count them alongside canonical fields. Default = the current project
+  // key when scope is provided.
+  const [projectSelections, setProjectSelections] = useState<string[]>(() => scopeKey ? [scopeKey] : []);
+  useEffect(() => {
+    setProjectSelections(scopeKey ? [scopeKey] : []);
+  }, [scopeKey]);
+  const activeFieldCount = countCanonicalActiveFields(effValue) + (projectSelections.length > 0 ? 1 : 0);
   const onClearAll = useCallback(() => setEff(emptyCanonicalFilterValue), [setEff]);
   const clearField = useCallback((field: keyof CanonicalFilterValue) => {
     setEff({ ...effValue, [field]: [] });
@@ -158,9 +176,23 @@ export function CanonicalFilter({
       default: return null;
     }
   }
+  function excludeKeyFor(field: keyof CanonicalFilterValue): keyof CanonicalFilterValue | null {
+    switch (field) {
+      case 'parent': return 'parentExclude';
+      case 'assignee': return 'assigneeExclude';
+      case 'status': return 'statusExclude';
+      case 'labels': return 'labelsExclude';
+      case 'workType': return 'workTypeExclude';
+      default: return null;
+    }
+  }
   function countFor(label: string): number {
     const k = fieldKeyFor(label);
-    return k ? effValue[k].length : 0;
+    if (!k) return 0;
+    const inc = effValue[k]?.length ?? 0;
+    const exK = excludeKeyFor(k);
+    const exc = exK ? (effValue[exK]?.length ?? 0) : 0;
+    return inc + exc;
   }
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<FilterTab>('basic');
@@ -559,7 +591,7 @@ export function CanonicalFilter({
               {savedOpen && (
                 <div
                   ref={savedRef}
-                  role="menu"
+                  role="menu" data-canonical-filter-popup="true"
                   style={{
                     position: 'absolute',
                     top: 32,
@@ -617,9 +649,17 @@ export function CanonicalFilter({
             />
           )}
           {tab === 'advanced' && (
-            <div style={{ display: 'flex', flex: 1, minHeight: 320, alignItems: 'center', justifyContent: 'center', color: textSubtle, fontSize: 14 }}>
-              Advanced editor — coming next phase.
-            </div>
+            <AdvancedTabBody
+              value={effValue}
+              onChange={setEff}
+              scopeKey={scopeKey}
+              statusOptions={statusOptions}
+              assigneeOptions={assigneeOptions}
+              labelOptions={labelOptions}
+              workTypeOptions={workTypeOptions}
+              projectSelections={projectSelections}
+              onProjectSelectionsChange={setProjectSelections}
+            />
           )}
           {tab === 'basic' && (
           <div style={{ display: 'flex', flex: 1, minHeight: 320 }}>
@@ -803,7 +843,7 @@ export function CanonicalFilter({
           return (
             <div
               ref={ellipsisMenuRef}
-              role="menu"
+              role="menu" data-canonical-filter-popup="true"
               style={{
                 position: 'fixed',
                 top: ellipsisPos.top,
@@ -1400,6 +1440,1069 @@ function Kbd({ children }: { children: React.ReactNode }) {
     >
       {children}
     </span>
+  );
+}
+
+/* ───── Advanced tab body — chip-based clause builder ─────
+ * Same data model as Basic (CanonicalFilterValue + *Exclude arrays).
+ * Each clause = chip with three segments: field label / operator /
+ * value picker. Adding a clause = activating a field via "+ Add filter".
+ * Removing a clause = clearing both include + exclude arrays of that field.
+ *
+ * Two-way binding with Basic + JQL is automatic — they all share the same
+ * canonical value state. Switch tabs to see the same predicate rendered
+ * three ways.
+ */
+
+const ADVANCED_FIELDS: Array<{ key: keyof CanonicalFilterValue; label: string }> = [
+  { key: 'parent',   label: 'Parent' },
+  { key: 'assignee', label: 'Assignee' },
+  { key: 'status',   label: 'Status' },
+  { key: 'labels',   label: 'Labels' },
+  { key: 'workType', label: 'Work type' },
+];
+
+function excludeKeyOf(field: keyof CanonicalFilterValue): keyof CanonicalFilterValue {
+  switch (field) {
+    case 'parent':   return 'parentExclude';
+    case 'assignee': return 'assigneeExclude';
+    case 'status':   return 'statusExclude';
+    case 'labels':   return 'labelsExclude';
+    case 'workType': return 'workTypeExclude';
+    default:         return field;
+  }
+}
+
+function clauseSummary(values: string[]): string {
+  if (values.length === 0) return 'Select…';
+  if (values.length === 1) {
+    const v = values[0];
+    return v === NO_PARENT_SENTINEL ? 'No parent' : v;
+  }
+  return `${values.length} selected`;
+}
+
+function AdvancedTabBody({
+  value,
+  onChange,
+  scopeKey,
+  statusOptions,
+  assigneeOptions,
+  labelOptions,
+  workTypeOptions,
+  projectSelections,
+  onProjectSelectionsChange,
+}: {
+  value: CanonicalFilterValue;
+  onChange: (next: CanonicalFilterValue) => void;
+  scopeKey?: string;
+  statusOptions: CanonicalStatusOption[];
+  assigneeOptions: CanonicalAssigneeOption[];
+  labelOptions: string[];
+  workTypeOptions: CanonicalWorkTypeOption[];
+  projectSelections: string[];
+  onProjectSelectionsChange: (next: string[]) => void;
+}) {
+  // Project name + avatar lookup so chips show display names and option
+  // rows show colored project icons.
+  const [projectMetaMap, setProjectMetaMap] = useState<Record<string, { name: string; avatarUrl: string | null; color: string | null }>>({});
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from('ph_jira_projects')
+        .select('project_key, name, avatar_url, color');
+      if (cancelled) return;
+      if (error || !data) return;
+      const m: Record<string, { name: string; avatarUrl: string | null; color: string | null }> = {};
+      (data as Array<{ project_key: string; name: string; avatar_url: string | null; color: string | null }>).forEach((r) => {
+        m[r.project_key] = { name: r.name || r.project_key, avatarUrl: r.avatar_url, color: r.color };
+      });
+      setProjectMetaMap(m);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+  const projectNameMap = useMemo(() => {
+    const m: Record<string, string> = {};
+    for (const k of Object.keys(projectMetaMap)) m[k] = projectMetaMap[k].name;
+    return m;
+  }, [projectMetaMap]);
+  const borderSubtle = token('color.border', '#DFE1E6');
+  const textPrimary = token('color.text', '#292A2E');
+  const textSubtle = token('color.text.subtle', '#505258');
+  const surface = token('elevation.surface', '#FFFFFF');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+
+  const [addOpen, setAddOpen] = useState(false);
+  const addBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Which fields have at least one include or exclude value → render a chip.
+  const activeFields = ADVANCED_FIELDS.filter((f) => {
+    const inc = value[f.key]?.length ?? 0;
+    const exc = value[excludeKeyOf(f.key)]?.length ?? 0;
+    return inc + exc > 0;
+  });
+  const inactiveFields = ADVANCED_FIELDS.filter((f) => !activeFields.includes(f));
+
+  function activateField(field: keyof CanonicalFilterValue) {
+    // Empty activation — chip appears with no values; user opens the value
+    // picker next. Sentinel: push a placeholder by setting include to []
+    // and an inert marker via excludeKey untouched. Use a side state instead
+    // since arrays can't carry an "activated-but-empty" flag — we add the
+    // field to `pendingChips` so the chip renders even with zero values.
+    setPendingChips((p) => p.includes(field) ? p : [...p, field]);
+    setAddOpen(false);
+  }
+
+  // Pending chips: fields user added via "+ Add filter" but hasn't picked a
+  // value for yet. Cleared when the chip's first value lands.
+  const [pendingChips, setPendingChips] = useState<Array<keyof CanonicalFilterValue>>([]);
+  const renderedFieldKeys = new Set<keyof CanonicalFilterValue>([
+    ...activeFields.map((f) => f.key),
+    ...pendingChips,
+  ]);
+
+  function clearClause(field: keyof CanonicalFilterValue) {
+    onChange({
+      ...value,
+      [field]: [],
+      [excludeKeyOf(field)]: [],
+    } as CanonicalFilterValue);
+    setPendingChips((p) => p.filter((x) => x !== field));
+  }
+
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 12, gap: 8, minHeight: 320 }}>
+      {/* Fixed Project chip — Catalyst's CanonicalFilter is project-scoped. */}
+      <ProjectChip
+        selectedKeys={projectSelections}
+        onSelectedKeysChange={onProjectSelectionsChange}
+        projectNameMap={projectNameMap}
+        projectMetaMap={projectMetaMap}
+      />
+
+      {ADVANCED_FIELDS.filter((f) => renderedFieldKeys.has(f.key)).map((f) => (
+        <ClauseChip
+          key={f.key}
+          field={f.key}
+          fieldLabel={f.label}
+          value={value}
+          onValueChange={onChange}
+          statusOptions={statusOptions}
+          assigneeOptions={assigneeOptions}
+          labelOptions={labelOptions}
+          workTypeOptions={workTypeOptions}
+          scopeKey={scopeKey}
+          onRemove={() => clearClause(f.key)}
+          autoOpenValuePicker={pendingChips.includes(f.key)}
+          onValuesFirstSet={() => setPendingChips((p) => p.filter((x) => x !== f.key))}
+        />
+      ))}
+
+      <div style={{ position: 'relative', alignSelf: 'flex-start' }}>
+        <button
+          ref={addBtnRef}
+          type="button"
+          onClick={() => setAddOpen((v) => !v)}
+          disabled={inactiveFields.length === 0}
+          style={{
+            height: 28,
+            padding: '0 10px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            border: `1px solid ${borderSubtle}`,
+            borderRadius: 3,
+            background: 'transparent',
+            color: textSubtle,
+            fontSize: 13,
+            fontWeight: 500,
+            fontFamily: 'inherit',
+            cursor: inactiveFields.length === 0 ? 'not-allowed' : 'pointer',
+          }}
+          onMouseEnter={(e) => {
+            if (inactiveFields.length > 0) e.currentTarget.style.background = hoverNeutral;
+          }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+        >
+          <TinyIcon><AddIcon label="" size="small" /></TinyIcon>
+          Add filter
+        </button>
+        {addOpen && (
+          <AddFilterMenu
+            options={inactiveFields}
+            onSelect={(k) => activateField(k)}
+            onClose={() => setAddOpen(false)}
+          />
+        )}
+      </div>
+
+      <div style={{ flex: 1 }} />
+    </div>
+  );
+}
+
+function ProjectChip({
+  selectedKeys,
+  onSelectedKeysChange,
+  projectNameMap,
+  projectMetaMap,
+}: {
+  selectedKeys: string[];
+  onSelectedKeysChange: (next: string[]) => void;
+  projectNameMap: Record<string, string>;
+  projectMetaMap: Record<string, { name: string; avatarUrl: string | null; color: string | null }>;
+}) {
+  const [hover, setHover] = useState(false);
+  const [popOpen, setPopOpen] = useState(false);
+  const [opOpen, setOpOpen] = useState(false);
+  const [operator, setOperator] = useState<'=' | '!='>('=');
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const opAnchorRef = useRef<HTMLButtonElement>(null);
+  const borderSubtle = token('color.border', '#DFE1E6');
+  const textPrimary = token('color.text', '#292A2E');
+  const textSubtle = token('color.text.subtle', '#505258');
+  const surface = token('elevation.surface', '#FFFFFF');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+  const blue = token('color.text.selected', '#0C66E4');
+  const isActive = popOpen || opOpen;
+  // Mid pill + right segment only render when the user has selections OR
+  // explicitly touched the operator (non-default). Clearing resets both.
+  const hasContent = selectedKeys.length > 0 || operator !== '=';
+
+  function toggleProject(k: string) {
+    onSelectedKeysChange(
+      selectedKeys.includes(k) ? selectedKeys.filter((x) => x !== k) : [...selectedKeys, k]
+    );
+  }
+
+  return (
+    <div
+      ref={anchorRef}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={() => { setOpOpen(false); setPopOpen(true); }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        position: 'relative',
+        gap: 10,
+        height: 40,
+        padding: '0 10px 0 14px',
+        minWidth: 400,
+        border: `1px solid ${isActive ? token('color.border.selected', '#0C66E4') : borderSubtle}`,
+        borderRadius: 3,
+        background: isActive ? token('color.background.selected', '#E9F2FE') : hover ? hoverNeutral : surface,
+        fontSize: 13,
+        fontFamily: 'inherit',
+        cursor: 'pointer',
+      }}
+    >
+      <span style={{ color: isActive ? blue : textPrimary, fontWeight: 600 }}>Project</span>
+
+      {hasContent && (
+        <button
+          ref={opAnchorRef}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setPopOpen(false);
+            setOpOpen((v) => !v);
+          }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            height: 28,
+            padding: '0 6px 0 10px',
+            fontSize: 14,
+            fontFamily: 'inherit',
+            fontWeight: 500,
+            border: `1px solid ${borderSubtle}`,
+            borderRadius: 3,
+            background: surface,
+            color: textPrimary,
+            cursor: 'pointer',
+          }}
+        >
+          {operator}
+          <ChevronDownIcon label="" size="small" />
+        </button>
+      )}
+
+      {hasContent && (
+        <FirstAndMore
+          values={selectedKeys}
+          resolveLabel={(k) => projectNameMap[k] || k}
+          activeColor={isActive ? blue : undefined}
+        />
+      )}
+      <span style={{ display: 'inline-flex', alignItems: 'center', color: isActive ? blue : textSubtle, marginLeft: 'auto' }}>
+        <ChevronDownIcon label="" size="small" />
+      </span>
+
+      {opOpen && (
+        <OperatorMenu
+          current={operator}
+          anchorRef={opAnchorRef}
+          onSelect={(op) => { setOperator(op); setOpOpen(false); }}
+          onClose={() => setOpOpen(false)}
+        />
+      )}
+      {popOpen && (
+        <ProjectPickerPopover
+          anchorRef={anchorRef}
+          operator={operator}
+          onSetOperator={setOperator}
+          selectedKeys={selectedKeys}
+          onToggle={toggleProject}
+          onClearSelection={() => { onSelectedKeysChange([]); setOperator('='); }}
+          onClose={() => setPopOpen(false)}
+          projectMetaMap={projectMetaMap}
+        />
+      )}
+    </div>
+  );
+}
+
+function ProjectAvatar({
+  avatarUrl,
+  color,
+  name,
+}: {
+  avatarUrl: string | null;
+  color: string | null;
+  name: string;
+}) {
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl}
+        alt=""
+        style={{ width: 20, height: 20, borderRadius: 3, objectFit: 'cover', flexShrink: 0 }}
+      />
+    );
+  }
+  const initial = (name || '?').trim().charAt(0).toUpperCase();
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 20,
+        height: 20,
+        borderRadius: 3,
+        background: color || '#0C66E4',
+        color: '#FFFFFF',
+        fontSize: 10,
+        fontWeight: 700,
+        flexShrink: 0,
+      }}
+    >
+      {initial}
+    </span>
+  );
+}
+
+function FirstAndMore({
+  values,
+  resolveLabel,
+  activeColor,
+}: {
+  values: string[];
+  resolveLabel: (id: string) => string;
+  activeColor?: string;
+}) {
+  if (values.length === 0) return null;
+  const first = resolveLabel(values[0]);
+  const extra = values.length - 1;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+      <span style={{
+        color: activeColor || token('color.text', '#292A2E'),
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        maxWidth: 180,
+      }}>
+        {first}
+      </span>
+      {extra > 0 && (
+        <span style={{
+          padding: '0 6px',
+          minWidth: 22,
+          height: 18,
+          borderRadius: 3,
+          background: token('color.background.accent.blue.subtle', '#579DFF'),
+          color: token('color.text', '#292A2E'),
+          fontSize: 11,
+          fontWeight: 700,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          +{extra}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function ProjectPickerPopover({
+  anchorRef,
+  operator,
+  onSetOperator,
+  selectedKeys,
+  onToggle,
+  onClearSelection,
+  onClose,
+  projectMetaMap,
+}: {
+  anchorRef: React.RefObject<HTMLDivElement | null>;
+  operator: '=' | '!=';
+  onSetOperator: (op: '=' | '!=') => void;
+  selectedKeys: string[];
+  onToggle: (k: string) => void;
+  onClearSelection: () => void;
+  onClose: () => void;
+  projectMetaMap: Record<string, { name: string; avatarUrl: string | null; color: string | null }>;
+}) {
+  const [headerOpOpen, setHeaderOpOpen] = useState(false);
+  const headerOpRef = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [search, setSearch] = useState('');
+  // Build the row list from the parent-owned meta map so name + avatar
+  // come from a single source of truth.
+  const rows = useMemo(() => Object.keys(projectMetaMap)
+    .map((k) => ({ key: k, name: projectMetaMap[k].name, avatarUrl: projectMetaMap[k].avatarUrl, color: projectMetaMap[k].color }))
+    .sort((a, b) => a.name.localeCompare(b.name)),
+    [projectMetaMap],
+  );
+
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (ref.current?.contains(e.target as Node)) return;
+      if (anchorRef.current?.contains(e.target as Node)) return;
+      // Sub-menus + sibling popovers live in document.body via createPortal.
+      // Their DOM isn't inside this popover's ref, so a click on them would
+      // close us. Treat any click on another canonical-filter portal as
+      // "still inside" — the canonical filter owns those portals.
+      const tgt = e.target as Element | null;
+      if (tgt?.closest?.('[data-canonical-filter-popup="true"]')) return;
+      onClose();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [onClose, anchorRef]);
+
+  if (!anchorRef.current) return null;
+  const rect = anchorRef.current.getBoundingClientRect();
+  const q = search.trim().toLowerCase();
+  const filtered = q ? rows.filter((r) => r.name.toLowerCase().includes(q) || r.key.toLowerCase().includes(q)) : rows;
+  const borderSubtle = token('color.border', '#DFE1E6');
+
+  return createPortal(
+    <div
+      ref={ref}
+      role="dialog" data-canonical-filter-popup="true"
+      aria-label="Project picker"
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      style={{
+        position: 'fixed',
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: 360,
+        maxHeight: 420,
+        background: token('elevation.surface.overlay', '#FFFFFF'),
+        border: `1px solid ${borderSubtle}`,
+        borderRadius: 6,
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        zIndex: 10000,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        fontFamily: 'inherit',
+      }}
+    >
+      <div style={{ padding: 8, borderBottom: `1px solid ${borderSubtle}` }}>
+        <button
+          ref={headerOpRef}
+          type="button"
+          onClick={() => setHeaderOpOpen((v) => !v)}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px 12px',
+            background: token('color.background.neutral', '#F1F2F4'),
+            border: 0,
+            borderRadius: 3,
+            color: token('color.text', '#292A2E'),
+            fontSize: 13,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+          }}
+        >
+          <span>Project {operator === '=' ? '= (equals)' : '!= (not equals)'}</span>
+          <ChevronDownIcon label="" size="small" />
+        </button>
+      </div>
+      {headerOpOpen && (
+        <OperatorMenu
+          current={operator}
+          anchorRef={headerOpRef}
+          onSelect={(op) => { onSetOperator(op); setHeaderOpOpen(false); }}
+          onClose={() => setHeaderOpOpen(false)}
+        />
+      )}
+      <div style={{ padding: 8 }}>
+        <FilterSearchInput
+          inputRef={searchInputRef}
+          value={search}
+          onChange={setSearch}
+          placeholder="Search projects"
+        />
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0', minHeight: 0 }}>
+        {filtered.length === 0 ? (
+          <div style={{ padding: 12, fontSize: 13, color: token('color.text.subtlest', '#6B6E76') }}>
+            No matches
+          </div>
+        ) : filtered.map((r) => (
+          <OptionRow
+            key={r.key}
+            label={r.name}
+            checked={selectedKeys.includes(r.key)}
+            onClick={() => onToggle(r.key)}
+            icon={<ProjectAvatar avatarUrl={r.avatarUrl} color={r.color} name={r.name} />}
+          />
+        ))}
+      </div>
+      <div
+        style={{
+          padding: '8px 12px',
+          borderTop: `1px solid ${borderSubtle}`,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <button
+          type="button"
+          disabled={selectedKeys.length === 0}
+          onClick={onClearSelection}
+          style={{
+            padding: 0,
+            border: 0,
+            background: 'transparent',
+            // Always-gray text per spec — color does not flip blue when enabled.
+            color: token('color.text.subtle', '#505258'),
+            cursor: selectedKeys.length > 0 ? 'pointer' : 'not-allowed',
+            opacity: selectedKeys.length > 0 ? 1 : 0.6,
+            fontSize: 13,
+            fontWeight: 500,
+            fontFamily: 'inherit',
+          }}
+        >
+          Clear selection
+        </button>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function ClauseChip({
+  field,
+  fieldLabel,
+  value,
+  onValueChange,
+  statusOptions,
+  assigneeOptions,
+  labelOptions,
+  workTypeOptions,
+  scopeKey,
+  onRemove,
+  autoOpenValuePicker,
+  onValuesFirstSet,
+}: {
+  field: keyof CanonicalFilterValue;
+  fieldLabel: string;
+  value: CanonicalFilterValue;
+  onValueChange: (next: CanonicalFilterValue) => void;
+  statusOptions: CanonicalStatusOption[];
+  assigneeOptions: CanonicalAssigneeOption[];
+  labelOptions: string[];
+  workTypeOptions: CanonicalWorkTypeOption[];
+  scopeKey?: string;
+  onRemove: () => void;
+  autoOpenValuePicker?: boolean;
+  onValuesFirstSet?: () => void;
+}) {
+  const exKey = excludeKeyOf(field);
+  const includeVals = value[field] as string[];
+  const excludeVals = value[exKey] as string[];
+  const operator: '=' | '!=' = excludeVals.length > 0 && includeVals.length === 0 ? '!=' : '=';
+
+  const [opOpen, setOpOpen] = useState(false);
+  const [valOpen, setValOpen] = useState(false);
+  const opAnchorRef = useRef<HTMLButtonElement>(null);
+  const valAnchorRef = useRef<HTMLDivElement>(null);
+
+  // Auto-open value picker when chip was just added (and has no values yet).
+  useEffect(() => {
+    if (autoOpenValuePicker && includeVals.length === 0 && excludeVals.length === 0) {
+      setValOpen(true);
+    }
+  }, [autoOpenValuePicker, includeVals.length, excludeVals.length]);
+
+  // Once any value lands, notify parent so the pending-chip flag clears.
+  useEffect(() => {
+    if (includeVals.length > 0 || excludeVals.length > 0) {
+      onValuesFirstSet?.();
+    }
+  }, [includeVals.length, excludeVals.length, onValuesFirstSet]);
+
+  function setOperator(next: '=' | '!=') {
+    setOpOpen(false);
+    // Swap the array — preserve selected values across operator change.
+    if (next === operator) return;
+    const current = includeVals.length ? includeVals : excludeVals;
+    onValueChange({
+      ...value,
+      [field]: next === '=' ? current : [],
+      [exKey]: next === '!=' ? current : [],
+    } as CanonicalFilterValue);
+  }
+
+  function toggleValue(id: string) {
+    const target = operator === '=' ? field : exKey;
+    const list = value[target] as string[];
+    const next = list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
+    onValueChange({ ...value, [target]: next } as CanonicalFilterValue);
+  }
+
+  function clearValues() {
+    onValueChange({ ...value, [field]: [], [exKey]: [] } as CanonicalFilterValue);
+  }
+
+  const borderSubtle = token('color.border', '#DFE1E6');
+  const blueBorder = token('color.border.selected', '#0C66E4');
+  const textPrimary = token('color.text', '#292A2E');
+  const textSubtle = token('color.text.subtle', '#505258');
+  const surface = token('elevation.surface', '#FFFFFF');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+  const [hover, setHover] = useState(false);
+  const isActive = valOpen || opOpen;
+  const activeValues = operator === '=' ? includeVals : excludeVals;
+  // Display-name resolver per field type.
+  const resolveLabel = (id: string): string => {
+    if (id === NO_PARENT_SENTINEL) return 'No parent';
+    switch (field) {
+      case 'status':   return statusOptions.find((s) => s.value === id)?.label ?? id;
+      case 'assignee': return assigneeOptions.find((a) => a.id === id)?.label ?? id;
+      case 'workType': return workTypeOptions.find((w) => w.id === id)?.label ?? id;
+      default:         return id;
+    }
+  };
+
+  // Background: white idle, gray on hover, blue-tinted when active.
+  let chipBg: string = surface;
+  if (isActive) chipBg = token('color.background.selected', '#E9F2FE');
+  else if (hover) chipBg = hoverNeutral;
+
+  return (
+    <div
+      ref={valAnchorRef}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={() => { setOpOpen(false); setValOpen(true); }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        position: 'relative',
+        gap: 10,
+        height: 40,
+        padding: '0 10px 0 14px',
+        minWidth: 400,
+        border: `1px solid ${isActive ? blueBorder : borderSubtle}`,
+        background: chipBg,
+        borderRadius: 3,
+        fontSize: 13,
+        fontFamily: 'inherit',
+        cursor: 'pointer',
+      }}
+    >
+      {/* LEFT — field label (bold) */}
+      <span style={{ color: textPrimary, fontWeight: 600 }}>{fieldLabel}</span>
+
+      {/* MIDDLE — operator pill with its own inset border */}
+      <button
+        ref={opAnchorRef}
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          // Mid pill is mutually exclusive with value picker — close it.
+          setValOpen(false);
+          setOpOpen((v) => !v);
+        }}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          height: 28,
+          padding: '0 6px 0 10px',
+          fontSize: 14,
+          fontFamily: 'inherit',
+          fontWeight: 500,
+          border: `1px solid ${borderSubtle}`,
+          borderRadius: 3,
+          background: surface,
+          color: textPrimary,
+          cursor: 'pointer',
+        }}
+      >
+        {operator}
+        <ChevronDownIcon label="" size="small" />
+      </button>
+
+      {/* RIGHT — first value + "+N" badge for remaining */}
+      <FirstAndMore values={activeValues} resolveLabel={resolveLabel} />
+
+      {/* Trailing chevron — indicates the chip opens a dropdown */}
+      <span style={{ display: 'inline-flex', alignItems: 'center', color: textSubtle, marginLeft: 'auto' }}>
+        <ChevronDownIcon label="" size="small" />
+      </span>
+
+      {/* Remove (×) — visible on hover only */}
+      {hover && (
+        <span
+          role="button"
+          aria-label="Remove clause"
+          title="Remove clause"
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          style={{
+            display: 'inline-flex', alignItems: 'center',
+            color: textSubtle, padding: 2, borderRadius: 3,
+            marginLeft: 2,
+          }}
+        >
+          <svg width="10" height="10" viewBox="0 0 16 16" aria-hidden focusable="false">
+            <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+        </span>
+      )}
+
+      {opOpen && (
+        <OperatorMenu
+          current={operator}
+          anchorRef={opAnchorRef}
+          onSelect={setOperator}
+          onClose={() => setOpOpen(false)}
+        />
+      )}
+
+      {valOpen && (
+        <ValuePickerPopover
+          anchorRef={valAnchorRef}
+          field={field}
+          fieldLabel={fieldLabel}
+          operator={operator}
+          onSetOperator={setOperator}
+          selected={operator === '=' ? includeVals : excludeVals}
+          onToggle={toggleValue}
+          onClear={clearValues}
+          onClose={() => setValOpen(false)}
+          statusOptions={statusOptions}
+          assigneeOptions={assigneeOptions}
+          labelOptions={labelOptions}
+          workTypeOptions={workTypeOptions}
+          scopeKey={scopeKey}
+        />
+      )}
+    </div>
+  );
+}
+
+function OperatorMenu({
+  current,
+  anchorRef,
+  onSelect,
+  onClose,
+}: {
+  current: '=' | '!=';
+  anchorRef: React.RefObject<HTMLButtonElement | null>;
+  onSelect: (op: '=' | '!=') => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (ref.current?.contains(e.target as Node)) return;
+      if (anchorRef.current?.contains(e.target as Node)) return;
+      // Sub-menus + sibling popovers live in document.body via createPortal.
+      // Their DOM isn't inside this popover's ref, so a click on them would
+      // close us. Treat any click on another canonical-filter portal as
+      // "still inside" — the canonical filter owns those portals.
+      const tgt = e.target as Element | null;
+      if (tgt?.closest?.('[data-canonical-filter-popup="true"]')) return;
+      onClose();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [onClose, anchorRef]);
+
+  if (!anchorRef.current) return null;
+  const rect = anchorRef.current.getBoundingClientRect();
+  return createPortal(
+    <div
+      ref={ref}
+      role="menu" data-canonical-filter-popup="true"
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      style={{
+        position: 'fixed',
+        top: rect.bottom + 4,
+        left: rect.left,
+        minWidth: 160,
+        background: token('elevation.surface.overlay', '#FFFFFF'),
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRadius: 6,
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        padding: '4px 0',
+        zIndex: 10000,
+        fontFamily: 'inherit',
+      }}
+    >
+      <EllipsisMenuItem label="= (equals)" enabled onClick={() => { onSelect('='); }} />
+      <EllipsisMenuItem label="!= (not equals)" enabled onClick={() => { onSelect('!='); }} />
+    </div>,
+    document.body,
+  );
+}
+
+function AddFilterMenu({
+  options,
+  onSelect,
+  onClose,
+}: {
+  options: Array<{ key: keyof CanonicalFilterValue; label: string }>;
+  onSelect: (k: keyof CanonicalFilterValue) => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (ref.current?.contains(e.target as Node)) return;
+      onClose();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [onClose]);
+  return (
+    <div
+      ref={ref}
+      role="menu" data-canonical-filter-popup="true"
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      style={{
+        position: 'absolute',
+        top: 32,
+        left: 0,
+        minWidth: 180,
+        background: token('elevation.surface.overlay', '#FFFFFF'),
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRadius: 6,
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        padding: '4px 0',
+        zIndex: 100,
+        fontFamily: 'inherit',
+      }}
+    >
+      {options.length === 0 ? (
+        <div style={{ padding: '8px 12px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
+          All fields already added
+        </div>
+      ) : options.map((o) => (
+        <EllipsisMenuItem
+          key={o.key}
+          label={o.label}
+          enabled
+          onClick={() => onSelect(o.key)}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ValuePickerPopover({
+  anchorRef,
+  field,
+  fieldLabel,
+  operator,
+  onSetOperator,
+  selected,
+  onToggle,
+  onClear,
+  onClose,
+  statusOptions,
+  assigneeOptions,
+  labelOptions,
+  workTypeOptions,
+  scopeKey,
+}: {
+  anchorRef: React.RefObject<HTMLDivElement | null>;
+  field: keyof CanonicalFilterValue;
+  fieldLabel: string;
+  operator: '=' | '!=';
+  onSetOperator: (op: '=' | '!=') => void;
+  selected: string[];
+  onToggle: (id: string) => void;
+  onClear: () => void;
+  onClose: () => void;
+  statusOptions: CanonicalStatusOption[];
+  assigneeOptions: CanonicalAssigneeOption[];
+  labelOptions: string[];
+  workTypeOptions: CanonicalWorkTypeOption[];
+  scopeKey?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const headerOpRef = useRef<HTMLButtonElement>(null);
+  const [headerOpOpen, setHeaderOpOpen] = useState(false);
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (ref.current?.contains(e.target as Node)) return;
+      if (anchorRef.current?.contains(e.target as Node)) return;
+      // Sub-menus + sibling popovers live in document.body via createPortal.
+      // Their DOM isn't inside this popover's ref, so a click on them would
+      // close us. Treat any click on another canonical-filter portal as
+      // "still inside" — the canonical filter owns those portals.
+      const tgt = e.target as Element | null;
+      if (tgt?.closest?.('[data-canonical-filter-popup="true"]')) return;
+      onClose();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [onClose, anchorRef]);
+
+  if (!anchorRef.current) return null;
+  const rect = anchorRef.current.getBoundingClientRect();
+
+  // Header dropdown ("Field = (equals)") for parity with the screenshot.
+  const opLabel = operator === '=' ? '= (equals)' : '!= (not equals)';
+
+  // Routes to the existing FieldEditor for value list rendering.
+  const fieldKeyAsBasic = field === 'parentExclude' ? 'parent'
+    : field === 'assigneeExclude' ? 'assignee'
+    : field === 'statusExclude' ? 'status'
+    : field === 'labelsExclude' ? 'labels'
+    : field === 'workTypeExclude' ? 'workType'
+    : field;
+
+  return createPortal(
+    <div
+      ref={ref}
+      role="dialog" data-canonical-filter-popup="true"
+      aria-label={`${fieldLabel} values`}
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      style={{
+        position: 'fixed',
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: 320,
+        maxHeight: 420,
+        background: token('elevation.surface.overlay', '#FFFFFF'),
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRadius: 6,
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        zIndex: 10000,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        fontFamily: 'inherit',
+      }}
+    >
+      <div style={{ padding: 8, borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
+        <button
+          ref={headerOpRef}
+          type="button"
+          onClick={() => setHeaderOpOpen((v) => !v)}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px 12px',
+            background: token('color.background.neutral', '#F1F2F4'),
+            border: 0,
+            borderRadius: 3,
+            color: token('color.text', '#292A2E'),
+            fontSize: 13,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+          }}
+        >
+          <span>{fieldLabel} {opLabel}</span>
+          <ChevronDownIcon label="" size="small" />
+        </button>
+      </div>
+      {headerOpOpen && (
+        <OperatorMenu
+          current={operator}
+          anchorRef={headerOpRef}
+          onSelect={(op) => { onSetOperator(op); setHeaderOpOpen(false); }}
+          onClose={() => setHeaderOpOpen(false)}
+        />
+      )}
+      <FieldEditor
+        fieldKey={fieldKeyAsBasic as keyof CanonicalFilterValue}
+        fieldLabel={fieldLabel}
+        selected={selected}
+        onToggle={onToggle}
+        onClearField={onClear}
+        statusOptions={statusOptions}
+        assigneeOptions={assigneeOptions}
+        labelOptions={labelOptions}
+        workTypeOptions={workTypeOptions}
+        scopeType={undefined}
+        scopeKey={scopeKey}
+      />
+    </div>,
+    document.body,
   );
 }
 

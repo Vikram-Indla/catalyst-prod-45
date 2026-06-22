@@ -1759,6 +1759,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     };
     // 2026-06-22 Phase 2 — CanonicalFilter rail predicates. AND across fields,
     // OR within each field (Jira-standard semantics confirmed by Vikram).
+    // Phase 5 — Advanced tab adds `!=` operator via *Exclude arrays.
     const cf = canonicalFilter;
     const matchesCanonical = (it: BacklogItem) => {
       if (cf.parent.length) {
@@ -1768,19 +1769,32 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         const namedMatch = !!itemParent && cf.parent.includes(itemParent);
         if (!noParentMatch && !namedMatch) return false;
       }
+      if (cf.parentExclude.length) {
+        const wantsNotNone = cf.parentExclude.includes(NO_PARENT_SENTINEL);
+        const itemParent = it.parent_key || '';
+        if (wantsNotNone && !itemParent) return false;
+        if (itemParent && cf.parentExclude.includes(itemParent)) return false;
+      }
       if (cf.assignee.length) {
         if (!it.assignee_name || !cf.assignee.includes(it.assignee_name)) return false;
       }
+      if (cf.assigneeExclude.length && it.assignee_name && cf.assigneeExclude.includes(it.assignee_name)) return false;
       if (cf.status.length) {
         if (!it.status || !cf.status.includes(it.status)) return false;
       }
+      if (cf.statusExclude.length && it.status && cf.statusExclude.includes(it.status)) return false;
       if (cf.labels.length) {
         const itLabels = it.labels || [];
         if (!cf.labels.some((l) => itLabels.includes(l))) return false;
       }
+      if (cf.labelsExclude.length) {
+        const itLabels = it.labels || [];
+        if (cf.labelsExclude.some((l) => itLabels.includes(l))) return false;
+      }
       if (cf.workType.length) {
         if (!it.issue_type || !cf.workType.includes(it.issue_type)) return false;
       }
+      if (cf.workTypeExclude.length && it.issue_type && cf.workTypeExclude.includes(it.issue_type)) return false;
       return true;
     };
 
@@ -1829,7 +1843,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       !!filterValue.updated.from || !!filterValue.updated.to || !!filterValue.created.from || !!filterValue.created.to ||
       canonicalFilter.parent.length > 0 || canonicalFilter.assignee.length > 0 ||
       canonicalFilter.status.length > 0 || canonicalFilter.labels.length > 0 ||
-      canonicalFilter.workType.length > 0;
+      canonicalFilter.workType.length > 0 ||
+      canonicalFilter.parentExclude.length > 0 || canonicalFilter.assigneeExclude.length > 0 ||
+      canonicalFilter.statusExclude.length > 0 || canonicalFilter.labelsExclude.length > 0 ||
+      canonicalFilter.workTypeExclude.length > 0;
     // flattenTree already dedups by id, so it is the final ordered list.
     return flattenTree<BacklogItem>(
       roots,

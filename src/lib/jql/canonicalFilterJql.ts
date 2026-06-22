@@ -16,13 +16,7 @@ import {
 
 export function jqlToCanonicalFilterValue(jql: string): CanonicalFilterValue {
   if (!jql?.trim()) return { ...emptyCanonicalFilterValue };
-  const result: CanonicalFilterValue = {
-    parent: [],
-    assignee: [],
-    status: [],
-    labels: [],
-    workType: [],
-  };
+  const result: CanonicalFilterValue = { ...emptyCanonicalFilterValue };
   const filters = translate(jql);
   for (const f of filters) {
     const col = f.column;
@@ -32,21 +26,32 @@ export function jqlToCanonicalFilterValue(jql: string): CanonicalFilterValue {
       : (f as any).value != null ? [(f as any).value] : [];
     if (!col || !raw.length) continue;
 
+    const isExclude = op === '!=' || op === 'not in';
+
     if (col === 'status') {
-      result.status = uniq([...result.status, ...raw]);
+      if (isExclude) result.statusExclude = uniq([...result.statusExclude, ...raw]);
+      else result.status = uniq([...result.status, ...raw]);
     } else if (col === 'assignee_display_name' || col === 'assignee_account_id') {
-      result.assignee = uniq([...result.assignee, ...raw]);
+      if (isExclude) result.assigneeExclude = uniq([...result.assigneeExclude, ...raw]);
+      else result.assignee = uniq([...result.assignee, ...raw]);
     } else if (col === 'labels') {
-      result.labels = uniq([...result.labels, ...raw]);
+      if (isExclude) result.labelsExclude = uniq([...result.labelsExclude, ...raw]);
+      else result.labels = uniq([...result.labels, ...raw]);
     } else if (col === 'issue_type') {
-      result.workType = uniq([...result.workType, ...raw]);
+      if (isExclude) result.workTypeExclude = uniq([...result.workTypeExclude, ...raw]);
+      else result.workType = uniq([...result.workType, ...raw]);
     } else if (col === 'parent_key') {
-      // `parent is empty` / `parent = null` → No-parent sentinel.
+      // `parent is empty` → include No-parent sentinel.
+      // `parent is not empty` → exclude No-parent sentinel.
       const isEmpty = op === 'is' && raw.some((v) => /^(empty|null)$/i.test(v));
-      const isNotNull = op === 'is not' && raw.some((v) => /^(empty|null)$/i.test(v));
+      const isNotEmpty = op === 'is not' && raw.some((v) => /^(empty|null)$/i.test(v));
       if (isEmpty) {
         result.parent = uniq([...result.parent, NO_PARENT_SENTINEL]);
-      } else if (!isNotNull) {
+      } else if (isNotEmpty) {
+        result.parentExclude = uniq([...result.parentExclude, NO_PARENT_SENTINEL]);
+      } else if (isExclude) {
+        result.parentExclude = uniq([...result.parentExclude, ...raw]);
+      } else {
         result.parent = uniq([...result.parent, ...raw]);
       }
     }
@@ -89,19 +94,29 @@ export function canonicalFilterValueToJql(
     }
   }
 
-  if (value.assignee.length) {
-    clauses.push(emitMulti('assignee', value.assignee));
+  if (value.assignee.length)  clauses.push(emitMulti('assignee', value.assignee));
+  if (value.status.length)    clauses.push(emitMulti('status', value.status));
+  if (value.labels.length)    clauses.push(emitMulti('labels', value.labels));
+  if (value.workType.length)  clauses.push(emitMulti('issuetype', value.workType));
+
+  // Exclude clauses (Advanced tab `!=` operator).
+  if (value.parentExclude?.length) {
+    const wantsNotNone = value.parentExclude.includes(NO_PARENT_SENTINEL);
+    const named = value.parentExclude.filter((p) => p !== NO_PARENT_SENTINEL);
+    if (wantsNotNone) clauses.push('parent is not empty');
+    if (named.length) clauses.push(emitMultiNot('parent', named));
   }
-  if (value.status.length) {
-    clauses.push(emitMulti('status', value.status));
-  }
-  if (value.labels.length) {
-    clauses.push(emitMulti('labels', value.labels));
-  }
-  if (value.workType.length) {
-    clauses.push(emitMulti('issuetype', value.workType));
-  }
+  if (value.assigneeExclude?.length)  clauses.push(emitMultiNot('assignee', value.assigneeExclude));
+  if (value.statusExclude?.length)    clauses.push(emitMultiNot('status', value.statusExclude));
+  if (value.labelsExclude?.length)    clauses.push(emitMultiNot('labels', value.labelsExclude));
+  if (value.workTypeExclude?.length)  clauses.push(emitMultiNot('issuetype', value.workTypeExclude));
+
   return clauses.join(' AND ');
+}
+
+function emitMultiNot(field: string, values: string[]): string {
+  if (values.length === 1) return `${field} != ${quote(values[0])}`;
+  return `${field} not in (${values.map(quote).join(', ')})`;
 }
 
 function emitMulti(field: string, values: string[]): string {
