@@ -30,6 +30,7 @@ import PriorityMediumIcon from '@atlaskit/icon/core/priority-medium';
 import PriorityLowIcon from '@atlaskit/icon/core/priority-low';
 import PriorityLowestIcon from '@atlaskit/icon/core/priority-lowest';
 import PriorityBlockerIcon from '@atlaskit/icon/core/priority-blocker';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import Tooltip from '@atlaskit/tooltip';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
@@ -141,6 +142,32 @@ export const CANONICAL_SEVERITY_OPTIONS: CanonicalSeverityOption[] = [
   { id: 'Low',     label: 'Low' },
 ];
 
+/**
+ * Default canonical work-type catalog covering every type tracked in
+ * Catalyst (CLAUDE.md 2026-06-12 hierarchy map + DEFAULT_WORK_ITEM_TYPES).
+ * Surfaces that don't supply their own workTypeOptions inherit this list.
+ * Each id mirrors the value used in ph_issues.issue_type so it round-trips
+ * through matchesCanonical predicates and JQL serialization unchanged.
+ */
+export const DEFAULT_CANONICAL_WORK_TYPE_OPTIONS: CanonicalWorkTypeOption[] = [
+  { id: 'Epic',                label: 'Epic',                icon: <JiraIssueTypeIcon type="Epic"                size={14} /> },
+  { id: 'Feature',             label: 'Feature',             icon: <JiraIssueTypeIcon type="Feature"             size={14} /> },
+  { id: 'Story',               label: 'Story',               icon: <JiraIssueTypeIcon type="Story"               size={14} /> },
+  { id: 'Task',                label: 'Task',                icon: <JiraIssueTypeIcon type="Task"                size={14} /> },
+  { id: 'Sub-task',            label: 'Sub-task',            icon: <JiraIssueTypeIcon type="Sub-task"            size={14} /> },
+  { id: 'QA Bug',              label: 'QA Bug',              icon: <JiraIssueTypeIcon type="QA Bug"              size={14} /> },
+  { id: 'Production Incident', label: 'Production Incident', icon: <JiraIssueTypeIcon type="Production Incident" size={14} /> },
+  { id: 'Change Request',      label: 'Change Request',      icon: <JiraIssueTypeIcon type="Change Request"      size={14} /> },
+  { id: 'Business Gap',        label: 'Business Gap',        icon: <JiraIssueTypeIcon type="Business Gap"        size={14} /> },
+  { id: 'Business Request',    label: 'Business Request',    icon: <JiraIssueTypeIcon type="Business Request"    size={14} /> },
+  { id: 'Backend',             label: 'Backend',             icon: <JiraIssueTypeIcon type="Backend"             size={14} /> },
+  { id: 'Frontend',            label: 'Frontend',            icon: <JiraIssueTypeIcon type="Frontend"             size={14} /> },
+  { id: 'Integration',         label: 'Integration',         icon: <JiraIssueTypeIcon type="Integration"         size={14} /> },
+  { id: 'API Requirement',     label: 'API Requirement',     icon: <JiraIssueTypeIcon type="API Requirement"     size={14} /> },
+  { id: 'Figma',               label: 'Figma',               icon: <JiraIssueTypeIcon type="Figma"               size={14} /> },
+  { id: 'Idea',                label: 'Idea',                icon: <JiraIssueTypeIcon type="Idea"                size={14} /> },
+];
+
 export interface CanonicalStatusOption {
   value: string;
   label: string;
@@ -195,7 +222,7 @@ export function CanonicalFilter({
   statusOptions = [],
   assigneeOptions = [],
   labelOptions = [],
-  workTypeOptions = [],
+  workTypeOptions = DEFAULT_CANONICAL_WORK_TYPE_OPTIONS,
   priorityOptions = CANONICAL_PRIORITY_OPTIONS,
   severityOptions = CANONICAL_SEVERITY_OPTIONS,
   scopeType,

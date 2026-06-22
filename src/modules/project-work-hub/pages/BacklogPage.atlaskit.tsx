@@ -3835,7 +3835,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             statusOptions={STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label, appearance: s.appearance as any }))}
             assigneeOptions={assigneeOptions.map((a) => ({ id: a.id, label: a.name, avatarUrl: a.avatarUrl ?? undefined }))}
             labelOptions={canonicalLabelOptions}
-            workTypeOptions={CANONICAL_WORK_TYPE_OPTIONS}
+            /* workTypeOptions omitted — CanonicalFilter falls back to
+               DEFAULT_CANONICAL_WORK_TYPE_OPTIONS which covers all 16
+               Jira work-item types (CLAUDE.md 2026-06-12 hierarchy). */
           />
         </div>
         {/* Apr 28, 2026 — Phase A.3 (next-session): @atlaskit/avatar-group

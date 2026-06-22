@@ -145,6 +145,9 @@ interface Props {
    *  detail structure; cloning it into the side panel would be a parallel
    *  reimplementation banned by CLAUDE.md "ADOPT — don't reimplement". */
   entityKind?: 'ph_issue' | 'task' | 'release';
+  /** Optional left-slot for AllWorkToolbar. Used by /tasks/work to add
+   *  Group + All workstreams dropdowns alongside the canonical filter. */
+  leftToolbarSlot?: React.ReactNode;
 }
 
 /** Split container widths for 3-state responsive layout:
@@ -155,7 +158,7 @@ interface Props {
 const WIDE_BP = 1120;
 const NARROW_BP = 480;
 
-export default function ProjectAllWorkView({ projectKey, projectId, mode = 'project', productName, tasksItems, entityKind = 'ph_issue' }: Props) {
+export default function ProjectAllWorkView({ projectKey, projectId, mode = 'project', productName, tasksItems, entityKind = 'ph_issue', leftToolbarSlot }: Props) {
   const isProduct = mode === 'product';
   const isIncident = mode === 'incident';
   const isTasks = !!tasksItems;
@@ -683,6 +686,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
         onSaveFilter={() => setSaveModalOpen(true)}
         saveFilterLabel={urlFilterId ? 'Update filter' : 'Save filter'}
         facetOptionItems={isProduct ? enrichedProductItems : undefined}
+        leftToolbarSlot={leftToolbarSlot}
       />
 
       {/* Save filter modal — opened from toolbar's Save filter button.
