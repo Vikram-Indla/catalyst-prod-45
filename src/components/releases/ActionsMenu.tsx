@@ -1,5 +1,6 @@
 import React from 'react';
-import { DropdownMenu, DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import DropdownMenu from '@atlaskit/dropdown-menu';
+import { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Button from '@atlaskit/button/new';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import { Release } from '@/types/phase3-releases';

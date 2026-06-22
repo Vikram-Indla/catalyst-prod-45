@@ -6,7 +6,7 @@ import Select from '@atlaskit/select';
 import Flag from '@atlaskit/flag';
 import { useReleases } from '@/hooks/releases/useReleases';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
-import JiraTable from '@/components/shared/JiraTable';
+import { JiraTable } from '@/components/shared/JiraTable';
 import { ReleaseCreateModal } from '@/components/releases/ReleaseCreateModal';
 import { ReleaseEditModal } from '@/components/releases/ReleaseEditModal';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
