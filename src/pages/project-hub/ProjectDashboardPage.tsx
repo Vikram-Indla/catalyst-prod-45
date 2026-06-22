@@ -36,7 +36,7 @@ import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import ProjectDashboardTimeline from '@/components/projecthub/ProjectDashboardTimeline';
 import ProductDashboardTimeline from '@/components/producthub/ProductDashboardTimeline';
-import CatalystReplayDemo from '@/components/replay/CatalystReplayDemo';
+import CatalystReplayDemo from '../../components/replay/CatalystReplayDemo';
 
 
 // Self-rolled dropdown for edit mode actions — avoids @atlaskit/popup (0,0) bug
