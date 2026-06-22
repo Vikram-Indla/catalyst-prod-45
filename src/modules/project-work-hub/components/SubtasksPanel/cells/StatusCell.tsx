@@ -65,6 +65,7 @@ export const StatusCell = React.memo(function StatusCell({
       <span style={{
         display: 'inline-flex',
         alignItems: 'center',
+        gap: 4,
         padding: '2px 6px',
         borderRadius: 3,
         fontSize: 11,
@@ -75,19 +76,19 @@ export const StatusCell = React.memo(function StatusCell({
         background: bg,
         color: fg,
         whiteSpace: 'nowrap',
-        maxWidth: 100,
+        maxWidth: 120,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
       }}>
-        {status}
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{status}</span>
+        {!readOnly && (
+          <span aria-hidden style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0, color: fg }}>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2.5 3.5L5 6.5L7.5 3.5" />
+            </svg>
+          </span>
+        )}
       </span>
-      {!readOnly && (
-        <span className="sp-status-chevron-ak" aria-hidden>
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-            <path d="M2.5 3.5L5 6.5L7.5 3.5" />
-          </svg>
-        </span>
-      )}
     </button>
   );
 
