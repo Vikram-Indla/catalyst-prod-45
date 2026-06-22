@@ -708,7 +708,7 @@ export function CatalystViewBase({
               when sidebar content is taller than the body.
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-sidebar" style={{
-            width: rightPanelWidth, minWidth: 220, maxWidth: 600,
+            width: rightPanelWidth, minWidth: hideSidebar ? 0 : 220, maxWidth: 600,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflowX: 'hidden',
             display: hideSidebar ? 'none' : 'flex', flexDirection: 'column', padding: '16px 4px 32px 16px',
             minHeight: 0,
