@@ -10,7 +10,7 @@
  * Mounted first on /project-hub/:key/backlog. Other surfaces migrate once
  * this is feature-complete.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,6 +25,7 @@ import PinFilledIcon from '@atlaskit/icon/core/pin-filled';
 import MoreIcon from '@atlaskit/icon/core/show-more-horizontal';
 import DragHandleIcon from '@atlaskit/icon/core/drag-handle-vertical';
 import Tooltip from '@atlaskit/tooltip';
+import Lozenge from '@atlaskit/lozenge';
 
 export type FilterTab = 'basic' | 'advanced' | 'jql';
 
@@ -34,19 +35,63 @@ export interface CanonicalSavedFilter {
   starred?: boolean;
 }
 
+/** Sentinel used in `parent` selection to mean "items with no parent". */
+export const NO_PARENT_SENTINEL = '__NO_PARENT__';
+
+export interface CanonicalFilterValue {
+  parent: string[];
+  assignee: string[];
+  status: string[];
+  labels: string[];
+  workType: string[];
+}
+
+export const emptyCanonicalFilterValue: CanonicalFilterValue = {
+  parent: [],
+  assignee: [],
+  status: [],
+  labels: [],
+  workType: [],
+};
+
+export function countCanonicalActiveFields(v: CanonicalFilterValue): number {
+  let n = 0;
+  if (v.parent.length) n++;
+  if (v.assignee.length) n++;
+  if (v.status.length) n++;
+  if (v.labels.length) n++;
+  if (v.workType.length) n++;
+  return n;
+}
+
+export interface CanonicalStatusOption {
+  value: string;
+  label: string;
+  appearance?: 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
+}
+export interface CanonicalAssigneeOption {
+  id: string;          // jira account_id or profile id used in row matching
+  label: string;
+  avatarUrl?: string;
+}
+export interface CanonicalWorkTypeOption {
+  id: string;
+  label: string;
+  icon?: React.ReactNode;
+}
+
 export interface CanonicalFilterProps {
   /** "My filters" list (scoped to the surface — project / product / etc.). */
   myFilters?: CanonicalSavedFilter[];
-  /** Phase-1 placeholder. Wired in a later phase. */
-  activeFilterCount?: number;
-  /** Phase-1 placeholder. Wired in a later phase. */
-  onClearAll?: () => void;
-  /**
-   * Persistence scope. Used to namespace localStorage so each project /
-   * product / incident / release surface keeps its own pin/order/remove
-   * preferences across page refreshes. Cross-device persistence will move
-   * to a Supabase table in a follow-up phase.
-   */
+  /** Controlled value (selected items per field). */
+  value?: CanonicalFilterValue;
+  onChange?: (next: CanonicalFilterValue) => void;
+  /** Option pools per field. */
+  statusOptions?: CanonicalStatusOption[];
+  assigneeOptions?: CanonicalAssigneeOption[];
+  labelOptions?: string[];
+  workTypeOptions?: CanonicalWorkTypeOption[];
+  /** Persistence scope — used for rail prefs AND parent query scoping. */
   scopeType?: string;
   scopeKey?: string;
 }
@@ -66,12 +111,49 @@ const DEFAULT_FILTERS = [
 
 export function CanonicalFilter({
   myFilters = [],
-  activeFilterCount = 0,
-  onClearAll,
+  value,
+  onChange,
+  statusOptions = [],
+  assigneeOptions = [],
+  labelOptions = [],
+  workTypeOptions = [],
   scopeType,
   scopeKey,
 }: CanonicalFilterProps) {
   const scopeReady = !!(scopeType && scopeKey);
+  // Uncontrolled fallback so component still works without value/onChange.
+  const [innerValue, setInnerValue] = useState<CanonicalFilterValue>(emptyCanonicalFilterValue);
+  const effValue = value ?? innerValue;
+  const setEff = useCallback((next: CanonicalFilterValue) => {
+    if (onChange) onChange(next);
+    else setInnerValue(next);
+  }, [onChange]);
+  const activeFieldCount = countCanonicalActiveFields(effValue);
+  const onClearAll = useCallback(() => setEff(emptyCanonicalFilterValue), [setEff]);
+  const clearField = useCallback((field: keyof CanonicalFilterValue) => {
+    setEff({ ...effValue, [field]: [] });
+  }, [effValue, setEff]);
+  const toggleSelection = useCallback((field: keyof CanonicalFilterValue, optionId: string) => {
+    const list = effValue[field];
+    const next = list.includes(optionId)
+      ? list.filter((x) => x !== optionId)
+      : [...list, optionId];
+    setEff({ ...effValue, [field]: next });
+  }, [effValue, setEff]);
+  function fieldKeyFor(label: string): keyof CanonicalFilterValue | null {
+    switch (label) {
+      case 'Parent': return 'parent';
+      case 'Assignee': return 'assignee';
+      case 'Status': return 'status';
+      case 'Labels': return 'labels';
+      case 'Work type': return 'workType';
+      default: return null;
+    }
+  }
+  function countFor(label: string): number {
+    const k = fieldKeyFor(label);
+    return k ? effValue[k].length : 0;
+  }
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<FilterTab>('basic');
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
@@ -354,16 +436,16 @@ export function CanonicalFilter({
       >
         <FilterIcon label="" />
         <span>Filter</span>
-        {activeFilterCount > 0 && (
+        {activeFieldCount > 0 && (
           <span
             style={{
               marginLeft: 4,
               padding: '0 6px',
-              minWidth: 18,
+              minWidth: 22,
               height: 18,
-              borderRadius: 10,
-              background: token('color.background.accent.blue.bolder', '#0C66E4'),
-              color: '#FFFFFF',
+              borderRadius: 3,
+              background: token('color.background.accent.blue.subtle', '#579DFF'),
+              color: token('color.text', '#292A2E'),
               fontSize: 11,
               fontWeight: 700,
               display: 'inline-flex',
@@ -371,7 +453,7 @@ export function CanonicalFilter({
               justifyContent: 'center',
             }}
           >
-            {activeFilterCount}
+            {activeFieldCount}
           </span>
         )}
       </button>
@@ -543,6 +625,7 @@ export function CanonicalFilter({
                     active={selectedField === f}
                     pinned
                     isDragOver={dragOverField === f && draggingField !== null && sectionOf(draggingField) === 'pinned'}
+                    selectionCount={countFor(f)}
                     onClick={() => setSelectedField(f)}
                     onTogglePin={() => togglePin(f)}
                     onOpenEllipsis={(rect) => {
@@ -565,6 +648,7 @@ export function CanonicalFilter({
                     active={selectedField === f}
                     pinned={false}
                     isDragOver={dragOverField === f && draggingField !== null && sectionOf(draggingField) === 'unpinned'}
+                    selectionCount={countFor(f)}
                     onClick={() => setSelectedField(f)}
                     onTogglePin={() => togglePin(f)}
                     onOpenEllipsis={(rect) => {
@@ -605,14 +689,14 @@ export function CanonicalFilter({
               <div style={{ padding: '8px 12px' }}>
                 <button
                   type="button"
-                  disabled={activeFilterCount === 0}
+                  disabled={activeFieldCount === 0}
                   onClick={onClearAll}
                   style={{
                     padding: 0,
                     border: 0,
                     background: 'transparent',
-                    color: activeFilterCount > 0 ? blue : textDisabled,
-                    cursor: activeFilterCount > 0 ? 'pointer' : 'not-allowed',
+                    color: activeFieldCount > 0 ? blue : textDisabled,
+                    cursor: activeFieldCount > 0 ? 'pointer' : 'not-allowed',
                     fontSize: 13,
                     fontWeight: 500,
                     fontFamily: 'inherit',
@@ -624,21 +708,30 @@ export function CanonicalFilter({
               </div>
             </div>
 
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
-                padding: '16px 16px',
-                color: textSubtle,
-                fontSize: 14,
-              }}
-            >
-              {selectedField
-                ? `Field editor for "${selectedField}" — coming next phase.`
-                : 'Select a field to start creating a filter.'}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              {!selectedField ? (
+                <div style={{ padding: '16px 16px', color: textSubtle, fontSize: 14 }}>
+                  Select a field to start creating a filter.
+                </div>
+              ) : (() => {
+                const fieldKey = fieldKeyFor(selectedField);
+                if (!fieldKey) return null;
+                return (
+                  <FieldEditor
+                    fieldKey={fieldKey}
+                    fieldLabel={selectedField}
+                    selected={effValue[fieldKey]}
+                    onToggle={(id) => toggleSelection(fieldKey, id)}
+                    onClearField={() => clearField(fieldKey)}
+                    statusOptions={statusOptions}
+                    assigneeOptions={assigneeOptions}
+                    labelOptions={labelOptions}
+                    workTypeOptions={workTypeOptions}
+                    scopeType={scopeType}
+                    scopeKey={scopeKey}
+                  />
+                );
+              })()}
             </div>
           </div>
 
@@ -820,6 +913,7 @@ function FieldItem({
   active,
   pinned,
   isDragOver,
+  selectionCount,
   onClick,
   onTogglePin,
   onOpenEllipsis,
@@ -832,6 +926,7 @@ function FieldItem({
   active: boolean;
   pinned: boolean;
   isDragOver: boolean;
+  selectionCount: number;
   onClick: () => void;
   onTogglePin: () => void;
   onOpenEllipsis: (rect: DOMRect) => void;
@@ -935,8 +1030,6 @@ function FieldItem({
           borderRadius: 3,
           background,
           color: active || hover ? blue : textPrimary,
-          textDecoration: active && !hover ? 'underline' : 'none',
-          textUnderlineOffset: 4,
           outline: isDragOver ? `2px solid ${token('color.border.selected', '#0C66E4')}` : 'none',
           outlineOffset: isDragOver ? -2 : 0,
         }}
@@ -954,6 +1047,25 @@ function FieldItem({
           />
         )}
         <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+        {!showHoverActions && selectionCount > 0 && (
+          <span
+            style={{
+              minWidth: 22,
+              height: 18,
+              padding: '0 6px',
+              borderRadius: 3,
+              background: token('color.background.accent.blue.subtle', '#579DFF'),
+              color: token('color.text', '#292A2E'),
+              fontSize: 11,
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {selectionCount}
+          </span>
+        )}
         {showHoverActions && (
           <>
             <Tooltip content={pinned ? 'Unpin field' : 'Pin field'} position="top">
@@ -1262,5 +1374,427 @@ function Kbd({ children }: { children: React.ReactNode }) {
     >
       {children}
     </span>
+  );
+}
+
+/* ───── FieldEditor (right pane) ───── */
+
+interface FieldEditorProps {
+  fieldKey: keyof CanonicalFilterValue;
+  fieldLabel: string;
+  selected: string[];
+  onToggle: (id: string) => void;
+  onClearField: () => void;
+  statusOptions: CanonicalStatusOption[];
+  assigneeOptions: CanonicalAssigneeOption[];
+  labelOptions: string[];
+  workTypeOptions: CanonicalWorkTypeOption[];
+  scopeType?: string;
+  scopeKey?: string;
+}
+
+interface Opt {
+  id: string;
+  /** Used for search-matching and for the visible row when displayNode unset. */
+  label: string;
+  sublabel?: string;
+  icon?: React.ReactNode;
+  /** Optional custom render in place of the plain label text (status pills). */
+  displayNode?: React.ReactNode;
+}
+
+function FieldEditor(props: FieldEditorProps) {
+  const { fieldKey, fieldLabel, selected, onToggle, onClearField } = props;
+  const [search, setSearch] = useState('');
+
+  if (fieldKey === 'parent') {
+    return (
+      <ParentEditor
+        fieldLabel={fieldLabel}
+        selected={selected}
+        onToggle={onToggle}
+        onClearField={onClearField}
+        scopeKey={props.scopeKey}
+      />
+    );
+  }
+
+  let options: Opt[] = [];
+  if (fieldKey === 'status') {
+    options = props.statusOptions.map((s) => ({
+      id: s.value,
+      label: s.label,
+      displayNode: <Lozenge appearance={s.appearance as any}>{s.label}</Lozenge>,
+    }));
+  } else if (fieldKey === 'assignee') {
+    options = props.assigneeOptions.map((a) => ({
+      id: a.id,
+      label: a.label,
+      icon: a.avatarUrl ? (
+        <img src={a.avatarUrl} alt="" style={{ width: 20, height: 20, borderRadius: '50%' }} />
+      ) : undefined,
+    }));
+  } else if (fieldKey === 'labels') {
+    options = props.labelOptions.map((l) => ({ id: l, label: l }));
+  } else if (fieldKey === 'workType') {
+    options = props.workTypeOptions.map((w) => ({ id: w.id, label: w.label, icon: w.icon }));
+  }
+
+  const q = search.trim().toLowerCase();
+  const filtered = q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
+
+  return (
+    <EditorShell
+      placeholder={`Search ${fieldLabel.toLowerCase()}`}
+      search={search}
+      setSearch={setSearch}
+      countShown={filtered.length}
+      total={options.length}
+      selected={selected}
+      onClearField={onClearField}
+    >
+      {filtered.length === 0 ? (
+        <div style={{ padding: 12, fontSize: 13, color: token('color.text.subtlest', '#6B6E76') }}>
+          No matches
+        </div>
+      ) : (
+        filtered.map((opt) => (
+          <OptionRow
+            key={opt.id}
+            label={opt.label}
+            sublabel={opt.sublabel}
+            icon={opt.icon}
+            displayNode={opt.displayNode}
+            checked={selected.includes(opt.id)}
+            onClick={() => onToggle(opt.id)}
+          />
+        ))
+      )}
+    </EditorShell>
+  );
+}
+
+function ParentEditor({
+  fieldLabel,
+  selected,
+  onToggle,
+  onClearField,
+  scopeKey,
+}: {
+  fieldLabel: string;
+  selected: string[];
+  onToggle: (id: string) => void;
+  onClearField: () => void;
+  scopeKey?: string;
+}) {
+  const PAGE = 50;
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [rows, setRows] = useState<Array<{ key: string; summary: string }>>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [reachedEnd, setReachedEnd] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 200);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => {
+    setRows([]);
+    setOffset(0);
+    setReachedEnd(false);
+  }, [debouncedSearch, scopeKey]);
+
+  useEffect(() => {
+    if (!scopeKey) return;
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      let q = supabase
+        .from('ph_issues')
+        .select('issue_key, summary', { count: 'exact' })
+        .eq('project_key', scopeKey)
+        .order('issue_key', { ascending: true })
+        .range(offset, offset + PAGE - 1);
+      if (debouncedSearch) {
+        q = q.or(`issue_key.ilike.%${debouncedSearch}%,summary.ilike.%${debouncedSearch}%`);
+      }
+      const { data, count, error } = await q;
+      if (cancelled) return;
+      setLoading(false);
+      if (error || !data) return;
+      const incoming = (data as Array<{ issue_key: string; summary: string }>).map((r) => ({
+        key: r.issue_key,
+        summary: r.summary || '',
+      }));
+      setRows((prev) => (offset === 0 ? incoming : [...prev, ...incoming]));
+      if (typeof count === 'number') setTotal(count);
+      if (incoming.length < PAGE) setReachedEnd(true);
+    })();
+    return () => { cancelled = true; };
+  }, [scopeKey, offset, debouncedSearch]);
+
+  function onScroll(e: React.UIEvent<HTMLDivElement>) {
+    const t = e.currentTarget;
+    if (loading || reachedEnd) return;
+    if (t.scrollHeight - t.scrollTop - t.clientHeight < 80) {
+      setOffset(rows.length);
+    }
+  }
+
+  // +1 accounts for the "No parent" sentinel row.
+  const shownPlusSentinel = rows.length + 1;
+  const totalPlusSentinel = total + 1;
+
+  return (
+    <EditorShell
+      placeholder={`Search ${fieldLabel.toLowerCase()}`}
+      search={search}
+      setSearch={setSearch}
+      countShown={shownPlusSentinel}
+      total={totalPlusSentinel}
+      selected={selected}
+      onClearField={onClearField}
+      scrollRef={scrollRef}
+      onScroll={onScroll}
+    >
+      <OptionRow
+        label="No parent"
+        checked={selected.includes(NO_PARENT_SENTINEL)}
+        onClick={() => onToggle(NO_PARENT_SENTINEL)}
+      />
+      {rows.map((r) => (
+        <OptionRow
+          key={r.key}
+          label={r.summary || r.key}
+          sublabel={r.key}
+          checked={selected.includes(r.key)}
+          onClick={() => onToggle(r.key)}
+        />
+      ))}
+      {loading && (
+        <div style={{ padding: 8, fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
+          Loading…
+        </div>
+      )}
+    </EditorShell>
+  );
+}
+
+function EditorShell({
+  placeholder,
+  search,
+  setSearch,
+  countShown,
+  total,
+  selected,
+  onClearField,
+  scrollRef,
+  onScroll,
+  children,
+}: {
+  placeholder: string;
+  search: string;
+  setSearch: (v: string) => void;
+  countShown: number;
+  total: number;
+  selected: string[];
+  onClearField: () => void;
+  scrollRef?: React.RefObject<HTMLDivElement | null>;
+  onScroll?: (e: React.UIEvent<HTMLDivElement>) => void;
+  children: React.ReactNode;
+}) {
+  const borderSubtle = token('color.border', '#DFE1E6');
+  const blue = token('color.text.selected', '#0C66E4');
+  const textDisabled = token('color.text.disabled', '#8993A4');
+  const textSubtle = token('color.text.subtle', '#505258');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { inputRef.current?.focus(); }, []);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+      <div style={{ padding: 12, borderBottom: `1px solid ${borderSubtle}` }}>
+        <FilterSearchInput
+          inputRef={inputRef}
+          value={search}
+          onChange={setSearch}
+          placeholder={placeholder}
+        />
+      </div>
+      <div
+        ref={scrollRef}
+        onScroll={onScroll}
+        style={{ flex: 1, overflowY: 'auto', padding: '4px 0', minHeight: 0 }}
+      >
+        {children}
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '8px 12px',
+          borderTop: `1px solid ${borderSubtle}`,
+        }}
+      >
+        <button
+          type="button"
+          disabled={selected.length === 0}
+          onClick={onClearField}
+          style={{
+            padding: 0,
+            border: 0,
+            background: 'transparent',
+            color: selected.length > 0 ? blue : textDisabled,
+            cursor: selected.length > 0 ? 'pointer' : 'not-allowed',
+            fontSize: 13,
+            fontWeight: 500,
+            fontFamily: 'inherit',
+          }}
+        >
+          Clear
+        </button>
+        <span style={{ fontSize: 12, color: textSubtle }}>
+          {countShown} of {total}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function FilterSearchInput({
+  inputRef,
+  value,
+  onChange,
+  placeholder,
+}: {
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+}) {
+  const [focused, setFocused] = useState(false);
+  const blueBorder = token('color.border.selected', '#0C66E4');
+  const borderInput = token('color.border.input', '#8993A4');
+  return (
+    <div style={{ position: 'relative' }}>
+      <span
+        style={{
+          position: 'absolute',
+          left: 8,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          display: 'flex',
+          pointerEvents: 'none',
+          color: token('color.text.subtle', '#505258'),
+        }}
+      >
+        <SearchIcon label="" />
+      </span>
+      <input
+        ref={inputRef}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          width: '100%',
+          height: 32,
+          padding: '0 8px 0 32px',
+          border: `1px solid ${focused ? blueBorder : borderInput}`,
+          borderRadius: 3,
+          outline: 'none',
+          fontSize: 13,
+          fontFamily: 'inherit',
+          color: token('color.text', '#292A2E'),
+          background: token('elevation.surface', '#FFFFFF'),
+          boxShadow: focused ? `0 0 0 1px ${blueBorder}` : 'none',
+          boxSizing: 'border-box',
+        }}
+      />
+    </div>
+  );
+}
+
+function OptionRow({
+  label,
+  sublabel,
+  icon,
+  displayNode,
+  checked,
+  onClick,
+}: {
+  label: string;
+  sublabel?: string;
+  icon?: React.ReactNode;
+  displayNode?: React.ReactNode;
+  checked: boolean;
+  onClick: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+  const blue = token('color.background.selected.bold', '#0C66E4');
+  const borderInput = token('color.border.input', '#8993A4');
+  return (
+    <div
+      role="checkbox"
+      aria-checked={checked}
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); }
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '6px 12px',
+        cursor: 'pointer',
+        background: hover ? hoverNeutral : 'transparent',
+        fontSize: 13,
+        color: token('color.text', '#292A2E'),
+      }}
+    >
+      <span
+        style={{
+          width: 16,
+          height: 16,
+          flexShrink: 0,
+          borderRadius: 3,
+          border: checked ? `1px solid ${blue}` : `2px solid ${borderInput}`,
+          background: checked ? blue : 'transparent',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {checked && (
+          <svg width="10" height="10" viewBox="0 0 16 16" aria-hidden focusable="false">
+            <path d="M3 8.5l3 3 7-7" fill="none" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </span>
+      {icon && <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>}
+      <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+        {displayNode ? (
+          <span style={{ display: 'inline-flex', alignItems: 'center', minWidth: 0 }}>{displayNode}</span>
+        ) : (
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+        )}
+        {sublabel && (
+          <span style={{ fontSize: 11, color: token('color.text.subtle', '#505258'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {sublabel}
+          </span>
+        )}
+      </span>
+    </div>
   );
 }

@@ -147,7 +147,13 @@ import { DatePulseHoverCard } from '@/components/business-request/DatePulseHover
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import { jiraSyncService } from '@/services/jira-sync.service';
 import { JiraFilterAtlaskit, emptyFilterValue } from '@/components/shared/JiraFilterAtlaskit';
-import { CanonicalFilter } from '@/components/filters/CanonicalFilter';
+import {
+  CanonicalFilter,
+  emptyCanonicalFilterValue,
+  NO_PARENT_SENTINEL,
+  type CanonicalFilterValue,
+  type CanonicalWorkTypeOption,
+} from '@/components/filters/CanonicalFilter';
 import { useFiltersForProject, useRecordFilterUsage } from '@/hooks/workhub/useSavedFilters';
 import { useWorkflowStatuses } from '@/hooks/useWorkflowStatuses';
 import { isFilterRelevantToBacklog, type BacklogFilterScopeInput } from './backlogFilterScope';
@@ -420,6 +426,21 @@ export interface BacklogItem {
   stakeholders?: string[] | null;
   targeted_feature?: boolean | null;
 }
+
+/* 2026-06-22 Phase 2 — CanonicalFilter Work-type options. Module-scoped so
+   icon JSX is constructed once. Ids match BacklogItem.issue_type values used
+   in the matchesCanonical predicate. */
+const CANONICAL_WORK_TYPE_OPTIONS: CanonicalWorkTypeOption[] = [
+  { id: 'Story',               label: 'Story',               icon: <JiraIssueTypeIcon type="Story"               size={14} /> },
+  { id: 'Epic',                label: 'Epic',                icon: <JiraIssueTypeIcon type="Epic"                size={14} /> },
+  { id: 'QA Bug',              label: 'Bug',                 icon: <JiraIssueTypeIcon type="QA Bug"              size={14} /> },
+  { id: 'Production Incident', label: 'Incident',            icon: <JiraIssueTypeIcon type="Production Incident" size={14} /> },
+  { id: 'Backend',             label: 'Backend',             icon: <JiraIssueTypeIcon type="Backend"             size={14} /> },
+  { id: 'Frontend',            label: 'Frontend',            icon: <JiraIssueTypeIcon type="Frontend"            size={14} /> },
+  { id: 'Sub-task',            label: 'Subtask',             icon: <JiraIssueTypeIcon type="Sub-task"            size={14} /> },
+  { id: 'Figma',               label: 'Figma',               icon: <JiraIssueTypeIcon type="Figma"               size={14} /> },
+  { id: 'API Requirement',     label: 'API Requirement',     icon: <JiraIssueTypeIcon type="API Requirement"     size={14} /> },
+];
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
 
@@ -976,6 +997,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   );
   const [search, setSearch] = useState(() => searchParams.get('q') || '');
   const [filterValue, setFilterValue] = useState<JiraFilterValue>(emptyFilterValue);
+  const [canonicalFilter, setCanonicalFilter] = useState<CanonicalFilterValue>(emptyCanonicalFilterValue);
 
   // 2026-06-22 (Phase 1): saved filters scoped to this project, fed to
   // CanonicalFilter's "My filters" section. user_id present in
@@ -1735,6 +1757,32 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // Reporter + Labels not wired yet (no data plumbed through BacklogItem)
       return true;
     };
+    // 2026-06-22 Phase 2 — CanonicalFilter rail predicates. AND across fields,
+    // OR within each field (Jira-standard semantics confirmed by Vikram).
+    const cf = canonicalFilter;
+    const matchesCanonical = (it: BacklogItem) => {
+      if (cf.parent.length) {
+        const wantsNone = cf.parent.includes(NO_PARENT_SENTINEL);
+        const itemParent = it.parent_key || '';
+        const noParentMatch = wantsNone && !itemParent;
+        const namedMatch = !!itemParent && cf.parent.includes(itemParent);
+        if (!noParentMatch && !namedMatch) return false;
+      }
+      if (cf.assignee.length) {
+        if (!it.assignee_name || !cf.assignee.includes(it.assignee_name)) return false;
+      }
+      if (cf.status.length) {
+        if (!it.status || !cf.status.includes(it.status)) return false;
+      }
+      if (cf.labels.length) {
+        const itLabels = it.labels || [];
+        if (!cf.labels.some((l) => itLabels.includes(l))) return false;
+      }
+      if (cf.workType.length) {
+        if (!it.issue_type || !cf.workType.includes(it.issue_type)) return false;
+      }
+      return true;
+    };
 
     // Apr 28 2026 (carryover #13 — chevron discoverability fix).
     // Pattern source: Jira BAU list view live DOM probe — clicked the
@@ -1778,15 +1826,18 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       !!search.trim() || typeFilter !== 'all' ||
       filterValue.priority.length > 0 || filterValue.status.length > 0 || filterValue.workType.length > 0 ||
       filterValue.assignees.length > 0 || filterValue.reporter.length > 0 || filterValue.sprintReleases.length > 0 ||
-      !!filterValue.updated.from || !!filterValue.updated.to || !!filterValue.created.from || !!filterValue.created.to;
+      !!filterValue.updated.from || !!filterValue.updated.to || !!filterValue.created.from || !!filterValue.created.to ||
+      canonicalFilter.parent.length > 0 || canonicalFilter.assignee.length > 0 ||
+      canonicalFilter.status.length > 0 || canonicalFilter.labels.length > 0 ||
+      canonicalFilter.workType.length > 0;
     // flattenTree already dedups by id, so it is the final ordered list.
     return flattenTree<BacklogItem>(
       roots,
       effectiveChildrenOf,
       (id) => !showHierarchy || hasActiveFilters || expandedIds.has(id),
-      (node) => matchesText(node) && matchesType(node) && matchesFilterBar(node),
+      (node) => matchesText(node) && matchesType(node) && matchesFilterBar(node) && matchesCanonical(node),
     );
-  }, [topLevel, childrenOf, items, expandedIds, showHierarchy, typeFilter, search, filterValue, sortKey, sortDir, compareRows]);
+  }, [topLevel, childrenOf, items, expandedIds, showHierarchy, typeFilter, search, filterValue, canonicalFilter, sortKey, sortDir, compareRows]);
 
   // ── "Hide done work items" filter (Apr 27 2026 — Jira parity View
   // options menu). When toggled on, rows whose status indicates a
@@ -2184,6 +2235,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     });
     return Array.from(m.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [items, avatarsByName]);
+
+  // 2026-06-22 Phase 2 — CanonicalFilter project-scoped label pool, derived
+  // from the loaded backlog items. Distinct + alphabetical.
+  const canonicalLabelOptions = useMemo<string[]>(() => {
+    const s = new Set<string>();
+    items.forEach((it) => { (it.labels || []).forEach((l) => { if (l) s.add(l); }); });
+    return Array.from(s).sort((a, b) => a.localeCompare(b));
+  }, [items]);
 
   // Reporters — distinct display names across the visible items. Sourced from
   // ph_issues.reporter_display_name (Lovable 2026-04 discovery). We reuse the
@@ -3741,6 +3800,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             myFilters={savedFiltersForCanonical}
             scopeType="project"
             scopeKey={projectKey}
+            value={canonicalFilter}
+            onChange={setCanonicalFilter}
+            statusOptions={STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label, appearance: s.appearance as any }))}
+            assigneeOptions={assigneeOptions.map((a) => ({ id: a.id, label: a.name, avatarUrl: a.avatarUrl ?? undefined }))}
+            labelOptions={canonicalLabelOptions}
+            workTypeOptions={CANONICAL_WORK_TYPE_OPTIONS}
           />
         </div>
         {/* Apr 28, 2026 — Phase A.3 (next-session): @atlaskit/avatar-group
