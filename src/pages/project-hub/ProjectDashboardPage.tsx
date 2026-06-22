@@ -36,6 +36,7 @@ import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import ProjectDashboardTimeline from '@/components/projecthub/ProjectDashboardTimeline';
 import ProductDashboardTimeline from '@/components/producthub/ProductDashboardTimeline';
+import { CatalystReplay } from '@/components/replay/CatalystReplay';
 
 
 // Self-rolled dropdown for edit mode actions — avoids @atlaskit/popup (0,0) bug
@@ -147,6 +148,7 @@ function ProjectDashboardPageInner({ mode }: { mode: DashboardMode }) {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [draft, setDraft] = useState<ResolvedWidget[] | null>(null);
   const [savedFlag, setSavedFlag] = useState(false);
+  const [showReplay, setShowReplay] = useState(false);
 
   // 2026-06-09 Vikram RCA — @atlaskit/flag has NO autoDismiss prop.
   // Without an explicit timer, "Layout saved" persists forever until
@@ -607,6 +609,13 @@ useEffect(() => {
             </div>
           ) : (
             <div style={{ padding: 16 }}>
+              {isProduct && (
+                <div style={{ marginBottom: 16 }}>
+                  <Button appearance="primary" onClick={() => setShowReplay(true)}>
+                    Replay Demo
+                  </Button>
+                </div>
+              )}
               {isEditing && (
                 <div style={{ marginBottom: 16 }}>
                   <SectionMessage appearance="information">
@@ -662,6 +671,9 @@ useEffect(() => {
         )}
       </FlagGroup>
     </AtlaskitPageShell>
+    {showReplay && (
+      <CatalystReplay rootKey="BR-204" onClose={() => setShowReplay(false)} />
+    )}
     </>
   );
 }
