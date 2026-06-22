@@ -177,7 +177,11 @@ export function CatalystViewBase({
   // headroom; 320 still felt cramped. 400 gives every field its full
   // affordance without overflow at typical 1140–1440px AllWork panel widths.
   // User can drag-resize narrower via the splitter handle if needed.
-  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 400 : 480);
+  // When panelMode + hideSidebar, start with 0 width (sidebar is display:none anyway).
+  // In a 480px detail panel, 400px sidebar leaves only 80px for content — breaks layout.
+  const [rightPanelWidth, setRightPanelWidth] = useState(
+    panelMode ? (hideSidebar ? 0 : 400) : 480
+  );
   const [showCopyFlag, setShowCopyFlag] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreAnchor, setMoreAnchor] = useState<DOMRect | null>(null);
