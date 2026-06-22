@@ -287,6 +287,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
   const [ttl, setTtl] = useState(3600);
   const [result, setResult] = useState<LinkResult | null>(null);
   const [copied, setCopied] = useState(false);
+  const [pendingConflict, setPendingConflict] = useState(false);
 
   // Fetch departments for the chip row
   const { data: departments = [] } = useQuery({
@@ -349,10 +350,13 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
       department_id: deptId,
     });
     if (r.ok) {
+      setPendingConflict(false);
       setResult({ link: r.setup_link || '', expiresAt: r.expires_at, invitationId: r.invitation_id, channelPending: r.channel_pending, channel });
       setCopied(false);
       onCreated?.();
       catalystToast.success(r.dispatched ? `Access created · sent via ${channel}` : 'Access created · copy the link');
+    } else if (!regenerate && r.error?.startsWith('A pending link already exists')) {
+      setPendingConflict(true);
     } else {
       catalystToast.error(r.error || 'Failed to create access');
     }
@@ -402,7 +406,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
                 <label style={lbl}>Email address <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span></label>
-                <Textfield value={email} onChange={e => setEmail((e.target as HTMLInputElement).value)} placeholder="name@company.com" aria-label="Email address" isRequired />
+                <Textfield value={email} onChange={e => { setEmail((e.target as HTMLInputElement).value); setPendingConflict(false); }} placeholder="name@company.com" aria-label="Email address" isRequired />
               </div>
               <div>
                 <label style={lbl}>Full name <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span></label>
@@ -522,17 +526,32 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
 
           </div>
 
+          {/* Pending-link conflict banner — replaces the generic error toast */}
+          {pendingConflict && (
+            <div style={{ margin: '0 20px 4px', padding: '10px 14px', background: 'var(--ds-background-warning, #FFF7D6)', border: '1px solid var(--ds-border-warning, #F5CD47)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-warning, #974F0C)', lineHeight: 1.4 }}>
+                <strong>A pending link already exists for this email.</strong>
+                {' '}Replacing it will expire the old link immediately.
+              </div>
+              <Button appearance="warning" isLoading={isLoading} onClick={() => submit(true)} style={{ flexShrink: 0 }}>
+                Replace existing link
+              </Button>
+            </div>
+          )}
+
           {/* Footer — amber blockHint on the left, actions on the right */}
           <div style={{ padding: '14px 20px', borderTop: '1px solid var(--ds-border, #EBECF0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>
               {/* Guidance hint — only after the user has started, never on a pristine open (no premature error) */}
-              {(email || fullName || roleOpt)
+              {!pendingConflict && (email || fullName || roleOpt)
                 ? (!nameOk ? 'Enter the full name' : (!emailOk ? 'Enter an email' : (!roleOk ? 'Select a role' : (!safeOk ? 'Add a safe-landing module' : ''))))
                 : ''}
             </span>
             <div style={{ display: 'flex', gap: 8 }}>
               <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-              <Button appearance="primary" isLoading={isLoading} isDisabled={!canCreate} onClick={() => submit(false)}>Create access</Button>
+              {!pendingConflict && (
+                <Button appearance="primary" isLoading={isLoading} isDisabled={!canCreate} onClick={() => submit(false)}>Create access</Button>
+              )}
             </div>
           </div>
         </>
