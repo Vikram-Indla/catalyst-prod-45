@@ -8,25 +8,46 @@ const cors = {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
 
+  // Auth: must be admin
+  const auth = req.headers.get('Authorization');
+  if (!auth?.startsWith('Bearer ')) return err('Unauthorized', 401);
+
+  // User-scoped client for JWT verification (canonical Supabase edge function pattern —
+  // service-role client's getUser(jwt) is unreliable in Deno edge function environments)
+  const userClient = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_ANON_KEY')!,
+    {
+      auth: { autoRefreshToken: false, persistSession: false },
+      global: { headers: { Authorization: auth } },
+    },
+  );
+  const { data: { user }, error: authErr } = await userClient.auth.getUser();
+  if (authErr || !user) {
+    console.error('[deploy-control] auth.getUser failed:', authErr?.message ?? 'no user');
+    return err('Unauthorized', 401);
+  }
+
+  // Service-role client for all DB operations (bypasses RLS)
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     { auth: { autoRefreshToken: false, persistSession: false } },
   );
 
-  // Auth: must be admin
-  const auth = req.headers.get('Authorization');
-  if (!auth?.startsWith('Bearer ')) return err('Unauthorized', 401);
-
-  const { data: { user }, error: authErr } = await supabase.auth.getUser(auth.slice(7));
-  if (authErr || !user) return err('Unauthorized', 401);
-
-  const { data: role } = await supabase
+  const { data: role, error: roleErr } = await supabase
     .from('user_roles')
     .select('role')
     .eq('user_id', user.id)
     .maybeSingle();
-  if (!role || !['admin', 'super_admin'].includes(role.role)) return err('Forbidden', 403);
+  if (roleErr) {
+    console.error('[deploy-control] user_roles query error:', roleErr.message, 'user:', user.id);
+    return err('Server error', 500);
+  }
+  if (!role || !['admin', 'super_admin'].includes(role.role)) {
+    console.error('[deploy-control] role check failed: role=', role?.role, 'user:', user.id);
+    return err('Forbidden', 403);
+  }
 
   try {
     if (req.method === 'GET') return await handleGet(supabase);
