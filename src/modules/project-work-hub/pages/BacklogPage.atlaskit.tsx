@@ -147,6 +147,7 @@ import { DatePulseHoverCard } from '@/components/business-request/DatePulseHover
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import { jiraSyncService } from '@/services/jira-sync.service';
 import { JiraFilterAtlaskit, emptyFilterValue } from '@/components/shared/JiraFilterAtlaskit';
+import { CanonicalFilter } from '@/components/filters/CanonicalFilter';
 import { useFiltersForProject, useRecordFilterUsage } from '@/hooks/workhub/useSavedFilters';
 import { useWorkflowStatuses } from '@/hooks/useWorkflowStatuses';
 import { isFilterRelevantToBacklog, type BacklogFilterScopeInput } from './backlogFilterScope';
@@ -975,6 +976,19 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   );
   const [search, setSearch] = useState(() => searchParams.get('q') || '');
   const [filterValue, setFilterValue] = useState<JiraFilterValue>(emptyFilterValue);
+
+  // 2026-06-22 (Phase 1): saved filters scoped to this project, fed to
+  // CanonicalFilter's "My filters" section. user_id present in
+  // starred_by_user_ids → starred:true.
+  const { data: projectSavedFilters = [] } = useFiltersForProject(projectKey, 'project');
+  const savedFiltersForCanonical = useMemo(
+    () => projectSavedFilters.map((f) => ({
+      id: f.id,
+      name: f.name,
+      starred: Array.isArray(f.starred_by_user_ids) && f.starred_by_user_ids.length > 0,
+    })),
+    [projectSavedFilters],
+  );
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => parseSet(searchParams.get('expanded')));
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   // Default sort — Key ASC matches Jira's default "Rank" ordering which
@@ -3717,26 +3731,16 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           />
         </div>
 
+        {/* 2026-06-22: Phase 1 — CanonicalFilter (UI shell). Replaces
+            JiraFilterAtlaskit on the backlog toolbar. Functional wiring
+            (field editors, value application, saved filters) lands in
+            subsequent phases. The legacy JiraFilterAtlaskit import is
+            retained because other surfaces still use it. */}
         <div style={{ position: 'relative' }}>
-          <JiraFilterAtlaskit
-            value={filterValue}
-            onChange={setFilterValue}
-            assignees={assigneeOptions}
-            reporters={reporterOptions}
-            statuses={STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label, appearance: s.appearance }))}
-            workTypes={[
-              { id: 'Epic',                label: 'Epic',                icon: <JiraIssueTypeIcon type="Epic"    size={14} /> },
-              { id: 'Feature',             label: 'Feature',             icon: <JiraIssueTypeIcon type="Feature" size={14} /> },
-              { id: 'Story',               label: 'Story',               icon: <JiraIssueTypeIcon type="Story"   size={14} /> },
-              { id: 'Task',                label: 'Task',                icon: <JiraIssueTypeIcon type="Task"    size={14} /> },
-              { id: 'QA Bug',              label: 'QA Bug',              icon: <JiraIssueTypeIcon type="Bug"     size={14} /> },
-              { id: 'Production Incident', label: 'Production Incident', icon: <JiraIssueTypeIcon type="Bug"     size={14} /> },
-              { id: 'Change Request',      label: 'Change Request',      icon: <JiraIssueTypeIcon type="Task"    size={14} /> },
-              { id: 'Business Gap',        label: 'Business Gap',        icon: <JiraIssueTypeIcon type="Business Gap" size={14} /> },
-              { id: 'API Requirement',     label: 'API Requirement',     icon: <JiraIssueTypeIcon type="Task"    size={14} /> },
-            ]}
-            sprintReleases={epics.map<SprintReleaseOption>((e) => ({ id: e.id, label: e.epic_key ? `${e.epic_key} — ${e.name}` : e.name }))}
-            labels={[]}
+          <CanonicalFilter
+            myFilters={savedFiltersForCanonical}
+            scopeType="project"
+            scopeKey={projectKey}
           />
         </div>
         {/* Apr 28, 2026 — Phase A.3 (next-session): @atlaskit/avatar-group
