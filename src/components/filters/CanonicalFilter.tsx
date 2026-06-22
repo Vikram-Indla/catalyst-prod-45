@@ -26,6 +26,14 @@ import MoreIcon from '@atlaskit/icon/core/show-more-horizontal';
 import DragHandleIcon from '@atlaskit/icon/core/drag-handle-vertical';
 import Tooltip from '@atlaskit/tooltip';
 import Lozenge from '@atlaskit/lozenge';
+import Spinner from '@atlaskit/spinner';
+import FullscreenEnterIcon from '@atlaskit/icon/core/fullscreen-enter';
+import FullscreenExitIcon from '@atlaskit/icon/core/fullscreen-exit';
+import QuestionIcon from '@atlaskit/icon/core/question-circle';
+import {
+  jqlToCanonicalFilterValue,
+  canonicalFilterValueToJql,
+} from '@/lib/jql/canonicalFilterJql';
 
 export type FilterTab = 'basic' | 'advanced' | 'jql';
 
@@ -598,7 +606,22 @@ export function CanonicalFilter({
 
           <div style={{ height: 1, background: borderSubtle }} />
 
-          {/* Body — left rail + right editor */}
+          {/* Body — tab-driven. Basic renders left rail + right editor.
+              JQL renders the full-width JQL composer. Advanced reserved
+              for a later phase. */}
+          {tab === 'jql' && (
+            <JqlTabBody
+              value={effValue}
+              onChange={setEff}
+              scopeKey={scopeKey}
+            />
+          )}
+          {tab === 'advanced' && (
+            <div style={{ display: 'flex', flex: 1, minHeight: 320, alignItems: 'center', justifyContent: 'center', color: textSubtle, fontSize: 14 }}>
+              Advanced editor — coming next phase.
+            </div>
+          )}
+          {tab === 'basic' && (
           <div style={{ display: 'flex', flex: 1, minHeight: 320 }}>
             <div
               style={{
@@ -665,11 +688,13 @@ export function CanonicalFilter({
                   type="button"
                   style={{
                     marginTop: 6,
-                    height: 32,
-                    padding: '0 12px',
+                    marginLeft: 16,
+                    height: 28,
+                    padding: '0 10px',
+                    alignSelf: 'flex-start',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 4,
                     border: `1px solid ${borderSubtle}`,
                     borderRadius: 3,
                     background: surface,
@@ -682,7 +707,7 @@ export function CanonicalFilter({
                   onMouseEnter={(e) => { e.currentTarget.style.background = hoverNeutral; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = surface; }}
                 >
-                  <AddIcon label="" />
+                  <TinyIcon><AddIcon label="" size="small" /></TinyIcon>
                   Add field
                 </button>
               </div>
@@ -734,6 +759,7 @@ export function CanonicalFilter({
               })()}
             </div>
           </div>
+          )}
 
           <div style={{ height: 1, background: borderSubtle }} />
 
@@ -1374,6 +1400,273 @@ function Kbd({ children }: { children: React.ReactNode }) {
     >
       {children}
     </span>
+  );
+}
+
+/* ───── JQL tab body ─────
+ * Two-layer editor (textarea on top of <pre> highlight overlay) — same trick
+ * react-syntax-highlighter-style editors use to keep the native textarea
+ * caret + selection behavior while painting tokens behind. Lightweight
+ * regex tokenizer; we do not validate JQL grammatically here — only color.
+ * Validity is reported by `translate()` at run-time. */
+const JQL_KEYWORDS = /\b(AND|OR|NOT|ORDER\s+BY|ASC|DESC|IN|IS|EMPTY|NULL|WAS|CHANGED|BY|ON|AFTER|BEFORE|DURING|FROM|TO)\b/gi;
+const JQL_FIELDS = /\b(project|parent|issuetype|status|assignee|reporter|priority|created|updated|duedate|labels|fixVersion|sprint|resolution)\b/gi;
+const JQL_FUNCS = /\b([a-zA-Z][a-zA-Z0-9]*)\s*\(/g;
+const JQL_STRINGS = /"([^"\\]|\\.)*"|'([^'\\]|\\.)*'/g;
+const JQL_NUMBERS = /\b\d+\b/g;
+const JQL_OPS = /(<=|>=|!=|=|<|>|~)/g;
+
+interface HighlightSpan {
+  start: number;
+  end: number;
+  color: string;
+}
+
+function tokenizeForHighlight(src: string): HighlightSpan[] {
+  const spans: HighlightSpan[] = [];
+  const push = (re: RegExp, color: string) => {
+    re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(src)) !== null) {
+      spans.push({ start: m.index, end: m.index + m[0].length, color });
+    }
+  };
+  // Order matters: strings first (so keywords inside strings aren't recolored).
+  push(JQL_STRINGS, '#7C3AED');   // purple
+  push(JQL_NUMBERS, '#C2410C');   // orange
+  push(JQL_KEYWORDS, '#0C66E4');  // blue
+  push(JQL_FIELDS, '#0C66E4');    // blue (same as keywords — Jira parity)
+  push(JQL_FUNCS, '#0F766E');     // teal
+  push(JQL_OPS, '#6B6E76');       // gray
+  // Resolve overlaps — keep the FIRST span (by index) that covers a position.
+  spans.sort((a, b) => (a.start - b.start) || (b.end - b.start) - (a.end - a.start));
+  const merged: HighlightSpan[] = [];
+  let cursor = 0;
+  for (const s of spans) {
+    if (s.start < cursor) continue;
+    if (s.start > cursor) merged.push({ start: cursor, end: s.start, color: '' });
+    merged.push(s);
+    cursor = s.end;
+  }
+  if (cursor < src.length) merged.push({ start: cursor, end: src.length, color: '' });
+  return merged;
+}
+
+function JqlTabBody({
+  value,
+  onChange,
+  scopeKey,
+}: {
+  value: CanonicalFilterValue;
+  onChange: (next: CanonicalFilterValue) => void;
+  scopeKey?: string;
+}) {
+  // Seed from the currently-active canonical value so toggling Basic → JQL
+  // shows the equivalent query string. Suffix uses `rank` (Jira's named
+  // alias for the Rank custom field) instead of the tenant-specific
+  // `cf[10019]` id — readable, portable across Jira instances, and matches
+  // what a Catalyst user would naturally type. ORDER BY → table sort
+  // application is a future phase; for now this is a cosmetic seed.
+  const ORDER_SUFFIX = ' ORDER BY rank ASC';
+  const canonicalJql = canonicalFilterValueToJql(value, { projectKey: scopeKey });
+  const initial =
+    (canonicalJql || (scopeKey ? `project = "${scopeKey}"` : ''))
+    + ORDER_SUFFIX;
+  const [text, setText] = useState<string>(initial);
+  const [expanded, setExpanded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const preRef = useRef<HTMLPreElement>(null);
+
+  // Keep the highlight overlay scroll-synced to the textarea.
+  function onScroll() {
+    if (preRef.current && textareaRef.current) {
+      preRef.current.scrollTop = textareaRef.current.scrollTop;
+      preRef.current.scrollLeft = textareaRef.current.scrollLeft;
+    }
+  }
+
+  function run() {
+    setLoading(true);
+    setErrMsg(null);
+    try {
+      const parsed = jqlToCanonicalFilterValue(text);
+      onChange(parsed);
+    } catch (e) {
+      setErrMsg(e instanceof Error ? e.message : 'Invalid JQL');
+    } finally {
+      // Short timeout so the loader is visible on instant in-memory parses.
+      setTimeout(() => setLoading(false), 120);
+    }
+  }
+
+  const blueBorder = token('color.border.selected', '#0C66E4');
+  const borderInput = token('color.border.input', '#8993A4');
+  const borderSubtle = token('color.border', '#DFE1E6');
+  const surface = token('elevation.surface', '#FFFFFF');
+  const textPrimary = token('color.text', '#292A2E');
+  const textSubtle = token('color.text.subtle', '#505258');
+
+  const editorHeight = expanded ? 320 : 140;
+  const spans = tokenizeForHighlight(text);
+
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 12, minHeight: 320 }}>
+      <div
+        style={{
+          position: 'relative',
+          border: `1px solid ${focused ? blueBorder : borderInput}`,
+          borderRadius: 6,
+          background: surface,
+          boxShadow: focused ? `0 0 0 1px ${blueBorder}` : 'none',
+          height: editorHeight,
+          transition: 'height 0.15s ease',
+        }}
+      >
+        {/* Highlight overlay */}
+        <pre
+          ref={preRef}
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 0,
+            margin: 0,
+            padding: '10px 84px 10px 12px',
+            fontFamily: '"SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace',
+            fontSize: 13,
+            lineHeight: 1.5,
+            color: textPrimary,
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+          }}
+        >
+          {spans.map((s, i) => (
+            <span key={i} style={{ color: s.color || textPrimary }}>
+              {text.slice(s.start, s.end)}
+            </span>
+          ))}
+          {'\n'}
+        </pre>
+        {/* Textarea */}
+        <textarea
+          ref={textareaRef}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onScroll={onScroll}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              run();
+            }
+          }}
+          spellCheck={false}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            margin: 0,
+            padding: '10px 84px 10px 12px',
+            border: 0,
+            outline: 'none',
+            background: 'transparent',
+            color: 'transparent',
+            caretColor: textPrimary,
+            fontFamily: '"SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace',
+            fontSize: 13,
+            lineHeight: 1.5,
+            resize: 'none',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            overflow: 'auto',
+          }}
+        />
+        {/* Top-right action bar */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 6,
+            right: 8,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+          }}
+        >
+          <Tooltip content={expanded ? 'Collapse editor' : 'Expand editor'} position="top">
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              aria-label={expanded ? 'Collapse editor' : 'Expand editor'}
+              style={{
+                width: 24, height: 24, padding: 0, background: 'transparent',
+                border: 0, borderRadius: 3, cursor: 'pointer',
+                color: textSubtle,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              {expanded ? <FullscreenExitIcon label="" size="small" /> : <FullscreenEnterIcon label="" size="small" />}
+            </button>
+          </Tooltip>
+          <Tooltip content="JQL help" position="top">
+            <button
+              type="button"
+              aria-label="JQL help"
+              style={{
+                width: 24, height: 24, padding: 0, background: 'transparent',
+                border: 0, borderRadius: 3, cursor: 'pointer',
+                color: textSubtle,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <QuestionIcon label="" size="small" />
+            </button>
+          </Tooltip>
+          <Tooltip content="Run query" position="top">
+            <button
+              type="button"
+              onClick={run}
+              disabled={loading}
+              aria-label="Run query"
+              style={{
+                width: 28, height: 28, padding: 0,
+                background: surface,
+                border: `1px solid ${borderSubtle}`,
+                borderRadius: 3,
+                cursor: loading ? 'progress' : 'pointer',
+                color: textSubtle,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              {loading ? <Spinner size="small" /> : <SearchIcon label="" size="small" />}
+            </button>
+          </Tooltip>
+        </div>
+      </div>
+      <div
+        style={{
+          marginTop: 6,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: 12,
+          color: textSubtle,
+        }}
+      >
+        <span style={{ color: errMsg ? token('color.text.danger', '#AE2A19') : textSubtle }}>
+          {errMsg || ''}
+        </span>
+        <span>
+          <strong style={{ fontWeight: 700, color: textPrimary }}>Enter</strong> to search&nbsp;&nbsp;
+          <strong style={{ fontWeight: 700, color: textPrimary }}>Shift+Enter</strong> to add a new line
+        </span>
+      </div>
+    </div>
   );
 }
 

@@ -18,6 +18,7 @@ const COMPARE_OPS = ['=', '!=', '<', '>', '<=', '>=', 'in', 'not in'] as const;
 
 export const JQL_FIELD_MAP: Record<string, FieldDef> = {
   project:     { column: 'project_key',           type: 'string', operators: [...STRING_OPS],  label: 'Project' },
+  parent:      { column: 'parent_key',             type: 'string', operators: [...STRING_OPS],  label: 'Parent' },
   issuetype:   { column: 'issue_type',             type: 'string', operators: [...STRING_OPS],  label: 'Issue type' },
   status:      { column: 'status',                 type: 'string', operators: [...STRING_OPS],  label: 'Status' },
   assignee:    { column: 'assignee_display_name', accountIdColumn: 'assignee_account_id', type: 'user', operators: [...STRING_OPS], label: 'Assignee' },
