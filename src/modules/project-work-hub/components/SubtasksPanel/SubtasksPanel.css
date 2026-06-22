@@ -153,22 +153,32 @@
   border: none !important;
   border-radius: 0 !important;
 }
-/* Inline create row sits flush at the bottom of the card, separated by a 1px rule. */
+/* Inline create row sits flush at the bottom of the card. Last data row's
+   td box-shadow (inset 0 -1px) already paints the separator — no border-top
+   here, otherwise doubles up (2026-06-23). */
 .sp-table-body .sp-create-wrap {
   margin-top: 0;
   padding: 4px 8px 4px;
-  border-top: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
 /* Jira-parity: table header cells in subtasks panel — compact padding + muted label color.
    jira-compare 2026-05-16: fresh DOM probe on BAU-5538 in Jira confirmed
-   12px/653 (not 11px/600 as previously set). */
+   12px/653 (not 11px/600 as previously set).
+   2026-06-23 — Replace JiraTable global header bottom border (inset 0 -2px,
+   bold) with a small 1px hairline matching the vertical column dividers
+   (border-right on th: 1px solid --ds-border #EBECF0). */
 .sp-ak-table .jira-table-grid table thead > tr > th {
   padding: 0 8px !important;
   color: var(--ds-text-subtle, #505258) !important;
   font-size: 12px !important;
   font-weight: 653 !important;
+  box-shadow: inset 0 -1px 0 0 var(--ds-border, #EBECF0) !important;
+}
+.sp-ak-table .jira-table-grid table thead > tr > th[data-actions-sticky] {
+  box-shadow:
+    inset 1px 0 0 0 var(--ds-border, #C1C7D0),
+    inset 0 -1px 0 0 var(--ds-border, #EBECF0) !important;
 }
 
 /* Jira-parity: constrain data rows to 40px height (Jira measured 40px on BAU-5538).
@@ -185,6 +195,64 @@
    but removes body-cell dividers. Only override <td> border-right. */
 .sp-ak-table .jira-table-grid table tbody > tr > td {
   border-right: none !important;
+}
+
+/* 2026-06-23 — Last data row has no bottom divider (outer card border owns
+   the bottom edge). Defeat JiraTable's tbody td box-shadow on :last-child. */
+.sp-ak-table .jira-table-grid table tbody > tr:last-child > td {
+  box-shadow: none !important;
+}
+
+/* 2026-06-23 — Jira-parity column drag-reorder visual.
+   When a header is dragged, the drop-target column lights up with a light
+   blue tint + solid blue left/right rails spanning header + every body row.
+   The dragged source column dims to 0.55 opacity (handled inline in
+   JiraTable). data-jt-drag-over / data-jt-drag-source attributes are
+   emitted from JiraTable when isDropTarget / isDraggingThis are true.
+   Selectors here beat the global tbody td !important box-shadow. */
+.sp-ak-table .jira-table-grid table tbody > tr > td[data-jt-drag-over="true"],
+.sp-ak-table .jira-table-grid table thead > tr > th[data-jt-drag-over="true"] {
+  background: var(--ds-background-selected, rgba(76, 154, 255, 0.15)) !important;
+  box-shadow:
+    inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF),
+    inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF) !important;
+}
+/* Top edge on the header cell + bottom edge on the last body row close the
+   blue frame around the dropped column. */
+.sp-ak-table .jira-table-grid table thead > tr > th[data-jt-drag-over="true"] {
+  box-shadow:
+    inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF),
+    inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF),
+    inset 0 1px 0 0 var(--ds-border-selected, #4C9AFF) !important;
+}
+.sp-ak-table .jira-table-grid table tbody > tr:last-child > td[data-jt-drag-over="true"] {
+  box-shadow:
+    inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF),
+    inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF),
+    inset 0 -1px 0 0 var(--ds-border-selected, #4C9AFF) !important;
+}
+/* Source column (the one being dragged) dims so the user sees what's moving. */
+.sp-ak-table .jira-table-grid table tbody > tr > td[data-jt-drag-source="true"] {
+  opacity: 0.55;
+}
+
+/* 2026-06-23 — Suppress JiraTable's focused-row blue left bar (3px inset
+   shadow on first-child td). Subtasks panel does not show selection state
+   on the left edge — only background tint. Restore the standard bottom
+   border so rows still divide correctly. */
+.sp-panel .jira-table-grid .jira-table-row-focused > td:first-child {
+  box-shadow: inset 0 -1px 0 0 var(--ds-border, #DFE1E6) !important;
+}
+
+/* 2026-06-23 — Jira parity row hover: whole row paints --ds-surface-hovered
+   (#F0F1F2). Individual cell on hover adds an extra layered tint so the
+   hovered cell appears DARKER than the rest of the row. Layering done via
+   --ds-background-neutral-subtle-hovered (rgba so it stacks on row bg). */
+.sp-ak-table .jira-table-grid table tbody > tr:hover > td {
+  background: var(--ds-surface-hovered, #F0F1F2) !important;
+}
+.sp-ak-table .jira-table-grid table tbody > tr > td:hover {
+  background-color: var(--ds-background-neutral-hovered, #DCDFE4) !important;
 }
 
 /* DynamicTable forwards row.className to <tr>, so we paint backgrounds
@@ -239,6 +307,19 @@
   align-items: center;
   gap: 6px;
   min-width: 0;
+  width: 100%;
+}
+/* 2026-06-23 — Jira parity: summary text behaves like the BAU key on hover.
+   Hover style applied to inner text span (NOT the button) so the empty
+   flex:1 padding area doesn't trigger the underline — only the glyphs do. */
+.sp-panel .sp-work-cell-summary-text {
+  transition: color 0.12s ease;
+}
+.sp-panel .sp-work-cell-summary-text:hover {
+  color: var(--ds-link, #0052CC);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
 }
 .sp-panel .sp-summary-wrap .sp-issue-summary {
   flex: 1 1 auto;
@@ -288,10 +369,60 @@
   box-shadow: 0 0 0 1.5px var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
-.sp-inline-summary-input {
+/* 2026-06-23 — Summary edit pencil. Mirrors `.sp-desc-trigger` opacity/hover
+   pattern (hover-reveal on row, square 22px) but renders the Edit pencil
+   icon. Click opens the inline summary editor. */
+.sp-panel .sp-summary-wrap .sp-summary-edit-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 3px;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+/* 2026-06-23 — Pencil reveals only when the summary cell is hovered, not
+   the entire row. Scope to <td> that contains .sp-summary-wrap via :has. */
+.sp-panel .sp-ak-table tbody td:has(.sp-summary-wrap):hover .sp-summary-edit-btn,
+.sp-panel .sp-summary-wrap:focus-within .sp-summary-edit-btn {
+  opacity: 1;
+}
+.sp-panel .sp-summary-edit-btn:hover {
+  background: var(--ds-background-neutral-hovered, #DCDFE4);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+}
+.sp-panel .sp-summary-edit-btn:focus-visible {
+  outline: none;
+  border-color: var(--cp-primary-60, #0052CC);
+  box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
+  opacity: 1;
+}
+.sp-panel .sp-summary-edit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0;
+}
+
+/* 2026-06-23 — Inline summary editor (Jira parity, image #137):
+   Input fills the summary slot. Confirm/Cancel buttons float ABSOLUTELY
+   below the input, anchored to the input's right edge — they overlay the
+   next row's right-side cells. Editing cells get overflow:visible via
+   :has() so the floating actions are not clipped by td overflow:hidden. */
+.sp-inline-summary-wrap {
+  position: relative;
   flex: 1;
   min-width: 0;
-  height: 28px;
+}
+.sp-inline-summary-input {
+  width: 100%;
+  height: 32px;
   padding: 0 8px;
   border: 2px solid var(--ds-border-focused, #4C9AFF);
   border-radius: 3px;
@@ -300,6 +431,49 @@
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-family: inherit;
+  box-sizing: border-box;
+}
+/* Portaled to document.body via createPortal; positioned via inline
+   top/left from the input's getBoundingClientRect. Buttons float over
+   the next row's cells regardless of any ancestor overflow:hidden. */
+.sp-inline-summary-actions {
+  display: flex;
+  gap: 4px;
+  z-index: 9999;
+}
+.sp-inline-summary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--ds-border, #DFE1E6);
+  background: var(--cp-bg-elevated, #FFFFFF);
+  border-radius: 3px;
+  color: var(--ds-text-subtle, var(--cp-text-secondary, #42526E));
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.sp-inline-summary-btn:hover {
+  background: var(--ds-background-neutral-hovered, #DCDFE4);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+}
+.sp-inline-summary-btn:focus-visible {
+  outline: none;
+  border-color: var(--cp-primary-60, #0052CC);
+  box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
+}
+/* Cells containing the inline editor need overflow:visible so the
+   absolutely-positioned action buttons aren't clipped by td/row borders. */
+.sp-panel .jira-table-grid table tbody > tr > td:has(.sp-inline-summary-wrap) {
+  overflow: visible !important;
+}
+.sp-panel .jira-table-grid table tbody > tr:has(.sp-inline-summary-wrap) {
+  z-index: 5;
+  position: relative;
 }
 
 .sp-inline-trigger {

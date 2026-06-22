@@ -17,7 +17,8 @@
  *   • Header ··· → Collapse / Clear completed
  *   • + → inline create row with type selector
  */
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useCreateChildListener } from '@/components/catalyst-detail-views/shared/sections/quickActionsBus';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,29 +26,29 @@ import { useAuth } from '@/hooks/useAuth';
 import { catalystToast } from '@/lib/catalystToast';
 import {
   ChevronDown, Plus,
-  Check,
+  Check, X as CrossIcon, Edit as EditPencilIcon,
 } from '@/lib/atlaskit-icons';
 import UtilityChevronDown from '@atlaskit/icon/utility/chevron-down';
 import UtilityChevronRight from '@atlaskit/icon/utility/chevron-right';
 import Tooltip from '@atlaskit/tooltip';
 import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';
 import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
-import { PriorityCell } from './cells/PriorityCell';
+import { EditablePriority } from '../dialogs/story-detail-modules/EditableFields';
 import { AssigneeCell } from './cells/AssigneeCell';
 import { StatusCell } from './cells/StatusCell';
 import { HeaderOverflowMenu } from './HeaderOverflowMenu';
+import { ColumnsButton } from './ColumnsButton';
 // ViewToggle and BoardView removed — Jira parity: child-issues panel is list-only.
 // No list/board toggle exists in Jira's child issues section.
 import { BulkEditBar } from './BulkEditBar';
 import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutations';
 import { sortRows, cycleSort, type SortField, type SortState } from './sort';
 import { computeNewPosition, rebalancePositions } from './reorder';
-import { WorkCell } from './cells/WorkCell';
+import { WorkCellPrefix, WorkCellSummary } from './cells/WorkCell';
 import { useAtlaskitThemeSync } from './atlaskitTheme';
 import { resolveAllowedChildTypes, panelTitleFor } from './hierarchy';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
 import { AiSuggestChildrenPanel } from './AiSuggestChildrenPanel';
-import { DescriptionPopover } from './DescriptionPopover';
 import { subtaskCreateInputSchema } from './schemas';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import Modal, {
@@ -204,6 +205,9 @@ function InlineSummaryEditor({
 }) {
   const [draft, setDraft] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const [actionsPos, setActionsPos] = useState<{ top: number; left: number } | null>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -216,21 +220,102 @@ function InlineSummaryEditor({
     else onCancel();
   };
 
+  // Compute action-row position from input rect. Recompute on scroll/resize
+  // so the floating actions track the input through the page.
+  useLayoutEffect(() => {
+    const reposition = () => {
+      const el = inputRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      // Actions = 2 × 32px button + 4px gap = 68px wide. Anchor right edge to input right.
+      setActionsPos({ top: rect.bottom + 6, left: rect.right - 68 });
+    };
+    reposition();
+    window.addEventListener('scroll', reposition, true);
+    window.addEventListener('resize', reposition);
+    return () => {
+      window.removeEventListener('scroll', reposition, true);
+      window.removeEventListener('resize', reposition);
+    };
+  }, []);
+
+  // Close on outside click — mirrors Jira's inline edit dismissal. The portal
+  // actions live outside the wrap so check against both.
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (wrapRef.current?.contains(t)) return;
+      if (actionsRef.current?.contains(t)) return;
+      onCancel();
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [onCancel]);
+
   return (
-    <input
-      ref={inputRef}
-      type="text"
-      className="sp-inline-summary-input"
-      value={draft}
-      onChange={(e) => setDraft(e.target.value)}
-      onBlur={commit}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') { e.preventDefault(); commit(); }
-        if (e.key === 'Escape') { e.preventDefault(); onCancel(); }
-      }}
+    <div
+      ref={wrapRef}
+      className="sp-inline-summary-wrap"
       onClick={(e) => e.stopPropagation()}
-      maxLength={255}
-    />
+    >
+      <input
+        ref={inputRef}
+        type="text"
+        className="sp-inline-summary-input"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') { e.preventDefault(); commit(); }
+          if (e.key === 'Escape') { e.preventDefault(); onCancel(); }
+        }}
+        maxLength={255}
+      />
+      {actionsPos && createPortal(
+        <div
+          ref={actionsRef}
+          className="sp-inline-summary-actions"
+          style={{ position: 'fixed', top: actionsPos.top, left: actionsPos.left }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            className="sp-inline-summary-btn sp-inline-summary-btn--confirm"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={commit}
+            aria-label="Confirm"
+            title="Confirm"
+          >
+            <Check size={16} />
+          </button>
+          <button
+            type="button"
+            className="sp-inline-summary-btn sp-inline-summary-btn--cancel"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={onCancel}
+            aria-label="Cancel"
+            title="Cancel"
+          >
+            <CrossIcon size={16} />
+          </button>
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
+
+function SummaryEditButton({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) {
+  return (
+    <button
+      type="button"
+      className="sp-summary-edit-btn"
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      disabled={disabled}
+      aria-label="Edit summary"
+      title="Edit summary"
+    >
+      <EditPencilIcon size={16} />
+    </button>
   );
 }
 
@@ -706,6 +791,7 @@ export function SubtasksPanel({
               sort={sort}
               onCycleSort={(field: SortField) => setSort(s => cycleSort(s, field))}
             />
+            <ColumnsButton columns={columns} onChange={setColumns} />
             {canCreate && (
               <button
                 type="button"
@@ -864,30 +950,32 @@ export function SubtasksPanel({
                 accessor: (r: any) => r.summary,
                 cell: ({ row }) => {
                   const child = row as any;
-                  return editingId === child.id ? (
-                    <InlineSummaryEditor
-                      value={child.summary}
-                      onSave={handleSummarySave(child)}
-                      onCancel={() => setEditingId(null)}
-                    />
-                  ) : (
+                  const isEditing = editingId === child.id;
+                  const openRow = () => {
+                    if (bulkEditMode) { toggleSelected(child.id); return; }
+                    onSubtaskClick?.(child.issue_key ?? child.id);
+                    setFocusedRowId(child.id);
+                  };
+                  return (
                     <span className="sp-summary-wrap">
-                      <WorkCell
+                      <WorkCellPrefix
                         issueType={child.issue_type}
                         issueKey={child.issue_key}
-                        summary={child.summary}
-                        onClick={() => {
-                          if (bulkEditMode) { toggleSelected(child.id); return; }
-                          onSubtaskClick?.(child.issue_key ?? child.id);
-                          setFocusedRowId(child.id);
-                        }}
+                        onClick={isEditing ? undefined : openRow}
                       />
-                      {!bulkEditMode && (
-                        <DescriptionPopover
-                          subtaskId={child.id}
-                          subtaskKey={child.issue_key}
-                          parentKey={storyKey}
+                      {isEditing ? (
+                        <InlineSummaryEditor
+                          value={child.summary}
+                          onSave={handleSummarySave(child)}
+                          onCancel={() => setEditingId(null)}
                         />
+                      ) : (
+                        <>
+                          <WorkCellSummary summary={child.summary} onClick={openRow} />
+                          {!bulkEditMode && (
+                            <SummaryEditButton onClick={() => setEditingId(child.id)} />
+                          )}
+                        </>
                       )}
                     </span>
                   );
@@ -904,10 +992,16 @@ export function SubtasksPanel({
                 cell: ({ row }) => {
                   const child = row as any;
                   return (
-                    <PriorityCell
-                      priority={child.priority}
-                      onChange={handlePriorityChange(child)}
-                      readOnly={bulkEditMode}
+                    <EditablePriority
+                      issueId={child.id}
+                      currentPriority={child.priority ?? 'Medium'}
+                      onUpdate={() => { /* invalidation handled by onChange path below */ }}
+                      onChange={(value) => {
+                        if (bulkEditMode) return;
+                        if (!value) return;
+                        if (value.toLowerCase() === (child.priority ?? '').toLowerCase()) return;
+                        update.mutate({ id: child.id, patch: { priority: value } });
+                      }}
                     />
                   );
                 },

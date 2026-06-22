@@ -182,6 +182,11 @@ export default function IssueFullPage() {
           projectKey={issue.project_key}
           itemType={issue.issue_type}
           fullPageMode={true}
+          /* 2026-06-23 — wire child-item navigation: clicking a subtask /
+             child key / summary in the SubtasksPanel routes through
+             onOpenItem → /browse/<key>. Without this, SubtasksPanel's
+             onSubtaskClick is undefined and clicks become no-ops. */
+          onOpenItem={(key) => navigate(`/browse/${key}`)}
         />
       </Suspense>
     </div>

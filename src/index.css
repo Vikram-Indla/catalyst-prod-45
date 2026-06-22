@@ -212,6 +212,11 @@
   --cp-teal-60: #0D9488;
   --cp-lozenge-grey-bg: #DFE1E6;
   --cp-lozenge-grey-text: #42526E;
+  /* 2026-06-23 — Resize handle hover indicator. Distinct grey that signals
+     "draggable boundary" without competing with --ds-border-selected (used
+     for active drag + selection). No ADS token matches this exact value;
+     Catalyst-scoped. */
+  --cp-resize-handle-hover: #7D818A;
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
   /* ADS canonical subtle success tokens (light) — spec 2026-05-29.
