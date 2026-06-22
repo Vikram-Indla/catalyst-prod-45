@@ -10,7 +10,7 @@
  * lives in test_cases/test_cycles). Test-specific widgets land later by
  * setting hideOnTest=false on each new WidgetDefinition.
  */
-import ProjectDashboardPage from '../project-hub/ProjectDashboardPage';
+import ProjectDashboardPage from "../project-hub/ProjectDashboardPage";
 
 export default function DashboardPage() {
   return <ProjectDashboardPage mode="test" />;

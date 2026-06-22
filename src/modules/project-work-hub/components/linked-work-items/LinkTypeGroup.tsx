@@ -15,7 +15,9 @@ import DynamicTable from '@atlaskit/dynamic-table';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import CloseIcon from '@atlaskit/icon/core/close';
-import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
+import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
+import PersonIcon from '@atlaskit/icon/glyph/person';
+import { PriorityIcon } from '@/components/icons/PriorityIcon';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { LinkedWorkItem } from './types';
@@ -88,6 +90,7 @@ export function LinkTypeGroup({
             <button
               type="button"
               className="lwi-row__key"
+              data-done={appearance === 'success' ? 'true' : undefined}
               onClick={() => onOpen(link)}
               aria-label={`Open ${target.issue_key} — ${target.summary}`}
             >
@@ -113,6 +116,9 @@ export function LinkTypeGroup({
           content: (
             <span className="lwi-row__status">
               <Lozenge appearance={appearance}>{target.status}</Lozenge>
+              <span className="lwi-row__status-caret" aria-hidden>
+                <ChevronDownIcon label="" color="currentColor" />
+              </span>
             </span>
           ),
         },
@@ -128,7 +134,9 @@ export function LinkTypeGroup({
                   borderColor="transparent"
                 />
               ) : (
-                <span className="lwi-row__avatar-empty" aria-label="Unassigned" />
+                <span className="lwi-row__avatar-empty" aria-label="Unassigned">
+                  <PersonIcon label="" primaryColor="var(--ds-text-subtle, #505258)" size="small" />
+                </span>
               )}
             </span>
           ),
@@ -140,7 +148,7 @@ export function LinkTypeGroup({
               className="lwi-row__priority"
               aria-label={`Priority: ${target.priority ?? 'None'}`}
             >
-              <PriorityBars priority={normalisePriority(target.priority)} />
+              <PriorityIcon level={target.priority} size={16} label="" />
             </span>
           ),
         },

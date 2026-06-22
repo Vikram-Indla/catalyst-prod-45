@@ -9,11 +9,7 @@ import { fn } from 'storybook/test';
 import { AutoSaveIndicator } from '@/components/business-requests/create-form/AutoSaveIndicator';
 import { BRStatusEducationalPopover } from '@/components/business-requests/BRStatusEducationalPopover';
 import { BrAttachmentsSection } from '@/components/catalyst-detail-views/business-request/sections/BrAttachmentsSection';
-import { BrCenterDetails } from '@/components/catalyst-detail-views/business-request/sections/BrCenterDetails';
-import { BrDescriptionSection } from '@/components/catalyst-detail-views/business-request/sections/BrDescriptionSection';
-import { BrLinkedItemsSection } from '@/components/catalyst-detail-views/business-request/sections/BrLinkedItemsSection';
 import { BrMoveProductDialog } from '@/components/catalyst-detail-views/business-request/BrMoveProductDialog';
-import { BrTitleSection } from '@/components/catalyst-detail-views/business-request/sections/BrTitleSection';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { FormField } from '@/components/business-requests/create-form/FormField';
 
@@ -27,26 +23,6 @@ export default { title: 'Enterprise/Business Request/Sections' };
 export const BrAttachmentsSectionDefault: StoryObj = {
   name: 'BrAttachmentsSection / Default',
   render: () => <Wrap><BrAttachmentsSection request={null} /></Wrap>,
-}
-
-export const BrCenterDetailsDefault: StoryObj = {
-  name: 'BrCenterDetails / Default',
-  render: () => <Wrap><BrCenterDetails request={null} onUpdate={fn()} /></Wrap>,
-}
-
-export const BrDescriptionSectionDefault: StoryObj = {
-  name: 'BrDescriptionSection / Default',
-  render: () => <Wrap><BrDescriptionSection request={null} onUpdate={fn()} /></Wrap>,
-}
-
-export const BrLinkedItemsSectionDefault: StoryObj = {
-  name: 'BrLinkedItemsSection / Default',
-  render: () => <Wrap><BrLinkedItemsSection request={null} /></Wrap>,
-}
-
-export const BrTitleSectionDefault: StoryObj = {
-  name: 'BrTitleSection / Default',
-  render: () => <Wrap><BrTitleSection request={null} onUpdate={fn()} /></Wrap>,
 }
 
 export const BrMoveProductDialogDefault: StoryObj = {

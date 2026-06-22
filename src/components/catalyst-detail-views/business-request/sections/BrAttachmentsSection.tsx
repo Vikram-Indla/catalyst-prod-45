@@ -1,5 +1,18 @@
 /**
- * BrAttachmentsSection — file attachments + drag-drop upload, ADS-only.
+ * BrAttachmentsSection — APPROVED ADAPTER (not a fork).
+ *
+ * Per CLAUDE.md `REUSE FIRST` carve-out (2026-06-21 Phase 3 assessment):
+ * canonical `AttachmentsSection` (story-detail-modules/AttachmentsSection.tsx)
+ * is welded to the `PhAttachment` shape (`work_item_id`, `storage_path`,
+ * permission check via `ph_project_members`, delete via `attachment-delete`
+ * edge function, download-all via `attachment-download-all`). BR persists to
+ * `business_request_links` with a different shape (`business_request_id`,
+ * `file_path`, extra `title`/`url`/`link_type`/`kind`/`added_by_name`
+ * columns) and has no project-membership concept.
+ *
+ * Promoting to canonical requires extracting an internal UI primitive from
+ * canonical AttachmentsSection that accepts column-name + permission +
+ * delete-path adapters. Tracked as a follow-up; current adapter ships.
  *
  * Reads/writes `business_request_links` (the same table
  * `CreateBusinessRequestModal` writes BRD docs into) so a unified
@@ -32,7 +45,9 @@ import UploadIcon from '@atlaskit/icon/glyph/upload';
 import AttachmentIcon from '@atlaskit/icon/glyph/attachment';
 import DownloadIcon from '@atlaskit/icon/glyph/download';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
-import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
+import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
+import Tooltip from '@atlaskit/tooltip';
 import { token } from '@atlaskit/tokens';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
@@ -212,27 +227,47 @@ export function BrAttachmentsSection({ request }: Props) {
       style={{ marginBottom: 20 }}
       aria-label="Attachments"
     >
-      {/* Section header — exact Story spec (16px/653, ChevronRight toggle, no uppercase) */}
+      {/* Section header — matches SubtasksPanel + LinkedWorkItemsHeader:
+          24x24 chevron button (only click target) with rounded hover bg
+          + Tooltip "Collapse"/"Expand". Title h2 outside button. Title
+          click does nothing. Mirrors Jira pattern (live screenshot 2026-06-21). */}
       <div
-        onClick={() => setCollapsed(c => !c)}
+        className="br-att-header"
         style={{
-          display: 'flex', alignItems: 'center', gap: 6, height: 40,
-          background: 'transparent', cursor: 'pointer', userSelect: 'none',
+          display: 'flex', alignItems: 'center', gap: 0, padding: '6px 0',
+          marginBottom: 4, userSelect: 'none',
         }}
       >
-        <span style={{
-          display: 'inline-flex',
-          transition: 'transform 0.15s ease',
-          transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
-          color: 'var(--ds-icon-subtle, #626F86)',
-        }}>
-          <ChevronRightIcon size="small" primaryColor="currentColor" />
-        </span>
-        <div style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>
+        <Tooltip content={collapsed ? 'Expand' : 'Collapse'} position="bottom">
+          <button
+            type="button"
+            onClick={() => setCollapsed(c => !c)}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? 'Expand' : 'Collapse'}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 24, height: 24, marginLeft: -4,
+              background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+              color: 'var(--ds-text-subtle, #505258)', borderRadius: 3,
+              transition: 'background-color 150ms ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            {collapsed
+              ? <ChevronRightIcon label="" color="currentColor" />
+              : <ChevronDownIcon label="" color="currentColor" />
+            }
+          </button>
+        </Tooltip>
+        <h2
+          onClick={() => setCollapsed(c => !c)}
+          style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', cursor: 'pointer' }}
+        >
           Attachments
-        </div>
+        </h2>
         {files.length > 0 && (
-          <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--ds-text-subtlest, #8590A2)', marginLeft: 4 }}>
+          <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, #626F86)', marginLeft: 4 }}>
             {files.length}
           </span>
         )}

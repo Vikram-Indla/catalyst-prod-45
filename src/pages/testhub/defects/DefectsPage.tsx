@@ -3,8 +3,7 @@ import { useParams } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
 import Button from '@atlaskit/button/standard-button';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useDefects, useCreateDefect } from '@/hooks/test-management/useDefects';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { DefectSeverity, DefectStatus } from '@/types/test-management';
@@ -146,17 +145,6 @@ export default function DefectsPage() {
     );
   }
 
-  const breadcrumbs = (
-    <Breadcrumbs
-      items={[
-        { key: 'home', text: 'Home', href: '/for-you' },
-        { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-        { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
-        { key: 'defects', text: 'Defects', isCurrent: true },
-      ]}
-    />
-  );
-
   return (
     <div
       style={{
@@ -165,11 +153,11 @@ export default function DefectsPage() {
         height: '100%',
         fontFamily: 'var(--ds-font-family-body)',
         background: 'var(--ds-surface, #FFFFFF)',
+        paddingTop: 16,
       }}
     >
-      <PageHeader
-        title="Defects"
-        breadcrumbs={breadcrumbs}
+      <ProjectPageHeader
+        hubType="test"
         actions={
           <Button
             appearance="primary"

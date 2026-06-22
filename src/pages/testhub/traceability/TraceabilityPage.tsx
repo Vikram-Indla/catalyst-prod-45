@@ -3,8 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { supabase } from '@/integrations/supabase/client';
 import { CaseStatus } from '@/types/test-management';
@@ -162,17 +161,6 @@ export default function TraceabilityPage() {
     return { covered, withPassing, withFailing };
   }, [grouped]);
 
-  const breadcrumbs = (
-    <Breadcrumbs
-      items={[
-        { key: 'home', text: 'Home', href: '/for-you' },
-        { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-        { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
-        { key: 'traceability', text: 'Traceability', isCurrent: true },
-      ]}
-    />
-  );
-
   return (
     <div
       style={{
@@ -181,9 +169,10 @@ export default function TraceabilityPage() {
         height: '100%',
         fontFamily: 'var(--ds-font-family-body)',
         background: 'var(--ds-surface, #FFFFFF)',
+        paddingTop: 16,
       }}
     >
-      <PageHeader title="Traceability" breadcrumbs={breadcrumbs} />
+      <ProjectPageHeader hubType="test" />
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px' }}>
         {/* ── Loading ──────────────────────────────────────────────────── */}

@@ -136,11 +136,14 @@ export function CatalystDetailPanel({
             onResizeCommit?.(next);
           }
         }}
+        /* Jira-parity splitter (2026-06-22 Vikram):
+             - idle: invisible
+             - hover/drag: blue hairline via inset box-shadow */
         onMouseEnter={(e) => {
-          if (!resizing) e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)';
+          if (!resizing) e.currentTarget.style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, #1868DB)';
         }}
         onMouseLeave={(e) => {
-          if (!resizing) e.currentTarget.style.background = 'transparent';
+          if (!resizing) e.currentTarget.style.boxShadow = 'none';
         }}
         style={{
           position: 'absolute',
@@ -149,9 +152,10 @@ export function CatalystDetailPanel({
           bottom: 0,
           width: 6,
           cursor: 'col-resize',
-          background: resizing ? 'var(--ds-border-selected, #388BFF)' : 'transparent',
+          background: 'transparent',
+          boxShadow: resizing ? 'inset 1px 0 0 0 var(--ds-link, #1868DB)' : 'none',
           zIndex: 51,
-          transition: resizing ? 'none' : 'background 120ms ease',
+          transition: 'box-shadow 120ms ease',
         }}
       />
 

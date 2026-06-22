@@ -40,6 +40,7 @@ export function HealthStatusBadge({ health, onClick }: HealthStatusBadgeProps) {
       <CatalystStatusPill
         status={health.health_status}
         appearance={appearance}
+        interactive={false}
       />
     </div>
   );

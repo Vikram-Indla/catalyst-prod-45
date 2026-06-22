@@ -8,8 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { Trash2 } from '@/lib/atlaskit-icons';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -468,17 +467,9 @@ export default function SetDetailPage() {
     <div style={{ padding: 24, maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <PageHeader
+        <ProjectPageHeader
+          hubType="test"
           title={set.name}
-          breadcrumbs={
-            <Breadcrumbs items={[
-              { key: 'home', text: 'Home', href: '/for-you' },
-              { key: 'testhub', text: 'Test Hub', href: '/testhub' },
-              { key: 'project', text: projectKey, href: `/testhub/${projectKey}/dashboard` },
-              { key: 'sets', text: 'Sets', href: `/testhub/${projectKey}/sets` },
-              { key: 'detail', text: set.name, isCurrent: true },
-            ]} />
-          }
           actions={
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <button

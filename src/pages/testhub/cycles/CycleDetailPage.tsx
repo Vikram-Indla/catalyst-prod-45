@@ -18,8 +18,7 @@ import Textarea from '@atlaskit/textarea';
 import Textfield from '@atlaskit/textfield';
 import { Play, CheckCircle, Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { TMCycleScope, RunStatus } from '@/types/test-management';
-import { PageHeader } from '@/components/ads/PageHeader';
-import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
@@ -169,7 +168,8 @@ export default function CycleDetailPage() {
   return (
     <div style={{ padding: '24px', maxWidth: 1200, fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <PageHeader
+        <ProjectPageHeader
+          hubType="test"
           title={cycle.name}
           breadcrumbs={
             <Breadcrumbs items={[

@@ -19,7 +19,9 @@
  *   ParentAndLabels block has been removed.
  */
 import React, { useState } from 'react';
-import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
+import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
+import Tooltip from '@atlaskit/tooltip';
 import { Inline } from '@atlaskit/primitives';
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { useQueryClient } from '@tanstack/react-query';
@@ -53,10 +55,12 @@ export function KeyDetailsFieldRow({
   const [hovered, setHovered] = React.useState(false);
   return (
     <div style={{ padding: '6px 0' }}>
-      <Inline space="space.250" alignBlock={alignBlock}>
+      {/* 2026-06-22 Vikram: widened label column (120→320) + gap
+          (space.250→space.800) for maximum breathing room. */}
+      <Inline space="space.800" alignBlock={alignBlock}>
         <span style={{
           fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
-          minWidth: 120, flexShrink: 0,
+          minWidth: 320, flexShrink: 0,
         }}>{label}</span>
         <div
           data-cv-keydetails-value="true"
@@ -132,6 +136,12 @@ interface CatalystKeyDetailsProps {
    *  Defects add: Severity, Found in build, Fix in build, Root Cause,
    *  Resolution. Incidents add: Severity, Impacted services, MTTR. */
   extraRows?: React.ReactNode;
+  /** Optional slot rendered INSIDE the collapsible body, after extraRows.
+   *  Detail views pass the canonical Description here so its visibility
+   *  is coupled to Key details' collapsed state (2026-06-21). The slot
+   *  resets the 20px left padding inherited from the Key-details body
+   *  so the Description renders flush-left like before. */
+  afterBody?: React.ReactNode;
   /**
    * 2026-06-17 — adapter for non-ph_issues data sources (tasks hub).
    * When `onPriorityChange` is set, EditablePriority's internal
@@ -156,6 +166,7 @@ export function CatalystKeyDetails({
   showPriority = true,
   defaultCollapsed = false,
   extraRows,
+  afterBody,
   dataSource,
 }: CatalystKeyDetailsProps) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
@@ -166,41 +177,51 @@ export function CatalystKeyDetails({
 
   return (
     <div style={{ marginBottom: 20 }}>
-      {/* Section header — mirrors CatalystDescriptionSection's header
-          typography/chevron for visual consistency. */}
+      {/* Section header — matches canonical Subtasks + Linked + Attachments
+          pattern: 24x24 chevron button (only click target) with rounded
+          hover bg + Tooltip "Collapse"/"Expand". Title h2 outside button.
+          Utility chevron (thin stroke, ADS v4). */}
       <div
-        onClick={() => setCollapsed(!collapsed)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 4,
-          marginBottom: collapsed ? 0 : 4, cursor: 'pointer', userSelect: 'none',
+          display: 'flex', alignItems: 'center', gap: 0, padding: '6px 0',
+          marginBottom: collapsed ? 0 : 4, userSelect: 'none',
         }}
       >
-        {/* @atlaskit/icon canonical chevron (Jira-parity stroke weight).
-            The icon is rotated via CSS transform to toggle between
-            collapsed (→) and expanded (↓) states; single asset avoids a
-            mount flash when toggling. */}
-        <span
-          style={{
-            display: 'inline-flex',
-            transition: collapsed
-              ? 'transform 150ms cubic-bezier(0.4,0,1,1)'   /* ADS collapse: ease-in */
-              : 'transform 200ms cubic-bezier(0.2,0,0,1)',  /* ADS expand: ease-out */
-            transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
-          }}
+        <Tooltip content={collapsed ? 'Expand' : 'Collapse'} position="bottom">
+          <button
+            type="button"
+            onClick={() => setCollapsed(!collapsed)}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? 'Expand' : 'Collapse'}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 24, height: 24, marginLeft: -4,
+              background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+              color: 'var(--ds-text-subtle, #505258)', borderRadius: 3,
+              transition: 'background-color 150ms ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            {collapsed
+              ? <ChevronRightIcon label="" color="currentColor" />
+              : <ChevronDownIcon label="" color="currentColor" />
+            }
+          </button>
+        </Tooltip>
+        <h2
+          onClick={() => setCollapsed(!collapsed)}
+          style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', cursor: 'pointer' }}
         >
-          <ChevronRightIcon label="" primaryColor="var(--ds-icon-subtle, #5E6C84)" size="small" />
-        </span>
-        {/* jira-compare 2026-05-11 re-probe: canonical Jira section header is
-            16px/653/20px/rgb(41,42,46) — measured on the innermost text node of
-            "Key details" / "Subtasks" / "Linked work items" / "Activity" across
-            BAU-5814 (Story), BAU-5824 + BAU-5751 (QA Bug). The atomic CSS class
-            names on the live page match @atlaskit/heading size="small".
-            Corrects 2026-05-08 K.11 lesson which had measured layout-wrapper
-            levels (14px/400) and inner field labels (11–12px/600). */}
-        <h2 style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Key details</h2>
+          Key details
+        </h2>
       </div>
 
-      <div style={{ overflow: 'hidden', maxHeight: collapsed ? 0 : 800, transition: 'max-height 0.15s ease' }}>
+      {/* Collapsible body. maxHeight cap removed 2026-06-21 — Description
+          is now rendered via `afterBody` and its content is variable
+          height (rich-text, images, code blocks), so a fixed cap would
+          clip. Display toggle replaces the height animation. */}
+      <div style={{ display: collapsed ? 'none' : 'block' }}>
         <div style={{ paddingLeft: 20 }}>
           {showParent && (
             <FieldRow label="Parent" alignBlock="center">
@@ -235,6 +256,13 @@ export function CatalystKeyDetails({
               exact 96px label column used by Parent + Priority. */}
           {extraRows}
         </div>
+        {/* afterBody (Description) renders OUTSIDE the 20px paddingLeft
+            wrapper so it sits flush-left like a top-level section.
+            marginTop separates it from the last Key-details row above
+            (2026-06-21 Vikram). */}
+        {afterBody && (
+          <div style={{ marginTop: 16 }}>{afterBody}</div>
+        )}
       </div>
     </div>
   );
