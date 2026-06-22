@@ -53,7 +53,7 @@ import type { CatalystViewBaseProps } from '../shared/types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import { useClearableOnOpen } from '@/hooks/useClearableOnOpen';
-import CatalystReplayButton from '../replay/CatalystReplayButton';
+import CatalystReplayButton from '../../replay/CatalystReplayButton';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
