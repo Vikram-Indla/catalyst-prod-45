@@ -22,6 +22,7 @@ import { MoreHorizontal, Edit as EditIcon, Maximize2, Minimize2 } from '@/lib/at
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { token } from '@atlaskit/tokens';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
+import { CatalystReplay } from '@/components/replay/CatalystReplay';
 
 import { supabase } from '@/integrations/supabase/client';
 import { AtlaskitPageShell, Button, Flag, FlagGroup, SectionMessage } from '@/components/ads';
@@ -147,6 +148,7 @@ function ProjectDashboardPageInner({ mode }: { mode: DashboardMode }) {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [draft, setDraft] = useState<ResolvedWidget[] | null>(null);
   const [savedFlag, setSavedFlag] = useState(false);
+  const [showReplay, setShowReplay] = useState(false);
 
   // 2026-06-09 Vikram RCA — @atlaskit/flag has NO autoDismiss prop.
   // Without an explicit timer, "Layout saved" persists forever until
@@ -449,6 +451,14 @@ useEffect(() => {
     </>
   ) : (
     <>
+      <Button
+        appearance="primary"
+        spacing="compact"
+        onClick={() => setShowReplay(true)}
+        testId="dashboard-replay-demo"
+      >
+        Replay Demo
+      </Button>
       <button
         type="button"
         style={elevatedBtnStyle}
@@ -556,6 +566,7 @@ useEffect(() => {
   }
 
   return (
+    <>
     <AtlaskitPageShell
       flush
       chromeBand={pKey ? (
@@ -661,5 +672,7 @@ useEffect(() => {
         )}
       </FlagGroup>
     </AtlaskitPageShell>
+    {showReplay && <CatalystReplay onClose={() => setShowReplay(false)} />}
+    </>
   );
 }
