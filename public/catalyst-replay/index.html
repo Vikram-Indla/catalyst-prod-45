@@ -101,11 +101,12 @@
     <div style="padding:11px 18px;border-bottom:1px solid #DFE1E6;display:flex;align-items:center;gap:12px;flex-shrink:0">
       <span id="cr-hi" style="display:flex"></span>
       <div style="display:flex;align-items:baseline;gap:9px;min-width:0">
-        <span style="font-weight:700;color:#974F0C;font-size:15px">BR-204</span>
-        <span style="color:#172B4D;font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Update License functionality</span>
+        <span id="cr-root-key" style="font-weight:700;color:#974F0C;font-size:15px">BR-204</span>
+        <span id="cr-root-title" style="color:#172B4D;font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Update License functionality</span>
       </div>
       <span style="font-size:11px;color:#5E6C84;background:#F1F2F4;border-radius:5px;padding:3px 8px;white-space:nowrap">Product Replay · MIM</span>
       <span id="cr-find" style="font-size:11px;font-weight:700;color:#fff;background:#C9372C;border-radius:11px;padding:3px 9px;cursor:pointer;white-space:nowrap">⚠ 0 findings</span>
+      <span id="cr-live-badge" style="display:none;font-size:10px;font-weight:700;color:#fff;background:#0C66E4;border-radius:11px;padding:3px 9px;white-space:nowrap">● Live data</span>
       <div style="margin-left:auto;display:flex;align-items:center;gap:14px">
         <div style="display:flex;background:#F1F2F4;border-radius:9px;padding:3px;gap:2px">
           <span class="cr-vseg on" data-var="a">Stage view</span>
@@ -178,6 +179,8 @@ class Component {
   boot(){
     const $=id=>document.getElementById(id);
     const root=$('cr-root'); if(!root) return;
+    const ROOT=(window.__crLiveLanes&&window.__crLiveLanes.length>0)?window.__crLiveLanes[0].key:'BR-204';
+    const isLive=!!(window.__crLiveLanes&&window.__crLiveLanes.length>0);
     // ---------- icons ----------
     const ICON={
       'Business Request':{vb:'0 0 24 24',in:'<path d="M12 3.2A6.2 6.2 0 0 0 8 14.2c.9.8 1.5 1.7 1.7 2.9h4.6c.2-1.2.8-2.1 1.7-2.9A6.2 6.2 0 0 0 12 3.2Z" fill="#D98A0B"/><rect x="9.4" y="18.2" width="5.2" height="2.2" rx="1.1" fill="#D98A0B"/><path d="M10.2 21.4h3.6" stroke="#D98A0B" stroke-width="1.6" stroke-linecap="round"/>'},
@@ -205,7 +208,7 @@ class Component {
     $('cr-hi').innerHTML=tyI('Business Request',22);
     $('cr-selIcon').innerHTML=tyI('Business Request',20);
     // ---------- data (w3 seed) ----------
-    const LANES=[
+    const LANES=(window.__crLiveLanes&&window.__crLiveLanes.length>0)?window.__crLiveLanes:[
      {key:'BR-204',type:'Business Request',module:'Product · MIM',parent:null,reporter:'Khalid',sum:'Update License functionality',target:'2026-09-12',release:{iso:'2026-09-14',name:'R-9'},ev:[['2026-08-01T09:00','New','todo','Khalid','create'],['2026-08-04T10:00','Demand Intake','todo','Sara','','Khalid'],['2026-08-09T10:00','Analysis & Design','prog','Omar','','Sara'],['2026-08-24T15:00','Ready for Impl.','prog','Omar'],['2026-09-03T11:00','In Development','prog','Omar'],['2026-09-14T16:00','Done','done','Omar']]},
      {key:'EPIC-1',type:'Epic',module:'Project · BAU',parent:'BR-204',reporter:'Omar',sum:'Upgrade 1 — tier model',target:'2026-08-18',ev:[['2026-08-10T10:00','Backlog','todo','Lina','create'],['2026-08-12T10:00','In Progress','prog','Lina'],['2026-08-18T09:00','In QA','prog','Yara','','Lina'],['2026-08-19T11:00','In Development','prog','Dev','detour','Yara'],['2026-08-20T14:00','In QA','prog','Yara','','Dev'],['2026-08-22T16:00','Done','done','Lina']]},
      {key:'EPIC-2',type:'Epic',module:'Project · ICP',parent:'BR-204',reporter:'Omar',sum:'Upgrade 2 — billing',sprint:{name:'Sprint 14',start:'2026-08-25',end:'2026-09-07'},target:'2026-09-07',ev:[['2026-08-12T10:00','Backlog','todo','Raj','create'],['2026-08-16T10:00','In Progress','prog','Raj'],['2026-08-30T10:00','In QA','prog','Raj'],['2026-09-06T14:00','Done','done','Raj']]},
@@ -217,17 +220,20 @@ class Component {
     ];
     this.LANES=LANES;this.tyI=tyI;this.aki=aki;this.ava=ava;this.pill=pill;this.fmt=fmt;this.fmtS=fmtS;
     this.CATC=CATC;this.CATL=CATL;this.TYC=TYC;this.PAL=PAL;this.ROLE=ROLE;this.ini=ini;this.$=$;
+    this.ROOT=ROOT;this.isLive=isLive;
     this.setupEngine();
   }
   setupEngine(){
-    const self=this; const {LANES,tyI,aki,ava,pill,fmt,fmtS,CATC,CATL,TYC,PAL,ROLE,ini,$}=this;
+    const self=this; const {LANES,tyI,aki,ava,pill,fmt,fmtS,CATC,CATL,TYC,PAL,ROLE,ini,$,ROOT,isLive}=this;
     const root=$('cr-root');
-    const AX={start:'2026-08-01'};
-    const BASE=Date.parse('2026-08-01'),DAY=864e5; const dnum=iso=>(Date.parse(iso)-BASE)/DAY;
+    const _allEvs=LANES.flatMap(function(l){return l.ev.map(function(e){return Date.parse(e[0]);});});
+    const BASE=Math.min.apply(null,_allEvs),DAY=864e5;
+    const AX={start:new Date(BASE).toISOString().slice(0,10)};
+    const dnum=iso=>(Date.parse(iso)-BASE)/DAY;
     const byKey={};LANES.forEach(l=>byKey[l.key]=l);
     LANES.forEach(l=>{let d=0,p=l.parent;while(p){d++;p=byKey[p]?byKey[p].parent:null;}l.depth=d;l.children=[];});
     LANES.forEach(l=>{if(l.parent&&byKey[l.parent])byKey[l.parent].children.push(l.key);});
-    const ENDDAY=dnum(byKey['BR-204'].ev[byKey['BR-204'].ev.length-1][0]);const SPAN=ENDDAY;
+    const ENDDAY=dnum(byKey[ROOT].ev[byKey[ROOT].ev.length-1][0]);const SPAN=ENDDAY;
     const dx=d=>6+Math.min(d,SPAN)/SPAN*88, pct=d=>(dx(d)-6)/88*100;
     const findings={deviation:[],detour:[],scope:[],open:[]};const hold={};
     LANES.forEach(l=>{l.cev=l.ev.map((e,i)=>{const day=dnum(e[0]);const nx=l.ev[i+1]?dnum(l.ev[i+1][0]):ENDDAY;return {i,day,iso:e[0],st:e[1],cat:e[2],act:e[3],kind:e[4]||'',hand:e[5]||'',dwell:Math.max(0,nx-day)};});
@@ -239,7 +245,8 @@ class Component {
     });
     const totF=findings.deviation.length+findings.detour.length+findings.scope.length+findings.open.length;
     $('cr-find').textContent='⚠ '+totF+' findings';
-    const ordered=[];(function dfs(k){const l=byKey[k];if(!l)return;ordered.push(l);l.children.forEach(dfs);})('BR-204');
+    const ordered=[];(function dfs(k){const l=byKey[k];if(!l)return;ordered.push(l);l.children.forEach(dfs);})(ROOT);
+    if(isLive){const rk=$('cr-root-key');if(rk)rk.textContent=ROOT;const rt=$('cr-root-title');if(rt)rt.textContent=(LANES[0].sum||ROOT);const lb=$('cr-live-badge');if(lb)lb.style.display='inline-flex';}
     const isLast=l=>{if(!l.parent)return true;const ch=byKey[l.parent].children;return ch[ch.length-1]===l.key;};
     const chainOf=l=>{const c=[];let x=l;while(x){c.unshift(x);x=x.parent?byKey[x.parent]:null;}return c;};
     const dwS=d=>d>=1?Math.round(d)+(Math.round(d)===1?' day':' days'):Math.round(d*24)+'h';
@@ -256,12 +263,12 @@ class Component {
     function vis(l){let p=l.parent;while(p){if(collapsed.has(p))return false;p=byKey[p]?byKey[p].parent:null;}return true;}
     function treeHTML(l){const d=l.depth;if(d===0)return'';const chain=chainOf(l);let h=`<div class="cr-conn" style="width:${d*18}px">`;for(let k=1;k<=d;k++){const x=(k-1)*18+9;const node=chain[k];if(k<d){if(!isLast(node))h+=`<i style="left:${x}px;top:0;bottom:0;width:1.5px"></i>`;}else{const lk=l.linked?'lk':'';h+=`<i class="${lk}" style="left:${x}px;top:0;height:53px;width:1.5px"></i>`;if(!isLast(l))h+=`<i style="left:${x}px;top:53px;bottom:0;width:1.5px"></i>`;h+=`<i class="${lk}" style="left:${x}px;top:53px;width:13px;height:1.5px"></i>`;}}h+='</div>';return h;}
     function buildLane(ln){const hasKids=ln.children.length>0;const row=document.createElement('div');row.className='cr-lane';ln._row=row;
-     const moduleColor=ln.module.startsWith('Product')?'#5E4DB2':'#0052CC';
-     row.innerHTML=`<div class="cr-lbl">${treeHTML(ln)}<div style="flex:1;min-width:0;padding:11px 10px 11px 5px;display:flex;gap:7px;align-items:center"><span class="cr-caret" data-key="${ln.key}" style="${hasKids?'':'visibility:hidden'}">▾</span>${tyI(ln.type,18)}<div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:700;color:${TYC[ln.type]};line-height:1.2;display:flex;align-items:center;gap:5px">${ln.key}${hasKids?`<span style="font-size:9px;color:#fff;background:#8993A4;border-radius:8px;padding:0 5px;font-weight:700">${ln.children.length}</span>`:''}</div><div style="font-size:10.5px;color:#42526E;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px">${ln.sum}</div><div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap"><span style="font-size:8px;font-weight:700;color:#fff;background:${moduleColor};padding:1.5px 5px;border-radius:3px;letter-spacing:.02em">${ln.module}</span>${ln.linked?`<span style="font-size:8px;font-weight:700;color:#5E4DB2;background:#EAE6FF;padding:1.5px 5px;border-radius:3px">↔ LINKED</span>`:''}${ln.scope?`<span style="font-size:8px;font-weight:700;color:#fff;background:#BF2600;padding:1.5px 5px;border-radius:3px">⚠ SCOPE</span>`:''}</div></div></div></div><div class="cr-trk" data-key="${ln.key}"></div>`;
+     const moduleColor=(ln.module||'').startsWith('Product')?'#5E4DB2':'#0052CC';
+     row.innerHTML=`<div class="cr-lbl">${treeHTML(ln)}<div style="flex:1;min-width:0;padding:11px 10px 11px 5px;display:flex;gap:7px;align-items:center"><span class="cr-caret" data-key="${ln.key}" style="${hasKids?'':'visibility:hidden'}">▾</span>${tyI(ln.type,18)}<div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:700;color:${TYC[ln.type]};line-height:1.2;display:flex;align-items:center;gap:5px">${ln.key}${hasKids?`<span style="font-size:9px;color:#fff;background:#8993A4;border-radius:8px;padding:0 5px;font-weight:700">${ln.children.length}</span>`:''}</div><div style="font-size:10.5px;color:#42526E;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px">${ln.sum}</div><div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">${ln.module?`<span style="font-size:8px;font-weight:700;color:#fff;background:${moduleColor};padding:1.5px 5px;border-radius:3px;letter-spacing:.02em">${ln.module}</span>`:''}${ln.linked?`<span style="font-size:8px;font-weight:700;color:#5E4DB2;background:#EAE6FF;padding:1.5px 5px;border-radius:3px">↔ LINKED</span>`:''}${ln.scope?`<span style="font-size:8px;font-weight:700;color:#fff;background:#BF2600;padding:1.5px 5px;border-radius:3px">⚠ SCOPE</span>`:''}</div></div></div></div><div class="cr-trk" data-key="${ln.key}"></div>`;
      lanesEl.appendChild(row);ln._trk=row.querySelector('.cr-trk');
      const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 100 106');svg.setAttribute('preserveAspectRatio','none');svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:4';ln._trk.appendChild(svg);ln._arcs=[];
      for(let i=1;i<ln.cev.length;i++){if(ln.cev[i].kind==='detour'){const x1=dx(ln.cev[i-1].day),x2=dx(ln.cev[i].day);const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',`M ${x1} 53 Q ${(x1+x2)/2} 80 ${x2} 53`);p.setAttribute('fill','none');p.setAttribute('stroke','#BF2600');p.setAttribute('stroke-width','1.5');p.setAttribute('stroke-dasharray','3 2');p.setAttribute('vector-effect','non-scaling-stroke');p.style.cssText='opacity:0;transition:opacity .5s';svg.appendChild(p);ln._arcs.push({el:p,day:ln.cev[i].day});}}
-     if(ln.sprint){const sx=dx(dnum(ln.sprint.start)),ex=dx(Math.min(dnum(ln.sprint.end),SPAN));const br=document.createElement('div');br.style.cssText=`position:absolute;top:98px;left:${sx}%;width:${ex-sx}%;height:0;border-top:2px solid #5E4DB2;opacity:.5`;br.innerHTML=`<span style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:8px;color:#5E4DB2;font-weight:700;white-space:nowrap;background:#fff;padding:0 4px">▦ ${ln.sprint.name}</span><i style="position:absolute;left:0;top:-4px;width:1.5px;height:8px;background:#5E4DB2"></i><i style="position:absolute;right:0;top:-4px;width:1.5px;height:8px;background:#5E4DB2"></i>`;ln._trk.appendChild(br);}
+     if(ln.sprint&&ln.sprint.start&&ln.sprint.end){const sx=dx(dnum(ln.sprint.start)),ex=dx(Math.min(dnum(ln.sprint.end),SPAN));const br=document.createElement('div');br.style.cssText=`position:absolute;top:98px;left:${sx}%;width:${ex-sx}%;height:0;border-top:2px solid #5E4DB2;opacity:.5`;br.innerHTML=`<span style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:8px;color:#5E4DB2;font-weight:700;white-space:nowrap;background:#fff;padding:0 4px">▦ ${ln.sprint.name}</span><i style="position:absolute;left:0;top:-4px;width:1.5px;height:8px;background:#5E4DB2"></i><i style="position:absolute;right:0;top:-4px;width:1.5px;height:8px;background:#5E4DB2"></i>`;ln._trk.appendChild(br);}
      if(ln.target){const x=dx(dnum(ln.target));const fl=document.createElement('div');fl.className='cr-flag';fl.style.left=x+'%';fl.textContent='⚑ target '+fmtS(ln.target);ln._trk.appendChild(fl);const fline=document.createElement('div');fline.style.cssText=`position:absolute;top:16px;left:${x}%;height:37px;width:0;border-left:1.5px dotted #974F0C;opacity:.5`;ln._trk.appendChild(fline);}
      ln._segs=[];for(let i=0;i<ln.cev.length-1;i++){const e=ln.cev[i],x=dx(e.day),w=dx(ln.cev[i+1].day)-x;const seg=document.createElement('div');seg.className='cr-seg';seg.style.left=x+'%';seg.style.width=w+'%';seg.style.background=CATC[e.cat];ln._trk.appendChild(seg);ln._segs.push({el:seg,a:e.day,b:ln.cev[i+1].day});}
      ln._dlys=[];for(let i=0;i<ln.cev.length-1;i++){const e=ln.cev[i],mid=(dx(e.day)+dx(ln.cev[i+1].day))/2,sl=e.dwell>=7;const d=document.createElement('div');d.className='cr-dly';d.style.left=mid+'%';d.style.color=sl?'#BF2600':'#7A869A';d.textContent=(e.dwell>=1?Math.round(e.dwell)+'d':Math.round(e.dwell*24)+'h')+(sl?' ⚠':'');ln._dlys.push({el:d,b:ln.cev[i+1].day});ln._trk.appendChild(d);}
@@ -346,6 +353,7 @@ class Component {
     }
     function loop(ts){if(!lastTs)lastTs=ts;const dt=ts-lastTs;lastTs=ts;if(tween){const k=Math.min(1,(ts-tween.s)/tween.d);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;t=tween.from+(tween.to-tween.from)*e;if(k>=1){t=tween.to;tween=null;}}else if(playing){t+=dt/1000*(SPAN/18)*speed;if(t>=SPAN){t=SPAN;playing=false;setPlay();if(!completed){completed=true;showSum(true);}}}draw();raf=requestAnimationFrame(loop);}
     raf=requestAnimationFrame(loop);
+    window.__crCancelFn=function(){cancelAnimationFrame(raf);};
     function step(dir){playing=false;setPlay();const days=activeEvents().map(e=>e.day);const ref=tween?tween.to:t;let target;if(dir>0)target=days.find(d=>d>ref+1e-4);else{const b=days.filter(d=>d<ref-1e-4);target=b.length?b[b.length-1]:-0.4;}if(target===undefined)target=SPAN;tween={from:t,to:target,s:performance.now(),d:Math.abs(target-ref)>3?620:440};}
     playB.onclick=()=>{if(playing)playing=false;else{if(t>=SPAN){t=-0.4;completed=false;}tween=null;playing=true;hideSum();}setPlay();};
     $('cr-prev').onclick=()=>step(-1);$('cr-next').onclick=()=>step(1);
@@ -384,9 +392,20 @@ class Component {
      <div style="flex:1;min-width:300px"><div style="font-size:11px;font-weight:800;color:#42526E;margin-bottom:8px;letter-spacing:.03em">TIME HELD — BY WHOM, IN WHICH STATUS</div><table style="border-collapse:collapse;width:100%">${rows}</table><div style="margin-top:10px;font-size:11px;color:#5E6C84;background:#F7F8FA;border-radius:8px;padding:9px 11px">Longest accumulation: <b>${longest[0]}</b> held work for <b>${Math.round(longest[1].total)} days</b> — the primary owner across the journey.</div></div></div></div>`;
      b.style.maxHeight='70vh';const x=$('cr-sumx');if(x)x.onclick=hideSum;}
     updateVis();draw();
+    window.__crRestartFn=function(){if(window.__crCancelFn)window.__crCancelFn();var le=$('cr-lanes');if(le)le.innerHTML='';var st=$('cr-stripTop');if(st)st.innerHTML='';var ss=$('cr-stripSide');if(ss)ss.innerHTML='';try{var c=new Component();c._init=false;c.componentDidMount();}catch(ex){console.error('Replay restart error:',ex);}};
   }
 }
 
+window.__crLiveLanes=null;
+window.__crLiveWarnings=[];
+window.addEventListener('message',function(ev){
+  if(!ev.data||ev.data.type!=='catalyst-replay-journey')return;
+  var j=ev.data.journey;
+  if(!j||!Array.isArray(j.lanes)||j.lanes.length===0)return;
+  window.__crLiveLanes=j.lanes;
+  window.__crLiveWarnings=(j.dataQuality&&j.dataQuality.warnings)||[];
+  if(window.__crRestartFn){window.__crRestartFn();}
+});
 document.addEventListener("DOMContentLoaded",function(){try{var c=new Component();c.componentDidMount();}catch(e){console.error("Replay boot error:",e);}});
 </script>
 </body>

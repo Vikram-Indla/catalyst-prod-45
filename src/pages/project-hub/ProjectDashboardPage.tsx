@@ -187,7 +187,10 @@ function ProjectDashboardPageInner({ mode }: { mode: DashboardMode }) {
         setLiveReplayLoading(false);
         return;
       }
-      const journey = await buildLiveReplayJourney(candidate);
+      const moduleLabel = isProduct
+        ? `Product · ${key.toUpperCase()}`
+        : `Project · ${key.toUpperCase()}`;
+      const journey = await buildLiveReplayJourney(candidate, moduleLabel);
       setLiveJourney(journey);
       setShowLiveReplay(true);
     } catch (err) {

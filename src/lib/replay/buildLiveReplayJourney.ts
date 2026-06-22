@@ -58,6 +58,7 @@ interface TransitionRow {
  */
 export async function buildLiveReplayJourney(
   rootCandidate: ReplayCandidate,
+  moduleLabel?: string,
 ): Promise<ReplayJourney> {
   const warnings: string[] = [];
   const sourceTables: string[] = ["ph_issues"];
@@ -196,6 +197,7 @@ export async function buildLiveReplayJourney(
     lanes.push({
       key: issue.issue_key,
       type: toReplayType(issue.issue_type),
+      module: moduleLabel,
       parent: issue.parent_key,
       reporter: issue.reporter_display_name ?? undefined,
       sum: issue.summary ?? issue.issue_key,

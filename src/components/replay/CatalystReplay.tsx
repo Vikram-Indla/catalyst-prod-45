@@ -1,36 +1,38 @@
 import React from "react";
 import { createPortal } from "react-dom";
+import type { ReplayJourney } from "@/lib/replay/liveReplayTypes";
 
 /**
  * CatalystReplay — drop-in, pixel-perfect lifecycle replay overlay.
  *
- * This is the APPROVED design, shipped exactly as built. It renders the
- * self-contained replay app (public/catalyst-replay/index.html) inside an
- * isolated iframe, so:
- *   • it looks 100% identical to the approved prototype (same code, same pixels)
- *   • Catalyst's global CSS cannot leak in and distort it, and its styles
- *     cannot leak out and affect Catalyst (full style isolation)
- *   • there are zero dependency / version conflicts
+ * Renders public/catalyst-replay/index.html inside an isolated iframe.
+ * Full style isolation — Catalyst CSS cannot leak in, iframe CSS cannot leak out.
  *
- * Public API is intentionally tiny and matches the existing mount points:
- *   <CatalystReplay rootKey="BR-204" onClose={() => setShowReplay(false)} />
- *
- * NOTE (v1): the replay runs on the built-in sample journey (BR-204). Wiring it
- * to live data is a later, additive step — see README. `rootKey` is forwarded
- * to the app now so that wiring requires no signature change.
+ * v2: supports `mode` + `journey` props for live-data path.
+ *   mode="demo"  → iframe runs its built-in sample journey (original behaviour)
+ *   mode="live"  → iframe receives a ReplayJourney via postMessage after load
  */
 export interface CatalystReplayProps {
-  /** Work-item key to replay (e.g. a Business Request key). Forwarded to the app. */
+  mode?: "demo" | "live";
+  /** Work-item key forwarded in the iframe URL (used by demo mode). */
   rootKey?: string;
+  /** Live journey to post into the iframe after load. Required when mode="live". */
+  journey?: ReplayJourney;
   /** Called when the user closes the replay (✕ inside the overlay, or Esc). */
   onClose?: () => void;
 }
 
-// public/ is served at the site root by Vite, so this path is stable on every route.
 const REPLAY_APP_URL = "/catalyst-replay/index.html";
 
-export function CatalystReplay({ rootKey, onClose }: CatalystReplayProps) {
-  // Listen for the close signal the embedded app posts when ✕ / Esc is used.
+export function CatalystReplay({
+  mode = "demo",
+  rootKey,
+  journey,
+  onClose,
+}: CatalystReplayProps) {
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
+
+  // Listen for close signal from embedded app
   React.useEffect(() => {
     function handle(e: MessageEvent) {
       if (e?.data && e.data.type === "catalyst-replay-close") onClose?.();
@@ -38,6 +40,16 @@ export function CatalystReplay({ rootKey, onClose }: CatalystReplayProps) {
     window.addEventListener("message", handle);
     return () => window.removeEventListener("message", handle);
   }, [onClose]);
+
+  // Post live journey after iframe loads
+  function handleLoad() {
+    if (mode === "live" && journey && iframeRef.current?.contentWindow) {
+      iframeRef.current.contentWindow.postMessage(
+        { type: "catalyst-replay-journey", journey },
+        window.location.origin,
+      );
+    }
+  }
 
   const src =
     `${REPLAY_APP_URL}?embed=1` +
@@ -51,12 +63,14 @@ export function CatalystReplay({ rootKey, onClose }: CatalystReplayProps) {
       style={{ position: "fixed", inset: 0, zIndex: 9000, background: "#fff" }}
     >
       <iframe
+        ref={iframeRef}
         src={src}
         title="Catalyst Replay"
+        onLoad={handleLoad}
         style={{ width: "100%", height: "100%", border: 0, display: "block" }}
       />
     </div>,
-    document.body
+    document.body,
   );
 }
 
