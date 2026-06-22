@@ -5,7 +5,7 @@ import { BusinessRequest, CreateBusinessRequestFormData } from '@/types/business
 import { useToast } from '@/hooks/use-toast';
 import { Json } from '@/integrations/supabase/types';
 
-// Helper to generate MIM-XXX format request key
+// Helper to generate MDT-XXX format request key
 const generateRequestKey = async (): Promise<string> => {
   // Get all existing request keys to find the max number
   const { data, error } = await typedQuery('business_requests')
@@ -17,24 +17,24 @@ const generateRequestKey = async (): Promise<string> => {
     console.error('Error getting request keys:', error);
     // Fallback to timestamp-based key to avoid collisions
     const timestamp = Date.now().toString().slice(-6);
-    return `MIM-${timestamp}`;
+    return `MDT-${timestamp}`;
   }
-  
+
   // Find the highest number from existing keys (handles gaps from deleted records)
   let maxNum = 0;
   ((data || []) as any[]).forEach((row: any) => {
     if (row.request_key) {
-      const match = row.request_key.match(/MIM-(\d+)/);
+      const match = row.request_key.match(/(?:MDT|MIM)-(\d+)/);
       if (match) {
         const num = parseInt(match[1], 10);
         if (num > maxNum) maxNum = num;
       }
     }
   });
-  
+
   // Generate next sequential number, padded to 3 digits
   const nextNum = (maxNum + 1).toString().padStart(3, '0');
-  return `MIM-${nextNum}`;
+  return `MDT-${nextNum}`;
 };
 
 // Helper to transform DB row to BusinessRequest

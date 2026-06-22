@@ -58,12 +58,12 @@ function useNextInitiativeKey() {
       if (data && data.length > 0) {
         let maxNum = 0;
         for (const row of data) {
-          const match = row.initiative_key?.match(/MIM-(\d+)/);
+          const match = row.initiative_key?.match(/(?:MDT|MIM)-(\d+)/);
           if (match) { const num = parseInt(match[1], 10); if (num > maxNum) maxNum = num; }
         }
-        return `MIM-${String(maxNum + 1).padStart(3, '0')}`;
+        return `MDT-${String(maxNum + 1).padStart(3, '0')}`;
       }
-      return 'MIM-001';
+      return 'MDT-001';
     },
     staleTime: 0,
   });
@@ -244,7 +244,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
 
   const handleCreate = async (addAnother: boolean) => {
     if (!form.title.trim()) { setTitleError(true); return; }
-    const key = nextKey || 'MIM-001';
+    const key = nextKey || 'MDT-001';
     await createMutation.mutateAsync({
       ...form,
       initiative_key: key,
