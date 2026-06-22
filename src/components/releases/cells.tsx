@@ -2,6 +2,7 @@ import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import ProgressBar from '@atlaskit/progress-bar';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
+import { ActionsMenu } from './ActionsMenu';
 
 // ── Release Name Cell (link to detail)
 export function makeReleaseNameCell(
@@ -185,26 +186,24 @@ export function makeDescriptionCell() {
 }
 
 // ── Actions Menu Cell (kebab)
-export function makeActionsCell(onAction: (action: string, releaseId: string) => void) {
+export function makeActionsCell(
+  onEdit: (release: Release) => void,
+  onArchive: (release: Release) => void,
+  onRelease: (release: Release) => void,
+  onDelete: (release: Release) => void
+) {
   return {
     key: 'actions',
     header: '',
     width: 80,
     render: (row: Release) => (
-      <button
-        onClick={() => onAction('menu', row.id)}
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '18px',
-          padding: '0 8px',
-        }}
-        aria-label={`Actions for ${row.name}`}
-        aria-haspopup="menu"
-      >
-        •••
-      </button>
+      <ActionsMenu
+        release={row}
+        onEdit={onEdit}
+        onArchive={onArchive}
+        onRelease={onRelease}
+        onDelete={onDelete}
+      />
     ),
   };
 }

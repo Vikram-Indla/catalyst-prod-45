@@ -8,6 +8,11 @@ import { useReleases } from '@/hooks/releases/useReleases';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
 import JiraTable from '@/components/shared/JiraTable';
 import { ReleaseCreateModal } from '@/components/releases/ReleaseCreateModal';
+import { ReleaseEditModal } from '@/components/releases/ReleaseEditModal';
+import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
+import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
+import { ReleaseDeleteDialog } from '@/components/releases/ReleaseDeleteDialog';
+import { ActionsMenu } from '@/components/releases/ActionsMenu';
 import {
   makeReleaseNameCell,
   makeStatusCell,
@@ -36,7 +41,17 @@ export function ReleasesPage() {
     archived: false,
   });
   const [successFlag, setSuccessFlag] = useState<string | null>(null);
+
+  // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingRelease, setEditingRelease] = useState<Release | null>(null);
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [archivingRelease, setArchivingRelease] = useState<Release | null>(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [confirmingRelease, setConfirmingRelease] = useState<Release | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletingRelease, setDeletingRelease] = useState<Release | null>(null);
 
   const filtered = useMemo(() => {
     if (!data?.data) return { unreleased: [], released: [], archived: [] };
@@ -69,10 +84,35 @@ export function ReleasesPage() {
     };
   };
 
-  const handleAction = (action: string, releaseId: string) => {
-    if (action === 'menu') {
-      // TODO: Open actions dropdown menu
-      console.log('Open menu for release:', releaseId);
+  const handleEditRelease = (release: Release) => {
+    setEditingRelease(release);
+    setIsEditModalOpen(true);
+  };
+
+  const handleArchiveRelease = (release: Release) => {
+    setArchivingRelease(release);
+    setIsArchiveDialogOpen(true);
+  };
+
+  const handleReleaseVersion = (release: Release) => {
+    setConfirmingRelease(release);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleDeleteRelease = (release: Release) => {
+    setDeletingRelease(release);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleAction = (action: string, release: Release) => {
+    if (action === 'edit') {
+      handleEditRelease(release);
+    } else if (action === 'archive') {
+      handleArchiveRelease(release);
+    } else if (action === 'release') {
+      handleReleaseVersion(release);
+    } else if (action === 'delete') {
+      handleDeleteRelease(release);
     }
   };
 
@@ -92,7 +132,7 @@ export function ReleasesPage() {
     makeStartDateCell(),
     makeReleaseDateCell(),
     makeDescriptionCell(),
-    makeActionsCell(handleAction),
+    makeActionsCell(handleEditRelease, handleArchiveRelease, handleReleaseVersion, handleDeleteRelease),
   ];
 
   if (isLoading) return <div>Loading releases...</div>;
@@ -262,6 +302,70 @@ export function ReleasesPage() {
           setSuccessFlag(`Release "${release.name}" has been created.`);
         }}
       />
+
+      {/* Edit Release Modal */}
+      {editingRelease && (
+        <ReleaseEditModal
+          isOpen={isEditModalOpen}
+          projectKey={key!}
+          release={editingRelease}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingRelease(null);
+          }}
+          onSuccess={(release) => {
+            setSuccessFlag(`Release "${release.name}" has been updated.`);
+          }}
+        />
+      )}
+
+      {/* Archive Release Dialog */}
+      {archivingRelease && (
+        <ReleaseArchiveDialog
+          isOpen={isArchiveDialogOpen}
+          release={archivingRelease}
+          projectKey={key!}
+          onClose={() => {
+            setIsArchiveDialogOpen(false);
+            setArchivingRelease(null);
+          }}
+          onSuccess={() => {
+            setSuccessFlag(`Release "${archivingRelease.name}" has been archived.`);
+          }}
+        />
+      )}
+
+      {/* Release Confirmation Modal */}
+      {confirmingRelease && (
+        <ReleaseConfirmationModal
+          isOpen={isConfirmModalOpen}
+          release={confirmingRelease}
+          projectKey={key!}
+          onClose={() => {
+            setIsConfirmModalOpen(false);
+            setConfirmingRelease(null);
+          }}
+          onSuccess={(release) => {
+            setSuccessFlag(`Release "${release.name}" published.`);
+          }}
+        />
+      )}
+
+      {/* Delete Release Dialog */}
+      {deletingRelease && (
+        <ReleaseDeleteDialog
+          isOpen={isDeleteDialogOpen}
+          release={deletingRelease}
+          projectKey={key!}
+          onClose={() => {
+            setIsDeleteDialogOpen(false);
+            setDeletingRelease(null);
+          }}
+          onSuccess={() => {
+            setSuccessFlag(`Release "${deletingRelease.name}" has been deleted.`);
+          }}
+        />
+      )}
     </div>
   );
 }
