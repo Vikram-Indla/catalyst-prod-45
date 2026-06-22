@@ -71,6 +71,7 @@ Deno.serve(async (req) => {
     const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
       type: 'recovery',
       email,
+      options: { redirectTo: 'https://ksa-catalyst.com/auth/reset-password' },
     });
     if (linkErr) {
       console.error('[reset-user-password] generateLink:', linkErr);
