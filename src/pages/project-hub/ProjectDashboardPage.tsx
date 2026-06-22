@@ -671,7 +671,7 @@ useEffect(() => {
         )}
       </FlagGroup>
     </AtlaskitPageShell>
-    {showReplay && <CatalystReplay onClose={() => setShowReplay(false)} />}
+    {showReplay && <CatalystReplayDemo />}
     </>
   );
 }
