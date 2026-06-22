@@ -36,6 +36,10 @@ import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import ProjectDashboardTimeline from '@/components/projecthub/ProjectDashboardTimeline';
 import ProductDashboardTimeline from '@/components/producthub/ProductDashboardTimeline';
+import { CatalystReplay } from '@/components/replay/CatalystReplay';
+import { selectBestReplayCandidate } from '@/lib/replay/selectReplayCandidates';
+import { buildLiveReplayJourney } from '@/lib/replay/buildLiveReplayJourney';
+import type { ReplayJourney } from '@/lib/replay/liveReplayTypes';
 
 
 // Self-rolled dropdown for edit mode actions — avoids @atlaskit/popup (0,0) bug
@@ -147,6 +151,54 @@ function ProjectDashboardPageInner({ mode }: { mode: DashboardMode }) {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [draft, setDraft] = useState<ResolvedWidget[] | null>(null);
   const [savedFlag, setSavedFlag] = useState(false);
+  const [showReplay, setShowReplay] = useState(false);
+  const [showLiveReplay, setShowLiveReplay] = useState(false);
+  const [liveJourney, setLiveJourney] = useState<ReplayJourney | null>(null);
+  const [liveReplayLoading, setLiveReplayLoading] = useState(false);
+  const [liveReplayError, setLiveReplayError] = useState<string | null>(null);
+
+  async function handleReplayLive() {
+    if (!key) return;
+    setLiveReplayError(null);
+    setLiveReplayLoading(true);
+    try {
+      // Product hub: use jira_project_key from products table so INV → MDT etc.
+      let jiraProjectKey = key;
+      const rootTypes = ["Epic", "Story", "Feature"];
+      if (isProduct) {
+        const { data: productRow } = await supabase
+          .from("products")
+          .select("jira_project_key")
+          .eq("code", key.toUpperCase())
+          .single();
+        if (productRow?.jira_project_key) {
+          jiraProjectKey = productRow.jira_project_key;
+          // BR-centric product: include Business Request as valid root type
+          rootTypes.unshift("Business Request");
+        }
+      }
+
+      const candidate = await selectBestReplayCandidate(jiraProjectKey, rootTypes);
+      if (!candidate) {
+        setLiveReplayError(
+          `No eligible Replay journey found for ${jiraProjectKey} — no transition history available. ` +
+          `Run wh-jira-changelog-backfill for this project to enable live Replay.`
+        );
+        setLiveReplayLoading(false);
+        return;
+      }
+      const moduleLabel = isProduct
+        ? `Product · ${key.toUpperCase()}`
+        : `Project · ${key.toUpperCase()}`;
+      const journey = await buildLiveReplayJourney(candidate, moduleLabel);
+      setLiveJourney(journey);
+      setShowLiveReplay(true);
+    } catch (err) {
+      setLiveReplayError(`Replay build failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setLiveReplayLoading(false);
+    }
+  }
 
   // 2026-06-09 Vikram RCA — @atlaskit/flag has NO autoDismiss prop.
   // Without an explicit timer, "Layout saved" persists forever until
@@ -607,6 +659,25 @@ useEffect(() => {
             </div>
           ) : (
             <div style={{ padding: 16 }}>
+              {isProduct && (
+                <div style={{ marginBottom: 16, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <Button appearance="primary" onClick={() => setShowReplay(true)}>
+                    Replay Demo
+                  </Button>
+                  <Button
+                    appearance="default"
+                    isDisabled={liveReplayLoading}
+                    onClick={handleReplayLive}
+                  >
+                    {liveReplayLoading ? 'Building…' : 'Replay Live'}
+                  </Button>
+                  {liveReplayError && (
+                    <span style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)', maxWidth: 420 }}>
+                      {liveReplayError}
+                    </span>
+                  )}
+                </div>
+              )}
               {isEditing && (
                 <div style={{ marginBottom: 16 }}>
                   <SectionMessage appearance="information">
@@ -662,6 +733,16 @@ useEffect(() => {
         )}
       </FlagGroup>
     </AtlaskitPageShell>
+    {showReplay && (
+      <CatalystReplay rootKey="BR-204" onClose={() => setShowReplay(false)} />
+    )}
+    {showLiveReplay && liveJourney && (
+      <CatalystReplay
+        mode="live"
+        journey={liveJourney}
+        onClose={() => { setShowLiveReplay(false); setLiveJourney(null); }}
+      />
+    )}
     </>
   );
 }

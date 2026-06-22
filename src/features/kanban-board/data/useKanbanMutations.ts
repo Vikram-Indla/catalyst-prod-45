@@ -45,8 +45,8 @@ function categoryToJira(cat?: StatusCategory): string | undefined {
   return undefined;
 }
 
-/* Generate a unique MIM-N request_key (mirrors src/hooks/useBusinessRequests.ts).
-   business_requests uses one global keyspace (MIM-1, MIM-2, ...) regardless
+/* Generate a unique MDT-N request_key (mirrors src/hooks/useBusinessRequests.ts).
+   business_requests uses one global keyspace (MDT-1, MDT-2, ...) regardless
    of product. Falls back to a timestamp-based key on lookup failure so we
    never block creation. */
 async function generateRequestKey(): Promise<string> {
@@ -57,16 +57,16 @@ async function generateRequestKey(): Promise<string> {
     .limit(2000);
   let maxNum = 0;
   ((data ?? []) as Array<{ request_key: string | null }>).forEach((r) => {
-    const m = r.request_key?.match(/MIM-(\d+)/);
+    const m = r.request_key?.match(/(?:MDT|MIM)-(\d+)/);
     if (m) {
       const n = parseInt(m[1], 10);
       if (!Number.isNaN(n) && n > maxNum) maxNum = n;
     }
   });
   if (maxNum === 0) {
-    return `MIM-${Date.now().toString().slice(-6)}`;
+    return `MDT-${Date.now().toString().slice(-6)}`;
   }
-  return `MIM-${maxNum + 1}`;
+  return `MDT-${maxNum + 1}`;
 }
 
 /* 2026-06-17: helper — resolve a task status NAME → task_statuses.id so

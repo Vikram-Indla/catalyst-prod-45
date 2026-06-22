@@ -145,19 +145,42 @@ function useDeployControl() {
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   const call = useCallback(async (method: string, body?: unknown) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const res = await fetch(
+    const getToken = async (forceRefresh = false): Promise<string | null> => {
+      if (forceRefresh) {
+        const { data } = await supabase.auth.refreshSession();
+        return data.session?.access_token ?? null;
+      }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) return session.access_token;
+      // No cached session — attempt refresh before failing
+      const { data } = await supabase.auth.refreshSession();
+      return data.session?.access_token ?? null;
+    };
+
+    const token = await getToken();
+    if (!token) throw new Error('Not authenticated — please sign in again');
+
+    const doFetch = (t: string) => fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/deploy-control`,
       {
         method,
         headers: {
-          Authorization: `Bearer ${session?.access_token}`,
+          Authorization: `Bearer ${t}`,
           'Content-Type': 'application/json',
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
         body: body ? JSON.stringify(body) : undefined,
       },
     );
+
+    let res = await doFetch(token);
+
+    if (res.status === 401) {
+      // Server rejected token (stale JWT) — force refresh and retry once
+      const freshToken = await getToken(true);
+      if (freshToken) res = await doFetch(freshToken);
+    }
+
     if (!res.ok) {
       const e = await res.json().catch(() => ({ error: res.statusText }));
       throw new Error(e.error ?? 'Unknown error');

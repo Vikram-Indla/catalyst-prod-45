@@ -18,14 +18,14 @@ export function useUnreadCount() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return 0;
 
-      // Count unread Direct-tab notifications from last 7 days.
+      // Count unread notifications (direct + watching) from last 7 days.
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
       const { count, error } = await supabase
         .from('notifications')
         .select('*', { count: 'exact', head: true })
         .eq('recipient_user_id', user.id)
-        .eq('tab', 'direct')
+        .in('tab', ['direct', 'watching'])
         .is('read_at', null)
         .eq('entity_deleted', false)
         .gte('created_at', sevenDaysAgo)

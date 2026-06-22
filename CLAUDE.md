@@ -898,6 +898,68 @@ The working tree on `main` frequently carries **stale, uncommitted changes** fro
 
 ---
 
+## 2026-06-22 — Panel layout: NEVER use injected `<style>` with ID guard to override React inline styles; use ResizeObserver instead (P0 process — cost Vikram 5 iterations)
+
+**Surface:** `KeyDetailsFieldRow` in `CatalystKeyDetails.tsx` — label minWidth responsive layout for panel vs modal.
+
+**What broke:** Label `minWidth: 320px` + `space.800` (64px) gap = 384px consumed before the value column. In a 480px panel (448px usable), value got only 64px → all field values ("None", "Select type", etc.) clipped at right edge.
+
+**What I tried and why each failed:**
+
+1. **CSS container query injection** (`@container (max-width: 520px) { .cv-kd-label { min-width: 120px !important; } }`):
+   - **Fatal flaw — HMR ID guard**: The injection is guarded by `if (!document.getElementById(KEY_DETAILS_HOVER_BG_RESET_ID))`. In Vite HMR, the style element persists across module hot-reloads. New code with the container query was SKIPPED on every hot reload. The old style (without the query) stayed in the DOM. The rule never landed unless the user hard-refreshed.
+   - **Never verified with DOM probe**: I shipped the code change and waited for a screenshot. A single `getComputedStyle(span).minWidth` check in Chrome DevTools would have revealed instantly that `320px` was still the computed value.
+
+2. **Container query fired but computed value didn't change**: `!important` in an injected stylesheet CAN override a React inline `style` prop (`style="min-width: 320px"`) per CSS cascade spec. But with the HMR issue, the rule never existed in the DOM so it didn't matter.
+
+**What fixed it on the FIRST attempt:** `ResizeObserver` on the row wrapper ref. Measures actual rendered pixels → `setIsNarrow(width < 420)` → React re-renders with `minWidth: isNarrow ? 120 : 320`. Zero CSS cascade, zero HMR issues, zero injection timing.
+
+**The process failure that made this 5 iterations:**
+1. Chose CSS approach for a CSS layout problem (reasonable instinct, wrong tool)
+2. Never DOM-probed after each failed attempt — shipped code, waited for a screenshot
+3. Each iteration tried a new CSS trick instead of measuring
+
+**The rules that would have saved all 5 iterations:**
+
+**Rule 1 — DOM probe BEFORE and AFTER every visual layout fix:**
+```js
+// Before: what is the computed value right now?
+getComputedStyle(document.querySelector('.cv-kd-label')).minWidth  // '320px' → broken
+// After any code change: verify it actually changed
+getComputedStyle(document.querySelector('.cv-kd-label')).minWidth  // must change to '120px' or '0px'
+```
+If computed value doesn't change after your fix → stop, diagnose, don't try next CSS trick.
+
+**Rule 2 — NEVER use injected `<style>` with ID guard to override React inline styles in dev environment:**
+- ID guard (`!document.getElementById(id)`) means: if the style was ever injected in this browser session, it will NOT be updated by code changes (HMR, re-imports, anything short of hard refresh)
+- The correct pattern for shared injected styles that need to UPDATE is: `if (existing) { existing.textContent = newCss; }` (see how CatalystViewBase does it at line 79-80)
+- OR: don't use injected styles for dynamic values at all
+
+**Rule 3 — For component-internal responsive layout, use ResizeObserver:**
+```tsx
+const rowRef = React.useRef<HTMLDivElement>(null);
+const [isNarrow, setIsNarrow] = React.useState(false);
+React.useEffect(() => {
+  const el = rowRef.current;
+  if (!el) return;
+  const ro = new ResizeObserver(([e]) => setIsNarrow(e.contentRect.width < 420));
+  ro.observe(el);
+  return () => ro.disconnect();
+}, []);
+// Use: minWidth: isNarrow ? 120 : 320
+```
+ResizeObserver is environment-agnostic, HMR-safe, fires on mount AND on resize, no CSS specificity issues.
+
+**Rule 4 — Container queries have real-world failure modes — verify before shipping:**
+- HMR doesn't update ID-guarded injected styles
+- `container-type` + `overflow: hidden` on the same element has browser-specific interaction bugs
+- `@container` inside dynamically injected `<style>` may not work in all HMR scenarios
+- **Always verify with `getComputedStyle` after the fix, before sending to Vikram**
+
+**Severity:** P0 process — 5 iterations for a minWidth change. Vikram nearly gave up. Root cause: shipped code changes without DOM probe verification between each attempt.
+
+---
+
 ## 2026-06-20 — `git add <path-already-git-rm'd>` aborts the whole stage → split a file deletion from its dependent edit → build break on main
 
 **Surface:** Deleting a file that is imported elsewhere (orphaned `ProductFilterPreviewPage.tsx` + its `lazy()` import in `FullAppRoutes.tsx`).

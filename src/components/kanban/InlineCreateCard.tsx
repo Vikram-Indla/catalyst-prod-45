@@ -482,20 +482,20 @@ function InlineCreateCardComponent({
           projectManagerUserId = (prof as { id: string } | null)?.id ?? null;
         }
 
-        /* Generate MIM-N request_key (same pattern as useKanbanMutations). */
+        /* Generate MDT-N request_key (same pattern as useKanbanMutations). */
         const { data: keyRows } = await (supabase as any)
           .from('business_requests').select('request_key').not('request_key', 'is', null).limit(2000);
         let maxNum = 0;
         ((keyRows ?? []) as Array<{ request_key: string | null }>).forEach((r) => {
-          const m = r.request_key?.match(/MIM-(\d+)/);
+          const m = r.request_key?.match(/(?:MDT|MIM)-(\d+)/);
           if (m) {
             const n = parseInt(m[1], 10);
             if (!Number.isNaN(n) && n > maxNum) maxNum = n;
           }
         });
         const requestKey = maxNum === 0
-          ? `MIM-${Date.now().toString().slice(-6)}`
-          : `MIM-${maxNum + 1}`;
+          ? `MDT-${Date.now().toString().slice(-6)}`
+          : `MDT-${maxNum + 1}`;
 
         const insertRow: Record<string, any> = {
           request_key: requestKey,

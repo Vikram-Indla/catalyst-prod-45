@@ -593,9 +593,28 @@ serve(async (req) => {
               const statusCat = (issue.fields.status?.statusCategory?.name || '').toLowerCase()
               const statusType = statusCat === 'done' ? 'green' : statusCat === 'in progress' ? 'blue' : 'gray'
 
-              // Notify all mapped team members EXCEPT the assignee and creator (they get direct notifications)
+              // Direct notification for assignee (tab: 'direct' → shows badge + appears in Direct tab)
+              if (assigneeCatalystId) {
+                watchingNotifRows.push({
+                  recipient_user_id: assigneeCatalystId,
+                  actor_user_id: creatorCatalystId || null,
+                  notification_type: 'assigned',
+                  entity_id: issue.id,
+                  entity_type: 'issue',
+                  entity_key: issue.key,
+                  entity_title: issue.fields.summary || '',
+                  hub_source: 'ProjectHub',
+                  entity_icon_type: watchIcon,
+                  status: issue.fields.status?.name || 'To Do',
+                  status_type: statusType,
+                  tab: 'direct',
+                  metadata: {},
+                })
+              }
+
+              // Watching notification for all other mapped team members
               for (const catalystId of allCatalystIds) {
-                if (catalystId === assigneeCatalystId) continue  // has direct 'assigned' notification
+                if (catalystId === assigneeCatalystId) continue  // already got direct
                 if (catalystId === creatorCatalystId) continue   // they created it
                 watchingNotifRows.push({
                   recipient_user_id: catalystId,
@@ -616,14 +635,13 @@ serve(async (req) => {
             }
 
             if (watchingNotifRows.length > 0) {
-              // Upsert with dedup: skip if this user already has a watching notif for this entity
               const { error: wErr } = await supabase
                 .from('notifications')
                 .insert(watchingNotifRows)
               if (wErr && wErr.code !== '23505') {
-                console.warn(`[sync] watching notifications insert: ${wErr.message}`)
+                console.warn(`[sync] notifications insert: ${wErr.message}`)
               } else {
-                console.log(`[sync] Emitted ${watchingNotifRows.length} watching notifications for ${newIssues.length} new issues`)
+                console.log(`[sync] Emitted ${watchingNotifRows.length} notifications for ${newIssues.length} new issues`)
               }
             }
           }

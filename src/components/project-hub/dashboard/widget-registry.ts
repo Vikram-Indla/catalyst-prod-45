@@ -69,7 +69,6 @@ import ProductionIncidentsWidget from './widgets/ProductionIncidentsWidget';
 import QADefectsWidget from './widgets/QADefectsWidget';
 import TeamWorkloadWidget from './widgets/TeamWorkloadWidget';
 import TimeInStatusWidget from './widgets/TimeInStatusWidget';
-import BrPulseMapWidget from './widgets/BrPulseMapWidget';
 import HealthRadarWidget from './widgets/HealthRadarWidget';
 import ReleaseConfidenceWidget from './widgets/ReleaseConfidenceWidget';
 import StakeholderLensWidget from './widgets/StakeholderLensWidget';
@@ -227,20 +226,6 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     hideOnProject: true,
   },
 
-  // ─── §6 DATE PULSE HEALTH (product-only) ────────────────────────────
-  // Health visibility for Business Requests via DatePulseEngine.
-  {
-    id: 'br-pulse-map',
-    title: 'BR Pulse Map',
-    subtitle: 'Health distribution across Business Requests',
-    group: 'delivery',
-    defaultSpan: 12,
-    minSpan: 6,
-    defaultPosition: 10,
-    component: BrPulseMapWidget,
-    hideOnProject: true,
-    hideOnIncident: true,
-  },
   {
     id: 'health-radar',
     title: 'Release Health',

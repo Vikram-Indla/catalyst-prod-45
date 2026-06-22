@@ -281,10 +281,7 @@ async function handlePost(
       },
     );
 
-    if (!res.ok) {
-      const txt = await res.text();
-      return err(`GitHub API error ${res.status}: ${txt}`, 502);
-    }
+    if (!res.ok) return ghErr(res);
     return json({ ok: true, message: 'Workflow dispatch triggered' });
   }
 
@@ -306,7 +303,7 @@ async function handlePost(
         },
       },
     );
-    if (!res.ok) return err(`GitHub API error ${res.status}`, 502);
+    if (!res.ok) return ghErr(res);
     const jobsBody = await res.json();
     const jobs = (jobsBody.jobs ?? []).map((j: Record<string, unknown>) => ({
       id: j.id,
@@ -390,7 +387,7 @@ async function handlePost(
         },
       },
     );
-    if (!res.ok) return err(`GitHub API error ${res.status}`, 502);
+    if (!res.ok) return ghErr(res);
     const cmp = await res.json();
     const commits = (cmp.commits ?? []).map((c: Record<string, unknown>) => ({
       sha: (c.sha as string)?.slice(0, 7),
@@ -430,10 +427,7 @@ async function handlePost(
     );
 
     if (res.status === 204) return json({ ok: true, message: `Already up to date — production is at the same commit as ${sourceBranch}` });
-    if (!res.ok) {
-      const txt = await res.text();
-      return err(`GitHub merge error ${res.status}: ${txt}`, 502);
-    }
+    if (!res.ok) return ghErr(res);
     const merged = await res.json();
     return json({ ok: true, sha: (merged.sha as string)?.slice(0, 7), message: `Merged ${sourceBranch} → production. CI will now deploy to ksa-catalyst.com.` });
   }
@@ -457,7 +451,7 @@ async function handlePost(
         },
       },
     );
-    if (!res.ok) return err(`GitHub API error ${res.status}`, 502);
+    if (!res.ok) return ghErr(res);
 
     const raw = await res.json() as Record<string, unknown>[];
     const branches = raw.map((b) => ({
@@ -499,10 +493,7 @@ async function handlePost(
       `https://api.github.com/repos/${settings.github_repo}/compare/production...${encodeURIComponent(sourceBranch)}?per_page=100`,
       { headers: ghHeaders },
     );
-    if (!res.ok) {
-      const txt = await res.text();
-      return err(`GitHub API error ${res.status}: ${txt}`, 502);
-    }
+    if (!res.ok) return ghErr(res);
 
     const cmp = await res.json();
     const ahead_by: number = cmp.ahead_by ?? 0;
@@ -606,4 +597,15 @@ function err(message: string, status: number) {
     status,
     headers: { ...cors, 'Content-Type': 'application/json' },
   });
+}
+
+async function ghErr(res: Response): Promise<Response> {
+  if (res.status === 403) {
+    return err(
+      'GitHub PAT is missing repository access. Go to the Config tab and update the PAT — it needs "repo" scope (classic PAT) or "Contents: Read" permission (fine-grained PAT).',
+      502,
+    );
+  }
+  const txt = await res.text();
+  return err(`GitHub API error ${res.status}: ${txt}`, 502);
 }
