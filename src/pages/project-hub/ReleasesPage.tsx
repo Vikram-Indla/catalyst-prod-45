@@ -7,6 +7,7 @@ import Flag from '@atlaskit/flag';
 import { useReleases } from '@/hooks/releases/useReleases';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
 import JiraTable from '@/components/shared/JiraTable';
+import { ReleaseCreateModal } from '@/components/releases/ReleaseCreateModal';
 import {
   makeReleaseNameCell,
   makeStatusCell,
@@ -35,6 +36,7 @@ export function ReleasesPage() {
     archived: false,
   });
   const [successFlag, setSuccessFlag] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const filtered = useMemo(() => {
     if (!data?.data) return { unreleased: [], released: [], archived: [] };
@@ -145,7 +147,9 @@ export function ReleasesPage() {
           onChange={(option) => setStatusFilter(option.value)}
           isSearchable={false}
         />
-        <Button appearance="primary">Create release</Button>
+        <Button appearance="primary" onClick={() => setIsCreateModalOpen(true)}>
+          Create release
+        </Button>
       </div>
 
       {/* Unreleased Section */}
@@ -247,6 +251,17 @@ export function ReleasesPage() {
           )}
         </div>
       )}
+
+      {/* Create Release Modal */}
+      <ReleaseCreateModal
+        isOpen={isCreateModalOpen}
+        projectKey={key!}
+        projectId={data?.data?.[0]?.project_id || key!}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={(release) => {
+          setSuccessFlag(`Release "${release.name}" has been created.`);
+        }}
+      />
     </div>
   );
 }
