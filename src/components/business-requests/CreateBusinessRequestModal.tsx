@@ -46,6 +46,7 @@ import {
   type ChangeEvent,
   type ReactNode,
 } from 'react';
+import { createPortal } from 'react-dom';
 
 import {
   ModalDialog,
@@ -70,7 +71,6 @@ import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
-import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -341,26 +341,131 @@ function FullscreenToggleButton() {
 }
 
 function MoreActionsButton() {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        menuRef.current?.contains(e.target as Node) ||
+        triggerRef.current?.contains(e.target as Node)
+      ) return;
+      setIsOpen(false);
+    };
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape, true);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape, true);
+    };
+  }, [isOpen]);
+
+  const getPosition = () => {
+    if (!triggerRef.current) return { top: 0, right: 0 };
+    const rect = triggerRef.current.getBoundingClientRect();
+    return {
+      top: rect.bottom + 4,
+      right: window.innerWidth - rect.right,
+    };
+  };
+
+  const pos = getPosition();
+
   return (
-    <DropdownMenu
-      trigger={({ triggerRef, ...triggerProps }) => (
-        <IconButton
-          {...triggerProps}
-          ref={triggerRef}
-          appearance="subtle"
-          spacing="default"
-          label="More actions"
-          icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
-        />
+    <>
+      <IconButton
+        ref={triggerRef}
+        appearance="subtle"
+        spacing="default"
+        label="More actions"
+        icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
+        onClick={() => setIsOpen(!isOpen)}
+      />
+      {isOpen && createPortal(
+        <div
+          ref={menuRef}
+          role="menu"
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            right: pos.right,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 6,
+            boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+            padding: '4px 0',
+            minWidth: 180,
+            zIndex: 9999,
+          }}
+        >
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              window.open('https://github.com/anthropics/claude-code/issues', '_blank');
+              setIsOpen(false);
+            }}
+            style={{
+              display: 'block',
+              width: '100%',
+              textAlign: 'left',
+              padding: '8px 16px',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              color: token('color.text', '#292A2E'),
+              fontSize: 14,
+              transition: 'background 120ms',
+            }}
+            onMouseEnter={(e) => {
+              (e.target as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)');
+            }}
+            onMouseLeave={(e) => {
+              (e.target as HTMLElement).style.background = 'none';
+            }}
+          >
+            Give feedback
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              window.open('https://claude.ai/help', '_blank');
+              setIsOpen(false);
+            }}
+            style={{
+              display: 'block',
+              width: '100%',
+              textAlign: 'left',
+              padding: '8px 16px',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              color: token('color.text', '#292A2E'),
+              fontSize: 14,
+              transition: 'background 120ms',
+            }}
+            onMouseEnter={(e) => {
+              (e.target as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)');
+            }}
+            onMouseLeave={(e) => {
+              (e.target as HTMLElement).style.background = 'none';
+            }}
+          >
+            Help
+          </button>
+        </div>,
+        document.body
       )}
-      placement="bottom-end"
-      shouldRenderToParent
-    >
-      <DropdownItemGroup>
-        <DropdownItem>Give feedback</DropdownItem>
-        <DropdownItem>Help</DropdownItem>
-      </DropdownItemGroup>
-    </DropdownMenu>
+    </>
   );
 }
 
@@ -563,7 +668,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
   return (
     <ModalTransition>
       {isOpen && (
-        <ModalDialog onClose={handleClose} width="large" shouldScrollInViewport autoFocus>
+        <ModalDialog onClose={handleClose} width="large" shouldScrollInViewport autoFocus modalTitle="Create Business Request">
 
           {/* ── Header ─────────────────────────────────────────────────────── */}
           <ModalHeader>
