@@ -2005,7 +2005,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   style={{ height: d.rowHeight }}
                 >
                   {r.cells.map((c: any) => (
-                    <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden', display: 'flex' }}>
+                    <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
                       {c.content}
                     </td>
                   ))}
@@ -2040,7 +2040,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         style={{ height: d.rowHeight }}
                       >
                         {r.cells.map((c: any) => (
-                          <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden', display: 'flex' }}>
+                          <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
                             {c.content}
                           </td>
                         ))}
