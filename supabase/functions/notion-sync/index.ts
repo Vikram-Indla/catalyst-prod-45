@@ -1,16 +1,14 @@
 /**
- * notion-sync
+ * notion-sync v2
  *
- * Syncs Notion Features database → business_requests table.
- * Upsert key: notion_page_id (Notion's internal page UUID).
- * Notion is allowed to overwrite all mapped fields on every sync.
+ * Syncs Notion databases → business_requests.
+ * Upsert key: notion_page_id.
+ *
+ * v2: sync_paused check, exclusion_rules, notify_admins.
  *
  * Triggered by:
- *   - pg_cron daily schedule (cron job in notion_sync_cron migration)
- *   - Manual POST from the admin Notion connection page
- *
- * Body (manual trigger): { config_id?: string }
- *   If config_id is omitted, uses the first enabled config row.
+ *   - pg_cron daily schedule
+ *   - Manual POST: { config_id?, triggered_by? }
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -22,7 +20,58 @@ const CORS = {
 
 const NOTION_VERSION = '2022-06-28'
 
-// ── Field flattener (mirrors notion-fetch/index.ts) ──────────────────────────
+// ── Exclusion rules ───────────────────────────────────────────────────────────
+interface ExclusionRule {
+  field: string
+  op: 'is' | 'is_not' | 'contains'
+  value: string
+}
+
+function shouldExclude(flat: Record<string, string | null>, rules: ExclusionRule[]): boolean {
+  if (!rules || rules.length === 0) return false
+  for (const rule of rules) {
+    const fieldVal = (flat[rule.field] ?? '').toLowerCase()
+    const ruleVal  = (rule.value ?? '').toLowerCase()
+    if (rule.op === 'is'       && fieldVal === ruleVal)       return true
+    if (rule.op === 'is_not'   && fieldVal !== ruleVal)       return true
+    if (rule.op === 'contains' && fieldVal.includes(ruleVal)) return true
+  }
+  return false
+}
+
+// ── Notify admins ─────────────────────────────────────────────────────────────
+async function notifyAdmins(
+  db: any, configId: string, sourceLabel: string,
+  synced: number, skipped: number, ok: boolean,
+) {
+  const { data: admins } = await db.from('user_roles').select('user_id').eq('role', 'admin')
+  if (!admins || admins.length === 0) return
+
+  const title = ok
+    ? `Notion sync: ${synced} records synced from "${sourceLabel}"`
+    : `Notion sync failed for "${sourceLabel}"`
+
+  const rows = admins.map((u: any) => ({
+    recipient_user_id: u.user_id,
+    actor_user_id:     null,
+    notification_type: 'ai_insight_generated',
+    entity_id:         configId,
+    entity_type:       'issue',
+    entity_key:        sourceLabel,
+    entity_title:      title,
+    hub_source:        'ProductHub',
+    entity_icon_type:  'story',
+    status:            ok ? 'Synced' : 'Error',
+    status_type:       ok ? 'green'  : 'gray',
+    tab:               'watching',
+    metadata:          { synced, skipped, source_label: sourceLabel },
+  }))
+
+  const { error } = await db.from('notifications').insert(rows)
+  if (error) console.warn('[notion-sync] notify_admins insert failed:', error.message)
+}
+
+// ── Field flattener ───────────────────────────────────────────────────────────
 function flattenProp(prop: any): string | null {
   if (!prop) return null
   switch (prop.type) {
@@ -85,7 +134,7 @@ function mapNotionPageToBR(page: any, fieldMapping: Record<string, string>) {
     }
   }
 
-  return br
+  return { br, flat }
 }
 
 // ── Main handler ─────────────────────────────────────────────────────────────
@@ -135,7 +184,14 @@ Deno.serve(async (req) => {
 
 // ── Sync a single config row ──────────────────────────────────────────────────
 async function syncOneConfig(db: any, config: any, triggeredBy: string) {
-  // Insert sync log (running)
+  // Respect pause flag
+  if (config.sync_paused) {
+    console.log(`[notion-sync] ${config.source_label} is paused — skipping`)
+    return { ok: true, paused: true, synced: 0, skipped: 0 }
+  }
+
+  const exclusionRules: ExclusionRule[] = config.exclusion_rules || []
+
   const { data: logRow } = await db.from('notion_sync_log').insert({
     config_id:    config.id,
     status:       'running',
@@ -175,10 +231,12 @@ async function syncOneConfig(db: any, config: any, triggeredBy: string) {
 
     const fieldMapping: Record<string, string> = config.field_mapping || {}
 
-    let synced = 0, skipped = 0
+    let synced = 0, skipped = 0, excluded = 0
     for (const page of pages) {
-      const br = mapNotionPageToBR(page, fieldMapping)
+      const { br, flat } = mapNotionPageToBR(page, fieldMapping)
       if (!br.title) { skipped++; continue }
+
+      if (shouldExclude(flat, exclusionRules)) { excluded++; skipped++; continue }
 
       const { error: upsertErr } = await db
         .from('business_requests')
@@ -208,7 +266,11 @@ async function syncOneConfig(db: any, config: any, triggeredBy: string) {
       }).eq('id', logId)
     }
 
-    return { ok: true, synced, skipped, total: pages.length }
+    if (config.notify_admins) {
+      await notifyAdmins(db, config.id, config.source_label, synced, skipped, true)
+    }
+
+    return { ok: true, synced, skipped, excluded, total: pages.length }
 
   } catch (err: any) {
     const msg = err.message || 'Unknown error'
@@ -219,6 +281,9 @@ async function syncOneConfig(db: any, config: any, triggeredBy: string) {
         status:        'error',
         error_message: msg,
       }).eq('id', logId)
+    }
+    if (config.notify_admins) {
+      await notifyAdmins(db, config.id, config.source_label, 0, 0, false)
     }
     return { ok: false, error: msg, synced: 0, skipped: 0 }
   }
