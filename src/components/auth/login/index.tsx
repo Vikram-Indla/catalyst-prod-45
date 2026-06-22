@@ -213,7 +213,7 @@ export function CatalystLoginPage() {
     const { data, error } = await supabase.functions.invoke('send-password-reset', {
       body: {
         email: email.toLowerCase().trim(),
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+        redirectTo: `${window.location.origin}/reset-password`,
       },
     });
     // The function is anti-enumeration: it returns ok:true even for unknown emails.

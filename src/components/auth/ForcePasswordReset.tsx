@@ -73,7 +73,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
   const handleSendResetLink = async () => {
     setSendingLink(true);
     await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     await supabase.auth.signOut();
     setSendingLink(false);
