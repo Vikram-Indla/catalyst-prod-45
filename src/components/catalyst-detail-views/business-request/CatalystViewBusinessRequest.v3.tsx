@@ -53,7 +53,6 @@ import type { CatalystViewBaseProps } from '../shared/types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import { useClearableOnOpen } from '@/hooks/useClearableOnOpen';
-import CatalystReplayButton from '../../replay/CatalystReplayButton';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
@@ -318,28 +317,16 @@ export default function CatalystViewBusinessRequestV3({
   }, [deleteRequest, onClose]);
 
   // ── Left rail (mirrors Story's leftContent slot) ──────────────────────────
-  const hasTransitioned = request && request.status !== 'New';
 
   const leftContent = useMemo(
     () => (
       <>
         {/* Canonical Story title editor (CatalystTitleEditor) mounted via
             mapBrToIssueLike adapter. Replaces former BrTitleSection fork. */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ flex: 1 }}>
-            <CatalystTitleEditor
-              issue={mapBrToIssueLike(request)}
-              onTitleChange={(t) => { void updateField('title', t); }}
-            />
-          </div>
-          {request?.request_key && (
-            <CatalystReplayButton
-              brKey={request.request_key}
-              hasTransitioned={hasTransitioned ?? false}
-              dir="ltr"
-            />
-          )}
-        </div>
+        <CatalystTitleEditor
+          issue={mapBrToIssueLike(request)}
+          onTitleChange={(t) => { void updateField('title', t); }}
+        />
         <CatalystQuickActions />
         {/* Canonical Key details — Parent hidden (BR has no parent concept),
             Priority on (mapBrToIssueLike.priority = urgency), urgency write
@@ -397,7 +384,7 @@ export default function CatalystViewBusinessRequestV3({
       </>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [request, updateField, resolvedId, isOpen, openDetail, isNewlyCreated, brKeyDetailsRows, descriptionAdf, handleDescriptionSave, hasTransitioned],
+    [request, updateField, resolvedId, isOpen, openDetail, isNewlyCreated, brKeyDetailsRows, descriptionAdf, handleDescriptionSave],
   );
 
   // ── Right rail — status pill in header, matching Story's pattern ──────────

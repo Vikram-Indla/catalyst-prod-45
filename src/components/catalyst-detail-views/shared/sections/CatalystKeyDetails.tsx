@@ -45,22 +45,32 @@ export function KeyDetailsFieldRow({
   alignBlock?: 'start' | 'center';
   children: React.ReactNode;
 }) {
-  /* 2026-06-17: uniform hover background on every Key details VALUE cell
-     (Parent / Priority / Severity / Workstream / Due date / etc.). The
-     wrapper owns the hover bg via data-cv-keydetails-value. Inner editor
-     atoms (EditablePriority, EditableAssignee, etc.) already render
-     their own hover bg via global `.cv-*-select__control:hover` CSS —
-     that's suppressed inside this wrapper (rule injected below) so we
-     get exactly ONE background, not two stacked. */
+  /* 2026-06-17: uniform hover background on every Key details VALUE cell. */
   const [hovered, setHovered] = React.useState(false);
+  /* Responsive label width: 320px in wide modal/full-page contexts,
+     collapses to 120px in narrow panel (~480px) so value column has room.
+     ResizeObserver on the row wrapper measures actual rendered width — more
+     reliable than container queries (which had CSS injection issues). */
+  const rowRef = React.useRef<HTMLDivElement>(null);
+  const [isNarrow, setIsNarrow] = React.useState(false);
+  React.useEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setIsNarrow(entry.contentRect.width < 420);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   return (
-    <div style={{ padding: '6px 0' }}>
+    <div ref={rowRef} style={{ padding: '6px 0' }}>
       {/* 2026-06-22 Vikram: widened label column (120→320) + gap
-          (space.250→space.800) for maximum breathing room. */}
+          (space.250→space.800) for maximum breathing room in wide views.
+          Narrow containers (panel mode) shrink label to 120px via ResizeObserver. */}
       <Inline space="space.800" alignBlock={alignBlock}>
         <span style={{
           fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
-          minWidth: 320, flexShrink: 0,
+          minWidth: isNarrow ? 120 : 320, flexShrink: 0,
         }}>{label}</span>
         <div
           data-cv-keydetails-value="true"
