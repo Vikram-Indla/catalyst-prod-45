@@ -275,7 +275,6 @@ const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPag
 const JiraSyncPage = lazy(() => import("../pages/admin/connections/JiraSyncPage").then(m => ({ default: m.JiraSyncPage })));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 // Connections hub — each integration gets a page under /admin/connections/*
-const SlackConnectionPage = lazy(() => import("../pages/admin/connections/SlackConnectionPage"));
 const NotionConnectionPage = lazy(() => import("../pages/admin/connections/NotionConnectionPage"));
 const VercelConnectionPage = lazy(() => import("../pages/admin/connections/VercelConnectionPage"));
 // WorkHubSyncLogs DEPRECATED 2026-06-20 — route removed
@@ -948,7 +947,6 @@ export default function FullAppRoutes() {
           <Route path="connections/jira" element={<S><JiraSyncPage /></S>} />
           <Route path="workflows/hierarchy" element={<S><WorkHubHierarchyPage /></S>} />
           <Route path="connections/jira/hierarchy" element={<Navigate to="/admin/workflows/hierarchy" replace />} />
-          <Route path="connections/slack" element={<S><SlackConnectionPage /></S>} />
           <Route path="connections/notion" element={<S><NotionConnectionPage /></S>} />
           <Route path="connections/vercel" element={<S><VercelConnectionPage /></S>} />
           {/* Backward-compat redirects — old workhub/* paths */}

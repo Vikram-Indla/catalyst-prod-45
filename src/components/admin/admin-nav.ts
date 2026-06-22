@@ -74,7 +74,6 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/connections',
     children: [
       { label: 'Jira', path: '/admin/connections/jira' },
-      { label: 'Slack', path: '/admin/connections/slack' },
       { label: 'Notion', path: '/admin/connections/notion' },
       { label: 'Vercel', path: '/admin/connections/vercel' },
     ],
@@ -104,7 +103,6 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/release-ops',
   '/admin/workflows/hierarchy',
   '/admin/connections/jira',
-  '/admin/connections/slack',
   '/admin/connections/notion',
   '/admin/connections/vercel',
   '/admin/ai-governance/translations',

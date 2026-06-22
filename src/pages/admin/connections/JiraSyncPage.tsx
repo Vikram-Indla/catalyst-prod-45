@@ -352,7 +352,6 @@ function SyncControlTab() {
   const { data: writeBackEnabled } = useWHConfig('jira_write_back_enabled');
   const { data: health } = useSyncHealth();
   const { mutate: setConfig } = useSetWHConfig();
-  const forceSync = useForceSync();
 
   const [syncRunning, setSyncRunning] = useState(false);
   const [ticketKey, setTicketKey] = useState('');
