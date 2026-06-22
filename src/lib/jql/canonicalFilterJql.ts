@@ -40,6 +40,12 @@ export function jqlToCanonicalFilterValue(jql: string): CanonicalFilterValue {
     } else if (col === 'issue_type') {
       if (isExclude) result.workTypeExclude = uniq([...result.workTypeExclude, ...raw]);
       else result.workType = uniq([...result.workType, ...raw]);
+    } else if (col === 'priority') {
+      if (isExclude) result.priorityExclude = uniq([...result.priorityExclude, ...raw]);
+      else result.priority = uniq([...result.priority, ...raw]);
+    } else if (col === 'severity') {
+      if (isExclude) result.severityExclude = uniq([...result.severityExclude, ...raw]);
+      else result.severity = uniq([...result.severity, ...raw]);
     } else if (col === 'parent_key') {
       // `parent is empty` → include No-parent sentinel.
       // `parent is not empty` → exclude No-parent sentinel.
@@ -98,6 +104,8 @@ export function canonicalFilterValueToJql(
   if (value.status.length)    clauses.push(emitMulti('status', value.status));
   if (value.labels.length)    clauses.push(emitMulti('labels', value.labels));
   if (value.workType.length)  clauses.push(emitMulti('issuetype', value.workType));
+  if (value.priority.length)  clauses.push(emitMulti('priority', value.priority));
+  if (value.severity.length)  clauses.push(emitMulti('severity', value.severity));
 
   // Exclude clauses (Advanced tab `!=` operator).
   if (value.parentExclude?.length) {
@@ -110,6 +118,8 @@ export function canonicalFilterValueToJql(
   if (value.statusExclude?.length)    clauses.push(emitMultiNot('status', value.statusExclude));
   if (value.labelsExclude?.length)    clauses.push(emitMultiNot('labels', value.labelsExclude));
   if (value.workTypeExclude?.length)  clauses.push(emitMultiNot('issuetype', value.workTypeExclude));
+  if (value.priorityExclude?.length)  clauses.push(emitMultiNot('priority', value.priorityExclude));
+  if (value.severityExclude?.length)  clauses.push(emitMultiNot('severity', value.severityExclude));
 
   return clauses.join(' AND ');
 }

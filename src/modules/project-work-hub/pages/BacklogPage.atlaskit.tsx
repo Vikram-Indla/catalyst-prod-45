@@ -410,6 +410,8 @@ export interface BacklogItem {
   labels: string[] | null;
   sprint_release: string[] | null;
   rank_order: number | null;
+  /** Severity (Jira customfield_10125 — Blocker / High / Medium / Low). */
+  severity?: string | null;
   // 2026-06-01 — Business Request adapter fields (always null on Jira rows).
   // Surface only via the product backlog (ProductBacklogPage's adapter sets
   // allowedColumnIds to expose them).
@@ -1795,6 +1797,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         if (!it.issue_type || !cf.workType.includes(it.issue_type)) return false;
       }
       if (cf.workTypeExclude.length && it.issue_type && cf.workTypeExclude.includes(it.issue_type)) return false;
+      if (cf.priority.length) {
+        if (!it.priority || !cf.priority.includes(it.priority)) return false;
+      }
+      if (cf.priorityExclude.length && it.priority && cf.priorityExclude.includes(it.priority)) return false;
+      const sev = (it as any).severity as string | null | undefined;
+      if (cf.severity.length) {
+        if (!sev || !cf.severity.includes(sev)) return false;
+      }
+      if (cf.severityExclude.length && sev && cf.severityExclude.includes(sev)) return false;
       return true;
     };
 
@@ -1844,9 +1855,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       canonicalFilter.parent.length > 0 || canonicalFilter.assignee.length > 0 ||
       canonicalFilter.status.length > 0 || canonicalFilter.labels.length > 0 ||
       canonicalFilter.workType.length > 0 ||
+      canonicalFilter.priority.length > 0 || canonicalFilter.severity.length > 0 ||
       canonicalFilter.parentExclude.length > 0 || canonicalFilter.assigneeExclude.length > 0 ||
       canonicalFilter.statusExclude.length > 0 || canonicalFilter.labelsExclude.length > 0 ||
-      canonicalFilter.workTypeExclude.length > 0;
+      canonicalFilter.workTypeExclude.length > 0 ||
+      canonicalFilter.priorityExclude.length > 0 || canonicalFilter.severityExclude.length > 0;
     // flattenTree already dedups by id, so it is the final ordered list.
     return flattenTree<BacklogItem>(
       roots,

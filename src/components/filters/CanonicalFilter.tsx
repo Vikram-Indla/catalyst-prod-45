@@ -24,6 +24,12 @@ import PinIcon from '@atlaskit/icon/core/pin';
 import PinFilledIcon from '@atlaskit/icon/core/pin-filled';
 import MoreIcon from '@atlaskit/icon/core/show-more-horizontal';
 import DragHandleIcon from '@atlaskit/icon/core/drag-handle-vertical';
+import PriorityHighestIcon from '@atlaskit/icon/core/priority-highest';
+import PriorityHighIcon from '@atlaskit/icon/core/priority-high';
+import PriorityMediumIcon from '@atlaskit/icon/core/priority-medium';
+import PriorityLowIcon from '@atlaskit/icon/core/priority-low';
+import PriorityLowestIcon from '@atlaskit/icon/core/priority-lowest';
+import PriorityBlockerIcon from '@atlaskit/icon/core/priority-blocker';
 import Tooltip from '@atlaskit/tooltip';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
@@ -52,12 +58,16 @@ export interface CanonicalFilterValue {
   status: string[];
   labels: string[];
   workType: string[];
+  priority: string[];
+  severity: string[];
   /** Exclude variants — populated when the Advanced chip operator is `!=`. */
   parentExclude: string[];
   assigneeExclude: string[];
   statusExclude: string[];
   labelsExclude: string[];
   workTypeExclude: string[];
+  priorityExclude: string[];
+  severityExclude: string[];
 }
 
 export const emptyCanonicalFilterValue: CanonicalFilterValue = {
@@ -66,11 +76,15 @@ export const emptyCanonicalFilterValue: CanonicalFilterValue = {
   status: [],
   labels: [],
   workType: [],
+  priority: [],
+  severity: [],
   parentExclude: [],
   assigneeExclude: [],
   statusExclude: [],
   labelsExclude: [],
   workTypeExclude: [],
+  priorityExclude: [],
+  severityExclude: [],
 };
 
 export function countCanonicalActiveFields(v: CanonicalFilterValue): number {
@@ -80,8 +94,52 @@ export function countCanonicalActiveFields(v: CanonicalFilterValue): number {
   if (v.status.length || v.statusExclude.length) n++;
   if (v.labels.length || v.labelsExclude.length) n++;
   if (v.workType.length || v.workTypeExclude.length) n++;
+  if (v.priority.length || v.priorityExclude.length) n++;
+  if (v.severity.length || v.severityExclude.length) n++;
   return n;
 }
+
+export interface CanonicalPriorityOption { id: string; label: string }
+export interface CanonicalSeverityOption { id: string; label: string }
+
+/** Canonical Jira-standard priority taxonomy. */
+export const CANONICAL_PRIORITY_OPTIONS: CanonicalPriorityOption[] = [
+  { id: 'Highest', label: 'Highest' },
+  { id: 'High',    label: 'High' },
+  { id: 'Medium',  label: 'Medium' },
+  { id: 'Low',     label: 'Low' },
+  { id: 'Lowest',  label: 'Lowest' },
+];
+
+/** Map a priority id → its Atlaskit core icon (color tinted). */
+function priorityIcon(id: string): React.ReactNode {
+  switch (id) {
+    case 'Highest': return <span style={{ display: 'inline-flex', color: '#CD1316' }}><PriorityHighestIcon label="" size="small" /></span>;
+    case 'High':    return <span style={{ display: 'inline-flex', color: '#E15D31' }}><PriorityHighIcon    label="" size="small" /></span>;
+    case 'Medium':  return <span style={{ display: 'inline-flex', color: '#E4A11B' }}><PriorityMediumIcon  label="" size="small" /></span>;
+    case 'Low':     return <span style={{ display: 'inline-flex', color: '#2898BD' }}><PriorityLowIcon     label="" size="small" /></span>;
+    case 'Lowest':  return <span style={{ display: 'inline-flex', color: '#388BFF' }}><PriorityLowestIcon  label="" size="small" /></span>;
+    default:        return null;
+  }
+}
+/** Map a severity id → its Atlaskit core icon (color tinted). */
+function severityIcon(id: string): React.ReactNode {
+  switch (id) {
+    case 'Blocker': return <span style={{ display: 'inline-flex', color: '#CD1316' }}><PriorityBlockerIcon label="" size="small" /></span>;
+    case 'High':    return <span style={{ display: 'inline-flex', color: '#E15D31' }}><PriorityHighIcon    label="" size="small" /></span>;
+    case 'Medium':  return <span style={{ display: 'inline-flex', color: '#E4A11B' }}><PriorityMediumIcon  label="" size="small" /></span>;
+    case 'Low':     return <span style={{ display: 'inline-flex', color: '#2898BD' }}><PriorityLowIcon     label="" size="small" /></span>;
+    default:        return null;
+  }
+}
+
+/** Defect-tier severity (customfield_10125: Blocker / High / Medium / Low). */
+export const CANONICAL_SEVERITY_OPTIONS: CanonicalSeverityOption[] = [
+  { id: 'Blocker', label: 'Blocker' },
+  { id: 'High',    label: 'High' },
+  { id: 'Medium',  label: 'Medium' },
+  { id: 'Low',     label: 'Low' },
+];
 
 export interface CanonicalStatusOption {
   value: string;
@@ -110,12 +168,14 @@ export interface CanonicalFilterProps {
   assigneeOptions?: CanonicalAssigneeOption[];
   labelOptions?: string[];
   workTypeOptions?: CanonicalWorkTypeOption[];
+  priorityOptions?: CanonicalPriorityOption[];
+  severityOptions?: CanonicalSeverityOption[];
   /** Persistence scope — used for rail prefs AND parent query scoping. */
   scopeType?: string;
   scopeKey?: string;
 }
 
-const BASIC_FIELDS = ['Parent', 'Assignee', 'Status', 'Labels', 'Work type'];
+const BASIC_FIELDS = ['Parent', 'Assignee', 'Status', 'Labels', 'Work type', 'Priority', 'Severity'];
 
 const DEFAULT_FILTERS = [
   'Assigned to me',
@@ -136,6 +196,8 @@ export function CanonicalFilter({
   assigneeOptions = [],
   labelOptions = [],
   workTypeOptions = [],
+  priorityOptions = CANONICAL_PRIORITY_OPTIONS,
+  severityOptions = CANONICAL_SEVERITY_OPTIONS,
   scopeType,
   scopeKey,
 }: CanonicalFilterProps) {
@@ -173,6 +235,8 @@ export function CanonicalFilter({
       case 'Status': return 'status';
       case 'Labels': return 'labels';
       case 'Work type': return 'workType';
+      case 'Priority': return 'priority';
+      case 'Severity': return 'severity';
       default: return null;
     }
   }
@@ -183,6 +247,8 @@ export function CanonicalFilter({
       case 'status': return 'statusExclude';
       case 'labels': return 'labelsExclude';
       case 'workType': return 'workTypeExclude';
+      case 'priority': return 'priorityExclude';
+      case 'severity': return 'severityExclude';
       default: return null;
     }
   }
@@ -288,6 +354,29 @@ export function CanonicalFilter({
   const [draggingField, setDraggingField] = useState<string | null>(null);
   const [dragOverField, setDragOverField] = useState<string | null>(null);
   const ellipsisMenuRef = useRef<HTMLDivElement>(null);
+  const [addFieldOpen, setAddFieldOpen] = useState(false);
+  const addFieldBtnRef = useRef<HTMLButtonElement>(null);
+  const addFieldMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!addFieldOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (addFieldMenuRef.current?.contains(e.target as Node)) return;
+      if (addFieldBtnRef.current?.contains(e.target as Node)) return;
+      setAddFieldOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setAddFieldOpen(false); } };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [addFieldOpen]);
+  function restoreField(label: string) {
+    setRemovedFields((r) => r.filter((x) => x !== label));
+    setPinnedFields((p) => p.includes(label) ? p : [...p, label]);
+    setAddFieldOpen(false);
+  }
 
   type RailSection = 'pinned' | 'unpinned';
   function sectionOf(label: string): RailSection {
@@ -657,6 +746,8 @@ export function CanonicalFilter({
               assigneeOptions={assigneeOptions}
               labelOptions={labelOptions}
               workTypeOptions={workTypeOptions}
+              priorityOptions={priorityOptions}
+              severityOptions={severityOptions}
               projectSelections={projectSelections}
               onProjectSelectionsChange={setProjectSelections}
             />
@@ -724,32 +815,60 @@ export function CanonicalFilter({
                     onDrop={() => dropOn(f)}
                   />
                 ))}
-                <button
-                  type="button"
-                  style={{
-                    marginTop: 6,
-                    marginLeft: 16,
-                    height: 28,
-                    padding: '0 10px',
-                    alignSelf: 'flex-start',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    border: `1px solid ${borderSubtle}`,
-                    borderRadius: 3,
-                    background: surface,
-                    color: textSubtle,
-                    fontSize: 13,
-                    fontWeight: 500,
-                    fontFamily: 'inherit',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = hoverNeutral; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = surface; }}
-                >
-                  <TinyIcon><AddIcon label="" size="small" /></TinyIcon>
-                  Add field
-                </button>
+                <div style={{ position: 'relative', marginTop: 6, marginLeft: 16, alignSelf: 'flex-start' }}>
+                  <button
+                    ref={addFieldBtnRef}
+                    type="button"
+                    disabled={removedFields.length === 0}
+                    onClick={() => setAddFieldOpen((v) => !v)}
+                    style={{
+                      height: 28,
+                      padding: '0 10px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      border: `1px solid ${borderSubtle}`,
+                      borderRadius: 3,
+                      background: surface,
+                      color: removedFields.length === 0 ? token('color.text.disabled', '#8993A4') : textSubtle,
+                      fontSize: 13,
+                      fontWeight: 500,
+                      fontFamily: 'inherit',
+                      cursor: removedFields.length === 0 ? 'not-allowed' : 'pointer',
+                    }}
+                    onMouseEnter={(e) => { if (removedFields.length > 0) e.currentTarget.style.background = hoverNeutral; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = surface; }}
+                  >
+                    <TinyIcon><AddIcon label="" size="small" /></TinyIcon>
+                    Add field
+                  </button>
+                  {addFieldOpen && removedFields.length > 0 && addFieldBtnRef.current && createPortal(
+                    <div
+                      ref={addFieldMenuRef}
+                      role="menu" data-canonical-filter-popup="true"
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      style={{
+                        position: 'fixed',
+                        top: addFieldBtnRef.current.getBoundingClientRect().bottom + 4,
+                        left: addFieldBtnRef.current.getBoundingClientRect().left,
+                        minWidth: 180,
+                        background: token('elevation.surface.overlay', '#FFFFFF'),
+                        border: `1px solid ${borderSubtle}`,
+                        borderRadius: 6,
+                        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+                        padding: '4px 0',
+                        zIndex: 10001,
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      {removedFields.map((f) => (
+                        <EllipsisMenuItem key={f} label={f} enabled onClick={() => restoreField(f)} />
+                      ))}
+                    </div>,
+                    document.body,
+                  )}
+                </div>
               </div>
               <div style={{ padding: '8px 12px' }}>
                 <button
@@ -792,6 +911,8 @@ export function CanonicalFilter({
                     assigneeOptions={assigneeOptions}
                     labelOptions={labelOptions}
                     workTypeOptions={workTypeOptions}
+                    priorityOptions={priorityOptions}
+                    severityOptions={severityOptions}
                     scopeType={scopeType}
                     scopeKey={scopeKey}
                   />
@@ -1460,6 +1581,8 @@ const ADVANCED_FIELDS: Array<{ key: keyof CanonicalFilterValue; label: string }>
   { key: 'status',   label: 'Status' },
   { key: 'labels',   label: 'Labels' },
   { key: 'workType', label: 'Work type' },
+  { key: 'priority', label: 'Priority' },
+  { key: 'severity', label: 'Severity' },
 ];
 
 function excludeKeyOf(field: keyof CanonicalFilterValue): keyof CanonicalFilterValue {
@@ -1469,6 +1592,8 @@ function excludeKeyOf(field: keyof CanonicalFilterValue): keyof CanonicalFilterV
     case 'status':   return 'statusExclude';
     case 'labels':   return 'labelsExclude';
     case 'workType': return 'workTypeExclude';
+    case 'priority': return 'priorityExclude';
+    case 'severity': return 'severityExclude';
     default:         return field;
   }
 }
@@ -1490,6 +1615,8 @@ function AdvancedTabBody({
   assigneeOptions,
   labelOptions,
   workTypeOptions,
+  priorityOptions,
+  severityOptions,
   projectSelections,
   onProjectSelectionsChange,
 }: {
@@ -1500,6 +1627,8 @@ function AdvancedTabBody({
   assigneeOptions: CanonicalAssigneeOption[];
   labelOptions: string[];
   workTypeOptions: CanonicalWorkTypeOption[];
+  priorityOptions: CanonicalPriorityOption[];
+  severityOptions: CanonicalSeverityOption[];
   projectSelections: string[];
   onProjectSelectionsChange: (next: string[]) => void;
 }) {
@@ -1592,6 +1721,8 @@ function AdvancedTabBody({
           assigneeOptions={assigneeOptions}
           labelOptions={labelOptions}
           workTypeOptions={workTypeOptions}
+          priorityOptions={priorityOptions}
+          severityOptions={severityOptions}
           scopeKey={scopeKey}
           onRemove={() => clearClause(f.key)}
           autoOpenValuePicker={pendingChips.includes(f.key)}
@@ -1630,6 +1761,7 @@ function AdvancedTabBody({
         </button>
         {addOpen && (
           <AddFilterMenu
+            anchorRef={addBtnRef}
             options={inactiveFields}
             onSelect={(k) => activateField(k)}
             onClose={() => setAddOpen(false)}
@@ -2032,6 +2164,8 @@ function ClauseChip({
   assigneeOptions,
   labelOptions,
   workTypeOptions,
+  priorityOptions,
+  severityOptions,
   scopeKey,
   onRemove,
   autoOpenValuePicker,
@@ -2045,6 +2179,8 @@ function ClauseChip({
   assigneeOptions: CanonicalAssigneeOption[];
   labelOptions: string[];
   workTypeOptions: CanonicalWorkTypeOption[];
+  priorityOptions: CanonicalPriorityOption[];
+  severityOptions: CanonicalSeverityOption[];
   scopeKey?: string;
   onRemove: () => void;
   autoOpenValuePicker?: boolean;
@@ -2113,6 +2249,8 @@ function ClauseChip({
       case 'status':   return statusOptions.find((s) => s.value === id)?.label ?? id;
       case 'assignee': return assigneeOptions.find((a) => a.id === id)?.label ?? id;
       case 'workType': return workTypeOptions.find((w) => w.id === id)?.label ?? id;
+      case 'priority': return priorityOptions.find((p) => p.id === id)?.label ?? id;
+      case 'severity': return severityOptions.find((s) => s.id === id)?.label ?? id;
       default:         return id;
     }
   };
@@ -2229,6 +2367,8 @@ function ClauseChip({
           assigneeOptions={assigneeOptions}
           labelOptions={labelOptions}
           workTypeOptions={workTypeOptions}
+          priorityOptions={priorityOptions}
+          severityOptions={severityOptions}
           scopeKey={scopeKey}
         />
       )}
@@ -2301,10 +2441,12 @@ function OperatorMenu({
 }
 
 function AddFilterMenu({
+  anchorRef,
   options,
   onSelect,
   onClose,
 }: {
+  anchorRef: React.RefObject<HTMLButtonElement | null>;
   options: Array<{ key: keyof CanonicalFilterValue; label: string }>;
   onSelect: (k: keyof CanonicalFilterValue) => void;
   onClose: () => void;
@@ -2313,6 +2455,7 @@ function AddFilterMenu({
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
       if (ref.current?.contains(e.target as Node)) return;
+      if (anchorRef.current?.contains(e.target as Node)) return;
       onClose();
     };
     const onKey = (e: KeyboardEvent) => {
@@ -2324,24 +2467,26 @@ function AddFilterMenu({
       document.removeEventListener('mousedown', onDown);
       document.removeEventListener('keydown', onKey, true);
     };
-  }, [onClose]);
-  return (
+  }, [onClose, anchorRef]);
+  if (!anchorRef.current) return null;
+  const rect = anchorRef.current.getBoundingClientRect();
+  return createPortal(
     <div
       ref={ref}
       role="menu" data-canonical-filter-popup="true"
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       style={{
-        position: 'absolute',
-        top: 32,
-        left: 0,
+        position: 'fixed',
+        top: rect.bottom + 4,
+        left: rect.left,
         minWidth: 180,
         background: token('elevation.surface.overlay', '#FFFFFF'),
         border: `1px solid ${token('color.border', '#DFE1E6')}`,
         borderRadius: 6,
         boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
         padding: '4px 0',
-        zIndex: 100,
+        zIndex: 10001,
         fontFamily: 'inherit',
       }}
     >
@@ -2357,7 +2502,8 @@ function AddFilterMenu({
           onClick={() => onSelect(o.key)}
         />
       ))}
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -2375,6 +2521,8 @@ function ValuePickerPopover({
   assigneeOptions,
   labelOptions,
   workTypeOptions,
+  priorityOptions,
+  severityOptions,
   scopeKey,
 }: {
   anchorRef: React.RefObject<HTMLDivElement | null>;
@@ -2390,6 +2538,8 @@ function ValuePickerPopover({
   assigneeOptions: CanonicalAssigneeOption[];
   labelOptions: string[];
   workTypeOptions: CanonicalWorkTypeOption[];
+  priorityOptions: CanonicalPriorityOption[];
+  severityOptions: CanonicalSeverityOption[];
   scopeKey?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -2430,6 +2580,8 @@ function ValuePickerPopover({
     : field === 'statusExclude' ? 'status'
     : field === 'labelsExclude' ? 'labels'
     : field === 'workTypeExclude' ? 'workType'
+    : field === 'priorityExclude' ? 'priority'
+    : field === 'severityExclude' ? 'severity'
     : field;
 
   return createPortal(
@@ -2498,6 +2650,8 @@ function ValuePickerPopover({
         assigneeOptions={assigneeOptions}
         labelOptions={labelOptions}
         workTypeOptions={workTypeOptions}
+        priorityOptions={priorityOptions}
+        severityOptions={severityOptions}
         scopeType={undefined}
         scopeKey={scopeKey}
       />
@@ -2785,6 +2939,8 @@ interface FieldEditorProps {
   assigneeOptions: CanonicalAssigneeOption[];
   labelOptions: string[];
   workTypeOptions: CanonicalWorkTypeOption[];
+  priorityOptions: CanonicalPriorityOption[];
+  severityOptions: CanonicalSeverityOption[];
   scopeType?: string;
   scopeKey?: string;
 }
@@ -2834,6 +2990,10 @@ function FieldEditor(props: FieldEditorProps) {
     options = props.labelOptions.map((l) => ({ id: l, label: l }));
   } else if (fieldKey === 'workType') {
     options = props.workTypeOptions.map((w) => ({ id: w.id, label: w.label, icon: w.icon }));
+  } else if (fieldKey === 'priority') {
+    options = props.priorityOptions.map((p) => ({ id: p.id, label: p.label, icon: priorityIcon(p.id) }));
+  } else if (fieldKey === 'severity') {
+    options = props.severityOptions.map((s) => ({ id: s.id, label: s.label, icon: severityIcon(s.id) }));
   }
 
   const q = search.trim().toLowerCase();
