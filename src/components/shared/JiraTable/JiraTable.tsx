@@ -1245,6 +1245,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
 
         rowCells.push({
           key: `${id}-${col.id}`,
+          colId: col.id,
           content: (
             <div
               style={{
@@ -2005,7 +2006,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   style={{ height: d.rowHeight }}
                 >
                   {r.cells.map((c: any) => (
-                    <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
+                    <td key={c.key} colSpan={c.colSpan} style={{
+                      overflow: 'hidden',
+                      ...(c.colId === '__actions' ? {
+                        position: 'sticky',
+                        right: 0,
+                        zIndex: 2,
+                        background: 'var(--cp-bg-elevated, #FFFFFF)',
+                      } : {}),
+                    }}>
                       {c.content}
                     </td>
                   ))}
@@ -2040,7 +2049,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         style={{ height: d.rowHeight }}
                       >
                         {r.cells.map((c: any) => (
-                          <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
+                          <td key={c.key} colSpan={c.colSpan} style={{
+                            overflow: 'hidden',
+                            ...(c.colId === '__actions' ? {
+                              position: 'sticky',
+                              right: 0,
+                              zIndex: 2,
+                              background: 'var(--cp-bg-elevated, #FFFFFF)',
+                            } : {}),
+                          }}>
                             {c.content}
                           </td>
                         ))}
