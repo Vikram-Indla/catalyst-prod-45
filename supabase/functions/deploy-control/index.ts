@@ -44,8 +44,8 @@ Deno.serve(async (req) => {
     console.error('[deploy-control] user_roles query error:', roleErr.message, 'user:', user.id);
     return err('Server error', 500);
   }
-  if (!role || !['admin', 'super_admin'].includes(role.role)) {
-    console.error('[deploy-control] role check failed: role=', role?.role, 'user:', user.id);
+  if (!role || role.role !== 'admin') {
+    console.error('[deploy-control] role check failed: requires admin, user had:', role?.role, 'user:', user.id);
     return err('Forbidden', 403);
   }
 
@@ -429,20 +429,47 @@ async function handlePost(
       .maybeSingle();
     if (!settings?.github_pat) return err('GitHub PAT not configured', 400);
 
+    const ghHeaders = {
+      Authorization: `Bearer ${settings.github_pat}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    };
+
+    // Fetch commits ahead of production to build a meaningful message
+    let commitMessage = `release: promote ${sourceBranch} → production`;
+    try {
+      const cmpRes = await fetch(
+        `https://api.github.com/repos/${settings.github_repo}/compare/production...${encodeURIComponent(sourceBranch)}?per_page=50`,
+        { headers: ghHeaders },
+      );
+      if (cmpRes.ok) {
+        const cmp = await cmpRes.json();
+        const commits = ((cmp.commits ?? []) as Record<string, unknown>[])
+          .map((c) => ((c.commit as Record<string, unknown>)?.message as string ?? '').split('\n')[0])
+          .reverse();
+        const ahead = cmp.ahead_by ?? commits.length;
+        if (ahead === 0) {
+          // Already in sync — handled below by 204
+        } else if (commits.length === 1) {
+          commitMessage = `release: ${commits[0]}`;
+        } else {
+          const lines = commits.slice(0, 10).map((m) => `• ${m}`).join('\n');
+          commitMessage = `release: promote ${ahead} commit${ahead !== 1 ? 's' : ''} to production\n\n${lines}`;
+        }
+      }
+    } catch {
+      // fallback to generic message
+    }
+
     const res = await fetch(
       `https://api.github.com/repos/${settings.github_repo}/merges`,
       {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${settings.github_pat}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-          'Content-Type': 'application/json',
-        },
+        headers: { ...ghHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           base: 'production',
           head: sourceBranch,
-          commit_message: `chore(promote): merge ${sourceBranch} → production ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC`,
+          commit_message: commitMessage,
         }),
       },
     );
