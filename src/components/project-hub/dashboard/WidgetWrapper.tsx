@@ -236,7 +236,6 @@ export default function WidgetWrapper({
         position: 'relative',
         minWidth: 0,
         width: '100%',
-        maxWidth: '100%',
         // Cap soloed width at 1440px so the gadget reads with a
         // measured horizontal rhythm on ultra-wide displays — auto
         // margins below center it. 100% on every other state.
