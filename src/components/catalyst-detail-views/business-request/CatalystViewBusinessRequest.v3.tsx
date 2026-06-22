@@ -52,6 +52,7 @@ import { BUSINESS_REQUEST_SUBTASK_TYPES } from '../shared/parent-rules';
 import type { CatalystViewBaseProps } from '../shared/types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
+import { useClearableOnOpen } from '@/hooks/useClearableOnOpen';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
@@ -77,6 +78,12 @@ export default function CatalystViewBusinessRequestV3({
   const [showCloneDialog, setShowCloneDialog] = React.useState(false);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const openDetail = useGlobalSearchStore((s) => s.openDetail);
+
+  /* Dropdown open state tracking — Type, Category, Theme.
+     X (clear) button only shows when dropdown is expanded. */
+  const type = useClearableOnOpen();
+  const category = useClearableOnOpen();
+  const theme = useClearableOnOpen();
 
   /* Recents tracking — Business Request type. Mirrors Story view
      (CatalystViewStory). Guards on first mount per request id so re-opening
@@ -166,9 +173,11 @@ export default function CatalystViewBusinessRequestV3({
             options={TYPE_SELECT_OPTIONS}
             value={TYPE_SELECT_OPTIONS.find((o) => o.value === requestTypeRaw) ?? null}
             onChange={(opt) => void updateField('request_type', (opt as { value: string } | null)?.value ?? null)}
-            isClearable
+            isClearable={type.isClearable}
             isSearchable={false}
             placeholder="Select type"
+            onMenuOpen={type.onMenuOpen}
+            onMenuClose={type.onMenuClose}
           />
         </KeyDetailsFieldRow>
         <KeyDetailsFieldRow label="Category">
@@ -178,9 +187,11 @@ export default function CatalystViewBusinessRequestV3({
             options={CATEGORY_OPTIONS}
             value={CATEGORY_OPTIONS.find((o) => o.value === categoryRaw) ?? null}
             onChange={(opt) => void updateField('category', (opt as { value: string } | null)?.value ?? null)}
-            isClearable
+            isClearable={category.isClearable}
             isSearchable={false}
             placeholder="Select category"
+            onMenuOpen={category.onMenuOpen}
+            onMenuClose={category.onMenuClose}
           />
         </KeyDetailsFieldRow>
         <KeyDetailsFieldRow label="Theme">
@@ -190,9 +201,11 @@ export default function CatalystViewBusinessRequestV3({
             options={THEME_SELECT_OPTIONS}
             value={THEME_SELECT_OPTIONS.find((o) => o.value === request.theme) ?? null}
             onChange={(opt) => void updateField('theme', (opt as { value: string } | null)?.value ?? null)}
-            isClearable
+            isClearable={theme.isClearable}
             isSearchable
             placeholder="Select theme"
+            onMenuOpen={theme.onMenuOpen}
+            onMenuClose={theme.onMenuClose}
           />
         </KeyDetailsFieldRow>
         <KeyDetailsFieldRow label="Stakeholders" alignBlock="start">
@@ -251,6 +264,9 @@ export default function CatalystViewBusinessRequestV3({
     THEME_SELECT_OPTIONS,
     STAKEHOLDER_SELECT_OPTIONS,
     health,
+    type.isClearable,
+    category.isClearable,
+    theme.isClearable,
   ]);
 
   const brAsIssueLike = useMemo(
@@ -301,6 +317,7 @@ export default function CatalystViewBusinessRequestV3({
   }, [deleteRequest, onClose]);
 
   // ── Left rail (mirrors Story's leftContent slot) ──────────────────────────
+
   const leftContent = useMemo(
     () => (
       <>

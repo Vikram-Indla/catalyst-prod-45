@@ -3981,17 +3981,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             display: 'flex',
             flexDirection: 'column',
             minHeight: 0,
-            // Apr 27, 2026 (audit pass 9): horizontal padding 16/16 → 0/0.
-            // 32px of dead whitespace on the right of the table that the
-            // user surfaced ("still empty space") was 16px contributed
-            // here. Keeping top:4 for breathing room under the toolbar
-            // bottom border. Outer page chrome still has 8px padding-left
-            // (AtlaskitPageShell) so the table won't touch the nav edge.
-            // Apr 28, 2026 (jira-compare cycle 2 V3): horizontal padding
-            // 0 → 24px so the table thead + tbody inset matches the
-            // toolbar's new 24px inset. Without this the table still
-            // hugs the white card edge.
-            padding: '24px',
+            // paddingRight drives panel-open layout (must be last / not overridden by shorthand).
+            // Other three sides: 24px to match toolbar inset.
+            paddingTop: 24,
+            paddingLeft: 24,
+            paddingBottom: 24,
           }}
         >
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>

@@ -21,7 +21,8 @@ export const FullscreenContext = createContext<{
   minimized: boolean;
   toggleFullscreen: () => void;
   toggleMinimize: () => void;
-}>({ fullscreen: false, minimized: false, toggleFullscreen: () => {}, toggleMinimize: () => {} });
+  modalTitle: string;
+}>({ fullscreen: false, minimized: false, toggleFullscreen: () => {}, toggleMinimize: () => {}, modalTitle: 'Create Story' });
 
 export function useFullscreen() {
   return useContext(FullscreenContext);
@@ -34,6 +35,7 @@ interface ModalDialogProps {
   width?: 'small' | 'medium' | 'large' | 'x-large' | string;
   shouldScrollInViewport?: boolean;
   autoFocus?: boolean;
+  modalTitle?: string;
 }
 
 // ADS @atlaskit/modal-dialog spec widths — do not deviate.
@@ -45,7 +47,7 @@ const WIDTH_MAP: Record<string, number> = {
   'x-large': 968,
 };
 
-export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialogProps) {
+export function ModalDialog({ children, onClose, width = 'medium', modalTitle = 'Create Story' }: ModalDialogProps) {
   const [fullscreen, setFullscreen] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const maxW = typeof width === 'number' ? width : (WIDTH_MAP[width] ?? 640);
@@ -69,6 +71,7 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
       minimized,
       toggleFullscreen: () => { setFullscreen(f => !f); setMinimized(false); },
       toggleMinimize: () => { setMinimized(m => !m); setFullscreen(false); },
+      modalTitle,
     }}>
       {/* Minimized pill bar — bottom-right, Jira-parity */}
       {minimized && (
@@ -96,7 +99,7 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setMinimized(false); }}
         >
           <span style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#292A2E'), flex: 1 }}>
-            Create Story
+            {modalTitle}
           </span>
           <button
             type="button"

@@ -298,6 +298,7 @@ export function CatalystDetailPanel({
               projectKey={projectKey}
               projectId={projectId}
               panelMode={true}
+              hideSidebar={true}
               entityKind={entityKind}
             />
           )}

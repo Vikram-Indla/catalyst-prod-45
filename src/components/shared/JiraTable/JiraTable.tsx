@@ -1245,6 +1245,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
 
         rowCells.push({
           key: `${id}-${col.id}`,
+          colId: col.id,
           content: (
             <div
               style={{
@@ -1266,6 +1267,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
+                minWidth: 0,
               }}
             >
               {/* Apr 27 2026 (jira-compare regression F-NEW-3 — issue half
@@ -2004,7 +2006,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   style={{ minHeight: d.rowHeight }}
                 >
                   {r.cells.map((c: any) => (
-                    <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
+                    <td key={c.key} colSpan={c.colSpan} style={{
+                      overflow: 'hidden',
+                      ...(c.colId === '__actions' ? {
+                        position: 'sticky',
+                        right: 0,
+                        zIndex: 2,
+                        background: 'var(--cp-bg-elevated, #FFFFFF)',
+                      } : {}),
+                    }}>
                       {c.content}
                     </td>
                   ))}
@@ -2040,7 +2050,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         style={{ minHeight: d.rowHeight }}
                       >
                         {r.cells.map((c: any) => (
-                          <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
+                          <td key={c.key} colSpan={c.colSpan} style={{
+                            overflow: 'hidden',
+                            ...(c.colId === '__actions' ? {
+                              position: 'sticky',
+                              right: 0,
+                              zIndex: 2,
+                              background: 'var(--cp-bg-elevated, #FFFFFF)',
+                            } : {}),
+                          }}>
                             {c.content}
                           </td>
                         ))}
