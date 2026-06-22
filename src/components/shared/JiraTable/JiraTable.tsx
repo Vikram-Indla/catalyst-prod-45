@@ -2001,7 +2001,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   className={[r.className, isGroup ? 'jira-table-group-row' : ''].filter(Boolean).join(' ')}
                   onClick={r.onClick}
                   onContextMenu={r.onContextMenu}
-                  style={{ height: d.rowHeight }}
+                  style={{ minHeight: d.rowHeight }}
                 >
                   {r.cells.map((c: any) => (
                     <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
@@ -2033,10 +2033,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       <tr
                         key={r.key}
                         data-index={vRow.index}
+                        ref={virtualizer?.measureElement as any}
                         className={[r.className, isGroup ? 'jira-table-group-row' : ''].filter(Boolean).join(' ')}
                         onClick={r.onClick}
                         onContextMenu={r.onContextMenu}
-                        style={{ height: d.rowHeight }}
+                        style={{ minHeight: d.rowHeight }}
                       >
                         {r.cells.map((c: any) => (
                           <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>

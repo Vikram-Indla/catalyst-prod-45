@@ -307,7 +307,7 @@ function DragHandleCell({ row }: { row: BacklogItem }) {
           </svg>
         </span>
       </span>
-      {dropEdge && trRect && createPortal(
+      {dropEdge && trRect && ReactDOM.createPortal(
         <div
           aria-hidden
           style={{
@@ -2442,7 +2442,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // The standalone 'summary' column block below is now deleted.
       id: 'key',
       label: 'Work',
-      flex: true,
+      // 2026-06-22: width pinned (no flex) so adding/removing other columns
+      // never resizes the Work column. width:50 → 600px via naturalWidthFor.
+      // User can still column-resize manually.
+      width: 50,
       sortable: true,
       alwaysVisible: true,
       defaultVisible: true,
@@ -2504,6 +2507,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         );
         const summaryCellRenderer = makeSummaryInlineEditCell<BacklogItem>({
           getSummary: (r) => r.title,
+          // 2026-06-22: 2-line wrap so long titles don't clamp aggressively
+          // behind the row-hover open-in-side-panel icon.
+          wrapLines: 2,
           // Iron dome OPEN (2026-04-27 audit). Every row is inline-editable.
           onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
           // 2026-05-12 Jira parity: row hover → ↗ "Open work item" opens the
