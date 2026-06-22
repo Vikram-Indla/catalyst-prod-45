@@ -301,7 +301,6 @@ export default function TestSetsPage() {
       <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0' }}>
           {sets.length} set{sets.length !== 1 ? 's' : ''}
         </p>
-      </div>
 
       {/* Create form */}
       {showCreate && (

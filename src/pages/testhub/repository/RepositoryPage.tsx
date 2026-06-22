@@ -790,9 +790,7 @@ export default function RepositoryPage() {
   );
 
   return (
-        actions={createCaseButton}
-      />
-
+    <>
       {/* Bulk action bar (visible when items selected) */}
       {selectMode && selectedIds.size > 0 && (
         <div style={{
@@ -1069,7 +1067,7 @@ export default function RepositoryPage() {
           saving={copyCases.isPending}
         />
       )}
-    </div>
+    </>
   );
 }
 
