@@ -75,6 +75,12 @@ export interface Column<TRow> {
   include?: (row: TRow) => boolean;
   /** Optional custom styles applied to the header <th> element. */
   headerStyle?: React.CSSProperties;
+  /**
+   * 2026-06-22 — locks this column's position. Excluded from drag-reorder
+   * source AND target. Used for Work column in SubtasksPanel (Jira parity:
+   * "Work" is always first and cannot be moved or replaced).
+   */
+  lockedPosition?: boolean;
 }
 
 /** Group definition for grouped rows. */

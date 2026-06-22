@@ -181,6 +181,12 @@
   padding-bottom: 0 !important;
 }
 
+/* 2026-06-23 — Jira parity: child work items table keeps header dividers
+   but removes body-cell dividers. Only override <td> border-right. */
+.sp-ak-table .jira-table-grid table tbody > tr > td {
+  border-right: none !important;
+}
+
 /* DynamicTable forwards row.className to <tr>, so we paint backgrounds
    via descendant td (Atlaskit sets its own td background otherwise). */
 .sp-ak-table tr.sp-row--selected > td {

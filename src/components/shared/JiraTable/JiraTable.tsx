@@ -49,6 +49,8 @@ import PlusIcon from '@atlaskit/icon/core/add';
 import SearchIcon from '@atlaskit/icon/core/search';
 import ResetIcon from '@atlaskit/icon/core/refresh';
 import type { Column, JiraTableProps, SortOrder } from './types';
+import { ColumnHeaderMenu, type MenuItem } from './ColumnHeaderMenu';
+import { ResizeColumnDialog } from './ResizeColumnDialog';
 
 // Simple Atlaskit-tuned button style used by the pagination footer.
 const pageBtnStyle = (disabled: boolean): React.CSSProperties => ({
@@ -183,6 +185,13 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
   // Right-click context menu state — one menu at a time, anchored to cursor.
   const [ctxMenu, setCtxMenu] = useState<{ row: TRow; x: number; y: number } | null>(null);
   const ctxMenuRef = useRef<HTMLDivElement>(null);
+  // 2026-06-23 — per-column header menu (3-dot). Stores open column id +
+  // trigger element ref so the portal menu anchors correctly.
+  const [headerMenuColId, setHeaderMenuColId] = useState<string | null>(null);
+  const headerMenuTriggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  // 2026-06-23 — column resize dialog (slider). Anchored under the 3-dot trigger.
+  const [resizeDialogColId, setResizeDialogColId] = useState<string | null>(null);
+  const resizeDialogOriginalWidthRef = useRef<number | null>(null);
   // 2026-05-10 Per-column filter popup — opens from header chevron click.
   const [filterMenu, setFilterMenu] = useState<{ colId: string; top: number; left: number } | null>(null);
   const filterMenuRef = useRef<HTMLDivElement>(null);
@@ -257,6 +266,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       if (aS && bS) return base.indexOf(a) - base.indexOf(b);
       if (aS) return -1;    // other structural (__drag, __select) first
       if (bS) return 1;
+      // 2026-06-23 — locked columns pinned at their original schema position,
+      // ALWAYS before any non-locked reorderable column. Without this, a
+      // commitColumnOrder excluding the locked column would push it to the
+      // end (idx=undefined → 999), breaking the "Work always first" contract.
+      const aLocked = !!a.lockedPosition;
+      const bLocked = !!b.lockedPosition;
+      if (aLocked && bLocked) return base.indexOf(a) - base.indexOf(b);
+      if (aLocked) return -1;
+      if (bLocked) return 1;
       const ai = idx.has(a.id) ? idx.get(a.id)! : 999;
       const bi = idx.has(b.id) ? idx.get(b.id)! : 999;
       return ai - bi;
@@ -278,8 +296,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
   const computeReorder = useCallback((sourceId: string, targetId: string): string[] | null => {
     if (sourceId === targetId) return null;
     if (sourceId.startsWith('__') || targetId.startsWith('__')) return null;
+    const srcCol = visibleColumns.find((c) => c.id === sourceId);
+    const tgtCol = visibleColumns.find((c) => c.id === targetId);
+    if (srcCol?.lockedPosition || tgtCol?.lockedPosition) return null;
     const reorderable = visibleColumns
-      .filter((c) => !c.id.startsWith('__'))
+      .filter((c) => !c.id.startsWith('__') && !c.lockedPosition)
       .map((c) => c.id);
     const fromIdx = reorderable.indexOf(sourceId);
     const toIdx = reorderable.indexOf(targetId);
@@ -294,6 +315,28 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     if (onColumnOrderChange) onColumnOrderChange(next);
     else setInternalColumnOrder(next);
   }, [onColumnOrderChange]);
+
+  // 2026-06-23 — Move column to absolute / relative position. Operates on
+  // the reorderable list (excludes locked + structural columns).
+  const moveColumn = useCallback(
+    (colId: string, direction: 'first' | 'left' | 'right' | 'last') => {
+      const reorderable = visibleColumns
+        .filter((c) => !c.id.startsWith('__') && !c.lockedPosition)
+        .map((c) => c.id);
+      const idx = reorderable.indexOf(colId);
+      if (idx < 0) return;
+      const next = [...reorderable];
+      next.splice(idx, 1);
+      let to = idx;
+      if (direction === 'first') to = 0;
+      else if (direction === 'left') to = Math.max(0, idx - 1);
+      else if (direction === 'right') to = Math.min(next.length, idx + 1);
+      else if (direction === 'last') to = next.length;
+      next.splice(to, 0, colId);
+      commitColumnOrder(next);
+    },
+    [visibleColumns, commitColumnOrder],
+  );
 
   // Whether to render the trailing `+` column-manager header. Only when the
   // parent opted in by providing both props.
@@ -808,6 +851,28 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          Active-filter state keeps chevron visible (opacity:1 inline). */
       .jira-table-grid thead th:hover .jira-filter-chevron { opacity: 1 !important; }
       .jira-filter-chevron-active { opacity: 1 !important; }
+      /* 2026-06-23 Jira-parity: sort arrow + 3-dot trigger animated reveal.
+         Idle: width 0, opacity 0 (collapsed in flex flow).
+         Hover (or sorted/menu-open): width 18, opacity 1, smooth transition.
+         The width-animation pushes the label to ellipsize gracefully and
+         the arrow slides left to make room for the 3-dot. */
+      .jira-th-sort-arrow,
+      .jira-th-menu-trigger {
+        width: 0;
+        opacity: 0;
+        margin: 0;
+        transition: width 160ms ease, opacity 160ms ease, margin 160ms ease;
+      }
+      .jira-table-grid thead th:hover .jira-th-sort-arrow,
+      .jira-table-grid thead th:hover .jira-th-menu-trigger {
+        width: 18px;
+        opacity: 1;
+      }
+      .jira-th-sort-arrow-active { width: 18px !important; opacity: 1 !important; }
+      .jira-th-menu-trigger-active { width: 18px !important; opacity: 1 !important; }
+      .jira-th-menu-trigger:hover {
+        background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) !important;
+      }
       .jira-table-grid tbody td {
         padding: 0 12px;
         vertical-align: middle;
@@ -935,22 +1000,22 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          takes left-side layout, pushing the visible SVG 6px right of centre.
          We collapse the label paddings and absolute-position the input so
          the SVG alone is the laid-out child. */
-      .jira-table-grid table thead > tr > th:first-child,
-      .jira-table-grid table tbody > tr > td:first-child {
+      .jira-table-grid.has-select-col table thead > tr > th:first-child,
+      .jira-table-grid.has-select-col table tbody > tr > td:first-child {
         text-align: center;
         padding-left: 0 !important;
         padding-right: 0 !important;
         border-right: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) !important;
       }
-      .jira-table-grid table thead > tr > th:first-child > span,
-      .jira-table-grid table tbody > tr > td:first-child > [data-jira-table-editor],
-      .jira-table-grid table tbody > tr > td:first-child > div {
+      .jira-table-grid.has-select-col table thead > tr > th:first-child > span,
+      .jira-table-grid.has-select-col table tbody > tr > td:first-child > [data-jira-table-editor],
+      .jira-table-grid.has-select-col table tbody > tr > td:first-child > div {
         display: flex !important;
         align-items: center;
         justify-content: center;
         width: 100%;
       }
-      .jira-table-grid table > * tr > *:first-child label {
+      .jira-table-grid.has-select-col table > * tr > *:first-child label {
         /* CRITICAL — containment for the 100%×100% absolute input below.
            Without this, every row's invisible checkbox input escapes up the
            DOM to the nearest positioned ancestor (often the viewport), stacks
@@ -1024,10 +1089,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
         background: var(--ds-surface-sunken, #1D2125) !important;
       }
-      .dark .jira-table-grid thead th,
-      .dark .jira-table-grid thead th:nth-child(1),
-      .dark .jira-table-grid thead th:nth-child(2),
-      .dark .jira-table-grid thead th:nth-child(3) {
+      .dark .jira-table-grid thead th {
         background: var(--ds-surface-sunken, #1D2125) !important;
       }
       .dark .jira-table-grid .jira-table-row-focused > td:first-child {
@@ -1140,6 +1202,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             // Header label — Jira parity (2026-04-26 re-probe from
             // BAU list view "Summary"): 12px / 700 / #505258 /
             // textTransform none / letterSpacing normal. NO uppercase.
+            // 2026-06-23: flex:1 + min-width:0 + overflow ellipsis lets the
+            // label shrink when the column gets narrow so the sort arrow +
+            // 3-dot icons next to it never overflow into the next column.
             style={{
               fontSize: d.headerFontSize,
               fontWeight: 700,
@@ -1149,6 +1214,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               whiteSpace: 'nowrap',
               textAlign: col.align === 'center' ? 'center' : col.align === 'end' ? 'right' : 'left',
               display: 'block',
+              flex: 1,
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
             {col.label}
@@ -1724,7 +1793,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
   return (
     <div
       ref={containerRef}
-      className="jira-table-grid"
+      className={`jira-table-grid${selectable ? ' has-select-col' : ''}`}
       aria-label={ariaLabel}
       tabIndex={0}
       style={{
@@ -1777,7 +1846,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 const meta = colWidthEntries[idx];
                 const isSorted = meta && sortKey === meta.id;
                 const isStructural = !!meta && meta.id.startsWith('__');
-                const isReorderable = enableColumnReorder && !!meta && !isStructural;
+                const colMeta = meta ? columns.find((c) => c.id === meta.id) : undefined;
+                const isLocked = !!colMeta?.lockedPosition;
+                const isReorderable = enableColumnReorder && !!meta && !isStructural && !isLocked;
                 // Apr 27 2026 (jira-compare regression F-NEW-3 issue half):
                 // first non-structural column header gets a 24×24 placeholder
                 // BEFORE the label content so the column-grid alignment
@@ -1850,8 +1921,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       top: 0,
                       right: meta?.id === '__actions' ? 0 : undefined,
                       zIndex: meta?.id === '__actions' ? 3 : undefined,
-                      background:
-                        meta?.id === '__actions'
+                      background: isDragOverThis
+                        ? 'var(--ds-background-selected, rgba(76, 154, 255, 0.15))'
+                        : meta?.id === '__actions'
                           ? 'var(--cp-bg-elevated, #FFFFFF)'
                           : undefined,
                       // 2026-06-09: when __actions header sticks during
@@ -1860,7 +1932,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       // content sliding underneath it. Combined with the
                       // bottom border that all headers share.
                       boxShadow: isDragOverThis
-                        ? 'inset -2px 0 0 0 #0C66E4, inset 0 -2px 0 0 var(--ds-border, #C1C7D0)'
+                        ? 'inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF), inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF), inset 0 -2px 0 0 var(--ds-border, #C1C7D0)'
                         : meta?.id === '__actions'
                           ? 'inset 1px 0 0 0 var(--ds-border, #C1C7D0), inset 0 -2px 0 0 var(--ds-border, #C1C7D0)'
                           : 'inset 0 -2px 0 0 var(--ds-border, #C1C7D0)',
@@ -1875,7 +1947,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       ...meta?.headerStyle,
                     }}
                   >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%', overflow: 'hidden' }}>
                       {/* F-NEW-3 chevron-slot placeholder in the header,
                           mirrors body-row slot at `data-jira-table-issue-chevron-slot`. */}
                       {isFirstDataColHeader && (
@@ -1891,13 +1963,87 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         />
                       )}
                       {cell.content}
-                      {meta?.sortable && isSorted && (
-                        <span aria-hidden="true" style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }}>
-                          {sortOrder === 'ASC'
-                            ? <ArrowUpIcon label="" size="small" />
-                            : <ArrowDownIcon label="" size="small" />}
-                        </span>
+                      {/* 2026-06-23 Jira-parity sort arrow:
+                          - Sorted: always visible
+                          - Sortable (unsorted): show on header hover */}
+                      {meta?.sortable && !isStructural && (
+                        <button
+                          type="button"
+                          aria-label={isSorted
+                            ? `Sorted ${sortOrder === 'ASC' ? 'ascending' : 'descending'} — toggle`
+                            : `Sort ${meta.id} ascending`}
+                          className={isSorted ? 'jira-th-sort-arrow jira-th-sort-arrow-active' : 'jira-th-sort-arrow'}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleHeaderClick(meta.id, true);
+                          }}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 18,
+                            padding: 0,
+                            border: 'none',
+                            borderRadius: 3,
+                            background: 'transparent',
+                            color: isSorted
+                              ? 'var(--ds-text, #292A2E)'
+                              : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+                            cursor: 'pointer',
+                            flexShrink: 0,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {sortOrder === 'DESC' && isSorted
+                            ? <ArrowDownIcon label="" size="small" />
+                            : <ArrowUpIcon label="" size="small" />}
+                        </button>
                       )}
+                      {/* 2026-06-23 Jira-parity per-column 3-dot menu:
+                          Hover-revealed; opens portal menu (per CLAUDE.md
+                          @atlaskit/dropdown-menu ban inside overflow:hidden). */}
+                      {!isStructural && meta && (() => {
+                        const col = visibleColumns.find((c) => c.id === meta.id);
+                        if (!col) return null;
+                        const isMenuOpen = headerMenuColId === meta.id;
+                        return (
+                          <button
+                            type="button"
+                            ref={(el) => {
+                              if (el) headerMenuTriggerRefs.current.set(meta.id, el);
+                              else headerMenuTriggerRefs.current.delete(meta.id);
+                            }}
+                            aria-label={`${col.label} column actions`}
+                            aria-haspopup="menu"
+                            aria-expanded={isMenuOpen}
+                            className={isMenuOpen ? 'jira-th-menu-trigger jira-th-menu-trigger-active' : 'jira-th-menu-trigger'}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setHeaderMenuColId(isMenuOpen ? null : meta.id);
+                            }}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: 18,
+                              padding: 0,
+                              border: isMenuOpen ? '1px solid var(--ds-border-selected, #0C66E4)' : 'none',
+                              borderRadius: 3,
+                              background: isMenuOpen ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                              color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+                              cursor: 'pointer',
+                              flexShrink: 0,
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+                              <circle cx="2" cy="6" r="1" />
+                              <circle cx="6" cy="6" r="1" />
+                              <circle cx="10" cy="6" r="1" />
+                            </svg>
+                          </button>
+                        );
+                      })()}
                       {/* 2026-05-10 Jira-parity: hover-revealed filter chevron. */}
                       {(() => {
                         const col = meta && !isStructural
@@ -2005,19 +2151,26 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   onContextMenu={r.onContextMenu}
                   style={{ minHeight: d.rowHeight }}
                 >
-                  {r.cells.map((c: any) => (
-                    <td key={c.key} colSpan={c.colSpan} style={{
-                      overflow: 'hidden',
-                      ...(c.colId === '__actions' ? {
-                        position: 'sticky',
-                        right: 0,
-                        zIndex: 2,
-                        background: 'var(--cp-bg-elevated, #FFFFFF)',
-                      } : {}),
-                    }}>
-                      {c.content}
-                    </td>
-                  ))}
+                  {r.cells.map((c: any) => {
+                    const isDropTarget = c.colId && dragOverId === c.colId && dragId && dragId !== c.colId;
+                    return (
+                      <td key={c.key} colSpan={c.colSpan} data-col-id={c.colId} style={{
+                        overflow: 'hidden',
+                        ...(c.colId === '__actions' ? {
+                          position: 'sticky',
+                          right: 0,
+                          zIndex: 2,
+                          background: 'var(--cp-bg-elevated, #FFFFFF)',
+                        } : {}),
+                        ...(isDropTarget ? {
+                          background: 'var(--ds-background-selected, rgba(76, 154, 255, 0.15))',
+                          boxShadow: 'inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF), inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF)',
+                        } : {}),
+                      }}>
+                        {c.content}
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })}
@@ -2333,6 +2486,138 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         </div>,
         document.body,
       )}
+      {/* 2026-06-23 Per-column 3-dot menu (portal) */}
+      {headerMenuColId && (() => {
+        const col = visibleColumns.find((c) => c.id === headerMenuColId);
+        if (!col) return null;
+        const triggerRef = { current: headerMenuTriggerRefs.current.get(headerMenuColId) ?? null };
+        const reorderable = visibleColumns
+          .filter((c) => !c.id.startsWith('__') && !c.lockedPosition)
+          .map((c) => c.id);
+        const idx = reorderable.indexOf(headerMenuColId);
+        const isFirst = idx === 0;
+        const isLast = idx === reorderable.length - 1;
+        const canReorder = enableColumnReorder && !col.lockedPosition && idx >= 0;
+        const canRemove = !!columnVisibility && !!onColumnVisibilityChange && !col.alwaysVisible;
+        const widthMeta = colWidthEntries.find((e) => e.id === headerMenuColId);
+        const items: MenuItem[] = [];
+        if (col.sortable) {
+          items.push({
+            id: 'sort-asc',
+            label: 'Sort lowest to highest',
+            onClick: () => onSortChange?.(headerMenuColId, 'ASC'),
+          });
+          items.push({
+            id: 'sort-desc',
+            label: 'Sort highest to lowest',
+            onClick: () => onSortChange?.(headerMenuColId, 'DESC'),
+          });
+        } else if (col.lockedPosition) {
+          // Work column — Jira parity: "Sort by columns" submenu of sortable peers
+          const sortablePeers = visibleColumns.filter((c) => c.sortable && !c.id.startsWith('__'));
+          if (sortablePeers.length > 0) {
+            items.push({
+              id: 'sort-by-columns',
+              label: 'Sort by columns',
+              hasSubmenu: true,
+              submenu: sortablePeers.flatMap((peer) => [
+                {
+                  id: `sort-${peer.id}-asc`,
+                  label: `${peer.label}: A to Z`,
+                  onClick: () => onSortChange?.(peer.id, 'ASC'),
+                },
+                {
+                  id: `sort-${peer.id}-desc`,
+                  label: `${peer.label}: Z to A`,
+                  onClick: () => onSortChange?.(peer.id, 'DESC'),
+                },
+              ]),
+            });
+          }
+        }
+        if (canReorder) {
+          if (items.length > 0) items[items.length - 1].divider = 'after';
+          if (!isFirst) {
+            items.push({ id: 'move-first', label: 'Move column to first position', onClick: () => moveColumn(headerMenuColId, 'first') });
+            items.push({ id: 'move-left', label: 'Move column to left', onClick: () => moveColumn(headerMenuColId, 'left') });
+          }
+          if (!isLast) {
+            items.push({ id: 'move-right', label: 'Move column to right', onClick: () => moveColumn(headerMenuColId, 'right') });
+            items.push({ id: 'move-last', label: 'Move column to last position', onClick: () => moveColumn(headerMenuColId, 'last') });
+          }
+        }
+        if (canRemove) {
+          items.push({
+            id: 'remove',
+            label: 'Remove column',
+            onClick: () => {
+              if (!columnVisibility || !onColumnVisibilityChange) return;
+              const next = new Set(columnVisibility);
+              next.delete(headerMenuColId);
+              onColumnVisibilityChange(next);
+            },
+          });
+        }
+        if (items.length > 0) items[items.length - 1].divider = 'after';
+        items.push({
+          id: 'resize',
+          label: 'Resize column',
+          onClick: () => {
+            resizeDialogOriginalWidthRef.current = widthMeta?.width ?? null;
+            setResizeDialogColId(headerMenuColId);
+          },
+        });
+        if (columnWidths[headerMenuColId] != null) {
+          items.push({
+            id: 'reset-width',
+            label: 'Reset column width',
+            onClick: () => {
+              setColumnWidths((prev) => {
+                const next = { ...prev };
+                delete next[headerMenuColId];
+                onColumnWidthsChangeRef.current?.(next);
+                return next;
+              });
+            },
+          });
+        }
+        return (
+          <ColumnHeaderMenu
+            isOpen={true}
+            onClose={() => setHeaderMenuColId(null)}
+            triggerRef={triggerRef as React.RefObject<HTMLButtonElement>}
+            items={items}
+          />
+        );
+      })()}
+      {/* 2026-06-23 Column resize dialog (portal, slider with live preview) */}
+      {resizeDialogColId && (() => {
+        const col = visibleColumns.find((c) => c.id === resizeDialogColId);
+        if (!col) return null;
+        const triggerRef = { current: headerMenuTriggerRefs.current.get(resizeDialogColId) ?? null };
+        const widthMeta = colWidthEntries.find((e) => e.id === resizeDialogColId);
+        const original = resizeDialogOriginalWidthRef.current ?? widthMeta?.width ?? 120;
+        return (
+          <ResizeColumnDialog
+            isOpen={true}
+            onClose={() => setResizeDialogColId(null)}
+            triggerRef={triggerRef as React.RefObject<HTMLElement>}
+            columnLabel={col.label}
+            currentWidth={original}
+            onPreview={(next) => {
+              setColumnWidths((prev) => ({ ...prev, [resizeDialogColId]: next }));
+            }}
+            onSave={(next) => {
+              setColumnWidths((prev) => {
+                const merged = { ...prev, [resizeDialogColId]: next };
+                onColumnWidthsChangeRef.current?.(merged);
+                return merged;
+              });
+            }}
+            onCancel={() => { /* preview already reverts via onPreview(original) */ }}
+          />
+        );
+      })()}
     </div>
   );
 }

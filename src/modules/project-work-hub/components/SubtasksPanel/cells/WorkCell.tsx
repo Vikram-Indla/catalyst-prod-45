@@ -30,11 +30,23 @@ export function WorkCell({ issueType, issueKey, summary, onClick }: WorkCellProp
         minWidth: 0,
       }}
     >
-      <span style={{ display: 'inline-flex', flexShrink: 0 }}>
-        <JiraIssueTypeIcon type={issueType || 'task'} size={16} />
-      </span>
+      {issueType && (
+        <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+          <JiraIssueTypeIcon type={issueType} size={16} />
+        </span>
+      )}
       {issueKey && (
-        <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 12, flexShrink: 0 }}>{issueKey}</span>
+        <span
+          style={{
+            color: 'var(--ds-link, #0052CC)',
+            fontSize: 12,
+            flexShrink: 0,
+            textDecoration: 'underline',
+            textUnderlineOffset: 2,
+          }}
+        >
+          {issueKey}
+        </span>
       )}
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {summary}
