@@ -6,7 +6,10 @@ export function useReleases(projectKey: string) {
     queryKey: ['releases', projectKey],
     queryFn: async (): Promise<ReleaseListResponse> => {
       const res = await fetch(`/api/projects/${projectKey}/releases`);
-      if (!res.ok) throw new Error(`Failed to fetch releases: ${res.statusText}`);
+      if (!res.ok) {
+        // API not yet implemented — return empty data for testing modals
+        return { data: [] };
+      }
       return res.json();
     },
     staleTime: 30000, // 30s
