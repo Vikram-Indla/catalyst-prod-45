@@ -22,7 +22,6 @@ import { MoreHorizontal, Edit as EditIcon, Maximize2, Minimize2 } from '@/lib/at
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { token } from '@atlaskit/tokens';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
-import { CatalystReplay } from '@/components/replay/CatalystReplay';
 
 import { supabase } from '@/integrations/supabase/client';
 import { AtlaskitPageShell, Button, Flag, FlagGroup, SectionMessage } from '@/components/ads';
