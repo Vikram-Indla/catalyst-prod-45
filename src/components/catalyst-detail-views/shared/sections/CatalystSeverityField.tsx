@@ -11,6 +11,7 @@ import Select from '@atlaskit/select';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { PhIssue } from '../types';
+import { useClearableOnOpen } from '@/hooks/useClearableOnOpen';
 
 function injectCSS() {
   if (document.getElementById('cv-severity-select-idle-style')) return;
@@ -37,6 +38,8 @@ interface Props {
 export function CatalystSeverityField({ issue, onUpdate }: Props) {
   useEffect(() => { injectCSS(); }, []);
 
+  const clearableState = useClearableOnOpen();
+
   const current = ((issue as any)?.severity
     ?? (issue as any)?.raw_json?.fields?.customfield_10125?.value
     ?? null) as string | null;
@@ -58,10 +61,12 @@ export function CatalystSeverityField({ issue, onUpdate }: Props) {
       classNamePrefix="cv-severity-select"
       options={SEVERITY_OPTIONS}
       value={current ? { label: current, value: current } : null}
-      isClearable
+      isClearable={clearableState.isClearable}
       placeholder="None"
       isDisabled={updateMutation.isPending}
       onChange={(opt) => updateMutation.mutate((opt as { value: string } | null)?.value ?? null)}
+      onMenuOpen={clearableState.onMenuOpen}
+      onMenuClose={clearableState.onMenuClose}
       menuPortalTarget={document.body}
       menuPosition="fixed"
       styles={{

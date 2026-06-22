@@ -27,6 +27,7 @@ import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import type { PhIssue } from '../types';
+import { useClearableOnOpen } from '@/hooks/useClearableOnOpen';
 
 interface Props {
   issue: PhIssue | null;
@@ -70,6 +71,8 @@ const ASSESSMENT_FEATURE_VALUES: ReadonlyArray<string> = [
 ];
 
 export function CatalystAssessmentFeatureField({ issue, onUpdate }: Props) {
+  const clearableState = useClearableOnOpen();
+
   const current = ((issue as any)?.assessment_feature
     ?? (issue as any)?.raw_json?.fields?.customfield_10288?.value
     ?? null) as string | null;
@@ -110,7 +113,7 @@ export function CatalystAssessmentFeatureField({ issue, onUpdate }: Props) {
         appearance="subtle"
         spacing="compact"
         isSearchable
-        isClearable
+        isClearable={clearableState.isClearable}
         classNamePrefix="cv-assessment-feature-select"
         placeholder="None"
         options={options}
@@ -119,6 +122,8 @@ export function CatalystAssessmentFeatureField({ issue, onUpdate }: Props) {
           const next = v?.value ?? null;
           if (next !== current) updateMutation.mutate(next);
         }}
+        onMenuOpen={clearableState.onMenuOpen}
+        onMenuClose={clearableState.onMenuClose}
       />
     </div>
   );
