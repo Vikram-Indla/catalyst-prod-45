@@ -292,14 +292,13 @@ export default function TestSetsPage() {
   return (
     <div style={{ padding: 24, maxWidth: 1100, fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-          actions={
-            <Button appearance="primary" onClick={() => setShowCreate(true)}>
-              + New Test Set
-            </Button>
-          }
-        />
-        <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 24px 0' }}>
+      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>Test Sets</h2>
+        <Button appearance="primary" onClick={() => setShowCreate(true)}>
+          + New Test Set
+        </Button>
+      </div>
+      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0' }}>
           {sets.length} set{sets.length !== 1 ? 's' : ''}
         </p>
       </div>
