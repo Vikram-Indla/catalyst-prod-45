@@ -1266,6 +1266,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
+                minWidth: 0,
               }}
             >
               {/* Apr 27 2026 (jira-compare regression F-NEW-3 — issue half
@@ -2004,7 +2005,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   style={{ height: d.rowHeight }}
                 >
                   {r.cells.map((c: any) => (
-                    <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
+                    <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden', display: 'flex' }}>
                       {c.content}
                     </td>
                   ))}
@@ -2039,7 +2040,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         style={{ height: d.rowHeight }}
                       >
                         {r.cells.map((c: any) => (
-                          <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
+                          <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden', display: 'flex' }}>
                             {c.content}
                           </td>
                         ))}
