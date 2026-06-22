@@ -124,7 +124,9 @@ export function StatusTransitionDropdown({
               category={currentStatusEntry?.category ?? 'default'}
               name={currentStatusName ?? '—'}
             />
-            <span aria-hidden="true" style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #44546F)' }}>▾</span>
+            {!isFrozen && (
+              <span aria-hidden="true" style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #44546F)' }}>▾</span>
+            )}
           </button>
         )}
         placement="bottom-start"

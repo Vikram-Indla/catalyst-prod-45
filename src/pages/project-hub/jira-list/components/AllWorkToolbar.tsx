@@ -61,6 +61,16 @@ import { Checkbox } from "@atlaskit/checkbox";
    appearance. All canonical components imported from the Catalyst icon
    registry (RESET ICONS, CLAUDE.md 2026-05-03) and Atlaskit. */
 import { WorkItemTypeIcon, PriorityIcon } from "@/components/icons";
+import { JiraIssueTypeIcon } from "@/lib/jira-issue-type-icons";
+import {
+  CanonicalFilter,
+  emptyCanonicalFilterValue,
+  type CanonicalFilterValue,
+  type CanonicalStatusOption,
+  type CanonicalAssigneeOption,
+  type CanonicalWorkTypeOption,
+} from "@/components/filters/CanonicalFilter";
+import { useFiltersForProject } from "@/hooks/workhub/useSavedFilters";
 import { statusToLozenge } from "@/modules/project-work-hub/utils/statusToLozenge";
 /* CLAUDE.md §19 — external avatar URLs (gravatar, cdn, supabase storage) are
    banned. resolveAvatarUrl loads bundled `/src/assets/avatars/<slug>.png`
@@ -236,6 +246,13 @@ interface Props {
    * When absent, the toolbar queries ph_issues as normal (Project Hub path).
    */
   facetOptionItems?: WorkItem[];
+  /**
+   * Optional slot rendered immediately to the LEFT of the CanonicalFilter
+   * trigger. Used by tasks-hub /tasks/work to inject its Group-by + All
+   * workstreams dropdowns alongside the canonical filter. Layout-only —
+   * no toolbar state is owned here.
+   */
+  leftToolbarSlot?: React.ReactNode;
 }
 
 /** Coerce any value (string / number / object / null) to a clean string
@@ -1131,6 +1148,87 @@ function SavedFiltersDropdown({
   );
 }
 
+/**
+ * Bridge between FilterState (used by ProjectAllWorkView's itemPassesFilters)
+ * and CanonicalFilterValue (used by CanonicalFilter UI). Maps the 7 fields
+ * canonical supports; ignores facets canonical doesn't know about. Saved
+ * filters from useFiltersForProject feed into CanonicalFilter's built-in
+ * Saved Filters dropdown.
+ */
+function CanonicalAllWorkFilterBridge({
+  projectKey,
+  selectedFilters,
+  onSelectedFiltersChange,
+  facetOptions,
+}: {
+  projectKey: string;
+  selectedFilters: FilterState;
+  onSelectedFiltersChange?: (next: FilterState) => void;
+  facetOptions: Record<FilterFacet, FacetOption[]>;
+}) {
+  const canonicalValue: CanonicalFilterValue = React.useMemo(() => ({
+    ...emptyCanonicalFilterValue,
+    parent:   selectedFilters.parent,
+    assignee: selectedFilters.assignee,
+    status:   selectedFilters.status,
+    labels:   selectedFilters.labels,
+    workType: selectedFilters.workType,
+    priority: selectedFilters.priority,
+    severity: selectedFilters.severity,
+  }), [selectedFilters]);
+
+  const handleChange = React.useCallback((next: CanonicalFilterValue) => {
+    if (!onSelectedFiltersChange) return;
+    onSelectedFiltersChange({
+      ...selectedFilters,
+      parent:   next.parent,
+      assignee: next.assignee,
+      status:   next.status,
+      labels:   next.labels,
+      workType: next.workType,
+      priority: next.priority,
+      severity: next.severity,
+    });
+  }, [selectedFilters, onSelectedFiltersChange]);
+
+  const statusOptions: CanonicalStatusOption[] = React.useMemo(
+    () => facetOptions.status.map((o) => ({ value: o.value, label: o.label })),
+    [facetOptions.status],
+  );
+  const assigneeOptions: CanonicalAssigneeOption[] = React.useMemo(
+    () => facetOptions.assignee.map((o) => ({ id: o.value, label: o.label })),
+    [facetOptions.assignee],
+  );
+  const labelOptions: string[] = React.useMemo(
+    () => facetOptions.labels.map((o) => o.value),
+    [facetOptions.labels],
+  );
+  const workTypeOptions: CanonicalWorkTypeOption[] = React.useMemo(
+    () => facetOptions.workType.map((o) => ({
+      id: o.value,
+      label: o.label,
+      icon: <JiraIssueTypeIcon type={o.value} size={14} />,
+    })),
+    [facetOptions.workType],
+  );
+
+  const { data: savedFilters = [] } = useFiltersForProject(projectKey, 'project');
+
+  return (
+    <CanonicalFilter
+      value={canonicalValue}
+      onChange={handleChange}
+      scopeType="project"
+      scopeKey={projectKey}
+      statusOptions={statusOptions}
+      assigneeOptions={assigneeOptions}
+      labelOptions={labelOptions}
+      workTypeOptions={workTypeOptions}
+      myFilters={savedFilters.map((f) => ({ id: f.id, name: f.name }))}
+    />
+  );
+}
+
 export function AllWorkToolbar({
   projectKey,
   query,
@@ -1148,6 +1246,7 @@ export function AllWorkToolbar({
   onSaveFilter,
   saveFilterLabel = 'Save filter',
   facetOptionItems,
+  leftToolbarSlot,
 }: Props) {
   /* ── ALL HOOKS FIRST — React Rules of Hooks: no hook after a conditional return ── */
 
@@ -1354,121 +1453,19 @@ export function AllWorkToolbar({
         />
       )}
 
-      {/* 6. Filter chip bar — Jira's Basic-mode pattern (jira-compare 2026-05-03 Round 8).
-          REPLACES the prior single Filter button + 600×489 monolithic popup.
-          Now: Type / Status / Assignee as top-level chips (FilterChip with
-          single-facet dropdown), More filters chip for the remaining 5 facets
-          (FilterTriggerAndPopup with multi-facet popup, restricted to
-          MORE_FILTERS_FACETS), Clear filters + Save filter buttons.
+      {leftToolbarSlot}
 
-          Chip state: single openChipKey tracks which chip's dropdown is open
-          (chip-or-popup). Opening one closes the others (Jira behaviour). */}
-      <FilterChip
-        label={FACET_LABELS.workType}
-        facet="workType"
-        options={facetOptions.workType}
-        selected={selectedFilters.workType}
-        onToggle={(v) => toggleValue("workType", v)}
-        onClear={() => updateFacet("workType", [])}
-        isOpen={openChipKey === "workType"}
-        onOpenChange={(open) => setOpenChipKey(open ? "workType" : null)}
-        headline="Type = (equals)"
-      />
-      <FilterChip
-        label={FACET_LABELS.status}
-        facet="status"
-        options={facetOptions.status}
-        selected={selectedFilters.status}
-        onToggle={(v) => toggleValue("status", v)}
-        onClear={() => updateFacet("status", [])}
-        isOpen={openChipKey === "status"}
-        onOpenChange={(open) => setOpenChipKey(open ? "status" : null)}
-        headline="Status = (equals)"
-      />
-      <FilterChip
-        label={FACET_LABELS.assignee}
-        facet="assignee"
-        options={facetOptions.assignee}
-        selected={selectedFilters.assignee}
-        onToggle={(v) => toggleValue("assignee", v)}
-        onClear={() => updateFacet("assignee", [])}
-        isOpen={openChipKey === "assignee"}
-        onOpenChange={(open) => setOpenChipKey(open ? "assignee" : null)}
-        headline="Assignee = (equals)"
-      />
-
-      {/* More filters → opens the multi-facet popup with the 5 remaining facets
-          (Sprint/Iteration, Parent, Labels, Priority, Reporter). Reuses
-          FilterTriggerAndPopup from Round 6 — left-rail tabs + right-pane
-          value picker pattern. Atlaskit primitive: @atlaskit/popup behaviour
-          replicated manually (see Round 6 root-cause comment). */}
-      <FilterTriggerAndPopup
-        triggerLabel={(() => {
-          const moreCount = MORE_FILTERS_FACETS.reduce(
-            (n, f) => n + selectedFilters[f].length,
-            0,
-          );
-          return `More filters${moreCount > 0 ? ` (${moreCount})` : ""}`;
-        })()}
-        isOpen={openChipKey === "more"}
-        onOpenChange={(open) => setOpenChipKey(open ? "more" : null)}
-        FilterIcon={FilterIcon}
-        renderContent={() => {
-          const jiraCategories: JiraFilterCategory[] = MORE_FILTERS_FACETS.map(
-            (f) => ({
-              id: f,
-              label: FACET_LABELS[f],
-              options: facetOptions[f].map((o) => ({
-                id: o.value,
-                label: o.label,
-              })),
-            }),
-          );
-          const jiraSelected: Record<string, string[]> = {};
-          for (const f of MORE_FILTERS_FACETS) jiraSelected[f] = selectedFilters[f];
-          return (
-            <div data-testid="catalyst-allwork-toolbar.more-filters-popup">
-              <JiraBasicFilter
-                categories={jiraCategories}
-                selected={jiraSelected}
-                onSelectionChange={(categoryId, optionIds) =>
-                  updateFacet(categoryId as FilterFacet, optionIds)
-                }
-                onClearAll={() => {
-                  if (!onSelectedFiltersChange) return;
-                  const next = { ...selectedFilters };
-                  for (const f of MORE_FILTERS_FACETS) next[f] = [];
-                  onSelectedFiltersChange(next);
-                }}
-                onClose={() => setOpenChipKey(null)}
-              />
-            </div>
-          );
-        }}
-      />
-
-      {/* Clear filters — visible when any chip has a selection.
-          Atlaskit Button "subtle" with brand text colour, matches Jira. */}
-      {totalCount > 0 && (
-        <Button
-          appearance="subtle"
-          onClick={clearAll}
-          testId="catalyst-allwork-toolbar.clear-filters"
-        >
-          <span style={{ color: "var(--ds-text-brand, #0C66E4)" }}>
-            Clear filters
-          </span>
-        </Button>
-      )}
-
-      {/* Saved filters dropdown — Read + Apply + Delete (R + D of CRUD).
-          Shows the user's saved views for this project; click to apply state
-          to the chip bar. Renders nothing if the user has no saved filters. */}
-      <SavedFiltersDropdown
+      {/* 2026-06-22 — CanonicalFilter migration. Replaces the prior
+          Work type / Status / Assignee chips + More filters popup + Saved
+          filters dropdown with a single canonical surface. Bridges
+          FilterState ↔ CanonicalFilterValue for the 7 fields canonical
+          supports; the 6 legacy-only facets (sprintReleases / sprint /
+          reporter / resolution / storyPoints / health) drop here. */}
+      <CanonicalAllWorkFilterBridge
         projectKey={projectKey}
-        refreshKey={savedFiltersRefreshKey}
-        onApply={(s) => onSelectedFiltersChange?.(s)}
-        onShowFlag={showFlag}
+        selectedFilters={selectedFilters}
+        onSelectedFiltersChange={onSelectedFiltersChange}
+        facetOptions={facetOptions}
       />
 
       {/* Save filter modal — standalone canonical FilterSaveModal */}

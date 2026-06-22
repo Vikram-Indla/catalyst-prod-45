@@ -475,9 +475,16 @@ export function makeSummaryInlineEditCell<T>({
   onOpenWorkItem,
   onCreateChild,
   canCreateChild,
+  wrapLines,
 }: {
   getSummary: (row: T) => string;
   canEdit?: (row: T) => boolean;
+  /**
+   * When set to a positive integer N, long summaries wrap up to N lines
+   * (line-clamp) instead of truncating with ellipsis on one line. Omit
+   * (or 0/undefined) for legacy single-line nowrap+ellipsis behaviour.
+   */
+  wrapLines?: number;
   /**
    * Optional read-only affordance. When `canEdit(row) === false`, the cell
    * is rendered as a non-editable display. Without an affordance the user
@@ -510,15 +517,28 @@ export function makeSummaryInlineEditCell<T>({
     const summary = getSummary(row);
     const editable = canEdit ? canEdit(row) : true;
 
+    const wrapStyle: React.CSSProperties = wrapLines && wrapLines > 0
+      ? {
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: wrapLines,
+          WebkitBoxOrient: 'vertical',
+          whiteSpace: 'normal',
+          wordBreak: 'break-word',
+        }
+      : {
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        };
+
     if (!editable) {
       const readOnlyTooltip = getReadOnlyTooltip?.(row) ?? null;
       const display = (
         <span
           dir="auto"
           style={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
+            ...wrapStyle,
             flex: 1,
             // Affordance: when a tooltip explains the read-only state,
             // pair it with cursor: not-allowed so the inert cell is
@@ -605,9 +625,7 @@ export function makeSummaryInlineEditCell<T>({
                   // "click anywhere in cell to edit" UX pattern). Previously used
                   // cursor: pointer which implies a navigation action, not a text edit.
                   cursor: 'text',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
+                  ...wrapStyle,
                   width: '100%',
                   // 2026-05-08 DOM probe: Jira summary = rgb(80,82,88) = --ds-text-subtle.
                   // Inheriting --ds-text (rgb 41,42,46) from tbody td baseline was wrong.

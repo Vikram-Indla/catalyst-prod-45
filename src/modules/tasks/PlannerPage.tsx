@@ -484,7 +484,7 @@ export function PlannerPage() {
   return (
     <div className="flex flex-col flex-1 min-w-0 min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
         {/* Header with breadcrumb - hidden on views that have their own headers */}
-        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'workstreams' && (
+        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'workstreams' && activeView !== 'work' && (
           <div className="shrink-0" style={{ backgroundColor: 'var(--bg)', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
             <div
               className="flex items-center justify-between px-6"
@@ -585,7 +585,7 @@ export function PlannerPage() {
         )}
 
         {/* Search Bar - hidden on views that have their own integrated filter bars */}
-        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
+        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'workstreams' && activeView !== 'settings' && activeView !== 'work' && !isInsightView(activeView) && (
           <PlannerSearchBar
             filters={filters}
             onSearchChange={setSearch}

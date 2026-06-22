@@ -18,6 +18,13 @@ import { CatyBoardInsight } from '@/components/for-you/atlaskit/CatyBoardInsight
 import { SIZES, STRINGS, QUICK_FILTERS } from '../constants';
 import { useFiltersForProject } from '@/hooks/workhub/useSavedFilters';
 import type { FilterApi } from '../hooks/useKanbanFilters';
+import {
+  CanonicalFilter,
+  emptyCanonicalFilterValue,
+  type CanonicalFilterValue,
+  type CanonicalWorkTypeOption,
+} from '@/components/filters/CanonicalFilter';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { GroupByMode, CardVisibleFields, BoardIssue } from '../types';
 
 function InsightsBars({ issues }: { issues: BoardIssue[] }) {
@@ -130,6 +137,40 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
 
   const { data: savedFilters = [] } = useFiltersForProject(projectKey, 'project');
 
+  // 2026-06-22 — CanonicalFilter migration. Bridge the kanban FilterApi
+  // Set<string> state ↔ CanonicalFilterValue string[] arrays. Epics map
+  // to canonical `parent`, types → `workType`, assignees + priorities map
+  // directly. Status / labels / severity stay unsupported on kanban (no
+  // data exposed by BoardIssue) — users can Remove those rail items.
+  const canonicalValue: CanonicalFilterValue = React.useMemo(() => ({
+    ...emptyCanonicalFilterValue,
+    parent: Array.from(api.epics),
+    workType: Array.from(api.types),
+    assignee: Array.from(api.assignees),
+    priority: Array.from(api.priorities),
+  }), [api.epics, api.types, api.assignees, api.priorities]);
+
+  const handleCanonicalChange = React.useCallback((next: CanonicalFilterValue) => {
+    const applyDiff = (current: Set<string>, target: string[], toggleFn: (v: string) => void) => {
+      const targetSet = new Set(target);
+      current.forEach((v) => { if (!targetSet.has(v)) toggleFn(v); });
+      targetSet.forEach((v) => { if (!current.has(v)) toggleFn(v); });
+    };
+    applyDiff(api.epics,      next.parent,   api.toggleEpic);
+    applyDiff(api.types,      next.workType, api.toggleType);
+    applyDiff(api.assignees,  next.assignee, api.toggleAssignee);
+    applyDiff(api.priorities, next.priority, api.togglePriority);
+  }, [api]);
+
+  const kanbanWorkTypeOptions: CanonicalWorkTypeOption[] = React.useMemo(
+    () => api.allTypes.map((t) => ({ id: t, label: t, icon: <JiraIssueTypeIcon type={t} size={14} /> })),
+    [api.allTypes],
+  );
+  const kanbanAssigneeOptions = React.useMemo(
+    () => api.allAssignees.map((name) => ({ id: name, label: name })),
+    [api.allAssignees],
+  );
+
   return (
     <div className="kb-toolbar" style={{ height: SIZES.TOOLBAR_HEIGHT, padding: `8px ${SIZES.PAGE_PADDING_X}px`, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, overflowX: 'auto' }}>
       {/* Persistent search */}
@@ -146,35 +187,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
 
       <AvatarFilter api={api} avatars={avatars} />
 
-      <PortalMenu ariaLabel={STRINGS.FILTER_EPIC} trigger={({ open }) => (
-        <button style={triggerStyle(api.epics.size > 0 || open)}>{STRINGS.FILTER_EPIC}{api.epics.size > 0 ? ` (${api.epics.size})` : ''}<TriggerChevron /></button>
-      )}>
-        {() => api.allEpics.length === 0
-          ? <div style={{ padding: '8px 12px', fontSize: 13, color: token('color.text.subtlest', '#626F86') }}>No epics</div>
-          : api.allEpics.map((e) => <MenuItem key={e.key} selected={api.epics.has(e.key)} onClick={() => api.toggleEpic(e.key)}>{e.summary}</MenuItem>)}
-      </PortalMenu>
-
-      <PortalMenu ariaLabel={STRINGS.FILTER_TYPE} trigger={({ open }) => (
-        <button style={triggerStyle(api.types.size > 0 || open)}>{STRINGS.FILTER_TYPE}{api.types.size > 0 ? ` (${api.types.size})` : ''}<TriggerChevron /></button>
-      )}>
-        {() => api.allTypes.map((t) => <MenuItem key={t} selected={api.types.has(t)} onClick={() => api.toggleType(t)}>{t}</MenuItem>)}
-      </PortalMenu>
-
-      <PortalMenu ariaLabel="Quick filters" minWidth={200} trigger={({ open }) => (
-        <button style={triggerStyle(api.quickFilters.size > 0 || open)}>Quick filters{api.quickFilters.size > 0 ? ` (${api.quickFilters.size})` : ''}<TriggerChevron /></button>
-      )}>
-        {() => (
-          <>
-            {QUICK_FILTERS.map((qf) => <MenuItem key={qf.id} selected={api.quickFilters.has(qf.id)} onClick={() => api.toggleQuickFilter(qf.id)}>{qf.label}</MenuItem>)}
-            {savedFilters.length > 0 && (
-              <>
-                <div style={{ padding: '6px 12px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', '#626F86'), marginTop: 6 }}>My filters</div>
-                {savedFilters.slice(0, 5).map((f) => <MenuItem key={f.id} selected={api.quickFilters.has(f.id)} onClick={() => api.toggleQuickFilter(f.id)}>{f.name}</MenuItem>)}
-              </>
-            )}
-          </>
-        )}
-      </PortalMenu>
+      <CanonicalFilter
+        value={canonicalValue}
+        onChange={handleCanonicalChange}
+        scopeType="project"
+        scopeKey={projectKey}
+        workTypeOptions={kanbanWorkTypeOptions}
+        assigneeOptions={kanbanAssigneeOptions}
+        myFilters={savedFilters.map((f) => ({ id: f.id, name: f.name }))}
+      />
 
       <div style={{ flex: 1 }} />
 

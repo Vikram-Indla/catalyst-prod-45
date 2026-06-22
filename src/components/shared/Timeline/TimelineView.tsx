@@ -33,6 +33,15 @@ import Avatar from '@atlaskit/avatar';
 import AvatarGroup from '@atlaskit/avatar-group';
 import Checkbox from '@atlaskit/checkbox';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import {
+  CanonicalFilter,
+  emptyCanonicalFilterValue,
+  type CanonicalFilterValue,
+  type CanonicalStatusOption,
+  type CanonicalAssigneeOption,
+  type CanonicalWorkTypeOption,
+  DEFAULT_CANONICAL_WORK_TYPE_OPTIONS,
+} from '@/components/filters/CanonicalFilter';
 import { StatusPill } from '@/components/shared/StatusPill';
 import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 import { translate } from '@/lib/jql';
@@ -684,6 +693,50 @@ export default function TimelineView(props: TimelineViewProps) {
             />
           </div>
 
+          {/* 2026-06-22 — CanonicalFilter migration. Replaces the prior
+              Type / Status / Assignee / Quick filters / Saved filters
+              dropdowns with a single canonical surface. Bridge: timeline's
+              string[] / single-value state ↔ CanonicalFilterValue. */}
+          {(() => {
+            const canonicalValue: CanonicalFilterValue = {
+              ...emptyCanonicalFilterValue,
+              workType: issueTypeFilter,
+              status:   statusFilter,
+              assignee: assigneeFilter ? [assigneeFilter] : [],
+            };
+            const handleCanonicalChange = (next: CanonicalFilterValue) => {
+              setIssueTypeFilter(next.workType);
+              setStatusFilter(next.status);
+              setAssigneeFilter(next.assignee.length > 0 ? next.assignee[0] : null);
+            };
+            const canonicalStatusOptions: CanonicalStatusOption[] = STATUS_CAT_OPTIONS.map((o) => ({
+              value: o.value,
+              label: o.label,
+            }));
+            const canonicalAssigneeOptions: CanonicalAssigneeOption[] = assigneeOptions.map((a) => ({
+              id: a.name,
+              label: a.name,
+              avatarUrl: a.avatarUrl ?? undefined,
+            }));
+            const canonicalWorkTypeOptions: CanonicalWorkTypeOption[] = workItemTypes.length > 0
+              ? workItemTypes.map((t) => ({ id: t, label: t, icon: <JiraIssueTypeIcon type={t} size={14} /> }))
+              : DEFAULT_CANONICAL_WORK_TYPE_OPTIONS;
+            return (
+              <CanonicalFilter
+                value={canonicalValue}
+                onChange={handleCanonicalChange}
+                scopeType="timeline"
+                scopeKey={hubKey}
+                statusOptions={canonicalStatusOptions}
+                assigneeOptions={canonicalAssigneeOptions}
+                workTypeOptions={canonicalWorkTypeOptions}
+                myFilters={(savedFilters ?? []).map((f) => ({ id: f.id, name: f.name }))}
+              />
+            );
+          })()}
+
+          {/* type filter — LEGACY (now hidden, replaced above) */}
+          {false && (<>
           {/* type filter */}
           <div style={{ position: 'relative' }}>
             <button
@@ -907,6 +960,7 @@ export default function TimelineView(props: TimelineViewProps) {
               )}
             </PortalMenu>
           </div>
+          </>)}
 
           {/* more dropdown */}
           <div style={{ position: 'relative' }}>
