@@ -266,6 +266,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       if (aS && bS) return base.indexOf(a) - base.indexOf(b);
       if (aS) return -1;    // other structural (__drag, __select) first
       if (bS) return 1;
+      // 2026-06-23 — locked columns pinned at their original schema position,
+      // ALWAYS before any non-locked reorderable column. Without this, a
+      // commitColumnOrder excluding the locked column would push it to the
+      // end (idx=undefined → 999), breaking the "Work always first" contract.
+      const aLocked = !!a.lockedPosition;
+      const bLocked = !!b.lockedPosition;
+      if (aLocked && bLocked) return base.indexOf(a) - base.indexOf(b);
+      if (aLocked) return -1;
+      if (bLocked) return 1;
       const ai = idx.has(a.id) ? idx.get(a.id)! : 999;
       const bi = idx.has(b.id) ? idx.get(b.id)! : 999;
       return ai - bi;
@@ -842,13 +851,25 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          Active-filter state keeps chevron visible (opacity:1 inline). */
       .jira-table-grid thead th:hover .jira-filter-chevron { opacity: 1 !important; }
       .jira-filter-chevron-active { opacity: 1 !important; }
-      /* 2026-06-23 Jira-parity: sort arrow + 3-dot trigger hover-reveal.
-         Active sort keeps arrow visible permanently. Open menu keeps
-         3-dot visible permanently. */
-      .jira-table-grid thead th:hover .jira-th-sort-arrow { opacity: 1 !important; }
-      .jira-table-grid thead th:hover .jira-th-menu-trigger { opacity: 1 !important; }
-      .jira-th-sort-arrow-active { opacity: 1 !important; }
-      .jira-th-menu-trigger-active { opacity: 1 !important; }
+      /* 2026-06-23 Jira-parity: sort arrow + 3-dot trigger animated reveal.
+         Idle: width 0, opacity 0 (collapsed in flex flow).
+         Hover (or sorted/menu-open): width 18, opacity 1, smooth transition.
+         The width-animation pushes the label to ellipsize gracefully and
+         the arrow slides left to make room for the 3-dot. */
+      .jira-th-sort-arrow,
+      .jira-th-menu-trigger {
+        width: 0;
+        opacity: 0;
+        margin: 0;
+        transition: width 160ms ease, opacity 160ms ease, margin 160ms ease;
+      }
+      .jira-table-grid thead th:hover .jira-th-sort-arrow,
+      .jira-table-grid thead th:hover .jira-th-menu-trigger {
+        width: 18px;
+        opacity: 1;
+      }
+      .jira-th-sort-arrow-active { width: 18px !important; opacity: 1 !important; }
+      .jira-th-menu-trigger-active { width: 18px !important; opacity: 1 !important; }
       .jira-th-menu-trigger:hover {
         background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) !important;
       }
@@ -1181,6 +1202,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             // Header label — Jira parity (2026-04-26 re-probe from
             // BAU list view "Summary"): 12px / 700 / #505258 /
             // textTransform none / letterSpacing normal. NO uppercase.
+            // 2026-06-23: flex:1 + min-width:0 + overflow ellipsis lets the
+            // label shrink when the column gets narrow so the sort arrow +
+            // 3-dot icons next to it never overflow into the next column.
             style={{
               fontSize: d.headerFontSize,
               fontWeight: 700,
@@ -1190,6 +1214,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               whiteSpace: 'nowrap',
               textAlign: col.align === 'center' ? 'center' : col.align === 'end' ? 'right' : 'left',
               display: 'block',
+              flex: 1,
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
             {col.label}
@@ -1919,7 +1947,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       ...meta?.headerStyle,
                     }}
                   >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%', overflow: 'hidden' }}>
                       {/* F-NEW-3 chevron-slot placeholder in the header,
                           mirrors body-row slot at `data-jira-table-issue-chevron-slot`. */}
                       {isFirstDataColHeader && (
@@ -1935,8 +1963,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         />
                       )}
                       {cell.content}
-                      {/* 2026-06-23 Spacer pushes sort arrow + 3-dot to end of header. */}
-                      <span style={{ flex: 1 }} aria-hidden />
                       {/* 2026-06-23 Jira-parity sort arrow:
                           - Sorted: always visible
                           - Sortable (unsorted): show on header hover */}
@@ -1955,7 +1981,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                             display: 'inline-flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: 18,
                             height: 18,
                             padding: 0,
                             border: 'none',
@@ -1966,8 +1991,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                               : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                             cursor: 'pointer',
                             flexShrink: 0,
-                            opacity: isSorted ? 1 : 0,
-                            transition: 'opacity 100ms',
+                            overflow: 'hidden',
                           }}
                         >
                           {sortOrder === 'DESC' && isSorted
@@ -2001,7 +2025,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              width: 18,
                               height: 18,
                               padding: 0,
                               border: isMenuOpen ? '1px solid var(--ds-border-selected, #0C66E4)' : 'none',
@@ -2010,8 +2033,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                               color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                               cursor: 'pointer',
                               flexShrink: 0,
-                              opacity: isMenuOpen ? 1 : 0,
-                              transition: 'opacity 100ms',
+                              overflow: 'hidden',
                             }}
                           >
                             <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden>
