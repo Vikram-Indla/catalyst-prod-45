@@ -1071,7 +1071,18 @@ export default function VercelConnectionPage() {
     );
   }
 
-  const { gate, config, runs, deployments, stats } = data!;
+  if (!data) {
+    return (
+      <AdminGuard>
+        <div style={{ padding: 48, display: 'flex', alignItems: 'center', gap: 12, color: 'var(--ds-text-subtle, #505258)', fontFamily: FONT }}>
+          <Spinner size="medium" />
+          <span style={{ fontSize: 14 }}>Loading deployment status…</span>
+        </div>
+      </AdminGuard>
+    );
+  }
+
+  const { gate, config, runs, deployments, stats } = data;
   const latestRun = runs[0] ?? null;
   const latestDeployment = deployments[0] ?? null;
   const isRunInProgress = latestRun?.status === 'in_progress' || latestRun?.status === 'queued';
