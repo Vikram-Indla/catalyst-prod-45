@@ -114,11 +114,9 @@ export function CreateReleaseModal({ onClose, release }: Props) {
 
   const errors = {
     name: !name.trim() ? 'Name is required' : '',
-    releaseType: !releaseType ? 'Release type is required' : '',
-    targetEnv: !targetEnv ? 'Target environment is required' : '',
     plannedRelease: !plannedRelease ? 'Planned release date is required' : '',
   };
-  const isValid = !errors.name && !errors.releaseType && !errors.targetEnv && !errors.plannedRelease;
+  const isValid = !errors.name && !errors.plannedRelease;
 
   const handleSubmit = () => {
     setSubmitted(true);
