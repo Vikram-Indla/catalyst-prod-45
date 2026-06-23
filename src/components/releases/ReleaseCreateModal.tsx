@@ -12,7 +12,6 @@ import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useCreateRelease } from '@/hooks/releases/useCreateRelease';
-import { useReleases } from '@/hooks/releases/useReleases';
 import { Release, CreateReleasePayload } from '@/types/phase3-releases';
 import { catalystToast } from '@/lib/catalystToast';
 
@@ -54,7 +53,6 @@ export function ReleaseCreateModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
-  const { data: releasesData } = useReleases(projectKey);
   const createMutation = useCreateRelease();
 
   const validate = (): boolean => {
