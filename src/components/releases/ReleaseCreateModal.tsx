@@ -313,10 +313,18 @@ export function ReleaseCreateModal({
         </ModalBody>
 
         <ModalFooter>
-          <Button type="button" onClick={handleClose}>
+          <Button type="button" onClick={() => handleClose()}>
             Cancel
           </Button>
-          <Button type="submit" appearance="primary" isLoading={createMutation.isPending} form="release-form">
+          <Button
+            appearance="primary"
+            isLoading={createMutation.isPending}
+            onClick={(e: any) => {
+              e.preventDefault();
+              const form = document.querySelector('form[id="release-form"]');
+              if (form) form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+            }}
+          >
             Create release
           </Button>
         </ModalFooter>
