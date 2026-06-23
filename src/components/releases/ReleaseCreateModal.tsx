@@ -85,27 +85,32 @@ export function ReleaseCreateModal({
   };
 
   const handleSubmit = () => {
+    setErrors({});
     setSubmitted(true);
     if (!validate() || !projectId) return;
 
-    const payload: CreateReleasePayload = {
-      project_id: projectId,
-      name: formData.name.trim(),
-      ...(formData.description && formData.description.trim() && { description: formData.description.trim() }),
-      ...(formData.start_date && { start_date: formData.start_date }),
-      ...(formData.release_date && { release_date: formData.release_date }),
-    };
+    try {
+      const payload: CreateReleasePayload = {
+        project_id: projectId,
+        name: formData.name.trim(),
+        ...(formData.description && formData.description.trim() && { description: formData.description.trim() }),
+        ...(formData.start_date && { start_date: formData.start_date }),
+        ...(formData.release_date && { release_date: formData.release_date }),
+      };
 
-    createMutation.mutate(payload, {
-      onSuccess: (result) => {
-        catalystToast.success(`Release "${result.name}" created`);
-        onSuccess?.(result);
-        handleClose();
-      },
-      onError: (error: any) => {
-        catalystToast.error(error?.message || 'Failed to create release');
-      },
-    });
+      createMutation.mutate(payload, {
+        onSuccess: (result) => {
+          catalystToast.success(`Release "${result.name}" created`);
+          onSuccess?.(result);
+          handleClose();
+        },
+        onError: (error: any) => {
+          catalystToast.error(error?.message || 'Failed to create release');
+        },
+      });
+    } catch (err: any) {
+      catalystToast.error(err?.message || 'Error creating release');
+    }
   };
 
   const handleClose = () => {
