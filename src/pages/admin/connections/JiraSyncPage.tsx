@@ -49,6 +49,8 @@ const T = {
 
 export function JiraSyncPage() {
   const [selectedTab, setSelectedTab] = useState(0);
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardStep, setWizardStep] = useState(0);
   const env = resolveJiraEnvironment();
   const { data: connection } = useJiraConnection();
   const { data: health } = useSyncHealth();
@@ -111,6 +113,7 @@ export function JiraSyncPage() {
             <Tab>Overview</Tab>
             <Tab>Sync Control</Tab>
             <Tab>Projects ({projects.length})</Tab>
+            <Tab>Field Mapping</Tab>
             <Tab>Type Mapping</Tab>
             <Tab>Backup & Logs</Tab>
           </TabList>
@@ -119,10 +122,13 @@ export function JiraSyncPage() {
             <OverviewTab connection={connection} health={health} projects={projects} />
           </TabPanel>
           <TabPanel>
-            <SyncControlTab connection={connection} env={env} />
+            <SyncControlTab connection={connection} env={env} projects={projects} />
           </TabPanel>
           <TabPanel>
             <ProjectsTab projects={projects} />
+          </TabPanel>
+          <TabPanel>
+            <FieldMappingTab projects={projects} />
           </TabPanel>
           <TabPanel>
             <TypeMappingTab />
@@ -228,23 +234,36 @@ function OverviewTab({
   );
 }
 
-function SyncControlTab({ connection, env }: { connection: any; env: any }) {
+function SyncControlTab({ connection, env, projects }: { connection: any; env: any; projects: any[] }) {
   const manualSync = useManualSyncMutation();
   const refreshData = useRefreshDataMutation();
   const [refreshMode, setRefreshMode] = useState<'dry-run' | 'confirmed'>('dry-run');
   const [confirmPhrase, setConfirmPhrase] = useState('');
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardStep, setWizardStep] = useState(0);
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
 
   return (
     <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
-      {/* Manual sync */}
+      {/* Sync wizard */}
       <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 24 }}>
         <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
-          Manual Sync
+          Full Sync Wizard
+        </h3>
+        <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, marginBottom: 16 }}>
+          Guided sync: project selection → field mapping → type/status validation → filters → dry-run → confirm
+        </p>
+        <Button appearance="primary" onClick={() => setWizardOpen(true)}>
+          Start Full Sync Wizard
+        </Button>
+      </div>
+
+      {/* Quick sync */}
+      <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 24 }}>
+        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+          Quick Sync
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <Button appearance="primary" onClick={() => manualSync.mutate({ mode: 'full' })} isLoading={manualSync.isPending}>
-            {manualSync.isPending ? 'Syncing…' : 'Run Full Sync'}
-          </Button>
           <Button onClick={() => manualSync.mutate({ mode: 'incremental' })} isLoading={manualSync.isPending}>
             {manualSync.isPending ? 'Syncing…' : 'Run Incremental'}
           </Button>
@@ -332,6 +351,78 @@ function ProjectsTab({ projects }: { projects: any[] }) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function FieldMappingTab({ projects }: { projects: any[] }) {
+  const [selectedProject, setSelectedProject] = useState<string | null>(projects[0]?.key || null);
+
+  const { data: fieldMappings = [] } = useQuery({
+    queryKey: ['field-mappings', selectedProject],
+    queryFn: async () => {
+      if (!selectedProject) return [];
+      const { data } = await supabase
+        .from('jira_field_mappings')
+        .select('jira_field, jira_field_name, catalyst_column')
+        .eq('project_key', selectedProject)
+        .order('jira_field');
+      return data || [];
+    },
+    enabled: !!selectedProject,
+  });
+
+  return (
+    <div style={{ marginTop: 24 }}>
+      <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+        Per-Project Field Mapping ({projects.length})
+      </h3>
+      <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, marginBottom: 16 }}>
+        Map Jira custom fields to Catalyst columns per project. Wired to sync operations.
+      </p>
+
+      {/* Project selector */}
+      <div style={{ marginBottom: 16 }}>
+        <label style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+          Select Project
+        </label>
+        <Select
+          options={projects.map(p => ({ label: `${p.key} — ${p.name}`, value: p.key }))}
+          value={selectedProject ? { label: selectedProject, value: selectedProject } : null}
+          onChange={(opt: any) => setSelectedProject(opt?.value)}
+          isSearchable
+        />
+      </div>
+
+      {/* Field mappings */}
+      {selectedProject && (
+        <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16 }}>
+          {fieldMappings.length === 0 ? (
+            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, textAlign: 'center', padding: '24px' }}>
+              No field mappings configured for {selectedProject}
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
+              {fieldMappings.map((m: any) => (
+                <div key={m.jira_field} style={{ background: T.surfaceSunken, border: `1px solid ${T.border}`, borderRadius: 6, padding: 12 }}>
+                  <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: T.textSubtle, marginBottom: 4 }}>
+                    Jira Field
+                  </div>
+                  <div style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 8 }}>
+                    {m.jira_field}
+                  </div>
+                  <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: T.textSubtle, marginBottom: 4 }}>
+                    Catalyst Column
+                  </div>
+                  <div style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, fontWeight: 600, color: T.text }}>
+                    {m.catalyst_column}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
