@@ -19,22 +19,23 @@ export default function InviteAcceptPage() {
   const ctx = useMemo(() => {
     const qToken = searchParams.get('token');
     const qEmail = searchParams.get('email');
-    if (qToken && qEmail) return { token: qToken, email: qEmail };
+    const qFullName = searchParams.get('full_name');
+    if (qToken && qEmail) return { token: qToken, email: qEmail, full_name: qFullName };
     try {
       const raw = sessionStorage.getItem(INVITE_CTX_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as { token?: string; email?: string };
-        if (parsed.token && parsed.email) return { token: parsed.token, email: parsed.email };
+        const parsed = JSON.parse(raw) as { token?: string; email?: string; full_name?: string | null };
+        if (parsed.token && parsed.email) return { token: parsed.token, email: parsed.email, full_name: parsed.full_name ?? null };
       }
     } catch { /* ignore */ }
-    return { token: null as string | null, email: null as string | null };
+    return { token: null as string | null, email: null as string | null, full_name: null as string | null };
   }, [searchParams]);
   const token = ctx.token;
   const email = ctx.email;
 
   const { acceptInvite, isLoading } = useAcceptInvite();
 
-  const [fullName, setFullName] = useState('');
+  const [fullName, setFullName] = useState(ctx.full_name ?? '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -148,7 +149,7 @@ export default function InviteAcceptPage() {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Jane Doe"
+                placeholder="Enter your full name"
                 required
               />
             </div>

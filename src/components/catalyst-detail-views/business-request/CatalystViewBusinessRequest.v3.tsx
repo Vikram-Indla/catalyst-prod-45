@@ -53,6 +53,7 @@ import type { CatalystViewBaseProps } from '../shared/types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import { useClearableOnOpen } from '@/hooks/useClearableOnOpen';
+import { ReleaseSection } from './ReleaseSection';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
@@ -415,7 +416,19 @@ export default function CatalystViewBusinessRequestV3({
           )
         }
         hideDiscuss={isClosed}
-      />
+      >
+        {/* Tier 3.4: BR Release field */}
+        {request?.id && (
+          <ReleaseSection
+            brId={request.id}
+            projectId={request.product_id}
+            releaseId={request?.release_id ?? null}
+            onReleaseChange={() => {
+              // TODO: Implement release change handler if needed
+            }}
+          />
+        )}
+      </CatalystSidebarDetails>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [request, updateField, brAsIssueLike, handleApplyDescription, health, isClosed],

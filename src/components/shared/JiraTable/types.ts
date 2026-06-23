@@ -81,6 +81,16 @@ export interface Column<TRow> {
    * "Work" is always first and cannot be moved or replaced).
    */
   lockedPosition?: boolean;
+  /**
+   * 2026-06-23 — composite-column sub-sort options. When set, the column's
+   * three-dot header menu renders a "Sort by columns" group whose entries are
+   * each a submenu of direction options. Used by the Work column (which
+   * packs Type icon + Key + Summary into one cell) so Jira's three-level
+   * sort menu is reproducible: Sort by columns ▸ Type ▸ A→Z / Z→A.
+   * `kind` controls direction labels — 'alpha' → A to Z / Z to A;
+   *                                    'numeric' → lowest to highest / highest to lowest.
+   */
+  subSorts?: Array<{ id: string; label: string; kind: 'alpha' | 'numeric' }>;
 }
 
 /** Group definition for grouped rows. */

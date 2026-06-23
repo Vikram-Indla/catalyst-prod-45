@@ -39,13 +39,14 @@ Deno.serve(async (req) => {
     .from('user_roles')
     .select('role')
     .eq('user_id', user.id)
+    .eq('role', 'admin')
     .maybeSingle();
   if (roleErr) {
     console.error('[deploy-control] user_roles query error:', roleErr.message, 'user:', user.id);
     return err('Server error', 500);
   }
-  if (!role || !['admin', 'super_admin'].includes(role.role)) {
-    console.error('[deploy-control] role check failed: role=', role?.role, 'user:', user.id);
+  if (!role) {
+    console.error('[deploy-control] role check failed: requires admin, user had:', role?.role, 'user:', user.id);
     return err('Forbidden', 403);
   }
 
@@ -117,6 +118,43 @@ async function handleGet(supabase: ReturnType<typeof createClient>) {
       }
     } catch (e) {
       console.error('[deploy-control] github runs fetch failed:', e);
+    }
+  }
+
+  // Staging function deploy runs (deploy-functions.yml → staging job on main push)
+  let staging_runs: unknown[] = [];
+  if (settings.github_pat) {
+    try {
+      const sr = await fetch(
+        `https://api.github.com/repos/${settings.github_repo}/actions/workflows/deploy-functions.yml/runs?per_page=8`,
+        {
+          headers: {
+            Authorization: `Bearer ${settings.github_pat}`,
+            Accept: 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        },
+      );
+      if (sr.ok) {
+        const body = await sr.json();
+        staging_runs = (body.workflow_runs ?? []).map((r: Record<string, unknown>) => ({
+          id: r.id,
+          status: r.status,
+          conclusion: r.conclusion,
+          head_sha: (r.head_sha as string)?.slice(0, 7),
+          head_commit_message: ((r.head_commit as Record<string, unknown>)?.message as string ?? '').split('\n')[0],
+          created_at: r.created_at,
+          updated_at: r.updated_at,
+          run_started_at: r.run_started_at,
+          html_url: r.html_url,
+          trigger: (r.triggering_actor as Record<string, unknown>)?.login as string ?? '',
+          duration_ms: r.run_started_at && r.updated_at
+            ? new Date(r.updated_at as string).getTime() - new Date(r.run_started_at as string).getTime()
+            : null,
+        }));
+      }
+    } catch (e) {
+      console.error('[deploy-control] staging_runs fetch failed:', e);
     }
   }
 
@@ -243,6 +281,7 @@ async function handleGet(supabase: ReturnType<typeof createClient>) {
       production_url: settings.production_url ?? 'https://ksa-catalyst.com',
     },
     runs: runsWithSummaries,
+    staging_runs,
     deployments,
     stats: {
       today: todayRuns.length,
@@ -429,20 +468,47 @@ async function handlePost(
       .maybeSingle();
     if (!settings?.github_pat) return err('GitHub PAT not configured', 400);
 
+    const ghHeaders = {
+      Authorization: `Bearer ${settings.github_pat}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    };
+
+    // Fetch commits ahead of production to build a meaningful message
+    let commitMessage = `release: promote ${sourceBranch} → production`;
+    try {
+      const cmpRes = await fetch(
+        `https://api.github.com/repos/${settings.github_repo}/compare/production...${encodeURIComponent(sourceBranch)}?per_page=50`,
+        { headers: ghHeaders },
+      );
+      if (cmpRes.ok) {
+        const cmp = await cmpRes.json();
+        const commits = ((cmp.commits ?? []) as Record<string, unknown>[])
+          .map((c) => ((c.commit as Record<string, unknown>)?.message as string ?? '').split('\n')[0])
+          .reverse();
+        const ahead = cmp.ahead_by ?? commits.length;
+        if (ahead === 0) {
+          // Already in sync — handled below by 204
+        } else if (commits.length === 1) {
+          commitMessage = `release: ${commits[0]}`;
+        } else {
+          const lines = commits.slice(0, 10).map((m) => `• ${m}`).join('\n');
+          commitMessage = `release: promote ${ahead} commit${ahead !== 1 ? 's' : ''} to production\n\n${lines}`;
+        }
+      }
+    } catch {
+      // fallback to generic message
+    }
+
     const res = await fetch(
       `https://api.github.com/repos/${settings.github_repo}/merges`,
       {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${settings.github_pat}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-          'Content-Type': 'application/json',
-        },
+        headers: { ...ghHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           base: 'production',
           head: sourceBranch,
-          commit_message: `chore(promote): merge ${sourceBranch} → production ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC`,
+          commit_message: commitMessage,
         }),
       },
     );

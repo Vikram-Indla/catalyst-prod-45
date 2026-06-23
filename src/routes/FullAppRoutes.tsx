@@ -61,6 +61,7 @@ const FilterDetailPageLazy = lazy(() => import("../pages/project-hub/filters/Fil
 const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/FilterPreviewPage").then(m => ({ default: m.FilterPreviewPage })));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
+const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
 
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
@@ -741,6 +742,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/timeline" element={<S><ReleasesTimelineCanonical /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
+        <Route path="/release-hub/releases-management" element={<S><ReleasesPageLazy /></S>} />
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
         <Route path="/release-hub/changes/:changeId" element={<S><ChangeDetailPage /></S>} />
         <Route path="/release-hub/sop-templates" element={<S><SopTemplatesPage /></S>} />
@@ -1050,7 +1052,6 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/filters/create" element={<Navigate to="/project-hub" replace />} />
         <Route path="/project-hub/:key/timeline/:issueKey" element={<S><TimelineDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/timeline" element={<S><ProjectHubTimelinePage /></S>} />
-        <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
         <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />

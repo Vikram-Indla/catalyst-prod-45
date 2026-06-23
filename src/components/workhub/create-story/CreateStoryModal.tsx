@@ -86,6 +86,7 @@ import {
   useProjects,
   useTeamMembers,
   useProjectReleases,
+  useReleaseSprints,
   useCreateStoryMutation,
   useWorkflowStatuses,
 } from './useCreateStory';
@@ -407,6 +408,7 @@ export function CreateStoryModal({
   const { data: projects = [] } = useProjects();
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [], isLoading: releasesLoading, error: releasesError } = useProjectReleases(form.projectId);
+  const { data: sprints = [], isLoading: sprintsLoading } = useReleaseSprints(form.releaseId);
 
   const createMutation = useCreateStoryMutation();
 
@@ -538,6 +540,11 @@ export function CreateStoryModal({
       ...releases.map((r: any) => ({ value: r.id, label: r.name })),
     ],
     [releases],
+  );
+
+  const sprintOptions: IconOption[] = useMemo(
+    () => sprints.map((s: any) => ({ value: s.id, label: s.name })),
+    [sprints],
   );
 
   // STR-005: Fetch existing label vocabulary from catalyst_issues so users can
@@ -966,8 +973,8 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Sprint/Iteration ────────────────────────────────────── */}
-              <Field name="sprintRelease" label="Sprint/Iteration">
+              {/* ── Sprint/Iteration (Release) ────────────────────────── */}
+              <Field name="sprintRelease" label="Release">
                 {({ fieldProps }) => (
                   <Select<IconOption>
                     {...fieldProps}
@@ -978,17 +985,57 @@ export function CreateStoryModal({
                         (o) => o.value === (form.releaseId ?? ''),
                       ) ?? null
                     }
-                    onChange={(opt) =>
+                    onChange={(opt) => {
                       updateField(
                         'releaseId',
                         (opt as IconOption)?.value || null,
-                      )
-                    }
+                      );
+                      // Reset sprints when release changes
+                      updateField('sprintReleases', []);
+                    }}
                     isClearable
-                    placeholder=""
+                    placeholder="Select release"
                   />
                 )}
               </Field>
+
+              {/* ── Sprints (multi-select, filtered by release) ────── */}
+              {form.releaseId && (
+                <Field name="sprints" label="Sprints">
+                  {({ fieldProps }) => (
+                    <>
+                      {sprintsLoading ? (
+                        <Spinner size="small" />
+                      ) : sprintOptions.length > 0 ? (
+                        <Select<IconOption, true>
+                          {...fieldProps}
+                          inputId="cs-sprints"
+                          isMulti
+                          options={sprintOptions}
+                          value={
+                            (form.sprintReleases ?? []).map(
+                              (id) =>
+                                sprintOptions.find((o) => o.value === id) ??
+                                null,
+                            ).filter(Boolean) as IconOption[]
+                          }
+                          onChange={(vals) =>
+                            updateField(
+                              'sprintReleases',
+                              (vals ?? []).map((o) => o.value),
+                            )
+                          }
+                          placeholder="Select sprints"
+                        />
+                      ) : (
+                        <Box xcss={{ color: 'color.text.subtlest', fontSize: '12px' }}>
+                          No sprints available for this release
+                        </Box>
+                      )}
+                    </>
+                  )}
+                </Field>
+              )}
 
               {/* ── Assignee + Assign to me ────────────────────────── */}
               <Field name="assignee" label="Assignee">
