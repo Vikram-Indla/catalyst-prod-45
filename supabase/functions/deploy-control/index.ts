@@ -120,6 +120,43 @@ async function handleGet(supabase: ReturnType<typeof createClient>) {
     }
   }
 
+  // Staging function deploy runs (deploy-functions.yml → staging job on main push)
+  let staging_runs: unknown[] = [];
+  if (settings.github_pat) {
+    try {
+      const sr = await fetch(
+        `https://api.github.com/repos/${settings.github_repo}/actions/workflows/deploy-functions.yml/runs?per_page=8`,
+        {
+          headers: {
+            Authorization: `Bearer ${settings.github_pat}`,
+            Accept: 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        },
+      );
+      if (sr.ok) {
+        const body = await sr.json();
+        staging_runs = (body.workflow_runs ?? []).map((r: Record<string, unknown>) => ({
+          id: r.id,
+          status: r.status,
+          conclusion: r.conclusion,
+          head_sha: (r.head_sha as string)?.slice(0, 7),
+          head_commit_message: ((r.head_commit as Record<string, unknown>)?.message as string ?? '').split('\n')[0],
+          created_at: r.created_at,
+          updated_at: r.updated_at,
+          run_started_at: r.run_started_at,
+          html_url: r.html_url,
+          trigger: (r.triggering_actor as Record<string, unknown>)?.login as string ?? '',
+          duration_ms: r.run_started_at && r.updated_at
+            ? new Date(r.updated_at as string).getTime() - new Date(r.run_started_at as string).getTime()
+            : null,
+        }));
+      }
+    } catch (e) {
+      console.error('[deploy-control] staging_runs fetch failed:', e);
+    }
+  }
+
   // Vercel deployments (requires token)
   if (settings.vercel_token) {
     try {
@@ -243,6 +280,7 @@ async function handleGet(supabase: ReturnType<typeof createClient>) {
       production_url: settings.production_url ?? 'https://ksa-catalyst.com',
     },
     runs: runsWithSummaries,
+    staging_runs,
     deployments,
     stats: {
       today: todayRuns.length,
