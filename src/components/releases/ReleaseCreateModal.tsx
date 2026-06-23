@@ -1,10 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Modal, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-} from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
@@ -47,6 +41,19 @@ export function ReleaseCreateModal({
     if (isOpen && nameFieldRef.current) {
       setTimeout(() => nameFieldRef.current?.focus(), 100);
     }
+  }, [isOpen]);
+
+  // Escape key handler
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', handler, true);
+    return () => document.removeEventListener('keydown', handler, true);
   }, [isOpen]);
 
   const validate = (): boolean => {
@@ -110,7 +117,7 @@ export function ReleaseCreateModal({
           text: `Release "${result.name}" has been created.`,
         });
         onSuccess?.(result);
-        onClose();
+        handleClose();
       },
       onError: (error) => {
         setFlagMessage({
@@ -125,210 +132,260 @@ export function ReleaseCreateModal({
     setFormData({ name: '', description: '', start_date: '', release_date: '' });
     setErrors({});
     setFlagMessage(null);
-    onClose();
+    onClose(); // Call parent's setState(false)
   };
 
-  // Force close with Escape at dialog level
-  React.useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        handleClose();
-      }
-    };
-    document.addEventListener('keydown', handler, true);
-    return () => document.removeEventListener('keydown', handler, true);
-  }, [isOpen]);
+  if (!isOpen) return null;
 
   return (
     <>
-      {/* Error/Success Flag */}
-      {flagMessage && (
-        <Flag
-          appearance={flagMessage.type as 'success' | 'error'}
-          icon={null}
-          onDismissed={() => setFlagMessage(null)}
-          title=""
-          description={flagMessage.text}
-          id={`release-modal-flag-${flagMessage.type}`}
-        />
-      )}
-
-      <Modal isOpen={isOpen} onClose={handleClose} width={480}>
-        <ModalHeader>
-          <ModalTitle>Create release</ModalTitle>
-        </ModalHeader>
-
-        <ModalBody>
-          <form
-            id="release-form"
-            onSubmit={handleSubmit}
-            aria-label="Create release form"
-            noValidate
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
-            {/* Version Name Field */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                htmlFor="version-name"
-                style={{
-                  fontWeight: 500,
-                  color: 'var(--ds-text, #172B4D)',
-                }}
-              >
-                Name
-                <span
-                  aria-label="required"
-                  style={{
-                    color: 'var(--ds-text-danger, #AE2A19)',
-                    marginLeft: '4px',
-                  }}
-                >
-                  *
-                </span>
-              </label>
-              <TextField
-                ref={nameFieldRef}
-                id="version-name"
-                placeholder="e.g., v2.1.0"
-                value={formData.name}
-                onChange={(e) => {
-                  setFormData((p) => ({ ...p, name: e.currentTarget.value }));
-                  // Clear error on change
-                  if (errors.name) setErrors((p) => ({ ...p, name: '' }));
-                }}
-                isInvalid={!!errors.name}
-                maxLength={255}
-                required
-                aria-required="true"
-                aria-invalid={!!errors.name}
-                aria-describedby={errors.name ? 'name-error' : undefined}
-              />
-              {errors.name && (
-                <div
-                  id="name-error"
-                  role="alert"
-                  aria-live="assertive"
-                  style={{
-                    color: 'var(--ds-text-danger, #AE2A19)',
-                    marginTop: '4px',
-                  }}
-                >
-                  {errors.name}
-                </div>
-              )}
-            </div>
-
-            {/* Description Field */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                htmlFor="version-description"
-                style={{
-                  fontWeight: 500,
-                  color: 'var(--ds-text, #172B4D)',
-                }}
-              >
-                Description
-              </label>
-              <TextArea
-                id="version-description"
-                placeholder="Optional description"
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, description: e.currentTarget.value }))
-                }
-                rows={3}
-              />
-            </div>
-
-            {/* Start Date Field */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                htmlFor="version-start-date"
-                style={{
-                  fontWeight: 500,
-                  color: 'var(--ds-text, #172B4D)',
-                }}
-              >
-                Start date
-              </label>
-              <DatePicker
-                id="version-start-date"
-                value={formData.start_date}
-                onChange={(e) => {
-                  setFormData((p) => ({ ...p, start_date: e.iso || '' }));
-                  if (errors.start_date) setErrors((p) => ({ ...p, start_date: '' }));
-                }}
-                formatDisplayLabel={(value) => value || 'Select start date'}
-              />
-              {errors.start_date && (
-                <div
-                  role="alert"
-                  aria-live="assertive"
-                  style={{
-                    color: 'var(--ds-text-danger, #AE2A19)',
-                    marginTop: '4px',
-                  }}
-                >
-                  {errors.start_date}
-                </div>
-              )}
-            </div>
-
-            {/* Release Date Field */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                htmlFor="version-release-date"
-                style={{
-                  fontWeight: 500,
-                  color: 'var(--ds-text, #172B4D)',
-                }}
-              >
-                Release date
-              </label>
-              <DatePicker
-                id="version-release-date"
-                value={formData.release_date}
-                onChange={(e) => {
-                  setFormData((p) => ({ ...p, release_date: e.iso || '' }));
-                  if (errors.release_date) setErrors((p) => ({ ...p, release_date: '' }));
-                }}
-                formatDisplayLabel={(value) => value || 'Select release date'}
-              />
-              {errors.release_date && (
-                <div
-                  role="alert"
-                  aria-live="assertive"
-                  style={{
-                    color: 'var(--ds-text-danger, #AE2A19)',
-                    marginTop: '4px',
-                  }}
-                >
-                  {errors.release_date}
-                </div>
-              )}
-            </div>
-          </form>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button type="button" onClick={() => handleClose()}>
-            Cancel
-          </Button>
-          <Button
-            appearance="primary"
-            isLoading={createMutation.isPending}
-            onClick={(e: any) => {
-              e.preventDefault();
-              const form = document.querySelector('form[id="release-form"]');
-              if (form) form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      {/* Backdrop */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(9, 30, 66, 0.52)',
+          zIndex: 2147483000,
+          display: isOpen ? 'flex' : 'none',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        onClick={handleClose}
+      >
+        {/* Modal Container */}
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: 'relative',
+            width: 480,
+            maxHeight: '90vh',
+            backgroundColor: 'var(--ds-surface, #FFFFFF)',
+            borderRadius: 3,
+            boxShadow: '0 20px 32px rgba(9, 30, 66, 0.25)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Header */}
+          <div
+            style={{
+              padding: '16px 24px',
+              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              flex: '0 0 auto',
             }}
           >
-            Create release
-          </Button>
-        </ModalFooter>
-      </Modal>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: 20,
+                fontWeight: 600,
+                color: 'var(--ds-text, #172B4D)',
+              }}
+            >
+              Create release
+            </h2>
+          </div>
+
+          {/* Body */}
+          <div
+            style={{
+              padding: '24px',
+              flex: '1 1 auto',
+              overflowY: 'auto',
+            }}
+          >
+            {/* Error/Success Flag */}
+            {flagMessage && (
+              <Flag
+                appearance={flagMessage.type as 'success' | 'error'}
+                icon={null}
+                onDismissed={() => setFlagMessage(null)}
+                title=""
+                description={flagMessage.text}
+                id={`release-modal-flag-${flagMessage.type}`}
+              />
+            )}
+
+            <form
+              id="release-form"
+              onSubmit={handleSubmit}
+              aria-label="Create release form"
+              noValidate
+              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+            >
+              {/* Version Name Field */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label
+                  htmlFor="version-name"
+                  style={{
+                    fontWeight: 500,
+                    color: 'var(--ds-text, #172B4D)',
+                  }}
+                >
+                  Name
+                  <span
+                    aria-label="required"
+                    style={{
+                      color: 'var(--ds-text-danger, #AE2A19)',
+                      marginLeft: '4px',
+                    }}
+                  >
+                    *
+                  </span>
+                </label>
+                <TextField
+                  ref={nameFieldRef}
+                  id="version-name"
+                  placeholder="e.g., v2.1.0"
+                  value={formData.name}
+                  onChange={(e) => {
+                    setFormData((p) => ({ ...p, name: e.currentTarget.value }));
+                    if (errors.name) setErrors((p) => ({ ...p, name: '' }));
+                  }}
+                  isInvalid={!!errors.name}
+                  maxLength={255}
+                  required
+                  aria-required="true"
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? 'name-error' : undefined}
+                />
+                {errors.name && (
+                  <div
+                    id="name-error"
+                    role="alert"
+                    aria-live="assertive"
+                    style={{
+                      color: 'var(--ds-text-danger, #AE2A19)',
+                      marginTop: '4px',
+                    }}
+                  >
+                    {errors.name}
+                  </div>
+                )}
+              </div>
+
+              {/* Description Field */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label
+                  htmlFor="version-description"
+                  style={{
+                    fontWeight: 500,
+                    color: 'var(--ds-text, #172B4D)',
+                  }}
+                >
+                  Description
+                </label>
+                <TextArea
+                  id="version-description"
+                  placeholder="Optional description"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, description: e.currentTarget.value }))
+                  }
+                  rows={3}
+                />
+              </div>
+
+              {/* Start Date Field */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label
+                  htmlFor="version-start-date"
+                  style={{
+                    fontWeight: 500,
+                    color: 'var(--ds-text, #172B4D)',
+                  }}
+                >
+                  Start date
+                </label>
+                <DatePicker
+                  id="version-start-date"
+                  value={formData.start_date}
+                  onChange={(e) => {
+                    setFormData((p) => ({ ...p, start_date: e.iso || '' }));
+                    if (errors.start_date) setErrors((p) => ({ ...p, start_date: '' }));
+                  }}
+                  formatDisplayLabel={(value) => value || 'Select start date'}
+                />
+                {errors.start_date && (
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    style={{
+                      color: 'var(--ds-text-danger, #AE2A19)',
+                      marginTop: '4px',
+                    }}
+                  >
+                    {errors.start_date}
+                  </div>
+                )}
+              </div>
+
+              {/* Release Date Field */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label
+                  htmlFor="version-release-date"
+                  style={{
+                    fontWeight: 500,
+                    color: 'var(--ds-text, #172B4D)',
+                  }}
+                >
+                  Release date
+                </label>
+                <DatePicker
+                  id="version-release-date"
+                  value={formData.release_date}
+                  onChange={(e) => {
+                    setFormData((p) => ({ ...p, release_date: e.iso || '' }));
+                    if (errors.release_date) setErrors((p) => ({ ...p, release_date: '' }));
+                  }}
+                  formatDisplayLabel={(value) => value || 'Select release date'}
+                />
+                {errors.release_date && (
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    style={{
+                      color: 'var(--ds-text-danger, #AE2A19)',
+                      marginTop: '4px',
+                    }}
+                  >
+                    {errors.release_date}
+                  </div>
+                )}
+              </div>
+            </form>
+          </div>
+
+          {/* Footer */}
+          <div
+            style={{
+              padding: '16px 24px',
+              borderTop: '1px solid var(--ds-border, #DFE1E6)',
+              display: 'flex',
+              gap: '8px',
+              justifyContent: 'flex-end',
+              flex: '0 0 auto',
+            }}
+          >
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button
+              appearance="primary"
+              isLoading={createMutation.isPending}
+              onClick={(e: any) => {
+                e.preventDefault();
+                const form = document.querySelector('form[id="release-form"]');
+                if (form) form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+              }}
+            >
+              Create release
+            </Button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
