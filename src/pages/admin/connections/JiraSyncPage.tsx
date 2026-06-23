@@ -73,7 +73,7 @@ export function JiraSyncPage() {
 
   return (
     <AdminGuard>
-      <div style={{ padding: '32px 40px', maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{ padding: '32px 40px' }}>
         <div style={{ marginBottom: 32 }}>
           <h1 style={{ fontSize: 28, fontWeight: 600, color: T.text, margin: 0 }}>
             Jira Integration
