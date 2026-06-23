@@ -23,9 +23,9 @@ export default function ShortLinkResolverPage() {
       if (!code) { setFailed(true); return; }
       const { data, error } = await supabase.functions.invoke('invite-resolve', { body: { code } });
       if (cancelled) return;
-      const res = data as { ok?: boolean; token?: string; email?: string; purpose?: string } | null;
+      const res = data as { ok?: boolean; token?: string; email?: string; purpose?: string; full_name?: string | null } | null;
       if (error || !res?.ok || !res.token || !res.email) { setFailed(true); return; }
-      sessionStorage.setItem(INVITE_CTX_KEY, JSON.stringify({ token: res.token, email: res.email }));
+      sessionStorage.setItem(INVITE_CTX_KEY, JSON.stringify({ token: res.token, email: res.email, full_name: res.full_name ?? null }));
       const dest = res.purpose === 'invite' ? '/invite/accept' : '/reset-password';
       navigate(dest, { replace: true });
     })();
