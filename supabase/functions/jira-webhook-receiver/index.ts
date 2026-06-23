@@ -205,6 +205,132 @@ async function handleSprintReleaseChange(payload: any) {
   return true; // signal: handled
 }
 
+// ── Jira Integration: issue sync to ph_issues (environment-aware) ──
+function resolveEnvironment(supabaseUrl: string): string {
+  if (supabaseUrl.includes('cyijbdeuehohvhnsywig')) return 'staging';
+  if (supabaseUrl.includes('lmqwtldpfacrrlvdnmld')) return 'production';
+  return 'local';
+}
+
+async function handleIssueForPhIssues(payload: any) {
+  const issue = payload.issue;
+  if (!issue || !issue.key || !issue.fields) return false;
+
+  const environment = resolveEnvironment(Deno.env.get('SUPABASE_URL') || '');
+
+  try {
+    // 1. Check webhook control: listening enabled?
+    const { data: control } = await supabase
+      .from('jira_webhook_control')
+      .select('listening_enabled, blocked_by_error, blocked_by_mapping')
+      .eq('environment', environment)
+      .maybeSingle();
+
+    if (!control?.listening_enabled) {
+      console.log(`[jira-webhook] ${environment} webhook not listening, skipping issue ${issue.key}`);
+      await supabase.from('jira_webhook_control').update({ skipped_count: control?.skipped_count || 0 + 1 }).eq('environment', environment);
+      return false;
+    }
+
+    // 2. Check jira_sync_mappings: type and status mapped?
+    const { data: typeMappings } = await supabase
+      .from('jira_sync_mappings')
+      .select('jira_value')
+      .eq('environment', environment)
+      .eq('mapping_type', 'issue_type')
+      .eq('jira_value', issue.fields.issuetype?.name || '');
+
+    const { data: statusMappings } = await supabase
+      .from('jira_sync_mappings')
+      .select('jira_value')
+      .eq('environment', environment)
+      .eq('mapping_type', 'status')
+      .eq('jira_value', issue.fields.status?.name || '');
+
+    if (!typeMappings?.length || !statusMappings?.length) {
+      console.log(`[jira-webhook] unmapped type/status for ${issue.key}, skipping`);
+      await supabase
+        .from('jira_webhook_control')
+        .update({ blocked_by_mapping: (control?.blocked_by_mapping || 0) + 1 })
+        .eq('environment', environment);
+      return false;
+    }
+
+    // 3. Check project sync filters (if exists)
+    const { data: filter } = await supabase
+      .from('jira_project_sync_filters')
+      .select('include_types, include_statuses, exclude_types, exclude_statuses')
+      .eq('environment', environment)
+      .eq('project_key', issue.fields.project?.key || '')
+      .maybeSingle();
+
+    if (filter) {
+      const issueType = issue.fields.issuetype?.name;
+      const issueStatus = issue.fields.status?.name;
+
+      if (filter.exclude_types?.includes(issueType)) {
+        console.log(`[jira-webhook] type ${issueType} excluded, skipping ${issue.key}`);
+        return false;
+      }
+      if (filter.exclude_statuses?.includes(issueStatus)) {
+        console.log(`[jira-webhook] status ${issueStatus} excluded, skipping ${issue.key}`);
+        return false;
+      }
+      if (filter.include_types?.length && !filter.include_types.includes(issueType)) {
+        console.log(`[jira-webhook] type ${issueType} not included, skipping ${issue.key}`);
+        return false;
+      }
+      if (filter.include_statuses?.length && !filter.include_statuses.includes(issueStatus)) {
+        console.log(`[jira-webhook] status ${issueStatus} not included, skipping ${issue.key}`);
+        return false;
+      }
+    }
+
+    // 4. Transform and upsert to ph_issues
+    const issueRow = {
+      issue_key: issue.key,
+      project_key: issue.fields.project?.key,
+      summary: issue.fields.summary,
+      issue_type: issue.fields.issuetype?.name,
+      status: issue.fields.status?.name || 'Unknown',
+      status_category: issue.fields.status?.statusCategory?.name || 'To Do',
+      assignee_account_id: issue.fields.assignee?.accountId || null,
+      reporter_account_id: issue.fields.reporter?.accountId || null,
+      parent_key: issue.fields.parent?.key || null,
+      jira_issue_id: issue.id,
+      jira_created_at: issue.fields.created,
+      jira_updated_at: issue.fields.updated,
+      source: 'jira' as const,
+      raw_json: issue,
+    };
+
+    const { error: upsertError } = await supabase
+      .from('ph_issues')
+      .upsert(issueRow, { onConflict: 'issue_key' });
+
+    if (upsertError) {
+      console.error(`[jira-webhook] upsert failed for ${issue.key}:`, upsertError);
+      await supabase
+        .from('jira_webhook_control')
+        .update({ failed_count: (control?.failed_count || 0) + 1 })
+        .eq('environment', environment);
+      return false;
+    }
+
+    // 5. Update webhook metrics
+    await supabase
+      .from('jira_webhook_control')
+      .update({ last_webhook_received: new Date().toISOString() })
+      .eq('environment', environment);
+
+    console.log(`[jira-webhook] ${environment} synced issue ${issue.key}`);
+    return true;
+  } catch (err) {
+    console.error(`[jira-webhook] error handling ${issue.key}:`, err);
+    return false;
+  }
+}
+
 // ── User events that trigger jira-user-sync ──
 const USER_EVENTS = new Set([
   'jira:user_created',
@@ -392,23 +518,32 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ── Issue events — For You page + Sprint/Release ──
-    if (webhookEvent === 'jira:issue_updated' && payload.issue && payload.changelog) {
+    // ── Issue events — Jira Integration + For You page + Sprint/Release ──
+    if ((webhookEvent === 'jira:issue_created' || webhookEvent === 'jira:issue_updated' || webhookEvent === 'jira:issue_deleted') && payload.issue) {
       try {
-        // Record for For You page (assignee + reporter activity)
-        await handleIssueUpdateForForYou(payload);
+        // Sync to ph_issues (Jira Integration — environment-aware, mapping-gated)
+        await handleIssueForPhIssues(payload);
       } catch (err) {
-        console.error('for-you handler error:', err);
+        console.error('ph_issues handler error:', err);
       }
 
-      try {
-        // Handle sprint/release changes (release hub)
-        const handled = await handleSprintReleaseChange(payload);
-        if (handled) {
-          // Also queue into sync_events for existing issue processing
+      if (webhookEvent === 'jira:issue_updated' && payload.changelog) {
+        try {
+          // Record for For You page (assignee + reporter activity)
+          await handleIssueUpdateForForYou(payload);
+        } catch (err) {
+          console.error('for-you handler error:', err);
         }
-      } catch (err) {
-        console.error('sprintRelease handler error:', err);
+
+        try {
+          // Handle sprint/release changes (release hub)
+          const handled = await handleSprintReleaseChange(payload);
+          if (handled) {
+            // Also queue into sync_events for existing issue processing
+          }
+        } catch (err) {
+          console.error('sprintRelease handler error:', err);
+        }
       }
     }
 
