@@ -124,6 +124,7 @@ export function CreateReleaseModal({ onClose, release }: Props) {
     setSubmitted(true);
     setFormError('');
     if (!isValid) return;
+    if (!releaseType || !targetEnv) return; // Safety check
 
     if (isEdit) {
       updateRelease.mutate(
@@ -133,8 +134,8 @@ export function CreateReleaseModal({ onClose, release }: Props) {
           target_date: plannedRelease,
           planned_release_date: plannedRelease,
           planned_start_date: plannedStart || null,
-          release_type: releaseType!.value,
-          target_env: targetEnv!.value,
+          release_type: releaseType.value,
+          target_env: targetEnv.value,
           product_id: productId?.value || null,
           version: version.trim() || null,
           release_manager_id: releaseManager?.value || null,
@@ -154,8 +155,8 @@ export function CreateReleaseModal({ onClose, release }: Props) {
         target_date: plannedRelease,
         planned_release_date: plannedRelease,
         planned_start_date: plannedStart || undefined,
-        release_type: releaseType!.value,
-        target_env: targetEnv!.value,
+        release_type: releaseType.value,
+        target_env: targetEnv.value,
         product_id: productId?.value || undefined,
         version: version.trim() || undefined,
         release_manager_id: releaseManager?.value || undefined,
