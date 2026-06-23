@@ -60,8 +60,18 @@ export function CreateReleaseModal({ onClose, release }: Props) {
   const [name, setName] = useState(release?.name ?? '');
   const [version, setVersion] = useState(release?.version ?? '');
   const humanize = (v: string) => v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-  const [releaseType, setReleaseType] = useState<Opt | null>(() => release?.release_type ? { label: humanize(release.release_type), value: release.release_type } : null);
-  const [targetEnv, setTargetEnv] = useState<Opt | null>(() => release?.target_env ? { label: humanize(release.target_env), value: release.target_env } : null);
+  const [releaseType, setReleaseType] = useState<Opt | null>(() => {
+    if (release?.release_type) return { label: humanize(release.release_type), value: release.release_type };
+    // Default to first available type for create mode
+    const defaults = FALLBACK_RELEASE_TYPES;
+    return defaults.length > 0 ? defaults[0] : null;
+  });
+  const [targetEnv, setTargetEnv] = useState<Opt | null>(() => {
+    if (release?.target_env) return { label: humanize(release.target_env), value: release.target_env };
+    // Default to first available env for create mode
+    const defaults = FALLBACK_TARGET_ENVS;
+    return defaults.length > 0 ? defaults[0] : null;
+  });
   const [productId, setProductId] = useState<Opt | null>(null);
   const [plannedStart, setPlannedStart] = useState(release?.planned_start_date ?? '');
   const [plannedRelease, setPlannedRelease] = useState(release?.planned_release_date ?? release?.target_date ?? '');
