@@ -175,7 +175,7 @@ export function ReleaseCreateModal({
                 <DatePicker
                   id="release-start-date"
                   value={formData.start_date}
-                  onChange={(iso) => setFormData((p) => ({ ...p, start_date: iso || '' }))}
+                  onChange={(e: any) => setFormData((p) => ({ ...p, start_date: e?.iso || '' }))}
                   placeholder="Select start date"
                 />
               </div>
@@ -188,8 +188,8 @@ export function ReleaseCreateModal({
                 <DatePicker
                   id="release-date"
                   value={formData.release_date}
-                  onChange={(iso) => {
-                    setFormData((p) => ({ ...p, release_date: iso || '' }));
+                  onChange={(e: any) => {
+                    setFormData((p) => ({ ...p, release_date: e?.iso || '' }));
                     if (errors.release_date) setErrors((p) => ({ ...p, release_date: '' }));
                   }}
                   placeholder="Select release date"
