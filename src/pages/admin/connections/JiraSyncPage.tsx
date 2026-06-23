@@ -46,8 +46,6 @@ const T = {
   border: 'var(--ds-border, #DFE1E6)',
   success: 'var(--ds-background-success, #E3FCEF)',
   successText: 'var(--ds-text-success, #006644)',
-  warning: 'var(--ds-background-warning, #FFFAE6)',
-  warningText: 'var(--ds-text-warning, #7A5200)',
   danger: 'var(--ds-background-danger, #FFEBE6)',
   dangerText: 'var(--ds-text-danger, #AE2A19)',
   info: 'var(--ds-background-information, #DEEBFF)',
@@ -75,51 +73,40 @@ export function JiraSyncPage() {
     <AdminGuard>
       <div style={{ padding: '32px 40px' }}>
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 600, color: T.text, margin: 0 }}>
+          <h1 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 600, color: T.text, margin: 0 }}>
             Jira Integration
           </h1>
-          <p style={{ fontSize: 14, color: T.textSubtle, margin: '8px 0 0 0' }}>
+          <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, color: T.textSubtle, margin: '8px 0 0 0' }}>
             Sync configuration, webhooks, field mapping, and data backups. Read-only integration — no create/update/delete in Jira.
           </p>
         </div>
 
         {/* Environment Banner */}
-        <div style={{
-          display: 'flex', alignItems: 'flex-start', gap: 16,
-          background: env.isProductionRuntime ? 'var(--ds-background-danger, #FFEBE6)' : 'var(--ds-background-warning, #FFFAE6)',
-          border: `1px solid ${env.isProductionRuntime ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-warning, #7A5200)'}`,
-          borderRadius: 8, padding: '16px', marginBottom: 24,
-        }}>
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontSize: 13, fontWeight: 600,
-              color: env.isProductionRuntime ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-warning, #7A5200)',
-            }}>
-              {getEnvironmentLabel(env.environment)}
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', marginTop: 4 }}>
-              Supabase: <code style={{ background: 'rgba(0,0,0,0.05)', padding: '2px 6px', borderRadius: 3 }}>
-                {env.supabaseProjectRef}
-              </code>
-            </div>
+        <SectionMessage
+          appearance={env.isProductionRuntime ? 'error' : 'information'}
+          title={getEnvironmentLabel(env.environment)}
+          style={{ marginBottom: 24 }}
+        >
+          <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13 }}>
+            Supabase: <code style={{ background: 'rgba(0,0,0,0.05)', padding: '2px 6px', borderRadius: 3, fontFamily: 'var(--ds-font-family-code)' }}>
+              {env.supabaseProjectRef}
+            </code>
             {env.isProductionRuntime && (
-              <div style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 6, fontWeight: 500 }}>
-                ⚠️ All sync operations affect PRODUCTION data
+              <div style={{ marginTop: 8, fontWeight: 500 }}>
+                All sync operations affect PRODUCTION data
               </div>
             )}
           </div>
-        </div>
+        </SectionMessage>
 
         {isConnected && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            background: T.success, border: `1px solid ${T.successText}`, borderRadius: 8,
-            padding: '12px 16px', marginBottom: 24,
-          }}>
-            <div style={{ fontSize: 13, color: T.text }}>
-              <span style={{ fontWeight: 600, color: T.successText }}>✓ Connected</span>
-              {' to '}
-              <code style={{ fontSize: 12, background: 'rgba(0,0,0,0.05)', padding: '2px 6px', borderRadius: 3 }}>
+          <SectionMessage
+            appearance="success"
+            title="✓ Connected"
+            style={{ marginBottom: 24 }}
+          >
+            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13 }}>
+              to <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, background: 'rgba(0,0,0,0.05)', padding: '2px 6px', borderRadius: 3 }}>
                 {connection.site_url}
               </code>
               {' • Last tested '}
@@ -127,7 +114,7 @@ export function JiraSyncPage() {
                 {formatDistanceToNow(new Date(connection.last_tested_at || new Date()), { addSuffix: true })}
               </span>
             </div>
-          </div>
+          </SectionMessage>
         )}
 
         <Tabs id="jira-admin" selectedIndex={selectedTab} onChange={setSelectedTab}>
@@ -202,10 +189,10 @@ function OverviewTab({
             background: T.surfaceSunken, border: `1px solid ${T.border}`, borderRadius: 8,
             padding: '20px 16px', textAlign: 'center',
           }}>
-            <div style={{ fontSize: 22, fontWeight: 600, color: T.text }}>
+            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 22, fontWeight: 600, color: T.text }}>
               {value}
             </div>
-            <div style={{ fontSize: 12, color: T.textSubtle, marginTop: 8 }}>
+            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, marginTop: 8 }}>
               {label}
             </div>
           </div>
@@ -213,7 +200,7 @@ function OverviewTab({
       </div>
 
       <div>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 16 }}>
+        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 16 }}>
           All {projects.length} Accessible Projects
         </h3>
         <div style={{
@@ -233,11 +220,11 @@ function OverviewTab({
                     width: 8, height: 8, borderRadius: '50%',
                     background: isSynced ? T.successText : T.textSubtlest,
                   }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
+                  <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 600, color: T.text }}>
                     {p.key}
                   </span>
                 </div>
-                <div style={{ fontSize: 12, color: T.textSubtle }}>
+                <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle }}>
                   {p.name}
                 </div>
               </div>
@@ -289,7 +276,7 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
           extra: autoSync ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
               <Textfield value={interval} onChange={e => setInterval(e.target.value)} type="number" min="5" max="120" style={{ width: 100 }} />
-              <span style={{ fontSize: 13, color: T.textSubtle }}>minutes</span>
+              <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, color: T.textSubtle }}>minutes</span>
             </div>
           ) : null,
         },
@@ -301,7 +288,7 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
           extra: webhooks ? (
             <div style={{
               background: T.info, border: `1px solid ${T.infoText}`, borderRadius: 6,
-              padding: '8px 12px', fontSize: 12, color: T.infoText, marginTop: 12,
+              padding: '8px 12px', fontSize: 12, color: T.infoText, marginTop: 12, fontFamily: 'var(--ds-font-family-body)',
             }}>
               ✓ Webhook endpoint registered
             </div>
@@ -320,12 +307,12 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
           padding: '24px', marginBottom: 20,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: T.text, margin: 0 }}>
+            <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, margin: 0 }}>
               {tab.title}
             </h3>
             <Toggle isChecked={tab.enabled} onChange={e => tab.setEnabled(e.target.checked)} />
           </div>
-          <div style={{ fontSize: 12, color: T.textSubtle }}>
+          <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle }}>
             {tab.description}
           </div>
           {tab.extra}
@@ -336,7 +323,7 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
         background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8,
         padding: '24px', marginBottom: 20,
       }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
           Manual Sync
         </h3>
         <div style={{ display: 'flex', gap: 12 }}>
@@ -348,36 +335,37 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
           </Button>
         </div>
         {manualSync.isError && (
-          <div style={{ color: T.dangerText, fontSize: 12, marginTop: 12 }}>
+          <div style={{ fontFamily: 'var(--ds-font-family-body)', color: T.dangerText, fontSize: 12, marginTop: 12 }}>
             ✗ Sync failed: {(manualSync.error as Error).message}
           </div>
         )}
         {manualSync.isSuccess && (
-          <div style={{ color: T.successText, fontSize: 12, marginTop: 12 }}>
+          <div style={{ fontFamily: 'var(--ds-font-family-body)', color: T.successText, fontSize: 12, marginTop: 12 }}>
             ✓ Sync complete: {manualSync.data?.recordsAdded} added
           </div>
         )}
       </div>
 
       <div style={{
-        background: env.isProductionRuntime ? T.danger : T.warning,
-        border: `1px solid ${env.isProductionRuntime ? T.dangerText : T.warningText}`,
+        background: env.isProductionRuntime ? T.danger : T.info,
+        border: `1px solid ${env.isProductionRuntime ? T.dangerText : T.infoText}`,
         borderRadius: 8,
         padding: '24px',
       }}>
         <h3 style={{
+          fontFamily: 'var(--ds-font-family-heading)',
           fontSize: 16, fontWeight: 600,
-          color: env.isProductionRuntime ? T.dangerText : T.warningText,
+          color: env.isProductionRuntime ? T.dangerText : T.infoText,
           marginBottom: 12,
         }}>
           ⚠️ Refresh Jira Data ({env.environment})
         </h3>
-        <div style={{ fontSize: 12, color: env.isProductionRuntime ? T.dangerText : T.warningText, marginBottom: 16 }}>
+        <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: env.isProductionRuntime ? T.dangerText : T.infoText, marginBottom: 16 }}>
           Delete all Jira-origin data and reload fresh from Jira. Catalyst-native data is preserved.
           {env.isProductionRuntime && ' This affects PRODUCTION data.'}
         </div>
         <div style={{ marginBottom: 12 }}>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>
+          <label style={{ display: 'block', fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>
             Mode:
           </label>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -386,7 +374,7 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
               style={{
                 padding: '6px 12px', borderRadius: 4, border: `1px solid ${T.border}`,
                 background: refreshMode === 'dry-run' ? T.info : T.surface,
-                cursor: 'pointer', fontSize: 12,
+                cursor: 'pointer', fontSize: 12, fontFamily: 'var(--ds-font-family-body)',
               }}
             >
               Dry Run
@@ -396,7 +384,7 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
               style={{
                 padding: '6px 12px', borderRadius: 4, border: `1px solid ${T.border}`,
                 background: refreshMode === 'confirmed' ? T.danger : T.surface,
-                cursor: 'pointer', fontSize: 12,
+                cursor: 'pointer', fontSize: 12, fontFamily: 'var(--ds-font-family-body)',
               }}
             >
               Confirmed
@@ -405,7 +393,7 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
         </div>
         {refreshMode === 'confirmed' && (
           <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>
+            <label style={{ display: 'block', fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>
               Confirmation phrase:
             </label>
             <Textfield
@@ -414,7 +402,7 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
               placeholder={env.isProductionRuntime ? 'REFRESH PRODUCTION JIRA DATA' : 'REFRESH STAGING JIRA DATA'}
               style={{ width: '100%' }}
             />
-            <div style={{ fontSize: 11, color: T.textSubtle, marginTop: 4 }}>
+            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: T.textSubtle, marginTop: 4 }}>
               Type exactly: {env.isProductionRuntime ? 'REFRESH PRODUCTION JIRA DATA' : 'REFRESH STAGING JIRA DATA'}
             </div>
           </div>
@@ -427,12 +415,12 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
           {refreshData.isPending ? 'Processing…' : 'Start Refresh'}
         </Button>
         {refreshData.isError && (
-          <div style={{ color: T.dangerText, fontSize: 12, marginTop: 12 }}>
+          <div style={{ fontFamily: 'var(--ds-font-family-body)', color: T.dangerText, fontSize: 12, marginTop: 12 }}>
             ✗ Refresh failed: {(refreshData.error as Error).message}
           </div>
         )}
         {refreshData.isSuccess && (
-          <div style={{ color: T.successText, fontSize: 12, marginTop: 12 }}>
+          <div style={{ fontFamily: 'var(--ds-font-family-body)', color: T.successText, fontSize: 12, marginTop: 12 }}>
             ✓ Refresh complete: {refreshData.data?.recordsReloaded} reloaded
           </div>
         )}
