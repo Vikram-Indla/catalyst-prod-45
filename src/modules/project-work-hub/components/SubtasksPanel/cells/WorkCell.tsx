@@ -60,7 +60,7 @@ export function WorkCellPrefix({
         <span
           style={{
             color: 'var(--ds-link, #0052CC)',
-            fontSize: 12,
+            fontSize: 14,
             flexShrink: 0,
             textDecoration: 'underline',
             textUnderlineOffset: 2,

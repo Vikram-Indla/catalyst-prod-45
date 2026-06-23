@@ -1924,6 +1924,36 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       }
                       e.dataTransfer.effectAllowed = 'move';
                       try { e.dataTransfer.setData('text/plain', meta!.id); } catch { /* some browsers */ }
+                      // Custom drag image: blue-outlined rectangle sized to
+                      // the column body (width = th width, height = full
+                      // table height). Mirrors Jira's column-drag ghost.
+                      try {
+                        const thEl = e.currentTarget as HTMLElement;
+                        const tableEl = thEl.closest('table') as HTMLElement | null;
+                        const thRect = thEl.getBoundingClientRect();
+                        const tableRect = tableEl?.getBoundingClientRect();
+                        const ghostW = Math.round(thRect.width);
+                        const ghostH = Math.round(tableRect?.height ?? thRect.height);
+                        const ghost = document.createElement('div');
+                        ghost.style.cssText = [
+                          `position:fixed`,
+                          `top:-10000px`,
+                          `left:-10000px`,
+                          `width:${ghostW}px`,
+                          `height:${ghostH}px`,
+                          `background:rgba(76,154,255,0.10)`,
+                          `border:2px solid var(--ds-border-selected, #4C9AFF)`,
+                          `border-radius:3px`,
+                          `pointer-events:none`,
+                          `box-sizing:border-box`,
+                          `z-index:9999`,
+                        ].join(';');
+                        document.body.appendChild(ghost);
+                        const offsetX = Math.round(e.clientX - thRect.left);
+                        const offsetY = Math.round(e.clientY - thRect.top);
+                        e.dataTransfer.setDragImage(ghost, offsetX, offsetY);
+                        setTimeout(() => ghost.remove(), 0);
+                      } catch { /* setDragImage unsupported / cross-origin guard */ }
                       dragIdRef.current = meta!.id;
                       setDragId(meta!.id);
                     } : undefined}

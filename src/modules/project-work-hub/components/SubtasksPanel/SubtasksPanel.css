@@ -204,36 +204,16 @@
 }
 
 /* 2026-06-23 — Jira-parity column drag-reorder visual.
-   When a header is dragged, the drop-target column lights up with a light
-   blue tint + solid blue left/right rails spanning header + every body row.
-   The dragged source column dims to 0.55 opacity (handled inline in
-   JiraTable). data-jt-drag-over / data-jt-drag-source attributes are
-   emitted from JiraTable when isDropTarget / isDraggingThis are true.
-   Selectors here beat the global tbody td !important box-shadow. */
+   Source column stays untouched in place (no tint, no outline, no opacity).
+   The drag ghost — a blue-outlined transparent rectangle sized to the column
+   body — is created in JiraTable onDragStart via setDragImage and follows
+   the cursor.
+   Drop target (data-jt-drag-over) shows ONLY a single 2px blue vertical
+   line on its LEFT edge: the insertion indicator. */
 .sp-ak-table .jira-table-grid table tbody > tr > td[data-jt-drag-over="true"],
 .sp-ak-table .jira-table-grid table thead > tr > th[data-jt-drag-over="true"] {
-  background: var(--ds-background-selected, rgba(76, 154, 255, 0.15)) !important;
-  box-shadow:
-    inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF),
-    inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF) !important;
-}
-/* Top edge on the header cell + bottom edge on the last body row close the
-   blue frame around the dropped column. */
-.sp-ak-table .jira-table-grid table thead > tr > th[data-jt-drag-over="true"] {
-  box-shadow:
-    inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF),
-    inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF),
-    inset 0 1px 0 0 var(--ds-border-selected, #4C9AFF) !important;
-}
-.sp-ak-table .jira-table-grid table tbody > tr:last-child > td[data-jt-drag-over="true"] {
-  box-shadow:
-    inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF),
-    inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF),
-    inset 0 -1px 0 0 var(--ds-border-selected, #4C9AFF) !important;
-}
-/* Source column (the one being dragged) dims so the user sees what's moving. */
-.sp-ak-table .jira-table-grid table tbody > tr > td[data-jt-drag-source="true"] {
-  opacity: 0.55;
+  background: transparent !important;
+  box-shadow: inset 2px 0 0 0 var(--ds-border-selected, #4C9AFF) !important;
 }
 
 /* 2026-06-23 — Suppress JiraTable's focused-row blue left bar (3px inset
