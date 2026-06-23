@@ -172,9 +172,9 @@ export function ReleaseCreateModal({
                 </label>
                 <DatePicker
                   id="release-start-date"
-                  value={formData.start_date || ''}
-                  onChange={(isoDate: string) => setFormData((p) => ({ ...p, start_date: isoDate || '' }))}
-                  placeholder="Select start date"
+                  value={formData.start_date}
+                  onChange={(isoDate: string) => setFormData((p) => ({ ...p, start_date: isoDate }))}
+                  formatDisplayLabel="yyyy-MM-dd"
                 />
               </div>
 
@@ -185,12 +185,12 @@ export function ReleaseCreateModal({
                 </label>
                 <DatePicker
                   id="release-date"
-                  value={formData.release_date || ''}
+                  value={formData.release_date}
                   onChange={(isoDate: string) => {
-                    setFormData((p) => ({ ...p, release_date: isoDate || '' }));
+                    setFormData((p) => ({ ...p, release_date: isoDate }));
                     if (errors.release_date) setErrors((p) => ({ ...p, release_date: '' }));
                   }}
-                  placeholder="Select release date"
+                  formatDisplayLabel="yyyy-MM-dd"
                 />
                 {submitted && errors.release_date && (
                   <div id="release-date-error" role="alert" style={errStyle}>
