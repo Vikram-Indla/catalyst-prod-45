@@ -29,6 +29,22 @@ metadata:
 - Minimize regressions while repairing defects.
 - Leave behind a reproducible explanation of the failure.
 
+## 📋 MANDATORY CONTRACT REFERENCE
+
+**This skill enforces the Catalyst Mockup-First Visual Delivery Contract.**
+
+File: `.claude/mockup-contract.md`
+
+Key enforcement for UI bugs:
+- If bug is UI-related: create mockup of CORRECT state
+- Mockup route: `/mockups/<feature-slug>` (React/TSX)
+- Status file: `.catalyst/mockups/<feature-slug>.json`
+- Use canonical components only (no hand-rolled UI)
+- Screenshot evidence from mockup route (not SVG arrows)
+- Handoff at 80% context health
+
+---
+
 ## Activation Signals
 
 - Use this skill when the root cause is unknown.

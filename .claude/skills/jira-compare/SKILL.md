@@ -22,6 +22,24 @@ metadata:
 
 ---
 
+## 📋 MANDATORY CONTRACT REFERENCE
+
+**This skill enforces the Catalyst Mockup-First Visual Delivery Contract.**
+
+File: `.claude/mockup-contract.md`
+
+Key workflow:
+1. Collect real UI evidence (browser/MCP or supplied screenshots)
+2. Compare against Jira live DOM probes
+3. Create mockup route showing Jira-aligned version (`/mockups/<feature-slug>`)
+4. Update `.catalyst/mockups/<feature-slug>.json` with parity findings
+5. Map corrections to Catalyst canonical components (no hand-rolled UI)
+6. Show mockup route + screenshot evidence (no SVG arrows as main evidence)
+7. Request approval before fixes are applied
+8. Handoff at 80% context health
+
+---
+
 ## ⚠️ HARD RULES — READ FIRST
 
 0. **Code archaeology FIRST.** Before using ANY Jira API endpoint, check `wh-jira-bulk-sync` and similar functions for the proven endpoint. Replicate the working pattern exactly. Only debug if replication fails. See CLAUDE.md 2026-05-16 lesson. Cost: ~30 seconds. Benefit: eliminates wrong alternatives.

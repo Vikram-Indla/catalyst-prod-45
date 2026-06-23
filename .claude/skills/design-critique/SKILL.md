@@ -79,6 +79,22 @@ A critique that advances a fix, re-scores, or declares closure without a rendere
 
 ---
 
+## 📋 MANDATORY CONTRACT REFERENCE
+
+**This skill enforces the Catalyst Mockup-First Visual Delivery Contract.**
+
+File: `.claude/mockup-contract.md`
+
+Key workflow:
+1. Critique surfaces using actual page/screenshot + Storybook MCP (below)
+2. Create mockup route showing corrected state (`/mockups/<feature-slug>`)
+3. Update `.catalyst/mockups/<feature-slug>.json` with findings and fixes
+4. Show mockup route + screenshot evidence (no SVG arrows as main evidence)
+5. Request approval before fixes are applied
+6. Handoff at 80% context health
+
+---
+
 ## 🎨 SOURCE OF TRUTH — CATALYST STORYBOOK MCP (mandatory — runs FIRST, before any scoring)
 
 **The canonical Catalyst Design System lives in the published Storybook, exposed as an MCP server. It and the Atlassian Design System (https://atlassian.design/) are the ONLY design authorities. Consult the Storybook MCP BEFORE scoring any heuristic.**

@@ -77,6 +77,25 @@ A `/start` run or `proceed` step that advances without a rendered widget + expli
 
 ---
 
+## Mandatory Contract Reference
+
+**Every `/start` execution MUST enforce the Catalyst Mockup-First Visual Delivery Contract.**
+
+File: `.claude/mockup-contract.md`
+
+Key enforcement:
+- For UI-related tasks: mockup-first workflow required
+- Mockup must be React/TSX at a real route (prefer `/mockups/<feature-slug>`)
+- Mockup status tracked in `.catalyst/mockups/<feature-slug>.json`
+- Approval lock before implementation
+- Canonical component-first (no hand-rolled UI without justification)
+- No SVG arrow evidence
+- Handoff at 80% context health
+
+For non-UI tasks, the contract rules are advisory; approve at your discretion.
+
+---
+
 ## Core flow
 
 ### `/start [request]`
@@ -92,6 +111,8 @@ Skipping: <comma-separated list>
 
 Then render the recommendation widget (work type, skills→why mapping, expected before→after — all inside the widget). Then emit the consent line and stop. No `proceed` is honoured until the widget is approved. Everything else (work-type catalogue, per-skill rationale, expected outputs) lives in the widget, never in prose.
 
+**For UI-related tasks (Feature replication / Implementation / Design audit / UI-DOM analysis):** also state in the widget: "Mockup-first workflow required per `.claude/mockup-contract.md`".
+
 ### `proceed`
 
 When user says `proceed`:
@@ -100,6 +121,16 @@ When user says `proceed`:
 3. Check git status before implementation.
 4. Do not run destructive commands.
 5. Do not install tools unless explicitly approved.
+
+**FOR UI-RELATED TASKS ONLY** (Feature replication / Implementation / Design audit / UI-DOM analysis):
+   - **Step 1:** Create React/TSX mockup route (prefer `/mockups/<feature-slug>`) using Catalyst canonical components
+   - **Step 2:** Create/update `.catalyst/mockups/<feature-slug>.json` to track status
+   - **Step 3:** Open mockup route in browser/Chrome MCP and show it to user
+   - **Step 4:** Request approval before production implementation (unless user explicitly skips)
+   - **Step 5:** Every subsequent change must update the mockup first, then show the updated mockup route
+   - **Full contract:** Reference `.claude/mockup-contract.md` for all rules (canonical components, hand-rolled blocking, handoff at 80%, etc.)
+
+**FOR ALL TASKS:**
 6. For EVERY change: make the change, emit the three `Fix:`/`Applied:`/`Violations:` one-liners (per the Output Contract), render a Visual Widget Gate widget of that change (before→after), emit the consent line, and STOP until approved. One change = one widget = one consent. No consent, no next change. No prose beyond the three one-liners.
 7. Produce the main deliverable.
 8. Render a final summary widget + consent line, then end with the mandatory Benefit Report.
