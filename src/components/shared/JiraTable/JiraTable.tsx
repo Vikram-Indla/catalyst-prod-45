@@ -2684,26 +2684,58 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             onClick: () => onSortChange?.(headerMenuColId, 'DESC'),
           });
         } else if (col.lockedPosition) {
-          // Work column — Jira parity: "Sort by columns" submenu of sortable peers
-          const sortablePeers = visibleColumns.filter((c) => c.sortable && !c.id.startsWith('__'));
-          if (sortablePeers.length > 0) {
+          // Work column — Jira parity: "Sort by columns" is a non-interactive
+          // SECTION LABEL above Type / Key / Summary entries (each a submenu
+          // of A→Z / Z→A or low→high / high→low). Prefer the explicit
+          // col.subSorts contract (Jira's composite-cell sort grouping); fall
+          // back to sortable peers for older consumers without subSorts.
+          if (col.subSorts && col.subSorts.length > 0) {
             items.push({
-              id: 'sort-by-columns',
+              id: 'sort-by-columns-label',
               label: 'Sort by columns',
-              hasSubmenu: true,
-              submenu: sortablePeers.flatMap((peer) => [
-                {
-                  id: `sort-${peer.id}-asc`,
-                  label: `${peer.label}: A to Z`,
-                  onClick: () => onSortChange?.(peer.id, 'ASC'),
-                },
-                {
-                  id: `sort-${peer.id}-desc`,
-                  label: `${peer.label}: Z to A`,
-                  onClick: () => onSortChange?.(peer.id, 'DESC'),
-                },
-              ]),
+              kind: 'sectionLabel',
             });
+            for (const sub of col.subSorts) {
+              const isAlpha = sub.kind === 'alpha';
+              items.push({
+                id: `sort-${sub.id}`,
+                label: sub.label,
+                hasSubmenu: true,
+                submenu: [
+                  {
+                    id: `sort-${sub.id}-asc`,
+                    label: isAlpha ? 'Sort A to Z' : 'Sort lowest to highest',
+                    onClick: () => onSortChange?.(sub.id, 'ASC'),
+                  },
+                  {
+                    id: `sort-${sub.id}-desc`,
+                    label: isAlpha ? 'Sort Z to A' : 'Sort highest to lowest',
+                    onClick: () => onSortChange?.(sub.id, 'DESC'),
+                  },
+                ],
+              });
+            }
+          } else {
+            const sortablePeers = visibleColumns.filter((c) => c.sortable && !c.id.startsWith('__'));
+            if (sortablePeers.length > 0) {
+              items.push({
+                id: 'sort-by-columns',
+                label: 'Sort by columns',
+                hasSubmenu: true,
+                submenu: sortablePeers.flatMap((peer) => [
+                  {
+                    id: `sort-${peer.id}-asc`,
+                    label: `${peer.label}: A to Z`,
+                    onClick: () => onSortChange?.(peer.id, 'ASC'),
+                  },
+                  {
+                    id: `sort-${peer.id}-desc`,
+                    label: `${peer.label}: Z to A`,
+                    onClick: () => onSortChange?.(peer.id, 'DESC'),
+                  },
+                ]),
+              });
+            }
           }
         }
         if (canReorder) {

@@ -81,10 +81,13 @@ export function WorkCellSummary({
   summary: string;
   onClick?: () => void;
 }) {
+  // 2026-06-23 — onClick lives on the INNER text span, not the outer
+  // container. The outer span fills the remaining cell width (flex:1) but
+  // clicking its empty padding area must NOT trigger navigation — only
+  // clicking on the text itself does. Empty-area clicks bubble to the
+  // sp-summary-wrap which opens summary edit mode.
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <span
       className="sp-work-cell-summary"
       style={{
         display: '-webkit-box',
@@ -98,16 +101,29 @@ export function WorkCellSummary({
         flex: 1,
         lineHeight: `${LINE_HEIGHT}px`,
         background: 'transparent',
-        border: 'none',
         padding: 0,
         textAlign: 'left',
-        cursor: onClick ? 'pointer' : 'default',
         font: 'inherit',
         color: 'inherit',
       }}
     >
-      <span className="sp-work-cell-summary-text">{summary}</span>
-    </button>
+      <span
+        className="sp-work-cell-summary-text"
+        role={onClick ? 'button' : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        onClick={onClick ? (e) => { e.stopPropagation(); onClick(); } : undefined}
+        onKeyDown={onClick ? (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick();
+          }
+        } : undefined}
+        style={{ cursor: onClick ? 'pointer' : 'inherit' }}
+      >
+        {summary}
+      </span>
+    </span>
   );
 }
 

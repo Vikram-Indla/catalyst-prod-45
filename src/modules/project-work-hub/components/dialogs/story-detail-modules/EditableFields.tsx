@@ -256,6 +256,7 @@ export function EditableAssignee({
   currentAssigneeName,
   onUpdate,
   onChange,
+  allowReassign,
 }: {
   issueId: string;
   issueKey?: string;
@@ -267,6 +268,10 @@ export function EditableAssignee({
    *  Receives (userId, displayName). Enables non-ph_issues data sources (tasks, business_requests)
    *  to reuse this canonical picker — see CLAUDE.md "Adopt canonical components" rule (2026-06-01). */
   onChange?: (userId: string | null, displayName: string | null) => Promise<void> | void;
+  /** Override the "read-only once set" rule. Defaults to false (read-only when
+   *  currentAssigneeId is non-null). Subtasks table opts in (2026-06-23) so
+   *  rows can be re-assigned inline without first clearing. */
+  allowReassign?: boolean;
 }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   /* 2026-06-21: scope members to the project. Pulls project_members for
@@ -421,7 +426,7 @@ export function EditableAssignee({
         }}
         members={pickerMembers}
         fieldLabel="Assignee"
-        disabled={!!currentAssigneeId}
+        disabled={!allowReassign && !!currentAssigneeId}
         size={24}
       />
     </div>

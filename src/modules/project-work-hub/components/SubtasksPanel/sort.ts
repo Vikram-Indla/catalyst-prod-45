@@ -10,7 +10,7 @@
 import type { SubtaskRow } from './hooks/useSubtaskMutations';
 import { normalisePriority, PRIORITY_MAP } from '@/components/shared/PriorityIndicator';
 
-export type SortField = 'created' | 'key' | 'priority' | 'status' | 'assignee';
+export type SortField = 'created' | 'key' | 'priority' | 'status' | 'assignee' | 'type' | 'summary';
 export type SortDir = 'asc' | 'desc';
 
 export interface SortState {
@@ -86,6 +86,8 @@ export function sortRows(rows: SubtaskRow[], state: SortState): SubtaskRow[] {
       if (!an && !bn) return 0;
       return an.localeCompare(bn, undefined, { sensitivity: 'base' });
     },
+    type: (a, b) => (a.issue_type ?? '').localeCompare(b.issue_type ?? '', undefined, { sensitivity: 'base' }),
+    summary: (a, b) => (a.summary ?? '').localeCompare(b.summary ?? '', undefined, { sensitivity: 'base' }),
   };
 
   out.sort((a, b) => {

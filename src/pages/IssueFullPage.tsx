@@ -21,6 +21,7 @@ interface ResolvedIssue {
   issue_key: string;
   issue_type: string;
   project_key: string;
+  project_id: string | null;
   summary: string | null;
 }
 
@@ -75,11 +76,25 @@ export default function IssueFullPage() {
         }
 
         if (data) {
+          // 2026-06-23 — resolve project UUID from project_key so child
+          // surfaces (SubtasksPanel → EditableAssignee) can query
+          // project_members. ph_issues stores project_key but not project_id;
+          // we look it up in `projects` (Catalyst master) by key.
+          let projectIdResolved: string | null = null;
+          if (data.project_key) {
+            const { data: projRow } = await (supabase as any)
+              .from('projects')
+              .select('id')
+              .eq('key', data.project_key)
+              .maybeSingle();
+            if (!cancelled && projRow?.id) projectIdResolved = projRow.id;
+          }
           setIssue({
             id: data.id,
             issue_key: data.issue_key,
             issue_type: data.issue_type,
             project_key: data.project_key,
+            project_id: projectIdResolved,
             summary: data.summary,
           });
           setLoading(false);
@@ -100,6 +115,7 @@ export default function IssueFullPage() {
             issue_key: catRow.issue_key,
             issue_type: catRow.issue_type,
             project_key: catRow.projects?.key ?? '',
+            project_id: catRow.project_id ?? null,
             summary: catRow.title,
           });
           setLoading(false);
@@ -180,6 +196,11 @@ export default function IssueFullPage() {
              IssueDetailPage.tsx already follows this contract. */
           itemId={issue.issue_key}
           projectKey={issue.project_key}
+          /* 2026-06-23 — pass resolved project UUID so child surfaces
+             (SubtasksPanel → EditableAssignee) can scope project_members
+             to this project. Without it, the assignee picker had no
+             members and rendered as a disabled, non-opening trigger. */
+          projectId={issue.project_id ?? undefined}
           itemType={issue.issue_type}
           fullPageMode={true}
           /* 2026-06-23 — wire child-item navigation: clicking a subtask /

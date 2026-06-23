@@ -33,7 +33,7 @@ import UtilityChevronRight from '@atlaskit/icon/utility/chevron-right';
 import Tooltip from '@atlaskit/tooltip';
 import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';
 import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
-import { EditablePriority } from '../dialogs/story-detail-modules/EditableFields';
+import { EditableAssignee, EditablePriority } from '../dialogs/story-detail-modules/EditableFields';
 import { AssigneeCell } from './cells/AssigneeCell';
 import { StatusCell } from './cells/StatusCell';
 import { HeaderOverflowMenu } from './HeaderOverflowMenu';
@@ -250,6 +250,24 @@ function InlineSummaryEditor({
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
+  }, [onCancel]);
+
+  // 2026-06-23 — Dismiss the edit when the user resizes the Work column.
+  // ResizeObserver on the parent <td>; first measurement is ignored so the
+  // mount itself doesn't cancel.
+  useEffect(() => {
+    const td = wrapRef.current?.closest('td');
+    if (!td) return;
+    let firstObservation = true;
+    const ro = new ResizeObserver(() => {
+      if (firstObservation) {
+        firstObservation = false;
+        return;
+      }
+      onCancel();
+    });
+    ro.observe(td);
+    return () => ro.disconnect();
   }, [onCancel]);
 
   return (
@@ -947,6 +965,15 @@ export function SubtasksPanel({
             if (columns.work) {
               schema.push({
                 id: 'work', label: 'Work', width: 30, sortable: false, alwaysVisible: true, lockedPosition: true,
+                // 2026-06-23 — Jira parity: Work column packs Type + Key + Summary
+                // into one cell. Header three-dot menu renders "Sort by columns"
+                // with nested submenus per sub-field. JiraTable picks these up
+                // because col.lockedPosition && col.subSorts is set.
+                subSorts: [
+                  { id: 'type', label: 'Type', kind: 'alpha' },
+                  { id: 'key', label: 'Key', kind: 'numeric' },
+                  { id: 'summary', label: 'Summary', kind: 'alpha' },
+                ],
                 accessor: (r: any) => r.summary,
                 cell: ({ row }) => {
                   const child = row as any;
@@ -956,8 +983,22 @@ export function SubtasksPanel({
                     onSubtaskClick?.(child.issue_key ?? child.id);
                     setFocusedRowId(child.id);
                   };
+                  // 2026-06-23 — Empty-space click on the Work cell triggers
+                  // summary edit (Jira parity). Inner buttons (key, summary,
+                  // edit pencil) keep their explicit handlers — closest('button')
+                  // check skips the wrap handler when click landed on them.
+                  const handleWrapClick = (e: React.MouseEvent<HTMLSpanElement>) => {
+                    if (bulkEditMode || isEditing) return;
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button')) return;
+                    setEditingId(child.id);
+                  };
                   return (
-                    <span className="sp-summary-wrap">
+                    <span
+                      className="sp-summary-wrap"
+                      onClick={handleWrapClick}
+                      style={{ cursor: bulkEditMode || isEditing ? 'default' : 'text' }}
+                    >
                       <WorkCellPrefix
                         issueType={child.issue_type}
                         issueKey={child.issue_key}
@@ -1014,13 +1055,31 @@ export function SubtasksPanel({
                 accessor: (r: any) => r.assignee_display_name ?? '￿',
                 cell: ({ row }) => {
                   const child = row as any;
+                  // Bulk mode: read-only avatar (no picker). Otherwise: canonical
+                  // EditableAssignee — same searchable popover the right-rail uses
+                  // so both surfaces share keyboard semantics + project-member list.
+                  if (bulkEditMode) {
+                    return (
+                      <AssigneeCell
+                        displayName={child.assignee_display_name}
+                        accountId={child.assignee_account_id}
+                        avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
+                        readOnly
+                      />
+                    );
+                  }
                   return (
-                    <AssigneeCell
-                      displayName={child.assignee_display_name}
-                      accountId={child.assignee_account_id}
-                      avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
-                      onChange={handleAssigneeChange(child)}
-                      readOnly={bulkEditMode}
+                    <EditableAssignee
+                      issueId={child.id}
+                      issueKey={child.issue_key}
+                      projectId={parentProjectId ?? ''}
+                      currentAssigneeId={child.assignee_account_id}
+                      currentAssigneeName={child.assignee_display_name}
+                      allowReassign
+                      onUpdate={() => { /* invalidation flows via mutation */ }}
+                      onChange={(userId, displayName) => {
+                        handleAssigneeChange(child)({ accountId: userId, displayName });
+                      }}
                     />
                   );
                 },
@@ -1086,10 +1145,12 @@ export function SubtasksPanel({
                     onSortChange={onSortChangeAdapter}
                     focusedRowId={focusedRowId ?? undefined}
                     onFocusedRowChange={(id) => setFocusedRowId(id)}
-                    onRowClick={(r: any) => {
-                      if (bulkEditMode) { toggleSelected(r.id); return; }
-                      onSubtaskClick?.(r.issue_key ?? r.id);
-                    }}
+                    // 2026-06-23 — Row-wide click no longer navigates to the
+                    // detail. Only the Summary text + Key in the Work cell
+                    // call onSubtaskClick. Other cells (priority, status,
+                    // assignee editors) keep their own click semantics.
+                    // Bulk mode still toggles selection on row click.
+                    onRowClick={bulkEditMode ? (r: any) => toggleSelected(r.id) : undefined}
                     enableColumnReorder
                     rowsPerPage={0}
                     emptyView={null}
