@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
 import { useCreateRelease } from '@/hooks/releases/useCreateRelease';
 import { Release, CreateReleasePayload } from '@/types/phase3-releases';
 import { catalystToast } from '@/lib/catalystToast';
