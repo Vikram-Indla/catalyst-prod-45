@@ -1,13 +1,13 @@
 /**
- * ReleaseSprintSection — Story sidebar Release + Sprint fields.
+ * ReleaseSection — Production Incident sidebar Release field.
  *
  * Displays:
- *  - Release: Optional link to a release (read-only in idle state)
+ *  - Release: Optional link to a release version (read-only in idle state)
  *  - Sprints: Chip list of sprints linked to the selected release (read-only)
  *
- * Edit mode: Release dropdown → Sprint multi-select (filtered to release's sprints)
+ * Edit mode: Release dropdown only
  *
- * Used in: CatalystViewStory right sidebar (via children prop)
+ * Used in: CatalystViewIncident right sidebar (via children prop)
  */
 
 import { useState, useMemo } from 'react';
@@ -16,12 +16,14 @@ import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 
-interface ReleaseSprintSectionProps {
-  /** Story issue_key (UUID) */
-  issueKey: string;
+interface ReleaseSectionProps {
+  /** Incident id (UUID) */
+  incidentId: string;
   projectId?: string;
+  /** Current release_version_id if already linked */
+  releaseVersionId?: string | null;
   /** Callback when release changes */
-  onReleaseChange?: (releaseId: string | null) => void;
+  onReleaseChange?: (releaseVersionId: string | null) => void;
 }
 
 interface ReleaseOption {
@@ -35,24 +37,23 @@ interface SprintChip {
 }
 
 /**
- * Fetch releases for a project (canonical source: rh_releases)
+ * Fetch release versions for a project
  */
-function useProjectReleasesForSidebar(projectId: string | undefined) {
+function useProjectReleaseVersions(projectId: string | undefined) {
   return useQuery({
-    queryKey: ['story-releases', projectId],
+    queryKey: ['incident-releases', projectId],
     queryFn: async () => {
       if (!projectId) return [];
       const { data, error } = await supabase
-        .from('rh_releases')
-        .select('id, name, status, target_date')
-        .eq('project_id', projectId)
-        .order('target_date', { ascending: false, nullsFirst: false })
+        .from('release_versions')
+        .select('id, name, version, status, release_date')
+        .order('release_date', { ascending: false, nullsFirst: false })
         .order('name');
       if (error) {
-        console.error('[useProjectReleasesForSidebar] error:', error.message);
+        console.error('[useProjectReleaseVersions] error:', error.message);
         return [];
       }
-      return (data ?? []) as Array<{ id: string; name: string; status: string; target_date?: string }>;
+      return (data ?? []) as Array<{ id: string; name: string; version: string; status: string; release_date?: string }>;
     },
     enabled: !!projectId,
     staleTime: 2 * 60 * 1000,
@@ -60,41 +61,31 @@ function useProjectReleasesForSidebar(projectId: string | undefined) {
 }
 
 /**
- * Fetch current release for a story (via linking table)
+ * Fetch sprints linked to a release version (via its parent release)
  */
-function useStoryCurrentRelease(storyId: string) {
+function useReleaseVersionSprints(releaseVersionId: string | null | undefined) {
   return useQuery({
-    queryKey: ['story-current-release', storyId],
+    queryKey: ['incident-release-sprints', releaseVersionId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('release_story_links')
-        .select('release_id')
-        .eq('story_id', storyId)
-        .single();
-      if (error && error.code !== 'PGRST116') {
-        console.error('[useStoryCurrentRelease] error:', error.message);
-        return null;
-      }
-      return (data?.release_id as string) ?? null;
-    },
-    staleTime: 1 * 60 * 1000,
-  });
-}
+      if (!releaseVersionId) return [];
 
-/**
- * Fetch sprints linked to a release
- */
-function useReleaseSprints(releaseId: string | null | undefined) {
-  return useQuery({
-    queryKey: ['release-sprints-sidebar', releaseId],
-    queryFn: async () => {
-      if (!releaseId) return [];
+      // First get the release from the version
+      const { data: versionData } = await supabase
+        .from('release_versions')
+        .select('release_id:id')
+        .eq('id', releaseVersionId)
+        .single();
+
+      if (!versionData?.release_id) return [];
+
+      // Then get sprints linked to that release
       const { data, error } = await supabase
         .from('rh_release_sprints')
         .select('sprint_id, sprints(id, name, status)')
-        .eq('release_id', releaseId);
+        .eq('release_id', versionData.release_id);
+
       if (error) {
-        console.error('[useReleaseSprints] error:', error.message);
+        console.error('[useReleaseVersionSprints] error:', error.message);
         return [];
       }
       return (data ?? []).map(rs => ({
@@ -102,78 +93,53 @@ function useReleaseSprints(releaseId: string | null | undefined) {
         name: (rs as any).sprints?.name ?? '?'
       })) as SprintChip[];
     },
-    enabled: !!releaseId,
+    enabled: !!releaseVersionId,
     staleTime: 1 * 60 * 1000,
   });
 }
 
-export function ReleaseSprintSection({
-  issueKey,
+export function ReleaseSection({
+  incidentId,
   projectId,
+  releaseVersionId,
   onReleaseChange,
-}: ReleaseSprintSectionProps) {
+}: ReleaseSectionProps) {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
 
-  // Fetch current release from linking table
-  const { data: currentReleaseId } = useStoryCurrentRelease(issueKey);
-
-  // Fetch available releases
-  const { data: releases = [] } = useProjectReleasesForSidebar(projectId);
+  // Fetch available release versions
+  const { data: releaseVersions = [] } = useProjectReleaseVersions(projectId);
   const releaseOptions: ReleaseOption[] = useMemo(
-    () => releases.map(r => ({ value: r.id, label: r.name })),
-    [releases]
+    () => releaseVersions.map(r => ({ value: r.id, label: `${r.name} (${r.version})` })),
+    [releaseVersions]
   );
 
   // Initialize selectedRelease with proper label from releases list
   const [selectedRelease, setSelectedRelease] = useState<ReleaseOption | null>(() => {
-    if (!currentReleaseId) return null;
-    const release = releases.find(r => r.id === currentReleaseId);
-    return release ? { value: release.id, label: release.name } : null;
+    if (!releaseVersionId) return null;
+    const release = releaseVersions.find(r => r.id === releaseVersionId);
+    return release ? { value: release.id, label: `${release.name} (${release.version})` } : null;
   });
 
   // Fetch current linked sprints
-  const { data: linkedSprints = [] } = useReleaseSprints(currentReleaseId);
+  const { data: linkedSprints = [] } = useReleaseVersionSprints(releaseVersionId);
 
-  // Update release mutation (uses linking table pattern)
+  // Update release mutation (direct column update on incidents)
   const updateReleaseMutation = useMutation({
-    mutationFn: async (newReleaseId: string | null) => {
-      // Stories use release_story_links table
-      // 1. If removing release: DELETE from release_story_links
-      // 2. If setting release: DELETE old, INSERT new
-
-      if (newReleaseId === null || newReleaseId === '') {
-        // Delete any existing link
-        const { error: deleteError } = await supabase
-          .from('release_story_links')
-          .delete()
-          .eq('story_id', issueKey);
-        if (deleteError) throw deleteError;
-      } else {
-        // Delete old link
-        await supabase
-          .from('release_story_links')
-          .delete()
-          .eq('story_id', issueKey);
-
-        // Insert new link
-        const { error: insertError } = await supabase
-          .from('release_story_links')
-          .insert([{
-            release_id: newReleaseId,
-            story_id: issueKey,
-          }]);
-        if (insertError) throw insertError;
-      }
-
-      return newReleaseId;
+    mutationFn: async (newReleaseVersionId: string | null) => {
+      const { error } = await supabase
+        .from('incidents')
+        .update({ release_version_id: newReleaseVersionId ?? null })
+        .eq('id', incidentId);
+      if (error) throw error;
+      return newReleaseVersionId;
     },
-    onSuccess: (newReleaseId) => {
-      queryClient.invalidateQueries({ queryKey: ['story-detail', issueKey] });
-      queryClient.invalidateQueries({ queryKey: ['release-sprints-sidebar'] });
+    onSuccess: (newReleaseVersionId) => {
+      queryClient.invalidateQueries({ queryKey: ['incident-detail', incidentId] });
+      queryClient.invalidateQueries({ queryKey: ['incident-release-sprints'] });
       setIsEditing(false);
       flag.success('Release updated');
-      onReleaseChange?.(newReleaseId ?? null);
+      onReleaseChange?.(newReleaseVersionId ?? null);
     },
     onError: (err: any) => {
       flag.error('Failed to update release', err?.message ?? 'Try again');
@@ -186,9 +152,9 @@ export function ReleaseSprintSection({
 
   const handleCancel = () => {
     // Reset to current value from releases list
-    if (currentReleaseId) {
-      const current = releases.find(r => r.id === currentReleaseId);
-      setSelectedRelease(current ? { value: current.id, label: current.name } : null);
+    if (releaseVersionId) {
+      const current = releaseVersions.find(r => r.id === releaseVersionId);
+      setSelectedRelease(current ? { value: current.id, label: `${current.name} (${current.version})` } : null);
     } else {
       setSelectedRelease(null);
     }
@@ -203,7 +169,7 @@ export function ReleaseSprintSection({
           Release
         </div>
         <Select<ReleaseOption>
-          inputId="story-release-select"
+          inputId="incident-release-select"
           options={releaseOptions}
           value={selectedRelease}
           onChange={(opt) => setSelectedRelease(opt)}
@@ -260,24 +226,24 @@ export function ReleaseSprintSection({
             background: 'none',
             border: 'none',
             padding: 0,
-            color: currentReleaseId ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
+            color: releaseVersionId ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
             cursor: 'pointer',
-            textDecoration: currentReleaseId ? 'underline' : 'none',
+            textDecoration: releaseVersionId ? 'underline' : 'none',
             fontSize: 14,
             textAlign: 'left',
           }}
         >
-          {currentReleaseId && selectedRelease
+          {releaseVersionId && selectedRelease
             ? selectedRelease.label
             : 'None'}
         </button>
       </div>
 
-      {/* Sprints section — only show if release is linked */}
-      {currentReleaseId && linkedSprints.length > 0 && (
+      {/* Sprints section — only show if release is linked (read-only) */}
+      {releaseVersionId && linkedSprints.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 4px' }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)' }}>
-            Sprints
+            Linked Sprints
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {linkedSprints.map(sprint => (

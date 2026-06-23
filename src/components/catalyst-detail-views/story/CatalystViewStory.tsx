@@ -209,11 +209,10 @@ export default function CatalystViewStory({
       {/* Tier 3.3: Story Release + Sprint fields */}
       {issue?.issue_key && (
         <ReleaseSprintSection
-          issueKey={issue.issue_key}
+          issueKey={issue.id}
           projectId={projectId}
-          releaseId={(issue as any)?.release_id ?? null}
           onReleaseChange={() => {
-            // TODO: Implement release change handler
+            // TODO: Implement release change handler if needed
           }}
         />
       )}

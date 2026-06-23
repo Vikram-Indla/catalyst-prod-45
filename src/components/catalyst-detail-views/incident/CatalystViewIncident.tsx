@@ -21,6 +21,7 @@ import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
+import { ReleaseSection } from './ReleaseSection';
 export default function CatalystViewIncident({
   isOpen, onClose, itemId, projectId, projectKey,
   onOpenItem, panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
@@ -114,7 +115,19 @@ export default function CatalystViewIncident({
       onOpenItem={onOpenItem}
       statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
-    />
+    >
+      {/* Tier 3.4: PI Release field */}
+      {issue?.id && (
+        <ReleaseSection
+          incidentId={issue.id}
+          projectId={projectId}
+          releaseVersionId={(issue as any)?.release_version_id ?? null}
+          onReleaseChange={() => {
+            // TODO: Implement release change handler if needed
+          }}
+        />
+      )}
+    </CatalystSidebarDetails>
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 
