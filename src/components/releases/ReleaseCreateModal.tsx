@@ -9,8 +9,6 @@ import React, { useState, useEffect } from 'react';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
-import TextArea from '@atlaskit/textarea';
-import { DatePicker } from '@atlaskit/datetime-picker';
 import { useCreateRelease } from '@/hooks/releases/useCreateRelease';
 import { Release, CreateReleasePayload } from '@/types/phase3-releases';
 import { catalystToast } from '@/lib/catalystToast';
@@ -175,10 +173,11 @@ export function ReleaseCreateModal({
                 <label style={labelStyle} htmlFor="release-start-date">
                   Start date
                 </label>
-                <DatePicker
+                <Textfield
                   id="release-start-date"
+                  type="date"
                   value={formData.start_date}
-                  onChange={(isoDate: string) => setFormData((p) => ({ ...p, start_date: isoDate }))}
+                  onChange={(e) => setFormData((p) => ({ ...p, start_date: e.target.value }))}
                 />
               </div>
 
@@ -187,11 +186,12 @@ export function ReleaseCreateModal({
                 <label style={labelStyle} htmlFor="release-date">
                   Release date <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                 </label>
-                <DatePicker
+                <Textfield
                   id="release-date"
+                  type="date"
                   value={formData.release_date}
-                  onChange={(isoDate: string) => {
-                    setFormData((p) => ({ ...p, release_date: isoDate }));
+                  onChange={(e) => {
+                    setFormData((p) => ({ ...p, release_date: e.target.value }));
                     if (errors.release_date) setErrors((p) => ({ ...p, release_date: '' }));
                   }}
                 />
