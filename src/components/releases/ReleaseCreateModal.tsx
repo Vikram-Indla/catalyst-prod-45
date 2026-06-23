@@ -8,7 +8,7 @@ import Modal, {
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
-import { DatePicker as AkDatePicker } from '@atlaskit/datetime-picker';
+import DatePicker from '@atlaskit/datetime-picker';
 import Flag from '@atlaskit/flag';
 import { useCreateRelease } from '@/hooks/releases/useCreateRelease';
 import { useReleases } from '@/hooks/releases/useReleases';
@@ -122,11 +122,24 @@ export function ReleaseCreateModal({
   };
 
   const handleClose = () => {
-    // Reset form
     setFormData({ name: '', description: '', start_date: '', release_date: '' });
     setErrors({});
+    setFlagMessage(null);
     onClose();
   };
+
+  // Force close with Escape at dialog level
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', handler, true);
+    return () => document.removeEventListener('keydown', handler, true);
+  }, [isOpen]);
 
   return (
     <>
@@ -149,6 +162,7 @@ export function ReleaseCreateModal({
 
         <ModalBody>
           <form
+            id="release-form"
             onSubmit={handleSubmit}
             aria-label="Create release form"
             noValidate
@@ -239,7 +253,7 @@ export function ReleaseCreateModal({
               >
                 Start date
               </label>
-              <AkDatePicker
+              <DatePicker
                 id="version-start-date"
                 value={formData.start_date}
                 onChange={(e) => {
@@ -273,7 +287,7 @@ export function ReleaseCreateModal({
               >
                 Release date
               </label>
-              <AkDatePicker
+              <DatePicker
                 id="version-release-date"
                 value={formData.release_date}
                 onChange={(e) => {
@@ -299,12 +313,10 @@ export function ReleaseCreateModal({
         </ModalBody>
 
         <ModalFooter>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button
-            appearance="primary"
-            onClick={handleSubmit}
-            isLoading={createMutation.isPending}
-          >
+          <Button type="button" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button type="submit" appearance="primary" isLoading={createMutation.isPending} form="release-form">
             Create release
           </Button>
         </ModalFooter>
