@@ -111,7 +111,6 @@ export function JiraSyncPage() {
             <Tab>Overview</Tab>
             <Tab>Sync Control</Tab>
             <Tab>Projects ({projects.length})</Tab>
-            <Tab>Field Mapping</Tab>
             <Tab>Type Mapping</Tab>
             <Tab>Backup & Logs</Tab>
           </TabList>
@@ -124,9 +123,6 @@ export function JiraSyncPage() {
           </TabPanel>
           <TabPanel>
             <ProjectsTab projects={projects} />
-          </TabPanel>
-          <TabPanel>
-            <FieldMappingTab />
           </TabPanel>
           <TabPanel>
             <TypeMappingTab />
@@ -176,17 +172,17 @@ function OverviewTab({
 
   return (
     <div style={{ marginTop: 24 }}>
-      {/* Stats grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 32 }}>
+      {/* Stats grid — 2 columns compact */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
         {stats.map(({ label, value, color }) => (
           <div key={label} style={{
             background: T.surfaceSunken, border: `1px solid ${T.border}`, borderRadius: 8,
-            padding: '24px 16px', textAlign: 'center',
+            padding: '16px 12px', textAlign: 'center',
           }}>
-            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 24, fontWeight: 600, color: T.text, marginBottom: 8 }}>
+            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 20, fontWeight: 600, color: T.text, marginBottom: 4 }}>
               {value}
             </div>
-            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle }}>
+            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: T.textSubtle }}>
               {label}
             </div>
           </div>
@@ -239,7 +235,7 @@ function SyncControlTab({ connection, env }: { connection: any; env: any }) {
   const [confirmPhrase, setConfirmPhrase] = useState('');
 
   return (
-    <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+    <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
       {/* Manual sync */}
       <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 24 }}>
         <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
@@ -336,18 +332,6 @@ function ProjectsTab({ projects }: { projects: any[] }) {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function FieldMappingTab() {
-  return (
-    <div style={{ marginTop: 24 }}>
-      <SectionMessage appearance="information" title="Field Mapping">
-        <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
-          Map Jira custom fields to Catalyst columns. Coming soon.
-        </div>
-      </SectionMessage>
     </div>
   );
 }
