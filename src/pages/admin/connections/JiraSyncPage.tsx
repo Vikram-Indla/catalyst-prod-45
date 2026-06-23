@@ -2,10 +2,10 @@
  * Jira Integration — Enterprise admin surface for sync, webhooks, field mapping, and backups.
  * Route: /admin/connections/jira
  *
- * 6 tabs: Overview · Sync Control · Projects · Field Mapping · Type Mapping · Backup & Logs
+ * 8 tabs: Overview · Sync Control · Projects · Type Mapping · Status Mapping · Field Mapping · Schema · Logs
  *
- * Design: Atlaskit components only, ADS tokens, all 27 projects visible, people info shown.
- * No "Project Hub" terminology. Enterprise-grade throughout.
+ * Environment-aware: Staging and production Supabase separated completely.
+ * Design: Atlaskit components only, ADS tokens, enterprise-grade throughout.
  */
 
 import { useState, useCallback } from 'react';
@@ -19,11 +19,17 @@ import SectionMessage from '@atlaskit/section-message';
 import Toggle from '@atlaskit/toggle';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
+import Badge from '@atlaskit/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { useJiraConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
 import { useSyncHealth, useSyncLogs, useAvailableProjects } from '@/modules/workhub/admin/hooks/useSyncEngine';
 import { formatDistanceToNow } from 'date-fns';
+import {
+  resolveJiraEnvironment,
+  getEnvironmentLabel,
+  getEnvironmentBadgeVariant,
+} from '@/lib/jira-integration/environmentResolver';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -52,6 +58,7 @@ const ISSUE_TYPES = [
 
 export function JiraSyncPage() {
   const [selectedTab, setSelectedTab] = useState(0);
+  const env = resolveJiraEnvironment();
   const { data: connection } = useJiraConnection();
   const { data: health } = useSyncHealth();
   const { data: projects = [] } = useAvailableProjects();
@@ -69,6 +76,33 @@ export function JiraSyncPage() {
           <p style={{ fontSize: 14, color: T.textSubtle, margin: '8px 0 0 0' }}>
             Sync configuration, webhooks, field mapping, and data backups. Read-only integration — no create/update/delete in Jira.
           </p>
+        </div>
+
+        {/* Environment Banner */}
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', gap: 16,
+          background: env.isProductionRuntime ? 'var(--ds-background-danger, #FFEBE6)' : 'var(--ds-background-warning, #FFFAE6)',
+          border: `1px solid ${env.isProductionRuntime ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-warning, #7A5200)'}`,
+          borderRadius: 8, padding: '16px', marginBottom: 24,
+        }}>
+          <div style={{ flex: 1 }}>
+            <div style={{
+              fontSize: 13, fontWeight: 600,
+              color: env.isProductionRuntime ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-warning, #7A5200)',
+            }}>
+              {getEnvironmentLabel(env.environment)}
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', marginTop: 4 }}>
+              Supabase: <code style={{ background: 'rgba(0,0,0,0.05)', padding: '2px 6px', borderRadius: 3 }}>
+                {env.supabaseProjectRef}
+              </code>
+            </div>
+            {env.isProductionRuntime && (
+              <div style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 6, fontWeight: 500 }}>
+                ⚠️ All sync operations affect PRODUCTION data
+              </div>
+            )}
+          </div>
         </div>
 
         {isConnected && (
