@@ -354,6 +354,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     startX: number;
     startWidth: number;
   } | null>(null);
+  // 2026-06-23 — column whose right-edge resize handle is hovered. Used to
+  // paint a full-height vertical line spanning header + every body row to
+  // signal "you can drag here to resize" (Jira parity).
+  const [hoveredResizeColId, setHoveredResizeColId] = useState<string | null>(null);
 
   const onColumnWidthsChangeRef = useRef(onColumnWidthsChange);
   useEffect(() => { onColumnWidthsChangeRef.current = onColumnWidthsChange; }, [onColumnWidthsChange]);
@@ -366,6 +370,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     };
     const onUp = () => {
       setResizing(null);
+      setHoveredResizeColId(null);
       // Notify parent after drag completes so it can persist to localStorage.
       setColumnWidths((prev) => {
         onColumnWidthsChangeRef.current?.(prev);
@@ -912,23 +917,51 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-resize-handle {
         position: absolute;
         top: 0;
-        right: -3px;
+        right: 0;
         height: 100%;
-        width: 6px;
+        width: 8px;
         cursor: col-resize;
         user-select: none;
-        z-index: 3;
+        z-index: 4;
       }
-      .jira-resize-handle:hover::after,
-      .jira-resize-handle[data-active="true"]::after {
+      /* 2026-06-23 — full-column resize line. Painted via ::after on every
+         td/th carrying data-resize-hover="true" (set when hoveredResizeColId
+         matches the column). Spans top to bottom across header + all body rows.
+         Strip border-right entirely (not just color) so pseudo right:0 aligns
+         to outer edge consistently — right:0 on absolute child positions to
+         PADDING edge of containing block, so a 1px border would offset the
+         line by 1px vs a borderless td. Removing the border keeps header +
+         body pseudos at the same x. */
+      /* Hover state — muted grey signals draggable affordance. */
+      .jira-table-grid td[data-resize-state="hover"],
+      .jira-table-grid th[data-resize-state="hover"],
+      .jira-table-grid td[data-resize-state="active"],
+      .jira-table-grid th[data-resize-state="active"] {
+        border-right: none !important;
+      }
+      .jira-table-grid td[data-resize-state="hover"]::after,
+      .jira-table-grid th[data-resize-state="hover"]::after {
         content: '';
         position: absolute;
-        top: 6px;
-        right: 2px;
-        bottom: 6px;
+        top: 0;
+        right: 0;
+        bottom: 0;
         width: 2px;
-        background: var(--ds-border-focused, #4688EC);
-        border-radius: 1px;
+        background: var(--cp-resize-handle-hover, #7D818A);
+        z-index: 3;
+        pointer-events: none;
+      }
+      .jira-table-grid td[data-resize-state="active"]::after,
+      .jira-table-grid th[data-resize-state="active"]::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--ds-border-selected, #4C9AFF);
+        z-index: 3;
+        pointer-events: none;
       }
       .jira-table-grid tbody tr.jira-table-group-row > td {
         background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)) !important;
@@ -1867,6 +1900,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     key={cell.key}
                     className={meta?.sortable ? 'jira-th-sortable' : undefined}
                     data-actions-sticky={meta?.id === '__actions' ? '' : undefined}
+                    data-jt-drag-over={isDragOverThis ? 'true' : undefined}
+                    data-jt-drag-source={isDraggingThis ? 'true' : undefined}
+                    data-resize-state={
+                      meta && resizing?.id === meta.id
+                        ? 'active'
+                        : meta && hoveredResizeColId === meta.id
+                          ? 'hover'
+                          : undefined
+                    }
                     aria-sort={isSorted ? (sortOrder === 'ASC' ? 'ascending' : 'descending') : 'none'}
                     onClick={() => meta && handleHeaderClick(meta.id, meta.sortable)}
                     // ── Column reorder (HTML5 native DnD; opt-in) ──────────
@@ -1882,6 +1924,36 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       }
                       e.dataTransfer.effectAllowed = 'move';
                       try { e.dataTransfer.setData('text/plain', meta!.id); } catch { /* some browsers */ }
+                      // Custom drag image: blue-outlined rectangle sized to
+                      // the column body (width = th width, height = full
+                      // table height). Mirrors Jira's column-drag ghost.
+                      try {
+                        const thEl = e.currentTarget as HTMLElement;
+                        const tableEl = thEl.closest('table') as HTMLElement | null;
+                        const thRect = thEl.getBoundingClientRect();
+                        const tableRect = tableEl?.getBoundingClientRect();
+                        const ghostW = Math.round(thRect.width);
+                        const ghostH = Math.round(tableRect?.height ?? thRect.height);
+                        const ghost = document.createElement('div');
+                        ghost.style.cssText = [
+                          `position:fixed`,
+                          `top:-10000px`,
+                          `left:-10000px`,
+                          `width:${ghostW}px`,
+                          `height:${ghostH}px`,
+                          `background:rgba(76,154,255,0.10)`,
+                          `border:2px solid var(--ds-border-selected, #4C9AFF)`,
+                          `border-radius:3px`,
+                          `pointer-events:none`,
+                          `box-sizing:border-box`,
+                          `z-index:9999`,
+                        ].join(';');
+                        document.body.appendChild(ghost);
+                        const offsetX = Math.round(e.clientX - thRect.left);
+                        const offsetY = Math.round(e.clientY - thRect.top);
+                        e.dataTransfer.setDragImage(ghost, offsetX, offsetY);
+                        setTimeout(() => ghost.remove(), 0);
+                      } catch { /* setDragImage unsupported / cross-origin guard */ }
                       dragIdRef.current = meta!.id;
                       setDragId(meta!.id);
                     } : undefined}
@@ -1953,6 +2025,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       {isFirstDataColHeader && (
                         <span
                           aria-hidden="true"
+                          data-jt-chevron-slot="true"
                           style={{
                             display: 'inline-block',
                             width: 24,
@@ -2103,10 +2176,16 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         // Don't initiate column reorder from the resize handle.
                         draggable={false}
                         onClick={(e) => e.stopPropagation()}
+                        onMouseEnter={() => setHoveredResizeColId(meta.id)}
+                        onMouseLeave={() => {
+                          // Keep visible while actively resizing this col.
+                          if (resizing?.id !== meta.id) setHoveredResizeColId(null);
+                        }}
                         onMouseDown={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           setResizing({ id: meta.id, startX: e.clientX, startWidth: meta.width });
+                          setHoveredResizeColId(meta.id);
                         }}
                         // Double-click to auto-reset this column to its
                         // schema-derived natural width — matches common
@@ -2153,9 +2232,26 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 >
                   {r.cells.map((c: any) => {
                     const isDropTarget = c.colId && dragOverId === c.colId && dragId && dragId !== c.colId;
+                    const isResizeHoverCol = c.colId && hoveredResizeColId === c.colId;
+                    const cellMeta = c.colId ? colWidthEntries.find((e) => e.id === c.colId) : undefined;
+                    const cellResizable = !!cellMeta?.resizable && !isGroup;
                     return (
-                      <td key={c.key} colSpan={c.colSpan} data-col-id={c.colId} style={{
+                      <td
+                        key={c.key}
+                        colSpan={c.colSpan}
+                        data-col-id={c.colId}
+                        data-jt-drag-over={isDropTarget ? 'true' : undefined}
+                        data-jt-drag-source={c.colId && dragId === c.colId ? 'true' : undefined}
+                        data-resize-state={
+                          c.colId && resizing?.id === c.colId
+                            ? 'active'
+                            : isResizeHoverCol
+                              ? 'hover'
+                              : undefined
+                        }
+                        style={{
                         overflow: 'hidden',
+                        position: 'relative',
                         ...(c.colId === '__actions' ? {
                           position: 'sticky',
                           right: 0,
@@ -2168,6 +2264,35 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         } : {}),
                       }}>
                         {c.content}
+                        {cellResizable && cellMeta && (
+                          <span
+                            className="jira-resize-handle"
+                            data-active={resizing?.id === cellMeta.id ? 'true' : 'false'}
+                            role="separator"
+                            aria-orientation="vertical"
+                            aria-label="Resize column"
+                            draggable={false}
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseEnter={() => setHoveredResizeColId(cellMeta.id)}
+                            onMouseLeave={() => {
+                              if (resizing?.id !== cellMeta.id) setHoveredResizeColId(null);
+                            }}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setResizing({ id: cellMeta.id, startX: e.clientX, startWidth: cellMeta.width });
+                              setHoveredResizeColId(cellMeta.id);
+                            }}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              setColumnWidths((prev) => {
+                                const next = { ...prev };
+                                delete next[cellMeta.id];
+                                return next;
+                              });
+                            }}
+                          />
+                        )}
                       </td>
                     );
                   })}
@@ -2202,19 +2327,65 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         onContextMenu={r.onContextMenu}
                         style={{ minHeight: d.rowHeight }}
                       >
-                        {r.cells.map((c: any) => (
-                          <td key={c.key} colSpan={c.colSpan} style={{
-                            overflow: 'hidden',
-                            ...(c.colId === '__actions' ? {
-                              position: 'sticky',
-                              right: 0,
-                              zIndex: 2,
-                              background: 'var(--cp-bg-elevated, #FFFFFF)',
-                            } : {}),
-                          }}>
-                            {c.content}
-                          </td>
-                        ))}
+                        {r.cells.map((c: any) => {
+                          const isResizeHoverCol = c.colId && hoveredResizeColId === c.colId;
+                          const cellMeta = c.colId ? colWidthEntries.find((e) => e.id === c.colId) : undefined;
+                          const cellResizable = !!cellMeta?.resizable && !isGroup;
+                          return (
+                            <td
+                              key={c.key}
+                              colSpan={c.colSpan}
+                              data-col-id={c.colId}
+                              data-resize-state={
+                                c.colId && resizing?.id === c.colId
+                                  ? 'active'
+                                  : isResizeHoverCol
+                                    ? 'hover'
+                                    : undefined
+                              }
+                              style={{
+                              overflow: 'hidden',
+                              position: 'relative',
+                              ...(c.colId === '__actions' ? {
+                                position: 'sticky',
+                                right: 0,
+                                zIndex: 2,
+                                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                              } : {}),
+                            }}>
+                              {c.content}
+                              {cellResizable && cellMeta && (
+                                <span
+                                  className="jira-resize-handle"
+                                  data-active={resizing?.id === cellMeta.id ? 'true' : 'false'}
+                                  role="separator"
+                                  aria-orientation="vertical"
+                                  aria-label="Resize column"
+                                  draggable={false}
+                                  onClick={(e) => e.stopPropagation()}
+                                  onMouseEnter={() => setHoveredResizeColId(cellMeta.id)}
+                                  onMouseLeave={() => {
+                                    if (resizing?.id !== cellMeta.id) setHoveredResizeColId(null);
+                                  }}
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setResizing({ id: cellMeta.id, startX: e.clientX, startWidth: cellMeta.width });
+                                    setHoveredResizeColId(cellMeta.id);
+                                  }}
+                                  onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    setColumnWidths((prev) => {
+                                      const next = { ...prev };
+                                      delete next[cellMeta.id];
+                                      return next;
+                                    });
+                                  }}
+                                />
+                              )}
+                            </td>
+                          );
+                        })}
                       </tr>
                     );
                   })}
@@ -2513,26 +2684,58 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             onClick: () => onSortChange?.(headerMenuColId, 'DESC'),
           });
         } else if (col.lockedPosition) {
-          // Work column — Jira parity: "Sort by columns" submenu of sortable peers
-          const sortablePeers = visibleColumns.filter((c) => c.sortable && !c.id.startsWith('__'));
-          if (sortablePeers.length > 0) {
+          // Work column — Jira parity: "Sort by columns" is a non-interactive
+          // SECTION LABEL above Type / Key / Summary entries (each a submenu
+          // of A→Z / Z→A or low→high / high→low). Prefer the explicit
+          // col.subSorts contract (Jira's composite-cell sort grouping); fall
+          // back to sortable peers for older consumers without subSorts.
+          if (col.subSorts && col.subSorts.length > 0) {
             items.push({
-              id: 'sort-by-columns',
+              id: 'sort-by-columns-label',
               label: 'Sort by columns',
-              hasSubmenu: true,
-              submenu: sortablePeers.flatMap((peer) => [
-                {
-                  id: `sort-${peer.id}-asc`,
-                  label: `${peer.label}: A to Z`,
-                  onClick: () => onSortChange?.(peer.id, 'ASC'),
-                },
-                {
-                  id: `sort-${peer.id}-desc`,
-                  label: `${peer.label}: Z to A`,
-                  onClick: () => onSortChange?.(peer.id, 'DESC'),
-                },
-              ]),
+              kind: 'sectionLabel',
             });
+            for (const sub of col.subSorts) {
+              const isAlpha = sub.kind === 'alpha';
+              items.push({
+                id: `sort-${sub.id}`,
+                label: sub.label,
+                hasSubmenu: true,
+                submenu: [
+                  {
+                    id: `sort-${sub.id}-asc`,
+                    label: isAlpha ? 'Sort A to Z' : 'Sort lowest to highest',
+                    onClick: () => onSortChange?.(sub.id, 'ASC'),
+                  },
+                  {
+                    id: `sort-${sub.id}-desc`,
+                    label: isAlpha ? 'Sort Z to A' : 'Sort highest to lowest',
+                    onClick: () => onSortChange?.(sub.id, 'DESC'),
+                  },
+                ],
+              });
+            }
+          } else {
+            const sortablePeers = visibleColumns.filter((c) => c.sortable && !c.id.startsWith('__'));
+            if (sortablePeers.length > 0) {
+              items.push({
+                id: 'sort-by-columns',
+                label: 'Sort by columns',
+                hasSubmenu: true,
+                submenu: sortablePeers.flatMap((peer) => [
+                  {
+                    id: `sort-${peer.id}-asc`,
+                    label: `${peer.label}: A to Z`,
+                    onClick: () => onSortChange?.(peer.id, 'ASC'),
+                  },
+                  {
+                    id: `sort-${peer.id}-desc`,
+                    label: `${peer.label}: Z to A`,
+                    onClick: () => onSortChange?.(peer.id, 'DESC'),
+                  },
+                ]),
+              });
+            }
           }
         }
         if (canReorder) {

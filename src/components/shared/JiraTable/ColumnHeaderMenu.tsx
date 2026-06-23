@@ -23,6 +23,8 @@ interface MenuItem {
   submenu?: MenuItem[];
   divider?: 'before' | 'after';
   onClick?: () => void;
+  /** Non-interactive header label rendered above a group (Jira parity). */
+  kind?: 'sectionLabel';
 }
 
 interface ColumnHeaderMenuProps {
@@ -32,26 +34,138 @@ interface ColumnHeaderMenuProps {
   items: MenuItem[];
 }
 
+/**
+ * Each submenu owns its OWN open state so arbitrarily deep nesting works.
+ * Hovering a sibling at the same level closes the previously-open submenu
+ * via the parent's onHover prop; entering a child submenu doesn't disturb
+ * its ancestors.
+ */
+function MenuItemRow({
+  item,
+  onClose,
+  isActive,
+  onActivate,
+}: {
+  item: MenuItem;
+  onClose: () => void;
+  isActive: boolean;
+  onActivate: () => void;
+}) {
+  const rowRef = useRef<HTMLDivElement | null>(null);
+  if (item.kind === 'sectionLabel') {
+    return (
+      <div
+        role="presentation"
+        style={{
+          padding: '8px 16px 4px',
+          fontSize: 12,
+          fontWeight: 653,
+          color: 'var(--ds-text-subtle, #505258)',
+          userSelect: 'none',
+          cursor: 'default',
+        }}
+      >
+        {item.label}
+      </div>
+    );
+  }
+  if (item.hasSubmenu && item.submenu) {
+    return (
+      <>
+        <div
+          ref={rowRef}
+          role="menuitem"
+          aria-haspopup="true"
+          aria-expanded={isActive}
+          onMouseEnter={onActivate}
+          style={menuItemStyle(isActive)}
+        >
+          <span style={{ flex: 1 }}>{item.label}</span>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M3.5 2.5L6.5 5L3.5 7.5" />
+          </svg>
+        </div>
+        {isActive && rowRef.current && (
+          <SubmenuPortal
+            anchorRect={rowRef.current.getBoundingClientRect()}
+            items={item.submenu}
+            onClose={onClose}
+          />
+        )}
+      </>
+    );
+  }
+  return (
+    <>
+      {item.divider === 'before' && <div style={dividerStyle} />}
+      <div
+        role="menuitem"
+        tabIndex={0}
+        onClick={() => {
+          item.onClick?.();
+          onClose();
+        }}
+        onMouseEnter={onActivate}
+        style={menuItemStyle(false)}
+      >
+        {item.label}
+      </div>
+      {item.divider === 'after' && <div style={dividerStyle} />}
+    </>
+  );
+}
+
+function SubmenuPortal({
+  anchorRect,
+  items,
+  onClose,
+}: {
+  anchorRect: DOMRect;
+  items: MenuItem[];
+  onClose: () => void;
+}) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  return createPortal(
+    <div role="menu" style={submenuStyle(anchorRect)}>
+      {items.map((sub) => (
+        <MenuItemRow
+          key={sub.id}
+          item={sub}
+          onClose={onClose}
+          isActive={openId === sub.id}
+          onActivate={() => setOpenId(sub.id)}
+        />
+      ))}
+    </div>,
+    document.body,
+  );
+}
+
 export function ColumnHeaderMenu({ isOpen, onClose, triggerRef, items }: ColumnHeaderMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
-  const [submenuOpen, setSubmenuOpen] = useState<string | null>(null);
-  const submenuTriggerRef = useRef<HTMLDivElement | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
-      setSubmenuOpen(null);
+      setOpenId(null);
       return;
     }
     const onDown = (e: MouseEvent) => {
       const t = e.target as Node;
       if (menuRef.current?.contains(t)) return;
       if (triggerRef.current?.contains(t)) return;
+      // Submenus are portaled — check by ancestor role=menu hop
+      let el: HTMLElement | null = t instanceof HTMLElement ? t : null;
+      while (el) {
+        if (el.getAttribute('role') === 'menu') return;
+        el = el.parentElement;
+      }
       onClose();
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.stopPropagation();
-        if (submenuOpen) { setSubmenuOpen(null); return; }
+        if (openId) { setOpenId(null); return; }
         onClose();
       }
     };
@@ -61,63 +175,12 @@ export function ColumnHeaderMenu({ isOpen, onClose, triggerRef, items }: ColumnH
       document.removeEventListener('mousedown', onDown);
       document.removeEventListener('keydown', onKey, true);
     };
-  }, [isOpen, onClose, submenuOpen, triggerRef]);
+  }, [isOpen, onClose, openId, triggerRef]);
 
   if (!isOpen || !triggerRef.current) return null;
   const rect = triggerRef.current.getBoundingClientRect();
   const menuLeft = Math.max(8, rect.left);
   const menuTop = rect.bottom + 4;
-
-  const renderItem = (item: MenuItem, isSubmenu: boolean = false) => {
-    if (item.hasSubmenu && item.submenu) {
-      const isOpenSub = submenuOpen === item.id;
-      return (
-        <div
-          key={item.id}
-          ref={(el) => { if (isOpenSub) submenuTriggerRef.current = el; }}
-          role="menuitem"
-          aria-haspopup="true"
-          aria-expanded={isOpenSub}
-          onMouseEnter={() => setSubmenuOpen(item.id)}
-          style={menuItemStyle(isOpenSub)}
-        >
-          <span style={{ flex: 1 }}>{item.label}</span>
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M3.5 2.5L6.5 5L3.5 7.5" />
-          </svg>
-          {isOpenSub && submenuTriggerRef.current && (
-            createPortal(
-              <div
-                role="menu"
-                style={submenuStyle(submenuTriggerRef.current.getBoundingClientRect())}
-              >
-                {item.submenu!.map((sub) => renderItem(sub, true))}
-              </div>,
-              document.body,
-            )
-          )}
-        </div>
-      );
-    }
-    return (
-      <React.Fragment key={item.id}>
-        {item.divider === 'before' && <div style={dividerStyle} />}
-        <div
-          role="menuitem"
-          tabIndex={0}
-          onClick={() => {
-            item.onClick?.();
-            onClose();
-          }}
-          onMouseEnter={() => { if (!isSubmenu) setSubmenuOpen(null); }}
-          style={menuItemStyle(false)}
-        >
-          {item.label}
-        </div>
-        {item.divider === 'after' && <div style={dividerStyle} />}
-      </React.Fragment>
-    );
-  };
 
   return createPortal(
     <div
@@ -139,7 +202,15 @@ export function ColumnHeaderMenu({ isOpen, onClose, triggerRef, items }: ColumnH
         color: 'var(--ds-text, #292A2E)',
       }}
     >
-      {items.map((item) => renderItem(item))}
+      {items.map((item) => (
+        <MenuItemRow
+          key={item.id}
+          item={item}
+          onClose={onClose}
+          isActive={openId === item.id}
+          onActivate={() => setOpenId(item.id)}
+        />
+      ))}
     </div>,
     document.body,
   );
