@@ -47,8 +47,8 @@ export function ReleaseCreateModal({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    start_date: null as string | null,
-    release_date: null as string | null,
+    start_date: '2026-06-23',
+    release_date: '2026-06-24',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -109,7 +109,7 @@ export function ReleaseCreateModal({
   };
 
   const handleClose = () => {
-    setFormData({ name: '', description: '', start_date: '', release_date: '' });
+    setFormData({ name: '', description: '', start_date: '2026-06-23', release_date: '2026-06-24' });
     setErrors({});
     setSubmitted(false);
     onClose();
