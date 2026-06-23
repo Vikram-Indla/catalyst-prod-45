@@ -31,8 +31,10 @@ const STATUS_OPTIONS = [
 ];
 
 export function ReleasesPage() {
-  const { key } = useParams<{ key: string }>();
-  const { data, isLoading, error } = useReleases(key!);
+  const { key } = useParams<{ key?: string }>();
+  // Fallback to BAU if no project key provided (release-hub context)
+  const projectKey = key || 'BAU';
+  const { data, isLoading, error } = useReleases(projectKey);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [expandedSections, setExpandedSections] = useState({
@@ -125,7 +127,7 @@ export function ReleasesPage() {
     makeReleaseNameCell(
       (r) => r.name,
       handleOpenDetail,
-      (id) => `/projects/${key}/releases/${id}`
+      (id) => `/projects/${projectKey}/releases/${id}`
     ),
     makeStatusCell(),
     makeProgressCell(calculateProgress),
@@ -295,8 +297,8 @@ export function ReleasesPage() {
       {/* Create Release Modal */}
       <ReleaseCreateModal
         isOpen={isCreateModalOpen}
-        projectKey={key!}
-        projectId={data?.data?.[0]?.project_id || key!}
+        projectKey={projectKey}
+        projectId={data?.data?.[0]?.project_id || projectKey}
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={(release) => {
           setSuccessFlag(`Release "${release.name}" has been created.`);
@@ -307,7 +309,7 @@ export function ReleasesPage() {
       {editingRelease && (
         <ReleaseEditModal
           isOpen={isEditModalOpen}
-          projectKey={key!}
+          projectKey={projectKey}
           release={editingRelease}
           onClose={() => {
             setIsEditModalOpen(false);
@@ -324,7 +326,7 @@ export function ReleasesPage() {
         <ReleaseArchiveDialog
           isOpen={isArchiveDialogOpen}
           release={archivingRelease}
-          projectKey={key!}
+          projectKey={projectKey}
           onClose={() => {
             setIsArchiveDialogOpen(false);
             setArchivingRelease(null);
@@ -340,7 +342,7 @@ export function ReleasesPage() {
         <ReleaseConfirmationModal
           isOpen={isConfirmModalOpen}
           release={confirmingRelease}
-          projectKey={key!}
+          projectKey={projectKey}
           onClose={() => {
             setIsConfirmModalOpen(false);
             setConfirmingRelease(null);
@@ -356,7 +358,7 @@ export function ReleasesPage() {
         <ReleaseDeleteDialog
           isOpen={isDeleteDialogOpen}
           release={deletingRelease}
-          projectKey={key!}
+          projectKey={projectKey}
           onClose={() => {
             setIsDeleteDialogOpen(false);
             setDeletingRelease(null);
