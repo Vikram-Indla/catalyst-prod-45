@@ -17,6 +17,7 @@ import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
 import Lozenge from '@atlaskit/lozenge';
 import Spinner from '@atlaskit/spinner';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { useJiraConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
@@ -348,13 +349,36 @@ function FieldMappingTab() {
 }
 
 function TypeMappingTab() {
+  const ISSUE_TYPES = [
+    'Story', 'Epic', 'Feature', 'Task', 'Sub-task',
+    'QA Bug', 'Production Incident', 'Change Request',
+    'Business Request', 'Business Gap', 'Backend', 'Frontend',
+    'Integration', 'Idea',
+  ];
+
   return (
     <div style={{ marginTop: 24 }}>
-      <SectionMessage appearance="information" title="Type Mapping">
-        <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
-          Map Jira issue types to Catalyst work item types. Coming soon.
-        </div>
-      </SectionMessage>
+      <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+        Canonical Issue Types ({ISSUE_TYPES.length})
+      </h3>
+      <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, marginBottom: 16 }}>
+        Each Catalyst work item type has a canonical icon from Jira metadata. Field presence per type is queried on-demand.
+      </p>
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12,
+      }}>
+        {ISSUE_TYPES.map(type => (
+          <div key={type} style={{
+            background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 12,
+            display: 'flex', alignItems: 'center', gap: 8,
+          }}>
+            <JiraIssueTypeIcon type={type as any} size={16} />
+            <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500, color: T.text }}>
+              {type}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
