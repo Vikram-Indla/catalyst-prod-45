@@ -83,7 +83,6 @@ const ProductionEventsPageLazy = lazy(() => import("../pages/releasehub/Producti
 const RH21CommandCenterPage = lazy(() => import("../pages/releasehub/CommandCenterPage"));
 const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPage"));
 const ReleaseBoardCanonical = lazy(() => import("../pages/releasehub/ReleaseBoardCanonical"));
-const ReleasesBacklogCanonical = lazy(() => import("../pages/releasehub/ReleasesBacklogCanonical"));
 const ReleasesWorkCanonical = lazy(() => import("../pages/releasehub/ReleasesWorkCanonical"));
 const ReleaseFiltersListPage = lazy(() => import("../pages/releasehub/ReleaseFiltersListPage"));
 const ReleaseFilterPreviewPage = lazy(() => import("../pages/releasehub/ReleaseFilterPreviewPage"));
@@ -733,7 +732,8 @@ export default function FullAppRoutes() {
         {/* Release Operations — sections per handoff §6 (2026-06-18). */}
         <Route path="/release-hub" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/release-hub/overview" element={<ModuleGuard moduleCode="releases"><S><RH21CommandCenterPage /></S></ModuleGuard>} />
-        <Route path="/release-hub/releases" element={<S><ReleasesBacklogCanonical /></S>} />
+        {/* Deprecated 2026-06-23 — /release-hub/releases (ReleasesBacklogCanonical) removed; superseded by /release-hub/releases-management. */}
+        <Route path="/release-hub/releases" element={<Navigate to="/release-hub/releases-management" replace />} />
         <Route path="/release-hub/release-kanban" element={<S><ReleaseBoardCanonical /></S>} />
         <Route path="/release-hub/work" element={<S><ReleasesWorkCanonical /></S>} />
         <Route path="/release-hub/filters" element={<S><ReleaseFiltersListPage /></S>} />
@@ -760,13 +760,13 @@ export default function FullAppRoutes() {
         {/* Legacy releasehub redirects */}
         <Route path="/releasehub" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/releasehub/command-center" element={<Navigate to="/release-hub/overview" replace />} />
-        <Route path="/releasehub/all-releases" element={<Navigate to="/release-hub/releases" replace />} />
+        <Route path="/releasehub/all-releases" element={<Navigate to="/release-hub/releases-management" replace />} />
         <Route path="/releasehub/compare" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/releasehub/triage" element={<Navigate to="/release-hub/overview" replace />} />
         <Route path="/releasehub/changes" element={<Navigate to="/release-hub/changes" replace />} />
         <Route path="/releasehub/production-events" element={<Navigate to="/release-hub/production-events" replace />} />
         <Route path="/releasehub/dashboard" element={<Navigate to="/release-hub/overview" replace />} />
-        <Route path="/releasehub/all" element={<Navigate to="/release-hub/releases" replace />} />
+        <Route path="/releasehub/all" element={<Navigate to="/release-hub/releases-management" replace />} />
 
         {/* Deprecated 2026-06-17: Priorities (Task10) module removed. Subtree → 404. */}
         <Route path="/tasks/priorities/*" element={<S><NotFound /></S>} />
@@ -1052,6 +1052,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/filters/create" element={<Navigate to="/project-hub" replace />} />
         <Route path="/project-hub/:key/timeline/:issueKey" element={<S><TimelineDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/timeline" element={<S><ProjectHubTimelinePage /></S>} />
+        <Route path="/project-hub/:key/releases" element={<S><ReleasesPageLazy /></S>} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
         <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />
