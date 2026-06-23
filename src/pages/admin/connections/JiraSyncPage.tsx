@@ -163,11 +163,15 @@ function OverviewTab({
   const syncedCount = jiraProjects.filter(p => p.sync_enabled).length;
   const totalIssues = health?.issueCachedCount || 0;
 
+  const lastSyncStr = health?.lastSync?.started_at
+    ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true })
+    : 'Never';
+
   const stats = [
     { label: 'Accessible Projects', value: projects.length, color: T.info },
     { label: 'Projects Synced', value: syncedCount, color: T.success },
     { label: 'Issues Cached', value: totalIssues.toLocaleString(), color: T.infoText },
-    { label: 'Last Sync', value: health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : 'Never', color: T.textSubtle },
+    { label: 'Last Sync', value: lastSyncStr, color: T.textSubtle },
   ];
 
   return (
@@ -406,10 +410,12 @@ function BackupAndLogsTab({ syncLogs }: { syncLogs: any[] }) {
                 </tr>
               </thead>
               <tbody>
-                {syncLogs.map((log: any, i: number) => (
+                {syncLogs.map((log: any, i: number) => {
+                  const logTime = log.created_at ? formatDistanceToNow(new Date(log.created_at), { addSuffix: true }) : '—';
+                  return (
                   <tr key={i} style={{ borderBottom: `1px solid ${T.border}` }}>
                     <td style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, padding: '8px', color: T.text }}>
-                      {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
+                      {logTime}
                     </td>
                     <td style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, padding: '8px' }}>
                       <Lozenge appearance="default">{log.operation_type}</Lozenge>
@@ -421,7 +427,8 @@ function BackupAndLogsTab({ syncLogs }: { syncLogs: any[] }) {
                       {log.records_reloaded || log.records_deleted || 0}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
