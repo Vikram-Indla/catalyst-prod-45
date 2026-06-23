@@ -8,7 +8,7 @@ import Modal, {
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
-import DatePicker from '@atlaskit/datetime-picker';
+import { DatePicker } from '@atlaskit/datetime-picker';
 import Flag from '@atlaskit/flag';
 import { useCreateRelease } from '@/hooks/releases/useCreateRelease';
 import { useReleases } from '@/hooks/releases/useReleases';
