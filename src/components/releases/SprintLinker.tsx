@@ -13,7 +13,7 @@ import Select from '@atlaskit/select';
 import { Box, Inline, Stack, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
-import PlusIcon from '@atlaskit/icon/glyph/plus';
+import PlusIcon from '@atlaskit/icon/glyph/add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import Spinner from '@atlaskit/spinner';
 import { supabase } from '@/integrations/supabase/client';
