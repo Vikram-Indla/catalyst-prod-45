@@ -42,6 +42,7 @@ import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
+import { ReleaseSprintSection } from './ReleaseSprintSection';
 
 export default function CatalystViewStory({
   isOpen, onClose, itemId, projectId, projectKey,
@@ -204,7 +205,19 @@ export default function CatalystViewStory({
          Story" pair on the right side of BAU-5609. */
       statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
-    />
+    >
+      {/* Tier 3.3: Story Release + Sprint fields */}
+      {issue?.issue_key && (
+        <ReleaseSprintSection
+          issueKey={issue.issue_key}
+          projectId={projectId}
+          releaseId={(issue as any)?.release_id ?? null}
+          onReleaseChange={() => {
+            // TODO: Implement release change handler
+          }}
+        />
+      )}
+    </CatalystSidebarDetails>
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [issue, itemId, projectId, projectKey, onOpenItem, onClose, improveHandlers]);
 
