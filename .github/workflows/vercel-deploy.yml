@@ -1,10 +1,13 @@
 name: Vercel Deploy
 
-# Only runs via manual dispatch from /admin/connections/vercel.
-# Push to main does NOT trigger this workflow — the deploy gate in
-# the Catalyst admin UI is the sole entry point.
+# Two entry points:
+# 1. workflow_dispatch — manual "Deploy to Production Now" button in /admin/connections/vercel
+# 2. push to `production` branch — triggered automatically by "Promote to Production" merge
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - production
 
 env:
   VERCEL_ORG_ID: team_Du0X963eQg3ApToexQcuPwnr

@@ -1,14 +1,21 @@
 name: Deploy Supabase Functions
 
+# main push       → staging (cyijbdeuehohvhnsywig)
+# production push → prod   (lmqwtldpfacrrlvdnmld)
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - production
     paths:
       - 'supabase/functions/**'
 
 jobs:
-  deploy:
+  deploy-staging:
+    name: Deploy → STAGING
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,7 +23,25 @@ jobs:
         with:
           version: latest
 
-      - name: Deploy all edge functions
+      - name: Deploy all edge functions to staging
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy --project-ref cyijbdeuehohvhnsywig --no-verify-jwt
+
+  deploy-prod:
+    name: Deploy → PRODUCTION
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/production'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Deploy all edge functions to production
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
