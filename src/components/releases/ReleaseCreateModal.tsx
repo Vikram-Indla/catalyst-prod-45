@@ -13,6 +13,7 @@ import TextArea from '@atlaskit/textarea';
 import { useCreateRelease } from '@/hooks/releases/useCreateRelease';
 import { Release, CreateReleasePayload } from '@/types/phase3-releases';
 import { catalystToast } from '@/lib/catalystToast';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 
 interface ReleaseCreateModalProps {
   isOpen: boolean;
@@ -171,35 +172,33 @@ export function ReleaseCreateModal({
 
               {/* Start Date */}
               <div>
-                <label style={labelStyle} htmlFor="release-start-date">
-                  Start date
-                </label>
-                <input
-                  id="release-start-date"
-                  type="date"
-                  value={formData.start_date}
-                  onChange={(e) => setFormData((p) => ({ ...p, start_date: e.target.value }))}
-                  style={{ padding: '6px 8px', borderRadius: '3px', border: '1px solid var(--ds-border, #DFE1E6)', fontSize: '14px', fontFamily: 'inherit' }}
+                <label style={labelStyle}>Start date</label>
+                <CatalystDatePicker
+                  value={formData.start_date ? new Date(formData.start_date) : null}
+                  onChange={(date) => setFormData((p) => ({
+                    ...p,
+                    start_date: date ? date.toISOString().split('T')[0] : '',
+                  }))}
+                  placeholder="Start date"
                 />
               </div>
 
               {/* Release Date */}
               <div>
-                <label style={labelStyle} htmlFor="release-date">
+                <label style={labelStyle}>
                   Release date <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                 </label>
-                <input
-                  id="release-date"
-                  type="date"
-                  value={formData.release_date}
-                  onChange={(e) => {
-                    setFormData((p) => ({ ...p, release_date: e.target.value }));
+                <CatalystDatePicker
+                  value={formData.release_date ? new Date(formData.release_date) : null}
+                  onChange={(date) => {
+                    const isoStr = date ? date.toISOString().split('T')[0] : '';
+                    setFormData((p) => ({ ...p, release_date: isoStr }));
                     if (errors.release_date) setErrors((p) => ({ ...p, release_date: '' }));
                   }}
-                  style={{ padding: '6px 8px', borderRadius: '3px', border: '1px solid var(--ds-border, #DFE1E6)', fontSize: '14px', fontFamily: 'inherit' }}
+                  placeholder="Release date"
                 />
                 {submitted && errors.release_date && (
-                  <div id="release-date-error" role="alert" style={errStyle}>
+                  <div role="alert" style={errStyle}>
                     {errors.release_date}
                   </div>
                 )}
