@@ -174,11 +174,12 @@ export function ReleaseCreateModal({
                 <label style={labelStyle} htmlFor="release-start-date">
                   Start date
                 </label>
-                <Textfield
+                <input
                   id="release-start-date"
                   type="date"
                   value={formData.start_date}
-                  onChange={(e) => setFormData((p) => ({ ...p, start_date: e.currentTarget.value }))}
+                  onChange={(e) => setFormData((p) => ({ ...p, start_date: e.target.value }))}
+                  style={{ padding: '6px 8px', borderRadius: '3px', border: '1px solid var(--ds-border, #DFE1E6)', fontSize: '14px', fontFamily: 'inherit' }}
                 />
               </div>
 
@@ -187,14 +188,15 @@ export function ReleaseCreateModal({
                 <label style={labelStyle} htmlFor="release-date">
                   Release date <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                 </label>
-                <Textfield
+                <input
                   id="release-date"
                   type="date"
                   value={formData.release_date}
                   onChange={(e) => {
-                    setFormData((p) => ({ ...p, release_date: e.currentTarget.value }));
+                    setFormData((p) => ({ ...p, release_date: e.target.value }));
                     if (errors.release_date) setErrors((p) => ({ ...p, release_date: '' }));
                   }}
+                  style={{ padding: '6px 8px', borderRadius: '3px', border: '1px solid var(--ds-border, #DFE1E6)', fontSize: '14px', fontFamily: 'inherit' }}
                 />
                 {submitted && errors.release_date && (
                   <div id="release-date-error" role="alert" style={errStyle}>
