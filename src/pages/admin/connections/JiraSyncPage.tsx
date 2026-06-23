@@ -30,6 +30,11 @@ import {
   getEnvironmentLabel,
   getEnvironmentBadgeVariant,
 } from '@/lib/jira-integration/environmentResolver';
+import {
+  useManualSyncMutation,
+  useRefreshDataMutation,
+  useWebhookToggleMutation,
+} from '@/lib/jira-integration/useJiraSyncMutations';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -139,7 +144,7 @@ export function JiraSyncPage() {
             <OverviewTab connection={connection} health={health} projects={projects} />
           </TabPanel>
           <TabPanel>
-            <SyncControlTab connection={connection} />
+            <SyncControlTab connection={connection} env={env} />
           </TabPanel>
           <TabPanel>
             <ProjectsTab projects={projects} />
@@ -244,11 +249,34 @@ function OverviewTab({
   );
 }
 
-function SyncControlTab({ connection }: { connection: any }) {
+function SyncControlTab({ connection, env }: { connection: any; env: any }) {
   const [autoSync, setAutoSync] = useState(true);
   const [webhooks, setWebhooks] = useState(false);
   const [writeback, setWriteback] = useState(true);
   const [interval, setInterval] = useState('15');
+  const [refreshMode, setRefreshMode] = useState<'dry-run' | 'confirmed'>('dry-run');
+  const [confirmPhrase, setConfirmPhrase] = useState('');
+
+  const manualSync = useManualSyncMutation();
+  const refreshData = useRefreshDataMutation();
+  const webhookToggle = useWebhookToggleMutation();
+
+  const handleRunFullSync = () => {
+    manualSync.mutate({ mode: 'full' });
+  };
+
+  const handleRunIncremental = () => {
+    manualSync.mutate({ mode: 'incremental' });
+  };
+
+  const handleRefreshData = () => {
+    const requiredPhrase = env.isProductionRuntime ? 'REFRESH PRODUCTION JIRA DATA' : 'REFRESH STAGING JIRA DATA';
+    if (refreshMode === 'confirmed' && confirmPhrase !== requiredPhrase) {
+      alert(`Invalid phrase. Type: ${requiredPhrase}`);
+      return;
+    }
+    refreshData.mutate({ projectKeys: [], confirmationPhrase: confirmPhrase, mode: refreshMode });
+  };
 
   return (
     <div style={{ marginTop: 20 }}>
@@ -306,15 +334,108 @@ function SyncControlTab({ connection }: { connection: any }) {
 
       <div style={{
         background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8,
-        padding: '24px',
+        padding: '24px', marginBottom: 20,
       }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
           Manual Sync
         </h3>
         <div style={{ display: 'flex', gap: 12 }}>
-          <Button appearance="primary">Run Full Sync</Button>
-          <Button>Run Incremental</Button>
+          <Button appearance="primary" onClick={handleRunFullSync} isLoading={manualSync.isPending}>
+            {manualSync.isPending ? 'Syncing…' : 'Run Full Sync'}
+          </Button>
+          <Button onClick={handleRunIncremental} isLoading={manualSync.isPending}>
+            {manualSync.isPending ? 'Syncing…' : 'Run Incremental'}
+          </Button>
         </div>
+        {manualSync.isError && (
+          <div style={{ color: T.dangerText, fontSize: 12, marginTop: 12 }}>
+            ✗ Sync failed: {(manualSync.error as Error).message}
+          </div>
+        )}
+        {manualSync.isSuccess && (
+          <div style={{ color: T.successText, fontSize: 12, marginTop: 12 }}>
+            ✓ Sync complete: {manualSync.data?.recordsAdded} added
+          </div>
+        )}
+      </div>
+
+      <div style={{
+        background: env.isProductionRuntime ? T.danger : T.warning,
+        border: `1px solid ${env.isProductionRuntime ? T.dangerText : T.warningText}`,
+        borderRadius: 8,
+        padding: '24px',
+      }}>
+        <h3 style={{
+          fontSize: 16, fontWeight: 600,
+          color: env.isProductionRuntime ? T.dangerText : T.warningText,
+          marginBottom: 12,
+        }}>
+          ⚠️ Refresh Jira Data ({env.environment})
+        </h3>
+        <div style={{ fontSize: 12, color: env.isProductionRuntime ? T.dangerText : T.warningText, marginBottom: 16 }}>
+          Delete all Jira-origin data and reload fresh from Jira. Catalyst-native data is preserved.
+          {env.isProductionRuntime && ' This affects PRODUCTION data.'}
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>
+            Mode:
+          </label>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => setRefreshMode('dry-run')}
+              style={{
+                padding: '6px 12px', borderRadius: 4, border: `1px solid ${T.border}`,
+                background: refreshMode === 'dry-run' ? T.info : T.surface,
+                cursor: 'pointer', fontSize: 12,
+              }}
+            >
+              Dry Run
+            </button>
+            <button
+              onClick={() => setRefreshMode('confirmed')}
+              style={{
+                padding: '6px 12px', borderRadius: 4, border: `1px solid ${T.border}`,
+                background: refreshMode === 'confirmed' ? T.danger : T.surface,
+                cursor: 'pointer', fontSize: 12,
+              }}
+            >
+              Confirmed
+            </button>
+          </div>
+        </div>
+        {refreshMode === 'confirmed' && (
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>
+              Confirmation phrase:
+            </label>
+            <Textfield
+              value={confirmPhrase}
+              onChange={e => setConfirmPhrase(e.target.value)}
+              placeholder={env.isProductionRuntime ? 'REFRESH PRODUCTION JIRA DATA' : 'REFRESH STAGING JIRA DATA'}
+              style={{ width: '100%' }}
+            />
+            <div style={{ fontSize: 11, color: T.textSubtle, marginTop: 4 }}>
+              Type exactly: {env.isProductionRuntime ? 'REFRESH PRODUCTION JIRA DATA' : 'REFRESH STAGING JIRA DATA'}
+            </div>
+          </div>
+        )}
+        <Button
+          appearance={refreshMode === 'confirmed' ? 'danger' : 'default'}
+          onClick={handleRefreshData}
+          isLoading={refreshData.isPending}
+        >
+          {refreshData.isPending ? 'Processing…' : 'Start Refresh'}
+        </Button>
+        {refreshData.isError && (
+          <div style={{ color: T.dangerText, fontSize: 12, marginTop: 12 }}>
+            ✗ Refresh failed: {(refreshData.error as Error).message}
+          </div>
+        )}
+        {refreshData.isSuccess && (
+          <div style={{ color: T.successText, fontSize: 12, marginTop: 12 }}>
+            ✓ Refresh complete: {refreshData.data?.recordsReloaded} reloaded
+          </div>
+        )}
       </div>
     </div>
   );
