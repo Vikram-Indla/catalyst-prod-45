@@ -86,12 +86,12 @@ export function ReleaseCreateModal({
 
   const handleSubmit = () => {
     setSubmitted(true);
-    if (!validate()) return;
+    if (!validate() || !projectId) return;
 
     const payload: CreateReleasePayload = {
       project_id: projectId,
       name: formData.name.trim(),
-      ...(formData.description.trim() && { description: formData.description.trim() }),
+      ...(formData.description && formData.description.trim() && { description: formData.description.trim() }),
       ...(formData.start_date && { start_date: formData.start_date }),
       ...(formData.release_date && { release_date: formData.release_date }),
     };
