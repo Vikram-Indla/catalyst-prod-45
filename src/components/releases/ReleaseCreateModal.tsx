@@ -178,7 +178,7 @@ export function ReleaseCreateModal({
                   id="release-start-date"
                   type="date"
                   value={formData.start_date}
-                  onChange={(e) => setFormData((p) => ({ ...p, start_date: e.target.value }))}
+                  onChange={(e) => setFormData((p) => ({ ...p, start_date: e.currentTarget.value }))}
                 />
               </div>
 
@@ -192,7 +192,7 @@ export function ReleaseCreateModal({
                   type="date"
                   value={formData.release_date}
                   onChange={(e) => {
-                    setFormData((p) => ({ ...p, release_date: e.target.value }));
+                    setFormData((p) => ({ ...p, release_date: e.currentTarget.value }));
                     if (errors.release_date) setErrors((p) => ({ ...p, release_date: '' }));
                   }}
                 />
