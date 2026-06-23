@@ -39,12 +39,13 @@ Deno.serve(async (req) => {
     .from('user_roles')
     .select('role')
     .eq('user_id', user.id)
+    .eq('role', 'admin')
     .maybeSingle();
   if (roleErr) {
     console.error('[deploy-control] user_roles query error:', roleErr.message, 'user:', user.id);
     return err('Server error', 500);
   }
-  if (!role || role.role !== 'admin') {
+  if (!role) {
     console.error('[deploy-control] role check failed: requires admin, user had:', role?.role, 'user:', user.id);
     return err('Forbidden', 403);
   }
