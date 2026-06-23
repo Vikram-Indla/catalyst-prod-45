@@ -995,6 +995,7 @@ export function SubtasksPanel({
                     <EditablePriority
                       issueId={child.id}
                       currentPriority={child.priority ?? 'Medium'}
+                      hideClear
                       onUpdate={() => { /* invalidation handled by onChange path below */ }}
                       onChange={(value) => {
                         if (bulkEditMode) return;

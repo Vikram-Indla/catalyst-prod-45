@@ -68,6 +68,10 @@
   --status-inprogress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
   --status-done-bg: var(--cp-lozenge-green-bg, #1B7F37);
   --status-done-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
+  /* 2026-06-23 — canonical lozenge green for Done status pills (Vikram).
+     Replaces prior #94C748 lime. Consumed by statusPalette.ts STATUS_BG.success
+     via inline var() so every renderer picks it up. */
+  --cp-status-done-green: #6A9A23;
 }
 .dark {
   --status-todo-bg: #42526E;
@@ -76,6 +80,7 @@
   --status-inprogress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
   --status-done-bg: var(--cp-lozenge-green-bg, #1B7F37);
   --status-done-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
+  --cp-status-done-green: #6A9A23;
 }
 .status-badge-base {
   display: inline-flex;

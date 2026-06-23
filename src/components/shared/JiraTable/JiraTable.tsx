@@ -2025,6 +2025,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       {isFirstDataColHeader && (
                         <span
                           aria-hidden="true"
+                          data-jt-chevron-slot="true"
                           style={{
                             display: 'inline-block',
                             width: 24,

@@ -651,6 +651,7 @@ export function EditablePriority({
   onUpdate,
   options,
   onChange,
+  hideClear,
 }: {
   /** ph_issues row id — required only when `onChange` is NOT provided (default ph_issues write path). */
   issueId?: string;
@@ -664,6 +665,10 @@ export function EditablePriority({
    *  Receives the selected value (or null on clear). Enables this canonical component to write to
    *  ANY data source without forking — see CLAUDE.md "Adopt canonical components" rule (2026-06-01). */
   onChange?: (value: string | null) => Promise<void> | void;
+  /** Hide the inline (×) clear-priority button. Subtasks table opts in
+   *  (2026-06-23 Vikram) — Jira parity removes the clear affordance from
+   *  table inline-edit triggers and relies on the picker for changes. */
+  hideClear?: boolean;
 }) {
   const [showPicker, setShowPicker] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -738,7 +743,7 @@ export function EditablePriority({
   const hasValue = !!currentPriority;
 
   return (
-    <div ref={triggerRef}>
+    <div ref={triggerRef} data-priority-editing={showPicker ? "true" : undefined}>
       {showPicker ? (
         <div
           style={{
@@ -749,6 +754,9 @@ export function EditablePriority({
             borderRadius: 4,
             padding: "2px 6px",
             background: "var(--ds-background-input, #fff)",
+            minWidth: 180,
+            position: "relative",
+            zIndex: 5,
           }}
         >
           <span
@@ -775,7 +783,7 @@ export function EditablePriority({
             )}
             <span>{currentPriority || "Select priority"}</span>
           </span>
-          {hasValue && (
+          {hasValue && !hideClear && (
             <button
               type="button"
               onClick={(e) => {

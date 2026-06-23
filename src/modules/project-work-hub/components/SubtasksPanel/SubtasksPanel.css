@@ -121,10 +121,10 @@
 }
 .sp-progress-fill {
   height: 100%;
-  /* jira-compare 2026-05-17: Jira measures progress bar fill as #94C748 (lime green).
-     ADS token --ds-background-success-bold resolves to #1F845A (dark forest green)
-     which is wrong. Use exact Jira hex per K.11. */
-  background: #94C748;
+  /* 2026-06-23 (Vikram) — progress fill uses the canonical Catalyst done
+     green token --cp-status-done-green (#6A9A23). Defined in index.css
+     :root + .dark. Was Jira-parity #94C748 lime previously. */
+  background: var(--cp-status-done-green, #6A9A23);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -169,11 +169,41 @@
    bold) with a small 1px hairline matching the vertical column dividers
    (border-right on th: 1px solid --ds-border #EBECF0). */
 .sp-ak-table .jira-table-grid table thead > tr > th {
-  padding: 0 8px !important;
+  padding: 0 12px !important;
   color: var(--ds-text-subtle, #505258) !important;
   font-size: 12px !important;
   font-weight: 653 !important;
   box-shadow: inset 0 -1px 0 0 var(--ds-border, #EBECF0) !important;
+}
+/* 2026-06-23 — Subtasks body rows have no expand-chevron column, so the
+   header's 24×24 chevron-slot placeholder (used by JiraTable to align with
+   body chevrons in other surfaces) just pushes "Work" 28px right of the
+   bookmark icon below. Hide it in subtasks only. */
+.sp-ak-table .jira-table-grid thead > tr > th [data-jt-chevron-slot="true"] {
+  display: none !important;
+}
+/* 2026-06-23 — JiraTable's cell-content wrapper adds 4px paddingLeft on
+   every td (to make room for in-cell controls in other surfaces). In
+   subtasks every body cell ends up 16px from the td edge while the header
+   labels sit at 12px — visible misalignment across Priority / Assignee /
+   Status. Zero the inner padding on every data column so each row value
+   shares the 12px anchor with its header label. */
+.sp-ak-table .jira-table-grid table tbody > tr > td > div {
+  padding-left: 0 !important;
+}
+
+/* 2026-06-23 — Priority inline-edit trigger is 180px min-width. The Priority
+   column is narrower than 180px so the edit field needs to overflow into the
+   adjacent cell while open (Jira parity, image #162). Defeat both the td
+   inline overflow:hidden AND JiraTable's inner cell-content div overflow:
+   hidden when the descendant is actively editing. */
+.sp-ak-table .jira-table-grid table tbody > tr > td:has([data-priority-editing="true"]) {
+  overflow: visible !important;
+  z-index: 5;
+  position: relative;
+}
+.sp-ak-table .jira-table-grid table tbody > tr > td:has([data-priority-editing="true"]) > div {
+  overflow: visible !important;
 }
 .sp-ak-table .jira-table-grid table thead > tr > th[data-actions-sticky] {
   box-shadow:
