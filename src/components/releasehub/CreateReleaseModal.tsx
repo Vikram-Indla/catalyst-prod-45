@@ -208,11 +208,11 @@ export function CreateReleaseModal({ onClose, release }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16 }}>
             <div>
               <label style={labelStyle}>Planned start</label>
-              <DatePicker value={plannedStart} onChange={setPlannedStart} placeholder="Select date" />
+              <DatePicker value={plannedStart} onChange={setPlannedStart} formatDisplayLabel="yyyy-MM-dd" />
             </div>
             <div>
               <label style={labelStyle}>Planned release *</label>
-              <DatePicker value={plannedRelease} onChange={setPlannedRelease} placeholder="Select date" />
+              <DatePicker value={plannedRelease} onChange={setPlannedRelease} formatDisplayLabel="yyyy-MM-dd" />
               {submitted && errors.plannedRelease && <div style={errStyle}>{errors.plannedRelease}</div>}
             </div>
           </div>
