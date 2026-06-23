@@ -111,6 +111,10 @@ export interface BacklogStory {
   product_owner_name?: string | null;
   stakeholders?: string[] | null;
   targeted_feature?: boolean | null;
+  // 2026-06-23 (Phase 1B, Release Hub) — adapter-only fields. Always undefined
+  // on ph_issues/business_requests rows; populated by releasesDataSource so the
+  // Release Hub's opt-in Progress column can read it. Additive + undefined-safe.
+  progress?: number | null;
   feature?: {
     id: string;
     display_id: string | null;

@@ -119,6 +119,9 @@ import type {
 
 import { useStoryBacklog, useEpicBacklog, useRequestsByKeys, useRequestLinksByEpicKeys } from '../hooks/useBacklogData';
 import { BIZ_SOURCE, type BacklogDataSource } from '../adapters/backlogDataSource';
+// 2026-06-23 (Phase 1B, Release Hub) — canonical release progress bar reused
+// inside the opt-in `release_progress` column.
+import { ReleaseProgressBar } from '@/components/releases/ReleaseProgressBar';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
 import { CatyAiSearch } from '@/components/caty/CatyAiSearch';
 import { useCatySearch } from '@/components/caty/catySearchStore';
@@ -427,6 +430,13 @@ export interface BacklogItem {
   product_owner_name?: string | null;
   stakeholders?: string[] | null;
   targeted_feature?: boolean | null;
+  // 2026-06-23 (Phase 1B, Release Hub) — adapter-only fields, always undefined
+  // on ph_issues / business_requests rows. Surface only via the Release Hub
+  // adapter (releasesDataSource sets allowedColumnIds to expose the opt-in
+  // Description / Start date / Progress columns).
+  description?: string | null;
+  start_date?: string | null;
+  progress?: number | null;
 }
 
 /* 2026-06-22 Phase 2 — CanonicalFilter Work-type options. Module-scoped so
@@ -554,6 +564,10 @@ const ALLOWED_COLUMN_IDS = new Set([
   'product_owner',
   'stakeholders',
   'targeted_feature',
+  // 2026-06-23 (Phase 1B, Release Hub) — opt-in release columns.
+  'release_progress',
+  'start_date',
+  'description',
 ]);
 
 /**
@@ -565,6 +579,16 @@ const PRODUCT_ONLY_COLUMN_IDS = new Set([
   'request_type', 'category', 'theme', 'urgency', 'planned_quarter',
   'target_date', 'delivery_manager', 'product_owner', 'stakeholders',
   'targeted_feature',
+]);
+
+/**
+ * 2026-06-23 (Phase 1B, Release Hub) — columns that only make sense for the
+ * Release Hub adapter (rh_releases). Gated exactly like PRODUCT_ONLY_COLUMN_IDS:
+ * hidden unless an adapter whitelists them via allowedColumnIds. No non-release
+ * consumer ever sees them.
+ */
+const RELEASE_ONLY_COLUMN_IDS = new Set([
+  'release_progress', 'start_date', 'description',
 ]);
 
 // Permanently banned fields that must NEVER appear in column picker
@@ -1052,9 +1076,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     const adapterAllow = effectiveAllowedColumnIds
       ? new Set([...effectiveAllowedColumnIds, '__drag', '__actions'])
       : null;
+    // 2026-06-23 (Phase 1B): an adapter may override the static default-visible
+    // set (Release Hub uses this for Version/Status/Progress/Start/Release/
+    // Description/Actions). Omitted → static DEFAULT_VISIBLE_COLUMNS unchanged.
+    const baseDefaults = dataSource?.defaultVisibleColumns ?? DEFAULT_VISIBLE_COLUMNS;
     const allowedDefaults = adapterAllow
-      ? DEFAULT_VISIBLE_COLUMNS.filter((c) => adapterAllow.has(c))
-      : DEFAULT_VISIBLE_COLUMNS;
+      ? baseDefaults.filter((c) => adapterAllow.has(c))
+      : baseDefaults;
     const raw = searchParams.get('cols');
     if (!raw) return new Set(allowedDefaults);
     const fromUrl = parseSet(raw);
@@ -1076,6 +1104,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (!ALLOWED_COLUMN_IDS.has(id)) return true;
       if (BANNED_COLUMN_IDS.has(id)) return true;
       if (PRODUCT_ONLY_COLUMN_IDS.has(id) && !adapterAllow) return true;
+      if (RELEASE_ONLY_COLUMN_IDS.has(id) && !adapterAllow) return true;
       if (adapterAllow && !adapterAllow.has(id)) return true;
       return false;
     });
@@ -1093,9 +1122,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     // (e.g. `parent`/`assignee` on product backlog) keep getting re-merged,
     // creating an infinite loop with the URL-sync effect that writes them
     // back and re-triggers this cleanup pass.
+    // 2026-06-23 (Phase 1B): an adapter may override the static default-visible
+    // set (Release Hub uses this for Version/Status/Progress/Start/Release/
+    // Description/Actions). Omitted → static DEFAULT_VISIBLE_COLUMNS unchanged.
+    const baseDefaults = dataSource?.defaultVisibleColumns ?? DEFAULT_VISIBLE_COLUMNS;
     const allowedDefaults = adapterAllow
-      ? DEFAULT_VISIBLE_COLUMNS.filter((c) => adapterAllow.has(c))
-      : DEFAULT_VISIBLE_COLUMNS;
+      ? baseDefaults.filter((c) => adapterAllow.has(c))
+      : baseDefaults;
     setVisibleColumns(new Set([...supportedIds, ...allowedDefaults]));
     // Run-once on first mount when adapter is ready.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1652,6 +1685,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         product_owner_name: (s as any).product_owner_name ?? null,
         stakeholders: (s as any).stakeholders ?? null,
         targeted_feature: (s as any).targeted_feature ?? null,
+        // 2026-06-23 (Phase 1B, Release Hub) — adapter-only fields, undefined
+        // on ph_issues rows. Feed the opt-in release columns.
+        description: (s as any).description ?? null,
+        start_date: (s as any).start_date ?? null,
+        progress: (s as any).progress ?? null,
       });
     });
     return out;
@@ -3061,6 +3099,43 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { planned_quarter: next } }),
       }),
     },
+    // ── 2026-06-23 (Phase 1B, Release Hub) opt-in columns ───────────────────
+    // Release-only, display-only (no inline edit → no lifecycle mutation).
+    // Hidden for every non-release consumer via RELEASE_ONLY_COLUMN_IDS gating
+    // in filteredCols below. Reuse the canonical ReleaseProgressBar.
+    // 2026-06-23 (Phase 1B-fix): Progress + Start date are defined HERE, before
+    // target_date (Release date), and Description immediately after — so the
+    // Release Hub renders in registry order: Version, Status, Progress, Start
+    // date, Release date, Description, Actions. Both columns stay release-only
+    // gated, so no other hub's column order changes.
+    {
+      id: 'release_progress',
+      label: 'Progress',
+      width: 12,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => String(r.progress ?? -1),
+      cell: ({ row: r }: { row: BacklogItem }) => (
+        <div style={{ padding: '4px 8px' }}>
+          {typeof r.progress === 'number'
+            ? <ReleaseProgressBar value={r.progress} />
+            : <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>—</span>}
+        </div>
+      ),
+    },
+    {
+      id: 'start_date',
+      label: 'Start date',
+      width: 9,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.start_date || '',
+      cell: ({ row: r }: { row: BacklogItem }) => (
+        <span style={{ padding: '4px 8px', color: 'var(--ds-text, #292A2E)' }}>
+          {r.start_date || <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>—</span>}
+        </span>
+      ),
+    },
     {
       id: 'target_date',
       label: 'Target date',
@@ -3072,6 +3147,29 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         getDate: (r) => r.target_date ?? null,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { target_date: next } }),
       }),
+    },
+    {
+      id: 'description',
+      label: 'Description',
+      width: 18,
+      sortable: false,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.description || '',
+      cell: ({ row: r }: { row: BacklogItem }) => (
+        <span
+          title={r.description || ''}
+          style={{
+            padding: '4px 8px',
+            color: 'var(--ds-text, #292A2E)',
+            display: 'block',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {r.description || <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>—</span>}
+        </span>
+      ),
     },
     {
       id: 'delivery_manager',
@@ -3172,9 +3270,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       alwaysVisible: true,
       cell: (props) => (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-          {makeRowActionsCell<BacklogItem>({
-            actions: rowActions.filter((a) => a.id !== 'open'),
-          })(props)}
+          {dataSource?.nonDestructiveActions
+            /* 2026-06-23 (Phase 1B, Release Hub): suppress the destructive row
+               kebab (delete/duplicate/etc.) on surfaces not yet wired for those
+               actions. Render a non-interactive placeholder, keeping the column
+               structure intact. */
+            ? <span aria-hidden="true" style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>—</span>
+            : makeRowActionsCell<BacklogItem>({
+                actions: rowActions.filter((a) => a.id !== 'open'),
+              })(props)}
         </div>
       ),
     },
@@ -3197,9 +3301,21 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       if (!ALLOWED_COLUMN_IDS.has(col.id)) return false;
       if (BANNED_COLUMN_IDS.has(col.id)) return false;
       if (PRODUCT_ONLY_COLUMN_IDS.has(col.id) && !adapterAllow) return false;
+      // 2026-06-23 (Phase 1B): release columns hidden unless an adapter
+      // whitelists them — mirrors the product-only gate above.
+      if (RELEASE_ONLY_COLUMN_IDS.has(col.id) && !adapterAllow) return false;
       if (adapterAllow && !adapterAllow.has(col.id)) return false;
       return true;
     });
+    // 2026-06-23 (Phase 1B): opt-in column-header relabeling. When an adapter
+    // supplies columnLabelOverrides, swap the matching column labels (Release
+    // Hub: key→"Version", target_date→"Release date"). No override → unchanged.
+    const labelOverrides = dataSource?.columnLabelOverrides;
+    if (labelOverrides) {
+      return allowed.map((col) =>
+        labelOverrides[col.id] != null ? { ...col, label: labelOverrides[col.id] } : col,
+      );
+    }
     // 2026-06-09: previously this sorted columns by their position in the
     // URL `cols=` parameter, which made checked-on columns appear in the
     // order the user toggled them (Set insertion order) — so "check
@@ -3208,7 +3324,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     // positions are predictable. Drag-reorder uses JiraTable's separate
     // columnOrder mechanism, not the URL cols= param.
     return allowed;
-  }, [columns, effectiveAllowedColumnIds]);
+  }, [columns, effectiveAllowedColumnIds, dataSource]);
 
 
   // Editing state — used by EditBacklogItemModal below.

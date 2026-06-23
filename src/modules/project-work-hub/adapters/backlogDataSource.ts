@@ -153,6 +153,32 @@ export interface BacklogDataSource {
    */
   allowedColumnIds?: readonly string[];
 
+  /**
+   * 2026-06-23 (Phase 1B, Release Hub) — opt-in column-header relabeling.
+   * Maps an existing column id to a replacement label string. When omitted,
+   * every column keeps its registry label (all non-release hubs unchanged).
+   * Release Hub uses this to render `key` as "Version" and `target_date` as
+   * "Release date" WITHOUT changing those labels for any other consumer.
+   */
+  columnLabelOverrides?: Readonly<Record<string, string>>;
+
+  /**
+   * 2026-06-23 (Phase 1B, Release Hub) — opt-in default-visible column set.
+   * When provided, replaces BacklogPage's static DEFAULT_VISIBLE_COLUMNS
+   * (still intersected with allowedColumnIds). When omitted, the static
+   * default is used (all non-release hubs unchanged).
+   */
+  defaultVisibleColumns?: readonly string[];
+
+  /**
+   * 2026-06-23 (Phase 1B, Release Hub) — when true, the structural `__actions`
+   * column renders a non-interactive placeholder instead of the row kebab.
+   * Suppresses every destructive/lifecycle action (delete, duplicate, etc.)
+   * for surfaces that are not yet wired for those operations. When omitted/
+   * false, the normal kebab renders (all non-release hubs unchanged).
+   */
+  nonDestructiveActions?: boolean;
+
   /** Product UUID — forwarded to CreateBusinessRequestModal. */
   productId: string;
 

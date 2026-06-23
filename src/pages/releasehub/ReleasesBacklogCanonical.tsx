@@ -31,17 +31,35 @@ export default function ReleasesBacklogCanonical() {
   /* Column allowlist — only those that map to rh_releases columns. Keeps the
      picker clean and prevents non-applicable columns (parent / labels / sprint
      / reporter / comments / priority) from rendering as empty. */
+  /* Phase 1B (2026-06-23): structural move toward Jira Releases columns —
+     Version, Status, Progress, Start date, Release date, Description, Actions —
+     using only the additive, opt-in canonical-table contract (columnLabelOverrides
+     / defaultVisibleColumns / nonDestructiveActions + the release-only columns).
+     Data is rh_releases via useReleasesSource. No schema/RLS/CRUD change. */
   const adapterWithChrome = {
     ...adapter,
     ChromeHeader: () => <ProjectPageHeader projectKey="RELEASES" hubType="release" />,
     allowedColumnIds: [
-      'key',           // jira_key / version / id
-      'request_type',  // release_type (regular / minor / major / hotfix / emergency)
-      'status',        // release lifecycle stage
-      'category',      // target_env (qa / beta / staging / production)
-      'target_date',   // planned_release_date
-      'assignee',      // release manager
+      'key',               // Version  ← rh_releases.name / version
+      'status',            // Status   ← rh_releases.status
+      'release_progress',  // Progress ← rh_releases.readiness_pct (ReleaseProgressBar)
+      'start_date',        // Start date   ← rh_releases.planned_start_date
+      'target_date',       // Release date ← rh_releases.planned_release_date / target_date
+      'description',       // Description  ← rh_releases.description
+      '__actions',         // Actions  (non-destructive placeholder this phase)
     ] as const,
+    columnLabelOverrides: {
+      // Phase 1C (2026-06-23): Jira Releases screenshot header column 1 reads
+      // "Release" (the release name), not "Version". Release-adapter-only
+      // override — zero blast radius on other hubs.
+      key: 'Release',
+      target_date: 'Release date',
+    } as const,
+    defaultVisibleColumns: [
+      'key', 'status', 'release_progress', 'start_date', 'target_date', 'description', '__actions',
+    ] as const,
+    // Phase 1B: no delete / archive / release / unrelease / merge / edit yet.
+    nonDestructiveActions: true,
   };
 
   return (

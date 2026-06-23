@@ -44,7 +44,7 @@ const RELEASE_STATUSES: Array<{ value: string; label: string; appearance: Lozeng
 const STATUS_BY_VALUE = new Map(RELEASE_STATUSES.map((s) => [s.value, s]));
 
 const RELEASE_SELECT =
-  'id, name, version, status, health, release_type, target_env, target_date, planned_release_date, readiness_pct, source, jira_key, updated_at, created_at, product_id, release_manager_id';
+  'id, name, version, status, health, release_type, target_env, target_date, planned_start_date, planned_release_date, readiness_pct, description, source, jira_key, updated_at, created_at, product_id, release_manager_id';
 
 interface ReleaseRow {
   id: string;
@@ -55,8 +55,10 @@ interface ReleaseRow {
   release_type: string | null;
   target_env: string | null;
   target_date: string | null;
+  planned_start_date: string | null;
   planned_release_date: string | null;
   readiness_pct: number | null;
+  description: string | null;
   source: string;
   jira_key: string | null;
   updated_at: string | null;
@@ -72,13 +74,15 @@ function releaseToBacklogStory(r: ReleaseRow): BacklogStory {
     story_key: r.jira_key ?? r.version ?? r.id,
     title: r.name ?? '',
     name: r.name ?? null,
-    description: null,
+    /* Phase 1B: carry the real release fields so the Release Hub's opt-in
+       Description / Start date / Progress columns can render them. */
+    description: r.description ?? null,
     status: r.status ?? null,
     feature_id: null,
     assignee_id: r.release_manager_id ?? null,
     assignee_name: r.manager_name ?? null,
     reporter_name: null,
-    start_date: null,
+    start_date: r.planned_start_date ?? null,
     priority: null,
     deleted_at: null,
     jira_created_at: r.created_at ?? null,
@@ -103,6 +107,8 @@ function releaseToBacklogStory(r: ReleaseRow): BacklogStory {
     product_owner_name: null,
     stakeholders: null,
     targeted_feature: null,
+    /* Phase 1B: readiness_pct drives the opt-in Progress column (ReleaseProgressBar). */
+    progress: r.readiness_pct ?? null,
   };
 }
 
