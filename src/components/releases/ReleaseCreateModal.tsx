@@ -47,8 +47,8 @@ export function ReleaseCreateModal({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    start_date: '',
-    release_date: '',
+    start_date: null as string | null,
+    release_date: null as string | null,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
