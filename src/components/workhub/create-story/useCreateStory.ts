@@ -126,6 +126,27 @@ export function useProjectReleases(projectId: string) {
   });
 }
 
+// Fetch sprints linked to a release
+export function useReleaseSprints(releaseId: string | null) {
+  return useQuery({
+    queryKey: ['release-sprints', releaseId],
+    queryFn: async () => {
+      if (!releaseId) return [];
+      const { data, error } = await supabase
+        .from('release_sprints')
+        .select('sprint_id, sprints(id, name, status)')
+        .eq('release_id', releaseId);
+      if (error) {
+        console.error('[useReleaseSprints] Supabase error:', error.message);
+        return [];
+      }
+      return (data ?? []).map(rs => ({ id: (rs as any).sprints?.id ?? rs.sprint_id, name: (rs as any).sprints?.name ?? '?' }));
+    },
+    enabled: !!releaseId,
+    staleTime: 1 * 60 * 1000,
+  });
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Kept for unit test compatibility — tests verify 'Task' and 'API Requirement'
 // are absent. ph_workflow_type_statuses uses literal work_item_type strings now.

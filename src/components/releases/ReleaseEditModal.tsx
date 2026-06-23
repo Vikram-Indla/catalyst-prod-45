@@ -13,6 +13,7 @@ import Flag from '@atlaskit/flag';
 import { useUpdateRelease } from '@/hooks/releases/useUpdateRelease';
 import { useReleases } from '@/hooks/releases/useReleases';
 import { Release, UpdateReleasePayload } from '@/types/phase3-releases';
+import { SprintLinker } from './SprintLinker';
 
 interface ReleaseEditModalProps {
   isOpen: boolean;
@@ -240,6 +241,22 @@ export function ReleaseEditModal({
                   setFormData((p) => ({ ...p, description: e.currentTarget.value }))
                 }
                 rows={3}
+              />
+            </div>
+
+            {/* Sprints Linker */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label
+                style={{
+                  fontWeight: 500,
+                  color: 'var(--ds-text, #172B4D)',
+                }}
+              >
+                Sprints
+              </label>
+              <SprintLinker
+                releaseId={release.id}
+                projectKey={projectKey}
               />
             </div>
 
