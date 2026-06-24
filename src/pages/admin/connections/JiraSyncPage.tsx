@@ -107,7 +107,10 @@ export function JiraSyncPage() {
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('jira-sync-readiness');
       if (error) return null;
-      return data as { readiness: Readiness; allowedActions: Record<string, boolean>; reasons: string[] } | null;
+      return data as {
+        readiness: Readiness; allowedActions: Record<string, boolean>; reasons: string[];
+        connectionValid: boolean; siteUrl: string | null; lastTestedAt: string | null;
+      } | null;
     },
     staleTime: 15_000,
   });
@@ -167,7 +170,12 @@ export function JiraSyncPage() {
     };
   });
 
-  const isConnected = connection?.status === 'connected';
+  // Connection status from the service-role readiness function (authoritative) — the
+  // RLS-gated useJiraConnection read can be blocked for the admin user, falsely showing
+  // "Not configured". Backend readiness reads it via service role. (spec §17)
+  const isConnected = backendReadiness?.connectionValid ?? (connection?.status === 'connected');
+  const connSiteUrl = connection?.site_url ?? backendReadiness?.siteUrl ?? null;
+  const connLastTested = connection?.last_tested_at ?? backendReadiness?.lastTestedAt ?? null;
   const enabledProjects = projects.filter(p => p.sync_enabled);
   const totalJiraIssues = Object.values(issueCounts).reduce((a: number, b: number) => a + b, 0);
 
@@ -205,14 +213,14 @@ export function JiraSyncPage() {
             <span style={{ fontWeight: 600, fontFamily: FB, color: isConnected ? C.textSuccess : C.textSubtle }}>
               {isConnected ? '✓ Connected' : 'Not configured'}
             </span>
-            {connection?.site_url && (
+            {connSiteUrl && (
               <code style={{ fontSize: 12, fontFamily: FC, background: C.neutral, padding: '2px 6px', borderRadius: 3 }}>
-                {connection.site_url}
+                {connSiteUrl}
               </code>
             )}
-            {connection?.last_tested_at && (
+            {connLastTested && (
               <span style={{ color: C.textSubtle, marginLeft: 'auto', fontSize: 12, fontFamily: FB }}>
-                Last tested {formatDistanceToNow(new Date(connection.last_tested_at), { addSuffix: true })}
+                Last tested {formatDistanceToNow(new Date(connLastTested), { addSuffix: true })}
               </span>
             )}
           </div>
