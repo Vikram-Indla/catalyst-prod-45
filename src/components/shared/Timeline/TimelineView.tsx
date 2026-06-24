@@ -1399,8 +1399,8 @@ export default function TimelineView(props: TimelineViewProps) {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 4,
                   background: 'none', border: 'none', padding: '0 2px', cursor: 'pointer',
-                  fontSize: 13, fontWeight: 653, color: 'var(--ds-text, #172B4D)',
-                  fontFamily: 'var(--ds-font-family-body)', letterSpacing: '0.01em',
+                  fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
+                  fontFamily: 'var(--ds-font-family-body)',
                   userSelect: 'none',
                 }}
               >
@@ -1415,15 +1415,15 @@ export default function TimelineView(props: TimelineViewProps) {
                 <button
                   onClick={openCreateWork}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 10px',
-                    border: '1px solid var(--ds-border-brand, #0C66E4)', borderRadius: 3,
-                    background: '#FFFFFF',
-                    cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                    color: 'var(--ds-link, #0C66E4)',
+                    display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '6px 12px',
+                    border: 'none', borderRadius: 3,
+                    background: 'transparent',
+                    cursor: 'pointer', fontSize: 14, fontWeight: 500,
+                    color: 'var(--ds-text-subtle, #505258)',
                     fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-subtlest, #E9F2FF)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   <EditorAddIcon label="" size="small" />
                   {!isNarrow && 'Create work'}
