@@ -22,7 +22,7 @@ import Modal, { ModalTransition } from '@atlaskit/modal-dialog';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { useJiraConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
+import { useJiraConnection, useUpdateJiraConnection, useTestConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
 import { useSyncHealth, useSyncLogs, useAvailableProjects } from '@/modules/workhub/admin/hooks/useSyncEngine';
 import { formatDistanceToNow } from 'date-fns';
 import { resolveJiraEnvironment, getEnvironmentLabel } from '@/lib/jira-integration/environmentResolver';
@@ -193,6 +193,7 @@ export function JiraSyncPage() {
 
         <Tabs id="jira-admin" selectedIndex={selectedTab} onChange={setSelectedTab}>
           <TabList>
+            <Tab>Connection</Tab>
             <Tab>Overview</Tab>
             <Tab>Sync Control</Tab>
             <Tab>Projects ({projects.length})</Tab>
@@ -203,6 +204,9 @@ export function JiraSyncPage() {
             <Tab>Backup & Logs</Tab>
           </TabList>
 
+          <TabPanel>
+            <ConnectionTab connection={connection} health={health} env={env} />
+          </TabPanel>
           <TabPanel>
             <OverviewTab projects={projects} health={health} mappingValid={mappingValid} />
           </TabPanel>
@@ -247,6 +251,96 @@ export function JiraSyncPage() {
 
 const TH = { padding: '12px 16px', textAlign: 'left' as const, fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}`, fontFamily: FB };
 const TD = { padding: '12px 16px', fontSize: 13, fontFamily: FB, color: C.text };
+
+function ConnectionTab({ connection, health, env }: any) {
+  const testConn = useTestConnection();
+  const saveConn = useUpdateJiraConnection();
+  const isConnected = connection?.status === 'connected';
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ site_url: connection?.site_url || '', auth_email: connection?.auth_email || '', auth_token: '' });
+
+  const rows: Array<[string, string]> = [
+    ['Status', isConnected ? 'Connected' : (connection?.status || 'Not configured')],
+    ['Site URL', connection?.site_url || '—'],
+    ['Auth email', connection?.auth_email || '—'],
+    ['Auth method', connection?.auth_method || '—'],
+    ['Accessible projects', String(connection?.project_count ?? '—')],
+    ['Issues cached', (health?.issueCachedCount ?? 0).toLocaleString()],
+    ['Last tested', connection?.last_tested_at ? formatDistanceToNow(new Date(connection.last_tested_at), { addSuffix: true }) : 'Never'],
+  ];
+
+  return (
+    <div style={{ marginTop: 20 }}>
+      {/* Status card */}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: isConnected ? C.textSuccess : C.textSubtlest }} />
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: 0, fontFamily: FH }}>
+            {isConnected ? 'Connected to Jira' : 'Jira not configured'}
+          </h3>
+          <Lozenge appearance={isConnected ? 'success' : 'default'}>{getEnvironmentLabel(env.environment)}</Lozenge>
+        </div>
+
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
+          <tbody>
+            {rows.map(([k, v]) => (
+              <tr key={k} style={{ borderBottom: `1px solid ${C.border}` }}>
+                <td style={{ padding: '8px 0', fontSize: 12, color: C.textSubtle, fontFamily: FB, width: 180 }}>{k}</td>
+                <td style={{ padding: '8px 0', fontSize: 13, color: C.text, fontFamily: k === 'Site URL' ? FC : FB }}>{v}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div style={{ display: 'flex', gap: 12 }}>
+          <Button appearance="primary" isDisabled={!isConnected || testConn.isPending} onClick={() => testConn.mutate()}>
+            {testConn.isPending ? 'Testing…' : 'Test Connection'}
+          </Button>
+          <Button onClick={() => setEditing(e => !e)}>{editing ? 'Cancel' : isConnected ? 'Reconfigure' : 'Configure'}</Button>
+        </div>
+
+        {testConn.isSuccess && (
+          <SectionMessage appearance="success" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 12 }}>Connection test passed.</p></SectionMessage>
+        )}
+        {testConn.isError && (
+          <SectionMessage appearance="error" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 12 }}>{testConn.error instanceof Error ? testConn.error.message : 'Test failed'}</p></SectionMessage>
+        )}
+      </div>
+
+      {/* Configure form */}
+      {editing && (
+        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: '0 0 16px 0', fontFamily: FH }}>Jira Credentials</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 520 }}>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 4, fontFamily: FB }}>Site URL</label>
+              <Textfield placeholder="https://your-org.atlassian.net" value={form.site_url} onChange={e => setForm(f => ({ ...f, site_url: (e.target as HTMLInputElement).value }))} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 4, fontFamily: FB }}>Auth email</label>
+              <Textfield placeholder="you@org.com" value={form.auth_email} onChange={e => setForm(f => ({ ...f, auth_email: (e.target as HTMLInputElement).value }))} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 4, fontFamily: FB }}>API token</label>
+              <Textfield type="password" placeholder="Paste your Jira API token" value={form.auth_token} onChange={e => setForm(f => ({ ...f, auth_token: (e.target as HTMLInputElement).value }))} />
+              <div style={{ fontSize: 11, color: C.textSubtlest, marginTop: 4, fontFamily: FB }}>Encrypted server-side via wh-save-connection. Never stored in the browser.</div>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <Button appearance="primary" isDisabled={!form.site_url || !form.auth_email || !form.auth_token || saveConn.isPending}
+                onClick={() => saveConn.mutate({ site_url: form.site_url, auth_method: 'api_token', auth_email: form.auth_email, auth_token_encrypted: form.auth_token }, { onSuccess: () => setEditing(false) })}>
+                {saveConn.isPending ? 'Saving…' : 'Save & Connect'}
+              </Button>
+              <Button onClick={() => setEditing(false)}>Cancel</Button>
+            </div>
+            {saveConn.isError && (
+              <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{saveConn.error instanceof Error ? saveConn.error.message : 'Save failed'}</p></SectionMessage>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function OverviewTab({ projects, health, mappingValid }: any) {
   const syncedCount = projects.filter((p: any) => p.sync_enabled).length;
