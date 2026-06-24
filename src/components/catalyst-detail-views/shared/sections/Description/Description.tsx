@@ -46,9 +46,28 @@ interface DescriptionProps {
    * paragraph) and pass it here.
    */
   loadAdf?: AdfDoc | null;
+  /**
+   * Custom copy shown in the empty-state click target. Defaults to
+   * "Add a description...". Callers (e.g. release detail) may override
+   * with a richer prompt.
+   */
+  emptyPlaceholder?: string;
+  /**
+   * When true, the empty-state placeholder does not receive the neutral
+   * hover background tint. Useful when the surrounding container already
+   * provides hover affordance or when the placeholder should sit flat.
+   */
+  disableEmptyHover?: boolean;
 }
 
-export function Description({ issue, label = 'Description', saveOverride, loadAdf }: DescriptionProps) {
+export function Description({
+  issue,
+  label = 'Description',
+  saveOverride,
+  loadAdf,
+  emptyPlaceholder = 'Add a description...',
+  disableEmptyHover = false,
+}: DescriptionProps) {
   const [editing, setEditing] = useState(false);
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -493,7 +512,7 @@ export function Description({ issue, label = 'Description', saveOverride, loadAd
             if (issue) setEditing(true);
           }}
           onMouseEnter={(e) => {
-            if (issue) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
+            if (issue && !disableEmptyHover) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';
@@ -508,7 +527,7 @@ export function Description({ issue, label = 'Description', saveOverride, loadAd
             transition: 'background-color 120ms ease',
           }}
         >
-          Add a description...
+          {emptyPlaceholder}
         </div>
       ) : (
         <div

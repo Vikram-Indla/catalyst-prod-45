@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
 import { useQuery } from '@tanstack/react-query';
@@ -250,9 +250,9 @@ export function ReleasesPage() {
     return null;
   };
 
+  const navigate = useNavigate();
   const handleOpenDetail = (releaseId: string) => {
-    // Detail route TBD — no-op until /release-hub/releases/:id lands
-    console.log('Open release detail:', releaseId);
+    navigate(`/release-hub/releases-management/${releaseId}`);
   };
 
   const projectId = projectRow?.id || releases[0]?.project_id || '';

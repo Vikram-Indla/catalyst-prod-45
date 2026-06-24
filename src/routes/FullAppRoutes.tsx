@@ -62,6 +62,7 @@ const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/Fi
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
+const ReleaseDetailPageLazy = lazy(() => import("../pages/release-hub/ReleaseDetailPage").then(m => ({ default: m.ReleaseDetailPage })));
 const DependenciesPageLazy = lazy(() => import("../pages/project-hub/DependenciesPage"));
 
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
@@ -744,6 +745,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/releases-management" element={<S><ReleasesPageLazy /></S>} />
+        <Route path="/release-hub/releases-management/:releaseId" element={<S><ReleaseDetailPageLazy /></S>} />
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
         <Route path="/release-hub/changes/:changeId" element={<S><ChangeDetailPage /></S>} />
         <Route path="/release-hub/sop-templates" element={<S><SopTemplatesPage /></S>} />
