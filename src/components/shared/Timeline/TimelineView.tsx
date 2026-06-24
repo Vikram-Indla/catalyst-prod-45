@@ -1462,7 +1462,7 @@ export default function TimelineView(props: TimelineViewProps) {
                 <div
                   role="row"
                   style={{
-                    height: 36, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 4,
+                    height: ROW_H, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 6,
                     borderBottom: '1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
                     background: 'var(--ds-background-neutral-subtle, #F7F8F9)', cursor: 'pointer',
                   }}
@@ -1475,6 +1475,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   }}>
                     <ChevronDownIcon label={releasesCollapsed ? 'Expand releases' : 'Collapse releases'} size="small" />
                   </div>
+                  <ProjectIcon projectKey={hubKey.replace(/^(project|product)-/, '')} size="small" name={hubLabel} />
                   <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
                     {hubLabel}
                   </span>
