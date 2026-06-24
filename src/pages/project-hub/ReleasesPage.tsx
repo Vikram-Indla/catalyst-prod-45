@@ -12,6 +12,7 @@ import { ReleaseCreateModal } from '@/components/releases/ReleaseCreateModal';
 import { ShareFeedbackModal } from '@/components/releases/ShareFeedbackModal';
 import FeedbackIcon from '@atlaskit/icon/core/feedback';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
+import { ReleaseMergeDialog } from '@/components/releases/ReleaseMergeDialog';
 import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
 import { ReleaseDeleteDialog } from '@/components/releases/ReleaseDeleteDialog';
 import {
@@ -112,6 +113,8 @@ export function ReleasesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deletingRelease, setDeletingRelease] = useState<CellRelease | null>(null);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [mergingRelease, setMergingRelease] = useState<CellRelease | null>(null);
+  const [isMergeDialogOpen, setIsMergeDialogOpen] = useState(false);
 
   const progressByVersion = useMemo(() => {
     const m = new Map<string, ProgressRow>();
@@ -330,7 +333,7 @@ export function ReleasesPage() {
           onOpenDetail={handleOpenDetail}
           onRelease={(r) => { setConfirmingRelease(r); setIsConfirmModalOpen(true); }}
           onArchive={(r) => { setArchivingRelease(r); setIsArchiveDialogOpen(true); }}
-          onMerge={(r) => { console.log('Merge release (TBD):', r.id); }}
+          onMerge={(r) => { setMergingRelease(r); setIsMergeDialogOpen(true); }}
           onEdit={(r) => { setEditingRelease(r); setIsCreateModalOpen(true); }}
           onDelete={(r) => { setDeletingRelease(r); setIsDeleteDialogOpen(true); }}
         />
@@ -395,6 +398,15 @@ export function ReleasesPage() {
         isOpen={isFeedbackModalOpen}
         onClose={() => setIsFeedbackModalOpen(false)}
       />
+
+      {mergingRelease && (
+        <ReleaseMergeDialog
+          isOpen={isMergeDialogOpen}
+          release={mergingRelease as any}
+          projectKey={projectKey}
+          onClose={() => { setIsMergeDialogOpen(false); setMergingRelease(null); }}
+        />
+      )}
     </div>
   );
 }
