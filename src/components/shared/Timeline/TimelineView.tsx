@@ -1268,8 +1268,8 @@ export default function TimelineView(props: TimelineViewProps) {
               return {
                 position: 'fixed',
                 top: rect ? rect.bottom + 4 : 80,
-                left: rect ? Math.min(rect.left, window.innerWidth - 424) : 100,
-                width: 420,
+                left: rect ? Math.min(rect.left, window.innerWidth - 554) : 100,
+                width: 550,
                 maxHeight: `calc(100vh - ${rect ? rect.bottom + 24 : 104}px)`,
                 background: 'var(--ds-surface-overlay, #FFFFFF)',
                 boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
@@ -1327,6 +1327,9 @@ export default function TimelineView(props: TimelineViewProps) {
                   value={createWorkType ? { value: createWorkType, label: createWorkType } : null}
                   onChange={(opt: any) => opt && setCreateWorkType(opt.value)}
                   options={workItemTypes.map(t => ({ value: t, label: t }))}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 10000 }) }}
                   formatOptionLabel={(opt: any) => (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <JiraIssueTypeIcon type={opt.value} size={16} />
