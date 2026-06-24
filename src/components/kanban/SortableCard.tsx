@@ -189,7 +189,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
           minWidth: 180,
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 4,
-          boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
+          boxShadow: 'var(--ds-shadow-raised, rgba(9,30,66,0.31)) 0 0 1px, var(--ds-shadow-raised, rgba(9,30,66,0.25)) 0 4px 8px -2px',
           padding: '4px 0',
           fontFamily: 'var(--cp-font-body)',
         }}
@@ -212,14 +212,14 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
               width: '100%',
               padding: '8px 16px',
               fontSize: 13,
-              color: (item as { danger?: boolean }).danger ? '#AE2A19' : tk.textPrimary,
+              color: (item as { danger?: boolean }).danger ? 'var(--ds-text-danger, #AE2A19)' : tk.textPrimary,
               background: 'none',
               border: 'none',
               textAlign: 'left',
               cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover || '#F7F8F9'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover || 'var(--ds-surface-sunken, #F7F8F9)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
             {item.label}

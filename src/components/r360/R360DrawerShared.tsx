@@ -17,15 +17,15 @@ export const SUCCESS = 'var(--ds-text-success, var(--cp-success, #16A34A))';
 export const WARNING = 'var(--ds-text-warning, var(--cp-warning, #D97706))';
 export const DANGER = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
 export const BRAND = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
-export const BORDER = 'rgba(15,23,42,0.12)';
-export const BORDER_LIGHT = 'rgba(15,23,42,0.06)';
+export const BORDER = 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))';
+export const BORDER_LIGHT = 'var(--ds-shadow-overlay, rgba(15,23,42,0.06))';
 export const SLATE = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 
 export const TYPE_COLORS: Record<string, { color: string; opacity: number }> = {
-  Bug:      { color: '#FF5630', opacity: 0.75 },
-  Story:    { color: '#36B37E', opacity: 0.80 },
-  Subtask:  { color: '#2684FF', opacity: 0.75 },
-  Incident: { color: '#FF5630', opacity: 0.50 },
+  Bug:      { color: 'var(--ds-background-danger-bold, #C9372C)', opacity: 0.75 },
+  Story:    { color: 'var(--ds-background-success-bold, #1F845A)', opacity: 0.80 },
+  Subtask:  { color: 'var(--ds-link, #0C66E4)', opacity: 0.75 },
+  Incident: { color: 'var(--ds-background-danger-bold, #C9372C)', opacity: 0.50 },
 };
 
 // ── Panel stack types ──
@@ -57,11 +57,11 @@ export function SectionTitle({ children }: { children: React.ReactNode }) {
 export function R360StatusLozenge({ status }: { status: string }) {
   const s = (status ?? '').toLowerCase().replace(/[\s_-]/g, '');
   let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
-  let color = '#42526E';
+  let color = 'var(--ds-text-subtle, #42526E)';
   if (['done', 'closed', 'completed', 'approved', 'resolved'].includes(s)) {
     bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   } else if (['inprogress', 'inreview', 'active', 'started'].includes(s)) {
-    bg = '#0C66E4'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+    bg = 'var(--ds-link, #0C66E4)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   }
   return (
     <span style={{
@@ -112,7 +112,7 @@ export function FilteredListPanel({
           <span style={{ fontSize: 13, fontWeight: 600, color: INK1 }}>{label}</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center',
-            backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E',
+            backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)',
             fontSize: '11px', fontWeight: 700, padding: '0 6px', height: '20px', borderRadius: '4px',
           }}>{items.length} item{items.length !== 1 ? 's' : ''}</span>
         </div>
@@ -137,7 +137,7 @@ export function FilteredListPanel({
                 borderBottom: idx < items.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 background: 'var(--bg-app)', cursor: 'pointer', transition: 'background 120ms',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <span style={{ width: 20, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>

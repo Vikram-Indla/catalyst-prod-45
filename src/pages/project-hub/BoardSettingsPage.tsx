@@ -74,7 +74,7 @@ const CARD_COLOR_METHODS: { value: CardColorMethod; label: string }[] = [
 ];
 
 // ads-scanner:ignore-next-line — input[type=color] data value, not CSS style
-const DEFAULT_CARD_COLOR = '#0052CC';
+const DEFAULT_CARD_COLOR = 'var(--ds-link, #0052CC)';
 
 const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 

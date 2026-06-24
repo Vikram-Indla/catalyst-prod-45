@@ -69,16 +69,16 @@ function ActivityFeed({
   if (sortedItems.length === 0) {
     return (
       <div className={cn('text-center py-12', className)}>
-        <History className="h-10 w-10 mx-auto mb-3 text-[#C1C7D0] dark:text-[var(--ds-border-bold,#454545)]" />
+        <History className="h-10 w-10 mx-auto mb-3 text-[var(--ds-border, #DFE1E6)] dark:text-[var(--ds-border-bold,#454545)]" />
         <p className="text-[14px] font-medium text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{emptyMessage}</p>
-        <p className="text-[12px] text-[#97A0AF] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-1">{emptyDescription}</p>
+        <p className="text-[12px] text-[var(--ds-text-disabled, #8590A2)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-1">{emptyDescription}</p>
       </div>
     );
   }
 
   return (
     <div ref={scrollRef} className={cn('overflow-y-auto', className)}>
-      <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+      <div className="divide-y divide-[var(--ds-border, #DFE1E6)] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
         {sortedItems.map((item) => (
           <ActivityItem key={item.id} item={item} jiraUserMap={jiraUserMap} />
         ))}

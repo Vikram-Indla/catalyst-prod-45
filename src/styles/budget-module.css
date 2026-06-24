@@ -17,7 +17,7 @@
      ============================================ */
   --budget-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --budget-primary-dark: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --budget-primary-light: rgba(37, 99, 235, 0.08);
+  --budget-primary-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
   --budget-primary-bg: var(--ds-background-selected, #eff6ff);
 
   /* ============================================
@@ -25,37 +25,37 @@
      ============================================ */
   --budget-insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));      /* Blue */
   --budget-insourced-dark: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --budget-insourced-light: rgba(37, 99, 235, 0.08);
+  --budget-insourced-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
   
-  --budget-cosourced: #0d9488;      /* Teal */
-  --budget-cosourced-dark: #0f766e;
-  --budget-cosourced-light: rgba(13, 148, 136, 0.1);
+  --budget-cosourced: var(--ds-chart-teal-bold, #0d9488);      /* Teal */
+  --budget-cosourced-dark: var(--ds-chart-teal-bolder, #0f766e);
+  --budget-cosourced-light: var(--ds-background-success, rgba(13, 148, 136, 0.1));
   
   --budget-outsourced: var(--ds-text-warning, #d97706);     /* Amber */
-  --budget-outsourced-dark: #b45309;
-  --budget-outsourced-light: rgba(217, 119, 6, 0.1);
+  --budget-outsourced-dark: var(--ds-background-warning-bold, #b45309);
+  --budget-outsourced-light: var(--ds-background-warning, rgba(217, 119, 6, 0.1));
   
-  --budget-licenses: #7c3aed;       /* Violet */
-  --budget-licenses-dark: #6d28d9;
-  --budget-licenses-light: rgba(124, 58, 237, 0.1);
+  --budget-licenses: var(--ds-background-discovery-bold, #7C3AED);       /* Violet */
+  --budget-licenses-dark: var(--ds-background-discovery-bold, #6d28d9);
+  --budget-licenses-light: var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.1));
 
   /* ============================================
      V8 SEMANTIC COLORS
      ============================================ */
-  --budget-success: var(--quality-high, #059669);
+  --budget-success: var(--quality-high, var(--ds-background-success-bold, #059669));
   --budget-success-light: rgba(5, 150, 105, 0.1);
   --budget-warning: var(--ds-text-warning, #d97706);
-  --budget-warning-light: rgba(217, 119, 6, 0.1);
+  --budget-warning-light: var(--ds-background-warning, rgba(217, 119, 6, 0.1));
   --budget-danger: var(--ds-text-danger, #dc2626);
-  --budget-danger-light: rgba(220, 38, 38, 0.1);
+  --budget-danger-light: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.1));
   --budget-info: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 
   /* ============================================
      V8 NEUTRALS (WCAG AA COMPLIANT)
      ============================================ */
   --slate-900: var(--ds-text, #0f172a);
-  --slate-800: #1e293b;
-  --slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  --slate-800: var(--ds-text, #172B4D);
+  --slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
   --slate-600: var(--ds-text-subtle, #475569);
   --slate-500: var(--ds-text-subtlest, #64748b);
   --slate-400: var(--ds-text-subtlest, #94a3b8);
@@ -63,28 +63,28 @@
   --slate-200: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --slate-100: var(--ds-surface-sunken, #f1f5f9);
   --slate-50: var(--ds-surface-sunken, #f8fafc);
-  --white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 
   --budget-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --budget-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --budget-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --budget-text-primary: var(--ds-text, #0f172a);
-  --budget-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  --budget-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
   --budget-text-muted: var(--ds-text-subtlest, #64748b);
   --budget-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --budget-border-strong: var(--ds-text-disabled, #cbd5e1);
 
   /* Legacy aliases for compatibility */
   --budget-bg: var(--ds-surface-sunken, #f8fafc);
-  --budget-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --budget-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --budget-text: var(--ds-text, #0f172a);
   --budget-border-light: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 
   /* ============================================
      V8 SHADOWS
      ============================================ */
-  --budget-shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --budget-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-  --budget-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --budget-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.05));
+  --budget-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 2px 4px -1px var(--ds-shadow-raised, rgba(0,0,0,0.06));
+  --budget-shadow-lg: 0 10px 15px -3px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0,0,0,0.05));
 
   /* ============================================
      V8 TYPOGRAPHY
@@ -115,59 +115,59 @@
 .dark .budget-module,
 .dark .budget-module , [data-theme="dark"] .budget-module {
   /* Neutrals — hex only (no HSL) */
-  --slate-900: var(--fg-1, var(--cp-bg-neutral, #EDEDED));
+  --slate-900: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
   --slate-800: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --slate-700: var(--fg-2, #A1A1A1);
-  --slate-600: var(--fg-3, var(--cp-text-secondary, #878787));
-  --slate-500: #7D7D7D;
+  --slate-700: var(--fg-2, var(--ds-text-subtlest, #626F86));
+  --slate-600: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)));
+  --slate-500: var(--ds-text-subtlest, #626F86);
   --slate-400: var(--fg-4, rgba(237,237,237,0.30));
   --slate-300: var(--ds-border-bold, #454545);
   --slate-200: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --slate-100: var(--ds-border, var(--cp-ink-1, #292929));
   --slate-50: var(--ds-surface-overlay, #1F1F1F);
-  --white: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  --white: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
 
   /* Surfaces + text */
-  --budget-bg-page: var(--cp-bg-page, #1F1F21);
-  --budget-bg-surface: var(--cp-bg-surface, var(--cp-ink-1, #242528));
-  --budget-text-primary: var(--fg-1, var(--cp-bg-neutral, #EDEDED));
-  --budget-text-secondary: var(--fg-2, #A1A1A1);
-  --budget-text-muted: var(--fg-3, var(--cp-text-secondary, #878787));
+  --budget-bg-page: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
+  --budget-bg-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
+  --budget-text-primary: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
+  --budget-text-secondary: var(--fg-2, var(--ds-text-subtlest, #626F86));
+  --budget-text-muted: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)));
   --budget-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --budget-border-strong: var(--ds-border-bold, #454545);
 
   /* Legacy aliases */
-  --budget-bg: var(--cp-bg-page, #1F1F21);
-  --budget-surface: var(--cp-bg-surface, var(--cp-ink-1, #242528));
-  --budget-text: var(--fg-1, var(--cp-bg-neutral, #EDEDED));
+  --budget-bg: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
+  --budget-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
+  --budget-text: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
   --budget-border-light: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* Primary surfaces used in info/expanded rows */
-  --budget-primary-bg: rgba(59,130,246,0.10);
-  --budget-primary-light: rgba(59,130,246,0.12);
+  --budget-primary-bg: var(--ds-background-information-bold, rgba(59,130,246,0.10));
+  --budget-primary-light: var(--ds-background-information-bold, rgba(59,130,246,0.12));
 
   /* Semantic — darkened for dark bg */
-  --budget-success: #4ADE80;
-  --budget-success-light: rgba(74,222,128,0.12);
-  --budget-warning: #FDE68A;
-  --budget-warning-light: rgba(253,230,138,0.10);
+  --budget-success: var(--ds-background-success, #DFFCF0);
+  --budget-success-light: var(--ds-background-success-bold, rgba(74,222,128,0.12));
+  --budget-warning: var(--ds-background-warning, #FFF7D6);
+  --budget-warning-light: var(--ds-background-warning, rgba(253,230,138,0.10));
   --budget-danger: var(--ds-border-danger, #FCA5A5);
-  --budget-danger-light: rgba(239,68,68,0.10);
+  --budget-danger-light: var(--ds-background-danger, rgba(239,68,68,0.10));
   --budget-info: var(--ds-text-brand, #60A5FA);
 
   /* Budget type colors — lightened for dark bg */
   --budget-insourced: var(--ds-text-brand, #60A5FA);
   --budget-insourced-dark: var(--ds-text-brand, #3B82F6);
-  --budget-insourced-light: rgba(59,130,246,0.10);
-  --budget-cosourced: #5EEAD4;
-  --budget-cosourced-dark: #2DD4BF;
-  --budget-cosourced-light: rgba(13,148,136,0.10);
-  --budget-outsourced: #FDE68A;
-  --budget-outsourced-dark: #FBBF24;
-  --budget-outsourced-light: rgba(217,119,6,0.10);
-  --budget-licenses: #A78BFA;
-  --budget-licenses-dark: #8B5CF6;
-  --budget-licenses-light: rgba(124,58,237,0.10);
+  --budget-insourced-light: var(--ds-background-information-bold, rgba(59,130,246,0.10));
+  --budget-cosourced: var(--ds-background-success, #DCFFF1);
+  --budget-cosourced-dark: var(--ds-background-success, #DCFFF1);
+  --budget-cosourced-light: var(--ds-background-success, rgba(13,148,136,0.10));
+  --budget-outsourced: var(--ds-background-warning, #FFF7D6);
+  --budget-outsourced-dark: var(--ds-background-warning-bold, #E2B203);
+  --budget-outsourced-light: var(--ds-background-warning, rgba(217,119,6,0.10));
+  --budget-licenses: var(--ds-background-discovery, #F3F0FF);
+  --budget-licenses-dark: var(--ds-background-discovery-bold, #8b5cf6);
+  --budget-licenses-light: var(--ds-background-discovery-bold, rgba(124,58,237,0.10));
 
   /* Shadows — suppressed */
   --budget-shadow-sm: none;
@@ -207,7 +207,7 @@
 .budget-module .period-btn.active {
   color: var(--budget-primary);
   background: var(--white);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06));
 }
 
 /* ============================================
@@ -264,14 +264,14 @@
 }
 
 .budget-module .dept-tab:hover {
-  border-color: rgba(37, 99, 235, 0.5);
+  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.5));
   box-shadow: var(--budget-shadow-sm);
 }
 
 /* ACTIVE STATE with gradient + left accent bar */
 .budget-module .dept-tab.active {
   border-color: var(--budget-primary);
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(37, 99, 235, 0.08) 50%, rgba(37, 99, 235, 0.05) 100%);
+  background: linear-gradient(135deg, var(--ds-background-information, rgba(37, 99, 235, 0.05)) 0%, var(--ds-background-information, rgba(37, 99, 235, 0.08)) 50%, var(--ds-background-information, rgba(37, 99, 235, 0.05)) 100%);
   box-shadow: var(--budget-shadow-sm);
 }
 
@@ -289,7 +289,7 @@
 
 /* INACTIVE NO BUDGET (muted) */
 .budget-module .dept-tab.no-budget {
-  background: rgba(248, 250, 252, 0.5);
+  background: var(--ds-surface, rgba(248, 250, 252, 0.5));
   border-color: var(--slate-200);
 }
 
@@ -338,7 +338,7 @@
 }
 
 .budget-module .dept-tab.active .dept-tab-count {
-  color: rgba(37, 99, 235, 0.7);
+  color: var(--ds-background-information, rgba(37, 99, 235, 0.7));
 }
 
 .budget-module .dept-tab-count .warning {
@@ -413,13 +413,13 @@
   background: linear-gradient(90deg, var(--budget-insourced) 0%, var(--ds-text-brand, #3b82f6) 100%); 
 }
 .budget-module .summary-card.cosourced::before { 
-  background: linear-gradient(90deg, #0f766e 0%, var(--budget-cosourced) 100%); 
+  background: linear-gradient(90deg, var(--ds-chart-teal-bolder, #0f766e) 0%, var(--budget-cosourced) 100%); 
 }
 .budget-module .summary-card.outsourced::before { 
   background: linear-gradient(90deg, var(--budget-outsourced) 0%, var(--ds-text-warning, #f59e0b) 100%); 
 }
 .budget-module .summary-card.licenses::before { 
-  background: linear-gradient(90deg, var(--budget-licenses) 0%, #a78bfa 100%); 
+  background: linear-gradient(90deg, var(--budget-licenses) 0%, var(--ds-background-discovery, #F3F0FF) 100%); 
 }
 
 /* Ring effect when expanded */
@@ -429,16 +429,16 @@
 }
 
 .budget-module .summary-card.insourced.active { 
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3), var(--budget-shadow-lg);
+  box-shadow: 0 0 0 2px var(--ds-background-information, rgba(37, 99, 235, 0.3)), var(--budget-shadow-lg);
 }
 .budget-module .summary-card.cosourced.active { 
-  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.3), var(--budget-shadow-lg);
+  box-shadow: 0 0 0 2px var(--ds-background-success, rgba(13, 148, 136, 0.3)), var(--budget-shadow-lg);
 }
 .budget-module .summary-card.outsourced.active { 
-  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.3), var(--budget-shadow-lg);
+  box-shadow: 0 0 0 2px var(--ds-background-warning, rgba(217, 119, 6, 0.3)), var(--budget-shadow-lg);
 }
 .budget-module .summary-card.licenses.active { 
-  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3), var(--budget-shadow-lg);
+  box-shadow: 0 0 0 2px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.3)), var(--budget-shadow-lg);
 }
 
 .budget-module .summary-header {
@@ -779,19 +779,19 @@
 }
 
 .budget-module .type-badge.insourced { 
-  background: #dbeafe; /* blue-100 */
+  background: var(--ds-background-information, #E9F2FF); /* blue-100 */
   color: var(--ds-background-brand-bold-hovered, #1d4ed8); /* blue-700 */
-  border-color: #93c5fd; /* blue-300 */
+  border-color: var(--ds-background-information-bold, #0C66E4); /* blue-300 */
 }
 .budget-module .type-badge.cosourced { 
-  background: #ccfbf1; /* teal-100 */
-  color: #0f766e; /* teal-700 */
-  border-color: #5eead4; /* teal-300 */
+  background: var(--ds-background-success, #DCFFF1); /* teal-100 */
+  color: var(--ds-chart-teal-bolder, #0f766e); /* teal-700 */
+  border-color: var(--ds-background-success, #DCFFF1); /* teal-300 */
 }
 .budget-module .type-badge.outsourced { 
-  background: #fef3c7; /* amber-100 */
-  color: #b45309; /* amber-700 */
-  border-color: #fcd34d; /* amber-300 */
+  background: var(--ds-background-warning, #FFF7D6); /* amber-100 */
+  color: var(--ds-background-warning-bold, #b45309); /* amber-700 */
+  border-color: var(--ds-background-warning, #FFF7D6); /* amber-300 */
 }
 
 /* ============================================
@@ -812,7 +812,7 @@
 
 /* In Progress - Blue */
 .budget-module .status-badge.in-progress { 
-  background: #dbeafe; /* blue-100 */
+  background: var(--ds-background-information, #E9F2FF); /* blue-100 */
   color: var(--ds-background-brand-bold-hovered, #1d4ed8); /* blue-700 */
 }
 
@@ -824,8 +824,8 @@
 
 /* On Hold - Amber */
 .budget-module .status-badge.on-hold { 
-  background: #fef3c7; /* amber-100 */
-  color: #b45309; /* amber-700 */
+  background: var(--ds-background-warning, #FFF7D6); /* amber-100 */
+  color: var(--ds-background-warning-bold, #b45309); /* amber-700 */
 }
 
 /* Not Started / Yet to Start - Light slate */
@@ -851,11 +851,11 @@
 }
 .budget-module .payment-badge.on-track { 
   background: var(--ds-background-success, #dcfce7); /* green-100 */
-  color: #166534; /* green-800 */
+  color: var(--ds-text-success, #216E4E); /* green-800 */
 }
 .budget-module .payment-badge.unpaid { 
-  background: #fee2e2; /* red-100 */
-  color: #b91c1c; /* red-700 */
+  background: var(--ds-background-danger, #FFECEB); /* red-100 */
+  color: var(--ds-text-danger, #AE2A19); /* red-700 */
   font-weight: 700;
 }
 
@@ -867,7 +867,7 @@
 }
 
 .budget-module .cost-cell.insourced { color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); }
-.budget-module .cost-cell.cosourced { color: #0d9488; }
+.budget-module .cost-cell.cosourced { color: var(--ds-chart-teal-bold, #0d9488); }
 .budget-module .cost-cell.outsourced { color: var(--ds-text-warning, #d97706); }
 .budget-module .cost-cell.muted { color: var(--budget-text-muted); }
 
@@ -920,7 +920,7 @@
    ============================================ */
 .budget-module .quality-panel {
   background: var(--budget-warning-light);
-  border: 2px solid #fbbf24;
+  border: 2px solid var(--ds-background-warning-bold, #E2B203);
   border-radius: var(--budget-radius-md);
   padding: 14px 16px;
   margin-bottom: 16px;
@@ -939,13 +939,13 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 700;
-  color: #92400e;
+  color: var(--ds-text-warning, #974F0C);
 }
 
 .budget-module .quality-toggle {
   font-size: 11px;
   font-weight: 600;
-  color: #92400e;
+  color: var(--ds-text-warning, #974F0C);
   cursor: pointer;
   text-decoration: underline;
   background: none;
@@ -964,7 +964,7 @@
   gap: 8px;
   font-size: 12px;
   font-weight: 400;
-  color: #78350f;
+  color: var(--ds-text-warning, #974F0C);
 }
 
 /* ============================================
@@ -974,7 +974,7 @@
 .budget-module .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
   backdrop-filter: blur(4px); /* per spec I1.2 */
   display: flex;
   align-items: center;
@@ -1118,7 +1118,7 @@
 /* Alert Panel */
 .budget-module .exec-alert {
   background: var(--budget-danger-light);
-  border: 1px solid #fecaca;
+  border: 1px solid var(--ds-background-danger, #FFECEB);
   border-radius: var(--budget-radius-xl);
   padding: 16px 20px;
   margin-bottom: 24px;
@@ -1215,7 +1215,7 @@
 
 .budget-module .exec-summary-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.35);
+  box-shadow: 0 6px 16px var(--ds-shadow-overlay, rgba(15, 23, 42, 0.35));
 }
 
 .budget-module .exec-summary-btn:active {
@@ -1246,7 +1246,7 @@
 .budget-module button:focus-visible,
 .budget-module .dept-tab:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.3));
 }
 
 /* ============================================

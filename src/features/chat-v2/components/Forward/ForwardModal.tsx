@@ -230,7 +230,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
             style={{
               display: 'inline-flex', alignItems: 'stretch',
               background: canForward ? 'var(--cv2-success)' : 'transparent',
-              color: canForward ? '#FFFFFF' : 'var(--cv2-text-muted)',
+              color: canForward ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
               border: canForward
                 ? '1px solid var(--cv2-success)'
                 : '1px solid var(--cv2-border-strong)',
@@ -251,7 +251,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
             >
               Forward
             </button>
-            <span aria-hidden="true" style={{ width: 1, background: canForward ? 'rgba(255,255,255,0.25)' : 'var(--cv2-border-strong)' }} />
+            <span aria-hidden="true" style={{ width: 1, background: canForward ? 'var(--ds-surface, rgba(255,255,255,0.25))' : 'var(--cv2-border-strong)' }} />
             <button
               ref={scheduleAnchorRef}
               type="button"
@@ -313,7 +313,7 @@ function RecipientField({
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 22, height: 22, fontSize: 11, fontWeight: 700,
-            background: 'var(--cv2-accent)', color: '#FFFFFF',
+            background: 'var(--cv2-accent)', color: 'var(--ds-surface, #FFFFFF)',
             borderRadius: 11,
           }}
         >

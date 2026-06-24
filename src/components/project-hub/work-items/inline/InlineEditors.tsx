@@ -42,7 +42,7 @@ function FixedDropdown({ anchorRef, children, onClose, width = 180 }: {
       style={{
         position: 'fixed', top: pos.top, left: pos.left, width,
         border: '1px solid var(--divider)', borderRadius: 6,
-        boxShadow: '0 12px 32px rgba(0,0,0,0.18)', zIndex: 9999,
+        boxShadow: '0 12px 32px var(--ds-shadow-raised, rgba(0,0,0,0.18))', zIndex: 9999,
         maxHeight: 280, overflowY: 'auto',
       }}
     >

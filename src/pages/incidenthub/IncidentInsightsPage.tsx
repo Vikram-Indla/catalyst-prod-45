@@ -26,7 +26,7 @@ export default function IncidentInsightsPage() {
       <ProjectPageHeader projectKey="INCIDENTS" hubType="incident" />
       <div className="px-6 pt-2 pb-4">
         {/* Featured AI Card */}
-        <div className="p-4 mb-6" style={{ border: `1px solid ${isDark ? 'rgba(124,58,237,0.25)' : '#E9D5FF'}`, borderRadius: 6, backgroundColor: surfaceBg }}>
+        <div className="p-4 mb-6" style={{ border: `1px solid ${isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.25))' : 'var(--ds-background-discovery, #F3F0FF)'}`, borderRadius: 6, backgroundColor: surfaceBg }}>
           <div className="flex items-start gap-3">
             <div className="shrink-0 rounded-full flex items-center justify-center" style={{
               width: 36, height: 50,

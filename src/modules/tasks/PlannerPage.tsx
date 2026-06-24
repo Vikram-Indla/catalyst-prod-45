@@ -162,7 +162,7 @@ export function PlannerPage() {
   const { data: users = [] } = useTaskUsers();
   
   // Online users from real users data (add color for avatar)
-  const avatarColors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#10b981', '#8b5cf6', 'var(--ds-text-warning, #f59e0b)', 'var(--ds-text-danger, #ef4444)', '#0d9488'];
+  const avatarColors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-text-warning, #f59e0b)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-icon-information, #1D7AFC)'];
   const onlineUsers = useMemo(() => 
     users.filter(u => u.online).map((u, i) => ({
       id: u.id,

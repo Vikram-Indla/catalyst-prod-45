@@ -58,7 +58,7 @@ export function TaskPillV2({ task, onClick, onContextMenu, compact = false }: Ta
   }, [task.dueDate, task.status]);
 
   // Assignee color based on workstream or fallback
-  const assigneeColor = task.teamColor || '#6366f1';
+  const assigneeColor = task.teamColor || 'var(--ds-background-discovery-bold, #6E5DC6)';
   const assigneeInitials = task.assigneeInitials || task.assigneeName?.slice(0, 2).toUpperCase();
 
   // Handle hover with delay for hover card
@@ -112,7 +112,7 @@ export function TaskPillV2({ task, onClick, onContextMenu, compact = false }: Ta
         data-priority={task.priority}
         style={{
           '--task-progress': `${task.progress || 0}%`,
-          borderLeftColor: task.teamColor || '#6366f1',
+          borderLeftColor: task.teamColor || 'var(--ds-background-discovery-bold, #6E5DC6)',
           borderLeftWidth: '4px',
         } as React.CSSProperties}
         title={`${task.title}${task.assigneeName ? ` - ${task.assigneeName}` : ''}`}

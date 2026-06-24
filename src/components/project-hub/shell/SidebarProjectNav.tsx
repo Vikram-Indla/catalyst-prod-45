@@ -61,8 +61,8 @@ const TRACKING_NAV = [
 ];
 
 const ITEM_TYPE_COLORS: Record<string, string> = {
-  bug: '#FF5630', task: '#4BADE8', story: '#36B37E', epic: '#6554C0',
-  subtask: '#2684FF', incident: '#FF5630', new_feature: '#36B37E', improvement: '#4BADE8',
+  bug: 'var(--ds-background-danger-bold, #C9372C)', task: 'var(--ds-background-information-bold, #1D7AFC)', story: 'var(--ds-background-success-bold, #1F845A)', epic: 'var(--ds-background-discovery-bold, #6554C0)',
+  subtask: 'var(--ds-link, #0C66E4)', incident: 'var(--ds-background-danger-bold, #C9372C)', new_feature: 'var(--ds-background-success-bold, #1F845A)', improvement: 'var(--ds-background-information-bold, #1D7AFC)',
 };
 
 function getTypeColor(type: string): string {
@@ -143,14 +143,14 @@ export function SidebarProjectNav({
       }}
     >
       {/* Header */}
-      <div className="relative flex-shrink-0 border-b border-[#EBECF0] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] flex flex-col justify-center" style={{ minHeight: 77 }}>
+      <div className="relative flex-shrink-0 border-b border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] flex flex-col justify-center" style={{ minHeight: 77 }}>
         <div className="flex items-center gap-2.5" style={{ padding: collapsed ? '12px 10px' : '12px 12px' }}>
           <div
             className="flex items-center justify-center flex-shrink-0"
             style={{
               width: 30, height: 30, backgroundColor: projectColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: 11, fontWeight: 700, borderRadius: 6,
-              fontFamily: 'var(--cp-font-heading)', boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+              fontFamily: 'var(--cp-font-heading)', boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
             }}
           >
             {projectKey.slice(0, 2)}
@@ -169,7 +169,7 @@ export function SidebarProjectNav({
                     {projectName}
                   </div>
                 </div>
-                <ChevronDown size={14} className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[#7D7D7D]" />
+                <ChevronDown size={14} className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest, #626F86)]" />
               </button>
               <button
                 onClick={onToggle}
@@ -177,7 +177,7 @@ export function SidebarProjectNav({
                 style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: 'pointer' }}
                 title="Collapse sidebar"
               >
-                <ChevronsLeft size={16} className="text-[var(--cp-primary-60, #0052CC)] dark:text-[#4C9AFF]" />
+                <ChevronsLeft size={16} className="text-[var(--cp-primary-60, #0052CC)] dark:text-[var(--ds-background-information-bold, #0C66E4)]" />
               </button>
             </>
           )}
@@ -188,7 +188,7 @@ export function SidebarProjectNav({
               className="absolute top-2 right-1 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
               style={{ width: 20, height: 20, border: 'none', background: 'transparent', cursor: 'pointer' }}
             >
-              <ChevronsRight size={14} className="text-[var(--cp-primary-60, #0052CC)] dark:text-[#4C9AFF]" />
+              <ChevronsRight size={14} className="text-[var(--cp-primary-60, #0052CC)] dark:text-[var(--ds-background-information-bold, #0C66E4)]" />
             </button>
           )}
         </div>
@@ -229,7 +229,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: 'var(--ds-border, #EBECF0)', margin: '8px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
-          <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+          <div className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             Planning
           </div>
         )}
@@ -240,7 +240,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: 'var(--ds-border, #EBECF0)', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
-          <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+          <div className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             Tracking
           </div>
         )}
@@ -251,7 +251,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: 'var(--ds-border, #EBECF0)', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
-          <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+          <div className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             AI Intelligence
           </div>
         )}
@@ -270,11 +270,11 @@ export function SidebarProjectNav({
             >
               <ChevronRight
                 size={12}
-                className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[#7D7D7D]"
+                className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest, #626F86)]"
                 style={{ transform: recentsExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 150ms ease' }}
               />
-              <Clock size={12} className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[#7D7D7D]" />
-              <span className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+              <Clock size={12} className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest, #626F86)]" />
+              <span className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
                 Recents
               </span>
               <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-mono)' }}>
@@ -329,7 +329,7 @@ export function SidebarProjectNav({
       </div>
 
       {/* Settings pinned to bottom */}
-      <div className="border-t border-[#EBECF0] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ padding: '8px 6px' }}>
+      <div className="border-t border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ padding: '8px 6px' }}>
         <NavItem icon={Settings} label="Settings" isActive={isPathActive('settings')} onClick={() => navigate(`${basePath}/settings`)} collapsed={collapsed} />
       </div>
     </div>

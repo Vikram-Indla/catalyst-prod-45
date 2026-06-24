@@ -12,18 +12,18 @@ const MONO = "'JetBrains Mono', monospace";
 const LIFECYCLE_ORDER = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Converted to Request'];
 
 const STATUS_BAR_COLORS: Record<string, string> = {
-  'Draft': 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', 'Submitted': 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': 'var(--cp-lozenge-green-bg, #1B7F37)',
+  'Draft': 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', 'Submitted': 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', 'Under Review': 'var(--ds-link, #0C66E4)', 'Approved': 'var(--ds-link, #0C66E4)', 'Converted to Request': 'var(--cp-lozenge-green-bg, #1B7F37)',
 };
 const STATUS_TEXT_COLORS: Record<string, string> = {
-  'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 'Approved': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 'Converted to Request': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  'Draft': 'var(--ds-text-subtle, #42526E)', 'Submitted': 'var(--ds-text-subtle, #42526E)', 'Under Review': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 'Approved': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 'Converted to Request': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
 };
 const STATUS_BAR_COLORS_DARK: Record<string, string> = {
-  'Draft': 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', 'Submitted': 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', 'Under Review': 'rgba(59,130,246,0.15)',
-  'Approved': 'rgba(59,130,246,0.15)', 'Converted to Request': 'rgba(22,163,74,0.15)',
+  'Draft': 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', 'Submitted': 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', 'Under Review': 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',
+  'Approved': 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', 'Converted to Request': 'var(--ds-background-success-bold, rgba(22,163,74,0.15))',
 };
 const STATUS_TEXT_COLORS_DARK: Record<string, string> = {
-  'Draft': 'rgba(255,255,255,0.72)', 'Submitted': 'rgba(255,255,255,0.72)', 'Under Review': '#93C5FD',
-  'Approved': '#93C5FD', 'Converted to Request': '#86EFAC',
+  'Draft': 'var(--ds-surface, rgba(255,255,255,0.72))', 'Submitted': 'var(--ds-surface, rgba(255,255,255,0.72))', 'Under Review': 'var(--ds-background-information-bold, #0C66E4)',
+  'Approved': 'var(--ds-background-information-bold, #0C66E4)', 'Converted to Request': 'var(--ds-background-success, #DFFCF0)',
 };
 
 export default function IdeasAnalyticsPage() {
@@ -125,7 +125,7 @@ export default function IdeasAnalyticsPage() {
                       width: `${Math.max((s.count / maxFunnel) * 100, s.count > 0 ? 8 : 0)}%`, height: '100%',
                       background: isDark ? (STATUS_BAR_COLORS_DARK[s.status] || 'var(--ds-border, var(--cp-ink-1, #2E2E2E))') : (STATUS_BAR_COLORS[s.status] || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'),
                       borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px',
-                      color: isDark ? (STATUS_TEXT_COLORS_DARK[s.status] || dk.t2) : (STATUS_TEXT_COLORS[s.status] || '#42526E'),
+                      color: isDark ? (STATUS_TEXT_COLORS_DARK[s.status] || dk.t2) : (STATUS_TEXT_COLORS[s.status] || 'var(--ds-text-subtle, #42526E)'),
                       fontSize: '12px', fontWeight: 700, minWidth: s.count > 0 ? '32px' : undefined,
                     }}>{s.count}</div>
                   </div>
@@ -159,7 +159,7 @@ export default function IdeasAnalyticsPage() {
               <div key={t.theme} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                 <span style={{ width: '140px', fontSize: '12px', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.theme}</span>
                 <div style={{ flex: 1, height: '20px', background: barTrack, borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
-                  <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'rgba(59,130,246,0.15)' : '#0C66E4', borderRadius: '4px' }} />
+                  <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.15))' : 'var(--ds-link, #0C66E4)', borderRadius: '4px' }} />
                   <div style={{ position: 'absolute', top: 0, left: 0, width: `${(t.converted / maxConvTheme) * 100}%`, height: '100%', background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))', borderRadius: '4px' }} />
                 </div>
                 <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: dk.greenText, minWidth: '40px', textAlign: 'right' }}>{t.converted}/{t.total}</span>

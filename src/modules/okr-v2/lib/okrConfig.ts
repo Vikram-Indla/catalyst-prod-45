@@ -53,10 +53,10 @@ export const HEALTH_FROM_PROGRESS = {
 
 // Status colors for UI (aligned with Catalyst brand)
 export const STATUS_COLORS: Record<string, string> = {
-  'on-track': '#0d9488', // teal
-  'completed': '#0d9488', // teal
+  'on-track': 'var(--ds-icon-information, #1D7AFC)', // teal
+  'completed': 'var(--ds-icon-information, #1D7AFC)', // teal
   'in-progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // brand-primary blue
-  'pending': '#c8ccd0', // secondary-grey
+  'pending': 'var(--ds-border, #DFE1E6)', // secondary-grey
   'at-risk': 'var(--ds-text-warning, #f59e0b)', // amber warning
   'off-track': 'var(--ds-text-danger, #ef4444)', // red danger
   'blocked': 'var(--ds-text-danger, #dc2626)', // dark danger
@@ -76,9 +76,9 @@ export const STATUS_LABELS: Record<string, string> = {
 // Theme default colors (used when no color specified)
 export const DEFAULT_THEME_COLORS = [
   'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // brand-primary blue
-  '#0d9488', // teal
+  'var(--ds-icon-information, #1D7AFC)', // teal
   'var(--ds-text-brand, #60a5fa)', // blue light
-  '#6b7280', // gray
+  'var(--ds-text-subtlest, #626F86)', // gray
   'var(--ds-background-brand-bold-hovered, #1d4ed8)', // dark blue
 ] as const;
 

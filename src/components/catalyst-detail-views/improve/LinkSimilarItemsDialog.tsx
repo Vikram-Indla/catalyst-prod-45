@@ -149,13 +149,13 @@ export function LinkSimilarItemsDialog({
         <ModalTitle>{triggerLabel} — Link similar work items</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', '#6B6E76') }}>
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)') }}>
           {loading ? 'Finding related items…' : suggestions.length > 0 ? 'AI-ranked candidates from this project. Each link uses the "relates to" type.' : ''}
         </p>
 
         <div>
           {loading && (
-            <div style={{ padding: '32px 0', textAlign: 'center', color: token('color.text.subtle', '#6B6E76'), fontSize: 14 }}>
+            <div style={{ padding: '32px 0', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 14 }}>
               Searching…
             </div>
           )}
@@ -165,8 +165,8 @@ export function LinkSimilarItemsDialog({
               style={{
                 padding: 12,
                 borderRadius: 4,
-                background: token('color.background.danger', '#FFEBE6'),
-                color: token('color.text.danger', '#AE2A19'),
+                background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
+                color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
                 fontSize: 13,
               }}
             >
@@ -175,7 +175,7 @@ export function LinkSimilarItemsDialog({
           )}
 
           {!loading && !error && suggestions.length === 0 && (
-            <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtle', '#6B6E76'), fontSize: 14 }}>
+            <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 14 }}>
               No similar items found in this project.
             </div>
           )}
@@ -193,7 +193,7 @@ export function LinkSimilarItemsDialog({
                       padding: 12,
                       borderRadius: 6,
                       border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-                      background: linked ? token('color.background.success', '#E3FCEF') : token('elevation.surface', '#FFFFFF'),
+                      background: linked ? token('color.background.success', 'var(--ds-background-success, #DFFCF0)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                       alignItems: 'center',
                     }}
                   >
@@ -203,7 +203,7 @@ export function LinkSimilarItemsDialog({
                           style={{
                             fontSize: 13,
                             fontWeight: 600,
-                            color: token('color.text.brand', '#0C66E4'),
+                            color: token('color.text.brand', 'var(--ds-link, #0C66E4)'),
                           }}
                         >
                           {s.issue_key}
@@ -220,7 +220,7 @@ export function LinkSimilarItemsDialog({
                           margin: '4px 0 0',
                           fontSize: 14,
                           lineHeight: '20px',
-                          color: token('color.text', '#292A2E'),
+                          color: token('color.text', 'var(--ds-text, #172B4D)'),
                         }}
                       >
                         {s.summary}
@@ -228,7 +228,7 @@ export function LinkSimilarItemsDialog({
                     </div>
                     <div style={{ flexShrink: 0 }}>
                       {linked ? (
-                        <span style={{ fontSize: 12, color: token('color.text.success', '#216E4E'), fontWeight: 600 }}>
+                        <span style={{ fontSize: 12, color: token('color.text.success', 'var(--ds-text-success, #216E4E)'), fontWeight: 600 }}>
                           ✓ Linked
                         </span>
                       ) : (

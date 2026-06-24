@@ -13,7 +13,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,6 +72,8 @@ function locateSiblings(
 
 export default function ProjectHubTimelinePage() {
   const { key: projectKey } = useParams<{ key: string }>();
+  const [searchParams] = useSearchParams();
+  const locateKey = searchParams.get('locate');
   const queryClient = useQueryClient();
   const { data: tree = [], isLoading, error } = useProjectHubTimeline(projectKey);
   const { data: savedFilters = [] } = useFiltersForProject(projectKey, 'project');
@@ -218,14 +220,14 @@ export default function ProjectHubTimelinePage() {
       );
       invalidate();
     },
-    onCreateEpic: async (summary) => {
+    onCreateEpic: async (summary, issueType = 'Epic') => {
       if (!projectKey) return null;
     const localKey = await generateIssueKey(projectKey.toUpperCase());
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,
         projectKey: projectKey.toUpperCase(),
-        issueType: 'Epic',
+        issueType,
         summary,
         status: 'To Do',
         statusCategory: 'default',
@@ -247,7 +249,7 @@ export default function ProjectHubTimelinePage() {
         await (supabase as any).from('ph_issues').insert({
           issue_key: localKey,
           project_key: projectKey.toUpperCase(),
-          issue_type: 'Epic',
+          issue_type: issueType,
           summary,
           status: 'To Do',
           source: 'catalyst',
@@ -389,10 +391,13 @@ export default function ProjectHubTimelinePage() {
         savedFilters,
       }}
       buildIssueDetailRoute={(issueKey) => `/project-hub/${projectKey}/timeline/${issueKey}`}
+      buildDependenciesRoute={(issueKey) => `/project-hub/${projectKey}/dependencies?focus=${encodeURIComponent(issueKey)}`}
       resolveItemType={resolveItemType}
       detailRouteOwnerKey={projectKey ?? ''}
       mutations={mutations}
+      enableCreateEpicRow
       menuVariant="jira"
+      locatedKey={locateKey ?? undefined}
     />
   );
 }

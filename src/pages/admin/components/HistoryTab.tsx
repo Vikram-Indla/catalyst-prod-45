@@ -215,9 +215,9 @@ export default function HistoryTab() {
         <div
           style={{
             padding: token('space.300', '24px'),
-            border: `1px solid ${token('color.border', '#DCDFE4')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
             borderRadius: 6,
-            background: token('color.background.neutral.subtle', '#F7F8F9'),
+            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
             color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontSize: 13,
           }}
@@ -227,14 +227,14 @@ export default function HistoryTab() {
       ) : (
         <div
           style={{
-            border: `1px solid ${token('color.border', '#DCDFE4')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
             borderRadius: 6,
             overflow: 'hidden',
           }}
         >
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ background: token('color.background.neutral.subtle', '#F7F8F9') }}>
+              <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>When</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Component</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Route</th>
@@ -246,7 +246,7 @@ export default function HistoryTab() {
             </thead>
             <tbody>
               {history.map(row => (
-                <tr key={row.id} style={{ borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }}>
+                <tr key={row.id} style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }}>
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', whiteSpace: 'nowrap', fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                     {new Date(row.applied_at).toLocaleString()}
                   </td>
@@ -310,7 +310,7 @@ export default function HistoryTab() {
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                 <thead>
-                  <tr style={{ background: token('color.background.neutral.subtle', '#F7F8F9') }}>
+                  <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
                     <th style={{ padding: 8, textAlign: 'left' }}>Flag</th>
                     <th style={{ padding: 8, textAlign: 'left' }}>Current</th>
                     <th style={{ padding: 8, textAlign: 'left' }}>After rollback</th>
@@ -319,7 +319,7 @@ export default function HistoryTab() {
                 </thead>
                 <tbody>
                   {rollbackDiff.map(d => (
-                    <tr key={d.key} style={{ borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }}>
+                    <tr key={d.key} style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }}>
                       <td style={{ padding: 8, fontFamily: 'var(--ds-font-family-code)' }}>{d.key}</td>
                       <td style={{ padding: 8 }}>{String(d.from ?? '—')}</td>
                       <td style={{ padding: 8 }}>{String(d.to ?? '—')}</td>

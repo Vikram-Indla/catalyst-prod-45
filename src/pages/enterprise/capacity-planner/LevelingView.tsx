@@ -139,7 +139,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                   className={cn(
                     'w-full flex items-center gap-3 px-5 py-4 text-left transition-colors relative',
                     isCurrentSelected
-                      ? 'bg-[#f5f5f4]'
+                      ? 'bg-[var(--ds-background-neutral-subtle, #F7F8F9)]'
                       : 'hover:bg-muted/30'
                   )}
                 >
@@ -156,7 +156,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                   </div>
                   <span className={cn(
                     'text-xs font-semibold',
-                    freeCapacity >= 40 ? 'text-[#0d9488]' :
+                    freeCapacity >= 40 ? 'text-[var(--ds-chart-teal-bold, #0d9488)]' :
                     freeCapacity >= 20 ? 'text-[var(--ds-text-warning,#d97706)]' : 'text-[var(--ds-text-danger,#dc2626)]'
                   )}>
                     {freeCapacity}% free
@@ -195,7 +195,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                     <p className="text-xs text-muted-foreground">Current</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-[#0d9488]">{availableCapacity}%</p>
+                    <p className="text-2xl font-bold text-[var(--ds-chart-teal-bold, #0d9488)]">{availableCapacity}%</p>
                     <p className="text-xs text-muted-foreground">Available</p>
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
 
                         {/* Icon */}
                         <div className="w-10 h-10 rounded-lg bg-[#d4b896]/20 flex items-center justify-center shrink-0">
-                          <FileStack className="h-5 w-5 text-[#8b7355]" />
+                          <FileStack className="h-5 w-5 text-[var(--ds-text-subtle, #8B7355)]" />
                         </div>
 
                         {/* Content */}

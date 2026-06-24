@@ -28,21 +28,21 @@ export function TestBreakdownGrid({ passed, failed, blocked, notRun, isWinner }:
       icon: (color: string) => <CheckMarkIcon label="" size="small" primaryColor={color} />,
       count: passed,
       label: 'Passed',
-      bgColor: '#ccfbf1',
-      iconColor: '#0d9488'
+      bgColor: 'var(--ds-background-success, #DCFFF1)',
+      iconColor: 'var(--ds-chart-teal-bold, #0d9488)'
     },
     {
       icon: (color: string) => <CloseIcon label="" size="small" primaryColor={color} />,
       count: failed,
       label: 'Failed',
-      bgColor: '#fee2e2',
+      bgColor: 'var(--ds-background-danger, #FFECEB)',
       iconColor: 'var(--ds-text-danger, #ef4444)'
     },
     {
       icon: (color: string) => <WarningIcon label="" size="small" primaryColor={color} />,
       count: blocked,
       label: 'Blocked',
-      bgColor: '#fef3c7',
+      bgColor: 'var(--ds-background-warning, #FFF7D6)',
       iconColor: 'var(--ds-text-warning, #d97706)'
     },
     {
@@ -59,7 +59,7 @@ export function TestBreakdownGrid({ passed, failed, blocked, notRun, isWinner }:
       {isWinner && (
         <div 
           className="absolute -top-1 -right-1 text-lg z-10"
-          style={{ color: '#0d9488' }}
+          style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}
         >
           ★
         </div>

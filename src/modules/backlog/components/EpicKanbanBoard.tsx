@@ -27,9 +27,9 @@ interface EpicKanbanBoardProps {
 const COLOR_MAP: Record<string, string> = {
   info: 'var(--ds-text-brand, #3b82f6)',      // Blue
   warning: 'var(--ds-text-warning, #f59e0b)',   // Amber
-  forest: '#0d9488',    // Teal (was Green)
-  stone: '#6b7280',     // Gray
-  success: '#0d9488',   // Teal (was Green)
+  forest: 'var(--ds-chart-teal-bold, #0d9488)',    // Teal (was Green)
+  stone: 'var(--ds-text-subtlest, #626F86)',     // Gray
+  success: 'var(--ds-chart-teal-bold, #0d9488)',   // Teal (was Green)
   danger: 'var(--ds-text-danger, #ef4444)',    // Red
   primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',   // Blue (was Olive)
 };
@@ -38,10 +38,10 @@ const COLOR_MAP: Record<string, string> = {
 const FALLBACK_STATES = [
   { id: 'proposed', label: 'New Epic', color: 'var(--ds-text-brand, #3b82f6)' },
   { id: 'analyzing', label: 'Analysis', color: 'var(--ds-text-brand, #3b82f6)' },
-  { id: 'approved', label: 'Ready for Implementation', color: '#0d9488' },
+  { id: 'approved', label: 'Ready for Implementation', color: 'var(--ds-chart-teal-bold, #0d9488)' },
   { id: 'in_progress', label: 'In Implementation', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  { id: 'done', label: 'Done', color: '#0d9488' },
-  { id: 'cancelled', label: 'Cancelled', color: '#6b7280' },
+  { id: 'done', label: 'Done', color: 'var(--ds-chart-teal-bold, #0d9488)' },
+  { id: 'cancelled', label: 'Cancelled', color: 'var(--ds-text-subtlest, #626F86)' },
 ];
 
 export function EpicKanbanBoard({
@@ -102,7 +102,7 @@ export function EpicKanbanBoard({
       return epicStatuses.map((status: any) => ({
         id: status.value,
         label: status.label,
-        color: COLOR_MAP[status.color] || status.color || '#6b7280',
+        color: COLOR_MAP[status.color] || status.color || 'var(--ds-text-subtlest, #626F86)',
       }));
     }
     return FALLBACK_STATES;

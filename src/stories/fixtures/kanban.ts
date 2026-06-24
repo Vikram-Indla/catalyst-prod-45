@@ -9,11 +9,11 @@ import type {
 const NOW = '2026-06-14T10:00:00.000Z';
 
 export const MOCK_STATUSES: PlannerStatus[] = [
-  { id: 'st-backlog', name: 'Backlog', slug: 'backlog', color: '#9ca3af', position: 1, is_default: true, is_completed_status: false, created_at: NOW, updated_at: NOW },
-  { id: 'st-planned', name: 'Planned', slug: 'planned', color: '#2563eb', position: 2, is_default: false, is_completed_status: false, created_at: NOW, updated_at: NOW },
-  { id: 'st-in-progress', name: 'In progress', slug: 'in-progress', color: '#d97706', position: 3, is_default: false, is_completed_status: false, created_at: NOW, updated_at: NOW },
-  { id: 'st-review', name: 'In review', slug: 'review', color: '#0d9488', position: 4, is_default: false, is_completed_status: false, created_at: NOW, updated_at: NOW },
-  { id: 'st-done', name: 'Done', slug: 'done', color: '#10b981', position: 5, is_default: false, is_completed_status: true, created_at: NOW, updated_at: NOW },
+  { id: 'st-backlog', name: 'Backlog', slug: 'backlog', color: 'var(--ds-text-subtlest, #626F86)', position: 1, is_default: true, is_completed_status: false, created_at: NOW, updated_at: NOW },
+  { id: 'st-planned', name: 'Planned', slug: 'planned', color: 'var(--ds-link, #2563eb)', position: 2, is_default: false, is_completed_status: false, created_at: NOW, updated_at: NOW },
+  { id: 'st-in-progress', name: 'In progress', slug: 'in-progress', color: 'var(--ds-background-warning-bold, #d97706)', position: 3, is_default: false, is_completed_status: false, created_at: NOW, updated_at: NOW },
+  { id: 'st-review', name: 'In review', slug: 'review', color: 'var(--ds-icon-information, #1D7AFC)', position: 4, is_default: false, is_completed_status: false, created_at: NOW, updated_at: NOW },
+  { id: 'st-done', name: 'Done', slug: 'done', color: 'var(--ds-background-success-bold, #1F845A)', position: 5, is_default: false, is_completed_status: true, created_at: NOW, updated_at: NOW },
 ];
 
 export const MOCK_WORKSTREAMS: KanbanWorkstream[] = [

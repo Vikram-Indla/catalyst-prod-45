@@ -312,7 +312,7 @@ export function ManagerFollowUpNotes({
               )}
               {completedCount > 0 && (
                 // TEAL for success per design spec v2
-                <span className="text-[#0d9488] dark:text-[#14b8a6] flex items-center gap-1 font-medium">
+                <span className="text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-[var(--ds-background-accent-teal-bolder, #14b8a6)] flex items-center gap-1 font-medium">
                   <Check className="w-3 h-3" />
                   {completedCount} done
                 </span>
@@ -349,7 +349,7 @@ export function ManagerFollowUpNotes({
                 'flex items-start gap-3 p-3 rounded-md border transition-colors',
                 // TEAL for completed per design spec v2
                 followUp.is_completed
-                  ? 'bg-[rgba(13,148,136,0.05)] border-[#0d9488]/20 dark:bg-[rgba(20,184,166,0.05)] dark:border-[#14b8a6]/20'
+                  ? 'bg-[var(--ds-background-success, rgba(13,148,136,0.05))] border-[var(--ds-icon-information, #1D7AFC)]/20 dark:bg-[rgba(20,184,166,0.05)] dark:border-[var(--ds-background-accent-teal-bolder, #14b8a6)]/20'
                   : 'bg-surface-muted border-border-subtle'
               )}
             >
@@ -358,7 +358,7 @@ export function ManagerFollowUpNotes({
                 onCheckedChange={() => toggleComplete(followUp.id)}
                 disabled={isSaving}
                 // TEAL for checked per design spec v2
-                className="mt-0.5 border-muted-foreground data-[state=checked]:bg-[#0d9488] data-[state=checked]:border-[#0d9488] dark:data-[state=checked]:bg-[#14b8a6] dark:data-[state=checked]:border-[#14b8a6]"
+                className="mt-0.5 border-muted-foreground data-[state=checked]:bg-[var(--ds-chart-teal-bold, #0d9488)] data-[state=checked]:border-[var(--ds-chart-teal-bold, #0d9488)] dark:data-[state=checked]:bg-[var(--ds-background-accent-teal-bolder, #14b8a6)] dark:data-[state=checked]:border-[var(--ds-background-accent-teal-bolder, #14b8a6)]"
               />
               
               <div className="flex-1 min-w-0">
@@ -475,7 +475,7 @@ export function ManagerFollowUpNotes({
                   <span className={cn(
                     'font-medium',
                     // TEAL for completed per design spec v2
-                    entry.action === 'completed' && 'text-[#0d9488] dark:text-[#14b8a6]',
+                    entry.action === 'completed' && 'text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-[var(--ds-background-accent-teal-bolder, #14b8a6)]',
                     entry.action === 'deleted' && 'text-red-400',
                     entry.action === 'created' && 'text-blue-400'
                   )}>

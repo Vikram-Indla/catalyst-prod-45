@@ -106,7 +106,7 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
           onClick={onToday}
           className="inline-flex items-center gap-1.5 h-[30px] px-3 text-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
           style={{
-            border: '1.5px solid #EF4444',
+            border: '1.5px solid var(--ds-background-danger-bold, #ef4444)',
             borderRadius: 6,
             color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
             fontWeight: 600,

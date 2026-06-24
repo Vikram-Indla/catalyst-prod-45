@@ -27,17 +27,17 @@ interface LayerDisplay {
 
 /* Monochromatic blue gradient — darkest at top */
 const LAYER_COLORS: Record<string, string> = {
-  mission: '#1E3A5F',
-  vision: '#1E40AF',
+  mission: 'var(--ds-text, #172B4D)',
+  vision: 'var(--ds-link-pressed, #1e40af)',
   themes: 'var(--ds-text-brand, #3B82F6)',
-  goals: '#93C5FD',
-  krs: '#DBEAFE',
+  goals: 'var(--ds-background-information-bold, #0C66E4)',
+  krs: 'var(--ds-background-information, #E9F2FF)',
 };
 
 const LETTER_COLORS: Record<string, string> = {
-  mission: 'rgba(255,255,255,0.30)',
-  vision: 'rgba(255,255,255,0.30)',
-  themes: 'rgba(255,255,255,0.25)',
+  mission: 'var(--ds-surface, rgba(255,255,255,0.30))',
+  vision: 'var(--ds-surface, rgba(255,255,255,0.30))',
+  themes: 'var(--ds-surface, rgba(255,255,255,0.25))',
   goals: 'rgba(30,58,95,0.20)',
   krs: 'rgba(30,58,95,0.20)',
 };
@@ -170,9 +170,9 @@ export function StrategyPyramid() {
               return (
                 <div key={t.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))' }}>
                   <div className="flex items-center gap-2 mb-1">
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1E40AF', flexShrink: 0 }} />
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-link-pressed, #1e40af)', flexShrink: 0 }} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--exec-text-primary)' }}>{t.title}</span>
-                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: avgProgress >= 70 ? '#1E40AF' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{avgProgress}%</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: avgProgress >= 70 ? 'var(--ds-link-pressed, #1e40af)' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{avgProgress}%</span>
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--exec-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
                     {themeGoals.length} Goals · {themeKrs.length} KRs

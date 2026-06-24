@@ -16,11 +16,11 @@
 
 /* Card enterprise styling override */
 .ph-card {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px 0 var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 1px 2px -1px var(--ds-shadow-raised, rgba(0,0,0,0.1));
 }
 
 .dark .ph-card {
@@ -62,7 +62,7 @@
 /* Focus ring for form inputs */
 .ph-input:focus {
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1)) !important;
 }
 
 /* Content area responsive */

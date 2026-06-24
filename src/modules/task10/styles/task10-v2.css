@@ -12,7 +12,7 @@
 .t10-module-v2 {
   /* Backgrounds */
   --t10-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --t10-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --t10-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --t10-bg-subtle: var(--ds-surface-sunken, #f1f5f9);
   --t10-bg-hover: var(--ds-surface-sunken, #f8fafc);
   
@@ -30,25 +30,25 @@
   /* Accent (Catalyst V5 Blue) */
   --t10-accent: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --t10-accent-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --t10-accent-subtle: rgba(37, 99, 235, 0.08);
-  --t10-accent-light: rgba(37, 99, 235, 0.12);
+  --t10-accent-subtle: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  --t10-accent-light: var(--ds-background-information, rgba(37, 99, 235, 0.12));
   
   /* Status */
   --t10-success: var(--ds-text-success, #22c55e);
-  --t10-success-subtle: rgba(34, 197, 94, 0.1);
+  --t10-success-subtle: var(--ds-background-success-bold, rgba(34, 197, 94, 0.1));
   --t10-warning: var(--ds-text-warning, #f59e0b);
-  --t10-warning-subtle: rgba(245, 158, 11, 0.1);
+  --t10-warning-subtle: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1));
   --t10-danger: var(--ds-text-danger, #ef4444);
-  --t10-danger-subtle: rgba(239, 68, 68, 0.1);
-  --t10-teal: #0d9488;
-  --t10-teal-subtle: rgba(13, 148, 136, 0.1);
+  --t10-danger-subtle: var(--ds-background-danger, rgba(239, 68, 68, 0.1));
+  --t10-teal: var(--ds-chart-teal-bold, #0d9488);
+  --t10-teal-subtle: var(--ds-background-success, rgba(13, 148, 136, 0.1));
   
   /* Shadows */
-  --t10-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --t10-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --t10-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --t10-shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --t10-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --t10-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  --t10-shadow-md: 0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
+  --t10-shadow-lg: 0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  --t10-shadow-xl: 0 8px 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  --t10-shadow-card-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
   --t10-shadow-focus: 0 0 0 3px var(--t10-accent-subtle);
   
   /* Typography */
@@ -104,7 +104,7 @@
 .t10-portal-wrapper {
   /* Backgrounds */
   --t10-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --t10-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --t10-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --t10-bg-subtle: var(--ds-surface-sunken, #f1f5f9);
   --t10-bg-hover: var(--ds-surface-sunken, #f8fafc);
   
@@ -122,25 +122,25 @@
   /* Accent (Catalyst V5 Blue) */
   --t10-accent: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --t10-accent-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --t10-accent-subtle: rgba(37, 99, 235, 0.08);
-  --t10-accent-light: rgba(37, 99, 235, 0.12);
+  --t10-accent-subtle: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  --t10-accent-light: var(--ds-background-information, rgba(37, 99, 235, 0.12));
   
   /* Status */
   --t10-success: var(--ds-text-success, #22c55e);
-  --t10-success-subtle: rgba(34, 197, 94, 0.1);
+  --t10-success-subtle: var(--ds-background-success-bold, rgba(34, 197, 94, 0.1));
   --t10-warning: var(--ds-text-warning, #f59e0b);
-  --t10-warning-subtle: rgba(245, 158, 11, 0.1);
+  --t10-warning-subtle: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1));
   --t10-danger: var(--ds-text-danger, #ef4444);
-  --t10-danger-subtle: rgba(239, 68, 68, 0.1);
-  --t10-teal: #0d9488;
-  --t10-teal-subtle: rgba(13, 148, 136, 0.1);
+  --t10-danger-subtle: var(--ds-background-danger, rgba(239, 68, 68, 0.1));
+  --t10-teal: var(--ds-chart-teal-bold, #0d9488);
+  --t10-teal-subtle: var(--ds-background-success, rgba(13, 148, 136, 0.1));
   
   /* Shadows */
-  --t10-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --t10-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --t10-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --t10-shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --t10-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --t10-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  --t10-shadow-md: 0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
+  --t10-shadow-lg: 0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  --t10-shadow-xl: 0 8px 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  --t10-shadow-card-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
   --t10-shadow-focus: 0 0 0 3px var(--t10-accent-subtle);
   
   /* Typography */
@@ -237,7 +237,7 @@
   font-size: var(--t10-text-base);
   font-weight: 500;
   background: var(--t10-accent);
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   border: none;
   border-radius: var(--t10-radius-md);
   cursor: pointer;
@@ -841,7 +841,7 @@
 .t10-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -861,7 +861,7 @@
   max-width: 400px;
   background: var(--t10-bg-card);
   border-radius: var(--t10-radius-xl);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 60px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
   animation: t10-slide-up 200ms ease;
 }
 
@@ -1115,9 +1115,9 @@
 }
 
 .t10-priority-rank-high {
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   background: linear-gradient(135deg, var(--t10-accent) 0%, var(--t10-accent-hover) 100%);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.3));
 }
 
 .t10-priority-rank-low {
@@ -1296,7 +1296,7 @@
 .t10-panel-overlay {
   position: fixed !important;
   inset: 0 !important;
-  background: rgba(0, 0, 0, 0.4) !important;
+  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.4)) !important;
   z-index: 9998 !important;
   animation: t10-fade-in 200ms ease;
 }
@@ -1312,8 +1312,8 @@
   width: 480px !important;
   max-width: 100vw !important;
   height: 100vh !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15), -2px 0 8px rgba(0, 0, 0, 0.1) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
+  box-shadow: -8px 0 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15)), -2px 0 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)) !important;
   z-index: 9999 !important;
   display: flex !important;
   flex-direction: column !important;
@@ -1360,11 +1360,11 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--ds-surface, rgba(255, 255, 255, 0.2));
   border-radius: var(--t10-radius-md);
   font-size: var(--t10-text-sm);
   font-weight: 700;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
 }
 
 .t10-panel-title-label {
@@ -1372,7 +1372,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--ds-surface, rgba(255, 255, 255, 0.9));
   margin: 0;
 }
 
@@ -1391,14 +1391,14 @@
   background: transparent;
   border: none;
   border-radius: var(--t10-radius-md);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ds-surface, rgba(255, 255, 255, 0.8));
   cursor: pointer;
   transition: all var(--t10-transition-fast);
 }
 
 .t10-panel-header-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--ds-surface, rgba(255, 255, 255, 0.15));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
 }
 
 .t10-panel-key-row {
@@ -1410,7 +1410,7 @@
 .t10-panel-key {
   font-family: var(--t10-font-mono);
   font-size: var(--t10-text-base);
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--ds-surface, rgba(255, 255, 255, 0.9));
 }
 
 .t10-panel-copy-btn {
@@ -1422,12 +1422,12 @@
   background: transparent;
   border: none;
   border-radius: var(--t10-radius-sm);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ds-surface, rgba(255, 255, 255, 0.6));
   cursor: pointer;
 }
 
 .t10-panel-copy-btn:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--ds-surface, rgba(255, 255, 255, 0.9));
 }
 
 /* Title Section */
@@ -1942,18 +1942,18 @@
 }
 
 .t10-status-badge.full {
-  color: #15803d !important;
-  background: rgba(34, 197, 94, 0.1) !important;
+  color: var(--ds-background-success-bold, #1F845A) !important;
+  background: var(--ds-background-success-bold, rgba(34, 197, 94, 0.1)) !important;
 }
 
 .t10-status-badge.partial {
   color: var(--ds-background-brand-bold-hovered, #1d4ed8) !important;
-  background: rgba(37, 99, 235, 0.1) !important;
+  background: var(--ds-background-information, rgba(37, 99, 235, 0.1)) !important;
 }
 
 .t10-status-badge.low {
-  color: #b45309 !important;
-  background: rgba(245, 158, 11, 0.1) !important;
+  color: var(--ds-background-warning-bold, #b45309) !important;
+  background: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1)) !important;
 }
 
 /* Expanded Row */
@@ -2336,7 +2336,7 @@
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   text-transform: uppercase;
   letter-spacing: 0.5px;
   overflow: hidden;
@@ -2568,7 +2568,7 @@
   font-family: var(--t10-font) !important;
   font-size: var(--t10-text-md) !important;
   font-weight: 500 !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   background: var(--t10-accent) !important;
   border: none !important;
   border-radius: var(--t10-radius-md) !important;
@@ -2592,7 +2592,7 @@
 .t10-module-v2 .t10-no-active-week-btn svg {
   width: 16px !important;
   height: 16px !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -2632,7 +2632,7 @@
 
 /* Card Skeleton */
 .t10-card-skeleton {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   padding: 20px 24px;
@@ -2711,13 +2711,13 @@
   font-size: 11px;
   font-weight: 600;
   color: var(--ds-text-brand, #3b82f6);
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--ds-background-information-bold, rgba(59, 130, 246, 0.1));
   border-radius: 4px;
 }
 
 .t10-tab-badge--warning {
   color: var(--ds-text-warning, #f59e0b);
-  background: rgba(245, 158, 11, 0.1);
+  background: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -2736,22 +2736,22 @@
 
 .t10-status-badge--success {
   color: var(--ds-text-success, #16a34a);
-  background: rgba(22, 163, 74, 0.1);
+  background: var(--ds-background-success-bold, rgba(22, 163, 74, 0.1));
 }
 
 .t10-status-badge--info {
   color: var(--ds-text-brand, #3b82f6);
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--ds-background-information-bold, rgba(59, 130, 246, 0.1));
 }
 
 .t10-status-badge--warning {
   color: var(--ds-text-warning, #f59e0b);
-  background: rgba(245, 158, 11, 0.1);
+  background: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1));
 }
 
 .t10-status-badge--danger {
   color: var(--ds-text-danger, #ef4444);
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--ds-background-danger, rgba(239, 68, 68, 0.1));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -2766,8 +2766,8 @@
   font-size: 12px;
   font-weight: 600;
   color: var(--ds-text-brand, #3b82f6);
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: var(--ds-background-information-bold, rgba(59, 130, 246, 0.08));
+  border: 1px solid var(--ds-background-information-bold, rgba(59, 130, 246, 0.2));
   border-radius: 6px;
 }
 
@@ -2791,7 +2791,7 @@
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   margin-bottom: 10px;
@@ -2801,7 +2801,7 @@
 
 .t10-completed-card:hover {
   border-color: var(--ds-text-disabled, #cbd5e1);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.04));
 }
 
 .t10-completed-card__icon {
@@ -2810,7 +2810,7 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  background: rgba(22, 163, 74, 0.1);
+  background: var(--ds-background-success-bold, rgba(22, 163, 74, 0.1));
   color: var(--ds-text-success, #22c55e);
   border-radius: 12px;
   flex-shrink: 0;
@@ -2867,7 +2867,7 @@
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   margin-bottom: 10px;
@@ -2886,7 +2886,7 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  background: rgba(245, 158, 11, 0.1);
+  background: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1));
   color: var(--ds-text-warning, #f59e0b);
   border-radius: 12px;
   flex-shrink: 0;
@@ -2934,7 +2934,7 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--ds-text-brand, #3b82f6);
-  background: rgba(59, 130, 246, 0.08);
+  background: var(--ds-background-information-bold, rgba(59, 130, 246, 0.08));
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -2942,7 +2942,7 @@
 }
 
 .t10-archived-card__restore-btn:hover {
-  background: rgba(59, 130, 246, 0.15);
+  background: var(--ds-background-information-bold, rgba(59, 130, 246, 0.15));
 }
 
 .t10-archived-card__delete-btn {
@@ -2961,7 +2961,7 @@
 
 .t10-archived-card__delete-btn:hover {
   color: var(--ds-text-danger, #ef4444);
-  background: rgba(239, 68, 68, 0.08);
+  background: var(--ds-background-danger, rgba(239, 68, 68, 0.08));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -3018,7 +3018,7 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--ds-text-subtlest, #64748b);
-  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 8px;
   cursor: pointer;
@@ -3033,13 +3033,13 @@
 
 .t10-module-v2 .t10-filter-trigger.t10-active {
   border-color: var(--ds-text-brand, #3b82f6);
-  background-color: rgba(59, 130, 246, 0.08);
+  background-color: var(--ds-background-information-bold, rgba(59, 130, 246, 0.08));
   color: var(--ds-text-brand, #3b82f6);
 }
 
 .t10-module-v2 .t10-filter-trigger.t10-open {
   border-color: var(--ds-text-brand, #3b82f6);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  box-shadow: 0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.12));
 }
 
 .t10-module-v2 .t10-filter-trigger-icon {
@@ -3071,7 +3071,7 @@
   padding: 0 5px;
   font-size: 11px;
   font-weight: 600;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   background-color: var(--ds-text-brand, #3b82f6);
   border-radius: 9999px;
 }
@@ -3086,10 +3086,10 @@
   left: 0;
   min-width: 280px;
   max-width: 320px;
-  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
   z-index: 100001;
   animation: t10-filterDropIn 150ms ease forwards;
 }
@@ -3144,7 +3144,7 @@
 
 .t10-module-v2 .t10-dropdown-search-input:focus {
   outline: none;
-  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border-color: var(--ds-text-brand, #3b82f6);
 }
 
@@ -3176,7 +3176,7 @@
 }
 
 .t10-module-v2 .t10-dropdown-option.t10-selected {
-  background-color: rgba(59, 130, 246, 0.08);
+  background-color: var(--ds-background-information-bold, rgba(59, 130, 246, 0.08));
   color: var(--ds-text-brand, #3b82f6);
 }
 
@@ -3200,7 +3200,7 @@
 .t10-module-v2 .t10-dropdown-option-checkbox svg {
   width: 12px;
   height: 12px;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   opacity: 0;
 }
 
@@ -3288,7 +3288,7 @@
 }
 
 .t10-module-v2 .t10-dropdown-footer-btn-apply {
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   background-color: var(--ds-text-brand, #3b82f6);
   border: none;
 }
@@ -3319,7 +3319,7 @@
   font-family: var(--t10-font);
   font-size: 13px;
   color: var(--ds-text, #0f172a);
-  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 6px;
 }
@@ -3372,7 +3372,7 @@
 }
 
 .t10-module-v2 .t10-assignee-option.t10-selected {
-  background-color: rgba(59, 130, 246, 0.08);
+  background-color: var(--ds-background-information-bold, rgba(59, 130, 246, 0.08));
 }
 
 .t10-module-v2 .t10-assignee-avatar {
@@ -3384,7 +3384,7 @@
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -3429,23 +3429,23 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    DARK MODE — Rule 3 paired overrides for !important hex above.
-   White text (var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))) on brand-blue surfaces is intentional — kept as-is.
+   White text (var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))) on brand-blue surfaces is intentional — kept as-is.
    We only flip the neutral panel surface and the status badge text/bg
    to maintain WCAG AA on dark backgrounds.
    ═══════════════════════════════════════════════════════════════════════════════ */
 .dark .t10-panel {
   background: var(--ds-surface-overlay, #1D2125) !important;
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5), -2px 0 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: -8px 0 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.5)), -2px 0 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.3)) !important;
 }
 .dark .t10-status-badge.full {
   color: var(--ds-text-success, #7EE2B8) !important;
-  background: rgba(34, 197, 94, 0.18) !important;
+  background: var(--ds-background-success-bold, rgba(34, 197, 94, 0.18)) !important;
 }
 .dark .t10-status-badge.partial {
   color: var(--ds-text-information, #85B8FF) !important;
-  background: rgba(37, 99, 235, 0.22) !important;
+  background: var(--ds-background-information, rgba(37, 99, 235, 0.22)) !important;
 }
 .dark .t10-status-badge.low {
   color: var(--ds-text-warning, #F5CD47) !important;
-  background: rgba(245, 158, 11, 0.18) !important;
+  background: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.18)) !important;
 }

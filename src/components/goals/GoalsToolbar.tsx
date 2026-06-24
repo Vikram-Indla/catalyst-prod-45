@@ -71,8 +71,8 @@ function FilterDropdown({
           display: 'inline-flex', alignItems: 'center', gap: 4,
           padding: '5px 10px', fontSize: 12, fontWeight: 500,
           color: selected.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? DK.t2 : 'var(--fg-3)'),
-          background: selected.length > 0 ? 'rgba(37,99,235,0.06)' : (isDark ? 'transparent' : 'var(--bg-app)'),
-          border: `1px solid ${selected.length > 0 ? 'rgba(37,99,235,0.3)' : (isDark ? DK.border : 'var(--divider)')}`,
+          background: selected.length > 0 ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : (isDark ? 'transparent' : 'var(--bg-app)'),
+          border: `1px solid ${selected.length > 0 ? 'var(--ds-background-information, rgba(37,99,235,0.3))' : (isDark ? DK.border : 'var(--divider)')}`,
           borderRadius: 8, cursor: 'pointer',
         }}
       >
@@ -85,7 +85,7 @@ function FilterDropdown({
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
           background: isDark ? DK.float : 'var(--bg-app)',
           border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8,
-          boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.08)',
+          boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.3))' : '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
           padding: 6, minWidth: 180, zIndex: 9999, maxHeight: 240, overflowY: 'auto',
         }}>
           {selected.length > 0 && (
@@ -149,7 +149,7 @@ export function GoalsToolbar({
                 color: active ? (isDark ? 'var(--bg-app)' : 'var(--fg-1)') : (isDark ? 'var(--fg-4)' : 'var(--fg-3)'),
                 background: active ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bg-app)') : 'transparent',
                 border: 'none', borderRadius: 6, cursor: 'pointer',
-                boxShadow: active && !isDark ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                boxShadow: active && !isDark ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.08))' : 'none',
                 transition: 'all 150ms',
               }}>
                 <vb.icon size={13} />
@@ -189,7 +189,7 @@ export function GoalsToolbar({
         {hasActiveFilters && (
           <button
             onClick={() => onFiltersChange?.({})}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', fontSize: 11, fontWeight: 500, color: 'var(--sem-danger)', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, cursor: 'pointer' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', fontSize: 11, fontWeight: 500, color: 'var(--sem-danger)', background: 'var(--ds-background-danger, rgba(239,68,68,0.06))', border: '1px solid var(--ds-background-danger, rgba(239,68,68,0.2))', borderRadius: 8, cursor: 'pointer' }}
           >
             <X size={11} /> Clear all
           </button>

@@ -100,6 +100,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     const boardId = boardConfig.boardId;
     if (key && boardId) navigate(`/project-hub/${key}/boards/${boardId}/map-statuses`);
   }, [key, boardConfig.boardId, navigate]);
+  const [hideDone, setHideDone] = useState(true);
   const { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
@@ -207,13 +208,13 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         style={{
           display: 'flex', alignItems: 'center', gap: 6, width: 'calc(100% - 16px)',
           padding: '6px 8px', margin: '2px 8px 4px', border: 'none', borderRadius: SIZES.CARD_RADIUS,
-          background: 'transparent', color: token('color.text.subtle', '#44546F'),
+          background: 'transparent', color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
           fontSize: 14, fontFamily: 'inherit', cursor: 'pointer',
         }}
         onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
       >
-        <AddIcon label="" size="small" primaryColor={token('color.icon.subtle', '#626F86')} />
+        <AddIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />
         {STRINGS.CREATE_ISSUE}
       </button>
     );
@@ -256,7 +257,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   }, [idToKey, mode, navigate]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden', background: token('elevation.surface', '#FFFFFF') }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden', background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)') }}>
       {/* Header */}
       <div style={{ height: SIZES.HEADER_HEIGHT, padding: `0 ${SIZES.PAGE_PADDING_X}px`, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2, flexShrink: 0 }}>
         <Breadcrumbs>
@@ -288,7 +289,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
           <Heading size="large">{boardConfig.boardName === 'Board' ? 'Kanban' : boardConfig.boardName}</Heading>
           {boards.length > 0 && (
             <PortalMenu ariaLabel="Switch board" minWidth={220} trigger={({ open }) => (
-              <button style={{ height: 28, padding: '0 8px', borderRadius: 3, border: `1px solid ${token('color.border', '#091E4224')}`, background: open ? token('color.background.neutral.subtle.hovered', '#091E420F') : 'transparent', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', color: token('color.text.subtle', '#44546F') }}>
+              <button style={{ height: 28, padding: '0 8px', borderRadius: 3, border: `1px solid ${token('color.border', '#091E4224')}`, background: open ? token('color.background.neutral.subtle.hovered', '#091E420F') : 'transparent', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
                 Switch board ▾
               </button>
             )}>
@@ -375,6 +376,8 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
               renderMenu={renderMenu}
               columnFooter={columnFooter}
               cardHealthKey={mode === 'product' ? (issue) => issue.id : undefined}
+              hideDone={hideDone}
+              onToggleHideDone={() => setHideDone((v) => !v)}
             />
           )}
         </div>

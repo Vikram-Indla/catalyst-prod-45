@@ -80,7 +80,7 @@ export function TemplateCard({
       className={`
         group cursor-pointer transition-all duration-200
         hover:shadow-md hover:border-slate-300
-        ${isSystemTemplate ? 'bg-[var(--ds-background-selected,#eff6ff)] border-[#dbeafe]' : 'bg-white border-slate-200'}
+        ${isSystemTemplate ? 'bg-[var(--ds-background-selected,#eff6ff)] border-[var(--ds-background-information, #E9F2FF)]' : 'bg-white border-slate-200'}
       `}
       onClick={onView}
     >

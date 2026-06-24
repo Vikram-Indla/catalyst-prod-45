@@ -29,7 +29,7 @@ export const R360WeekNav: React.FC<Props> = ({ totalItems, pendingItems, activeF
     <div className="r3-week-nav" role="toolbar" aria-label="Week navigation">
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <Calendar size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" aria-hidden="true" />
-        <span style={{ fontSize: 13, fontWeight: 700, color: '#020617' }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>
           {isThisWeek ? 'This Week' : `Week of ${fmt(startOfWeek).split(',')[0]}`}
         </span>
         <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>

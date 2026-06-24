@@ -74,8 +74,8 @@ export default function SidebarClock({ expanded }: SidebarClockProps) {
   const homeWeather = useCityWeather(countryToGeo(homeCountry));
   const weatherForRow = (index: number) => (index === 0 ? riyadhWeather : homeWeather);
 
-  const muted = token('color.text.subtlest', '#626F86');
-  const primary = token('color.text', '#292A2E');
+  const muted = token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)');
+  const primary = token('color.text', 'var(--ds-text, #172B4D)');
 
   // Collapsed rail (56px): icon only, full read in the tooltip.
   if (!expanded) {

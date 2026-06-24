@@ -29,7 +29,7 @@ const variantConfig: Record<CatalystToastType, {
   icon: React.ReactNode;
 }> = {
   success: {
-    bg: 'bg-[#0d9488]', // Teal
+    bg: 'bg-[var(--ds-chart-teal-bold, #0d9488)]', // Teal
     iconBg: 'bg-white/20',
     icon: <Check className="w-5 h-5 text-white" />,
   },

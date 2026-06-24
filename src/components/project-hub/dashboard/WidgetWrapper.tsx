@@ -48,13 +48,13 @@ import { useWidgetEditState } from './widget-edit-context';
 // 2026-06-09 Spec parity — ADS B400 #0052CC for the blue accent (was
 // #2684FF B200). Other category colors aligned to ADS canonical palette.
 const HIGHLIGHT_COLORS: Record<string, string> = {
-  blue: '#0052CC',
-  red: '#DE350B',
-  orange: '#FF8B00',
-  green: '#006644',
+  blue: 'var(--ds-link, #0052CC)',
+  red: 'var(--ds-background-danger-bold, #C9372C)',
+  orange: 'var(--ds-background-warning-bold, #E2B203)',
+  green: 'var(--ds-text-success, #006644)',
   teal: '#00B8D9',
-  purple: '#6554C0',
-  grey: '#6B778C',
+  purple: 'var(--ds-background-discovery-bold, #6554C0)',
+  grey: 'var(--ds-text-subtlest, #6B778C)',
   white: 'transparent',
 };
 
@@ -241,16 +241,16 @@ export default function WidgetWrapper({
         // margins below center it. 100% on every other state.
         maxWidth: isSoloed ? 'min(1440px, 100%)' : '100%',
         marginInline: isSoloed ? 'auto' : undefined,
-        background: token('elevation.surface', '#FFFFFF'),
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         boxShadow: isSoloed
-          ? token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)')
-          : token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
+          ? token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))')
+          : token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))'),
         // 2026-06-09 Spec parity (Filter Results gadget v1) — radius 8px,
         // top accent 3px #0052CC, 1px ds-border on remaining sides + shadow.
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderTop: `3px solid ${HIGHLIGHT_COLORS[highlightColor] ?? HIGHLIGHT_COLORS.blue}`,
         borderRadius: token('border.radius.200', '8px'),
-        outline: isEditing ? `1px dashed ${token('color.border.brand', '#0C66E4')}` : 'none',
+        outline: isEditing ? `1px dashed ${token('color.border.brand', 'var(--ds-link, #0C66E4)')}` : 'none',
         outlineOffset: isEditing ? '-1px' : '0',
         cursor: reorderRaw ? 'grab' : 'default',
         transition: 'box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), max-width 200ms cubic-bezier(0.4, 0, 0.2, 1)',
@@ -278,11 +278,11 @@ export default function WidgetWrapper({
           minWidth: 0,
           padding: '16px 20px 12px 20px',
           background: headerHovered && !isEditing
-            ? token('color.background.neutral.subtle.hovered', '#F1F2F4')
-            : token('elevation.surface', '#FFFFFF'),
+            ? token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)')
+            : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
           borderBottom: collapsed
             ? 'none'
-            : `1px solid ${token('color.border', '#DFE1E6')}`,
+            : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           minHeight: 40,
           cursor: isEditing ? 'inherit' : 'pointer',
           transition: 'background 120ms ease',
@@ -300,7 +300,7 @@ export default function WidgetWrapper({
                 justifyContent: 'center',
                 width: 24,
                 height: 24,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                 cursor: 'grab',
                 flexShrink: 0,
               }}
@@ -310,9 +310,9 @@ export default function WidgetWrapper({
           )}
           {headerIcon}
           <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-            {/* 2026-06-09 Spec parity — semantic h2 + 16/600/#172B4D
+            {/* 2026-06-09 Spec parity — semantic h2 + 16/600/var(--ds-text, #172B4D)
                 /-0.006em letter-spacing per Filter Results gadget spec. */}
-            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: token('color.text', '#172B4D'), lineHeight: '20px', letterSpacing: '-0.006em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '20px', letterSpacing: '-0.006em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {title}
             </h2>
             {subtitle && (
@@ -320,7 +320,7 @@ export default function WidgetWrapper({
                 style={{
                   fontSize: 12,
                   fontWeight: 400,
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                   lineHeight: '16px',
                   marginTop: 4,
                   overflow: 'hidden',
@@ -473,7 +473,7 @@ export default function WidgetWrapper({
             minWidth: 0,
             width: '100%',
             maxWidth: '100%',
-            background: token('elevation.surface', '#FFFFFF'),
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
             // Bump padding when soloed so the focused gadget breathes —
             // 32px instead of the default 24px. Flush-body widgets keep
             // 0 (their inner tables own the edge alignment).
@@ -501,8 +501,8 @@ export default function WidgetWrapper({
       {!collapsed && footer && (
         <div
           style={{
-            background: token('elevation.surface', '#FFFFFF'),
-            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+            borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             padding: `8px ${token('space.200', '16px')}`,
           }}
         >
@@ -518,7 +518,7 @@ export default function WidgetWrapper({
             padding: `4px ${token('space.200', '16px')} 8px`,
             fontSize: 12,
             fontWeight: 400,
-            color: token('color.text.subtlest', '#6B778C'),
+            color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
           }}
         >
           <span

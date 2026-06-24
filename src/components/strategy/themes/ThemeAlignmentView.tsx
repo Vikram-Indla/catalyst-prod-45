@@ -28,27 +28,27 @@ import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/
 
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
-  theme:      { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: 'var(--ds-background-selected, #EFF6FF)', badgeText: '#1E40AF', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  goal:       { color: 'var(--cp-teal-60, #0D9488)', badgeBg: '#F0FDFA', badgeText: '#115E59', border: 'var(--cp-teal-60, #0D9488)' },
-  kr:         { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  initiative: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', badgeBg: '#FFFBEB', badgeText: '#92400E', border: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  epic:       { color: '#4F46E5', badgeBg: '#EEF2FF', badgeText: '#3730A3', border: '#4F46E5' },
+  theme:      { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: 'var(--ds-background-selected, #EFF6FF)', badgeText: 'var(--ds-link-pressed, #0747A6)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  goal:       { color: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', badgeBg: 'var(--ds-background-success, #DFFCF0)', badgeText: 'var(--ds-text-success, #216E4E)', border: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
+  kr:         { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: 'var(--ds-background-information, #E9F2FF)', badgeText: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  initiative: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', badgeBg: 'var(--ds-background-warning, #FFF7D6)', badgeText: 'var(--ds-text-warning, #974F0C)', border: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  epic:       { color: 'var(--ds-background-discovery-bold, #6E5DC6)', badgeBg: '#EEF2FF', badgeText: 'var(--ds-background-discovery-bold, #3730a3)', border: 'var(--ds-background-discovery-bold, #6E5DC6)' },
 } as const;
 
 const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-  active:       { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#166534', label: 'Active' },
-  on_track:     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#166534', label: 'On Track' },
-  at_risk:      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
+  active:       { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'Active' },
+  on_track:     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'On Track' },
+  at_risk:      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', label: 'At Risk' },
   off_track:    { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)', label: 'Off Track' },
-  draft:        { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Draft' },
-  planned:      { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
-  completed:    { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'Done' },
-  cancelled:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Cancelled' },
-  in_progress:  { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'In Progress' },
-  not_started:  { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Not Started' },
-  approved:     { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
-  proposed:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Proposed' },
-  analyzing:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Analyzing' },
+  draft:        { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Draft' },
+  planned:      { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
+  completed:    { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'Done' },
+  cancelled:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Cancelled' },
+  in_progress:  { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'In Progress' },
+  not_started:  { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Not Started' },
+  approved:     { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'Approved' },
+  proposed:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Proposed' },
+  analyzing:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Analyzing' },
 };
 
 function getProgressColor(v: number) {
@@ -88,7 +88,7 @@ function ChainStat({ label, value, total }: { label: string; value: number; tota
 function GhostNode({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
-      style={{ width: 180, padding: 12, borderColor: 'var(--ds-text-disabled, #CBD5E1)', background: 'rgba(248,250,252,0.5)' }}>
+      style={{ width: 180, padding: 12, borderColor: 'var(--ds-text-disabled, #CBD5E1)', background: 'var(--ds-surface, rgba(248,250,252,0.5))' }}>
       <Unlink size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
       <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No linked {label}</span>
     </div>
@@ -102,7 +102,7 @@ function ChainPill({ color, keyLabel, title }: { color: string; keyLabel: string
         style={{ fontSize: 9, background: `${color}15`, color }}>
         {keyLabel}
       </span>
-      <span className="font-medium truncate" style={{ fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{title}</span>
+      <span className="font-medium truncate" style={{ fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{title}</span>
     </div>
   );
 }
@@ -127,7 +127,7 @@ function AILoadingState() {
   return (
     <div className="px-8 py-8">
       <div className="flex items-center gap-3 mb-8">
-        <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: '#F3E8FF' }}>
+        <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: 'var(--ds-background-discovery, #F3F0FF)' }}>
           <Sparkles size={16} className="animate-pulse" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
         </div>
         <div>
@@ -655,7 +655,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       if (focusedChain!.nodes.has(nodeId)) {
         return {
           transform: 'scale(1.12)', opacity: 1, zIndex: 20,
-          boxShadow: '0 4px 24px -4px rgba(37,99,235,0.18), 0 0 0 1.5px rgba(37,99,235,0.15)',
+          boxShadow: '0 4px 24px -4px var(--ds-background-information, rgba(37,99,235,0.18)), 0 0 0 1.5px var(--ds-background-information, rgba(37,99,235,0.15))',
           transition: 'all 500ms ease-out',
         };
       }
@@ -663,27 +663,27 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     }
     // Hover-only
     if (highlightedNodes.has(nodeId)) {
-      return { opacity: 1, boxShadow: '0 2px 16px -2px rgba(37,99,235,0.14), 0 0 0 1px rgba(37,99,235,0.1)' };
+      return { opacity: 1, boxShadow: '0 2px 16px -2px var(--ds-background-information, rgba(37,99,235,0.14)), 0 0 0 1px var(--ds-background-information, rgba(37,99,235,0.1))' };
     }
     return { opacity: 0.2 };
   }
 
   function getPathStyle(p: RenderedPath) {
     if (!isFocused && !anyHover) {
-      return { stroke: '#D1D5DB', strokeWidth: 1, opacity: 0.35, filter: 'none' };
+      return { stroke: 'var(--ds-border, #DFE1E6)', strokeWidth: 1, opacity: 0.35, filter: 'none' };
     }
     if (isFocused) {
       const srcIn = focusedChain!.nodes.has(p.sourceId);
       const tgtIn = focusedChain!.nodes.has(p.targetId);
       if (srcIn && tgtIn) {
-        return { stroke: p.layerColor, strokeWidth: 3, opacity: 1, filter: 'drop-shadow(0 0 4px rgba(37, 99, 235, 0.3))' };
+        return { stroke: p.layerColor, strokeWidth: 3, opacity: 1, filter: 'drop-shadow(0 0 4px var(--ds-background-information, rgba(37, 99, 235, 0.3)))' };
       }
-      return { stroke: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
+      return { stroke: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
     }
     // Hover-only
     const isLit = highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);
     if (isLit) return { stroke: p.layerColor, strokeWidth: 2.5, opacity: 1, filter: 'none' };
-    return { stroke: '#D1D5DB', strokeWidth: 1, opacity: 0.08, filter: 'none' };
+    return { stroke: 'var(--ds-border, #DFE1E6)', strokeWidth: 1, opacity: 0.08, filter: 'none' };
   }
 
   // ── Loading / empty states ──
@@ -799,15 +799,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 12 }}>
           <span className="font-semibold text-foreground">Reading this map:</span>
           <span>Each</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: 'var(--ds-background-selected, #EFF6FF)', borderColor: '#BFDBFE' }}>● Theme</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed, #1e40af)', background: 'var(--ds-background-selected, #EFF6FF)', borderColor: 'var(--ds-background-information, #E9F2FF)' }}>● Theme</span>
           <span>breaks down into</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#115E59', background: '#F0FDFA', borderColor: '#99F6E4' }}>● Goals</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-success, #216E4E)', background: 'var(--ds-background-success, #DFFCF0)', borderColor: 'var(--ds-background-success, #DFFCF0)' }}>● Goals</span>
           <span>measured by</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: '#DBEAFE', borderColor: '#93C5FD' }}>● Key Results</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed, #1e40af)', background: 'var(--ds-background-information, #E9F2FF)', borderColor: 'var(--ds-background-information-bold, #0C66E4)' }}>● Key Results</span>
           <span>delivered through</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#92400E', background: '#FFFBEB', borderColor: '#FDE68A' }}>● Requests</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-warning, #974F0C)', background: 'var(--ds-background-warning, #FFF7D6)', borderColor: 'var(--ds-background-warning, #FFF7D6)' }}>● Requests</span>
           <span>executed as</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#3730A3', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-background-discovery-bold, #3730a3)', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</span>
         </div>
       </div>
 
@@ -818,7 +818,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           ref={canvasRef}
           className="overflow-auto select-none transition-all duration-400 ease-out"
           style={{
-            background: 'var(--bg-1, #F8FAFC)',
+            background: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))',
             cursor: isPanning ? 'grabbing' : 'grab',
             width: isIntelOpen ? '50vw' : '100%',
             flexShrink: 0,

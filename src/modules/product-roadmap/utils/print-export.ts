@@ -6,15 +6,15 @@ import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 
 const STATUS_PRINT_COLORS: Record<string, { bg: string; c: string }> = {
-  new_request: { bg: 'rgba(59,130,246,0.12)', c: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  draft: { bg: 'rgba(115,115,115,0.12)', c: '#737373' },
-  submitted: { bg: 'rgba(59,130,246,0.12)', c: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  in_review: { bg: 'rgba(245,158,11,0.12)', c: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  approved: { bg: 'rgba(34,197,94,0.12)', c: '#15803D' },
-  rejected: { bg: 'rgba(239,68,68,0.12)', c: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  in_progress: { bg: 'rgba(139,92,246,0.12)', c: 'var(--cp-purple-60, #7C3AED)' },
-  completed: { bg: 'rgba(21,128,61,0.12)', c: '#15803D' },
-  cancelled: { bg: 'rgba(220,38,38,0.12)', c: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
+  new_request: { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', c: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  draft: { bg: 'rgba(115,115,115,0.12)', c: 'var(--ds-text-subtlest, #626F86)' },
+  submitted: { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', c: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  in_review: { bg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.12))', c: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  approved: { bg: 'var(--ds-background-success-bold, rgba(34,197,94,0.12))', c: 'var(--ds-background-success-bold, #1F845A)' },
+  rejected: { bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))', c: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
+  in_progress: { bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.12))', c: 'var(--cp-purple-60, #7C3AED)' },
+  completed: { bg: 'rgba(21,128,61,0.12)', c: 'var(--ds-background-success-bold, #1F845A)' },
+  cancelled: { bg: 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))', c: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
 };
 
 function fdf(dateStr: string | null): string {
@@ -54,22 +54,22 @@ export function doPrintExport(items: RoadmapDemand[]) {
 <html><head><title>Product Roadmap</title>
 <style>
 * { box-sizing: border-box; margin: 0 }
-body { font-family: system-ui, -apple-system, sans-serif; color: #09090B; padding: 40px; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+body { font-family: system-ui, -apple-system, sans-serif; color: var(--ds-text, #172B4D); padding: 40px; -webkit-print-color-adjust: exact; print-color-adjust: exact }
 @page { size: landscape; margin: 20mm }
 table { width: 100%; border-collapse: collapse; font-size: 12px }
-th { text-align: left; padding: 8px 10px; border-bottom: 2px solid #E4E4E7; font-size: 10px; font-weight: 700; color: #71717A; text-transform: uppercase; letter-spacing: 0.06em; background: #FAFAFA }
-td { padding: 8px 10px; border-bottom: 1px solid #F4F4F5 }
-tr:hover { background: #FAFAFA }
+th { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--ds-border, #DFE1E6); font-size: 10px; font-weight: 700; color: var(--ds-text-subtlest, #626F86); text-transform: uppercase; letter-spacing: 0.06em; background: var(--ds-surface-sunken, #FAFAFA) }
+td { padding: 8px 10px; border-bottom: 1px solid var(--ds-surface-sunken, #F7F8F9) }
+tr:hover { background: var(--ds-surface-sunken, #FAFAFA) }
 </style>
 </head><body>
 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px">
   <div>
     <h1 style="font-size:24px;font-weight:700;margin-bottom:4px">Product Roadmap</h1>
-    <p style="color:#71717A;font-size:13px">Catalyst Platform — ${now}</p>
+    <p style="color:var(--ds-text-subtlest, #626F86);font-size:13px">Catalyst Platform — ${now}</p>
   </div>
   <div style="text-align:right">
-    <span style="font-family:monospace;font-size:36px;font-weight:700;color:#2563EB">${items.length}</span>
-    <div style="font-size:11px;color:#71717A;font-weight:500">BUSINESS REQUESTS</div>
+    <span style="font-family:monospace;font-size:36px;font-weight:700;color:var(--ds-link, #2563eb)">${items.length}</span>
+    <div style="font-size:11px;color:var(--ds-text-subtlest, #626F86);font-weight:500">BUSINESS REQUESTS</div>
   </div>
 </div>
 <table>
@@ -78,7 +78,7 @@ tr:hover { background: #FAFAFA }
   </tr></thead>
   <tbody>${rows}</tbody>
 </table>
-<div style="margin-top:32px;padding-top:16px;border-top:1px solid #E4E4E7;display:flex;justify-content:space-between;font-size:10px;color:#A1A1AA">
+<div style="margin-top:32px;padding-top:16px;border-top:1px solid var(--ds-border, #DFE1E6);display:flex;justify-content:space-between;font-size:10px;color:#A1A1AA">
   <span>Catalyst V11 · Product Roadmap V9</span>
   <span>${now}</span>
 </div>

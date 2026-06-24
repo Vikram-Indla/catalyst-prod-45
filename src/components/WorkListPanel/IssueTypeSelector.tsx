@@ -64,7 +64,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
         onClick={() => setIsOpen(!isOpen)}
         style={{
           padding: '8px 12px',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'var(--ds-surface, #FFFFFF)',
           border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: '3px',
           fontSize: '14px',
@@ -105,10 +105,10 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
               top: triggerRect.bottom + 4,
               left: triggerRect.left,
               width: triggerRect.width,
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'var(--ds-surface, #FFFFFF)',
               border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
               borderRadius: '3px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
               zIndex: 10000,
               maxHeight: '300px',
               overflow: 'auto',
@@ -133,7 +133,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
                   transition: 'background-color 150ms',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F1F2F4';
+                  e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral, #F1F2F4)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'transparent';

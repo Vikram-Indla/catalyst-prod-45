@@ -31,7 +31,7 @@ const getInitials = (name: string | null): string => {
 };
 
 const getColorFromName = (name: string): string => {
-  const colors = ['var(--ds-text-brand, #3b82f6)', '#8b5cf6', '#ec4899', '#14b8a6', 'var(--ds-text-warning, #f59e0b)', '#6366f1', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))'];
+  const colors = ['var(--ds-text-brand, #3b82f6)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-warning, #f59e0b)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);

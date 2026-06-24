@@ -177,7 +177,7 @@ const previewWellDarkStyle: React.CSSProperties = {
   justifyContent: 'center',
   height: 64,
   borderRadius: 4,
-  backgroundColor: '#1D2125',
+  backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
   marginBottom: 8,
 };
 
@@ -802,8 +802,8 @@ export default function AdminIconsPage() {
             top: 16,
             right: 16,
             zIndex: 9999,
-            background: '#216E4E',
-            color: '#FFFFFF',
+            background: 'var(--ds-text-success, #216E4E)',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             padding: '8px 12px',
             borderRadius: 4,
             fontSize: 12,

@@ -52,20 +52,20 @@ function CatySparkle({ size = 18, monochromeColor }: SparkleProps) {
 
 function AskCatalystIcon() {
   // Used by IconButton (iconOnly mode) — keep monochrome brand blue
-  return <CatySparkle size={16} monochromeColor={token('color.icon.brand', '#2563EB')} />;
+  return <CatySparkle size={16} monochromeColor={token('color.icon.brand', 'var(--ds-link, #2563eb)')} />;
 }
 
 // CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out — static rainbow border on AI CTAs.
 // MUST be `animation: none` — no rotation, no shift, no shimmer. Pure colour treatment.
 const STATIC_RAINBOW = `conic-gradient(
   from 0deg,
-  #FF3CAC 0deg,
-  #784BA0 60deg,
-  #2B86C5 120deg,
-  #00C9FF 180deg,
-  #92FE9D 240deg,
-  #FFD700 300deg,
-  #FF3CAC 360deg
+  var(--ds-background-accent-magenta-bolder, #BE185D) 0deg,
+  var(--ds-background-discovery-bold, #6E5DC6) 60deg,
+  var(--ds-link, #0C66E4) 120deg,
+  var(--ds-background-information-bold, #0C66E4) 180deg,
+  var(--ds-background-success, #DFFCF0) 240deg,
+  var(--ds-background-warning-bold, #E2B203) 300deg,
+  var(--ds-background-accent-magenta-bolder, #BE185D) 360deg
 )`;
 
 const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
@@ -76,7 +76,7 @@ const DEPT_COLORS: Record<string, string> = {
   Governance: 'var(--cp-teal-60, #0D9488)',
   Operations: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   'Technical Support': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  'Strategy & Planning': '#0891B2',
+  'Strategy & Planning': 'var(--ds-link, #0C66E4)',
 };
 
 interface AskCatalystPillProps {
@@ -165,7 +165,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 height: 32,
                 padding: '0 14px 0 12px',
                 borderRadius: 9999,
-                background: token('elevation.surface', '#FFFFFF'),
+                background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                 // Border removed — rainbow wrapper provides the AI signifier.
                 // Hover state: subtle raised shadow only (no extra ring; rainbow IS the focus marker).
                 boxShadow: hovered && isForYou

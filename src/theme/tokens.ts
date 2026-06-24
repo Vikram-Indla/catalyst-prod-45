@@ -35,9 +35,9 @@ export const spacing = {
 export const surface = {
   // App backgrounds (FIX A: Surface hierarchy)
   app: 'hsl(var(--background))',
-  sunken: 'hsl(var(--surface-sunken))',         // #F9FAFB - sunken containers
-  raised: 'hsl(var(--surface-raised))',         // var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) - raised cards
-  backdrop: 'hsl(var(--surface-backdrop))',     // #F3F4F6 - dense container backdrop
+  sunken: 'hsl(var(--surface-sunken))',         // var(--ds-surface-sunken, #F7F8F9) - sunken containers
+  raised: 'hsl(var(--surface-raised))',         // var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))) - raised cards
+  backdrop: 'hsl(var(--surface-backdrop))',     // var(--ds-background-neutral-subtle, #F7F8F9) - dense container backdrop
   overlay: 'hsl(var(--popover))',
   
   // Interactive surfaces
@@ -80,7 +80,7 @@ export const text = {
   link: 'hsl(var(--brand-primary))',
   linkHover: 'hsl(var(--brand-primary-hover))',
   // Atlaskit blue.bolder — replaces Golden Hour hsl(35 46% 50%)
-  linkPressed: '#0747A6',
+  linkPressed: 'var(--ds-link-pressed, #0747A6)',
   
   // Status text
   success: 'hsl(var(--success))',
@@ -119,11 +119,11 @@ export const border = {
 // ============================================
 export const elevation = {
   none: 'none',
-  sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-  md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-  lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-  xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-  overlay: '0 8px 24px rgba(0, 0, 0, 0.12)',
+  sm: '0 1px 2px 0 var(--ds-shadow-raised, rgba(0, 0, 0, 0.05))',
+  md: '0 4px 6px -1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 2px 4px -1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06))',
+  lg: '0 10px 15px -3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05))',
+  xl: '0 20px 25px -5px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 10px 10px -5px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04))',
+  overlay: '0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
   drawer: '-4px 0 20px rgba(26, 26, 26, 0.08)',
 } as const;
 
@@ -346,11 +346,11 @@ export const status = {
 // BLUE + TEAL CHART PALETTE
 // ============================================
 export const chartPalette = {
-  expert: '#2563eb',      // Blue - Level 5
-  advanced: '#0d9488',    // Teal - Level 4
-  intermediate: '#6b7280', // Gray - Level 3
-  beginner: '#9ca3af',    // Light gray - Level 2
-  none: '#c8ccd0',        // Cool grey - Level 1
+  expert: 'var(--ds-link, #2563eb)',      // Blue - Level 5
+  advanced: 'var(--ds-chart-teal-bold, #0d9488)',    // Teal - Level 4
+  intermediate: 'var(--ds-text-subtlest, #626F86)', // Gray - Level 3
+  beginner: 'var(--ds-text-disabled, #8590A2)',    // Light gray - Level 2
+  none: 'var(--ds-border, #DFE1E6)',        // Cool grey - Level 1
 } as const;
 
 // ============================================
@@ -358,41 +358,41 @@ export const chartPalette = {
 // Use these for direct hex references in components
 // ============================================
 export const darkMode = {
-  pageBg: '#0A0A0A',
-  cardSurface: '#1A1A1A',
-  hoverSurface: '#1F1F1F',
-  activePressed: '#292929',
-  sidebarBg: '#111111',
-  modalOverlay: '#000000',
-  borderDefault: '#2E2E2E',
-  borderSubtle: '#292929',
-  borderMedium: '#454545',
-  textPrimary: '#EDEDED',
-  textSecondary: '#A1A1A1',
-  textMuted: '#878787',
-  textTertiary: '#7D7D7D',
-  placeholder: '#878787',
+  pageBg: 'var(--ds-text, #172B4D)',
+  cardSurface: 'var(--ds-text, #172B4D)',
+  hoverSurface: 'var(--ds-text, #172B4D)',
+  activePressed: 'var(--ds-text, #172B4D)',
+  sidebarBg: 'var(--ds-text, #172B4D)',
+  modalOverlay: 'var(--ds-text, #172B4D)',
+  borderDefault: 'var(--ds-background-neutral, #F1F2F4)',
+  borderSubtle: 'var(--ds-text, #172B4D)',
+  borderMedium: 'var(--ds-text-subtle, #44546F)',
+  textPrimary: 'var(--ds-background-neutral, #F1F2F4)',
+  textSecondary: 'var(--ds-text-subtlest, #626F86)',
+  textMuted: 'var(--ds-text-subtlest, #626F86)',
+  textTertiary: 'var(--ds-text-subtlest, #626F86)',
+  placeholder: 'var(--ds-text-subtlest, #626F86)',
 } as const;
 
 // ============================================
 // CATALYST V12 LIGHT MODE — HEX PALETTE
 // ============================================
 export const catalyst = {
-  pageBg: '#FFFFFF',
-  cardSurface: '#FFFFFF',
-  bgOverlay: '#F8FAFC',
-  bgInset: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
-  textPrimary: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))',
-  textSecondary: '#475569',
-  textMuted: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
-  textDisabled: '#CBD5E1',
-  borderDefault: 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-  borderStrong: '#CBD5E1',
-  borderFocus: '#2563EB',
-  primaryBlue: '#2563EB',
-  primaryBlueHover: '#1D4ED8',
-  aiPurple: 'var(--cp-purple-60, #7C3AED)',
-  aiTeal: 'var(--cp-teal-60, #0D9488)',
+  pageBg: 'var(--ds-surface, #FFFFFF)',
+  cardSurface: 'var(--ds-surface, #FFFFFF)',
+  bgOverlay: 'var(--ds-surface-sunken, #F8FAFC)',
+  bgInset: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))',
+  textPrimary: 'var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D)))',
+  textSecondary: 'var(--ds-text-subtle, #44546F)',
+  textMuted: 'var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2)))',
+  textDisabled: 'var(--ds-border, #DFE1E6)',
+  borderDefault: 'var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
+  borderStrong: 'var(--ds-border, #DFE1E6)',
+  borderFocus: 'var(--ds-link, #2563eb)',
+  primaryBlue: 'var(--ds-link, #2563eb)',
+  primaryBlueHover: 'var(--ds-link-pressed, #1d4ed8)',
+  aiPurple: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))',
+  aiTeal: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
 } as const;
 
 // ============================================
@@ -402,9 +402,9 @@ export const catalyst = {
 // Green = Done / Approved / Completed
 // ============================================
 export const statusLozenge = {
-  grey:  { lightBg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', lightText: '#253858', darkBg: '#2E2E2E', darkText: '#A1A1A1' },
-  blue:  { lightBg: '#DEEBFF', lightText: '#0747A6', darkBg: 'rgba(59,130,246,0.10)', darkText: '#7DB8FC' },
-  green: { lightBg: '#E3FCEF', lightText: '#006644', darkBg: 'rgba(74,222,128,0.10)', darkText: '#4ADE80' },
+  grey:  { lightBg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', lightText: 'var(--ds-text, #253858)', darkBg: 'var(--ds-background-neutral, #F1F2F4)', darkText: 'var(--ds-text-subtlest, #626F86)' },
+  blue:  { lightBg: 'var(--ds-background-information, #E9F2FF)', lightText: 'var(--ds-link-pressed, #0747A6)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))', darkText: 'var(--ds-background-information-bold, #0C66E4)' },
+  green: { lightBg: 'var(--ds-background-success, #DFFCF0)', lightText: 'var(--ds-text-success, #006644)', darkBg: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))', darkText: 'var(--ds-background-success, #DFFCF0)' },
 } as const;
 
 // ============================================

@@ -304,8 +304,8 @@ export default function ForYouPageAtlaskit() {
         minHeight: '100%',
         flex: 1,
         width: '100%',
-        background: token('elevation.surface', '#FFFFFF'),
-        color: token('color.text', '#292A2E'),
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        color: token('color.text', 'var(--ds-text, #172B4D)'),
         // Squeeze when the side panel is open so the panel sits next to
         // the feed instead of overlapping it. Same affordance the
         // project-hub backlog uses on its table column.
@@ -318,7 +318,7 @@ export default function ForYouPageAtlaskit() {
       <h1
         style={{
           font: `653 24px/28px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-          color: token('color.text', '#292A2E'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'),
           margin: 0,
           marginBlockStart: 24,
           letterSpacing: 0,
@@ -333,7 +333,7 @@ export default function ForYouPageAtlaskit() {
           position: 'sticky',
           top: 0,
           zIndex: 10,
-          background: token('elevation.surface', '#FFFFFF'),
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
           paddingBlock: 8,
           marginBlockEnd: 16,
           display: 'flex',
@@ -373,7 +373,7 @@ export default function ForYouPageAtlaskit() {
           overflowY: isR360Active ? 'auto' : 'visible',
           position: 'relative',
           zIndex: 0,
-          background: token('elevation.surface', '#FFFFFF'),
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         }}
       >
         {panel}
@@ -408,8 +408,8 @@ export default function ForYouPageAtlaskit() {
             onClick={loadMore}
             style={{
               padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
-              background: token('color.background.neutral', '#F1F2F4'),
-              color: token('color.text', '#292A2E'),
+              background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
               border: 'none',
               borderRadius: 3,
               cursor: 'pointer',

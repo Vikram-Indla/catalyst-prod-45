@@ -36,8 +36,8 @@ import React, { ReactNode, CSSProperties } from 'react';
 
 /* ─── Uniform surface (2026-06-18, Vikram) ────────────────────────────────
    Canvas + panel always track --cp-bg-elevated (= var(--ds-surface, #FFFFFF)
-   in light, #22272B in dark), so hub pages match the rest of the shell — one
-   flat tone everywhere. Light: #FFFFFF (no regression). Dark: #22272B (the
+   in light, var(--ds-surface, #FFFFFF) in dark), so hub pages match the rest of the shell — one
+   flat tone everywhere. Light: var(--ds-surface, #FFFFFF) (no regression). Dark: var(--ds-surface, #FFFFFF) (the
    grayish raised tone, spread uniformly). Replaces the broken
    data-theme==='dark' check.
    ──────────────────────────────────────────────────────────────────────── */

@@ -8,7 +8,7 @@ const T = {
   text3: '#3D3D56', text4: 'var(--fg-3)', border: 'var(--divider)', borderStrong: 'var(--divider)',
   todo: '#E23636', progress: 'var(--cp-blue)', done: '#0E8A5F',
   pendingHighlight: 'var(--ds-background-warning, #FFF7D6)',
-  shadow: '0 2px 8px rgba(0,0,0,.12)',
+  shadow: '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,.12))',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
 

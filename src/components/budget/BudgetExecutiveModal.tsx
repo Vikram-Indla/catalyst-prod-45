@@ -267,8 +267,8 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
               </div>
 
               <div className="mt-6 p-4 bg-[var(--budget-warning-light)] rounded-lg">
-                <div className="text-[12px] font-semibold text-[#92400e] mb-1">⚠️ Data Quality Note</div>
-                <div className="text-[12px] text-[#78350f]">
+                <div className="text-[12px] font-semibold text-[var(--ds-text-warning, #974F0C)] mb-1">⚠️ Data Quality Note</div>
+                <div className="text-[12px] text-[var(--ds-text-warning, #974F0C)]">
                   Only Delivery department has complete CTC data. Other departments show SAR 0 due to missing salary information.
                 </div>
               </div>
@@ -326,14 +326,14 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
                 <h4 className="text-[14px] font-semibold text-[var(--ds-text-danger,#991b1b)] mb-3">⚠️ Data Quality Issues ({data.dataQualityIssues.length})</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {data.dataQualityIssues.slice(0, 8).map((issue, idx) => (
-                    <div key={idx} className="text-[12px] text-[#78350f] p-2 bg-white rounded-md">
+                    <div key={idx} className="text-[12px] text-[var(--ds-text-warning, #974F0C)] p-2 bg-white rounded-md">
                       <strong>{issue.name}</strong> ({issue.department})
                       <br />
                       <span className="text-[10px]">{issue.issue}</span>
                     </div>
                   ))}
                   {data.dataQualityIssues.length > 8 && (
-                    <div className="text-[12px] text-[#78350f] p-2">
+                    <div className="text-[12px] text-[var(--ds-text-warning, #974F0C)] p-2">
                       +{data.dataQualityIssues.length - 8} more...
                     </div>
                   )}

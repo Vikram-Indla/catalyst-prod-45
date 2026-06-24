@@ -18,8 +18,8 @@ import type { TaskPriority } from '../../types';
 // Priority dot colors (spec A2)
 const PRIORITY_DOT_COLORS: Record<TaskPriority, string> = {
   critical: 'var(--ds-text-danger, #dc2626)', // red-600
-  high: '#f97316',     // orange-500
-  medium: '#eab308',   // yellow-500 (NOT green)
+  high: 'var(--ds-background-warning-bold, #E2B203)',     // orange-500
+  medium: 'var(--ds-background-warning-bold, #E2B203)',   // yellow-500 (NOT green)
   low: 'var(--ds-text-subtlest, #94a3b8)',      // gray-400
 };
 

@@ -17,6 +17,9 @@ import CloseIcon from '@atlaskit/icon/core/close';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
+import { useResourceAvatarOverrides } from '@/hooks/useResourceAvatarOverrides';
+import { uploadResourceAvatar, removeResourceAvatar } from '@/services/resourceAvatarService';
 import { useInviteUser } from '@/hooks/useInviteUser';
 import { useAuth } from '@/lib/auth';
 import { catalystToast } from '@/lib/catalystToast';
@@ -76,7 +79,9 @@ const ROLE_OPTIONS = ROLE_GROUPS.flatMap(g => g.options);
 const FILTER_ROLE_OPTIONS = [{ label: 'All roles', value: '' }, ...ROLE_OPTIONS];
 
 const STATUS_FILTER_OPTIONS = [
-  { label: 'Active & pending', value: 'active_pending' },
+  { label: 'All approved', value: 'all_approved' },
+  { label: 'Active', value: 'active' },
+  { label: 'Pending setup', value: 'pending' },
   { label: 'Suspended', value: 'suspended' },
   { label: 'All users', value: '' },
 ];
@@ -388,12 +393,12 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
       {/* Header */}
       <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ds-border, #EBECF0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#172B4D', letterSpacing: '-0.01em' }}>
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)', letterSpacing: '-0.01em' }}>
             {result ? 'Setup link ready' : 'Create access'}
           </h2>
-          {!result && <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6B778C' }}>Creates the user and a one-time setup link</p>}
+          {!result && <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Creates the user and a one-time setup link</p>}
         </div>
-        <button onClick={onClose} aria-label="Close" style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: '#6B778C', display: 'flex' }}>
+        <button onClick={onClose} aria-label="Close" style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
           <CloseIcon label="Close" size="medium" />
         </button>
       </div>
@@ -445,7 +450,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
             </div>
 
             {isGuest && (
-              <div style={{ padding: '8px 12px', background: '#FFF7D6', borderRadius: 6, fontSize: 12, color: '#974F0C' }}>
+              <div style={{ padding: '8px 12px', background: 'var(--ds-background-warning, #FFF7D6)', borderRadius: 6, fontSize: 12, color: 'var(--ds-text-warning, #974F0C)' }}>
                 Guest access is read-only. Link lifetime is capped at 48 hours.
               </div>
             )}
@@ -502,7 +507,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
                 <div style={{ marginTop: 12 }}>
                   <label style={lbl}>Phone <span style={{ color: 'var(--ds-text-subtlest, #97A0AF)' }}>(optional)</span></label>
                   <Textfield value={phone} onChange={e => setPhone((e.target as HTMLInputElement).value)} placeholder="+966 5x xxx xxxx" aria-label="Phone" />
-                  <p style={{ margin: '6px 0 0', fontSize: 11, color: '#97A0AF' }}>Provider integration pending — the link is recorded and shown below for manual sharing.</p>
+                  <p style={{ margin: '6px 0 0', fontSize: 11, color: 'var(--ds-text-disabled, #8590A2)' }}>Provider integration pending — the link is recorded and shown below for manual sharing.</p>
                 </div>
               )}
             </div>
@@ -521,7 +526,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
                   aria-label="Link validity"
                 />
               </div>
-              <p style={{ margin: 0, fontSize: 12, color: '#42526E', paddingBottom: 8 }}>{expiryPreview}</p>
+              <p style={{ margin: 0, fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', paddingBottom: 8 }}>{expiryPreview}</p>
             </div>
 
           </div>
@@ -562,8 +567,8 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
               <div style={{ padding: 12, background: '#F3F9FF', borderRadius: 8, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 24, flexShrink: 0 }}>✅</span>
                 <div>
-                  <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#172B4D' }}>Access created for {email}</p>
-                  <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6B778C' }}>
+                  <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Access created for {email}</p>
+                  <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
                     Role: <strong>{roleOpt?.label}</strong> · Channel: <strong style={{ textTransform: 'capitalize' }}>{result.channel}{result.channelPending ? ' (manual share)' : ''}</strong>
                   </p>
                 </div>
@@ -572,7 +577,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
               <div>
                 <label style={lbl}>One-time setup link</label>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, background: '#F1F2F4', border: '1px solid var(--ds-border, #EBECF0)', borderRadius: 6, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, background: 'var(--ds-background-neutral, #F1F2F4)', border: '1px solid var(--ds-border, #EBECF0)', borderRadius: 6, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {result.link || 'Link expired — regenerate below'}
                   </div>
                   <Button appearance="primary" isDisabled={!result.link} onClick={copyLink}>{copied ? '✓ Copied' : 'Copy'}</Button>
@@ -581,12 +586,12 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
 
               <div style={{ display: 'flex', gap: 24, fontSize: 13 }}>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#97A0AF', marginBottom: 2 }}>Expires</div>
-                  <div style={{ color: '#172B4D' }}>{result.expiresAt ? new Date(result.expiresAt).toLocaleString() : '—'}</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-disabled, #8590A2)', marginBottom: 2 }}>Expires</div>
+                  <div style={{ color: 'var(--ds-text, #172B4D)' }}>{result.expiresAt ? new Date(result.expiresAt).toLocaleString() : '—'}</div>
                 </div>
               </div>
 
-              <div style={{ padding: '10px 12px', background: '#FFF7D6', borderRadius: 6, fontSize: 11, color: '#974F0C', lineHeight: 1.5 }}>
+              <div style={{ padding: '10px 12px', background: 'var(--ds-background-warning, #FFF7D6)', borderRadius: 6, fontSize: 11, color: 'var(--ds-text-warning, #974F0C)', lineHeight: 1.5 }}>
                 This link is single-use and expires after one click. If the recipient's contact details were wrong, expire it below and regenerate. Catalyst never stores the raw token.
               </div>
             </div>
@@ -1231,14 +1236,14 @@ function BulkGenerateModal({ users, onClose }: { users: CatalystUser[]; onClose:
     <ModalTransition>
       <Modal onClose={onClose} width="large" shouldScrollInViewport autoFocus={false} label="Bulk generate setup links">
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ds-border, #EBECF0)' }}>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#172B4D' }}>Bulk generate setup links</h2>
-          <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6B778C' }}>
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Bulk generate setup links</h2>
+          <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
             For users with a real email who have never logged in. Placeholder (+jira) rows are excluded — give them a real email first.
           </p>
         </div>
         <div style={{ padding: 20 }}>
           {!running && !done && (
-            <p style={{ margin: 0, fontSize: 14, color: '#172B4D' }}>
+            <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
               {eligible.length === 0
                 ? 'No eligible users — everyone has either logged in or lacks a real email.'
                 : `${eligible.length} user${eligible.length === 1 ? '' : 's'} will get a fresh single-use setup link (manual / copy).`}
@@ -1249,21 +1254,21 @@ function BulkGenerateModal({ users, onClose }: { users: CatalystUser[]; onClose:
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                 <tbody>
                   {results.map((r, i) => (
-                    <tr key={r.email} style={{ borderTop: i === 0 ? 'none' : '1px solid #F1F2F4' }}>
-                      <td style={{ padding: '8px 12px', fontWeight: 500, color: '#172B4D', whiteSpace: 'nowrap' }}>{r.name}</td>
-                      <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, color: r.link ? '#172B4D' : '#AE2A19', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0 }}>
+                    <tr key={r.email} style={{ borderTop: i === 0 ? 'none' : '1px solid var(--ds-background-neutral, #F1F2F4)' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap' }}>{r.name}</td>
+                      <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, color: r.link ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-danger, #AE2A19)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0 }}>
                         {r.link || r.error || '…'}
                       </td>
                     </tr>
                   ))}
                   {running && results.length < eligible.length && (
-                    <tr><td colSpan={2} style={{ padding: '8px 12px', color: '#6B778C' }}>Generating… {results.length}/{eligible.length}</td></tr>
+                    <tr><td colSpan={2} style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, #6B778C)' }}>Generating… {results.length}/{eligible.length}</td></tr>
                   )}
                 </tbody>
               </table>
             </div>
           )}
-          {done && <p style={{ margin: '10px 0 0', fontSize: 12, color: '#6B778C' }}>{okCount} of {results.length} links generated.</p>}
+          {done && <p style={{ margin: '10px 0 0', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>{okCount} of {results.length} links generated.</p>}
         </div>
         <div style={{ padding: '14px 20px', borderTop: '1px solid var(--ds-border, #EBECF0)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           {done
@@ -1322,6 +1327,102 @@ function PeopleTableSkeleton() {
   );
 }
 
+// ─── Inline avatar upload cell ───────────────────────────────────────────────
+// Renders the avatar with a hover overlay — click to upload, hover to reveal
+// "Remove" if an override exists. Uses the same service as /admin/avatars.
+
+interface AvatarCellProps {
+  userId: string;
+  name: string;
+  avatarUrl?: string | null;
+  hasOverride: boolean;
+  uploadedBy: string;
+  overrideStoragePath?: string;
+  onChanged: () => void;
+}
+
+function AvatarCell({ userId, name, avatarUrl, hasOverride, uploadedBy, overrideStoragePath, onChanged }: AvatarCellProps) {
+  const fileRef = React.useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      catalystToast.error(`Unsupported type. Use PNG / JPG / WEBP.`);
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      catalystToast.error(`File too large. Max 2 MB.`);
+      e.target.value = '';
+      return;
+    }
+    setBusy(true);
+    try {
+      await uploadResourceAvatar({ profileId: userId, file, uploadedBy, previousStoragePath: overrideStoragePath ?? null });
+      onChanged();
+      catalystToast.success(`Avatar updated`);
+    } catch (err) {
+      catalystToast.error(`Upload failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setBusy(false);
+      e.target.value = '';
+    }
+  }
+
+  async function handleRemove(e: React.MouseEvent) {
+    e.stopPropagation();
+    setBusy(true);
+    try {
+      await removeResourceAvatar(userId);
+      onChanged();
+      catalystToast.success(`Avatar reset`);
+    } catch (err) {
+      catalystToast.error(`Remove failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      style={{ position: 'relative', display: 'inline-flex', cursor: busy ? 'wait' : 'pointer', flexShrink: 0 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={e => { e.stopPropagation(); fileRef.current?.click(); }}
+      title={hasOverride ? 'Click to replace photo' : 'Click to upload photo'}
+    >
+      <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" style={{ display: 'none' }} onChange={handleUpload} disabled={busy} />
+      <CatalystAvatar name={name} src={avatarUrl} size="small" />
+      {hovered && !busy && (
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: '50%',
+          background: 'rgba(0,0,0,0.45)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <span style={{ color: '#fff', fontSize: 9, fontWeight: 600, textAlign: 'center', lineHeight: 1.2 }}>
+            {hasOverride ? '✎' : '+'}
+          </span>
+        </div>
+      )}
+      {hovered && hasOverride && !busy && (
+        <button
+          onClick={handleRemove}
+          style={{
+            position: 'absolute', top: -4, right: -4, width: 14, height: 14,
+            borderRadius: '50%', border: 'none', background: 'var(--ds-text-danger, #AE2A19)',
+            color: '#fff', fontSize: 8, fontWeight: 700, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+          }}
+          title="Remove custom photo"
+        >✕</button>
+      )}
+    </div>
+  );
+}
+
 function PeopleTab() {
   const { user: currentUser } = useAuth();
   const qc = useQueryClient();
@@ -1371,12 +1472,34 @@ function PeopleTab() {
     staleTime: 60_000,
   });
 
-  const adminCount = useMemo(() => users.filter(u => u.role === 'admin').length, [users]);
+  // Merge resolved avatars (bundled photos + admin overrides) into user list
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const { data: avatarOverrides = {}, refetch: refetchOverrides } = useResourceAvatarOverrides();
+  const resolvedAvatarMap = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.id, p.avatarUrl])),
+    [approvedProfiles]
+  );
+  const usersWithAvatars = useMemo(
+    () => users.map(u => ({ ...u, avatar_url: resolvedAvatarMap.get(u.id) ?? u.avatar_url })),
+    [users, resolvedAvatarMap]
+  );
+
+  function handleAvatarChanged() {
+    refetchOverrides();
+    qc.invalidateQueries({ queryKey: ['approved-profiles'] });
+    qc.invalidateQueries({ queryKey: ['resource-avatar-overrides'] });
+  }
+
+  const adminCount = useMemo(() => usersWithAvatars.filter(u => u.role === 'admin').length, [usersWithAvatars]);
 
   const filtered = useMemo(() => {
-    let result = users;
-    if (statusFilter.value === 'active_pending') {
+    let result = usersWithAvatars;
+    if (statusFilter.value === 'all_approved') {
       result = result.filter(u => { const s = userState(u); return s === 'active' || s === 'pending' || s === 'locked'; });
+    } else if (statusFilter.value === 'active') {
+      result = result.filter(u => { const s = userState(u); return s === 'active' || s === 'locked'; });
+    } else if (statusFilter.value === 'pending') {
+      result = result.filter(u => userState(u) === 'pending');
     } else if (statusFilter.value === 'suspended') {
       result = result.filter(u => userState(u) === 'suspended');
     }
@@ -1514,10 +1637,14 @@ function PeopleTab() {
                 >
                   <td style={{ padding: '8px 16px', fontWeight: 500, overflow: 'hidden' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
-                      <CatalystAvatar
+                      <AvatarCell
+                        userId={u.id}
                         name={u.full_name || u.email || '?'}
-                        src={u.avatar_url}
-                        size="small"
+                        avatarUrl={u.avatar_url}
+                        hasOverride={!!avatarOverrides[u.id]}
+                        uploadedBy={currentUser?.id ?? ''}
+                        overrideStoragePath={avatarOverrides[u.id]?.storage_path}
+                        onChanged={handleAvatarChanged}
                       />
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name || '—'}</span>
                     </div>
@@ -1581,7 +1708,7 @@ function PeopleTab() {
           {filtered.length === users.length
             ? `${users.length} user${users.length !== 1 ? 's' : ''}`
             : `${filtered.length} of ${users.length} users`}
-          {statusFilter.value === 'active_pending' && (() => {
+          {(statusFilter.value === 'all_approved' || statusFilter.value === 'active' || statusFilter.value === 'pending') && (() => {
             const suspendedCount = users.filter(u => userState(u) === 'suspended').length;
             return suspendedCount > 0 ? ` · ${suspendedCount} suspended hidden` : null;
           })()}

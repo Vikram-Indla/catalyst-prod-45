@@ -119,7 +119,7 @@ export function StatusPopover({ status, issueType, onChange, children, showActiv
               background: token('elevation.surface.overlay', '#FFFFFF'),
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
-              boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
+              boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
               padding: '4px 0',
               zIndex: 9999,
             }}

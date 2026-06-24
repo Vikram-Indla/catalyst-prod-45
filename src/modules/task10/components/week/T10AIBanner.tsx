@@ -103,16 +103,16 @@ export function T10AIBanner({
               width: '36px',
               height: '50px',
               borderRadius: '12px',
-              border: '1.5px solid #8b5cf6',
+              border: '1.5px solid var(--ds-background-discovery-bold, #6E5DC6)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
             }}
           >
-            <Sparkles size={16} color="#8b5cf6" />
+            <Sparkles size={16} color="var(--ds-background-discovery-bold, #6E5DC6)" />
           </div>
-          <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e293b', whiteSpace: 'nowrap' }}>
+          <span style={{ fontWeight: 600, fontSize: '14px', color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap' }}>
             AI Suggestions
           </span>
           <span style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -133,9 +133,9 @@ export function T10AIBanner({
             padding: '6px 12px',
             fontSize: '13px',
             fontWeight: 500,
-            color: '#6366f1',
+            color: 'var(--ds-background-discovery-bold, #6E5DC6)',
             background: 'transparent',
-            border: '1px solid #e2e8f0',
+            border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: '6px',
             cursor: 'pointer',
             whiteSpace: 'nowrap',

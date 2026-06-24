@@ -62,7 +62,7 @@ export function MultiSelectDropdown({
     )
   }
 
-  const accentBg = accentColor === 'var(--cp-purple-60, #7C3AED)' ? '#F5F3FF' : 'var(--ds-background-selected, #EFF6FF)'
+  const accentBg = accentColor === 'var(--cp-purple-60, #7C3AED)' ? 'var(--ds-background-discovery, #F3F0FF)' : 'var(--ds-background-selected, #EFF6FF)'
 
   return (
     <div>
@@ -131,7 +131,7 @@ export function MultiSelectDropdown({
           <div style={{
             position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '4px',
             background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: '8px',
-            boxShadow: '0 8px 24px rgba(0,0,0,.12)', zIndex: 9999, overflow: 'hidden',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,.12))', zIndex: 9999, overflow: 'hidden',
           }}>
             {/* Search */}
             <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -193,7 +193,7 @@ export function MultiSelectDropdown({
                     >
                       <div style={{
                         width: 16, height: 16, borderRadius: '4px', flexShrink: 0,
-                        border: isSelected ? `2px solid ${accentColor}` : '2px solid #CBD5E1',
+                        border: isSelected ? `2px solid ${accentColor}` : '2px solid var(--ds-border, #DFE1E6)',
                         background: isSelected ? accentColor : 'var(--ds-surface, #fff)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}>
@@ -214,7 +214,7 @@ export function MultiSelectDropdown({
                         )}
                       </div>
                       {opt.badge && (
-                        <span style={{ fontSize: '9px', color: '#10B981', fontWeight: 600 }}>{opt.badge}</span>
+                        <span style={{ fontSize: '9px', color: 'var(--ds-background-success-bold, #1F845A)', fontWeight: 600 }}>{opt.badge}</span>
                       )}
                     </div>
                   )

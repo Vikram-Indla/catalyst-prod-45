@@ -153,7 +153,7 @@ export function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekSta
                 border: '1px solid var(--divider)', borderRadius: 8, padding: '12px 14px', background: 'var(--bg-app)',
                 cursor: 'pointer', transition: 'background 150ms',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 650, color: INK1 }}>{tile.value}</div>

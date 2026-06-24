@@ -218,7 +218,7 @@ export function WorkflowDiagram({
       const y2 = toPos.y + DIAGRAM_NODE_HEIGHT / 2;
 
       const isSelected = selectedEdge?.transition.id === t.id;
-      const color = isGlobal ? '#D97706' : (isSelected ? 'var(--ds-link, #0052CC)' : 'var(--ds-border, #DFE1E6)');
+      const color = isGlobal ? 'var(--ds-background-warning-bold, #d97706)' : (isSelected ? 'var(--ds-link, #0052CC)' : 'var(--ds-border, #DFE1E6)');
 
       return (
         <g key={t.id}>
@@ -256,7 +256,7 @@ export function WorkflowDiagram({
     const nodes = statuses.map((status) => {
       const pos = nodePositions[status.id];
       if (!pos) return null;
-      const catColor = STATUS_CATEGORY_COLORS[status.category as StatusCategory] ?? '#64748B';
+      const catColor = STATUS_CATEGORY_COLORS[status.category as StatusCategory] ?? 'var(--ds-text-subtlest, #626F86)';
       const isInitial = status.id === initialStatusId;
       const isUnreachable = !reachable.has(status.id);
       const isAddSource = addMode?.step === 'destination' && (addMode as { step: 'destination'; sourceId: string }).sourceId === status.id;
@@ -304,7 +304,7 @@ export function WorkflowDiagram({
           {isUnreachable && (
             <Tooltip content="No inbound transition — unreachable from the initial status">
               {/* Tooltip wrapper doesn't work directly in SVG; we use title element */}
-              <circle cx={DIAGRAM_NODE_WIDTH - 10} cy={10} r={5} fill="#DC2626">
+              <circle cx={DIAGRAM_NODE_WIDTH - 10} cy={10} r={5} fill="var(--ds-background-danger-bold, #dc2626)">
                 <title>No inbound transition — unreachable from the initial status</title>
               </circle>
             </Tooltip>
@@ -337,7 +337,7 @@ export function WorkflowDiagram({
             height={DIAGRAM_NODE_HEIGHT}
             rx={4}
             fill="transparent"
-            stroke="#D97706"
+            stroke="var(--ds-background-warning-bold, #d97706)"
             strokeWidth={1.5}
             strokeDasharray="6 3"
           />
@@ -347,7 +347,7 @@ export function WorkflowDiagram({
             fontSize={11}
             textAnchor="middle"
             fontFamily="var(--ds-font-family-body, 'Atlassian Sans', sans-serif)"
-            fill="#D97706"
+            fill="var(--ds-background-warning-bold, #d97706)"
           >
             Any status · global
           </text>
@@ -475,7 +475,7 @@ export function WorkflowDiagram({
               <polygon points="0 0,10 3.5,0 7" fill="var(--ds-link, #0052CC)" />
             </marker>
             <marker id="arrow-global" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-              <polygon points="0 0,10 3.5,0 7" fill="#D97706" />
+              <polygon points="0 0,10 3.5,0 7" fill="var(--ds-background-warning-bold, #d97706)" />
             </marker>
           </defs>
 

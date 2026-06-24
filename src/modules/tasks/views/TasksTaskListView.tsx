@@ -198,14 +198,14 @@ function TasksGroupByControl({
           padding: '0 12px',
           borderRadius: 3,
           border: `1px solid ${(isOpen || value !== 'none')
-            ? token('color.border.selected', '#0C66E4')
-            : token('color.border', '#DFE1E6')}`,
+            ? token('color.border.selected', 'var(--ds-link, #0C66E4)')
+            : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           background: (isOpen || value !== 'none')
-            ? token('color.background.selected', '#E9F2FF')
-            : token('elevation.surface', '#FFFFFF'),
+            ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
+            : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
           color: (isOpen || value !== 'none')
-            ? token('color.text.selected', '#0055CC')
-            : token('color.text', '#292A2E'),
+            ? token('color.text.selected', 'var(--ds-link, #0C66E4)')
+            : token('color.text', 'var(--ds-text, #172B4D)'),
           fontSize: 13,
           fontWeight: 500,
           fontFamily: 'inherit',
@@ -227,10 +227,10 @@ function TasksGroupByControl({
             top: anchor.top,
             left: anchor.left,
             minWidth: 180,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
             padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
@@ -258,11 +258,11 @@ function TasksGroupByControl({
                   border: 'none',
                   outline: 'none',
                   background: active
-                    ? token('color.background.selected', '#E9F2FF')
+                    ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
                     : focused
                       ? token('color.background.neutral.subtle.hovered', '#091E4208')
                       : 'transparent',
-                  color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#292A2E'),
+                  color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
                   fontWeight: active ? 500 : 400,
                   fontSize: 14,
                   fontFamily: 'inherit',
@@ -405,10 +405,10 @@ function TasksSavedFiltersControl({
           aria-label="Saved filters"
           style={{
             position: 'fixed', top: anchor.top, right: anchor.right, width: 280,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
             padding: '6px 0', zIndex: 9999, fontFamily: 'var(--cp-font-body)',
             maxHeight: 400, overflowY: 'auto',
           }}
@@ -421,7 +421,7 @@ function TasksSavedFiltersControl({
                 onChange={(e) => setNameInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') submitName(); }}
                 placeholder="Filter name"
-                style={{ flex: 1, padding: '6px 8px', fontSize: 13, border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3, outline: 'none' }}
+                style={{ flex: 1, padding: '6px 8px', fontSize: 13, border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: 3, outline: 'none' }}
               />
               <Button appearance="primary" onClick={submitName}>Save</Button>
             </div>
@@ -433,7 +433,7 @@ function TasksSavedFiltersControl({
               style={{
                 display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
                 background: 'transparent', border: 'none', cursor: hasCurrent ? 'pointer' : 'not-allowed',
-                color: hasCurrent ? token('color.text', '#292A2E') : token('color.text.disabled', '#9B9DA1'),
+                color: hasCurrent ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.disabled', '#9B9DA1'),
                 fontSize: 13, fontFamily: 'inherit',
               }}
             >
@@ -441,9 +441,9 @@ function TasksSavedFiltersControl({
             </button>
           )}
           {saved.length === 0 ? (
-            <div style={{ padding: '12px 16px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>No saved filters yet.</div>
+            <div style={{ padding: '12px 16px', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>No saved filters yet.</div>
           ) : (
-            <div style={{ borderTop: `1px solid ${token('color.border', '#DFE1E6')}`, padding: '4px 0' }}>
+            <div style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, padding: '4px 0' }}>
               {saved.map((s) => (
                 <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px 4px 16px' }}>
                   <button
@@ -451,17 +451,17 @@ function TasksSavedFiltersControl({
                     onClick={() => { onApply(s.filters); setIsOpen(false); }}
                     style={{
                       flex: 1, textAlign: 'left', padding: '4px 8px', background: 'transparent',
-                      border: 'none', cursor: 'pointer', fontSize: 13, color: token('color.text', '#292A2E'),
+                      border: 'none', cursor: 'pointer', fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'),
                       fontFamily: 'inherit',
                     }}
                   >
-                    {s.name} <span style={{ color: token('color.text.subtlest', '#6B6E76'), fontSize: 11 }}>({countActiveFilters(s.filters)})</span>
+                    {s.name} <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 11 }}>({countActiveFilters(s.filters)})</span>
                   </button>
                   <button
                     type="button"
                     aria-label={`Delete ${s.name}`}
                     onClick={() => onDelete(s.name)}
-                    style={{ padding: 4, background: 'transparent', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#6B6E76'), display: 'flex' }}
+                    style={{ padding: 4, background: 'transparent', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'), display: 'flex' }}
                   >
                     <AkCloseIcon label="" size="small" />
                   </button>
@@ -762,7 +762,7 @@ function TasksInlineCreateRow({
           outline: 'none',
           background: 'transparent',
           fontSize: 14,
-          color: token('color.text', '#292A2E'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'),
           fontFamily: 'inherit',
         }}
       />
@@ -783,17 +783,17 @@ function TasksInlineCreateRow({
             gap: 6,
             height: 26,
             padding: '0 8px',
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             borderRadius: 3,
             background: 'transparent',
-            color: token('color.text', '#292A2E'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
             fontSize: 12,
             fontFamily: 'inherit',
             cursor: 'pointer',
             flexShrink: 0,
             maxWidth: 160,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           {activeWs?.color && (
@@ -819,10 +819,10 @@ function TasksInlineCreateRow({
               minWidth: 220,
               maxHeight: '60vh',
               overflowY: 'auto',
-              background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
               padding: '6px 0',
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
@@ -830,7 +830,7 @@ function TasksInlineCreateRow({
             }}
           >
             {workstreams.length === 0 ? (
-              <div style={{ padding: '8px 16px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
+              <div style={{ padding: '8px 16px', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
                 No workstreams
               </div>
             ) : workstreams.map((w) => {
@@ -850,16 +850,16 @@ function TasksInlineCreateRow({
                     padding: '8px 16px',
                     border: 'none',
                     outline: 'none',
-                    background: active ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                    background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
                     boxShadow: active ? 'inset 3px 0 0 0 var(--ds-border-focused, #0C66E4)' : undefined,
-                    color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#292A2E'),
+                    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
                     fontWeight: active ? 500 : 400,
                     fontSize: 14,
                     fontFamily: 'inherit',
                     textAlign: 'left',
                     cursor: 'pointer',
                   }}
-                  onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+                  onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
                   onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {w.color && <span style={{ width: 8, height: 8, borderRadius: '50%', background: w.color, flexShrink: 0 }} />}
@@ -890,20 +890,20 @@ function TasksInlineCreateRow({
             height: 28,
             padding: 0,
             border: dateMenuOpen
-              ? `1.5px solid ${token('color.border.focused', '#0C66E4')}`
+              ? `1.5px solid ${token('color.border.focused', 'var(--ds-link, #0C66E4)')}`
               : '1.5px solid transparent',
             borderRadius: 4,
             background: dateMenuOpen
-              ? token('color.background.information', '#E9F2FF')
+              ? token('color.background.information', 'var(--ds-background-selected, #E9F2FF)')
               : 'transparent',
             color: dateMenuOpen
-              ? token('color.text.brand', '#0C66E4')
-              : token('color.text.subtle', '#505258'),
+              ? token('color.text.brand', 'var(--ds-link, #0C66E4)')
+              : token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
             cursor: 'pointer',
             flexShrink: 0,
             transition: 'background-color 120ms ease, border-color 120ms ease',
           }}
-          onMouseEnter={(e) => { if (!dateMenuOpen) e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+          onMouseEnter={(e) => { if (!dateMenuOpen) e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
           onMouseLeave={(e) => { if (!dateMenuOpen) e.currentTarget.style.background = 'transparent'; }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -925,15 +925,15 @@ function TasksInlineCreateRow({
               left: dateMenuAnchor.left,
               width: 280,
               padding: 12,
-              background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
             }}
           >
-            <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text', '#292A2E'), marginBottom: 6 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 6 }}>
               Due date
             </div>
             <div style={{ position: 'relative', marginBottom: 12 }}>
@@ -953,13 +953,13 @@ function TasksInlineCreateRow({
                   padding: '0 32px 0 8px',
                   fontSize: 14,
                   border: dateInputFocused
-                    ? `2px solid ${token('color.border.focused', '#0C66E4')}`
-                    : `1px solid ${token('color.border', '#DFE1E6')}`,
+                    ? `2px solid ${token('color.border.focused', 'var(--ds-link, #0C66E4)')}`
+                    : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                   borderRadius: 4,
                   outline: 'none',
                   fontFamily: 'inherit',
-                  color: token('color.text', '#292A2E'),
-                  background: token('elevation.surface', '#FFFFFF'),
+                  color: token('color.text', 'var(--ds-text, #172B4D)'),
+                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                   boxSizing: 'border-box',
                 }}
               />
@@ -977,8 +977,8 @@ function TasksInlineCreateRow({
                     height: 20,
                     border: 'none',
                     borderRadius: '50%',
-                    background: token('color.background.neutral.bold', '#42526E'),
-                    color: token('color.text.inverse', '#FFFFFF'),
+                    background: token('color.background.neutral.bold', 'var(--ds-text-subtle, #42526E)'),
+                    color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -994,30 +994,30 @@ function TasksInlineCreateRow({
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto auto 1fr auto auto', alignItems: 'center', gap: 4, marginBottom: 8 }}>
               <button type="button" aria-label="Previous year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() - 1, d.getMonth(), 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >«</button>
               <button type="button" aria-label="Previous month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >‹</button>
-              <span style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: token('color.text', '#292A2E') }}>{monthLabel}</span>
+              <span style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{monthLabel}</span>
               <button type="button" aria-label="Next month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >›</button>
               <button type="button" aria-label="Next year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() + 1, d.getMonth(), 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >»</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-                <div key={d} style={{ fontSize: 11, fontWeight: 500, textAlign: 'center', padding: '4px 0', color: token('color.text.subtle', '#505258') }}>{d}</div>
+                <div key={d} style={{ fontSize: 11, fontWeight: 500, textAlign: 'center', padding: '4px 0', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>{d}</div>
               ))}
               {dayCells.map((cell) => {
                 const highlight = cell.isSelected || (cell.isToday && !dueDate);
@@ -1030,20 +1030,20 @@ function TasksInlineCreateRow({
                       height: 28,
                       border: 'none',
                       borderBottom: highlight
-                        ? `2px solid ${token('color.border.focused', '#0C66E4')}`
+                        ? `2px solid ${token('color.border.focused', 'var(--ds-link, #0C66E4)')}`
                         : '2px solid transparent',
                       background: 'transparent',
                       cursor: 'pointer',
                       fontSize: 13,
                       fontFamily: 'inherit',
                       color: cell.outside
-                        ? token('color.text.subtlest', '#6B6E76')
+                        ? token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)')
                         : highlight
-                          ? token('color.text.brand', '#0C66E4')
-                          : token('color.text', '#292A2E'),
+                          ? token('color.text.brand', 'var(--ds-link, #0C66E4)')
+                          : token('color.text', 'var(--ds-text, #172B4D)'),
                       padding: 0,
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     {cell.day}
@@ -1076,11 +1076,11 @@ function TasksInlineCreateRow({
             border: 'none',
             borderRadius: '50%',
             background: 'transparent',
-            color: token('color.text.subtle', '#505258'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
             cursor: 'pointer',
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           {currentAssignee ? (
@@ -1102,10 +1102,10 @@ function TasksInlineCreateRow({
               minWidth: 240,
               maxHeight: '50vh',
               overflowY: 'auto',
-              background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
               padding: 8,
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
@@ -1124,7 +1124,7 @@ function TasksInlineCreateRow({
               style={{
                 padding: '8px 8px',
                 fontSize: 13,
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 borderRadius: 3,
                 outline: 'none',
                 fontFamily: 'inherit',
@@ -1140,8 +1140,8 @@ function TasksInlineCreateRow({
                   display: 'flex', alignItems: 'center', gap: 8,
                   width: '100%', padding: '8px 8px',
                   border: 'none', outline: 'none',
-                  background: assigneeIdx === -1 ? token('color.background.selected', '#E9F2FF') : 'transparent',
-                  color: token('color.text', '#292A2E'),
+                  background: assigneeIdx === -1 ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
+                  color: token('color.text', 'var(--ds-text, #172B4D)'),
                   fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
                   cursor: 'pointer', borderRadius: 3,
                 }}
@@ -1150,7 +1150,7 @@ function TasksInlineCreateRow({
                 <span>Unassigned</span>
               </button>
               {filteredMembers.length === 0 && assigneeQuery && (
-                <div style={{ padding: '8px 8px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
+                <div style={{ padding: '8px 8px', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
                   No matches
                 </div>
               )}
@@ -1168,12 +1168,12 @@ function TasksInlineCreateRow({
                       display: 'flex', alignItems: 'center', gap: 8,
                       width: '100%', padding: '8px 8px',
                       border: 'none', outline: 'none',
-                      background: isActive ? token('color.background.selected', '#E9F2FF') : 'transparent',
-                      color: token('color.text', '#292A2E'),
+                      background: isActive ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
+                      color: token('color.text', 'var(--ds-text, #172B4D)'),
                       fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
                       cursor: 'pointer', borderRadius: 3,
                     }}
-                    onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+                    onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
                     onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <Avatar size="xsmall" src={m.src} name={m.name} />
@@ -1201,19 +1201,19 @@ function TasksInlineCreateRow({
           border: 'none',
           borderRadius: 4,
           background: canSubmit
-            ? token('color.background.brand.bold', '#0C66E4')
-            : token('color.background.disabled', '#DCDFE4'),
+            ? token('color.background.brand.bold', 'var(--ds-link, #0C66E4)')
+            : token('color.background.disabled', 'var(--ds-border-disabled, #DCDFE4)'),
           color: canSubmit
-            ? token('color.text.inverse', '#FFFFFF')
-            : token('color.text.disabled', '#6B6E76'),
+            ? token('color.text.inverse', 'var(--ds-surface, #FFFFFF)')
+            : token('color.text.disabled', 'var(--ds-text-subtlest, #6B6E76)'),
           fontSize: 14,
           fontWeight: 500,
           fontFamily: 'inherit',
           cursor: canSubmit ? 'pointer' : 'not-allowed',
           flexShrink: 0,
         }}
-        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', '#0055CC'); }}
-        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', '#0C66E4'); }}
+        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', 'var(--ds-link, #0C66E4)'); }}
+        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'); }}
       >
         <span>{isSubmitting ? 'Creating…' : 'Create'}</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1642,12 +1642,12 @@ export default function TasksTaskListView() {
         );
       } else if (groupBy === 'priority') {
         const p = (sample.priority || '').toLowerCase();
-        const rank = TASK_PRIORITY_RANK[p] || { level: 0, color: token('color.border', '#DFE1E6') };
+        const rank = TASK_PRIORITY_RANK[p] || { level: 0, color: token('color.border', 'var(--ds-border, #DFE1E6)') };
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={k}>
             <span style={{ display: 'inline-flex', gap: 2 }}>
               {[1, 2, 3, 4].map((i) => (
-                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : token('color.border', '#DFE1E6') }} />
+                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : token('color.border', 'var(--ds-border, #DFE1E6)') }} />
               ))}
             </span>
             <span>{k}</span>
@@ -1721,7 +1721,7 @@ export default function TasksTaskListView() {
           minHeight: 0,
           margin: '16px 24px',
           background: 'var(--ds-surface, #FFFFFF)',
-          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
           borderRadius: 8,
           overflow: 'hidden',
         }}
@@ -1737,7 +1737,7 @@ export default function TasksTaskListView() {
             display: 'flex',
             gap: 12,
             alignItems: 'center',
-            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
           }}
         >
           {/* Mascot — Ask Caty (matches Backlog L3476-3482). Placeholder
@@ -1761,7 +1761,7 @@ export default function TasksTaskListView() {
                 <span
                   style={{
                     paddingInlineStart: 8,
-                    color: token('color.text.subtlest', '#6B778C'),
+                    color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                     display: 'flex',
                     alignItems: 'center',
                   }}
@@ -1782,7 +1782,7 @@ export default function TasksTaskListView() {
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
-                      color: token('color.text.subtlest', '#6B778C'),
+                      color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                       padding: '0 8px 0 4px',
                     }}
                   >
@@ -1945,7 +1945,7 @@ export default function TasksTaskListView() {
               height: 32,
               padding: '0 12px',
               marginLeft: 8,
-              color: token('color.text.subtlest', '#626F86'),
+              color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               fontSize: 12,
               fontWeight: 500,
               whiteSpace: 'nowrap',

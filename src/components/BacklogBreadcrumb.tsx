@@ -21,13 +21,13 @@ export const BacklogBreadcrumb = memo(function BacklogBreadcrumb() {
         }}
       >
         <li>
-          <Link to="/" style={{ color: '#0055CC', textDecoration: 'none' }}>
+          <Link to="/" style={{ color: 'var(--ds-link, #0C66E4)', textDecoration: 'none' }}>
             Home
           </Link>
         </li>
-        <li style={{ color: '#6B778C' }}>/</li>
+        <li style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>/</li>
         <li>
-          <Link to="/workitems" style={{ color: '#0055CC', textDecoration: 'none' }}>
+          <Link to="/workitems" style={{ color: 'var(--ds-link, #0C66E4)', textDecoration: 'none' }}>
             Work Items
           </Link>
         </li>

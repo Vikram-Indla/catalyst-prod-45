@@ -87,7 +87,7 @@ const STATUS_LEGEND = [
   { key: 'backlog', label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },  // F2
   { key: 'planned', label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },  // F3
   { key: 'progress', label: 'In Progress', color: 'var(--ds-text-warning, #f59e0b)' },  // F4
-  { key: 'review', label: 'Review', color: '#8b5cf6' },  // F5
+  { key: 'review', label: 'Review', color: 'var(--ds-background-discovery-bold, #8b5cf6)' },  // F5
   { key: 'done', label: 'Done', color: 'var(--ds-text-success, #16a34a)' },  // F6
 ];
 
@@ -467,7 +467,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
         {/* ============================================================
             TOP BAR - Title, Today, Date Nav, View Mode Toggle
             ============================================================ */}
-        {/* M5: Container background var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) */}
+        {/* M5: Container background var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] dark:border-slate-800 bg-white dark:bg-slate-950 flex-shrink-0">
           {/* Left: Title */}
           <div>
@@ -499,7 +499,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
               <Button variant="ghost" size="sm" className="h-9 px-2 rounded-l-lg" onClick={() => navigateView('prev')}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="px-4 text-sm font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:text-slate-300 min-w-[160px] text-center">
+              <span className="px-4 text-sm font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))] dark:text-slate-300 min-w-[160px] text-center">
                 {format(viewStart, 'MMM d')} - {format(viewEnd, 'MMM d, yyyy')}
               </span>
               <Button variant="ghost" size="sm" className="h-9 px-2 rounded-r-lg" onClick={() => navigateView('next')}>
@@ -517,7 +517,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                     "px-4 py-1.5 text-sm font-medium rounded-md transition-all capitalize",
                     viewMode === mode
                       ? "bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white shadow-sm"
-                      : "text-[var(--ds-text-subtlest,#64748b)] dark:text-slate-400 hover:text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:hover:text-slate-300"
+                      : "text-[var(--ds-text-subtlest,#64748b)] dark:text-slate-400 hover:text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))] dark:hover:text-slate-300"
                   )}
                 >
                   {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -1003,10 +1003,10 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                           // B6-B10: Workstream border color
                                           border: `1px solid ${wsColors.border}`,
                                           // D1: OVERDUE — Red left border 3px solid var(--ds-text-danger, #dc2626)
-                                          borderLeft: task.is_overdue ? '3px solid #dc2626' : `1px solid ${wsColors.border}`,
+                                          borderLeft: task.is_overdue ? '3px solid var(--ds-background-danger-bold, #dc2626)' : `1px solid ${wsColors.border}`,
                                           // H8: Bar border radius 6px
                                           borderRadius: '6px',
-                                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                                          boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05))',
                                         }}
                                         onClick={() => onTaskClick?.(task)}
                                         onMouseEnter={() => setHoveredTaskId(task.id)}
@@ -1035,7 +1035,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                               "task-title ml-1.5 text-[13px] font-medium truncate flex-1",
                                               task.status_slug === 'done' && "line-through opacity-70"
                                             )}
-                                            style={{ color: wsColors.textDark || 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}
+                                            style={{ color: wsColors.textDark || 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}
                                           >
                                             {task.title}
                                           </span>
@@ -1081,7 +1081,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
               <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
                 <CalendarDays className="w-8 h-8 text-[var(--ds-text-subtlest,#94a3b8)] dark:text-slate-500" />
               </div>
-              <h3 className="text-lg font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:text-slate-300 mb-1">
+              <h3 className="text-lg font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))] dark:text-slate-300 mb-1">
                 No tasks to display on timeline
               </h3>
               <p className="text-sm text-[var(--ds-text-subtlest,#64748b)] dark:text-slate-400">

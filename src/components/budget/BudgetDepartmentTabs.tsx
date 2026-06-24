@@ -44,13 +44,13 @@ export function BudgetDepartmentTabs({ departments, currentDept, budgets, onSele
                 // Active state with gradient + left accent
                 isActive && [
                   "border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]",
-                  "bg-gradient-to-br from-[rgba(37,99,235,0.05)] via-[rgba(37,99,235,0.08)] to-[rgba(37,99,235,0.05)]",
+                  "bg-gradient-to-br from-[var(--ds-background-information, rgba(37,99,235,0.05))] via-[var(--ds-background-information, rgba(37,99,235,0.08))] to-[var(--ds-background-information, rgba(37,99,235,0.05))]",
                   "shadow-sm"
                 ],
                 // Inactive with budget
                 !isActive && hasBudget && [
                   "border-slate-200 bg-white",
-                  "hover:border-[rgba(37,99,235,0.5)]",
+                  "hover:border-[var(--ds-background-information, rgba(37,99,235,0.5))]",
                   "hover:shadow-sm"
                 ],
                 // Inactive no budget (muted)
@@ -85,7 +85,7 @@ export function BudgetDepartmentTabs({ departments, currentDept, budgets, onSele
               {/* Resource Count + Warning */}
               <div className="flex items-center justify-center gap-1.5 text-xs">
                 <span className={cn(
-                  isActive ? "text-[rgba(37,99,235,0.7)]" : "text-slate-500"
+                  isActive ? "text-[var(--ds-background-information, rgba(37,99,235,0.7))]" : "text-slate-500"
                 )}>
                   {budget.resources} resources
                 </span>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { createWorkItem } from '@/services/workItemService';
 import { X, ArrowUp, ArrowRight, ArrowDown, ChevronsUp, Calendar, Search, ChevronDown } from '@/lib/atlaskit-icons';
 import { catalystToast } from '@/lib/catalystToast';
@@ -89,14 +90,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
     enabled: !!projectId,
   });
 
-  const { data: profiles = [] } = useQuery<ProfileOption[]>({
-    queryKey: ['ph-profiles-all'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('profiles').select('id, full_name, avatar_url').order('full_name');
-      if (error) throw error;
-      return (data || []) as ProfileOption[];
-    },
-  });
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = approvedProfiles.map(p => ({ id: p.id, full_name: p.name, avatar_url: p.avatarUrl ?? null }));
 
   const { data: parentItems = [] } = useQuery<ParentOption[]>({
     queryKey: ['ph-parent-items', projectId],
@@ -240,7 +235,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
       onClick={handleClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-[rgba(15,23,42,0.5)]" />
+      <div className="absolute inset-0 bg-[var(--ds-shadow-overlay, rgba(15,23,42,0.5))]" />
 
       {/* Modal */}
       <div
@@ -619,7 +614,7 @@ function FixedDropdown({
         width: width || '100%',
         maxHeight: maxHeight || 'auto',
         border: '1px solid var(--divider)',
-        boxShadow: '0 8px 20px rgba(0,0,0,0.18)',
+        boxShadow: '0 8px 20px var(--ds-shadow-raised, rgba(0,0,0,0.18))',
         zIndex: 9999,
       }}
       onClick={onClick}

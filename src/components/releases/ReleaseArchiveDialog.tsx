@@ -31,6 +31,7 @@ export function ReleaseArchiveDialog({ isOpen, release, onClose, onSuccess }: Pr
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['releases', release.project_id] });
       onSuccess?.();
       onClose();
     },

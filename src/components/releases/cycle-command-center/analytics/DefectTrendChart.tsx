@@ -17,7 +17,7 @@ interface DefectTrendChartProps {
 
 const SEVERITY_COLORS = {
   blocker: 'var(--ds-text-danger, #dc2626)',  // Red-600
-  critical: '#ea580c', // Orange-600
+  critical: 'var(--ds-background-warning-bold, #E2B203)', // Orange-600
   major: 'var(--ds-text-warning, #d97706)',    // Amber-600
   minor: '#65a30d',    // Lime-600
 };
@@ -65,17 +65,17 @@ export function DefectTrendChart({ cycleId, days = 14 }: DefectTrendChartProps) 
                 <XAxis 
                   dataKey="dateLabel" 
                   tick={{ fontSize: 11 }} 
-                  stroke="#9ca3af"
+                  stroke="var(--ds-text-disabled, #8590A2)"
                 />
                 <YAxis 
                   tick={{ fontSize: 11 }} 
-                  stroke="#9ca3af"
+                  stroke="var(--ds-text-disabled, #8590A2)"
                   allowDecimals={false}
                 />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'white', 
-                    border: '1px solid #e5e7eb',
+                    border: '1px solid var(--ds-border, #DFE1E6)',
                     borderRadius: '8px',
                     fontSize: '12px'
                   }}

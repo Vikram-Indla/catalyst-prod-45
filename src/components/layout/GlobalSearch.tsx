@@ -135,7 +135,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
           ref={inputRef}
           isCompact
           elemBeforeInput={
-            <span style={{ display: 'inline-flex', paddingLeft: 6, color: token('color.text.subtle', '#626F86') }}>
+            <span style={{ display: 'inline-flex', paddingLeft: 6, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
               <SearchIcon label="" />
             </span>
           }
@@ -151,8 +151,8 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
                 marginRight: 6,
                 borderRadius: 3,
                 border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-                background: token('elevation.surface.sunken', '#F4F5F7'),
-                color: token('color.text.subtle', '#626F86'),
+                background: token('elevation.surface.sunken', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+                color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                 fontSize: 11,
                 fontWeight: 600,
                 fontFamily: 'var(--cp-font-body)',

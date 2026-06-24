@@ -78,11 +78,11 @@ export const CATALYST_COLORS = {
 
 // Contract Ring Colors
 export const CONTRACT_RING_COLORS = {
-  healthy: CATALYST_COLORS.teal[600],     // #0d9488 - 60+ days
-  warning: CATALYST_COLORS.warning.DEFAULT, // #d97706 - 30-60 days
-  critical: CATALYST_COLORS.danger.DEFAULT, // #ef4444 - <30 days
-  permanent: CATALYST_COLORS.gray[400],     // #9ca3af - No end date
-  expired: CATALYST_COLORS.gray[400],       // #9ca3af - Past date
+  healthy: CATALYST_COLORS.teal[600],     // var(--ds-chart-teal-bold, #0d9488) - 60+ days
+  warning: CATALYST_COLORS.warning.DEFAULT, // var(--ds-background-warning-bold, #d97706) - 30-60 days
+  critical: CATALYST_COLORS.danger.DEFAULT, // var(--ds-background-danger-bold, #ef4444) - <30 days
+  permanent: CATALYST_COLORS.gray[400],     // var(--ds-text-disabled, #8590A2) - No end date
+  expired: CATALYST_COLORS.gray[400],       // var(--ds-text-disabled, #8590A2) - Past date
 } as const;
 
 // Allocation Bar Gradients (CSS)
@@ -95,12 +95,12 @@ export const BAR_GRADIENTS = {
 
 // Shadow System
 export const SHADOWS = {
-  sm: '0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06)',
-  md: '0 2px 4px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.06)',
-  lg: '0 4px 8px rgba(0,0,0,0.04), 0 8px 16px rgba(0,0,0,0.08), 0 16px 32px rgba(0,0,0,0.04)',
-  primaryGlow: `0 8px 20px rgba(37, 99, 235, 0.3), 0 4px 8px rgba(0,0,0,0.1)`,
-  tealGlow: `0 8px 20px rgba(13, 148, 136, 0.3), 0 4px 8px rgba(0,0,0,0.1)`,
-  warningGlow: `0 8px 20px rgba(217, 119, 6, 0.3), 0 4px 8px rgba(0,0,0,0.1)`,
+  sm: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.04)), 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
+  md: '0 2px 4px var(--ds-shadow-raised, rgba(0,0,0,0.04)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
+  lg: '0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.04)), 0 8px 16px var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 16px 32px var(--ds-shadow-raised, rgba(0,0,0,0.04))',
+  primaryGlow: `0 8px 20px var(--ds-background-information, rgba(37, 99, 235, 0.3)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.1))`,
+  tealGlow: `0 8px 20px var(--ds-background-success, rgba(13, 148, 136, 0.3)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.1))`,
+  warningGlow: `0 8px 20px var(--ds-background-warning, rgba(217, 119, 6, 0.3)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.1))`,
 } as const;
 
 // Timeline Bar Style Helper
@@ -115,7 +115,7 @@ export function getTimelineBarStyle(projectName?: string | null): {
   if (name.includes('insourced') || name.includes('ops') || name.includes('platform')) {
     return {
       background: BAR_GRADIENTS.primary,
-      boxShadow: '0 2px 4px rgba(37, 99, 235, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1)',
+      boxShadow: '0 2px 4px var(--ds-background-information, rgba(37, 99, 235, 0.15)), 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
       hoverShadow: SHADOWS.primaryGlow,
     };
   }
@@ -123,7 +123,7 @@ export function getTimelineBarStyle(projectName?: string | null): {
   if (name.includes('innovation') || name.includes('alpha') || name.includes('project')) {
     return {
       background: BAR_GRADIENTS.teal,
-      boxShadow: '0 2px 4px rgba(13, 148, 136, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1)',
+      boxShadow: '0 2px 4px var(--ds-background-success, rgba(13, 148, 136, 0.15)), 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
       hoverShadow: SHADOWS.tealGlow,
     };
   }
@@ -131,7 +131,7 @@ export function getTimelineBarStyle(projectName?: string | null): {
   if (name.includes('website') || name.includes('design') || name.includes('review')) {
     return {
       background: BAR_GRADIENTS.warning,
-      boxShadow: '0 2px 4px rgba(217, 119, 6, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1)',
+      boxShadow: '0 2px 4px var(--ds-background-warning, rgba(217, 119, 6, 0.15)), 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
       hoverShadow: SHADOWS.warningGlow,
     };
   }
@@ -139,8 +139,8 @@ export function getTimelineBarStyle(projectName?: string | null): {
   // Default to slate for unknown projects
   return {
     background: BAR_GRADIENTS.slate,
-    boxShadow: '0 2px 4px rgba(71, 85, 105, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1)',
-    hoverShadow: '0 8px 20px rgba(71, 85, 105, 0.3), 0 4px 8px rgba(0,0,0,0.1)',
+    boxShadow: '0 2px 4px var(--ds-background-neutral, rgba(71, 85, 105, 0.15)), 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1))',
+    hoverShadow: '0 8px 20px var(--ds-background-neutral, rgba(71, 85, 105, 0.3)), 0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
   };
 }
 

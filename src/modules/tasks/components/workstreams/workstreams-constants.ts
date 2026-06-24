@@ -18,7 +18,7 @@ export const COLORS = {
   surfaceWhite: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
   surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
-  surfaceSelected: '#dbeafe',
+  surfaceSelected: 'var(--ds-background-information, #E9F2FF)',
 
   // Borders
   borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
@@ -27,20 +27,20 @@ export const COLORS = {
   // Brand
   accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   accentHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-  accentLight: '#dbeafe',
+  accentLight: 'var(--ds-background-information, #E9F2FF)',
   accentLighter: 'var(--ds-background-selected, #eff6ff)',
 
   // Status
   success: 'var(--ds-text-success, #16a34a)',
-  successBg: '#f0fdf4',
+  successBg: 'var(--ds-background-success, #DFFCF0)',
 
   warning: 'var(--ds-text-warning, #f59e0b)',
-  warningText: '#b45309',
-  warningBg: '#fffbeb',
+  warningText: 'var(--ds-background-warning-bold, #b45309)',
+  warningBg: 'var(--ds-background-warning, #FFF7D6)',
 
   danger: 'var(--ds-text-danger, #dc2626)',
   dangerBg: 'var(--ds-background-danger, #fef2f2)',
-  dangerBorder: '#fecaca',
+  dangerBorder: 'var(--ds-background-danger, #FFECEB)',
 };
 
 // ============================================================================
@@ -49,10 +49,10 @@ export const COLORS = {
 
 export const ICON_COLORS = [
   'linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)',
-  'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
-  'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
-  'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-  'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+  'linear-gradient(135deg, var(--ds-background-discovery-bold, #6E5DC6) 0%, var(--ds-background-discovery-bold, #6d28d9) 100%)',
+  'linear-gradient(135deg, var(--ds-icon-information, #1D7AFC) 0%, var(--ds-icon-information, #1D7AFC) 100%)',
+  'linear-gradient(135deg, var(--ds-background-warning-bold, #E2B203) 0%, var(--ds-background-warning-bold, #E2B203) 100%)',
+  'linear-gradient(135deg, var(--ds-background-accent-magenta-bolder, #BE185D) 0%, var(--ds-background-accent-magenta-bolder, #BE185D) 100%)',
   'linear-gradient(135deg, var(--ds-text-success, #22c55e) 0%, var(--ds-text-success, #16a34a) 100%)',
   'linear-gradient(135deg, var(--ds-text-subtlest, #64748b) 0%, var(--ds-text-subtle, #475569) 100%)',
 ];

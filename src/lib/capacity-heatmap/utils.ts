@@ -36,31 +36,31 @@ export function getUtilizationColor(percentage: number, mode: 'standard' | 'ther
   
   if (isDark) {
     // DARK MODE - use darker backgrounds with light text
-    if (percentage === 0) return { bg: 'rgba(13, 148, 136, 0.25)', text: '#5eead4', pulse: false };  // teal
-    if (percentage <= 40) return { bg: 'rgba(16, 185, 129, 0.25)', text: '#6ee7b7', pulse: false };  // emerald
+    if (percentage === 0) return { bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.25))', text: 'var(--ds-background-success, #DCFFF1)', pulse: false };  // teal
+    if (percentage <= 40) return { bg: 'var(--ds-background-success-bold, rgba(16, 185, 129, 0.25))', text: 'var(--ds-background-success, #DFFCF0)', pulse: false };  // emerald
     if (percentage <= 70) return { bg: 'rgba(56, 189, 248, 0.25)', text: '#7dd3fc', pulse: false };  // sky
-    if (percentage <= 85) return { bg: 'rgba(59, 130, 246, 0.30)', text: '#93c5fd', pulse: false };  // blue
-    if (percentage <= 100) return { bg: 'rgba(37, 99, 235, 0.35)', text: '#bfdbfe', pulse: false }; // blue darker
-    return { bg: 'rgba(245, 158, 11, 0.35)', text: '#fcd34d', pulse: true };  // amber - warning
+    if (percentage <= 85) return { bg: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.30))', text: 'var(--ds-background-information-bold, #0C66E4)', pulse: false };  // blue
+    if (percentage <= 100) return { bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.35))', text: 'var(--ds-background-information, #E9F2FF)', pulse: false }; // blue darker
+    return { bg: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.35))', text: 'var(--ds-background-warning, #FFF7D6)', pulse: true };  // amber - warning
   }
   
   // LIGHT MODE
   if (mode === 'thermal') {
-    if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: 'var(--quality-high, #059669)', pulse: false };
-    if (percentage <= 40) return { bg: '#d1fae5', text: '#047857', pulse: false };
-    if (percentage <= 70) return { bg: '#e0f2fe', text: '#0369a1', pulse: false };
-    if (percentage <= 85) return { bg: '#bfdbfe', text: '#1d4ed8', pulse: false };
-    if (percentage <= 100) return { bg: '#93c5fd', text: '#1e40af', pulse: false };
-    return { bg: '#fde68a', text: '#b45309', pulse: true };
+    if (percentage === 0) return { bg: 'var(--ds-background-success-bold, rgba(16, 185, 129, 0.15))', text: 'var(--quality-high, #059669)', pulse: false };
+    if (percentage <= 40) return { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success-bold, #1F845A)', pulse: false };
+    if (percentage <= 70) return { bg: 'var(--ds-background-information, #E9F2FF)', text: '#0369a1', pulse: false };
+    if (percentage <= 85) return { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1d4ed8)', pulse: false };
+    if (percentage <= 100) return { bg: 'var(--ds-background-information-bold, #0C66E4)', text: 'var(--ds-link-pressed, #1e40af)', pulse: false };
+    return { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-background-warning-bold, #b45309)', pulse: true };
   }
   
   // Standard mode - light colors
-  if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: 'var(--quality-high, #059669)', pulse: false };
-  if (percentage <= 40) return { bg: '#d1fae5', text: '#047857', pulse: false };
-  if (percentage <= 70) return { bg: '#e0f2fe', text: '#0369a1', pulse: false };
-  if (percentage <= 85) return { bg: '#bfdbfe', text: '#1d4ed8', pulse: false };
-  if (percentage <= 100) return { bg: '#93c5fd', text: '#1e40af', pulse: false };
-  return { bg: '#fde68a', text: '#b45309', pulse: true };
+  if (percentage === 0) return { bg: 'var(--ds-background-success-bold, rgba(16, 185, 129, 0.15))', text: 'var(--quality-high, #059669)', pulse: false };
+  if (percentage <= 40) return { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success-bold, #1F845A)', pulse: false };
+  if (percentage <= 70) return { bg: 'var(--ds-background-information, #E9F2FF)', text: '#0369a1', pulse: false };
+  if (percentage <= 85) return { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1d4ed8)', pulse: false };
+  if (percentage <= 100) return { bg: 'var(--ds-background-information-bold, #0C66E4)', text: 'var(--ds-link-pressed, #1e40af)', pulse: false };
+  return { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-background-warning-bold, #b45309)', pulse: true };
 }
 
 export function getHealthStatus(utilization: number, conflictCount: number): HealthStatus {
@@ -167,7 +167,7 @@ export function generateTestData(monthCount = 12): { resources: HeatmapResource[
       util: [60, 65, 70, 65, 60, 55, 50, 45, 50, 55, 60, 65] },
   ];
   
-  const projectColors = [CATALYST_COLORS.primary, CATALYST_COLORS.teal, '#7c3aed', '#ea580c', CATALYST_COLORS.danger];
+  const projectColors = [CATALYST_COLORS.primary, CATALYST_COLORS.teal, 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-background-warning-bold, #E2B203)', CATALYST_COLORS.danger];
   const projectNames = ['Innovation Platform', 'Data Platform', 'Senaei BAU', 'Inspection Project', 'Security Audit'];
   
   const resources: HeatmapResource[] = templates.map((t, idx) => {

@@ -56,14 +56,14 @@ export type ProjectView = 'backlog' | 'board' | 'list' | 'timeline';
 /** Status display config */
 export const STATUS_CONFIG: Record<IssueStatus, { label: string; color: string; bg: string }> = {
   backlog:    { label: 'Backlog',    color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' },
-  ready:      { label: 'Ready',     color: 'var(--cp-workstream-catalyst-primary, #2563EB)', bg: '#EFF6FF' },
-  in_dev:     { label: 'In Dev',    color: 'var(--cp-workstream-catalyst-primary, #2563EB)', bg: '#EFF6FF' },
-  in_qa:      { label: 'In QA',     color: 'var(--cp-warning, #D97706)', bg: '#FFFBEB' },
-  in_uat:     { label: 'In UAT',    color: 'var(--cp-warning, #D97706)', bg: '#FFFBEB' },
-  in_beta:    { label: 'In Beta',   color: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA' },
-  prod_ready: { label: 'Prod Ready',color: 'var(--cp-success, #16A34A)', bg: '#DCFCE7' },
-  production: { label: 'Production',color: 'var(--cp-success, #16A34A)', bg: '#DCFCE7' },
-  on_hold:    { label: 'On Hold',   color: '#EF4444', bg: '#FEF2F2' },
+  ready:      { label: 'Ready',     color: 'var(--cp-workstream-catalyst-primary, #2563EB)', bg: 'var(--ds-background-information, #E9F2FF)' },
+  in_dev:     { label: 'In Dev',    color: 'var(--cp-workstream-catalyst-primary, #2563EB)', bg: 'var(--ds-background-information, #E9F2FF)' },
+  in_qa:      { label: 'In QA',     color: 'var(--cp-warning, #D97706)', bg: 'var(--ds-background-warning, #FFF7D6)' },
+  in_uat:     { label: 'In UAT',    color: 'var(--cp-warning, #D97706)', bg: 'var(--ds-background-warning, #FFF7D6)' },
+  in_beta:    { label: 'In Beta',   color: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-background-success, #DFFCF0)' },
+  prod_ready: { label: 'Prod Ready',color: 'var(--cp-success, #16A34A)', bg: 'var(--ds-background-success, #DFFCF0)' },
+  production: { label: 'Production',color: 'var(--cp-success, #16A34A)', bg: 'var(--ds-background-success, #DFFCF0)' },
+  on_hold:    { label: 'On Hold',   color: 'var(--ds-background-danger-bold, #ef4444)', bg: 'var(--ds-background-danger, #FFECEB)' },
 };
 
 /** Priority display config */

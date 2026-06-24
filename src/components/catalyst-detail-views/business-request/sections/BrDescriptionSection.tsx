@@ -78,7 +78,7 @@ export function BrDescriptionSection({ request, onUpdate, health }: Props) {
           fontSize: 14,
           fontWeight: 500,
           lineHeight: '20px',
-          color: token('color.text.subtle', '#505258'),
+          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
           fontFamily: 'var(--cp-font-body)',
         }}
       >
@@ -114,8 +114,8 @@ export function BrDescriptionSection({ request, onUpdate, health }: Props) {
             border: 'none',
             borderRadius: 3,
             color: hasContent
-              ? token('color.text', '#292A2E')
-              : token('color.text.subtlest', '#8590A2'),
+              ? token('color.text', 'var(--ds-text, #172B4D)')
+              : token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             fontSize: 14,
             fontFamily: 'var(--cp-font-body)',
             cursor: 'text',
@@ -124,7 +124,7 @@ export function BrDescriptionSection({ request, onUpdate, health }: Props) {
           onMouseEnter={(e) => {
             e.currentTarget.style.background = token(
               'color.background.neutral.hovered',
-              'rgba(9,30,66,0.04)',
+              'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))',
             );
           }}
           onMouseLeave={(e) => {

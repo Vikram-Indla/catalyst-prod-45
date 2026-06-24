@@ -46,7 +46,7 @@ function GeneratingOverlay() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'rgba(255, 255, 255, 0.75)',
+        background: 'var(--ds-surface, rgba(255, 255, 255, 0.75))',
         zIndex: 99990,
         display: 'flex',
         flexDirection: 'column',
@@ -63,14 +63,14 @@ function GeneratingOverlay() {
         marginTop: 16,
         fontSize: 16,
         fontWeight: 500,
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', 'var(--ds-text, #172B4D)'),
       }}>
         Generating stories…
       </div>
       <div style={{
         marginTop: 8,
         fontSize: 13,
-        color: token('color.text.subtle', '#42526E'),
+        color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
       }}>
         Analyzing epic documentation. This may take a moment.
       </div>
@@ -151,7 +151,7 @@ export function GenerateStoriesButton({ issue }: GenerateStoriesButtonProps) {
           style={{
             position: 'fixed',
             top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(255, 255, 255, 0.75)',
+            background: 'var(--ds-surface, rgba(255, 255, 255, 0.75))',
             zIndex: 99990,
             display: 'flex',
             flexDirection: 'column',
@@ -163,7 +163,7 @@ export function GenerateStoriesButton({ issue }: GenerateStoriesButtonProps) {
           aria-busy="true"
         >
           <Spinner size="large" />
-          <div style={{ marginTop: 16, fontSize: 16, fontWeight: 500, color: token('color.text', '#172B4D') }}>
+          <div style={{ marginTop: 16, fontSize: 16, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
             Creating stories…
           </div>
         </div>

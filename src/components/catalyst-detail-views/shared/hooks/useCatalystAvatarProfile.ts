@@ -1,6 +1,10 @@
 /**
  * Canonical hook — resolves a Jira account ID to an avatar URL.
  * Falls back through: jira_identity_map → profiles (catalyst_user_id) → profiles (direct).
+ *
+ * TODO: this hook resolves by jira_account_id (not by profile id), so it cannot
+ * simply be replaced with useApprovedProfiles. Refactor when useApprovedProfiles
+ * exposes a jiraAccountId-keyed map (useApprovedProfilesByJiraId already exists).
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

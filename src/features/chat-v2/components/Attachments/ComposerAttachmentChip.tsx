@@ -69,7 +69,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'rgba(0,0,0,0.35)',
+              background: 'var(--ds-shadow-raised, rgba(0,0,0,0.35))',
             }}
           >
             <Spinner />
@@ -85,7 +85,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
               right: 0,
               padding: '2px 4px',
               background: 'var(--cv2-danger, #E01E5A)',
-              color: '#FFFFFF',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: 10,
               fontWeight: 700,
               textAlign: 'center',
@@ -108,7 +108,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
             height: 22,
             borderRadius: '50%',
             background: '#1A1D21',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             border: '2px solid var(--cv2-bg-panel)',
             display: 'inline-flex',
             alignItems: 'center',
@@ -178,8 +178,8 @@ function Spinner() {
         width: 22,
         height: 22,
         borderRadius: '50%',
-        border: '2px solid rgba(255,255,255,0.3)',
-        borderTopColor: '#FFFFFF',
+        border: '2px solid var(--ds-surface, rgba(255,255,255,0.3))',
+        borderTopColor: 'var(--ds-surface, #FFFFFF)',
         animation: 'cv2-attach-spin 0.8s linear infinite',
       }}
     />

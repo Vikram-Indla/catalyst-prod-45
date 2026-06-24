@@ -5,6 +5,7 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { X, ChevronDown, Check, Link2, MoreHorizontal, Edit, Copy, Trash2 } from '@/lib/atlaskit-icons';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   DropdownMenu,
@@ -39,15 +40,15 @@ interface DrawerHeaderProps {
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   backlog: { label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
   planned: { label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
-  'in-progress': { label: 'In Progress', color: '#0284c7' },
-  in_progress: { label: 'In Progress', color: '#0284c7' },
-  review: { label: 'Review', color: '#8b5cf6' },
+  'in-progress': { label: 'In Progress', color: 'var(--ds-link, #0C66E4)' },
+  in_progress: { label: 'In Progress', color: 'var(--ds-link, #0C66E4)' },
+  review: { label: 'Review', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
   done: { label: 'Done', color: 'var(--ds-text-success, #16a34a)' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
   critical: { label: 'Critical', color: 'var(--ds-text-danger, #dc2626)' },
-  high: { label: 'High', color: '#ca8a04' },
+  high: { label: 'High', color: 'var(--ds-text-warning, #974F0C)' },
   medium: { label: 'Medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
   low: { label: 'Low', color: 'var(--ds-text-subtlest, #94a3b8)' },
 };
@@ -67,22 +68,6 @@ function useStatuses() {
     gcTime: 30 * 60 * 1000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-  });
-}
-
-function useProfiles() {
-  return useQuery({
-    queryKey: ['drawer-profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, email')
-        .order('full_name');
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
   });
 }
 
@@ -346,7 +331,11 @@ function AssigneeSelector({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { data: profiles = [] } = useProfiles();
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = useMemo(
+    () => approvedProfiles.map(p => ({ id: p.id, full_name: p.name, email: p.email, avatar_url: p.avatarUrl ?? null })),
+    [approvedProfiles]
+  );
 
   useEffect(() => {
     if (open) {

@@ -21,7 +21,7 @@ export function StatusLegend() {
       />
       <div className="w-px h-4 bg-border" />
       <div className="flex items-center gap-1.5">
-        <div className="w-3 h-3 rounded-full bg-[#0d9488]" />
+        <div className="w-3 h-3 rounded-full bg-[var(--ds-chart-teal-bold, #0d9488)]" />
         <span className="text-[11px] font-medium text-muted-foreground">Available</span>
       </div>
     </div>

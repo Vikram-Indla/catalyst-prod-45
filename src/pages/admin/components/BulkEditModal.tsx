@@ -180,7 +180,7 @@ const bulkModalCSS = `
 .ct-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,7 +197,7 @@ const bulkModalCSS = `
 .ct-modal {
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-radius: 12px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25));
   width: 480px;
   max-width: 90vw;
   max-height: 90vh;
@@ -283,7 +283,7 @@ const bulkModalCSS = `
 /* Active state: Blue border + subtle blue bg */
 .ct-field-card.active {
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  background: rgba(37, 99, 235, 0.04);
+  background: var(--ds-background-information, rgba(37, 99, 235, 0.04));
 }
 
 .ct-field-card-header {
@@ -320,7 +320,7 @@ const bulkModalCSS = `
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
-  color: #1e293b;
+  color: var(--ds-text, #172B4D);
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 8px;
@@ -339,7 +339,7 @@ const bulkModalCSS = `
 .ct-field-select-trigger:focus {
   outline: none;
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.08));
 }
 
 .ct-field-select-trigger:disabled {
@@ -372,7 +372,7 @@ const bulkModalCSS = `
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
   padding: 8px;
   z-index: 50;
   max-height: 280px;
@@ -405,7 +405,7 @@ const bulkModalCSS = `
 
 /* Selected item: Blue tint background */
 .ct-field-select-item.selected {
-  background: rgba(37, 99, 235, 0.08);
+  background: var(--ds-background-information, rgba(37, 99, 235, 0.08));
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   font-weight: 600;
 }

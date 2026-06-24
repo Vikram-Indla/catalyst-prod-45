@@ -28,14 +28,14 @@ const buttonVariants = cva(
         outline: "border border-border bg-transparent text-foreground hover:bg-muted",
         
         // Danger - Red
-        danger: "bg-[var(--ds-text-danger,#dc2626)] text-white hover:bg-[#b91c1c] shadow-sm",
-        destructive: "bg-[var(--ds-text-danger,#dc2626)] text-white hover:bg-[#b91c1c] shadow-sm",
+        danger: "bg-[var(--ds-text-danger,#dc2626)] text-white hover:bg-[var(--ds-text-danger, #AE2A19)] shadow-sm",
+        destructive: "bg-[var(--ds-text-danger,#dc2626)] text-white hover:bg-[var(--ds-text-danger, #AE2A19)] shadow-sm",
         
         // Success - Teal
-        success: "bg-[#0d9488] text-white hover:bg-[#0f766e] shadow-sm",
+        success: "bg-[var(--ds-chart-teal-bold, #0d9488)] text-white hover:bg-[var(--ds-chart-teal-bolder, #0f766e)] shadow-sm",
         
         // AI - Purple gradient
-        ai: "bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] text-white hover:from-[#6d28d9] hover:to-[#7c3aed] shadow-[0_4px_14px_-2px_rgba(124,58,237,0.3)]",
+        ai: "bg-gradient-to-r from-[var(--ds-background-discovery-bold, #7C3AED)] to-[var(--ds-background-discovery-bold, #8b5cf6)] text-white hover:from-[var(--ds-background-discovery-bold, #6d28d9)] hover:to-[var(--ds-background-discovery-bold, #7C3AED)] shadow-[0_4px_14px_-2px_var(--ds-background-discovery-bold, rgba(124,58,237,0.3))]",
         
         // Link style
         link: "text-brand-primary underline-offset-4 hover:underline p-0 h-auto",

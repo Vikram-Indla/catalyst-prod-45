@@ -17,6 +17,7 @@ import Select from '@atlaskit/select';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { useCreateChange } from '@/hooks/useReleaseHub';
 import { catalystToast } from '@/lib/catalystToast';
 import { X, Plus } from '@/lib/atlaskit-icons';
@@ -95,16 +96,10 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
       return (data ?? []) as { id: string; name: string }[];
     },
   });
-  const { data: users = [] } = useQuery({
-    queryKey: ['release-hub', 'create-chg', 'users'],
-    queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name').not('full_name', 'is', null).order('full_name');
-      return (data ?? []) as { id: string; full_name: string | null }[];
-    },
-  });
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
 
   const releaseOpts: Opt[] = useMemo(() => releases.map((r) => ({ label: r.name, value: r.id })), [releases]);
-  const userOpts: Opt[] = useMemo(() => users.map((u) => ({ label: u.full_name ?? 'Unknown', value: u.id })), [users]);
+  const userOpts: Opt[] = useMemo(() => approvedProfiles.map((p) => ({ label: p.name, value: p.id })), [approvedProfiles]);
 
   // Admin-managed option lists (rh_config_options) with static fallback.
   const { data: config } = useReleaseConfig();

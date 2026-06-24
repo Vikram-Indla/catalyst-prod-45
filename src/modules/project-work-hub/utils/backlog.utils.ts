@@ -24,20 +24,20 @@ export interface LozengeConfig {
 
 const LOZENGE_STYLES_LIGHT: Record<LozengeColor, { bg: string; text: string }> = {
   default:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
-  inprogress: { bg: '#DEEBFF', text: '#0747A6' },
-  success:    { bg: '#E3FCEF', text: '#006644' },
-  removed:    { bg: '#FFEBE6', text: '#BF2600' },
-  moved:      { bg: '#FFF0B3', text: '#974F0C' },
-  new:        { bg: '#EAE6FF', text: '#403294' },
+  inprogress: { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #0747A6)' },
+  success:    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)' },
+  removed:    { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)' },
+  moved:      { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
+  new:        { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #6E5DC6)' },
 };
 
 const LOZENGE_STYLES_DARK: Record<LozengeColor, { bg: string; text: string }> = {
   default:    { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',            text: 'var(--ds-text-subtlest, #A1A1A1)' },
-  inprogress: { bg: 'rgba(59,130,246,0.10)',  text: '#7DB8FC' },
-  success:    { bg: 'rgba(74,222,128,0.10)',  text: '#4ADE80' },
-  removed:    { bg: 'rgba(248,113,113,0.10)', text: '#F87171' },
+  inprogress: { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))',  text: 'var(--ds-background-information-bold, #0C66E4)' },
+  success:    { bg: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))',  text: 'var(--ds-background-success, #DFFCF0)' },
+  removed:    { bg: 'rgba(248,113,113,0.10)', text: 'var(--ds-background-danger, #FFECEB)' },
   moved:      { bg: 'rgba(234,179,8,0.10)',   text: '#FACC15' },
-  new:        { bg: 'rgba(167,139,250,0.10)', text: '#C4B5FD' },
+  new:        { bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.10))', text: 'var(--ds-background-discovery, #F3F0FF)' },
 };
 
 export function getLozengeStyle(color: LozengeColor) {
@@ -274,8 +274,8 @@ export function getPriorityColor(priority: string | null): string {
     case 'high':    return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
     case 'medium':  return '#CF7B00';
     case 'low':
-    case 'lowest':  return '#6B7280';
-    default:        return '#9CA3AF';
+    case 'lowest':  return 'var(--ds-text-subtlest, #626F86)';
+    default:        return 'var(--ds-text-disabled, #8590A2)';
   }
 }
 
@@ -318,13 +318,13 @@ export function groupByStatus<T extends { status: string | null }>(
 
 // ─── PARENT EPIC CHIP COLOR (deterministic) ──────
 const EPIC_CHIP_PALETTE = [
-  { bg: '#FFF0B3', text: '#7A4F00', border: '#FFD700' },
-  { bg: '#FFBDAD', text: '#BF2600', border: '#FF7452' },
+  { bg: 'var(--ds-background-warning, #FFF7D6)', text: '#7A4F00', border: 'var(--ds-background-warning-bold, #E2B203)' },
+  { bg: '#FFBDAD', text: 'var(--ds-text-danger, #AE2A19)', border: '#FF7452' },
   { bg: '#FFE2FE', text: '#6B0089', border: '#D084FF' },
-  { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '#4C9AFF' },
+  { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'var(--ds-background-information-bold, #0C66E4)' },
   { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '#57D9A3' },
   { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' },
-  { bg: '#EAE6FF', text: '#403294', border: '#8777D9' },
+  { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #6E5DC6)', border: '#8777D9' },
   { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'var(--ds-text-disabled, #CBD5E1)' },
 ];
 

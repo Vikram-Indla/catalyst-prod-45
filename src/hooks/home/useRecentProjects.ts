@@ -72,6 +72,7 @@ const SECTION_LABELS: Record<string, string> = {
   list: 'List',
   calendar: 'Calendar',
   timeline: 'Timeline',
+  dependencies: 'Dependencies',
   releases: 'Releases',
   reports: 'Reports',
   settings: 'Settings',
@@ -178,9 +179,10 @@ function globalHubSections(hub: 'incident' | 'release' | 'plan'): Set<string> {
  * Canonical sidebar nav sections — covers both Project Hub and Product Hub slugs.
  * Only sections in this set are recorded and surfaced in the Home rail.
  */
-const CANONICAL_NAV_SECTIONS = new Set([
+export const CANONICAL_NAV_SECTIONS = new Set([
   'dashboard',
   'boards',
+  'dependencies',
   'backlog',
   'allwork',
   'settings',

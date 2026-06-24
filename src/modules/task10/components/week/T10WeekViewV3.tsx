@@ -82,7 +82,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     alignItems: 'center',
     gap: 12,
     padding: '12px 16px',
-    background: isCompleted ? '#fafafa' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    background: isCompleted ? 'var(--ds-surface-sunken, #FAFAFA)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
     border: isDragging ? `2px solid var(--ds-border-focused, #2563eb)` : `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 12,
     cursor: 'default',
@@ -91,9 +91,9 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : undefined,
     boxShadow: isDragging 
-      ? '0 8px 24px rgba(37, 99, 235, 0.2)' 
+      ? '0 8px 24px var(--ds-background-information, rgba(37, 99, 235, 0.2))' 
       : isHovered 
-        ? '0 2px 8px rgba(0,0,0,0.06)' 
+        ? '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.06))' 
         : undefined,
   };
 
@@ -125,7 +125,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     justifyContent: 'center',
     fontSize: 12,
     fontWeight: 700,
-    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
     backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     borderRadius: 8,
     flexShrink: 0,
@@ -220,7 +220,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     justifyContent: 'center',
     borderRadius: '50%',
     border: isCompleted ? 'none' : `2px solid var(--ds-border, #d1d5db)`,
-    backgroundColor: isCompleted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    backgroundColor: isCompleted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
     cursor: 'pointer',
     transition: 'all 0.15s',
     flexShrink: 0,
@@ -241,7 +241,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
           onToggleStatus();
         }}
       >
-        {isCompleted && <Check size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={3} />}
+        {isCompleted && <Check size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))" strokeWidth={3} />}
       </div>
 
       {/* DRAG HANDLE - 6 dots (2x3 grid) */}
@@ -637,7 +637,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     alignItems: 'center',
     height: 60,
     padding: '0 24px',
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
     borderBottom: `1px solid var(--ds-border, #e2e8f0)`,
     gap: 20,
   };
@@ -682,7 +682,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const listNameStyle: React.CSSProperties = {
     fontSize: 15,
     fontWeight: 500,
-    color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+    color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
   };
 
   const weekNavBtnStyle: React.CSSProperties = {
@@ -691,7 +691,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
     border: `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 6,
     cursor: 'pointer',
@@ -718,7 +718,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontSize: 11,
     fontWeight: 700,
     background: isCurrentWeek ? 'var(--ds-text-success, #10b981)' : 'var(--ds-text-subtlest, #64748b)',
-    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
     borderRadius: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.3,
@@ -760,12 +760,12 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '8px 18px',
     fontSize: 13,
     fontWeight: 600,
-    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
     background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     border: 'none',
     borderRadius: 8,
     cursor: 'pointer',
-    boxShadow: '0 2px 10px rgba(37, 99, 235, 0.35)',
+    boxShadow: '0 2px 10px var(--ds-background-information, rgba(37, 99, 235, 0.35))',
     transition: 'all 0.15s',
   };
 
@@ -777,7 +777,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
 
   const aiSectionStyle: React.CSSProperties = {
     marginBottom: 20,
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
     border: `1px dashed var(--ds-border, #cbd5e1)`,
     borderRadius: 16,
     overflow: 'hidden',
@@ -810,7 +810,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontSize: 13,
     fontWeight: 500,
     color: 'var(--ds-text-subtle, #475569)',
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
     border: `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 8,
     cursor: 'pointer',
@@ -822,7 +822,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     gap: 14,
     padding: '16px 20px',
     marginBottom: 24,
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
     border: `1px dashed var(--ds-border, #cbd5e1)`,
     borderRadius: 16,
     opacity: isAddDisabled ? 0.6 : 1,
@@ -845,7 +845,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontSize: 12,
     fontWeight: 500,
     color: 'var(--ds-text-subtle, #475569)',
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
     border: `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 6,
   };
@@ -930,7 +930,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '6px 14px',
     fontSize: 12,
     fontWeight: 600,
-    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
     background: 'var(--ds-text-brand, #3b82f6)',
     border: 'none',
     borderRadius: 6,
@@ -1063,7 +1063,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         fontWeight: 700,
                         borderRadius: 12,
                         background: i === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : i === 1 ? 'var(--ds-text-brand, #3b82f6)' : 'var(--ds-text-brand, #60a5fa)',
-                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
                         flexShrink: 0,
                       }}>
                         P{i + 1}
@@ -1127,8 +1127,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
             >
               <kbd style={{
                 ...kbdStyle,
-                background: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                color: newItemText.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #475569)',
+                background: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+                color: newItemText.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : 'var(--ds-text-subtle, #475569)',
                 borderColor: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
               }}>Enter</kbd>
               <span>to add</span>

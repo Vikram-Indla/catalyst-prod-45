@@ -170,7 +170,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'rgba(9, 30, 66, 0.54)',
+        background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
         fontFamily: 'var(--cp-font-body)',
       }}
       onClick={(e) => {

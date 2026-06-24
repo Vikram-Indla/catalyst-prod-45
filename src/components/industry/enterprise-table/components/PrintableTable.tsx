@@ -119,7 +119,7 @@ export function PrintableTable<T extends { id: string }>({
             .print-header {
               text-align: center;
               margin-bottom: 20px;
-              border-bottom: 2px solid #e5e5e5;
+              border-bottom: 2px solid var(--ds-border, #DFE1E6);
               padding-bottom: 16px;
             }
             
@@ -150,14 +150,14 @@ export function PrintableTable<T extends { id: string }>({
             }
             
             th, td {
-              border: 1px solid #d4d4d4;
+              border: 1px solid var(--ds-background-neutral-hovered, #D4D4D4);
               padding: 6px 8px;
               text-align: left;
               vertical-align: top;
             }
             
             th {
-              background: #f5f5f5;
+              background: var(--ds-surface-sunken, #F7F8F9);
               font-weight: 600;
               font-size: 9pt;
               text-transform: uppercase;
@@ -165,7 +165,7 @@ export function PrintableTable<T extends { id: string }>({
             }
             
             tr:nth-child(even) td {
-              background: #fafafa;
+              background: var(--ds-surface-sunken, #FAFAFA);
             }
             
             .text-right {
@@ -179,7 +179,7 @@ export function PrintableTable<T extends { id: string }>({
             .print-footer {
               margin-top: 20px;
               padding-top: 12px;
-              border-top: 1px solid #e5e5e5;
+              border-top: 1px solid var(--ds-border, #DFE1E6);
               font-size: 9pt;
               color: #666;
               display: flex;

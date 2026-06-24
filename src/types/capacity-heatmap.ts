@@ -5,15 +5,15 @@
 
 export const CATALYST_COLORS = {
   primary: 'var(--cp-workstream-catalyst-primary, #2563eb)',
-  primaryDark: '#1d4ed8',
-  primaryLight: '#3b82f6',
-  teal: '#0d9488',
-  tealDark: '#0f766e',
-  tealLight: '#14b8a6',
-  warning: '#d97706',
-  warningDark: '#b45309',
-  danger: '#ef4444',
-  dangerDark: '#dc2626',
+  primaryDark: 'var(--ds-link-pressed, #1d4ed8)',
+  primaryLight: 'var(--ds-background-information-bold, #3b82f6)',
+  teal: 'var(--ds-chart-teal-bold, #0d9488)',
+  tealDark: 'var(--ds-chart-teal-bolder, #0f766e)',
+  tealLight: 'var(--ds-background-accent-teal-bolder, #14b8a6)',
+  warning: 'var(--ds-background-warning-bold, #d97706)',
+  warningDark: 'var(--ds-background-warning-bold, #b45309)',
+  danger: 'var(--ds-background-danger-bold, #ef4444)',
+  dangerDark: 'var(--ds-background-danger-bold, #dc2626)',
 } as const;
 
 export type UtilizationStatus = 'available' | 'light' | 'moderate' | 'optimal' | 'at-capacity' | 'over-allocated';

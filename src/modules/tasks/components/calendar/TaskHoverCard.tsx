@@ -24,8 +24,8 @@ interface Position {
 // Priority config
 const PRIORITY_LABELS: Record<string, { label: string; color: string; shape: string }> = {
   critical: { label: 'Critical', color: 'var(--ds-text-danger, #dc2626)', shape: '◆' },
-  high: { label: 'High', color: '#ea580c', shape: '▲' },
-  medium: { label: 'Medium', color: '#ca8a04', shape: '●' },
+  high: { label: 'High', color: 'var(--ds-background-warning-bold, #E2B203)', shape: '▲' },
+  medium: { label: 'Medium', color: 'var(--ds-text-warning, #974F0C)', shape: '●' },
   low: { label: 'Low', color: 'var(--ds-text-subtlest, #64748b)', shape: '○' },
 };
 
@@ -34,8 +34,8 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   'backlog': { label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
   'planned': { label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
   'in-progress': { label: 'In Progress', color: 'var(--ds-text-warning, #f59e0b)' },
-  'review': { label: 'Review', color: '#8b5cf6' },
-  'done': { label: 'Done', color: '#10b981' },
+  'review': { label: 'Review', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  'done': { label: 'Done', color: 'var(--ds-background-success-bold, #1F845A)' },
 };
 
 export function TaskHoverCard({ task, anchorEl, onClose }: TaskHoverCardProps) {
@@ -179,7 +179,7 @@ export function TaskHoverCard({ task, anchorEl, onClose }: TaskHoverCardProps) {
               <>
                 <span 
                   className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-semibold"
-                  style={{ background: task.teamColor || '#6366f1' }}
+                  style={{ background: task.teamColor || 'var(--ds-background-discovery-bold, #6E5DC6)' }}
                 >
                   {task.assigneeInitials || task.assigneeName.slice(0, 2).toUpperCase()}
                 </span>
@@ -201,7 +201,7 @@ export function TaskHoverCard({ task, anchorEl, onClose }: TaskHoverCardProps) {
             <span className="cal-hover-card-value flex items-center gap-1.5">
               <span 
                 className="w-3 h-3 rounded-sm"
-                style={{ background: task.teamColor || '#6366f1' }}
+                style={{ background: task.teamColor || 'var(--ds-background-discovery-bold, #6E5DC6)' }}
               />
               {task.teamName}
             </span>

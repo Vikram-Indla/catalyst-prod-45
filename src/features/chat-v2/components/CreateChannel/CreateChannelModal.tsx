@@ -482,7 +482,7 @@ function PrimaryButton({
       style={{
         padding: '8px 18px',
         background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success, #007A5A)',
-        color: disabled ? 'var(--cv2-text-muted)' : '#FFFFFF',
+        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',

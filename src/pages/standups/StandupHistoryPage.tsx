@@ -76,21 +76,21 @@ function SessionRow({ s, onOpenTicket }: { s: StandupSession; onOpenTicket: (key
   return (
     <div
       style={{
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderRadius: 8,
         padding: 16,
         marginBottom: 12,
-        background: token('elevation.surface', '#FFFFFF'),
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
       }}
     >
       {/* Driver row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
         <Avatar size="medium" src={s.driver_avatar_url ?? undefined} name={s.driver_name ?? 'Unknown'} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
             {s.driver_name ?? 'Unknown driver'}
           </div>
-          <div style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86') }}>
+          <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
             {fmtTime(s.started_at)} – {fmtTime(s.ended_at)} · {fmtDur(s.duration_sec)}
           </div>
         </div>
@@ -98,11 +98,11 @@ function SessionRow({ s, onOpenTicket }: { s: StandupSession; onOpenTicket: (key
 
       {/* Summary or "no summary" */}
       {!s.is_valid ? (
-        <div style={{ fontSize: 13, color: token('color.text.subtlest', '#626F86'), fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), fontStyle: 'italic' }}>
           Ran under 5 minutes — no summary.
         </div>
       ) : summary ? (
-        <p style={{ margin: '0 0 12px', fontSize: 13, lineHeight: '20px', color: token('color.text', '#172B4D'), whiteSpace: 'pre-wrap' }}>
+        <p style={{ margin: '0 0 12px', fontSize: 13, lineHeight: '20px', color: token('color.text', 'var(--ds-text, #172B4D)'), whiteSpace: 'pre-wrap' }}>
           {summary}
         </p>
       ) : null}
@@ -110,7 +110,7 @@ function SessionRow({ s, onOpenTicket }: { s: StandupSession; onOpenTicket: (key
       {/* Tickets touched */}
       {tickets.length > 0 && (
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: token('color.text.subtlest', '#626F86'), marginBottom: 6 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 6 }}>
             Tickets touched
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -123,14 +123,14 @@ function SessionRow({ s, onOpenTicket }: { s: StandupSession; onOpenTicket: (key
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px',
                   border: 'none', background: 'transparent', borderRadius: 4,
                   cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
-                  fontSize: 13, color: token('color.text', '#172B4D'),
+                  fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'),
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               >
                 <JiraIssueTypeIcon type={t.type} size={16} />
-                <span style={{ color: token('color.link', '#0C66E4'), fontWeight: 500, flexShrink: 0 }}>{t.key}</span>
-                <span style={{ flex: 1, color: token('color.text.subtle', '#44546F'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ color: token('color.link', 'var(--ds-link, #0C66E4)'), fontWeight: 500, flexShrink: 0 }}>{t.key}</span>
+                <span style={{ flex: 1, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {t.items.map(changeDesc).join(' · ')}
                 </span>
               </button>
@@ -182,23 +182,23 @@ export default function StandupHistoryPage() {
     <div style={{
       display: 'flex', flexDirection: 'column',
       height: '100%', minHeight: 0, overflow: 'hidden',
-      background: token('elevation.surface', '#FFFFFF'),
+      background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
     }}>
       {/* Page header */}
       <div style={{
         padding: '16px 32px',
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         flexShrink: 0,
       }}>
-        <div style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), marginBottom: 4 }}>
-          <Link to={`${hubBase}/${key}/boards`} style={{ color: token('color.text.subtle', '#44546F'), textDecoration: 'none' }}>
+        <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 4 }}>
+          <Link to={`${hubBase}/${key}/boards`} style={{ color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), textDecoration: 'none' }}>
             ← Back to boards
           </Link>
         </div>
-        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: token('color.text', '#172B4D'), letterSpacing: 0 }}>
+        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), letterSpacing: 0 }}>
           Standup history
         </h1>
-        <div style={{ marginTop: 4, fontSize: 13, color: token('color.text.subtlest', '#626F86') }}>
+        <div style={{ marginTop: 4, fontSize: 13, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
           Last 14 days · {sessions.length} {sessions.length === 1 ? 'session' : 'sessions'}
         </div>
       </div>
@@ -210,7 +210,7 @@ export default function StandupHistoryPage() {
             <Spinner size="large" />
           </div>
         ) : groups.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 48, color: token('color.text.subtlest', '#626F86') }}>
+          <div style={{ textAlign: 'center', padding: 48, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
             <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>No standups in the last 14 days.</p>
             <p style={{ fontSize: 13 }}>Start one from the board's kebab menu → Start standup.</p>
             <button
@@ -218,8 +218,8 @@ export default function StandupHistoryPage() {
               onClick={() => navigate(`${hubBase}/${key}/boards`)}
               style={{
                 marginTop: 16, padding: '8px 16px',
-                background: token('color.background.brand.bold', '#0C66E4'),
-                color: token('color.text.inverse', '#FFFFFF'),
+                background: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'),
+                color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
                 border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit',
               }}
             >
@@ -240,12 +240,12 @@ export default function StandupHistoryPage() {
               >
                 {label !== 'Today' && (
                   isCollapsed(label)
-                    ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon.subtle', '#44546F')} />
-                    : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', '#44546F')} />
+                    ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} />
+                    : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} />
                 )}
                 <span style={{
                   fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em',
-                  color: token('color.text.subtlest', '#626F86'),
+                  color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                 }}>
                   {label} · {daySessions.length} {daySessions.length === 1 ? 'session' : 'sessions'}
                 </span>

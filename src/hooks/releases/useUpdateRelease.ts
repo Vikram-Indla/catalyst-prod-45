@@ -2,11 +2,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Release, UpdateReleasePayload } from '@/types/phase3-releases';
 
+// Updates ph_releases (Catalyst-local). Accepts an optional status override
+// (used by the Release confirmation modal to set status='released').
+type UpdatePayload = UpdateReleasePayload & { status?: string; actual_date?: string };
+
 export function useUpdateRelease(releaseId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: UpdateReleasePayload & { product_id?: string }): Promise<Release> => {
+    mutationFn: async (payload: UpdatePayload & { product_id?: string }): Promise<Release> => {
       const row: Record<string, unknown> = {};
       if (payload.name !== undefined) {
         row.name = payload.name;
@@ -19,6 +23,8 @@ export function useUpdateRelease(releaseId: string) {
         row.target_date = payload.release_date;
       }
       if (payload.product_id) row.project_id = payload.product_id;
+      if (payload.status !== undefined) row.status = payload.status;
+      if (payload.actual_date !== undefined) row.actual_date = payload.actual_date ?? null;
 
       const { data, error } = await supabase
         .from('ph_releases')
@@ -34,6 +40,7 @@ export function useUpdateRelease(releaseId: string) {
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
       queryClient.invalidateQueries({ queryKey: ['releases', (release as any).project_id] });
+      queryClient.invalidateQueries({ queryKey: ['release-jira-progress'] });
     },
   });
 }

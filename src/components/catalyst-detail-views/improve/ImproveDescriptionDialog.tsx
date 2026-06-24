@@ -159,13 +159,13 @@ export function ImproveDescriptionDialog({
     <ModalDialog onClose={onClose} width={900}>
       <ModalHeader hasCloseButton>
         <ModalTitle>
-          {triggerLabel} — Improve description
+          Improve description
         </ModalTitle>
       </ModalHeader>
 
       <ModalBody>
         {/* Subtitle */}
-        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', '#6B6E76') }}>
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)') }}>
           Atlassian-Intelligence-style refinement. Per-type prompt focus is applied automatically.
         </p>
 
@@ -177,7 +177,7 @@ export function ImproveDescriptionDialog({
             marginBottom: 16,
             alignItems: 'flex-end',
             padding: '12px 16px',
-            background: token('color.background.neutral.subtle', '#F7F8F9'),
+            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
             borderRadius: 6,
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           }}
@@ -188,7 +188,7 @@ export function ImproveDescriptionDialog({
                 display: 'block',
                 fontSize: 12,
                 fontWeight: 600,
-                color: token('color.text.subtle', '#6B6E76'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 marginBottom: 4,
               }}
             >
@@ -211,7 +211,7 @@ export function ImproveDescriptionDialog({
                 display: 'block',
                 fontSize: 12,
                 fontWeight: 600,
-                color: token('color.text.subtle', '#6B6E76'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 marginBottom: 4,
               }}
             >
@@ -250,8 +250,8 @@ export function ImproveDescriptionDialog({
               style={{
                 padding: 12,
                 borderRadius: 4,
-                background: token('color.background.danger', '#FFEBE6'),
-                color: token('color.text.danger', '#AE2A19'),
+                background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
+                color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
                 fontSize: 13,
               }}
             >
@@ -264,7 +264,7 @@ export function ImproveDescriptionDialog({
               style={{
                 padding: '32px 16px',
                 textAlign: 'center',
-                color: token('color.text.subtle', '#6B6E76'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 fontSize: 14,
               }}
             >
@@ -328,7 +328,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '8px 12px',
-          background: token('color.background.neutral', '#F4F5F7'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
           borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         }}
       >
@@ -336,7 +336,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
           style={{
             fontSize: 12,
             fontWeight: 700,
-            color: token('color.text.subtle', '#6B6E76'),
+            color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
           }}
@@ -345,12 +345,12 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
         </span>
         <div style={{ display: 'flex', gap: 6 }}>
           {state === 'accepted' && (
-            <span style={{ fontSize: 12, color: token('color.text.success', '#216E4E'), fontWeight: 600 }}>
+            <span style={{ fontSize: 12, color: token('color.text.success', 'var(--ds-text-success, #216E4E)'), fontWeight: 600 }}>
               ✓ Applied
             </span>
           )}
           {state === 'rejected' && (
-            <span style={{ fontSize: 12, color: token('color.text.subtle', '#6B6E76'), fontWeight: 600 }}>
+            <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), fontWeight: 600 }}>
               Skipped
             </span>
           )}
@@ -372,8 +372,8 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
             padding: 12,
             fontSize: 13,
             lineHeight: '18px',
-            color: token('color.text.subtle', '#42526E'),
-            background: token('elevation.surface', '#FFFFFF'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
             borderRight: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             whiteSpace: 'pre-wrap',
             maxHeight: 280,
@@ -384,7 +384,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: token('color.text.subtlest', '#6B778C'),
+              color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
               marginBottom: 6,
@@ -399,8 +399,8 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
             padding: 12,
             fontSize: 13,
             lineHeight: '18px',
-            color: token('color.text', '#292A2E'),
-            background: token('color.background.success', '#E3FCEF'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            background: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'),
             whiteSpace: 'pre-wrap',
             maxHeight: 280,
             overflowY: 'auto',
@@ -410,7 +410,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: token('color.text.success', '#216E4E'),
+              color: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
               marginBottom: 6,

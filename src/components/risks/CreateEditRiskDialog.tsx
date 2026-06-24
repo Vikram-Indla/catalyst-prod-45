@@ -148,15 +148,15 @@ export function CreateEditRiskDialog({
   const isValid = formData.title && formData.description;
   const isEditing = !!risk;
 
-  const inputClasses = "w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-[#0D1117] border border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)] outline-none";
-  const labelClasses = "text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]";
+  const inputClasses = "w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] text-[var(--ds-surface, #FFFFFF)] dark:text-[var(--ds-border, #DFE1E6)] placeholder:text-[var(--ds-text-disabled, #8590A2)] dark:placeholder:text-[var(--ds-text-subtlest, #626F86)] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-1 focus:ring-[var(--ds-background-information, rgba(37,99,235,0.3))] outline-none";
+  const labelClasses = "text-sm font-medium text-[var(--ds-surface, #FFFFFF)] dark:text-[var(--ds-border, #DFE1E6)]";
 
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)]">
           <DialogHeader>
-            <DialogTitle className="text-[#24292F] dark:text-[#E6EDF3]">
+            <DialogTitle className="text-[var(--ds-surface, #FFFFFF)] dark:text-[var(--ds-border, #DFE1E6)]">
               {isEditing ? `Edit Risk #${risk.risk_number}` : "Create Risk"}
             </DialogTitle>
           </DialogHeader>
@@ -200,7 +200,7 @@ export function CreateEditRiskDialog({
                     <SelectTrigger className={inputClasses}>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D] z-[400]">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] z-[400]">
                       {RISK_STATUSES.map((status) => (
                         <SelectItem key={status} value={status}>
                           {status}
@@ -218,7 +218,7 @@ export function CreateEditRiskDialog({
                     <SelectTrigger className={inputClasses}>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D] z-[400]">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] z-[400]">
                       {ROAM_STATUSES.map((method) => (
                         <SelectItem key={method} value={method}>
                           {method}
@@ -240,7 +240,7 @@ export function CreateEditRiskDialog({
                     <SelectTrigger className={inputClasses}>
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D] z-[400]">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] z-[400]">
                       <SelectItem value="__none__">—</SelectItem>
                       {SEVERITY_LEVELS.map((level) => (
                         <SelectItem key={level} value={level}>
@@ -259,7 +259,7 @@ export function CreateEditRiskDialog({
                     <SelectTrigger className={inputClasses}>
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D] z-[400]">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] z-[400]">
                       <SelectItem value="__none__">—</SelectItem>
                       {SEVERITY_LEVELS.map((level) => (
                         <SelectItem key={level} value={level}>
@@ -278,7 +278,7 @@ export function CreateEditRiskDialog({
                     <SelectTrigger className={inputClasses}>
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D] z-[400]">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] z-[400]">
                       <SelectItem value="__none__">—</SelectItem>
                       <SelectItem value="Yes">Yes</SelectItem>
                       <SelectItem value="No">No</SelectItem>
@@ -361,7 +361,7 @@ export function CreateEditRiskDialog({
                   <SelectTrigger className={inputClasses}>
                     <SelectValue placeholder="Select owner" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D] z-[400]">
+                  <SelectContent className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] z-[400]">
                     <SelectItem value="__none__">Unassigned</SelectItem>
                     {users.map((user) => (
                       <SelectItem key={user.id} value={user.id}>
@@ -374,11 +374,11 @@ export function CreateEditRiskDialog({
 
             </div>
 
-            <DialogFooter className="mt-4 pt-4 border-t border-[#E1E4E8] dark:border-[#30363D]">
+            <DialogFooter className="mt-4 pt-4 border-t border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)]">
               <button
                 type="button"
                 onClick={() => handleClose()}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D] text-[#57606A] dark:text-[#8B949E] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]"
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] text-[#57606A] dark:text-[var(--ds-text-disabled, #8590A2)] hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)]"
               >
                 Cancel
               </button>
@@ -396,17 +396,17 @@ export function CreateEditRiskDialog({
 
       {/* Unsaved Changes Confirmation Dialog */}
       <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
-        <AlertDialogContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
+        <AlertDialogContent className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#24292F] dark:text-[#E6EDF3]">Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#57606A] dark:text-[#8B949E]">
+            <AlertDialogTitle className="text-[var(--ds-surface, #FFFFFF)] dark:text-[var(--ds-border, #DFE1E6)]">Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#57606A] dark:text-[var(--ds-text-disabled, #8590A2)]">
               You have unsaved changes. Are you sure you want to close without saving?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel 
               onClick={handleCancelDiscard}
-              className="bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D] text-[#57606A] dark:text-[#8B949E] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]"
+              className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] text-[#57606A] dark:text-[var(--ds-text-disabled, #8590A2)] hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)]"
             >
               Keep Editing
             </AlertDialogCancel>

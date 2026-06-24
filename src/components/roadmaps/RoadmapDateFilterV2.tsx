@@ -231,7 +231,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
       </PopoverTrigger>
 
       <PopoverContent 
-        className="w-[360px] p-0 bg-white dark:bg-[#2d2d2d] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50"
+        className="w-[360px] p-0 bg-white dark:bg-[var(--ds-text, #172B4D)] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50"
         align="end"
         sideOffset={8}
       >
@@ -293,7 +293,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                 onClick={selectAllQuarters}
                 className={cn(
                   "text-sm font-medium transition-colors",
-                  "text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:text-[var(--ds-background-brand-bold-hovered,#1d4ed8)] dark:text-[var(--ds-text-brand,#60a5fa)] dark:hover:text-[#93c5fd]"
+                  "text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:text-[var(--ds-background-brand-bold-hovered,#1d4ed8)] dark:text-[var(--ds-text-brand,#60a5fa)] dark:hover:text-[var(--ds-background-information, #E9F2FF)]"
                 )}
               >
                 All

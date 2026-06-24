@@ -41,19 +41,19 @@ export const INCIDENT_STATUS_LOZENGE: Record<IncidentStatus, 'grey' | 'blue' | '
 export type IncidentSeverity = 'SEV1' | 'SEV2' | 'SEV3' | 'SEV4';
 
 export const SEV_COLORS: Record<IncidentSeverity, { bg: string; text: string }> = {
-  SEV1: { bg: '#FEE2E2', text: '#991B1B' },
-  SEV2: { bg: '#FEF3C7', text: '#92400E' },
-  SEV3: { bg: '#DBEAFE', text: '#1E40AF' },
-  SEV4: { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: '#475569' },
+  SEV1: { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)' },
+  SEV2: { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
+  SEV3: { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' },
+  SEV4: { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, #44546F)' },
 };
 
 export type IncidentPriority = 'P1' | 'P2' | 'P3' | 'P4';
 
 export const PRIORITY_COLORS: Record<IncidentPriority, { bg: string; text: string }> = {
-  P1: { bg: '#FEE2E2', text: '#991B1B' },
-  P2: { bg: '#FEF3C7', text: '#92400E' },
-  P3: { bg: '#DBEAFE', text: '#1E40AF' },
-  P4: { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: '#475569' },
+  P1: { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)' },
+  P2: { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
+  P3: { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' },
+  P4: { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, #44546F)' },
 };
 
 export type IncidentImpact = 'high' | 'medium' | 'low';

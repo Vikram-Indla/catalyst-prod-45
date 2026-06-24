@@ -78,7 +78,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
     <>
       <div
         className="fixed inset-0 z-40"
-        style={{ background: 'rgba(15,23,42,.4)', animation: 'phFadeIn 200ms ease' }}
+        style={{ background: 'var(--ds-shadow-overlay, rgba(15,23,42,.4))', animation: 'phFadeIn 200ms ease' }}
         onClick={handleClose}
       />
       <div
@@ -86,7 +86,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
         style={{
           width: 460,
           borderLeft: '1px solid var(--divider)',
-          boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
+          boxShadow: '-8px 0 30px var(--ds-shadow-overlay, rgba(15,23,42,.1))',
           animation: 'phSlideInRight 200ms ease',
           fontFamily: 'var(--cp-font-body)',
         }}
@@ -141,7 +141,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                     className="flex items-center gap-2 p-3 rounded-lg border bg-[var(--bg-1)]"
                     style={{ borderColor: 'var(--divider)' }}
                   >
-                    <GripVertical size={14} color="#D1D5DB" className="cursor-grab flex-shrink-0" />
+                    <GripVertical size={14} color="var(--ds-border, #DFE1E6)" className="cursor-grab flex-shrink-0" />
                     <span className="rounded-full flex-shrink-0" style={{ width: 8, height: 8, background: col.color }} />
                     <span className="flex-1" style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{col.name}</span>
                     <div className="flex gap-1 flex-wrap">

@@ -69,12 +69,12 @@ export function OverviewTab({
 
   // Clickable tile style
   const clickableTileHover = (e: React.MouseEvent, entering: boolean) => {
-    (e.currentTarget as HTMLElement).style.background = entering ? 'rgba(37,99,235,0.04)' : 'var(--bg-app)';
+    (e.currentTarget as HTMLElement).style.background = entering ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'var(--bg-app)';
   };
 
   // Clickable row style
   const clickableRowHover = (e: React.MouseEvent, entering: boolean) => {
-    (e.currentTarget as HTMLElement).style.background = entering ? 'rgba(0,0,0,0.03)' : 'transparent';
+    (e.currentTarget as HTMLElement).style.background = entering ? 'var(--ds-shadow-raised, rgba(0,0,0,0.03))' : 'transparent';
   };
 
   // Normalize type for filtering
@@ -99,7 +99,7 @@ export function OverviewTab({
               onClick={() => setWeekOffset(o => Math.max(o - 1, -52))}
               disabled={weekOffset <= -52}
               style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset <= -52 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset <= -52 ? 0.3 : 1 }}
-              onMouseEnter={e => { if (weekOffset > -52) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+              onMouseEnter={e => { if (weekOffset > -52) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.04))'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
               <ChevronLeft size={16} color={INK4} />
@@ -109,7 +109,7 @@ export function OverviewTab({
               onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
               disabled={weekOffset >= 0}
               style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset >= 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset >= 0 ? 0.3 : 1 }}
-              onMouseEnter={e => { if (weekOffset < 0) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+              onMouseEnter={e => { if (weekOffset < 0) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.04))'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
               <ChevronRight size={16} color={INK4} />
@@ -213,7 +213,7 @@ export function OverviewTab({
               style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '8px 10px', border: `1px solid ${BORDER}`, borderRadius: 4,
-                boxShadow: '0 1px 2px rgba(15,23,42,0.06)', cursor: 'pointer', transition: 'background 120ms',
+                boxShadow: '0 1px 2px var(--ds-shadow-overlay, rgba(15,23,42,0.06))', cursor: 'pointer', transition: 'background 120ms',
               }}
               onMouseEnter={e => clickableRowHover(e, true)}
               onMouseLeave={e => clickableRowHover(e, false)}
@@ -231,7 +231,7 @@ export function OverviewTab({
               style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '8px 10px', border: `1px solid ${BORDER}`, borderRadius: 4,
-                boxShadow: '0 1px 2px rgba(15,23,42,0.06)', cursor: 'pointer', transition: 'background 120ms',
+                boxShadow: '0 1px 2px var(--ds-shadow-overlay, rgba(15,23,42,0.06))', cursor: 'pointer', transition: 'background 120ms',
               }}
               onMouseEnter={e => clickableRowHover(e, true)}
               onMouseLeave={e => clickableRowHover(e, false)}
@@ -243,7 +243,7 @@ export function OverviewTab({
             <div style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               padding: '8px 10px', border: `1px solid ${BORDER}`, borderRadius: 4,
-              boxShadow: '0 1px 2px rgba(15,23,42,0.06)',
+              boxShadow: '0 1px 2px var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
             }}>
               <span style={{ fontSize: 12, color: INK2 }}>Avg cycle time</span>
               <span style={{ fontSize: 12, fontWeight: 600, color: (avgDays === 0 || avgDays == null) ? MUTED : cycleColour, fontFamily: 'var(--cp-font-mono)' }}>{(avgDays === 0 || avgDays == null) ? '—' : `${avgDays}d per item`}</span>
@@ -254,7 +254,7 @@ export function OverviewTab({
               style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '8px 10px', border: `1px solid ${BORDER}`, borderRadius: 4,
-                boxShadow: '0 1px 2px rgba(15,23,42,0.06)',
+                boxShadow: '0 1px 2px var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
                 cursor: oldestKey !== '—' ? 'pointer' : 'default', transition: 'background 120ms',
               }}
               onMouseEnter={e => { if (oldestKey !== '—') clickableRowHover(e, true); }}
@@ -269,11 +269,11 @@ export function OverviewTab({
         {/* Anomaly callout */}
         {concurrent >= 3 && (
           <div style={{
-            marginTop: 10, background: 'rgba(217,119,6,0.08)', borderLeft: `3px solid ${WARNING}`,
+            marginTop: 10, background: 'var(--ds-background-warning, rgba(217,119,6,0.08))', borderLeft: `3px solid ${WARNING}`,
             borderRadius: 4, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
           }}>
             <AlertTriangle size={13} color={WARNING} />
-            <span style={{ fontSize: 12, color: '#92400E' }}>
+            <span style={{ fontSize: 12, color: 'var(--ds-text-warning, #974F0C)' }}>
               {concurrent} items in progress simultaneously — may indicate context-switching
             </span>
           </div>
@@ -283,7 +283,7 @@ export function OverviewTab({
       {/* §3 — Closure Trend */}
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
         <SectionTitle>CLOSURE TREND</SectionTitle>
-        <div style={{ border: `1px solid ${BORDER}`, borderRadius: 6, boxShadow: '0 1px 2px rgba(15,23,42,0.04)', padding: 12 }}>
+        <div style={{ border: `1px solid ${BORDER}`, borderRadius: 6, boxShadow: '0 1px 2px var(--ds-shadow-overlay, rgba(15,23,42,0.04))', padding: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <span style={{ fontSize: 12, color: INK2 }}>Items closed per week ({trend.length > 0 ? `${trend[0]?.weekLabel}–${trend[trend.length-1]?.weekLabel}` : '—'})</span>
             {trendChangePct !== 0 && (
@@ -348,7 +348,7 @@ export function OverviewTab({
                   display: 'flex', alignItems: 'center', gap: 10,
                   cursor: 'pointer', padding: '4px 0', borderRadius: 4, transition: 'background 120ms',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <JiraIssueTypeIcon type={row.type} size={16} />
@@ -368,7 +368,7 @@ export function OverviewTab({
         </div>
         {showBugInsight && (
           <div style={{
-            marginTop: 10, background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE', borderRadius: 4,
+            marginTop: 10, background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: 4,
             padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 6,
           }}>
             <Info size={14} color={BRAND} />
@@ -383,15 +383,15 @@ export function OverviewTab({
         <div
           onClick={() => onTabSwitch('weekly')}
           style={{
-            border: `1px solid ${BORDER}`, borderRadius: 6, boxShadow: '0 1px 2px rgba(15,23,42,0.04)',
+            border: `1px solid ${BORDER}`, borderRadius: 6, boxShadow: '0 1px 2px var(--ds-shadow-overlay, rgba(15,23,42,0.04))',
             padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12,
             transition: 'background 100ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
         >
           <div style={{
-            width: 32, height: 32, flexShrink: 0, background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE',
+            width: 32, height: 32, flexShrink: 0, background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information, #E9F2FF)',
             borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <BookOpen size={16} color={INK4} />
@@ -425,7 +425,7 @@ export function OverviewTab({
             <div key={i}
               onClick={tile.onClick}
               style={{ background: 'var(--bg-app)', padding: '10px 12px', cursor: 'pointer', transition: 'background 120ms' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 650, color: tile.color }}>{tile.value}</div>
@@ -447,7 +447,7 @@ export function OverviewTab({
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 cursor: 'pointer', transition: 'background 150ms',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

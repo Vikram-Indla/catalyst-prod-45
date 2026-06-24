@@ -10,23 +10,30 @@
  * Icons: JiraIssueTypeIcon (canonical) — never emoji or coloured dots (CLAUDE.md).
  */
 
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@atlaskit/button/new';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import Lozenge from '@atlaskit/lozenge';
 import SectionMessage from '@atlaskit/section-message';
 import Textfield from '@atlaskit/textfield';
 import Spinner from '@atlaskit/spinner';
+import Select from '@atlaskit/select';
+import ProgressBar from '@atlaskit/progress-bar';
 import Modal, { ModalTransition } from '@atlaskit/modal-dialog';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { useJiraConnection, useUpdateJiraConnection, useTestConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
+import { useJiraConnection, useUpdateJiraConnection, useTestConnection, useDisconnectJiraConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
 import { useSyncHealth, useSyncLogs, useAvailableProjects } from '@/modules/workhub/admin/hooks/useSyncEngine';
 import { formatDistanceToNow } from 'date-fns';
 import { resolveJiraEnvironment, getEnvironmentLabel } from '@/lib/jira-integration/environmentResolver';
-import { useManualSyncMutation, useRefreshDataMutation } from '@/lib/jira-integration/useJiraSyncMutations';
+import { useManualSyncMutation, useRefreshDataMutation, useSyncFilters, useSaveSyncFilterMutation, useFieldMappings, useSaveFieldMappingMutation, FIELD_MAP_TARGETS } from '@/lib/jira-integration/useJiraSyncMutations';
+
+// Date Mode UI <-> engine lookback_months (engine always floors to 2026).
+const DATE_MODE_TO_LOOKBACK: Record<string, number> = { 'Last 30 days': 1, 'Year 2026': 12, 'All time': 999 };
+const lookbackToDateMode = (m: number): string => (m <= 1 ? 'Last 30 days' : m >= 999 ? 'All time' : 'Year 2026');
+const SYNC_ISSUE_TYPES = ['Epic', 'Feature', 'Story', 'Task', 'Sub-task', 'QA Bug', 'Change Request', 'Production Incident', 'Business Gap'];
 
 const C = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -58,16 +65,24 @@ const READINESS_LABEL: Record<Readiness, { title: string; detail: string; ok: bo
   READY_TO_SYNC: { title: 'Ready to sync', detail: 'Connected with synced data. Sync and refresh are available.', ok: true },
 };
 
-// Canonical Jira → Catalyst type mapping (convention; both render via JiraIssueTypeIcon)
-const TYPE_MAP: Array<{ jira: string; catalyst: string }> = [
-  { jira: 'Epic', catalyst: 'Epic' },
-  { jira: 'Story', catalyst: 'Story' },
-  { jira: 'Task', catalyst: 'Task' },
-  { jira: 'Sub-task', catalyst: 'Sub-task' },
-  { jira: 'Bug', catalyst: 'QA Bug' },
-  { jira: 'Change Request', catalyst: 'Change Request' },
-  { jira: 'Incident', catalyst: 'Production Incident' },
+// Canonical Jira → Catalyst type mapping (convention; both render via JiraIssueTypeIcon).
+// Most types land in ph_issues (Projects module). Business Request is the Products-module
+// root — it routes to business_requests, NOT ph_issues (see PRODUCTS_MODULE_PROJECTS).
+const TYPE_MAP: Array<{ jira: string; catalyst: string; table: string }> = [
+  { jira: 'Epic', catalyst: 'Epic', table: 'ph_issues' },
+  { jira: 'Story', catalyst: 'Story', table: 'ph_issues' },
+  { jira: 'Task', catalyst: 'Task', table: 'ph_issues' },
+  { jira: 'Sub-task', catalyst: 'Sub-task', table: 'ph_issues' },
+  { jira: 'Bug', catalyst: 'QA Bug', table: 'ph_issues' },
+  { jira: 'Change Request', catalyst: 'Change Request', table: 'ph_issues' },
+  { jira: 'Incident', catalyst: 'Production Incident', table: 'ph_issues' },
+  { jira: 'Business Request', catalyst: 'Business Request', table: 'business_requests' },
 ];
+
+// Products-module projects: their Jira items are Business Requests routed to the Products
+// module (business_requests), NEVER ph_issues. Mirrors wh-jira-sync PRODUCTS_MODULE_PROJECTS.
+// Surfaced in Sync Scope so they are visible (mapped) rather than silently absent.
+const PRODUCTS_MODULE_PROJECTS = new Set<string>(['MDT']);
 
 // Canonical status-category mapping (Jira statusCategory → Catalyst status_category)
 const STATUS_MAP: Array<{ category: string; catalyst: string; terminal: boolean }> = [
@@ -99,6 +114,7 @@ export function JiraSyncPage() {
   const { data: connection, isLoading: connLoading } = useJiraConnection();
   const { data: health } = useSyncHealth();
   const { data: accessibleProjects = [] } = useAvailableProjects();
+  const { data: syncFilters = [] } = useSyncFilters();
   const { data: syncLogs = [] } = useSyncLogs(20);
 
   // Backend readiness (spec §11/§17) — authoritative when reachable.
@@ -154,17 +170,21 @@ export function JiraSyncPage() {
     ...syncProjects.map((s: any) => s.project_key),
   ]);
 
+  const filterMap = new Map(syncFilters.map((f) => [f.project_key, f]));
+
   const projects = Array.from(allKeys).sort().map((key) => {
     const ap = accessibleProjects.find((p: any) => p.key === key);
     const sp = syncProjects.find((s: any) => s.project_key === key);
     const cfg = (sp?.sync_config && typeof sp.sync_config === 'object') ? sp.sync_config as any : {};
     const cached = issueCounts[key] || 0;
+    // module_target authority: jira_project_sync_filters (e.g. fixed MDT -> Investor Journey) over legacy sync_config.
+    const moduleTarget = filterMap.get(key)?.module_target ?? cfg.module_target ?? null;
     return {
       key,
       name: ap?.name || sp?.name || key,
       // A project is effectively synced if it has cached jira data OR config marks it active.
       sync_enabled: cached > 0 || (sp?.is_active ?? false),
-      module_target: cfg.module_target ?? null,
+      module_target: moduleTarget,
       last_synced_at: sp?.last_synced_at ?? null,
       issues_cached: cached,
     };
@@ -177,6 +197,10 @@ export function JiraSyncPage() {
   const connSiteUrl = connection?.site_url ?? backendReadiness?.siteUrl ?? null;
   const connLastTested = connection?.last_tested_at ?? backendReadiness?.lastTestedAt ?? null;
   const enabledProjects = projects.filter(p => p.sync_enabled);
+  // Projects tab = projects with cached Jira data, PLUS Products-module projects (e.g. MDT →
+  // Investor Journey) and any explicitly-mapped project (Vikram, 2026-06-24: MDT must be
+  // visible, not silently excluded). Random no-data accessible projects are still hidden.
+  const dataProjects = projects.filter(p => p.issues_cached > 0 || PRODUCTS_MODULE_PROJECTS.has(p.key) || p.module_target);
   const totalJiraIssues = Object.values(issueCounts).reduce((a: number, b: number) => a + b, 0);
 
   // Backend readiness is authoritative when reachable; client derivation is the fallback.
@@ -207,11 +231,12 @@ export function JiraSyncPage() {
         ) : (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, padding: '12px 16px', borderRadius: 8,
-            background: isConnected ? C.bgSuccess : C.neutral,
-            border: `1px solid ${isConnected ? C.textSuccess : C.border}`,
+            background: C.neutral,
+            border: `1px solid ${C.border}`,
           }}>
-            <span style={{ fontWeight: 600, fontFamily: FB, color: isConnected ? C.textSuccess : C.textSubtle }}>
-              {isConnected ? '✓ Connected' : 'Not configured'}
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: isConnected ? C.textSubtle : C.textSubtlest }} />
+            <span style={{ fontWeight: 600, fontFamily: FB, color: C.text }}>
+              {isConnected ? 'Connected' : 'Not configured'}
             </span>
             {connSiteUrl && (
               <code style={{ fontSize: 12, fontFamily: FC, background: C.neutral, padding: '2px 6px', borderRadius: 3 }}>
@@ -228,10 +253,9 @@ export function JiraSyncPage() {
 
         <Tabs id="jira-admin" selectedIndex={selectedTab} onChange={setSelectedTab}>
           <TabList>
-            <Tab>Connection</Tab>
             <Tab>Overview</Tab>
             <Tab>Sync Control</Tab>
-            <Tab>Projects ({projects.length})</Tab>
+            <Tab>Projects ({dataProjects.length})</Tab>
             <Tab>Type Mapping</Tab>
             <Tab>Status Mapping</Tab>
             <Tab>Field Mapping</Tab>
@@ -240,16 +264,16 @@ export function JiraSyncPage() {
           </TabList>
 
           <TabPanel>
-            <ConnectionTab connection={connection} health={health} env={env} />
+            <div style={{ width: '100%' }}>
+              <ConnectionTab connection={connection} health={health} env={env} readiness={readiness} />
+              <OverviewTab projects={projects} health={health} readiness={readiness} isConnected={isConnected} totalJiraIssues={totalJiraIssues} env={env} onConfigure={() => setSelectedTab(0)} />
+            </div>
           </TabPanel>
           <TabPanel>
-            <OverviewTab projects={projects} health={health} readiness={readiness} isConnected={isConnected} totalJiraIssues={totalJiraIssues} env={env} onConfigure={() => setSelectedTab(0)} />
+            <SyncControlTab readiness={readiness} isConnected={isConnected} syncAllowed={syncAllowed} env={env} projects={projects} onRefreshClick={() => setRefreshOpen(true)} onConfigure={() => setSelectedTab(0)} />
           </TabPanel>
           <TabPanel>
-            <SyncControlTab readiness={readiness} isConnected={isConnected} syncAllowed={syncAllowed} env={env} onRefreshClick={() => setRefreshOpen(true)} onConfigure={() => setSelectedTab(0)} />
-          </TabPanel>
-          <TabPanel>
-            <ProjectsTab projects={projects} onManage={setProjectDetailKey} />
+            <ProjectsTab projects={dataProjects} onManage={setProjectDetailKey} />
           </TabPanel>
           <TabPanel>
             <TypeMappingTab />
@@ -287,33 +311,52 @@ export function JiraSyncPage() {
 const TH = { padding: '12px 16px', textAlign: 'left' as const, fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}`, fontFamily: FB };
 const TD = { padding: '12px 16px', fontSize: 13, fontFamily: FB, color: C.text };
 
-function ConnectionTab({ connection, health, env }: any) {
+// Neutral-enterprise status pill (Vikram 2026-06-24): no green/lime anywhere in the Jira
+// integration — Atlaskit's stock success Lozenge resolves to lime (#EFFFD6/#4C6B1F). Status
+// reads as restrained ADS neutral; red is reserved strictly for errors/danger. Labels stay
+// sentence-case (ADS typography rule — never all-caps).
+function StatusPill({ children, tone = 'neutral' }: { children: any; tone?: 'neutral' | 'danger' }) {
+  const palette = {
+    neutral: { bg: 'var(--ds-background-neutral, #DCDFE4)', fg: 'var(--ds-text-subtle, #44546F)' },
+    danger: { bg: 'var(--ds-background-danger, #FFECEB)', fg: 'var(--ds-text-danger, #AE2A19)' },
+  } as const;
+  const c = palette[tone];
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 8px', borderRadius: 3, background: c.bg, color: c.fg, fontFamily: FB, fontSize: 11, fontWeight: 600, lineHeight: '20px' }}>
+      {children}
+    </span>
+  );
+}
+
+function ConnectionTab({ connection, health, env, readiness }: any) {
   const testConn = useTestConnection();
   const saveConn = useUpdateJiraConnection();
+  const disconnect = useDisconnectJiraConnection();
   const isConnected = connection?.status === 'connected';
+  const r = READINESS_LABEL[readiness as Readiness];
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ site_url: connection?.site_url || '', auth_email: connection?.auth_email || '', auth_token: '' });
 
+  // 'Issues cached' lives in the metrics row below — kept out of here to avoid duplication.
   const rows: Array<[string, string]> = [
-    ['Status', isConnected ? 'Connected' : (connection?.status || 'Not configured')],
     ['Site URL', connection?.site_url || '—'],
     ['Auth email', connection?.auth_email || '—'],
     ['Auth method', connection?.auth_method || '—'],
     ['Accessible projects', String(connection?.project_count ?? '—')],
-    ['Issues cached', (health?.issueCachedCount ?? 0).toLocaleString()],
     ['Last tested', connection?.last_tested_at ? formatDistanceToNow(new Date(connection.last_tested_at), { addSuffix: true }) : 'Never'],
   ];
 
   return (
     <div style={{ marginTop: 20 }}>
-      {/* Status card */}
+      {/* Status card — folds in readiness so the standalone banner is no longer needed */}
       <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', background: isConnected ? C.textSuccess : C.textSubtlest }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: isConnected ? C.textSubtle : C.textSubtlest }} />
           <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: 0, fontFamily: FH }}>
             {isConnected ? 'Connected to Jira' : 'Jira not configured'}
           </h3>
-          <Lozenge appearance={isConnected ? 'success' : 'default'}>{getEnvironmentLabel(env.environment)}</Lozenge>
+          <StatusPill>{getEnvironmentLabel(env.environment)}</StatusPill>
+          {r && <StatusPill>{r.title}</StatusPill>}
         </div>
 
         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
@@ -328,17 +371,33 @@ function ConnectionTab({ connection, health, env }: any) {
         </table>
 
         <div style={{ display: 'flex', gap: 12 }}>
-          <Button appearance="primary" isDisabled={!isConnected || testConn.isPending} onClick={() => testConn.mutate()}>
-            {testConn.isPending ? 'Testing…' : 'Test Connection'}
-          </Button>
-          <Button onClick={() => setEditing(e => !e)}>{editing ? 'Cancel' : isConnected ? 'Reconfigure' : 'Configure'}</Button>
+          {isConnected ? (
+            <>
+              <Button appearance="subtle" isDisabled={testConn.isPending} onClick={() => testConn.mutate()}>
+                {testConn.isPending ? 'Testing…' : 'Test Connection'}
+              </Button>
+              <Button appearance="subtle" onClick={() => setEditing(e => !e)}>{editing ? 'Cancel' : 'Reconfigure'}</Button>
+              <Button
+                appearance="subtle"
+                isDisabled={disconnect.isPending}
+                onClick={() => { if (connection?.id) disconnect.mutate(connection.id); }}
+              >
+                <span style={{ color: C.textDanger }}>{disconnect.isPending ? 'Disconnecting…' : 'Disconnect'}</span>
+              </Button>
+            </>
+          ) : (
+            <Button appearance="primary" onClick={() => setEditing(e => !e)}>{editing ? 'Cancel' : 'Configure'}</Button>
+          )}
         </div>
 
         {testConn.isSuccess && (
-          <SectionMessage appearance="success" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 12 }}>Connection test passed.</p></SectionMessage>
+          <div style={{ marginTop: 16, fontSize: 12, color: C.textSubtle, fontFamily: FB }}>✓ Connection test passed.</div>
         )}
         {testConn.isError && (
           <SectionMessage appearance="error" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 12 }}>{testConn.error instanceof Error ? testConn.error.message : 'Test failed'}</p></SectionMessage>
+        )}
+        {disconnect.isError && (
+          <SectionMessage appearance="error" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 12 }}>{disconnect.error instanceof Error ? disconnect.error.message : 'Disconnect failed'}</p></SectionMessage>
         )}
       </div>
 
@@ -377,8 +436,7 @@ function ConnectionTab({ connection, health, env }: any) {
   );
 }
 
-function OverviewTab({ projects, health, readiness, isConnected, totalJiraIssues, env, onConfigure }: any) {
-  const r = READINESS_LABEL[readiness as Readiness];
+function OverviewTab({ projects, health, isConnected, totalJiraIssues, env }: any) {
   const syncedCount = isConnected ? projects.filter((p: any) => p.sync_enabled).length : 0;
   const lastSync = health?.lastSync?.started_at
     ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true })
@@ -387,22 +445,9 @@ function OverviewTab({ projects, health, readiness, isConnected, totalJiraIssues
   const cachedLabel = isConnected ? 'Issues Cached' : 'Issues Cached (stale)';
 
   return (
-    <div style={{ marginTop: 20 }}>
-      {/* Readiness — single source of truth; cannot show ready unless backend state says so */}
-      <div style={{
-        background: r.ok ? C.bgSuccess : C.bgDanger, border: `1px solid ${r.ok ? C.textSuccess : C.textDanger}`,
-        borderRadius: 8, padding: 24, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16,
-      }}>
-        <div style={{ fontSize: 32 }}>{r.ok ? '✓' : '⚠'}</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, fontFamily: FB, color: r.ok ? C.textSuccess : C.textDanger }}>{r.title}</div>
-          <div style={{ fontSize: 12, color: r.ok ? C.textSuccess : C.textDanger, marginTop: 4, fontFamily: FB }}>{r.detail}</div>
-        </div>
-        {!isConnected && <Button appearance="primary" onClick={onConfigure}>Configure</Button>}
-      </div>
-
-      {/* Metrics — honest. No "synced" when not connected. */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+    <div>
+      {/* Metrics — honest. No "synced" when not connected. (Readiness now shown in the connection card above.) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
         {[
           { label: 'Environment', value: getEnvironmentLabel(env.environment).replace(/^[^ ]+ /, '') },
           { label: 'Projects', value: isConnected ? projects.length : 0 },
@@ -417,7 +462,10 @@ function OverviewTab({ projects, health, readiness, isConnected, totalJiraIssues
       </div>
 
       {/* Sync scope — only when connected; otherwise blocked state */}
-      <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, marginBottom: 16, fontFamily: FH }}>Sync Scope</h3>
+      <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, marginBottom: 4, fontFamily: FH }}>Sync Scope</h3>
+      <p style={{ fontSize: 12, color: C.textSubtle, margin: '0 0 16px 0', fontFamily: FB, maxWidth: 760 }}>
+        <strong>Catalyst target</strong> is the Catalyst module a project's items route into. <strong>—</strong> means the project keeps its own Project Hub, keyed by its project code (the default). A named target means items are routed elsewhere — e.g. <code style={{ fontFamily: FC }}>MDT</code> is a Products-module project: its Jira items are Business Requests that land in <code style={{ fontFamily: FC }}>business_requests</code> (Investor Journey), never in <code style={{ fontFamily: FC }}>ph_issues</code>.
+      </p>
       {!isConnected ? (
         <SectionMessage appearance="warning" title="Sync blocked — not configured">
           <p style={{ fontFamily: FB, fontSize: 12 }}>Configure and test the Jira connection on the Connection tab. No project can sync until then.</p>
@@ -430,18 +478,29 @@ function OverviewTab({ projects, health, readiness, isConnected, totalJiraIssues
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr style={{ background: C.surfaceSunken }}>
-              {['Project', 'Catalyst Target', 'Sync', 'Issues Cached', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
+              {['Project', 'Catalyst target', 'Sync', 'Issues cached', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
             </tr></thead>
             <tbody>
-              {projects.map((p: any, i: number) => (
-                <tr key={p.key} style={{ borderBottom: i < projects.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                  <td style={TD}><code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '2px 6px', borderRadius: 3 }}>{p.key}</code> <span style={{ color: C.textSubtle }}>{p.name}</span></td>
-                  <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
-                  <td style={TD}><Lozenge appearance={p.sync_enabled ? 'success' : 'default'}>{p.sync_enabled ? 'ON' : 'OFF'}</Lozenge></td>
-                  <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
-                  <td style={TD}><Lozenge appearance={p.issues_cached > 0 ? 'success' : 'removed'}>{p.issues_cached > 0 ? 'Synced' : 'No data'}</Lozenge></td>
-                </tr>
-              ))}
+              {projects
+                .filter((p: any) => p.issues_cached > 0 || PRODUCTS_MODULE_PROJECTS.has(p.key) || p.module_target)
+                .map((p: any, i: number, arr: any[]) => {
+                  const isProduct = PRODUCTS_MODULE_PROJECTS.has(p.key);
+                  return (
+                    <tr key={p.key} style={{ borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : 'none' }}>
+                      <td style={TD}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                          <ProjectIcon projectKey={p.key} name={p.name} size="xsmall" />
+                          <span style={{ color: C.text, fontWeight: 500 }}>{p.name}</span>
+                          <code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
+                        </span>
+                      </td>
+                      <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
+                      <td style={TD}><StatusPill>{isProduct ? 'Products' : (p.sync_enabled ? 'On' : 'Off')}</StatusPill></td>
+                      <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
+                      <td style={TD}><StatusPill>{isProduct ? 'Products module' : (p.issues_cached > 0 ? 'Synced' : 'Not synced')}</StatusPill></td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
@@ -450,9 +509,59 @@ function OverviewTab({ projects, health, readiness, isConnected, totalJiraIssues
   );
 }
 
-function SyncControlTab({ readiness, isConnected, syncAllowed, env, onRefreshClick, onConfigure }: any) {
+function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [], onRefreshClick, onConfigure }: any) {
   const manualSync = useManualSyncMutation();
   const r = READINESS_LABEL[readiness as Readiness];
+  const enabledProjects = projects.filter((p: any) => p.sync_enabled);
+
+  const [selectedProjects, setSelectedProjects] = useState<Array<{ label: string; value: string }>>([]);
+  const [dateOption, setDateOption] = useState<{ label: string; value: string }>({ label: 'Per-project (saved filters)', value: 'Per-project' });
+
+  const projectOptions = enabledProjects.map((p: any) => ({ label: `${p.key} — ${p.name}`, value: p.key, count: p.issues_cached }));
+  const dateOptions = [
+    { label: 'Per-project (saved filters)', value: 'Per-project' },
+    { label: 'Last 30 days', value: 'Last 30 days' },
+    { label: 'Year 2026', value: 'Year 2026' },
+    { label: 'All time', value: 'All time' },
+  ];
+
+  // Per-project run: full/incremental sync sequentially so the user sees which project is in
+  // flight and a real percentage — not an indeterminate bar. Dry-run = single read-only estimate.
+  const [run, setRun] = useState<any>(null);
+  const syncing = !!run && !run.finished;
+
+  const runSync = async (mode: 'full' | 'incremental' | 'dry-run') => {
+    const lookbackOverride = dateOption.value === 'Per-project' ? undefined : (DATE_MODE_TO_LOOKBACK[dateOption.value] ?? undefined);
+    const list = selectedProjects.length
+      ? selectedProjects.map(o => ({ key: o.value, name: o.label.split(' — ')[1] || o.value }))
+      : enabledProjects.map((p: any) => ({ key: p.key, name: p.name }));
+    if (!list.length) return;
+
+    if (mode === 'dry-run') {
+      setRun({ mode, total: list.length, done: 0, currentKey: null, currentName: null, fetched: 0, updated: 0, failed: 0, finished: false });
+      try {
+        const res = await manualSync.mutateAsync({ mode, projectKeys: list.map(t => t.key), lookbackOverride });
+        setRun((r0: any) => ({ ...r0, done: list.length, estimate: res?.estimatedCount ?? 0, finished: true }));
+      } catch (e: any) {
+        setRun((r0: any) => ({ ...r0, finished: true, error: e?.message ?? 'Dry run failed' }));
+      }
+      return;
+    }
+
+    setRun({ mode, total: list.length, done: 0, currentKey: list[0].key, currentName: list[0].name, fetched: 0, updated: 0, failed: 0, finished: false });
+    let fetched = 0, updated = 0, failed = 0;
+    for (let i = 0; i < list.length; i++) {
+      const t = list[i];
+      setRun((r0: any) => ({ ...r0, currentKey: t.key, currentName: t.name, done: i }));
+      try {
+        const res = await manualSync.mutateAsync({ mode, projectKeys: [t.key], lookbackOverride });
+        fetched += res?.issuesFetched ?? 0;
+        updated += res?.recordsAdded ?? 0;
+      } catch { failed += 1; }
+      setRun((r0: any) => ({ ...r0, done: i + 1, fetched, updated, failed }));
+    }
+    setRun((r0: any) => ({ ...r0, currentKey: null, currentName: null, finished: true }));
+  };
 
   return (
     <div style={{ marginTop: 20 }}>
@@ -469,35 +578,128 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, onRefreshCli
 
       {/* Manual sync — every Jira button disabled unless connected */}
       <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, marginTop: 20, marginBottom: 20, opacity: isConnected ? 1 : 0.6 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: '0 0 12px 0', fontFamily: FH }}>Manual Sync</h3>
-        <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-          <Button appearance="primary" isDisabled={!isConnected || !syncAllowed || manualSync.isPending} onClick={() => manualSync.mutate({ mode: 'full' })}>
-            {manualSync.isPending ? 'Syncing…' : 'Run Full Sync'}
-          </Button>
-          <Button isDisabled={!isConnected || manualSync.isPending} onClick={() => manualSync.mutate({ mode: 'incremental' })}>Run Incremental</Button>
-          <Button isDisabled={!isConnected || manualSync.isPending} onClick={() => manualSync.mutate({ mode: 'dry-run' })}>Dry Run</Button>
+        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>Manual Sync</h3>
+        <p style={{ fontSize: 12, color: C.textSubtle, margin: '0 0 16px 0', fontFamily: FB }}>Pull issues from Jira into Catalyst. Choose scope, then run.</p>
+
+        {/* Per-run scope: projects + date window */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 6, fontFamily: FB }}>Projects</label>
+            <Select
+              isMulti
+              isDisabled={!isConnected || syncing}
+              options={projectOptions}
+              value={selectedProjects}
+              onChange={(v: any) => setSelectedProjects(v ? [...v] : [])}
+              placeholder={`All enabled (${enabledProjects.length})`}
+              spacing="compact"
+              menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+              formatOptionLabel={(opt: any) => (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <ProjectIcon projectKey={opt.value} name={opt.label} size="xsmall" />
+                  <span style={{ fontFamily: FB, fontSize: 13 }}>{opt.label}</span>
+                  {opt.count != null && <span style={{ marginLeft: 'auto', color: C.textSubtlest, fontFamily: FB, fontSize: 12 }}>{opt.count.toLocaleString()}</span>}
+                </span>
+              )}
+            />
+            <p style={{ fontSize: 11, color: C.textSubtlest, margin: '6px 0 0 0', fontFamily: FB }}>Leave empty to sync all {enabledProjects.length} enabled projects.</p>
+          </div>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 6, fontFamily: FB }}>Date window</label>
+            <Select
+              isDisabled={!isConnected || syncing}
+              options={dateOptions}
+              value={dateOption}
+              onChange={(v: any) => setDateOption(v)}
+              spacing="compact"
+              menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+              styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+            />
+            <p style={{ fontSize: 11, color: C.textSubtlest, margin: '6px 0 0 0', fontFamily: FB }}>"Per-project" uses each project's saved filter. Any other value overrides this run only. Always floored to 2026.</p>
+          </div>
         </div>
-        {manualSync.isSuccess && (
-          <SectionMessage appearance="success">
+
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Button appearance="primary" isDisabled={!isConnected || !syncAllowed || syncing} iconBefore={syncing && run?.mode === 'full' ? () => <Spinner size="small" appearance="invert" /> : undefined} onClick={() => runSync('full')}>
+            {syncing && run?.mode === 'full' ? 'Syncing…' : 'Run Full Sync'}
+          </Button>
+          <Button isDisabled={!isConnected || syncing} onClick={() => runSync('incremental')}>Run Incremental</Button>
+          <Button isDisabled={!isConnected || syncing} onClick={() => runSync('dry-run')}>Dry Run</Button>
+        </div>
+
+        {/* What each action does */}
+        <div style={{ display: 'flex', gap: 24, marginTop: 16, flexWrap: 'wrap' }}>
+          {[
+            { t: 'Full sync', d: "Re-pulls every issue in scope using each project's saved filter (2026+). Use to backfill or after changing filters." },
+            { t: 'Incremental', d: 'Only issues created or updated since the last successful sync. Fast — the routine refresh.' },
+            { t: 'Dry run', d: 'Counts how many issues would sync. Reads only — writes nothing.' },
+          ].map(x => (
+            <div key={x.t} style={{ flex: '1 1 200px', minWidth: 200, maxWidth: 300 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.text, fontFamily: FB }}>{x.t}</div>
+              <div style={{ fontSize: 11, color: C.textSubtlest, fontFamily: FB, marginTop: 4, lineHeight: 1.4 }}>{x.d}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Live per-project progress — which project is in flight + a real percentage */}
+        {syncing && run?.mode !== 'dry-run' && (
+          <div style={{ marginTop: 16, padding: 16, background: C.surfaceSunken, border: `1px solid ${C.border}`, borderRadius: 8 }} role="status" aria-live="polite">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              {run.currentKey && <ProjectIcon projectKey={run.currentKey} name={run.currentName || run.currentKey} size="xsmall" />}
+              <span style={{ fontSize: 13, fontWeight: 600, color: C.text, fontFamily: FB }}>Syncing {run.currentName || '…'}</span>
+              <span style={{ marginLeft: 'auto', fontSize: 12, color: C.textSubtle, fontFamily: FB, fontVariantNumeric: 'tabular-nums' }}>
+                {Math.min(run.done + 1, run.total)} of {run.total} · {Math.round((run.done / run.total) * 100)}%
+              </span>
+            </div>
+            <ProgressBar value={run.done / run.total} ariaLabel={`Sync progress ${Math.round((run.done / run.total) * 100)} percent`} />
+            {(run.fetched > 0 || run.updated > 0) && (
+              <div style={{ fontSize: 11, color: C.textSubtlest, fontFamily: FB, marginTop: 8 }}>
+                {run.fetched.toLocaleString()} fetched · {run.updated.toLocaleString()} new or updated so far
+              </div>
+            )}
+          </div>
+        )}
+        {syncing && run?.mode === 'dry-run' && (
+          <div style={{ marginTop: 16 }} role="status" aria-live="polite">
+            <div style={{ fontSize: 12, color: C.textSubtle, marginBottom: 8, fontFamily: FB }}>Estimating issues across {run.total} project{run.total === 1 ? '' : 's'}…</div>
+            <ProgressBar isIndeterminate ariaLabel="Estimating" />
+          </div>
+        )}
+        {/* Completion — neutral text for success (no green); red/amber only on failure */}
+        {run?.finished && !run.error && !run.failed && (
+          <div style={{ marginTop: 16, fontSize: 12, color: C.textSubtle, fontFamily: FB }}>
+            {run.mode === 'dry-run'
+              ? `Dry run: ${(run.estimate ?? 0).toLocaleString()} issue${run.estimate === 1 ? '' : 's'} would sync.`
+              : (run.fetched === 0 && run.updated === 0
+                  ? `Up to date — no new or changed issues across ${run.total} project${run.total === 1 ? '' : 's'}.`
+                  : `Fetched ${run.fetched.toLocaleString()} issue${run.fetched === 1 ? '' : 's'} across ${run.total} project${run.total === 1 ? '' : 's'} · ${run.updated.toLocaleString()} new or updated.`)}
+          </div>
+        )}
+        {run?.finished && !run.error && run.failed > 0 && (
+          <SectionMessage appearance="warning">
             <p style={{ fontFamily: FB, fontSize: 12 }}>
-              {manualSync.data?.estimatedCount != null
-                ? `Dry run: ${manualSync.data.estimatedCount.toLocaleString()} records would sync`
-                : `${manualSync.data?.recordsAdded ?? 0} records synced`}
+              Synced {run.total - run.failed} of {run.total} project{run.total === 1 ? '' : 's'} · {run.updated.toLocaleString()} new or updated. {run.failed} project{run.failed === 1 ? '' : 's'} failed.
             </p>
           </SectionMessage>
         )}
-        {manualSync.isError && (
-          <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{manualSync.error instanceof Error ? manualSync.error.message : 'Sync failed'}</p></SectionMessage>
+        {run?.finished && run.error && (
+          <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{run.error}</p></SectionMessage>
         )}
       </div>
 
-      {/* Refresh data — destructive, blocked unless connected */}
-      <div style={{ background: C.bgDanger, border: `1px solid ${C.textDanger}`, borderRadius: 8, padding: 24, opacity: isConnected ? 1 : 0.6 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.textDanger, margin: '0 0 12px 0', fontFamily: FH }}>⚠ Refresh Data</h3>
-        <p style={{ fontSize: 12, color: C.textDanger, margin: '0 0 16px 0', fontFamily: FB }}>
-          Delete Jira-origin rows and reload fresh from Jira. Catalyst-native records preserved. Cannot be undone.
-        </p>
-        <Button appearance="danger" isDisabled={!isConnected} onClick={onRefreshClick}>Refresh Data…</Button>
+      {/* Refresh data — destructive. Enterprise "danger zone": neutral surface, danger accent only. */}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.textDanger}`, borderRadius: 8, padding: 24, opacity: isConnected ? 1 : 0.6 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>Danger zone</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginTop: 8 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: C.text, fontFamily: FB }}>Refresh Data</div>
+            <p style={{ fontSize: 12, color: C.textSubtle, margin: '2px 0 0 0', fontFamily: FB }}>
+              Delete Jira-origin rows and reload fresh from Jira. Catalyst-native records preserved. Cannot be undone.
+            </p>
+          </div>
+          <Button appearance="danger" isDisabled={!isConnected} onClick={onRefreshClick}>Refresh Data…</Button>
+        </div>
       </div>
     </div>
   );
@@ -519,20 +721,28 @@ function ProjectsTab({ projects, onManage }: any) {
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr style={{ background: C.surfaceSunken }}>
-              {['Key', 'Name', 'Sync', 'Catalyst Target', 'Issues Cached', 'Manage', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
+              {['Key', 'Name', 'Sync', 'Catalyst target', 'Issues cached', 'Manage', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
             </tr></thead>
             <tbody>
-              {filtered.map((p: any, i: number) => (
-                <tr key={p.key} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                  <td style={TD}><code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '2px 6px', borderRadius: 3 }}>{p.key}</code></td>
-                  <td style={TD}>{p.name}</td>
-                  <td style={TD}><Lozenge appearance={p.sync_enabled ? 'success' : 'default'}>{p.sync_enabled ? 'ON' : 'OFF'}</Lozenge></td>
-                  <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
-                  <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
-                  <td style={TD}><Button appearance="subtle" onClick={() => onManage(p.key)}>Manage</Button></td>
-                  <td style={TD}><Lozenge appearance={p.issues_cached > 0 ? 'success' : 'removed'}>{p.issues_cached > 0 ? 'Synced' : 'No data'}</Lozenge></td>
-                </tr>
-              ))}
+              {filtered.map((p: any, i: number) => {
+                const isProduct = PRODUCTS_MODULE_PROJECTS.has(p.key);
+                return (
+                  <tr key={p.key} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
+                    <td style={TD}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                        <ProjectIcon projectKey={p.key} name={p.name} size="xsmall" />
+                        <code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
+                      </span>
+                    </td>
+                    <td style={{ ...TD, fontWeight: 500 }}>{p.name}</td>
+                    <td style={TD}><StatusPill>{isProduct ? 'Products' : (p.sync_enabled ? 'On' : 'Off')}</StatusPill></td>
+                    <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
+                    <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
+                    <td style={TD}><Button appearance="subtle" onClick={() => onManage(p.key)}>Manage</Button></td>
+                    <td style={TD}><StatusPill>{isProduct ? 'Products module' : (p.issues_cached > 0 ? 'Synced' : 'No data')}</StatusPill></td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -545,7 +755,7 @@ function TypeMappingTab() {
   return (
     <div style={{ marginTop: 20 }}>
       <SectionMessage appearance="information" title="Type Mappings">
-        <p style={{ fontFamily: FB, fontSize: 12 }}>Jira issue types map to Catalyst work item types. All land in <code style={{ fontFamily: FC }}>ph_issues</code>; the type drives icon, hierarchy, and field availability.</p>
+        <p style={{ fontFamily: FB, fontSize: 12 }}>Jira issue types map to Catalyst work item types. Most land in <code style={{ fontFamily: FC }}>ph_issues</code> (Projects module); the type drives icon, hierarchy, and field availability. <strong>Business Request</strong> is the exception — it is the Products-module root and routes to <code style={{ fontFamily: FC }}>business_requests</code>, never <code style={{ fontFamily: FC }}>ph_issues</code>.</p>
       </SectionMessage>
       <div style={{ marginTop: 20, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -557,8 +767,8 @@ function TypeMappingTab() {
               <tr key={t.jira} style={{ borderBottom: i < TYPE_MAP.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><JiraIssueTypeIcon type={t.catalyst as any} size={16} />{t.jira}</span></td>
                 <td style={TD}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><JiraIssueTypeIcon type={t.catalyst as any} size={16} />{t.catalyst}</span></td>
-                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>ph_issues</td>
-                <td style={TD}><Lozenge appearance="success">Mapped</Lozenge></td>
+                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{t.table}</td>
+                <td style={TD}><StatusPill>Mapped</StatusPill></td>
               </tr>
             ))}
           </tbody>
@@ -584,7 +794,7 @@ function StatusMappingTab() {
               <tr key={s.category} style={{ borderBottom: i < STATUS_MAP.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}>{s.category}</td>
                 <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{s.catalyst}</td>
-                <td style={TD}><Lozenge appearance={s.terminal ? 'success' : 'default'}>{s.terminal ? 'Yes' : 'No'}</Lozenge></td>
+                <td style={TD}><StatusPill>{s.terminal ? 'Yes' : 'No'}</StatusPill></td>
               </tr>
             ))}
           </tbody>
@@ -619,7 +829,7 @@ function FieldMappingTab() {
               <tr key={f.jira} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}>{f.jira}</td>
                 <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{f.catalyst}</td>
-                <td style={TD}><Lozenge appearance={f.mapped ? 'success' : 'default'}>{f.mapped ? 'Mapped' : 'Raw JSON'}</Lozenge></td>
+                <td style={TD}><StatusPill>{f.mapped ? 'Mapped' : 'Raw JSON'}</StatusPill></td>
               </tr>
             ))}
           </tbody>
@@ -679,8 +889,8 @@ function BackupAndLogsTab({ syncLogs }: { syncLogs: any[] }) {
                 return (
                   <tr key={log.id ?? i} style={{ borderBottom: i < syncLogs.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                     <td style={{ ...TD, fontSize: 12 }}>{when}</td>
-                    <td style={TD}><Lozenge appearance="default">{log.sync_type || 'sync'}</Lozenge></td>
-                    <td style={TD}><Lozenge appearance={log.status === 'success' ? 'success' : log.status === 'warning' ? 'moved' : 'removed'}>{log.status}</Lozenge></td>
+                    <td style={TD}><StatusPill>{log.sync_type || 'sync'}</StatusPill></td>
+                    <td style={TD}><StatusPill tone={log.status === 'error' || log.status === 'failed' ? 'danger' : 'neutral'}>{log.status}</StatusPill></td>
                     <td style={{ ...TD, fontSize: 12 }}>{log.issues_upserted ?? 0}</td>
                   </tr>
                 );
@@ -695,37 +905,126 @@ function BackupAndLogsTab({ syncLogs }: { syncLogs: any[] }) {
 
 function ProjectDetailModal({ projectKey, projects, onClose }: { projectKey: string | null; projects: any[]; onClose: () => void }) {
   const project = projects.find(p => p.key === projectKey);
+  const { data: filters = [] } = useSyncFilters();
+  const { data: allFieldMaps = [] } = useFieldMappings();
+  const saveFilter = useSaveSyncFilterMutation();
+  const saveFieldMap = useSaveFieldMappingMutation();
+  const existing = filters.find(f => f.project_key === projectKey);
+
+  const [dateMode, setDateMode] = useState('Year 2026');
+  const [dateBasis, setDateBasis] = useState<'created' | 'updated'>('updated');
+  const [types, setTypes] = useState<string[]>([]);
+  const [fieldMap, setFieldMap] = useState<Record<string, string>>({});
+  const [loadedFor, setLoadedFor] = useState<string | null>(null);
+
+  // Hydrate form from the persisted rows when the modal opens for a project.
+  if (projectKey && loadedFor !== projectKey) {
+    setDateMode(existing ? lookbackToDateMode(existing.lookback_months) : 'Year 2026');
+    setDateBasis((existing?.date_basis as 'created' | 'updated') ?? 'updated');
+    setTypes(existing?.include_types ?? []);
+    const fm: Record<string, string> = {};
+    for (const m of allFieldMaps) if (m.project_key === projectKey) fm[m.target_column] = m.jira_field;
+    setFieldMap(fm);
+    setLoadedFor(projectKey);
+  }
+
+  const toggleType = (t: string) => setTypes(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
+
+  const handleSave = async () => {
+    if (!projectKey) return;
+    await saveFilter.mutateAsync({
+      project_key: projectKey,
+      lookback_months: DATE_MODE_TO_LOOKBACK[dateMode] ?? 12,
+      date_basis: dateBasis,
+      include_types: types,
+      include_statuses: existing?.include_statuses ?? [],
+      sprint_release: existing?.sprint_release ?? [],
+      module_target: existing?.module_target ?? project?.module_target ?? null,
+    });
+    // Persist only changed field mappings (empty value => delete).
+    const prior: Record<string, string> = {};
+    for (const m of allFieldMaps) if (m.project_key === projectKey) prior[m.target_column] = m.jira_field;
+    for (const { value: target } of FIELD_MAP_TARGETS) {
+      const next = (fieldMap[target] ?? '').trim();
+      if (next !== (prior[target] ?? '')) {
+        await saveFieldMap.mutateAsync({ project_key: projectKey, target_column: target, jira_field: next });
+      }
+    }
+    setLoadedFor(null);
+    onClose();
+  };
+
   return (
     <ModalTransition>
       {projectKey && project && (
-        <Modal onClose={onClose} width="large">
+        <Modal onClose={() => { setLoadedFor(null); onClose(); }} width="large">
           <div style={{ padding: 24 }}>
             <h2 style={{ fontSize: 20, fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>
               {project.key} — {project.name}
             </h2>
             <p style={{ fontSize: 12, color: C.textSubtle, margin: '0 0 24px 0', fontFamily: FB }}>
-              {project.issues_cached > 0 ? `${project.issues_cached.toLocaleString()} issues cached` : 'No issues cached'} · Target: {project.module_target || 'unmapped'}
+              {project.issues_cached > 0 ? `${project.issues_cached.toLocaleString()} issues cached` : 'No issues cached'} · Target: {existing?.module_target || project.module_target || 'unmapped'}
             </p>
             <div style={{ marginBottom: 24 }}>
               <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, margin: '0 0 12px 0', fontFamily: FH }}>Date Filter</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
                 <div>
                   <label style={{ fontSize: 12, color: C.textSubtle, display: 'block', marginBottom: 4, fontFamily: FB }}>Date Mode</label>
-                  <select style={{ width: '100%', padding: 8, borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13, fontFamily: FB }}>
-                    <option>Last 30 days</option><option>All time</option><option>Year 2026</option>
+                  <select value={dateMode} onChange={e => setDateMode(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13, fontFamily: FB }}>
+                    <option>Last 30 days</option><option>Year 2026</option><option>All time</option>
                   </select>
                 </div>
                 <div>
                   <label style={{ fontSize: 12, color: C.textSubtle, display: 'block', marginBottom: 4, fontFamily: FB }}>Date Basis</label>
-                  <select style={{ width: '100%', padding: 8, borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13, fontFamily: FB }}>
-                    <option>Created date</option><option>Updated date</option>
+                  <select value={dateBasis} onChange={e => setDateBasis(e.target.value as 'created' | 'updated')} style={{ width: '100%', padding: 8, borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13, fontFamily: FB }}>
+                    <option value="created">Created date</option><option value="updated">Updated date</option>
                   </select>
                 </div>
               </div>
+              <p style={{ fontSize: 11, color: C.textSubtlest, margin: '8px 0 0 0', fontFamily: FB }}>
+                Sync always floors to 2026 (data-integrity guard). Date Mode narrows the window within it.
+              </p>
             </div>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <Button appearance="primary" onClick={onClose}>Save Filters</Button>
-              <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, margin: '0 0 12px 0', fontFamily: FH }}>Issue Types</h3>
+              <p style={{ fontSize: 11, color: C.textSubtlest, margin: '0 0 8px 0', fontFamily: FB }}>None selected = all types.</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {SYNC_ISSUE_TYPES.map(t => (
+                  <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px', background: types.includes(t) ? C.bgInfo : C.neutral, borderRadius: 6, cursor: 'pointer', fontSize: 12, fontFamily: FB }}>
+                    <input type="checkbox" checked={types.includes(t)} onChange={() => toggleType(t)} />
+                    {t}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>Field Mapping</h3>
+              <p style={{ fontSize: 11, color: C.textSubtlest, margin: '0 0 12px 0', fontFamily: FB }}>
+                Override which Jira field feeds each column for this project. Blank = engine default. Use the Jira field id (e.g. <code style={{ fontFamily: FC }}>priority</code>, <code style={{ fontFamily: FC }}>customfield_10125</code>, <code style={{ fontFamily: FC }}>duedate</code>).
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr)', gap: '8px 16px', alignItems: 'center' }}>
+                {FIELD_MAP_TARGETS.map(({ value, label }) => (
+                  <Fragment key={value}>
+                    <label htmlFor={`fm-${value}`} style={{ fontSize: 12, color: C.text, fontFamily: FB }}>
+                      {label} <code style={{ fontSize: 10, fontFamily: FC, color: C.textSubtlest }}>({value})</code>
+                    </label>
+                    <input
+                      id={`fm-${value}`}
+                      value={fieldMap[value] ?? ''}
+                      onChange={e => setFieldMap(prev => ({ ...prev, [value]: e.target.value }))}
+                      placeholder="default"
+                      style={{ width: '100%', padding: '6px 8px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 12, fontFamily: FC, color: C.text, background: C.surface }}
+                    />
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+            {(saveFilter.isError || saveFieldMap.isError) && (
+              <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{(saveFilter.error || saveFieldMap.error) instanceof Error ? ((saveFilter.error || saveFieldMap.error) as Error).message : 'Save failed'}</p></SectionMessage>
+            )}
+            <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+              <Button appearance="primary" isDisabled={saveFilter.isPending || saveFieldMap.isPending} onClick={handleSave}>{saveFilter.isPending || saveFieldMap.isPending ? 'Saving…' : 'Save'}</Button>
+              <Button appearance="subtle" onClick={() => { setLoadedFor(null); onClose(); }}>Cancel</Button>
             </div>
           </div>
         </Modal>

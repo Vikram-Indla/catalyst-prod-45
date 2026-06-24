@@ -100,7 +100,7 @@ export function ArchivedWorkstreamsView({
           justifyContent: 'space-between',
           padding: '16px 24px',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          borderBottom: '1px solid #e2e8f0',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

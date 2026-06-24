@@ -145,7 +145,7 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
   const goLink = (link: ReleaseRiskDriver['link']) => {
     if (link === 'freeze') navigate('/release-hub/freeze-windows');
     else if (link === 'signoff') navigate('/release-hub/sign-off-queue');
-    else if (link === 'release') navigate('/release-hub/releases');
+    else if (link === 'release') navigate('/release-hub/releases-management');
   };
 
   const copy = () => {

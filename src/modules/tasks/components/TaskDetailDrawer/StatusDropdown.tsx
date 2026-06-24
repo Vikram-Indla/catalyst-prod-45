@@ -51,7 +51,7 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
       planned: 'var(--ds-text-brand, #3b82f6)',
       'in-progress': 'var(--ds-text-warning, #f59e0b)',
       'in progress': 'var(--ds-text-warning, #f59e0b)',
-      review: '#8b5cf6',
+      review: 'var(--ds-background-discovery-bold, #6E5DC6)',
       done: 'var(--ds-text-success, #16a34a)',
     };
     return slugColors[slug] || STATUS_COLORS[name || ''] || 'var(--ds-text-subtlest, #94a3b8)';
@@ -76,7 +76,7 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
           borderRadius: '8px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none',
           minWidth: '120px',
         }}
       >
@@ -105,7 +105,7 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
             zIndex: 100001,
             padding: '6px',
             minWidth: '160px',

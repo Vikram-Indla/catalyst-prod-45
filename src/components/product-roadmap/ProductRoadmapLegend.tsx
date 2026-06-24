@@ -21,14 +21,14 @@ const CATALYST_STATUS_COLORS: Record<string, string> = {
 
 // Fallback colors for any unmapped statuses - cycles through brand palette
 const BRAND_FALLBACK_COLORS = [
-  '#0d9488', // Teal
+  'var(--ds-chart-teal-bold, #0d9488)', // Teal
   'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
-  '#6b7280', // Gray
-  '#0f766e', // Teal Dark
+  'var(--ds-text-subtlest, #626F86)', // Gray
+  'var(--ds-chart-teal-bolder, #0f766e)', // Teal Dark
   'var(--ds-text-brand, #60a5fa)', // Blue Light
   'var(--ds-background-brand-bold-hovered, #1d4ed8)', // Blue Dark
-  '#4b5563', // Gray Dark
-  '#9ca3af', // Gray Light
+  'var(--ds-text-subtlest, #626F86)', // Gray Dark
+  'var(--ds-text-disabled, #8590A2)', // Gray Light
 ];
 
 function getStatusColor(statusKey: string, index: number): string {

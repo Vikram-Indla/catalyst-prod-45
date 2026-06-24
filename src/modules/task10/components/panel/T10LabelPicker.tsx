@@ -165,7 +165,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
         zIndex: 100001,
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRadius: '8px',
-        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
+        boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
         border: '1px solid var(--ds-border, #e5e7eb)',
         overflow: 'hidden',
       }}
@@ -229,7 +229,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               gap: '8px',
               width: '100%',
               padding: '10px 12px',
-              background: '#f0fdf4',
+              background: 'var(--ds-background-success, #DFFCF0)',
               border: '1px solid var(--ds-border, #bbf7d0)',
               borderRadius: '6px',
               cursor: 'pointer',

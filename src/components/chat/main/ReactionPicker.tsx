@@ -96,7 +96,7 @@ export function ReactionPicker({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: `1px solid var(--ds-border, #DFE1E6)`,
         borderRadius: 8,
-        boxShadow: '0 4px 12px rgba(9,30,66,0.13)',
+        boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))',
         width: 320,
         maxHeight: 420,
         display: 'flex',

@@ -128,7 +128,7 @@ export default function TestCaseTypesPage() {
       {showAdd && (
         <div style={{
           border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, padding: 20, marginBottom: 20,
-          background: 'var(--ds-surface-overlay, #FFFFFF)', boxShadow: '0 2px 8px rgba(9,30,66,0.1)',
+          background: 'var(--ds-surface-overlay, #FFFFFF)', boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
         }}>
           <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>New case type</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'end' }}>

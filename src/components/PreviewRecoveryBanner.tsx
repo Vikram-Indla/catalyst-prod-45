@@ -85,11 +85,11 @@ export function PreviewRecoveryBanner() {
         gap: 12,
         padding: "10px 16px",
         background: "#7C2D12",
-        color: "#FFF7ED",
+        color: "var(--ds-background-warning, #FFF7D6)",
         fontFamily: 'var(--cp-font-body)',
         fontSize: 13,
         fontWeight: 600,
-        boxShadow: "0 2px 12px rgba(0,0,0,0.35)",
+        boxShadow: "0 2px 12px var(--ds-shadow-raised, rgba(0,0,0,0.35))",
       }}
     >
       <AlertTriangle size={16} style={{ flexShrink: 0 }} />
@@ -106,7 +106,7 @@ export function PreviewRecoveryBanner() {
           gap: 6,
           marginLeft: 8,
           padding: "6px 12px",
-          background: "#FFF7ED",
+          background: "var(--ds-background-warning, #FFF7D6)",
           color: "#7C2D12",
           border: "none",
           borderRadius: 4,

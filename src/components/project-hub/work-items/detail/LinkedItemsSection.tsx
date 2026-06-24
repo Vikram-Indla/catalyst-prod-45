@@ -159,7 +159,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
       <div className="absolute inset-0 bg-black/30" />
       <div
         className="relative rounded-lg flex flex-col bg-[var(--cp-float)]"
-        style={{ width: 440, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', maxHeight: '70vh' }}
+        style={{ width: 440, boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0,0,0,0.25))', maxHeight: '70vh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}

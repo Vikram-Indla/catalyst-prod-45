@@ -11,7 +11,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
   const priorityColors = {
     high: 'border-l-[var(--ds-text-danger,#dc2626)]',
     medium: 'border-l-[var(--ds-text-warning,#d97706)]',
-    low: 'border-l-[#0d9488]',
+    low: 'border-l-[var(--ds-chart-teal-bold, #0d9488)]',
   };
 
   const typeIcons = {

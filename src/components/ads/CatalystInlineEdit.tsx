@@ -35,7 +35,7 @@ export function CatalystInlineEdit({
             fontSize: 14,
             lineHeight: '20px',
             padding: '8px 6px',
-            color: defaultValue ? token('color.text', '#172B4D') : token('color.text.subtlest', '#6B778C'),
+            color: defaultValue ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             wordBreak: 'break-word',
           }}
         >

@@ -64,9 +64,9 @@ function ProjectFilterDropdown({ value, options, onChange }: {
         style={{
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '6px 8px', borderRadius: 3, fontSize: 14,
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
-          background: token('color.background.input', '#FAFBFC'),
-          color: token('color.text', '#292A2E'), cursor: 'pointer',
+          border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          background: token('color.background.input', 'var(--ds-surface-sunken, #F7F8F9)'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'), cursor: 'pointer',
           minWidth: 160, justifyContent: 'space-between',
         }}
       >
@@ -74,17 +74,17 @@ function ProjectFilterDropdown({ value, options, onChange }: {
           {value && <ProjectIcon projectKey={value} name={value} size="xsmall" />}
           {value || 'All projects'}
         </span>
-        <span style={{ fontSize: 10, color: token('color.icon.subtle', '#6B778C') }}>▾</span>
+        <span style={{ fontSize: 10, color: token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)') }}>▾</span>
       </button>
       {open && (
         <div
           role="listbox"
           style={{
             position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 9999,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             borderRadius: 8,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
             minWidth: 200, padding: '4px 0', maxHeight: 320, overflowY: 'auto',
           }}
         >
@@ -102,13 +102,13 @@ function ProjectFilterDropdown({ value, options, onChange }: {
                   padding: '8px 12px', textAlign: 'left', border: 'none', cursor: 'pointer',
                   fontSize: 14,
                   background: selected
-                    ? token('color.background.selected', '#E9F2FE')
+                    ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
                     : 'transparent',
                   color: selected
-                    ? token('color.text.selected', '#0052CC')
-                    : token('color.text', '#292A2E'),
+                    ? token('color.text.selected', 'var(--ds-link, #0052CC)')
+                    : token('color.text', 'var(--ds-text, #172B4D)'),
                 }}
-                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
                 onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               >
                 {opt
@@ -235,14 +235,14 @@ export default function ArchiveManagerPage() {
       {/* Header */}
       <h1 style={{
         margin: 0, fontSize: 24, fontWeight: 653,
-        color: token('color.text', '#292A2E'),
+        color: token('color.text', 'var(--ds-text, #172B4D)'),
         marginBottom: token('space.050', '4px'),
       }}>
         Archive manager
       </h1>
       <p style={{
         margin: 0, fontSize: 14, fontWeight: 400,
-        color: token('color.text.subtle', '#505258'),
+        color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
         marginBottom: token('space.200', '16px'),
       }}>
         Archived and deleted items. Auto-archived after 60 days of inactivity. Permanently shredded after 12 months.
@@ -280,14 +280,14 @@ export default function ArchiveManagerPage() {
               style={{
                 padding: '4px 8px', borderRadius: 3, fontSize: 12, fontWeight: 500,
                 border: `1px solid ${typeFilter === t.id
-                  ? token('color.border.selected', '#1D7AFC')
-                  : token('color.border', '#DFE1E6')}`,
+                  ? token('color.border.selected', 'var(--ds-background-information-bold, #1D7AFC)')
+                  : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 background: typeFilter === t.id
-                  ? token('color.background.selected', '#E9F2FE')
-                  : token('color.background.neutral.subtle', '#F7F8F9'),
+                  ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
+                  : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
                 color: typeFilter === t.id
-                  ? token('color.text.selected', '#0052CC')
-                  : token('color.text', '#292A2E'),
+                  ? token('color.text.selected', 'var(--ds-link, #0052CC)')
+                  : token('color.text', 'var(--ds-text, #172B4D)'),
                 cursor: 'pointer',
               }}
             >
@@ -300,7 +300,7 @@ export default function ArchiveManagerPage() {
             Unarchive {selected.size} selected
           </Button>
         )}
-        <span style={{ marginLeft: 'auto', fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+        <span style={{ marginLeft: 'auto', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
           {items.length} items
         </span>
       </div>
@@ -313,7 +313,7 @@ export default function ArchiveManagerPage() {
       ) : items.length === 0 ? (
         <div style={{
           padding: token('space.600', '48px'), textAlign: 'center',
-          color: token('color.text.subtle', '#505258'), fontSize: 14,
+          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 14,
         }}>
           No {typeFilter === 'all' ? 'archived or deleted' : typeFilter} items found.
         </div>
@@ -342,7 +342,7 @@ export default function ArchiveManagerPage() {
 
               return (
                 <tr key={item.issue_key + item._type} style={{
-                  borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 }}>
                   {isAdmin && (
                     <td style={{ ...tdStyle, width: 32 }}>
@@ -358,14 +358,14 @@ export default function ArchiveManagerPage() {
                   <td style={{ ...tdStyle, textAlign: 'left' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <JiraIssueTypeIcon type={item.issue_type} size={14} />
-                      <span style={{ fontSize: 12, fontWeight: 500, fontFamily: '"SFMono-Regular", monospace', color: token('color.text.subtle', '#505258') }}>
+                      <span style={{ fontSize: 12, fontWeight: 500, fontFamily: '"SFMono-Regular", monospace', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>
                         {item.issue_key}
                       </span>
                     </div>
                   </td>
                   <td style={{ ...tdStyle, textAlign: 'left', maxWidth: 360 }}>
                     <span style={{
-                      fontSize: 14, color: token('color.text', '#292A2E'),
+                      fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'),
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block',
                     }}>
                       {item.summary}
@@ -382,23 +382,23 @@ export default function ArchiveManagerPage() {
                   <td style={tdStyle}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                       <ProjectIcon projectKey={item.project_key} name={item.project_key} size="xsmall" />
-                      <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+                      <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                         {item.project_key}
                       </span>
                     </div>
                   </td>
                   <td style={tdStyle}>
-                    <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+                    <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                       {formatDate(actionDate)}
                     </span>
                   </td>
                   <td style={tdStyle}>
-                    <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+                    <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                       {byName}
                     </span>
                   </td>
                   <td style={tdStyle}>
-                    <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+                    <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                       {daysOpen(item.jira_created_at)}d
                     </span>
                   </td>
@@ -427,9 +427,9 @@ export default function ArchiveManagerPage() {
 
 const thStyle: React.CSSProperties = {
   fontSize: 12, fontWeight: 653, textAlign: 'center',
-  color: token('color.text.subtle', '#505258'),
+  color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
   padding: '4px 8px',
-  borderBottom: `1.67px solid ${token('color.border', '#DFE1E6')}`,
+  borderBottom: `1.67px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
   textTransform: 'none' as const,
 };
 

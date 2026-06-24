@@ -215,7 +215,7 @@ export function RichTextCommentEditor({
         {/* Toolbar */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 2, padding: '4px 8px',
-          borderBottom: '1px solid #F4F5F7', background: 'var(--ds-surface-sunken, #FAFBFC)', flexWrap: 'wrap',
+          borderBottom: '1px solid var(--ds-background-neutral-subtle, #F4F5F7)', background: 'var(--ds-surface-sunken, #FAFBFC)', flexWrap: 'wrap',
         }}>
           <button style={toolbarBtnStyle} onClick={() => execCmd('bold')} title="Bold"
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
@@ -287,7 +287,7 @@ export function RichTextCommentEditor({
           <div style={{
             position: 'absolute', top: mentionPos.top + 48, left: mentionPos.left + 8,
             background: 'var(--ds-surface, #FFF)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 6,
-            boxShadow: '0 4px 16px rgba(9,30,66,0.18)', zIndex: 100, minWidth: 240,
+            boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.18))', zIndex: 100, minWidth: 240,
             maxHeight: 200, overflowY: 'auto',
           }}>
             {filteredMembers.slice(0, 8).map((m, idx) => (

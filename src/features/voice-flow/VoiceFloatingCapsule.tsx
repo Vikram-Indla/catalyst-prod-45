@@ -42,8 +42,8 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       align-items: center;
       gap: 8px;
       background: rgba(16, 20, 36, 0.82);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 4px 24px rgba(0, 0, 0, 0.28);
+      border: 1px solid var(--ds-surface, rgba(255, 255, 255, 0.18));
+      box-shadow: inset 0 0 0 1px var(--ds-surface, rgba(255, 255, 255, 0.06)), 0 4px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.28));
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-radius: 999px;
@@ -103,8 +103,8 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     /* Spinner for processing */
     .vf-spinner {
       width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,0.2);
-      border-top-color: rgba(255,255,255,0.8);
+      border: 2px solid var(--ds-surface, rgba(255,255,255,0.2));
+      border-top-color: var(--ds-surface, rgba(255,255,255,0.8));
       border-radius: 50%;
       animation: vf-spin 0.7s linear infinite;
       flex-shrink: 0;
@@ -122,7 +122,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     .vf-label {
       font-size: 12px;
       font-weight: 500;
-      color: rgba(255,255,255,0.88);
+      color: var(--ds-surface, rgba(255,255,255,0.88));
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -130,15 +130,15 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       flex: 1;
     }
     .vf-label--muted {
-      color: rgba(255,255,255,0.88);
+      color: var(--ds-surface, rgba(255,255,255,0.88));
       font-weight: 400;
     }
     .vf-label--result {
-      color: rgba(255,255,255,0.88);
+      color: var(--ds-surface, rgba(255,255,255,0.88));
       font-weight: 400;
     }
     .vf-label--partial {
-      color: rgba(255,255,255,0.55);
+      color: var(--ds-surface, rgba(255,255,255,0.55));
       font-weight: 400;
       font-style: italic;
     }
@@ -154,7 +154,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     .vf-timer {
       font-size: 12px;
       font-weight: 400;
-      color: rgba(255,255,255,0.4);
+      color: var(--ds-surface, rgba(255,255,255,0.4));
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.02em;
       flex-shrink: 0;
@@ -180,13 +180,13 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     .vf-hint-badge {
       display: inline-flex;
       align-items: center;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: var(--ds-surface, rgba(255,255,255,0.06));
+      border: 1px solid var(--ds-surface, rgba(255,255,255,0.12));
       border-radius: 999px;
       padding: 2px 8px;
       font-size: 10px;
       font-weight: 500;
-      color: rgba(255,255,255,0.35);
+      color: var(--ds-surface, rgba(255,255,255,0.35));
       animation: vf-fade-in 250ms ease forwards;
       align-self: flex-start;
       margin-left: 12px;
@@ -208,20 +208,20 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       transition: background 100ms;
     }
     .vf-btn--cancel {
-      background: rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.7);
+      background: var(--ds-surface, rgba(255,255,255,0.12));
+      color: var(--ds-surface, rgba(255,255,255,0.7));
     }
-    .vf-btn--cancel:hover { background: rgba(255,255,255,0.22); }
+    .vf-btn--cancel:hover { background: var(--ds-surface, rgba(255,255,255,0.22)); }
     .vf-btn--commit {
-      background: #0C66E4;
-      color: #FFFFFF;
+      background: var(--ds-link, #0C66E4);
+      color: var(--ds-text-inverse, #FFFFFF);
     }
-    .vf-btn--commit:hover { background: #0055CC; }
+    .vf-btn--commit:hover { background: var(--ds-link, #0C66E4); }
     .vf-btn--commit-review {
       background: #F79009;
-      color: #FFFFFF;
+      color: var(--ds-text-inverse, #FFFFFF);
     }
-    .vf-btn--commit-review:hover { background: #D97706; }
+    .vf-btn--commit-review:hover { background: var(--ds-background-warning-bold, #d97706); }
   `;
   document.head.appendChild(s);
 }

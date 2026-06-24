@@ -103,11 +103,11 @@ function iconFor(appearance: FlagAppearance) {
   // primaryColor is passed via SPAN color (core icon reads currentColor).
   const props = { label: '', LEGACY_size: 'medium' as const, color: 'currentColor' };
   switch (appearance) {
-    case 'success': return <SuccessIcon {...props} color={token('color.icon.inverse', '#FFFFFF')} />;
-    case 'error':   return <ErrorIcon   {...props} color={token('color.icon.inverse', '#FFFFFF')} />;
-    case 'warning': return <WarningIcon {...props} color={token('color.icon.warning.inverse', '#292A2E')} />;
+    case 'success': return <SuccessIcon {...props} color={token('color.icon.inverse', 'var(--ds-surface, #FFFFFF)')} />;
+    case 'error':   return <ErrorIcon   {...props} color={token('color.icon.inverse', 'var(--ds-surface, #FFFFFF)')} />;
+    case 'warning': return <WarningIcon {...props} color={token('color.icon.warning.inverse', 'var(--ds-text, #172B4D)')} />;
     case 'info':
-    default:        return <InfoIcon    {...props} color={token('color.icon.inverse', '#FFFFFF')} />;
+    default:        return <InfoIcon    {...props} color={token('color.icon.inverse', 'var(--ds-surface, #FFFFFF)')} />;
   }
 }
 

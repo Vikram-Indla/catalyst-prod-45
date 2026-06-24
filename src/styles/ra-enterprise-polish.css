@@ -36,8 +36,8 @@
   --ra-text-percent-size-polish: 14px;
   
   /* Shadows */
-  --ra-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --ra-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --ra-card-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  --ra-card-shadow-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
   
   /* Transitions */
   --ra-transition-fast: 150ms ease;
@@ -51,15 +51,15 @@
     var(--ds-surface-sunken, #f1f5f9) 4px,
     var(--ds-surface-sunken, #f1f5f9) 8px
   );
-  --ra-end-text-bg: rgba(255, 255, 255, 0.9);
+  --ra-end-text-bg: var(--ds-surface, rgba(255, 255, 255, 0.9));
   
   /* Project Gradients */
   --ra-gradient-sectorial: linear-gradient(90deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 100%);
-  --ra-gradient-dataplatform: linear-gradient(90deg, #10b981 0%, var(--quality-high, #059669) 100%);
+  --ra-gradient-dataplatform: linear-gradient(90deg, var(--ds-background-success-bold, #059669) 0%, var(--quality-high, var(--ds-background-success-bold, #059669)) 100%);
   --ra-gradient-senaei: linear-gradient(90deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%);
-  --ra-gradient-tahommena: linear-gradient(90deg, #ec4899 0%, #db2777 100%);
-  --ra-gradient-inspection: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);
-  --ra-gradient-irplatform: linear-gradient(90deg, #06b6d4 0%, #0891b2 100%);
+  --ra-gradient-tahommena: linear-gradient(90deg, var(--ds-background-accent-magenta-bolder, #ec4899) 0%, var(--ds-background-accent-magenta-bolder, #BE185D) 100%);
+  --ra-gradient-inspection: linear-gradient(90deg, var(--ds-background-discovery-bold, #8b5cf6) 0%, var(--ds-background-discovery-bold, #7C3AED) 100%);
+  --ra-gradient-irplatform: linear-gradient(90deg, var(--ds-icon-information, #1D7AFC) 0%, var(--ds-link, #0C66E4) 100%);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -161,7 +161,7 @@
 .ra-polish .allocation-cell .text-xs.font-semibold {
   font-size: var(--ra-text-percent-size-polish) !important;
   font-weight: 700 !important;
-  color: #1e293b !important;
+  color: var(--ds-text, #172B4D) !important;
   letter-spacing: -0.01em !important;
 }
 
@@ -212,7 +212,7 @@
    ───────────────────────────────────────────────────────────── */
 .ra-polish [class*="avatar"],
 .ra-polish .avatar {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 2px 6px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12)) !important;
   transition: transform var(--ra-transition-fast) !important;
 }
 
@@ -233,7 +233,7 @@
 .ra-polish .resource-name,
 .ra-polish [class*="resource-name"] {
   font-weight: 700 !important;
-  color: #1e293b !important;
+  color: var(--ds-text, #172B4D) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -245,7 +245,7 @@
   font-weight: 700 !important;
   padding: 5px 12px !important;
   border-radius: 6px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05)) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -271,7 +271,7 @@
   letter-spacing: 0.75px !important;
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   padding: 16px 16px 10px !important;
-  background: linear-gradient(180deg, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) 0%, var(--ds-surface-sunken, #f8fafc) 100%) !important;
+  background: linear-gradient(180deg, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) 0%, var(--ds-surface-sunken, #f8fafc) 100%) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -316,7 +316,7 @@
 .dark .ra-polish , [data-theme="dark"] .ra-polish {
   /* Shadows — suppressed in dark */
   --ra-card-shadow: none;
-  --ra-card-shadow-hover: 0 4px 12px rgba(0,0,0,0.3);
+  --ra-card-shadow-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.3));
 
   /* END Cell — dark pattern */
   --ra-end-pattern-polish: repeating-linear-gradient(

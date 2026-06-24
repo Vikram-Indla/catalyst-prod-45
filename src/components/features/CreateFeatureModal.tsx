@@ -324,17 +324,17 @@ export function CreateFeatureModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className={cn(
         "sm:max-w-[700px] max-h-[90vh] p-0 flex flex-col overflow-hidden",
-        "bg-white dark:bg-[#171717]",
+        "bg-white dark:bg-[var(--ds-text, #172B4D)]",
         "rounded-lg",
         "shadow-xl",
         "border-0",
         "[&>button]:hidden"
       )}>
         {/* Accent Bar - Catalyst brand gradient */}
-        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[#0d9488] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[var(--ds-icon-information, #1D7AFC)] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
 
         {/* Header with Progress Ring */}
-        <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-[#171717]">
+        <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-[var(--ds-text, #172B4D)]">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <ProgressRing percent={completionPercent} />
@@ -430,7 +430,7 @@ export function CreateFeatureModal({
                   )}>
                     <SelectValue placeholder={epicsLoading ? "Loading..." : "Select an epic"} />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-[#262626] border-border z-[500] max-h-60">
+                  <SelectContent className="bg-white dark:bg-[var(--ds-text, #172B4D)] border-border z-[500] max-h-60">
                     {epics.map(epic => (
                       <SelectItem 
                         key={epic.id} 
@@ -464,7 +464,7 @@ export function CreateFeatureModal({
                   {formData.projectId && (
                     <span className={cn(
                       "px-1.5 py-0.5 text-[10px] font-medium rounded",
-                      "bg-[#0d9488]/15 text-[#0d9488] dark:text-[#2dd4bf]"
+                      "bg-[var(--ds-chart-teal-bold, #0d9488)]/15 text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-[var(--ds-background-success, #DCFFF1)]"
                     )}>
                       Auto
                     </span>
@@ -498,7 +498,7 @@ export function CreateFeatureModal({
                     )}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-[#262626] border-border z-[500] max-h-60">
+                <SelectContent className="bg-white dark:bg-[var(--ds-text, #172B4D)] border-border z-[500] max-h-60">
                   {users.map(user => (
                     <SelectItem 
                       key={user.id} 
@@ -521,7 +521,7 @@ export function CreateFeatureModal({
         <div className={cn(
           "flex items-center justify-between",
           "px-5 py-3",
-          "bg-[#f5f5f5] dark:bg-[#262626]",
+          "bg-[var(--ds-surface-sunken, #F7F8F9)] dark:bg-[var(--ds-text, #172B4D)]",
           "border-t border-gray-200 dark:border-gray-700",
           "flex-shrink-0"
         )}>

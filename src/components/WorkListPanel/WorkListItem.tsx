@@ -34,14 +34,14 @@ export const WorkListItem = memo(function WorkListItem({
         padding: '12px',
         width: '100%',
         border: 'none',
-        backgroundColor: isSelected ? '#F1F2F4' : 'transparent',
+        backgroundColor: isSelected ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
         cursor: 'pointer',
         textAlign: 'left',
         transition: 'background-color 150ms',
       }}
       onMouseEnter={(e) => {
         if (!isSelected) {
-          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+          e.currentTarget.style.backgroundColor = 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.05))';
         }
       }}
       onMouseLeave={(e) => {
@@ -69,7 +69,7 @@ export const WorkListItem = memo(function WorkListItem({
           style={{
             fontSize: '12px',
             fontWeight: 500,
-            color: '#6B778C',
+            color: 'var(--ds-text-subtlest, #6B778C)',
             marginBottom: '2px',
           }}
         >
@@ -96,7 +96,7 @@ export const WorkListItem = memo(function WorkListItem({
           fontWeight: 500,
           padding: '2px 6px',
           backgroundColor: '#E6EDFA',
-          color: '#0055CC',
+          color: 'var(--ds-link, #0C66E4)',
           borderRadius: '3px',
           flexShrink: 0,
           whiteSpace: 'nowrap',

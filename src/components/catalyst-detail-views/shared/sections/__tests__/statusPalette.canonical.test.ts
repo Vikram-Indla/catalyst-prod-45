@@ -20,16 +20,16 @@ function read(rel: string) {
 }
 
 describe('canonical status palette', () => {
-  it('pins the done/success background to the bright lime #94C748', () => {
-    expect(STATUS_BG.success).toBe('#94C748');
-    expect(statusBg('success')).toBe('#94C748');
-    expect(STATUS_TEXT).toBe('#292A2E');
+  it('pins the done/success background to the bright lime var(--ds-background-success-bold, #6A9A23)', () => {
+    expect(STATUS_BG.success).toBe('var(--ds-background-success-bold, #6A9A23)');
+    expect(statusBg('success')).toBe('var(--ds-background-success-bold, #6A9A23)');
+    expect(STATUS_TEXT).toBe('var(--ds-text, #172B4D)');
   });
 
   it('maps done category to the canonical success bg', () => {
-    expect(statusBg(categoryToAppearance('done'))).toBe('#94C748');
-    expect(statusBg(categoryToAppearance('in_progress'))).toBe('#8FB8F6');
-    expect(statusBg(categoryToAppearance('todo'))).toBe('#DDDEE1');
+    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success-bold, #6A9A23)');
+    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information, #E9F2FF)');
+    expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-border, #DFE1E6)');
   });
 });
 

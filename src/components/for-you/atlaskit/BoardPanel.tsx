@@ -30,7 +30,7 @@ export function BoardPanelView({ resourceId, isLoading }: BoardPanelViewProps) {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
-        color: token('color.text.subtle', '#6B778C'), fontSize: 14,
+        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 14,
       }}>
         No resource profile found for your account.
       </div>

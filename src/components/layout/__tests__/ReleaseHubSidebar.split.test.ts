@@ -16,18 +16,19 @@ describe('ReleaseHubSidebar — Backlog + Release Kanban split', () => {
     expect(releases).toBeTruthy();
   });
 
-  it('lists Releases, Board, Calendar in order (Production Events moved to Change Management)', () => {
+  it('lists Release, Board, Work, Timeline, Calendar in order (backlog "Releases" item removed 2026-06-23)', () => {
     expect(releases!.items.map((i) => i.id)).toEqual([
-      'backlog',
+      'release-management',
       'release-kanban',
+      'work',
+      'timeline',
       'calendar',
     ]);
   });
 
-  it('labels the table item "Releases"', () => {
-    const backlog = releases!.items.find((i) => i.id === 'backlog');
-    expect(backlog?.title).toBe('Releases');
-    expect(backlog?.path).toBe('/release-hub/releases');
+  it('no longer exposes the deprecated /release-hub/releases backlog item', () => {
+    expect(releases!.items.find((i) => i.id === 'backlog')).toBeUndefined();
+    expect(releases!.items.some((i) => i.path === '/release-hub/releases')).toBe(false);
   });
 
   it('labels the dedicated board item "Board"', () => {

@@ -362,9 +362,9 @@ export default function EpicDescriptionEditorPreview() {
         <div
           style={{
             fontSize: 13,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
-            backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
+            backgroundColor: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
             borderRadius: 3,
           }}
         >
@@ -376,7 +376,7 @@ export default function EpicDescriptionEditorPreview() {
       {variant && (
         <div
           style={{
-            border: `1px solid ${token('color.border', '#DCDFE4')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
             borderRadius: 3,
             overflow: 'hidden',
           }}
@@ -400,7 +400,7 @@ export default function EpicDescriptionEditorPreview() {
       {/* Collapsible ADF JSON viewer */}
       <div
         style={{
-          border: `1px solid ${token('color.border', '#DCDFE4')}`,
+          border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
           borderRadius: 3,
           overflow: 'hidden',
         }}
@@ -413,15 +413,15 @@ export default function EpicDescriptionEditorPreview() {
             alignItems: 'center',
             gap: token('space.100', '8px'),
             padding: token('space.150', '12px'),
-            backgroundColor: token('elevation.surface.raised', '#FFFFFF'),
+            backgroundColor: token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
             border: 'none',
             borderBottom: isJsonVisible
-              ? `1px solid ${token('color.border', '#DCDFE4')}`
+              ? `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`
               : 'none',
             cursor: 'pointer',
             fontSize: 13,
             fontWeight: 600,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
             textAlign: 'left',
           }}
           onClick={() => setIsJsonVisible(!isJsonVisible)}
@@ -435,10 +435,10 @@ export default function EpicDescriptionEditorPreview() {
             style={{
               margin: 0,
               padding: token('space.200', '16px'),
-              backgroundColor: token('color.background.neutral.subtle', '#F1F2F4'),
+              backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               fontSize: 11,
               fontFamily: 'var(--ds-font-family-code)',
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
               overflowX: 'auto',
               maxHeight: 360,
               overflowY: 'auto',
@@ -453,7 +453,7 @@ export default function EpicDescriptionEditorPreview() {
       <div
         style={{
           fontSize: 12,
-          color: token('color.text.subtlest', '#626F86'),
+          color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
           padding: `${token('space.150', '12px')} ${token('space.200', '16px')}`,
           backgroundColor: token('color.background.information.subtle', '#DEEBF7'),
           borderRadius: 3,

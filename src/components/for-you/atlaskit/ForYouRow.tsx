@@ -172,16 +172,16 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         borderBottom: 'none',
         cursor: 'pointer',
         backgroundColor: isActive
-          ? token('elevation.surface.hovered', 'rgba(9,30,66,0.06)')
+          ? token('elevation.surface.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')
           : 'transparent',
-        color: token('color.text', '#292A2E'),
+        color: token('color.text', 'var(--ds-text, #172B4D)'),
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 120ms ease',
         outline: 'none',
         // WCAG 2.4.7 — keyboard focus indicator. ADS border.focused (#388BFF)
         // routed via inset ring so it sits on top of the row's hover bg without
         // shifting layout. Only renders on actual keyboard focus, not hover.
         boxShadow: isFocused
-          ? `inset 0 0 0 2px ${token('color.border.focused', '#388BFF')}`
+          ? `inset 0 0 0 2px ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`
           : 'none',
         minWidth: 0,
       }}
@@ -189,7 +189,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
       {/* Left — work item type icon.
           jira-assigned variant: 32x32 rounded grey tile (border-radius 25%)
           containing the type icon. Confirmed via 2026-05-17 LIVE Jira DOM
-          probe: tile bg `rgba(5,21,36,0.06)`, dimensions 32px square.
+          probe: tile bg `var(--ds-shadow-overlay, rgba(5,21,36,0.06))`, dimensions 32px square.
           Default variant: 20px naked icon (legacy compact rail layout). */}
       {isJiraAssigned ? (
         <div className="cp-feed-type-tile" style={{
@@ -218,7 +218,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             // A prior comment claimed 400 was correct — live DOM disproves
             // that. The user-visible weight in Jira's For You is medium 500.
             font: `${isJiraAssigned ? 500 : 400} 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text', '#292A2E'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -234,7 +234,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             <span
               style={{
                 font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                color: token('color.text.subtlest', '#626F86'),
+                color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                 letterSpacing: 0,
               }}
             >
@@ -246,7 +246,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               aria-hidden="true"
               style={{
                 font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                color: token('color.text.subtlest', '#626F86'),
+                color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               }}
             >
               ·
@@ -268,7 +268,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               <span
                 style={{
                   font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                  color: token('color.link', '#0052CC'),
+                  color: token('color.link', 'var(--ds-link, #0052CC)'),
                   maxWidth: 180,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -292,7 +292,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             <span
               style={{
                 font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                color: token('color.text.subtlest', '#626F86'),
+                color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               }}
             >
               · {item.updatedAt}
@@ -308,7 +308,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               <span
                 style={{
                   font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                  color: token('color.text.subtle', '#626F86'),
+                  color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                   maxWidth: 260,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -422,17 +422,17 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
             borderRadius: 4,
             border: 'none',
             background: 'transparent',
-            color: token('color.icon.subtle', '#6B778C'),
+            color: token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)'),
             cursor: 'pointer',
             opacity: isVisible ? 1 : 0,
             transition: 'opacity 100ms, background 100ms',
             padding: 0,
             outline: 'none',
             boxShadow: focused
-              ? `0 0 0 2px ${token('color.border.focused', '#388BFF')}`
+              ? `0 0 0 2px ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`
               : 'none',
           }}
-          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -453,13 +453,13 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
             right: anchor.right,
             zIndex: 1000,
             minWidth: 180,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)'),
+            boxShadow: token('elevation.shadow.overlay', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
             padding: 4,
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-            color: token('color.text', '#292A2E'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
           }}
         >
           {normal.map(a => (
@@ -471,11 +471,11 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 width: '100%', padding: '8px 8px', border: 'none',
-                background: 'transparent', color: token('color.text', '#292A2E'),
+                background: 'transparent', color: token('color.text', 'var(--ds-text, #172B4D)'),
                 fontSize: 14, textAlign: 'left', cursor: 'pointer',
                 fontFamily: 'inherit', borderRadius: 3, outline: 'none',
               }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
             >
               {a.icon}
@@ -484,7 +484,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
           ))}
           {danger.length > 0 && (
             <>
-              <div style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '4px 0' }} />
+              <div style={{ height: 1, background: token('color.border', 'var(--ds-border, #DFE1E6)'), margin: '4px 0' }} />
               {danger.map(a => (
                 <button
                   key={a.id}
@@ -494,11 +494,11 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     width: '100%', padding: '8px 8px', border: 'none',
-                    background: 'transparent', color: token('color.text.danger', '#AE2A19'),
+                    background: 'transparent', color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
                     fontSize: 14, textAlign: 'left', cursor: 'pointer',
                     fontFamily: 'inherit', borderRadius: 3, outline: 'none',
                   }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', '#FFEBE6'))}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'))}
                   onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                 >
                   {a.icon}
@@ -552,7 +552,7 @@ export function JiraForYouLozenge({ status, statusCategory }: { status: string; 
 
 // ─── Star button ─────────────────────────────────────────────────────────────
 
-const GOLD = token('color.icon.accent.yellow', '#FFAB00');
+const GOLD = token('color.icon.accent.yellow', 'var(--ds-background-warning-bold, #E2B203)');
 
 function StarButton({
   isStarred,
@@ -587,7 +587,7 @@ function StarButton({
           alignItems: 'center',
           justifyContent: 'center',
           background: hover
-            ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)')
+            ? token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')
             : 'transparent',
           border: 'none',
           borderRadius: 4,
@@ -595,10 +595,10 @@ function StarButton({
           opacity: isVisible ? 1 : 0,
           transition: 'opacity 150ms cubic-bezier(0.15, 1, 0.3, 1), background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 120ms ease',
           padding: 0,
-          color: isStarred ? GOLD : token('color.icon.subtle', '#6B778C'),
+          color: isStarred ? GOLD : token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)'),
           outline: 'none',
           boxShadow: focused
-            ? `0 0 0 2px ${token('color.border.focused', '#388BFF')}`
+            ? `0 0 0 2px ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`
             : 'none',
         }}
       >

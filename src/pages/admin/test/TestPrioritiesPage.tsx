@@ -16,8 +16,8 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import { TMCasePriority } from '@/types/test-management';
 
 const COLORS = [
-  '#EF4444', '#F97316', '#EAB308', '#22C55E', '#14B8A6',
-  '#3B82F6', '#8B5CF6', '#EC4899', '#6B7280', '#172B4D',
+  'var(--ds-background-danger-bold, #ef4444)', 'var(--ds-background-warning-bold, #f97316)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-accent-teal-bolder, #14b8a6)',
+  'var(--ds-background-information-bold, #3b82f6)', 'var(--ds-background-discovery-bold, #8b5cf6)', 'var(--ds-background-accent-magenta-bolder, #ec4899)', 'var(--ds-text-subtlest, #626F86)', 'var(--ds-text, #172B4D)',
 ];
 
 export default function TestPrioritiesPage() {
@@ -133,7 +133,7 @@ export default function TestPrioritiesPage() {
       {showAdd && (
         <div style={{
           border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, padding: 20, marginBottom: 20,
-          background: 'var(--ds-surface-overlay, #FFFFFF)', boxShadow: '0 2px 8px rgba(9,30,66,0.1)',
+          background: 'var(--ds-surface-overlay, #FFFFFF)', boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
         }}>
           <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>New priority</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'end' }}>
@@ -205,7 +205,7 @@ export default function TestPrioritiesPage() {
                       ))}
                     </div>
                   ) : (
-                    <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', background: p.color ?? '#6B7280' }} />
+                    <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', background: p.color ?? 'var(--ds-text-subtlest, #626F86)' }} />
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>

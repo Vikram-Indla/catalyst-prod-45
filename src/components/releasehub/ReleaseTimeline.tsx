@@ -22,9 +22,9 @@ const T = {
 };
 
 const BAR = {
-  completed: { bar: '#C1C7D0', badge: { bg: '#F1F2F4', text: '#44546F' }, label: 'Released' },
-  active:    { bar: '#0C66E4', badge: { bg: '#E9F2FF', text: '#0C66E4' }, label: 'Active' },
-  upcoming:  { bar: '#22A06B', badge: { bg: '#DCFFF1', text: '#216E4E' }, label: 'Upcoming' },
+  completed: { bar: 'var(--ds-border, #DFE1E6)', badge: { bg: 'var(--ds-background-neutral, #F1F2F4)', text: 'var(--ds-icon, #44546F)' }, label: 'Released' },
+  active:    { bar: 'var(--ds-link, #0C66E4)', badge: { bg: 'var(--ds-background-selected, #E9F2FF)', text: 'var(--ds-link, #0C66E4)' }, label: 'Active' },
+  upcoming:  { bar: 'var(--ds-background-success-bold, #1F845A)', badge: { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' }, label: 'Upcoming' },
 } as const;
 
 type GanttStatus = keyof typeof BAR;
@@ -158,14 +158,14 @@ export function ReleaseTimeline() {
             left:  `${barLeft  * 100}%`,
             width: `${barW}%`,
             height: 16, borderRadius: 3,
-            background: dimmed ? '#C1C7D0' : style.bar,
+            background: dimmed ? 'var(--ds-border, #DFE1E6)' : style.bar,
             overflow: 'hidden', zIndex: 2,
           }}>
             {status === 'active' && (
               <div style={{
                 position: 'absolute', left: 0, height: '100%',
                 width: `${progressPct}%`,
-                background: 'rgba(255,255,255,0.22)',
+                background: 'var(--ds-surface, rgba(255,255,255,0.22))',
                 borderRadius: '3px 0 0 3px',
               }} />
             )}
@@ -323,7 +323,7 @@ export function ReleaseTimeline() {
             position: 'absolute',
             left: `calc(${NAME_W}px + ${todayRatio} * (100% - ${NAME_W + META_W}px))`,
             top: '50%', transform: 'translate(-50%, -50%)',
-            background: T.link, color: '#fff',
+            background: T.link, color: 'var(--ds-surface, #FFFFFF)',
             fontFamily: RH.fontBody,
             fontSize: 9, fontWeight: 800, padding: '1px 6px',
             borderRadius: 2, letterSpacing: '0.07em', whiteSpace: 'nowrap',
@@ -340,7 +340,7 @@ export function ReleaseTimeline() {
             borderBottom: `1px solid ${T.borderSub}`,
             padding: '0 16px',
           }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#C1C7D0', flexShrink: 0 }} />
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-border, #DFE1E6)', flexShrink: 0 }} />
             <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, fontStyle: 'italic' }}>
               No active release in progress
             </span>

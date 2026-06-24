@@ -108,16 +108,16 @@ async function exportAsPdf(releases: ComparedRelease[], generatedAt: string): Pr
       <title>Release Comparison Report</title>
       <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
-        .generated { color: #64748b; font-size: 12px; margin-bottom: 20px; }
+        h1 { color: var(--ds-text, #172B4D); border-bottom: 2px solid var(--ds-background-information-bold, #3b82f6); padding-bottom: 10px; }
+        .generated { color: var(--ds-text-subtlest, #626F86); font-size: 12px; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #f1f5f9; color: #475569; text-align: left; padding: 12px 8px; border: 1px solid var(--cp-bg-sunken, #e2e8f0); }
+        th { background: var(--ds-surface-sunken, #F7F8F9); color: var(--ds-text-subtle, #44546F); text-align: left; padding: 12px 8px; border: 1px solid var(--cp-bg-sunken, #e2e8f0); }
         td { padding: 10px 8px; border: 1px solid var(--cp-bg-sunken, #e2e8f0); }
-        .health-healthy { background: #dcfce7; color: #166534; }
-        .health-attention { background: #fef3c7; color: #92400e; }
-        .health-at_risk { background: #fed7aa; color: #9a3412; }
-        .health-critical { background: #fee2e2; color: #991b1b; }
-        .metric-label { font-weight: 600; color: #475569; }
+        .health-healthy { background: var(--ds-background-success, #DFFCF0); color: var(--ds-text-success, #216E4E); }
+        .health-attention { background: var(--ds-background-warning, #FFF7D6); color: var(--ds-text-warning, #974F0C); }
+        .health-at_risk { background: var(--ds-background-warning, #FFF7D6); color: var(--ds-text-danger, #AE2A19); }
+        .health-critical { background: var(--ds-background-danger, #FFECEB); color: var(--ds-text-danger, #AE2A19); }
+        .metric-label { font-weight: 600; color: var(--ds-text-subtle, #44546F); }
         .section { margin-top: 30px; }
         .section-title { font-size: 16px; font-weight: 600; color: var(--cp-ink-2, var(--cp-ink-2, #334155)); margin-bottom: 10px; }
       </style>

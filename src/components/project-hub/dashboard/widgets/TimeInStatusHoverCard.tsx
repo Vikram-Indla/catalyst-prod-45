@@ -71,14 +71,14 @@ export interface TimeInStatusHoverCardProps {
 // JiraTable cells.tsx). Same hexes as the matrix cell pills + tints —
 // keeps the hover card visually consistent with what triggered it.
 const CATEGORY_BG: Record<string, string> = {
-  todo: '#DDDEE1',         // gray
-  in_progress: '#8FB8F6',  // cornflower
-  done: '#B3DF72',         // lime
+  todo: 'var(--ds-border, #DFE1E6)',         // gray
+  in_progress: 'var(--ds-background-information, #E9F2FF)',  // cornflower
+  done: 'var(--ds-background-success-bold, #6A9A23)',         // lime
 };
 const CATEGORY_FG: Record<string, string> = {
-  todo: 'rgb(41, 42, 46)',
-  in_progress: 'rgb(41, 42, 46)',
-  done: 'rgb(41, 42, 46)',
+  todo: 'var(--ds-text, rgb(41, 42, 46))',
+  in_progress: 'var(--ds-text, rgb(41, 42, 46))',
+  done: 'var(--ds-text, rgb(41, 42, 46))',
 };
 
 export function TimeInStatusHoverCard({

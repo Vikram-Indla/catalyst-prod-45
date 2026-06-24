@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { extractSprint, extractRelease } from '@/components/shared/Timeline/dependencies/scheduleFields';
 
 export interface TimelineIssue {
   id: string;
@@ -19,11 +20,19 @@ export interface TimelineIssue {
   dueDate: string | null;
   epicColor: string | null;
   fixVersions: string[];
+  sprintEndDate: string | null;
+  sprintName: string | null;
+  releaseDate: string | null;
+  releaseName: string | null;
   children: TimelineIssue[];
+  /** Synthetic, non-interactive bucket header (e.g. "Story – 33 work items")
+   *  collecting parentless base-level items. Renders as a collapsible group
+   *  in the sidebar with no Gantt bar, no menu, no detail view. */
+  isGroup?: boolean;
 }
 
 const SELECT_FIELDS =
-  'id, issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_display_name, parent_key, raw_json, position, due_date, effective_due_date, jira_created_at, jira_updated_at';
+  'id, issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_display_name, parent_key, raw_json, due_date, effective_due_date, jira_created_at, jira_updated_at';
 
 const YEAR_2026_START = '2026-01-01T00:00:00Z';
 
@@ -73,12 +82,16 @@ function mapRow(row: any): TimelineIssue {
     dueDate: extractDueDate(row),
     epicColor: extractEpicColor(row.raw_json),
     fixVersions: extractFixVersions(row.raw_json),
+    sprintEndDate: extractSprint(row.raw_json).endDate,
+    sprintName: extractSprint(row.raw_json).name,
+    releaseDate: extractRelease(row.raw_json).date,
+    releaseName: extractRelease(row.raw_json).name,
     children: [],
     displayOrder: typeof row.position === 'number' ? row.position : null,
   };
 }
 
-function buildTree(issues: TimelineIssue[]): TimelineIssue[] {
+export function buildTree(issues: TimelineIssue[]): TimelineIssue[] {
   const byKey = new Map<string, TimelineIssue>();
   for (const issue of issues) {
     byKey.set(issue.issueKey, issue);
@@ -114,7 +127,38 @@ function buildTree(issues: TimelineIssue[]): TimelineIssue[] {
   };
   sortChildren(roots);
 
-  return roots;
+  // Jira parity: parentless base-level items (anything that isn't an Epic or
+  // Feature container) collapse into one "Story – N work items" bucket that
+  // sits below the epic/feature roots, instead of floating as flat roots.
+  const CONTAINER_TYPES = new Set(['Epic', 'Feature']);
+  const containers = roots.filter(r => CONTAINER_TYPES.has(r.issueType));
+  const orphans = roots.filter(r => !CONTAINER_TYPES.has(r.issueType));
+  if (orphans.length === 0) return roots;
+
+  const bucket: TimelineIssue = {
+    id: '__group-story',
+    issueKey: '__GROUP-STORY__',
+    projectKey: orphans[0].projectKey,
+    issueType: 'Story',
+    summary: 'Story',
+    status: '',
+    statusCategory: null,
+    priority: null,
+    assigneeDisplayName: null,
+    assigneeAvatarUrl: null,
+    parentKey: null,
+    startDate: null,
+    dueDate: null,
+    epicColor: null,
+    fixVersions: [],
+    sprintEndDate: null,
+    sprintName: null,
+    releaseDate: null,
+    releaseName: null,
+    children: orphans,
+    isGroup: true,
+  };
+  return [...containers, bucket];
 }
 
 export function useProjectHubTimeline(projectKey: string | undefined) {

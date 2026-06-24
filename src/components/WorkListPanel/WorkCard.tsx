@@ -27,10 +27,10 @@ const statusCategoryColor: Record<
   'todo' | 'inprogress' | 'done' | 'default',
   string
 > = {
-  todo: 'rgba(5,21,36,0.06)', // Light grey
+  todo: 'var(--ds-shadow-overlay, rgba(5,21,36,0.06))', // Light grey
   inprogress: '#669DF1', // Blue
-  done: '#94C748', // Green
-  default: 'rgba(5,21,36,0.06)',
+  done: 'var(--ds-background-success-bold, #6A9A23)', // Green
+  default: 'var(--ds-shadow-overlay, rgba(5,21,36,0.06))',
 };
 
 const statusCategoryTextColor: Record<
@@ -38,7 +38,7 @@ const statusCategoryTextColor: Record<
   string
 > = {
   todo: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', // Dark grey
-  inprogress: '#FFFFFF', // White
+  inprogress: 'var(--ds-surface, #FFFFFF)', // White
   done: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', // Dark
   default: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
 };

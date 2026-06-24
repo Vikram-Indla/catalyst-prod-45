@@ -188,24 +188,24 @@ function SetRowMenu({ set, projectId, onClose, onDeleted }: {
           position: 'fixed', top: pos.top, left: pos.left,
           background: 'var(--ds-surface-overlay, #FFFFFF)',
           border: '1px solid var(--ds-border, #DFE1E6)',
-          borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+          borderRadius: 6, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
           padding: '4px 0', minWidth: 160, zIndex: 9999,
         }}>
           <button role="menuitem" style={item}
             onClick={e => { e.stopPropagation(); copyMut.mutate(); }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
             Copy set
           </button>
           <button role="menuitem" style={{ ...item, color: 'var(--ds-text-warning, #974F0C)' }}
             onClick={e => { e.stopPropagation(); archiveMut.mutate(); }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
             Archive set
           </button>
           <button role="menuitem" style={{ ...item, color: 'var(--ds-text-danger, #AE2A19)' }}
             onClick={e => { e.stopPropagation(); deleteMut.mutate(); }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
             Delete set
           </button>
@@ -310,7 +310,7 @@ export default function TestSetsPage() {
           padding: 20,
           marginBottom: 24,
           background: 'var(--ds-surface-overlay, #FFFFFF)',
-          boxShadow: '0 4px 12px rgba(9,30,66,0.12)',
+          boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
         }}>
           <h3 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
             New Test Set
@@ -465,7 +465,7 @@ export default function TestSetsPage() {
                 >
                   <span style={{
                     display: 'block', width: 14, height: 14, borderRadius: '50%',
-                    background: '#fff',
+                    background: 'var(--ds-surface, #FFFFFF)',
                     position: 'absolute', top: 3,
                     left: set.is_active ? 19 : 3,
                     transition: 'left 200ms',

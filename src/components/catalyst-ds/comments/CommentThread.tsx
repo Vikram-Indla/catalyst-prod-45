@@ -273,11 +273,11 @@ function CommentThread({
           </div>
         ) : sortedTopLevelComments.length === 0 ? (
           <div className="text-center py-10">
-            <MessageSquare className="h-10 w-10 mx-auto mb-3 text-[#C1C7D0] dark:text-[var(--ds-border-bold,#454545)]" />
+            <MessageSquare className="h-10 w-10 mx-auto mb-3 text-[var(--ds-border, #DFE1E6)] dark:text-[var(--ds-border-bold,#454545)]" />
             <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">{emptyMessage}</p>
           </div>
         ) : (
-          <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+          <div className="divide-y divide-[var(--ds-border, #DFE1E6)] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             {sortedTopLevelComments.map((comment) => (
               <div key={comment.id}>
                 <CommentNode

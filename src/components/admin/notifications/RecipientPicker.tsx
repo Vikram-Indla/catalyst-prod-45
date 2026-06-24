@@ -176,8 +176,8 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
               onClick={() => handleToggle(def.key)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md border transition-colors duration-150 text-left ${
                 config[def.key]
-                  ? 'bg-[rgba(37,99,235,0.04)] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20'
-                  : 'bg-white border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] hover:bg-[rgba(0,0,0,0.02)]'
+                  ? 'bg-[var(--ds-background-information, rgba(37,99,235,0.04))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20'
+                  : 'bg-white border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] hover:bg-[var(--ds-shadow-raised, rgba(0,0,0,0.02))]'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">

@@ -53,13 +53,13 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
         style={{
           padding: '6px 10px',
           background: '#1D1D1F',
-          color: '#FFFFFF',
+          color: 'var(--ds-text-inverse, #FFFFFF)',
           borderRadius: 6,
           fontFamily: 'var(--cv2-font)',
           fontSize: 13,
           fontWeight: 600,
           whiteSpace: 'nowrap',
-          boxShadow: '0 6px 16px rgba(0,0,0,0.35)',
+          boxShadow: '0 6px 16px var(--ds-shadow-raised, rgba(0,0,0,0.35))',
         }}
       >
         {label}
@@ -69,7 +69,7 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
           style={{
             padding: '2px 8px',
             background: '#1D1D1F',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             borderRadius: 4,
             fontFamily: 'var(--cv2-font)',
             fontSize: 11,

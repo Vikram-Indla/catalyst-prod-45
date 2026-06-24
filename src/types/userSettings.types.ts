@@ -182,10 +182,10 @@ export const DEFAULT_APP_PREFERENCES: AppPreferences = {
 
 export const ACCENT_COLOR_PRESETS = [
   { name: 'Catalyst Blue', value: 'var(--cp-workstream-catalyst-primary, #2563eb)' },
-  { name: 'Teal', value: '#0d9488' },
-  { name: 'Green', value: '#10b981' },
-  { name: 'Purple', value: '#8b5cf6' },
-  { name: 'Red', value: '#ef4444' },
+  { name: 'Teal', value: 'var(--ds-chart-teal-bold, #0d9488)' },
+  { name: 'Green', value: 'var(--ds-background-success-bold, #059669)' },
+  { name: 'Purple', value: 'var(--ds-background-discovery-bold, #8b5cf6)' },
+  { name: 'Red', value: 'var(--ds-background-danger-bold, #ef4444)' },
 ];
 
 export const TIME_ZONES = [

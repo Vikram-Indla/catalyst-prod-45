@@ -38,7 +38,7 @@ export const AddItemInput: React.FC<AddItemInputProps> = ({
         borderRadius: '12px',
         transition: 'all 0.2s ease',
         // FIX 5: Subtle shadow, not heavy
-        boxShadow: isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none'
+        boxShadow: isFocused ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))' : 'none'
       }}
     >
       {/* PLUS ICON — 22px blue box */}

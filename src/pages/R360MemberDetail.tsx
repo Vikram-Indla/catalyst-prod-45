@@ -329,7 +329,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
         [data-r360-fullscreen] > div,
         #r360-root,
         #r360-root > .r3-page {
-          background-color: #FFFFFF !important;
+          background-color: var(--ds-surface, #FFFFFF) !important;
         }
         html.dark [data-catalyst-main],
         html.dark [data-catalyst-main] > div,
@@ -379,10 +379,10 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
 
   return (
     <>
-      <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden', background: token('elevation.surface', '#FFFFFF'), flex: 1 }}>
-        <div className="r3-page" style={{ background: token('elevation.surface', '#FFFFFF'), height: '100%', overflow: 'auto', paddingTop: '8px' }}>
+      <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden', background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), flex: 1 }}>
+        <div className="r3-page" style={{ background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), height: '100%', overflow: 'auto', paddingTop: '8px' }}>
           {/* ── Sticky Header: Profile + Week Nav ── */}
-          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: token('elevation.surface', '#FFFFFF') }}>
+          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)') }}>
             {!embedded && (<>
             {/* ── Profile Header ── */}
             <div className="r3-profile">
@@ -403,7 +403,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                         data-testid="r360-country"
                         style={{
                           fontSize: 12,
-                          color: token('color.text.subtle', '#626F86'),
+                          color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: 4,
@@ -437,8 +437,8 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                           fontWeight: 500,
                           padding: '1px 6px',
                           borderRadius: 3,
-                          background: token('color.background.neutral', '#F1F2F4'),
-                          color: token('color.text.subtle', '#626F86'),
+                          background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+                          color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                           whiteSpace: 'nowrap' as const,
                         }}
                       >
@@ -448,7 +448,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   </div>
                   {/* Reports to row — only render when manager is set or actively editing */}
                   {(managerName || editingManager) && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                    <span style={{ fontSize: 11, color: token('color.text.subtlest', '#8590A2'), fontWeight: 500 }}>
+                    <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), fontWeight: 500 }}>
                       Reports to:
                     </span>
                     {editingManager ? (
@@ -459,9 +459,9 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                           onChange={e => setPendingManagerId(e.target.value)}
                           style={{
                             fontSize: 11, padding: '1px 4px', borderRadius: 3,
-                            border: `1px solid ${token('color.border.focused', '#388BFF')}`,
+                            border: `1px solid ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`,
                             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-                            background: token('elevation.surface', '#FFFFFF'),
+                            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                             outline: 'none', maxWidth: 180,
                           }}
                         >
@@ -476,14 +476,14 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                             setEditingManager(false);
                           }}
                           disabled={isUpdating}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.success', '#216E4E') }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.success', 'var(--ds-text-success, #216E4E)') }}
                           title="Save"
                         >
                           <Check size={12} />
                         </button>
                         <button
                           onClick={() => setEditingManager(false)}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.subtle', '#626F86') }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}
                           title="Cancel"
                         >
                           <X size={12} />
@@ -493,7 +493,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       <>
                         <span
                           data-testid="r360-manager-name"
-                          style={{ fontSize: 11, color: token('color.text.subtle', '#626F86') }}
+                          style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}
                         >
                           {managerName ?? '—'}
                         </span>
@@ -504,7 +504,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                             setPendingManagerId(currentOpt?.id ?? '');
                             setEditingManager(true);
                           }}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.subtlest', '#8590A2'), display: 'inline-flex', alignItems: 'center' }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), display: 'inline-flex', alignItems: 'center' }}
                           title="Edit reporting manager"
                         >
                           <Pencil size={10} />
@@ -529,18 +529,18 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                     style={{
                       display: 'inline-flex', flexDirection: 'column', alignItems: 'center',
                       padding: '6px 14px', borderRadius: 6, gap: 1,
-                      background: token('color.background.neutral.subtle', '#F7F8F9'),
+                      background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
                       border: `1px solid ${token('color.border', '#091E4224')}`,
                       cursor: bannerOpenCount > 0 ? 'pointer' : 'default',
                       transition: 'background 80ms ease',
                     }}
                     onMouseEnter={e => {
                       if (bannerOpenCount > 0) {
-                        (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+                        (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
                       }
                     }}
                     onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle', '#F7F8F9');
+                      (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)');
                     }}
                   >
                     <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
@@ -558,7 +558,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       style={{
                         display: 'inline-flex', alignItems: 'center', gap: 3,
                         fontSize: 11, fontWeight: 500, cursor: 'pointer',
-                        color: token('color.text.warning', '#974F0C'),
+                        color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
                         padding: '1px 4px', borderRadius: 3,
                       }}
                     >
@@ -570,7 +570,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
 
               {/* §3 — Stale warning banner */}
               {allStale && allOpenItems.length > 0 && (
-                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', '#FFF7D6'), borderLeft: `3px solid ${token('color.border.warning', 'var(--cp-warning, #D97706)')}`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: token('color.text.warning', '#974F0C') }}>
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), borderLeft: `3px solid ${token('color.border.warning', 'var(--cp-warning, #D97706)')}`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>
                   ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
                 </div>
               )}
@@ -587,7 +587,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                 {!embedded && (
                   <button
                     onClick={() => navigate(backPath)}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: token('color.text.subtle', '#626F86'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
                     onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
                     onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
                   >
@@ -595,7 +595,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   </button>
                 )}
                 {/* Quarter label — computed from current date */}
-                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: token('color.background.neutral', '#F1F2F4'), border: 'none', borderRadius: '6px', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), border: 'none', borderRadius: '6px', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
                 </button>
                 {/* Ask Caty - Profile — opens R360 profile drawer.
@@ -644,24 +644,24 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
             <div>
               <div className="r3-empty">No work items assigned in this period.</div>
               {workItems.length > 0 && lastActivityDate && (
-                <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: `1px solid ${token('color.border', '#091E4224')}`, background: token('elevation.surface', '#FFFFFF'), textAlign: 'center' }}>
-                  <div style={{ fontSize: '13px', color: token('color.text.subtle', '#626F86'), marginBottom: '10px' }}>
+                <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: `1px solid ${token('color.border', '#091E4224')}`, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), textAlign: 'center' }}>
+                  <div style={{ fontSize: '13px', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), marginBottom: '10px' }}>
                     <strong style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
                     {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
                   </div>
-                  <div style={{ fontSize: '12.5px', color: token('color.text.subtlest', '#8590A2'), marginBottom: '12px' }}>
-                    Last activity: <strong style={{ color: token('color.text.subtle', '#626F86') }}>{lastActivityDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
+                  <div style={{ fontSize: '12.5px', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), marginBottom: '12px' }}>
+                    Last activity: <strong style={{ color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>{lastActivityDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
                   </div>
                   <button
                     onClick={jumpToLastActivity}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '7px 18px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600,
-                      border: 'none', background: token('color.background.brand.subtlest', '#E9F2FF'), color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'),
+                      border: 'none', background: token('color.background.brand.subtlest', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'),
                       cursor: 'pointer', transition: 'all 80ms ease',
                     }}
                     onMouseOver={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest.hovered', '#CCE0FF'); }}
-                    onMouseOut={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest', '#E9F2FF'); }}
+                    onMouseOut={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest', 'var(--ds-background-selected, #E9F2FF)'); }}
                   >
                     <Calendar size={13} />
                     Jump to last activity
@@ -687,12 +687,12 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       gap: 6,
                       padding: '4px 12px',
                       borderRadius: 999,
-                      background: token('color.background.information', '#E9F2FE'),
-                      color: token('color.text.information', '#0052CC'),
+                      background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
+                      color: token('color.text.information', 'var(--ds-link, #0052CC)'),
                       fontSize: 12,
                       fontWeight: 500,
                       fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
-                      boxShadow: token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.12)'),
+                      boxShadow: token('elevation.shadow.raised', '0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))'),
                       pointerEvents: 'none',
                       whiteSpace: 'nowrap',
                     }}>
@@ -733,7 +733,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               position: 'fixed',
               inset: 0,
               top: 48,
-              backgroundColor: 'rgba(0, 0, 0, 0.15)',
+              backgroundColor: 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
               zIndex: 300,
             }}
           />
@@ -744,7 +744,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               right: 0,
               width: 700,
               height: 'calc(100vh - 48px)',
-              backgroundColor: token('elevation.surface.overlay', '#FFFFFF'),
+              backgroundColor: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
               zIndex: 301,
               overflowY: 'auto',
               boxShadow: token('elevation.shadow.overlay', 'none'),
@@ -767,7 +767,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               position: 'fixed',
               inset: 0,
               top: 48,
-              backgroundColor: 'rgba(0, 0, 0, 0.15)',
+              backgroundColor: 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
               zIndex: 300,
             }}
           />
@@ -778,7 +778,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               right: 0,
               width: 700,
               height: 'calc(100vh - 48px)',
-              backgroundColor: token('elevation.surface.overlay', '#FFFFFF'),
+              backgroundColor: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
               zIndex: 301,
               overflowY: 'auto',
               boxShadow: token('elevation.shadow.overlay', 'none'),

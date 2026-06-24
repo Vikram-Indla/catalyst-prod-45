@@ -1107,7 +1107,7 @@ function InlineCreateRow({
         gap: 8,
         padding: '8px 12px',
         marginTop: 4,
-        border: '1px solid #0C66E4',
+        border: '1px solid var(--ds-link, #0C66E4)',
         borderRadius: 4,
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       }}
@@ -1245,10 +1245,10 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
           width: iconOnly ? 28 : undefined,
           padding: iconOnly ? 0 : '0 10px',
           border: '1px solid',
-          borderColor: isSelected ? '#0C66E4' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+          borderColor: isSelected ? 'var(--ds-link, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
           borderRadius: 4,
-          background: isSelected ? '#E9F2FF' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          color: isSelected ? '#0055CC' : '#42526E',
+          background: isSelected ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          color: isSelected ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, #42526E)',
           fontSize: 13,
           fontWeight: 500,
           cursor: 'pointer',
@@ -1316,7 +1316,7 @@ function ToolbarMenu({ trigger, children, anchor = 'left', width = 220 }: Toolba
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
             borderRadius: 4,
-            boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
+            boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
             padding: 4,
           }}
         >
@@ -1342,8 +1342,8 @@ function MenuItem({
         width: '100%',
         padding: '8px 10px',
         border: 'none',
-        background: active ? '#E9F2FF' : 'transparent',
-        color: active ? '#0055CC' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+        background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
+        color: active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         fontSize: 14,
         fontWeight: active ? 600 : 400,
         textAlign: 'left',
@@ -1355,7 +1355,7 @@ function MenuItem({
       onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
-      {icon && <span style={{ display: 'inline-flex', width: 16, color: active ? '#0C66E4' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{icon}</span>}
+      {icon && <span style={{ display: 'inline-flex', width: 16, color: active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{icon}</span>}
       <span style={{ flex: 1 }}>{children}</span>
     </button>
   );

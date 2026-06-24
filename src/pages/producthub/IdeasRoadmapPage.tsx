@@ -14,9 +14,9 @@ const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team']
 const ROADMAP_COLS = [
   { key: null, label: 'NO QUARTER', borderColor: 'transparent', textColor: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
   { key: 'Q1', label: 'Q1 2026', borderColor: 'var(--ds-text-danger, #991B1B)', textColor: 'var(--ds-text-danger, #991B1B)' },
-  { key: 'Q2', label: 'Q2 2026', borderColor: '#1E40AF', textColor: '#1E40AF' },
-  { key: 'Q3', label: 'Q3 2026', borderColor: '#115E59', textColor: '#115E59' },
-  { key: 'Q4', label: 'Q4 2026', borderColor: '#78350F', textColor: '#78350F' },
+  { key: 'Q2', label: 'Q2 2026', borderColor: 'var(--ds-link-pressed, #1e40af)', textColor: 'var(--ds-link-pressed, #1e40af)' },
+  { key: 'Q3', label: 'Q3 2026', borderColor: 'var(--ds-text-success, #216E4E)', textColor: 'var(--ds-text-success, #216E4E)' },
+  { key: 'Q4', label: 'Q4 2026', borderColor: 'var(--ds-text-warning, #974F0C)', textColor: 'var(--ds-text-warning, #974F0C)' },
 ];
 
 export default function IdeasRoadmapPage() {
@@ -117,18 +117,18 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
       borderRadius: '6px',
       padding: '12px', marginBottom: '8px', cursor: 'pointer',
       transition: 'box-shadow 150ms ease, transform 150ms ease',
-      boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)',
+      boxShadow: isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
     }}
       onMouseEnter={e => {
         if (!isDark) {
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.10)';
+          e.currentTarget.style.boxShadow = '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.10))';
           e.currentTarget.style.transform = 'translateY(-1px)';
         }
-        e.currentTarget.style.borderColor = isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(37,99,235,0.3)';
+        e.currentTarget.style.borderColor = isDark ? 'var(--ds-border-bold, #454545)' : 'var(--ds-background-information, rgba(37,99,235,0.3))';
       }}
       onMouseLeave={e => {
         if (!isDark) {
-          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
+          e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))';
           e.currentTarget.style.transform = 'none';
         }
         e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';

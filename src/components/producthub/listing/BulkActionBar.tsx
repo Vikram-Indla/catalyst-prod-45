@@ -18,7 +18,7 @@ export function BulkActionBar({ selectedCount, onAction, onCancel }: Props) {
       {selectedCount > 0 && (
         <motion.div
           className="h-11 flex items-center justify-between px-6 shrink-0"
-          style={{ background: 'var(--cp-blue-wash)', borderBottom: '1px solid #93c5fd' }}
+          style={{ background: 'var(--cp-blue-wash)', borderBottom: '1px solid var(--ds-background-information, #E9F2FF)' }}
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 44 }}
           exit={{ opacity: 0, height: 0 }}

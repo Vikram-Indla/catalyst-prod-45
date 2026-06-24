@@ -153,7 +153,7 @@ export function JiraConnection() {
                 {/* Jira logo placeholder */}
                 <div style={{
                   width: 48, height: 48, borderRadius: 'var(--wh-rad)',
-                  background: 'linear-gradient(135deg, var(--cp-primary-60, #0052CC), #2684FF)',
+                  background: 'linear-gradient(135deg, var(--cp-primary-60, #0052CC), var(--ds-link, #0C66E4))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: 'var(--ds-surface, #fff)', fontWeight: 800, fontSize: 14, fontFamily: 'var(--wh-fh)',
                 }}>
@@ -259,7 +259,7 @@ export function JiraConnection() {
               <div style={{
                 marginTop: 16, padding: '12px 14px',
                 background: 'var(--wh-dng-bg)', borderRadius: 'var(--wh-rad)',
-                border: '1px solid rgba(239,68,68,0.2)',
+                border: '1px solid var(--ds-background-danger, rgba(239,68,68,0.2))',
               }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                   ❌ Connection failed

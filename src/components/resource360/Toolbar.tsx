@@ -72,7 +72,7 @@ function FilterDropdown({ label, value, options, onChange }: {
         <div style={{
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
           background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8,
-          boxShadow: '0 4px 12px rgba(0,0,0,.1)', zIndex: 200,
+          boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,.1))', zIndex: 200,
           minWidth: 180, maxHeight: 240, overflowY: 'auto',
           padding: 4,
         }}>
@@ -109,7 +109,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--r360-text-3, #3D3D56)',
     background: active ? '#1A1A2E' : 'transparent',
     border: 'none', borderRadius: 6, cursor: 'pointer',
-    boxShadow: active ? '0 1px 3px rgba(0,0,0,.15)' : 'none',
+    boxShadow: active ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.15))' : 'none',
     transition: 'all 150ms',
   });
 
@@ -225,7 +225,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           transition: 'all 200ms ease',
           fontFamily: 'var(--cp-font-body)',
         }}
-        onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)'; }}
+        onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px var(--ds-background-information, rgba(37,99,235,0.15))'; }}
         onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}
       >
         <Zap size={13} strokeWidth={2.2} />

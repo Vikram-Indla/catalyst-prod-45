@@ -33,38 +33,38 @@ export const WORK_ITEM_STATUS_CONFIG: Record<WorkItemStatus, {
 }> = {
   backlog: {
     label: 'BACKLOG',
-    bgColor: '#F5F5F5',
-    textColor: '#525252'
+    bgColor: 'var(--ds-surface-sunken, #F7F8F9)',
+    textColor: 'var(--ds-text-subtle, #44546F)'
   },
   ready: {
     label: 'READY',
-    bgColor: '#DBEAFE',
-    textColor: '#1D4ED8'
+    bgColor: 'var(--ds-background-information, #E9F2FF)',
+    textColor: 'var(--ds-link-pressed, #1d4ed8)'
   },
   in_progress: {
     label: 'IN PROGRESS',
-    bgColor: '#CCFBF1',
-    textColor: '#0F766E'
+    bgColor: 'var(--ds-background-success, #DCFFF1)',
+    textColor: 'var(--ds-chart-teal-bolder, #0f766e)'
   },
   in_review: {
     label: 'IN REVIEW',
-    bgColor: '#FEF3C7',
-    textColor: '#B45309'
+    bgColor: 'var(--ds-background-warning, #FFF7D6)',
+    textColor: 'var(--ds-background-warning-bold, #b45309)'
   },
   blocked: {
     label: 'BLOCKED',
-    bgColor: '#FEE2E2',
+    bgColor: 'var(--ds-background-danger, #FFECEB)',
     textColor: 'var(--cp-danger, #DC2626)'
   },
   done: {
     label: 'DONE',
-    bgColor: '#D1FAE5',
-    textColor: '#047857'
+    bgColor: 'var(--ds-background-success, #DFFCF0)',
+    textColor: 'var(--ds-background-success-bold, #1F845A)'
   },
   closed: {
     label: 'CLOSED',
-    bgColor: '#F5F5F5',
-    textColor: '#737373'
+    bgColor: 'var(--ds-surface-sunken, #F7F8F9)',
+    textColor: 'var(--ds-text-subtlest, #626F86)'
   },
 };
 
@@ -87,7 +87,7 @@ export const PRIORITY_CONFIG: Record<PriorityLevel, {
   P2: {
     label: 'High',
     shortLabel: 'P2',
-    borderColor: '#F97316',
+    borderColor: 'var(--ds-background-warning-bold, #f97316)',
     showBorder: true
   },
   P3: { 
@@ -115,7 +115,7 @@ export const SEVERITY_CONFIG: Record<SeverityLevel, {
 }> = {
   SEV1: { label: 'Blocker', shortLabel: 'SEV1', color: 'var(--cp-danger, #DC2626)' },
   SEV2: { label: 'Critical', shortLabel: 'SEV2', color: 'var(--cp-danger, #DC2626)' },
-  SEV3: { label: 'Major', shortLabel: 'SEV3', color: '#F97316' },
+  SEV3: { label: 'Major', shortLabel: 'SEV3', color: 'var(--ds-background-warning-bold, #f97316)' },
   SEV4: { label: 'Minor', shortLabel: 'SEV4', color: 'var(--cp-amber, #F59E0B)' },
 };
 
@@ -127,10 +127,10 @@ export const TYPE_ICON_CONFIG: Record<WorkItemType, {
   bgColor: string;
   label: string;
 }> = {
-  story: { bgColor: '#0d9488', label: 'Story' },    // Teal
+  story: { bgColor: 'var(--ds-chart-teal-bold, #0d9488)', label: 'Story' },    // Teal
   task: { bgColor: 'var(--cp-workstream-catalyst-primary, #2563eb)', label: 'Task' },      // Blue
-  defect: { bgColor: '#ef4444', label: 'Defect' },  // Red
-  subtask: { bgColor: '#6b7280', label: 'Subtask' }, // Gray
+  defect: { bgColor: 'var(--ds-background-danger-bold, #ef4444)', label: 'Defect' },  // Red
+  subtask: { bgColor: 'var(--ds-text-subtlest, #626F86)', label: 'Subtask' }, // Gray
 };
 
 // ═══════════════════════════════════════════════════════════════

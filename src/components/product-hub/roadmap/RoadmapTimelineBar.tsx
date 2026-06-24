@@ -61,7 +61,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   }, []);
 
   const tooltipBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-  const tooltipShadow = isDark ? '0 20px 60px rgba(0,0,0,0.4)' : '0 20px 60px rgba(0,0,0,0.12)';
+  const tooltipShadow = isDark ? '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.4))' : '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.12))';
   const progressTrackBg = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : surface.borderLight;
 
   return (
@@ -90,8 +90,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           boxShadow: isDark
             ? 'none'
             : (isHovered || isSelected
-              ? '0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.08)'
-              : '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06)'),
+              ? '0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 2px 4px var(--ds-shadow-raised, rgba(0,0,0,0.08))'
+              : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06))'),
           filter: isHovered ? 'brightness(1.05)' : 'none',
           zIndex: isSelected ? 10 : isHovered ? 5 : 1,
           transition: 'transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease',
@@ -103,8 +103,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
             className="absolute left-0 top-0 bottom-0"
             style={{
               width: `${Math.min(100, item.progress)}%`,
-              background: 'rgba(255,255,255,0.18)',
-              borderRight: item.progress < 100 ? '2px solid rgba(255,255,255,0.35)' : 'none',
+              background: 'var(--ds-surface, rgba(255,255,255,0.18))',
+              borderRight: item.progress < 100 ? '2px solid var(--ds-surface, rgba(255,255,255,0.35))' : 'none',
               borderRadius: '5px 0 0 5px',
               zIndex: 0,
               pointerEvents: 'none',
@@ -121,7 +121,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               paddingLeft: 8, paddingRight: 4, lineHeight: '26px',
               flex: 1,
-              textShadow: '0 1px 2px rgba(0,0,0,0.15)',
+              textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
             }}
           >
             {width > 12 ? item.titleEn : item.initiativeKey}
@@ -137,7 +137,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               fontFamily: FONT.mono,
               fontSize: 9,
               fontWeight: 500,
-              color: 'rgba(255,255,255,0.7)',
+              color: 'var(--ds-surface, rgba(255,255,255,0.7))',
               paddingRight: 8,
               paddingLeft: 4,
             }}
@@ -150,7 +150,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
         {isFallbackEnd && (
           <div style={{
             position: 'absolute', right: 0, top: 0, bottom: 0,
-            width: 3, background: 'rgba(255,255,255,0.4)',
+            width: 3, background: 'var(--ds-surface, rgba(255,255,255,0.4))',
             borderRadius: '0 5px 5px 0',
           }} />
         )}
@@ -175,7 +175,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
                 background: m.completed ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : barColor,
                 border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 1,
                 transform: 'rotate(45deg)', zIndex: 3,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+                boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
               }}
             />
           );

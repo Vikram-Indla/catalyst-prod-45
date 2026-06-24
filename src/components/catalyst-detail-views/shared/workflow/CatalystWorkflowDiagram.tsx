@@ -3,9 +3,9 @@ import type { TypeStatus, Transition } from '@/hooks/useTypeWorkflow';
 import { STATUS_CATEGORY_BG, STATUS_TEXT } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 const CAT_COLOR: Record<string, string> = {
-  todo:        STATUS_CATEGORY_BG.todo,        // #DDDEE1 grey
-  in_progress: STATUS_CATEGORY_BG.in_progress, // #8FB8F6 periwinkle blue
-  done:        STATUS_CATEGORY_BG.done,         // #94C748 lime green
+  todo:        STATUS_CATEGORY_BG.todo,        // var(--ds-border, #DFE1E6) grey
+  in_progress: STATUS_CATEGORY_BG.in_progress, // var(--ds-background-information, #E9F2FF) periwinkle blue
+  done:        STATUS_CATEGORY_BG.done,         // var(--ds-background-success-bold, #6A9A23) lime green
 };
 
 const NODE_W = 155;
@@ -140,7 +140,7 @@ export function CatalystWorkflowDiagram({
         {/* START node */}
         <rect x={startX} y={startY} width={START_W} height={START_H} rx={START_H / 2} fill="var(--ds-text, #172B4D)" />
         <text x={startX + START_W / 2} y={startY + START_H / 2 + 1} textAnchor="middle" dominantBaseline="middle"
-          fontSize={10} fontWeight={600} fill="#FFFFFF">START</text>
+          fontSize={10} fontWeight={600} fill="var(--ds-surface, #FFFFFF)">START</text>
 
         {/* Arrow from START to initial */}
         {initialStatusId && (() => {
@@ -210,9 +210,9 @@ export function CatalystWorkflowDiagram({
               {/* Delete badge — shown on hover when onEdgeDelete wired */}
               {onEdgeDelete && isHovered && (
                 <>
-                  <circle cx={midX} cy={midY} r={8} fill="#E5493A" />
+                  <circle cx={midX} cy={midY} r={8} fill="var(--ds-background-danger-bold, #C9372C)" />
                   <text x={midX} y={midY + 1} textAnchor="middle" dominantBaseline="middle"
-                    fontSize={11} fontWeight={600} fill="#FFFFFF" style={{ pointerEvents: 'none' }}>
+                    fontSize={11} fontWeight={600} fill="var(--ds-surface, #FFFFFF)" style={{ pointerEvents: 'none' }}>
                     ×
                   </text>
                 </>
@@ -238,7 +238,7 @@ export function CatalystWorkflowDiagram({
               {/* Connect-source ring — solid amber, thicker */}
               {isConnectSource && (
                 <rect x={node.pos.x - 4} y={node.pos.y - 4} width={NODE_W + 8} height={NODE_H + 8}
-                  rx={8} fill="none" stroke="#FF991F" strokeWidth={3} />
+                  rx={8} fill="none" stroke="var(--ds-background-warning-bold, #E2B203)" strokeWidth={3} />
               )}
               {/* Selection ring — dashed blue (non-connect-mode) */}
               {isSelected && !isConnectSource && (
@@ -249,7 +249,7 @@ export function CatalystWorkflowDiagram({
               {/* Connect-target hint — faint highlight on non-source nodes */}
               {isConnectTarget && (
                 <rect x={node.pos.x - 2} y={node.pos.y - 2} width={NODE_W + 4} height={NODE_H + 4}
-                  rx={6} fill="rgba(12,102,228,0.08)" stroke="none" />
+                  rx={6} fill="var(--ds-link, rgba(12,102,228,0.08))" stroke="none" />
               )}
               <rect
                 x={node.pos.x} y={node.pos.y} width={NODE_W} height={NODE_H} rx={4}

@@ -1,0 +1,11 @@
+<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Jira blue geometric icon -->
+  <defs>
+    <linearGradient id="jiraGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0052CC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0747A6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <path d="M128 0L256 128L128 256L0 128Z" fill="url(#jiraGradient)"/>
+  <path d="M128 64L192 128L128 192L64 128Z" fill="white" opacity="0.9"/>
+</svg>

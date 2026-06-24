@@ -175,7 +175,7 @@ export default function ProjectBoardPage() {
                   borderRadius: 6, cursor: 'pointer', border: 'none',
                   background: isActive ? ('var(--cp-bg-elevated)') : 'transparent',
                   color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-secondary)'),
-                  boxShadow: isActive ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
+                  boxShadow: isActive ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.08))' : 'none',
                   transition: 'all 150ms ease',
                 }}
               >
@@ -213,7 +213,7 @@ export default function ProjectBoardPage() {
             padding: '6px 12px', height: 32,
             fontSize: 12, fontWeight: 500,
             borderRadius: 6, cursor: 'pointer',
-            border: hasActiveFilters ? '1px solid #BFDBFE' : ('1px solid var(--cp-border-default)'),
+            border: hasActiveFilters ? '1px solid var(--ds-background-information, #E9F2FF)' : ('1px solid var(--cp-border-default)'),
             background: hasActiveFilters ? ('var(--cp-interact-selected)') : ('var(--cp-bg-elevated)'),
             color: hasActiveFilters ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-secondary)'),
             fontFamily: 'var(--cp-font-body)',

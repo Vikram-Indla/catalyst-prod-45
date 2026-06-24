@@ -439,7 +439,7 @@ export function RichTextEditor({
               borderRadius: 999,
               background: 'var(--ds-surface-overlay, #FFFFFF)',
               border: '1px solid var(--ds-border, #DFE1E6)',
-              boxShadow: '0 2px 8px rgba(9,30,66,0.12)',
+              boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
               animation: 'caty-pill-enter 220ms ease forwards',
               maxWidth: 420,
             }}

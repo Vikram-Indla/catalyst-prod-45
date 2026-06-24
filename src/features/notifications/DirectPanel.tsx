@@ -2,7 +2,8 @@ import { useMemo, useState, useCallback } from 'react';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
-import { useActorProfiles } from '@/hooks/useActorProfiles';
+import { useDirectFromSync, useMarkSyncAsRead } from '@/hooks/useDirectFromSync';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './types';
 import { groupByDate } from './utils/date';
@@ -69,30 +70,32 @@ function mapStatusAppearance(statusType: StatusType) {
 
 function mapNotification(
   n: Notification,
-  profiles: Map<string, { full_name: string; avatar_url: string | null }>
+  profiles: Map<string, { name: string; avatarUrl?: string | null }>,
+  profilesByName: Map<string, { name: string; avatarUrl?: string | null }>
 ): DirectNotification {
   const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
-  // Show thread card if: there's a comment preview OR the notification is a comment verb.
-  // This ensures "View thread" is always visible on comment-type notifications,
-  // not only when metadata.comment_preview is populated in the DB.
   const isCommentVerb = ['commented', 'mentioned'].includes(mapVerb(n.notification_type));
   const hasThread = !!(n.metadata?.comment_preview) || isCommentVerb;
 
-  // 2026-05-17 design-critique: actor resolution now uses 3 fallback layers
-  // so the row never renders a faceless silhouette when ANY actor data exists.
-  //   1. profile join (when actor_user_id is set)
-  //   2. notification.actor embedded object (when webhook stored a snapshot)
-  //   3. metadata.actor_display_name / metadata.actor_avatar_url
-  //      — this is where the Jira webhook actually stores the actor for
-  //      issues where the actor has no Catalyst profile (e.g. external Jira
-  //      users like "Nada alfassam" / "dalia abdullah"). Previously the
-  //      `actor: n.actor_user_id ? ... : null` ternary dropped this entirely.
-  const metadataActorName = (n.metadata as Record<string, unknown> | undefined)?.actor_display_name as string | undefined;
-  const metadataActorAvatar = (n.metadata as Record<string, unknown> | undefined)?.actor_avatar_url as string | undefined;
-  const resolvedDisplayName = profile?.full_name
+  // Actor resolution — 4 fallback layers:
+  //   1. profile by actor_user_id (Catalyst profile UUID, carries override avatar)
+  //   2. notification.actor embedded object (webhook snapshot)
+  //   3. metadata.actor_name (sync feed stores reporter_display_name here)
+  //      NOTE: sync feed uses 'actor_name', webhook uses 'actor_display_name' — check both
+  //   4. metadata.actor_display_name (Jira webhook actor for external users)
+  const meta = n.metadata as Record<string, unknown> | undefined;
+  const metadataActorName = (meta?.actor_name ?? meta?.actor_display_name) as string | undefined;
+  const metadataActorAvatar = meta?.actor_avatar_url as string | undefined;
+  const resolvedDisplayName = profile?.name
     ?? n.actor?.full_name
     ?? (metadataActorName && metadataActorName.trim() ? metadataActorName : null);
-  const resolvedAvatarUrl = profile?.avatar_url
+  // Avatar: try id-based profile first, then name-based lookup (for sync reporter),
+  // then the webhook-embedded avatar URL.
+  const nameBasedProfile = resolvedDisplayName
+    ? profilesByName.get(resolvedDisplayName.toLowerCase())
+    : null;
+  const resolvedAvatarUrl = profile?.avatarUrl
+    ?? nameBasedProfile?.avatarUrl
     ?? n.actor?.avatar_url
     ?? (metadataActorAvatar && metadataActorAvatar.trim() ? metadataActorAvatar : null);
 
@@ -161,7 +164,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
           fontWeight: 600,
           color: isDark
             ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))'
-            : token('color.text.subtlest', '#8590A2'),
+            : token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
         }}
       >
         {label}
@@ -234,31 +237,53 @@ function EmptyState({ isDark }: { isDark: boolean }) {
 // ─── Main component ──────────────────────────────────────────────────────────
 
 export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadIds, onMarkRead }: DirectPanelProps) {
-  const { data, isLoading } = useNotificationsQuery('direct', unreadOnly);
+  // Layer 1: webhook-fired event notifications (mentions, comments, status changes)
+  // Passes unreadOnly=false so we get ALL events; we apply the filter ourselves after merging.
+  const { data: notifData, isLoading: notifLoading } = useNotificationsQuery('direct', false);
+  // Layer 2: ph_issues-based assigned work (always fresh from Jira sync — the primary feed)
+  const { data: syncItems, isLoading: syncLoading } = useDirectFromSync(false);
+
   const markAsReadMutation = useMarkAsRead();
+  const markSyncAsReadMutation = useMarkSyncAsRead();
 
   // Optimistic local read state — avoids waiting for query refetch after marking read
   const [localReadIds, setLocalReadIds] = useState<Set<string>>(new Set());
 
-  // Flatten paginated pages into a flat list of raw Notification rows
+  // Flatten paginated pages from the notifications table
+  const eventNotifications = useMemo<Notification[]>(() => {
+    if (!notifData?.pages) return [];
+    return notifData.pages.flat() as Notification[];
+  }, [notifData]);
+
+  // Merge: ph_issues assigned work (layer 2) + notification events (layer 1)
+  // Deduplicate by entity_id: if an event notification exists for the same entity_id,
+  // it takes precedence (it carries actor/verb info). Otherwise use the sync item.
   const rawNotifications = useMemo<Notification[]>(() => {
-    if (!data?.pages) return [];
-    return data.pages.flat() as Notification[];
-  }, [data]);
+    const eventEntityIds = new Set(eventNotifications.map(n => n.entity_id));
+    // Filter sync items to exclude those already covered by an event notification
+    const syncOnly = (syncItems ?? []).filter(n => !eventEntityIds.has(n.entity_id));
+    // Merge and sort descending by created_at
+    const merged = [...eventNotifications, ...syncOnly];
+    merged.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return merged;
+  }, [eventNotifications, syncItems]);
 
-  // Collect all actor IDs so we can batch-fetch their profiles (with avatar_url)
-  const actorIds = useMemo(
-    () => rawNotifications.map(n => n.actor_user_id).filter((id): id is string => !!id),
-    [rawNotifications]
+  const isLoading = notifLoading || syncLoading;
+
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.id, p])),
+    [approvedProfiles]
   );
-
-  const { data: profilesMap } = useActorProfiles(actorIds);
-  const profiles = profilesMap ?? new Map();
+  const profilesByName = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.name.toLowerCase(), p])),
+    [approvedProfiles]
+  );
 
   // Map raw DB rows → DirectNotification display shape
   const notifications = useMemo<DirectNotification[]>(
-    () => rawNotifications.map(n => mapNotification(n, profiles)),
-    [rawNotifications, profiles]
+    () => rawNotifications.map(n => mapNotification(n, profiles, profilesByName)),
+    [rawNotifications, profiles, profilesByName]
   );
 
   // Read-state: merge DB read_at, local optimistic state, and external state
@@ -277,11 +302,16 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   const handleMarkRead = useCallback((id: string) => {
     // Optimistic: mark read immediately in UI
     setLocalReadIds(prev => new Set(prev).add(id));
-    // Real write to DB — onSuccess invalidates ['notifications'] + ['notifications-unread-count']
-    markAsReadMutation.mutate(id);
-    // Also bubble up if parent needs to know
+    if (id.startsWith('sync::')) {
+      // Sync item from ph_issues — write a read-receipt to the notifications table
+      const raw = rawNotifications.find(n => n.id === id);
+      if (raw) markSyncAsReadMutation.mutate(raw);
+    } else {
+      // Real notification row — update read_at in notifications table
+      markAsReadMutation.mutate(id);
+    }
     onMarkRead?.(id);
-  }, [markAsReadMutation, onMarkRead]);
+  }, [markAsReadMutation, markSyncAsReadMutation, rawNotifications, onMarkRead]);
 
   if (isLoading) return <LoadingState isDark={isDark} />;
 

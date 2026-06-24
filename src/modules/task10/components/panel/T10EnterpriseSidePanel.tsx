@@ -33,35 +33,35 @@ const COLORS = {
   gray500: 'var(--ds-text-subtlest, #64748b)',
   gray600: 'var(--ds-text-subtle, #475569)',
   gray700: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-  gray800: '#1e293b',
+  gray800: 'var(--ds-text, #172B4D)',
   gray900: 'var(--ds-text, #0f172a)',
   blue: 'var(--ds-text-brand, #3b82f6)',
   blue50: 'var(--ds-background-selected, #eff6ff)',
   blueDark: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-  teal: '#0d9488',
-  teal50: '#f0fdfa',
+  teal: 'var(--ds-chart-teal-bold, #0d9488)',
+  teal50: 'var(--ds-background-success, #DFFCF0)',
   green: 'var(--ds-text-success, #22c55e)',
-  green50: '#f0fdf4',
+  green50: 'var(--ds-background-success, #DFFCF0)',
   red: 'var(--ds-text-danger, #ef4444)',
   red50: 'var(--ds-background-danger, #fef2f2)',
 };
 
 const LABEL_COLORS = [
   { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
-  { name: 'Orange', value: '#f97316' },
+  { name: 'Orange', value: 'var(--ds-background-warning-bold, #f97316)' },
   { name: 'Amber', value: 'var(--ds-text-warning, #f59e0b)' },
-  { name: 'Yellow', value: '#eab308' },
-  { name: 'Lime', value: '#84cc16' },
+  { name: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
+  { name: 'Lime', value: 'var(--ds-background-success-bold, #1F845A)' },
   { name: 'Green', value: 'var(--ds-text-success, #22c55e)' },
-  { name: 'Emerald', value: '#10b981' },
-  { name: 'Teal', value: '#14b8a6' },
-  { name: 'Cyan', value: '#06b6d4' },
+  { name: 'Emerald', value: 'var(--ds-background-success-bold, #059669)' },
+  { name: 'Teal', value: 'var(--ds-background-accent-teal-bolder, #14b8a6)' },
+  { name: 'Cyan', value: 'var(--ds-icon-information, #1D7AFC)' },
   { name: 'Blue', value: 'var(--ds-text-brand, #3b82f6)' },
-  { name: 'Indigo', value: '#6366f1' },
-  { name: 'Violet', value: '#8b5cf6' },
+  { name: 'Indigo', value: 'var(--ds-background-discovery-bold, #6366f1)' },
+  { name: 'Violet', value: 'var(--ds-background-discovery-bold, #8b5cf6)' },
   { name: 'Purple', value: '#a855f7' },
-  { name: 'Pink', value: '#ec4899' },
-  { name: 'Gray', value: '#6b7280' },
+  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder, #ec4899)' },
+  { name: 'Gray', value: 'var(--ds-text-subtlest, #626F86)' },
 ];
 
 export function T10EnterpriseSidePanel({
@@ -86,7 +86,7 @@ export function T10EnterpriseSidePanel({
   const [labelSearch, setLabelSearch] = useState('');
   const [showCreateLabel, setShowCreateLabel] = useState(false);
   const [newLabelName, setNewLabelName] = useState('');
-  const [newLabelColor, setNewLabelColor] = useState('#6b7280');
+  const [newLabelColor, setNewLabelColor] = useState('var(--ds-text-subtlest, #626F86)');
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [editDate, setEditDate] = useState('');
   
@@ -289,7 +289,7 @@ export function T10EnterpriseSidePanel({
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(15, 23, 42, 0.5)',
+          background: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.5))',
           backdropFilter: 'blur(4px)',
           WebkitBackdropFilter: 'blur(4px)',
           zIndex: 9998,
@@ -308,7 +308,7 @@ export function T10EnterpriseSidePanel({
           width: '480px',
           maxWidth: '100vw',
           background: COLORS.white,
-          boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.12)',
+          boxShadow: '-8px 0 32px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
@@ -348,7 +348,7 @@ export function T10EnterpriseSidePanel({
                     : 'transparent',
                 border: rankTier === 'buffer' ? `2px dashed ${COLORS.gray300}` : 'none',
                 color: rankTier === 'buffer' ? COLORS.gray400 : 'white',
-                boxShadow: rankTier === 'top' ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
+                boxShadow: rankTier === 'top' ? '0 4px 12px var(--ds-background-information-bold, rgba(59, 130, 246, 0.3))' : 'none',
               }}
             >
               {item.rank}
@@ -490,7 +490,7 @@ export function T10EnterpriseSidePanel({
                     gap: '12px',
                     padding: '14px',
                     background: isCompleted ? COLORS.green50 : COLORS.gray50,
-                    border: `1px solid ${isCompleted ? '#86efac' : COLORS.gray200}`,
+                    border: `1px solid ${isCompleted ? 'var(--ds-background-success, #DFFCF0)' : COLORS.gray200}`,
                     borderRadius: '12px',
                     cursor: isReadOnly ? 'default' : 'pointer',
                     transition: 'all 0.15s',
@@ -852,7 +852,7 @@ export function T10EnterpriseSidePanel({
                                     borderRadius: '4px',
                                     background: color.value,
                                     border: newLabelColor === color.value 
-                                      ? '2px solid #1e293b' 
+                                      ? '2px solid var(--ds-text, #172B4D)' 
                                       : '2px solid transparent',
                                     cursor: 'pointer',
                                   }}
@@ -965,7 +965,7 @@ export function T10EnterpriseSidePanel({
                   onFocus={e => {
                     if (!isReadOnly) {
                       e.currentTarget.style.borderColor = COLORS.blue;
-                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                      e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))';
                     }
                   }}
                   onBlur={e => {
@@ -1190,7 +1190,7 @@ function Dropdown({ children, style }: { children: React.ReactNode; style?: Reac
         background: COLORS.white,
         border: `1px solid ${COLORS.gray200}`,
         borderRadius: '12px',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
+        boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
         zIndex: 100,
         overflow: 'hidden',
         ...style,

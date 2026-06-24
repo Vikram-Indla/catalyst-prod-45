@@ -89,7 +89,7 @@ export function makeDragHandleCell(isDragEnabled: () => boolean) {
           width: 20,
           height: 20,
           cursor: "grab",
-          color: token("color.text.subtle", "#42526E"),
+          color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
         }}
         className="jira-drag-handle"
       >
@@ -131,7 +131,7 @@ export function makeRowMenuCell({
               border: "none",
               borderRadius: 3,
               background: "transparent",
-              color: token("color.text.subtle", "#42526E"),
+              color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
               cursor: "pointer",
               opacity: 0,
               transition: "opacity 120ms ease, background 100ms ease",
@@ -139,7 +139,7 @@ export function makeRowMenuCell({
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLElement).style.background = token(
                 "color.background.neutral.subtle.hovered",
-                "#F4F5F7",
+                "var(--ds-background-neutral-subtle, #F4F5F7)",
               );
             }}
             onMouseLeave={(e) => {
@@ -224,14 +224,14 @@ export function makeCaretCell({
           border: "none",
           borderRadius: 3,
           background: "transparent",
-          color: token("color.text.subtle", "#42526E"),
+          color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
           cursor: "pointer",
           padding: 0,
         }}
         onMouseEnter={(e) =>
           ((e.currentTarget as HTMLElement).style.background = token(
             "color.background.neutral.subtle.hovered",
-            "#F4F5F7",
+            "var(--ds-background-neutral-subtle, #F4F5F7)",
           ))
         }
         onMouseLeave={(e) =>
@@ -301,13 +301,13 @@ export function makeKeyCell(
           boxSizing: "border-box",
           fontFamily: "inherit",
           fontWeight: 400,
-          color: token("color.link", "#0C66E4"),
+          color: token("color.link", "var(--ds-link, #0C66E4)"),
           fontSize: 14,
           letterSpacing: 0,
           whiteSpace: "nowrap",
           cursor: "pointer",
           textDecoration: "underline",
-          border: `2px solid ${token("color.border.focused", "#388BFF")}`,
+          border: `2px solid ${token("color.border.focused", "var(--ds-border-focused, #388BFF)")}`,
           borderRadius: 3,
           padding: "2px 6px",
         }
@@ -317,7 +317,7 @@ export function makeKeyCell(
           padding: "0 2px",
           fontFamily: "inherit",
           fontWeight: 400,
-          color: token("color.link", "#0C66E4"),
+          color: token("color.link", "var(--ds-link, #0C66E4)"),
           fontSize: 14,
           lineHeight: 1,
           letterSpacing: 0,
@@ -467,7 +467,7 @@ export function makeStatusCell(
     const status = getStatus(row);
     if (!status)
       return (
-        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
           —
         </span>
       );
@@ -564,7 +564,7 @@ export function makeStatusEditCell<T>(opts: {
               compact={true}
             />
           ) : (
-            <span style={{ color: token("color.text.subtlest", "#7A869A") }}>—</span>
+            <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>—</span>
           )}
           {editable && (
             <svg
@@ -595,10 +595,10 @@ export function makeStatusEditCell<T>(opts: {
                 top: pos.top,
                 left: pos.left,
                 zIndex: 9999,
-                background: token("elevation.surface.overlay", "#FFFFFF"),
+                background: token("elevation.surface.overlay", "var(--ds-surface, #FFFFFF)"),
                 borderRadius: 4,
                 boxShadow:
-                  "0 4px 8px -2px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)",
+                  "0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,.25)), 0 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.08))",
                 minWidth: 180,
                 maxHeight: 280,
                 overflowY: "auto",
@@ -624,7 +624,7 @@ export function makeStatusEditCell<T>(opts: {
                       padding: "4px 12px",
                       border: "none",
                       background: isActive
-                        ? token("color.background.selected", "#E9F2FF")
+                        ? token("color.background.selected", "var(--ds-background-selected, #E9F2FF)")
                         : "transparent",
                       cursor: "pointer",
                       textAlign: "left",
@@ -632,16 +632,16 @@ export function makeStatusEditCell<T>(opts: {
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.background =
                         isActive
-                          ? token("color.background.selected", "#E9F2FF")
+                          ? token("color.background.selected", "var(--ds-background-selected, #E9F2FF)")
                           : token(
                               "color.background.neutral.subtle.hovered",
-                              "#F7F8F9",
+                              "var(--ds-surface-sunken, #F7F8F9)",
                             );
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.background =
                         isActive
-                          ? token("color.background.selected", "#E9F2FF")
+                          ? token("color.background.selected", "var(--ds-background-selected, #E9F2FF)")
                           : "transparent";
                     }}
                   >
@@ -747,7 +747,7 @@ export function makeParentCell(
     const p = getParent(row);
     if (!p)
       return (
-        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
           —
         </span>
       );
@@ -831,7 +831,7 @@ export function makeCommentsCell(
           display: "inline-flex",
           alignItems: "center",
           gap: 4,
-          color: token("color.text.subtle", "#42526E"),
+          color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
         }}
       >
         {/* Icon wrapper: relative container for the blue dot badge when hasCount */}
@@ -839,7 +839,7 @@ export function makeCommentsCell(
           style={{
             position: "relative",
             display: "inline-flex",
-            color: token("color.icon.subtle", "#6B778C"),
+            color: token("color.icon.subtle", "var(--ds-text-subtlest, #6B778C)"),
           }}
         >
           <CommentIcon label="" size="small" />
@@ -855,9 +855,9 @@ export function makeCommentsCell(
                 borderRadius: "50%",
                 backgroundColor: token(
                   "color.background.information.bold",
-                  "#0C66E4",
+                  "var(--ds-link, #0C66E4)",
                 ),
-                border: `1.5px solid ${token("elevation.surface", "#FFFFFF")}`,
+                border: `1.5px solid ${token("elevation.surface", "var(--ds-surface, #FFFFFF)")}`,
                 boxSizing: "border-box",
               }}
             />
@@ -868,7 +868,7 @@ export function makeCommentsCell(
         ) : (
           <span
             data-jira-cell-ghost
-            style={{ color: token("color.text.subtlest", "#6B778C") }}
+            style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #6B778C)") }}
           >
             Add comment
           </span>
@@ -982,7 +982,7 @@ export function makeDateCell(
     const iso = getISO(row);
     if (!iso) {
       return (
-        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
           —
         </span>
       );
@@ -996,7 +996,7 @@ export function makeDateCell(
       <span
         title={fullIso}
         style={{
-          color: token("color.text.subtle", "#42526E"),
+          color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
           fontSize: 14,
           lineHeight: "20px",
           fontWeight: 400,
@@ -1018,7 +1018,7 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
     const labels = getLabels(row);
     if (!labels || labels.length === 0) {
       return (
-        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
           —
         </span>
       );
@@ -1037,7 +1037,7 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
               fontSize: 14,
               fontWeight: 400,
               lineHeight: "20px",
-              color: token("color.text", "#292A2E"),
+              color: token("color.text", "var(--ds-text, #172B4D)"),
               whiteSpace: "nowrap",
             }}
           >
@@ -1067,7 +1067,7 @@ export function makeSprintReleaseCell(
       : [];
     if (versions.length === 0) {
       return (
-        <span style={{ color: token("color.text.subtlest", "#7A869A") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
           —
         </span>
       );
@@ -1088,7 +1088,7 @@ export function makeSprintReleaseCell(
               padding: "0px 4px",
               fontSize: 14,
               fontWeight: 400,
-              color: token("color.text", "#292A2E"),
+              color: token("color.text", "var(--ds-text, #172B4D)"),
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",

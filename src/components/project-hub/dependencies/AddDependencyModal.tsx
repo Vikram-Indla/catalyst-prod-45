@@ -21,13 +21,31 @@ import Button from '@atlaskit/button/new';
 import Select from '@atlaskit/select';
 import Spinner from '@atlaskit/spinner';
 import { catalystToast } from '@/lib/catalystToast';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 type IssueOption = {
   label: string;
   value: string;
+  issueType: string | null;
 };
 
+function renderIssueOption(opt: IssueOption) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+      {opt.issueType ? <JiraIssueTypeIcon type={opt.issueType} size={16} /> : null}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label}</span>
+    </span>
+  );
+}
+
 type DependencyType = 'blocks' | 'is_blocked_by';
+
+// Portal the select menu to <body> so the autocomplete dropdown floats ABOVE
+// the modal instead of being clipped inside ModalBody's scroll area (Jira parity).
+const MENU_PORTAL_PROPS = {
+  menuPortalTarget: typeof document !== 'undefined' ? document.body : undefined,
+  styles: { menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) },
+} as const;
 
 interface AddDependencyModalProps {
   projectKey: string;
@@ -49,10 +67,12 @@ export default function AddDependencyModal({ projectKey, isOpen, onClose, onSucc
     queryFn: async () => {
       if (!projectKey) return [];
 
+      // Real Jira-synced issues only — exclude catalyst-source local/test rows.
       const { data, error: supabaseError } = await supabase
         .from('ph_issues')
-        .select('issue_key, summary')
+        .select('issue_key, summary, issue_type')
         .eq('project_key', projectKey)
+        .in('source', ['jira', 'jira_parent_ref'])
         .order('issue_key');
 
       if (supabaseError) {
@@ -63,6 +83,7 @@ export default function AddDependencyModal({ projectKey, isOpen, onClose, onSucc
       return (data || []).map((issue: any) => ({
         label: `${issue.issue_key} — ${issue.summary || '(no summary)'}`,
         value: issue.issue_key,
+        issueType: issue.issue_type ?? null,
       }));
     },
     enabled: isOpen && !!projectKey,
@@ -146,6 +167,8 @@ export default function AddDependencyModal({ projectKey, isOpen, onClose, onSucc
                     placeholder="Select source issue..."
                     isDisabled={isSubmitting}
                     isClearable
+                    formatOptionLabel={renderIssueOption as any}
+                    {...MENU_PORTAL_PROPS}
                   />
                 </div>
 
@@ -159,6 +182,7 @@ export default function AddDependencyModal({ projectKey, isOpen, onClose, onSucc
                     value={depTypeOptions.find((opt) => opt.value === depType)}
                     onChange={(opt) => opt && setDepType(opt.value)}
                     isDisabled={isSubmitting}
+                    {...MENU_PORTAL_PROPS}
                   />
                 </div>
 
@@ -174,6 +198,8 @@ export default function AddDependencyModal({ projectKey, isOpen, onClose, onSucc
                     placeholder="Select target issue..."
                     isDisabled={isSubmitting}
                     isClearable
+                    formatOptionLabel={renderIssueOption as any}
+                    {...MENU_PORTAL_PROPS}
                   />
                 </div>
 

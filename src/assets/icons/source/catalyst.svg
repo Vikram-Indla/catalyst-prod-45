@@ -1,0 +1,7 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#172B4D">
+  <!-- Catalyst source icon: C in rounded square -->
+  <g>
+    <rect x="2" y="2" width="20" height="20" rx="4" ry="4"/>
+    <path d="M10 8C9.45 8 9 8.45 9 9v6c0 .55.45 1 1 1h4c.55 0 1-.45 1-1s-.45-1-1-1h-3v-4h3c.55 0 1-.45 1-1s-.45-1-1-1h-4z" fill="white" opacity="0.95"/>
+  </g>
+</svg>

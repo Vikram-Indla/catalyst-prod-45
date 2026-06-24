@@ -57,26 +57,26 @@ function BoardCard({ item, onSelect }: { item: R360WorkItem; onSelect: (i: R360W
       onClick={() => onSelect(item)}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(item); } }}
       style={{
-        background: token('elevation.surface.raised', '#FFFFFF'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        background: token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderRadius: 4,
         padding: '8px 12px',
         cursor: 'pointer',
         transition: 'box-shadow 80ms ease, border-color 80ms ease',
       }}
       onMouseEnter={e => {
-        (e.currentTarget as HTMLElement).style.boxShadow = token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px 0 rgba(9,30,66,0.31)');
-        (e.currentTarget as HTMLElement).style.borderColor = token('color.border.focused', '#388BFF');
+        (e.currentTarget as HTMLElement).style.boxShadow = token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px 0 var(--ds-shadow-raised, rgba(9,30,66,0.31))');
+        (e.currentTarget as HTMLElement).style.borderColor = token('color.border.focused', 'var(--ds-border-focused, #388BFF)');
       }}
       onMouseLeave={e => {
         (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-        (e.currentTarget as HTMLElement).style.borderColor = token('color.border', '#DFE1E6');
+        (e.currentTarget as HTMLElement).style.borderColor = token('color.border', 'var(--ds-border, #DFE1E6)');
       }}
     >
       {/* Title — primary content */}
       <div style={{
         fontSize: 14, fontWeight: 400, lineHeight: '20px',
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', 'var(--ds-text, #172B4D)'),
         display: '-webkit-box', WebkitLineClamp: 2,
         WebkitBoxOrient: 'vertical', overflow: 'hidden',
         marginBottom: hasParent ? 4 : 8,
@@ -88,7 +88,7 @@ function BoardCard({ item, onSelect }: { item: R360WorkItem; onSelect: (i: R360W
       {hasParent && (
         <div style={{
           fontSize: 11, fontWeight: 400, lineHeight: '16px',
-          color: token('color.text.subtlest', '#626F86'),
+          color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           marginBottom: 8,
         }}>
@@ -102,7 +102,7 @@ function BoardCard({ item, onSelect }: { item: R360WorkItem; onSelect: (i: R360W
         <span style={{
           fontSize: 11, fontWeight: 600,
           fontFamily: token('font.family.code', 'monospace'),
-          color: token('color.link', '#0052CC'),
+          color: token('color.link', 'var(--ds-link, #0052CC)'),
         }}>
           {item.item_key}
         </span>
@@ -115,8 +115,8 @@ function BoardCard({ item, onSelect }: { item: R360WorkItem; onSelect: (i: R360W
             <span {...tooltipProps} style={{
               fontSize: 11, fontWeight: 400,
               color: item.age_days > 30
-                ? token('color.text.warning', '#974F0C')
-                : token('color.text.subtlest', '#626F86'),
+                ? token('color.text.warning', 'var(--ds-text-warning, #974F0C)')
+                : token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
             }}>
               {item.age_days}d
             </span>
@@ -136,7 +136,7 @@ function ColumnHeader({ label, color, count }: { label: string; color: string; c
       borderBottom: `2px solid ${color}`,
     }}>
       <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
-      <span style={{ fontSize: 12, fontWeight: 600, color: token('color.text', '#292A2E') }}>{label}</span>
+      <span style={{ fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{label}</span>
       <span style={{ marginLeft: 'auto' }}>
         <Badge>{count}</Badge>
       </span>
@@ -177,33 +177,33 @@ function ProjectSwimlane({
           // High-contrast crisp card row — white surface + defined border +
           // raised shadow + brand left accent. Replaces the faint grey bar
           // (color.background.neutral on white = near-invisible).
-          background: token('elevation.surface', '#FFFFFF'),
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
-          borderLeft: `3px solid ${token('color.border.brand', '#1D7AFC')}`,
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          borderLeft: `3px solid ${token('color.border.brand', 'var(--ds-background-information-bold, #1D7AFC)')}`,
           borderRadius: collapsed ? 6 : '6px 6px 0 0',
           boxShadow: collapsed
-            ? token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)')
+            ? token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))')
             : 'none',
           cursor: 'pointer',
           userSelect: 'none',
         }}
       >
         {collapsed
-          ? <ChevronRightIcon label="" size="medium" primaryColor={token('color.text.subtle', '#44546F')} />
-          : <ChevronDownIcon label="" size="medium" primaryColor={token('color.text.subtle', '#44546F')} />
+          ? <ChevronRightIcon label="" size="medium" primaryColor={token('color.text.subtle', 'var(--ds-icon, #44546F)')} />
+          : <ChevronDownIcon label="" size="medium" primaryColor={token('color.text.subtle', 'var(--ds-icon, #44546F)')} />
         }
         {/* Project brand icon — canonical ProjectIcon (bundled avatar by key).
             20px fits the fixed 44px row; row dimensions unchanged. */}
         <ProjectIcon size="small" projectKey={projectKey} name={projectName} />
         <span style={{
           fontSize: 14, fontWeight: 700, letterSpacing: '0.01em',
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'),
         }}>
           {projectKey}
         </span>
         <span style={{
           fontSize: 13, fontWeight: 400,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {projectName}
@@ -211,16 +211,16 @@ function ProjectSwimlane({
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 16, alignItems: 'center' }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontSize: 12, fontWeight: 500, color: token('color.text.subtle', '#44546F'),
+            fontSize: 12, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
           }}>
-            <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.neutral.bold', '#626F86') }} />
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.neutral.bold', 'var(--ds-icon-subtle, #626F86)') }} />
             {todoItems.length} To do
           </span>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontSize: 12, fontWeight: 600, color: token('color.text.information', '#0055CC'),
+            fontSize: 12, fontWeight: 600, color: token('color.text.information', 'var(--ds-link, #0C66E4)'),
           }}>
-            <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.information.bold', '#0C66E4') }} />
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.information.bold', 'var(--ds-link, #0C66E4)') }} />
             {ipItems.length} In progress
           </span>
           <Badge appearance="primary">{items.length}</Badge>
@@ -230,20 +230,20 @@ function ProjectSwimlane({
       {/* Columns grid */}
       {!collapsed && (
         <div style={{
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
-          borderLeft: `3px solid ${token('color.border.brand', '#1D7AFC')}`,
+          border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          borderLeft: `3px solid ${token('color.border.brand', 'var(--ds-background-information-bold, #1D7AFC)')}`,
           borderTop: 'none',
           borderRadius: '0 0 6px 6px',
           padding: 16,
-          background: token('elevation.surface', '#FFFFFF'),
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {/* To do column */}
             <div>
-              <ColumnHeader label="To do" color={token('color.icon.warning', '#974F0C')} count={todoItems.length} />
+              <ColumnHeader label="To do" color={token('color.icon.warning', 'var(--ds-text-warning, #974F0C)')} count={todoItems.length} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {todoVisible.length === 0 && (
-                  <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: token('color.text.subtlest', '#626F86'), border: `1px dashed ${token('color.border', '#DFE1E6')}`, borderRadius: 4 }}>
+                  <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), border: `1px dashed ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: 4 }}>
                     Nothing here
                   </div>
                 )}
@@ -253,10 +253,10 @@ function ProjectSwimlane({
 
             {/* In progress column */}
             <div>
-              <ColumnHeader label="In progress" color={token('color.icon.information', '#0055CC')} count={ipItems.length} />
+              <ColumnHeader label="In progress" color={token('color.icon.information', 'var(--ds-link, #0C66E4)')} count={ipItems.length} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {ipVisible.length === 0 && (
-                  <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: token('color.text.subtlest', '#626F86'), border: `1px dashed ${token('color.border', '#DFE1E6')}`, borderRadius: 4 }}>
+                  <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), border: `1px dashed ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: 4 }}>
                     Nothing here
                   </div>
                 )}
@@ -273,7 +273,7 @@ function ProjectSwimlane({
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer',
                   fontSize: 12, fontWeight: 500,
-                  color: token('color.link', '#0052CC'),
+                  color: token('color.link', 'var(--ds-link, #0052CC)'),
                   padding: '4px 8px',
                 }}
               >
@@ -399,7 +399,7 @@ export function BoardView({ items, onSelect, resourceId }: { items: R360WorkItem
           </div>
           <span style={{
             fontSize: 12, fontWeight: 400,
-            color: token('color.text.subtlest', '#626F86'),
+            color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
           }}>
             {catyVisibleItems.length} items across {projectGroups.length} projects
           </span>

@@ -55,9 +55,9 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
           height: '48px',
           padding: '0 16px',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: isFocused ? '2px solid #2563eb' : '1px solid #e2e8f0',
+          border: isFocused ? '2px solid var(--ds-link, #2563eb)' : '1px solid var(--ds-border, #DFE1E6)',
           borderRadius: '12px',
-          boxShadow: isFocused ? '0 4px 12px rgba(37, 99, 235, 0.1)' : 'none',
+          boxShadow: isFocused ? '0 4px 12px var(--ds-background-information, rgba(37, 99, 235, 0.1))' : 'none',
           transition: 'all 0.15s ease',
         }}
       >
@@ -83,7 +83,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
             margin: 0,
             fontFamily: 'var(--cp-font-body)',
             fontSize: '14px',
-            color: '#1e293b',
+            color: 'var(--ds-text, #172B4D)',
             backgroundColor: 'transparent',
             border: 'none',
             borderRadius: 0,
@@ -105,7 +105,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
               fontFamily: 'monospace',
               color: 'var(--ds-text-subtlest, #94a3b8)',
               backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
-              border: '1px solid #e2e8f0',
+              border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: '6px',
             }}
           >

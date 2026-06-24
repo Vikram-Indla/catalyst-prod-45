@@ -80,7 +80,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
         className="relative flex items-center cursor-pointer transition-colors"
         style={{
           height: 44,
-          backgroundColor: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
+          backgroundColor: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'transparent',
           borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
         }}
         onClick={() => onItemClick(item.id)}
@@ -119,7 +119,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
               borderRight: `1px solid ${isQuarterBoundary ? 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`,
-              background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
+              background: period.isCurrent ? 'var(--ds-background-information, rgba(37,99,235,0.03))' : 'transparent',
             }}
           />
         );

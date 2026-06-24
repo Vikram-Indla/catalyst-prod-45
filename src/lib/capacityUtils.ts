@@ -8,11 +8,11 @@ import { Resource, Allocation, AllocationStatusInfo, CapacityProject, Vacancy } 
 
 // Golden Hour palette colors (CSS variables must be defined in index.css)
 export const GOLDEN_HOUR = {
-  expert: '#0d9488',      // Teal - Full allocation, success
-  advanced: '#f59e0b',    // Amber - Warnings, underallocation
-  intermediate: '#2563eb', // Blue - Brand accent
-  beginner: '#9ca3af',    // Gray - Light states
-  none: '#c8ccd0',        // Grey - Neutral
+  expert: 'var(--ds-chart-teal-bold, #0d9488)',      // Teal - Full allocation, success
+  advanced: 'var(--ds-background-warning-bold, #f59e0b)',    // Amber - Warnings, underallocation
+  intermediate: 'var(--ds-link, #2563eb)', // Blue - Brand accent
+  beginner: 'var(--ds-text-disabled, #8590A2)',    // Gray - Light states
+  none: 'var(--ds-border, #DFE1E6)',        // Grey - Neutral
 } as const;
 
 // Get current ISO week number
@@ -42,20 +42,20 @@ export function getStatus(percentage: number): AllocationStatusInfo {
     return { 
       status: 'over', 
       label: 'Overallocated', 
-      colorClass: 'text-[#f59e0b] bg-[#f59e0b]/10' // Amber for over
+      colorClass: 'text-[var(--ds-background-warning-bold, #f59e0b)] bg-[var(--ds-background-warning-bold, #f59e0b)]/10' // Amber for over
     };
   }
   if (percentage >= 80) {
     return { 
       status: 'full', 
       label: 'Fully Allocated', 
-      colorClass: 'text-[#0d9488] bg-[#0d9488]/10' // Teal for full
+      colorClass: 'text-[var(--ds-chart-teal-bold, #0d9488)] bg-[var(--ds-chart-teal-bold, #0d9488)]/10' // Teal for full
     };
   }
   return { 
     status: 'under', 
     label: 'Underallocated', 
-    colorClass: 'text-[#6b7280] bg-[#6b7280]/10' // Gray for under
+    colorClass: 'text-[var(--ds-text-subtlest, #626F86)] bg-[var(--ds-text-subtlest, #626F86)]/10' // Gray for under
   };
 }
 

@@ -25,7 +25,7 @@ export function ProgressGauge({ summary }: ProgressGaugeProps) {
           <circle cx="50" cy="50" r={radius} fill="none" className="stroke-muted" strokeWidth="8" />
           <circle
             cx="50" cy="50" r={radius} fill="none"
-            stroke="#10B981" strokeWidth="8" strokeLinecap="round"
+            stroke="var(--ds-background-success-bold, #059669)" strokeWidth="8" strokeLinecap="round"
             strokeDasharray={circumference} strokeDashoffset={strokeOffset}
             className="transition-[stroke-dashoffset] duration-500 ease-out"
           />
@@ -37,7 +37,7 @@ export function ProgressGauge({ summary }: ProgressGaugeProps) {
       </div>
 
       <div className="grid grid-cols-4 gap-2 mt-4 w-full">
-        <StatusItem icon={CheckCircle2} count={passedTests} label="Passed" color="#10B981" />
+        <StatusItem icon={CheckCircle2} count={passedTests} label="Passed" color="var(--ds-background-success-bold, #059669)" />
         <StatusItem icon={XCircle} count={failedTests} label="Failed" color="var(--ds-text-danger, #EF4444)" />
         <StatusItem icon={Ban} count={blockedTests} label="Blocked" color="var(--ds-text-warning, var(--cp-amber, #F59E0B))" />
         <StatusItem icon={Circle} count={notRunTests} label="Not Run" color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />

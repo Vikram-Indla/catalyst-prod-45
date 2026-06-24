@@ -37,28 +37,28 @@ const MONO = '"ui-monospace","SFMono-Regular","SF Mono",Menlo,monospace';
 // Using function-call form so they resolve correctly in both light + dark modes
 // via the --ds-* CSS variable system at runtime.
 const T = {
-  surface:           () => token('elevation.surface', '#FFFFFF'),
-  surfaceRaised:     () => token('elevation.surface.raised', '#FFFFFF'),
-  bgNeutral:         () => token('color.background.neutral', '#F1F2F4'),
-  bgNeutralSubtle:   () => token('color.background.neutral.subtle', '#F7F8F9'),
+  surface:           () => token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+  surfaceRaised:     () => token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
+  bgNeutral:         () => token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+  bgNeutralSubtle:   () => token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
   bgNeutralHovered:  () => token('color.background.neutral.hovered', '#E9EAEB'),
-  bgSuccessBold:     () => token('color.background.success.bold', '#1F845A'),
+  bgSuccessBold:     () => token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)'),
   bgInfoBold:        () => token('color.background.information.bold', 'var(--cp-primary-60, #0052CC)'),
   text:              () => token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-  textSubtle:        () => token('color.text.subtle', '#626F86'),
-  textSubtlest:      () => token('color.text.subtlest', '#8590A2'),
-  textDisabled:      () => token('color.text.disabled', '#8590A2'),
-  textInverse:       () => token('color.text.inverse', '#FFFFFF'),
-  textInfo:          () => token('color.text.information', '#0055CC'),
-  textWarning:       () => token('color.text.warning', '#974F0C'),
-  textDanger:        () => token('color.text.danger', '#AE2A19'),
-  textSuccess:       () => token('color.text.success', '#216E4E'),
-  iconSuccess:       () => token('color.icon.success', '#22A06B'),
-  iconInverse:       () => token('color.icon.inverse', '#FFFFFF'),
-  iconDisabled:      () => token('color.icon.disabled', '#8590A2'),
+  textSubtle:        () => token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
+  textSubtlest:      () => token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+  textDisabled:      () => token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'),
+  textInverse:       () => token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'),
+  textInfo:          () => token('color.text.information', 'var(--ds-link, #0C66E4)'),
+  textWarning:       () => token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
+  textDanger:        () => token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
+  textSuccess:       () => token('color.text.success', 'var(--ds-text-success, #216E4E)'),
+  iconSuccess:       () => token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)'),
+  iconInverse:       () => token('color.icon.inverse', 'var(--ds-surface, #FFFFFF)'),
+  iconDisabled:      () => token('color.icon.disabled', 'var(--ds-text-disabled, #8590A2)'),
   border:            () => token('color.border', '#091E4224'),
-  borderBold:        () => token('color.border.bold', '#8590A2'),
-  borderSuccess:     () => token('color.border.success', '#4BCE97'),
+  borderBold:        () => token('color.border.bold', 'var(--ds-text-disabled, #8590A2)'),
+  borderSuccess:     () => token('color.border.success', 'var(--ds-background-success-bold, #1F845A)'),
 } as const;
 
 export function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, onAvatarClick, presenceState }: {
@@ -257,7 +257,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           background: T.surface(),
           border: `1px solid ${T.border()}`,
           borderRadius: 12,
-          boxShadow: '0 1px 3px rgba(9,30,66,0.08)',
+          boxShadow: '0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
           textAlign: 'center' as const,
         }}>
           {/* Avatar — 72px */}
@@ -266,7 +266,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
             overflow: 'hidden',
             background: avatarUrl ? T.surface() : avatarGradient,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 1px 3px rgba(9,30,66,0.08)',
+            boxShadow: '0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
             border: `2px solid ${T.surface()}`,
             outline: `1px solid ${T.border()}`,
           }}>
@@ -311,7 +311,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     marginBottom: 8, cursor: 'pointer', background: T.surface(),
                     transition: 'box-shadow 0.15s ease',
                   }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 1px 4px rgba(9,30,66,0.12)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))'; }}
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     {/* Compact header: icon + key + project + age */}

@@ -207,7 +207,7 @@ const Item = React.forwardRef<HTMLButtonElement, {
         height: 34,
         padding: '0 14px',
         background: active ? 'var(--cv2-accent)' : 'transparent',
-        color: active ? '#FFFFFF' : danger ? 'var(--cv2-danger)' : 'var(--cv2-text)',
+        color: active ? 'var(--ds-text-inverse, #FFFFFF)' : danger ? 'var(--cv2-danger)' : 'var(--cv2-text)',
         border: 'none',
         cursor: 'pointer',
         textAlign: 'left',
@@ -231,12 +231,12 @@ const Item = React.forwardRef<HTMLButtonElement, {
       </span>
       <span style={{ flex: 1 }}>{label}</span>
       {shortcut && (
-        <span style={{ fontSize: 12, color: active ? 'rgba(255,255,255,0.8)' : 'var(--cv2-text-muted)' }}>
+        <span style={{ fontSize: 12, color: active ? 'var(--ds-surface, rgba(255,255,255,0.8))' : 'var(--cv2-text-muted)' }}>
           {shortcut}
         </span>
       )}
       {trailingArrow && (
-        <ChevronRightIcon size={14} style={{ color: active ? '#FFFFFF' : 'var(--cv2-text-subtle)' }} />
+        <ChevronRightIcon size={14} style={{ color: active ? 'var(--ds-surface, #FFFFFF)' : 'var(--cv2-text-subtle)' }} />
       )}
     </button>
   );

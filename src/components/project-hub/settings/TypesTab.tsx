@@ -26,8 +26,8 @@ interface WorkType {
 }
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
-  top:   { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
-  mid:   { bg: '#EFF6FF', text: '#2563EB' },
+  top:   { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--cp-purple-60, #7C3AED)' },
+  mid:   { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link, #2563eb)' },
   work:  { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' },
   child: { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))' },
 };
@@ -195,7 +195,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                             width: 28, height: 28, border: 'none', borderRadius: 4,
                             background: isSelected ? 'var(--ds-background-selected-bold,var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: isSelected ? '#fff' : 'var(--fg-3)',
+                            color: isSelected ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-3)',
                             fontSize: 16, fontWeight: 700, lineHeight: 1,
                             transition: 'background 80ms',
                           }}

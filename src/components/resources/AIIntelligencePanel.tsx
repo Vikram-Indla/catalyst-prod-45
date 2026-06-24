@@ -106,7 +106,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
               alt={name}
               style={{
                 width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
-                border: '2px solid #E4E4E7', background: avatarBg,
+                border: '2px solid var(--ds-border, #DFE1E6)', background: avatarBg,
               }}
               onError={(e) => {
                 const el = e.currentTarget;
@@ -143,7 +143,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
               margin: '0 0 16px 0',
               padding: '16px 20px',
               background: 'var(--rai-primary-bg, var(--cp-blue-wash))',
-              border: '1px solid rgba(37, 99, 235, 0.15)',
+              border: '1px solid var(--ds-background-information, rgba(37, 99, 235, 0.15))',
               borderRadius: 8,
               display: 'flex',
               alignItems: 'center',
@@ -157,7 +157,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
                 animation: 'spin 1s linear infinite',
               }} />
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#1E40AF' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-link-pressed, #1e40af)' }}>
                   Generating AI Intelligence…
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--cp-blue)', marginTop: 2 }}>

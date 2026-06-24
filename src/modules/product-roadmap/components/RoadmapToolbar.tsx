@@ -75,7 +75,7 @@ export function RoadmapToolbar({
   const handleTimelineFilterChange = onTimelineFilterChange ?? setLocalTimelineFilter;
 
   const hc = highContrast;
-  const borderColor = hc ? '#09090B' : tokens.border.default;
+  const borderColor = hc ? 'var(--ds-text, #172B4D)' : tokens.border.default;
 
   return (
     <div 
@@ -144,8 +144,8 @@ export function RoadmapToolbar({
               style={{
                 height: 32, padding: '0 10px', border: 'none', cursor: 'pointer',
                 fontSize: 11, fontWeight: viewMode === k ? 600 : 500,
-                color: viewMode === k ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : (hc ? '#3F3F46' : '#71717A')),
-                background: viewMode === k ? ('var(--cp-primary-light, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : (hc ? '#F0F0F0' : 'var(--ds-surface, #fff)')),
+                color: viewMode === k ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : (hc ? 'var(--ds-text-subtle, #44546F)' : 'var(--ds-text-subtlest, #626F86)')),
+                background: viewMode === k ? ('var(--cp-primary-light, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : (hc ? 'var(--ds-background-neutral, #F0F0F0)' : 'var(--ds-surface, #fff)')),
                 borderRight: k === 'gantt' ? `1px solid ${borderColor}` : 'none',
               }}
             >
@@ -155,7 +155,7 @@ export function RoadmapToolbar({
         </div>
 
         {/* Item count */}
-        <span className="text-sm ml-2" style={{ color: hc ? '#3F3F46' : tokens.text.muted }}>
+        <span className="text-sm ml-2" style={{ color: hc ? 'var(--ds-text-subtle, #44546F)' : tokens.text.muted }}>
           {itemCount} {itemCount === 1 ? 'demand' : 'demands'}
         </span>
       </div>
@@ -210,9 +210,9 @@ export function RoadmapToolbar({
             onClick={onToggleHighContrast}
             className="h-9 gap-1.5"
             style={{
-              border: `${hc ? 2 : 1}px solid ${hc ? '#09090B' : borderColor}`,
-              background: hc ? '#09090B' : 'var(--ds-surface, #fff)',
-              color: hc ? 'var(--ds-surface, #fff)' : '#3F3F46',
+              border: `${hc ? 2 : 1}px solid ${hc ? 'var(--ds-text, #172B4D)' : borderColor}`,
+              background: hc ? 'var(--ds-text, #172B4D)' : 'var(--ds-surface, #fff)',
+              color: hc ? 'var(--ds-surface, #fff)' : 'var(--ds-text-subtle, #44546F)',
               fontWeight: 600,
               fontSize: 11,
             }}

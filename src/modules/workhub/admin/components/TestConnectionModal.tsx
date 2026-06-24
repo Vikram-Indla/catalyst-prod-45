@@ -82,7 +82,7 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
       style={{
         position: 'fixed', inset: 0, zIndex: 99999,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)',
+        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))', backdropFilter: 'blur(2px)',
       }}
       onClick={(e) => { if (e.target === e.currentTarget && !isRunning) onClose(); }}
     >

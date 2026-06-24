@@ -84,8 +84,8 @@ export const SIZES = {
 
 /** Jira label bar palette (cosmetic; labels carry no color in data). */
 export const LABEL_COLORS = [
-  '#4C9AFF', '#00C7E6', '#36B37E', '#FFC400', '#FF5630',
-  '#6554C0', '#00875A', '#FF8B00', '#172B4D',
+  'var(--ds-background-information-bold, #0C66E4)', '#00C7E6', 'var(--ds-background-success-bold, #1F845A)', '#FFC400', 'var(--ds-background-danger-bold, #C9372C)',
+  'var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-text, #172B4D)',
 ] as const;
 
 /**
@@ -126,8 +126,8 @@ export interface PriorityConfig {
 }
 
 export const PRIORITY_CONFIG: Record<string, PriorityConfig> = {
-  highest: { shape: 'up', color: '#CA3521', label: 'Highest' },
-  critical: { shape: 'up', color: '#CA3521', label: 'Critical' },
+  highest: { shape: 'up', color: 'var(--ds-background-danger-bold, #C9372C)', label: 'Highest' },
+  critical: { shape: 'up', color: 'var(--ds-background-danger-bold, #C9372C)', label: 'Critical' },
   high: { shape: 'up', color: '#E2483D', label: 'High' },
   medium: { shape: 'equal', color: '#D97008', label: 'Medium' },
   low: { shape: 'down', color: '#388F4B', label: 'Low' },

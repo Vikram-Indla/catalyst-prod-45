@@ -108,7 +108,7 @@ export function renderJiraContent(
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#0747A6] dark:text-[#4C9AFF] hover:underline"
+          className="text-[var(--ds-link-pressed, #0747A6)] dark:text-[var(--ds-background-information-bold, #0C66E4)] hover:underline"
         >
           {text}
         </a>
@@ -122,7 +122,7 @@ export function renderJiraContent(
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#0747A6] dark:text-[#4C9AFF] hover:underline"
+          className="text-[var(--ds-link-pressed, #0747A6)] dark:text-[var(--ds-background-information-bold, #0C66E4)] hover:underline"
         >
           {prettyUrl(url)}
         </a>

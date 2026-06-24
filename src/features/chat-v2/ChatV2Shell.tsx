@@ -924,7 +924,7 @@ function SidebarSplitter({
           width: 3,
           height: 36,
           borderRadius: 2,
-          background: showAccent ? '#FFFFFF' : 'var(--cv2-text-subtle)',
+          background: showAccent ? 'var(--ds-surface, #FFFFFF)' : 'var(--cv2-text-subtle)',
           opacity: showAccent ? 0.9 : 0.35,
           pointerEvents: 'none',
           transition: 'background 120ms ease, opacity 120ms ease',

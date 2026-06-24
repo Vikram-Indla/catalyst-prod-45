@@ -396,7 +396,7 @@ export default function CycleDetailPage() {
                   background: 'var(--ds-surface-overlay, #FFFFFF)',
                   border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: 6,
-                  boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+                  boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
                   padding: '4px 0',
                   minWidth: 160,
                   zIndex: 9999,
@@ -440,7 +440,7 @@ export default function CycleDetailPage() {
                   background: 'var(--ds-surface-overlay, #FFFFFF)',
                   border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: 6,
-                  boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+                  boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
                   padding: '4px 0',
                   minWidth: 200,
                   maxHeight: 240,
@@ -499,7 +499,7 @@ export default function CycleDetailPage() {
               fontWeight: 500,
               border: statusFilter === pill.value ? 'none' : '1px solid var(--ds-border, #DFE1E6)',
               background: statusFilter === pill.value ? 'var(--ds-background-brand-bold, #0052CC)' : 'none',
-              color: statusFilter === pill.value ? '#fff' : 'var(--ds-text-subtle, #42526E)',
+              color: statusFilter === pill.value ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--ds-text-subtle, #42526E)',
             }}
           >
             {pill.label}
@@ -656,11 +656,11 @@ function RightPanel({ title, subtitle, onClose, children }: {
 
   return createPortal(
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'rgba(9,30,66,0.25)' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.25))' }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, width: 480, height: '100vh', zIndex: 8001,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
-        boxShadow: '-4px 0 24px rgba(9,30,66,0.2)',
+        boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
         display: 'flex', flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
@@ -798,7 +798,7 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
               disabled={!title.trim() || saving}
               style={{
                 padding: '8px 16px', borderRadius: 4, border: 'none',
-                background: 'var(--ds-background-brand-bold, #0052CC)', color: '#fff',
+                background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)',
                 cursor: (!title.trim() || saving) ? 'not-allowed' : 'pointer',
                 fontSize: 13, fontWeight: 500, opacity: saving ? 0.7 : 1,
               }}
@@ -892,7 +892,7 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
               disabled={!text.trim() || posting}
               style={{
                 marginTop: 8, padding: '7px 14px', borderRadius: 4, border: 'none',
-                background: 'var(--ds-background-brand-bold, #0052CC)', color: '#fff',
+                background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)',
                 cursor: (!text.trim() || posting) ? 'not-allowed' : 'pointer',
                 fontSize: 13, fontWeight: 500, opacity: posting ? 0.7 : 1,
               }}
@@ -1055,7 +1055,7 @@ function AddCasesModal({
     <>
       <div
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.32)', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.32))', zIndex: 300 }}
       />
       <div style={{
         position: 'fixed',
@@ -1066,7 +1066,7 @@ function AddCasesModal({
         maxHeight: '80vh',
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         borderRadius: 8,
-        boxShadow: '0 8px 32px rgba(9,30,66,0.32)',
+        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.32))',
         zIndex: 301,
         display: 'flex',
         flexDirection: 'column',

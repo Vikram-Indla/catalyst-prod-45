@@ -1,5 +1,6 @@
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
+import Button from '@atlaskit/button/new';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
 import type { Column, CellProps } from '@/components/shared/JiraTable/types';
 import { ActionsMenu } from './ActionsMenu';
@@ -28,7 +29,7 @@ export function makeReleaseNameCell(
             color: 'var(--ds-link, #0052CC)',
             fontWeight: 500,
             textDecoration: 'none',
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-100, 14px)',
             cursor: 'pointer',
           }}
         >
@@ -80,8 +81,13 @@ export function makeProgressCell(
     width: 17,
     cell: ({ row }: CellProps<Release>) => {
       const progress = calculateProgress(row);
+      // No linked work items — match Jira's "No work items" empty state (no fabricated %).
       if (!progress || !progress.total) {
-        return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>;
+        return (
+          <span style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            No work items
+          </span>
+        );
       }
       const donePercent = Math.round((progress.done / progress.total) * 100);
       const inProgressPercent = Math.round(
@@ -105,7 +111,7 @@ export function makeProgressCell(
               <div
                 style={{
                   width: `${donePercent}%`,
-                  backgroundColor: '#00875A',
+                  backgroundColor: 'var(--ds-background-success-bold, #1F845A)', // done green
                 }}
               />
             )}
@@ -113,7 +119,7 @@ export function makeProgressCell(
               <div
                 style={{
                   width: `${inProgressPercent}%`,
-                  backgroundColor: '#0052CC',
+                  backgroundColor: 'var(--ds-background-information-bold, #1868DB)', // in-progress blue
                 }}
               />
             )}
@@ -166,7 +172,7 @@ export function makeReleaseDateCell(): Column<Release> {
       });
 
       return (
-        <span style={{ color: isOverdue ? '#DE350B' : 'inherit' }}>
+        <span style={{ color: isOverdue ? 'var(--ds-text-danger, #C9372C)' : 'inherit' }}>
           {dateStr}
           {isOverdue && ' — Overdue'}
         </span>
@@ -198,7 +204,8 @@ export function makeActionsCell(
   onEdit: (release: Release) => void,
   onArchive: (release: Release) => void,
   onRelease: (release: Release) => void,
-  onDelete: (release: Release) => void
+  onDelete: (release: Release) => void,
+  onMerge?: (release: Release) => void
 ): Column<Release> {
   return {
     id: 'actions',
@@ -206,13 +213,21 @@ export function makeActionsCell(
     width: 6,
     align: 'end',
     cell: ({ row }: CellProps<Release>) => (
-      <ActionsMenu
-        release={row}
-        onEdit={onEdit}
-        onArchive={onArchive}
-        onRelease={onRelease}
-        onDelete={onDelete}
-      />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+        {row.status === 'unreleased' && (
+          <Button appearance="default" spacing="compact" onClick={() => onRelease(row)}>
+            Release
+          </Button>
+        )}
+        <ActionsMenu
+          release={row}
+          onEdit={onEdit}
+          onArchive={onArchive}
+          onRelease={onRelease}
+          onDelete={onDelete}
+          onMerge={onMerge}
+        />
+      </div>
     ),
   };
 }

@@ -61,7 +61,7 @@ export function ReleaseDetail() {
   const segments = [
     { label: 'Done', value: release.doneItems, color: 'var(--sem-success)' },
     { label: 'In Progress', value: release.inProgressItems, color: 'var(--cp-blue)' },
-    { label: 'In Review', value: release.inReviewItems, color: '#7c3aed' },
+    { label: 'In Review', value: release.inReviewItems, color: 'var(--ds-background-discovery-bold, #7C3AED)' },
     { label: 'Blocked', value: release.blockedItems, color: 'var(--sem-danger)' },
     { label: 'To Do', value: release.todoItems, color: 'var(--fg-4)' },
   ];
@@ -77,7 +77,7 @@ export function ReleaseDetail() {
   const kpis = [
     { label: 'Completion', value: `${release.completionPercent}%`, icon: TrendingUp, color: release.completionPercent > 50 ? 'var(--sem-success)' : 'var(--sem-warning)' },
     { label: 'Items', value: String(release.totalItems), icon: FileStack, color: 'var(--cp-blue)' },
-    { label: 'Assignees', value: String(release.assignees.length), icon: Users, color: '#7c3aed' },
+    { label: 'Assignees', value: String(release.assignees.length), icon: Users, color: 'var(--ds-background-discovery-bold, #7C3AED)' },
     { label: 'Projects', value: String(release.projects.length), icon: FolderGit2, color: 'var(--sem-success)' },
     { label: 'Blocked', value: String(release.blockedItems), icon: AlertTriangle, color: release.blockedItems > 0 ? 'var(--sem-danger)' : 'var(--fg-4)' },
   ];
@@ -119,8 +119,8 @@ export function ReleaseDetail() {
           display: 'inline-flex', alignItems: 'center', gap: 6,
           padding: '4px 12px', borderRadius: 9999,
           fontSize: 12, fontWeight: 600,
-          background: statusLabel === 'Completed' ? '#d1fae5' : statusLabel === 'Active' ? '#dbeafe' : statusLabel === 'At Risk' ? '#fee2e2' : 'var(--bg-1)',
-          color: statusLabel === 'Completed' ? '#047857' : statusLabel === 'Active' ? 'var(--ds-background-brand-bold-hovered, #1d4ed8)' : statusLabel === 'At Risk' ? 'var(--ds-text-danger, #991b1b)' : 'var(--fg-2)',
+          background: statusLabel === 'Completed' ? 'var(--ds-background-success, #DFFCF0)' : statusLabel === 'Active' ? 'var(--ds-background-information, #E9F2FF)' : statusLabel === 'At Risk' ? 'var(--ds-background-danger, #FFECEB)' : 'var(--bg-1)',
+          color: statusLabel === 'Completed' ? 'var(--ds-background-success-bold, #1F845A)' : statusLabel === 'Active' ? 'var(--ds-background-brand-bold-hovered, #1d4ed8)' : statusLabel === 'At Risk' ? 'var(--ds-text-danger, #991b1b)' : 'var(--fg-2)',
         }}>
           {statusLabel}
         </span>
@@ -141,7 +141,7 @@ export function ReleaseDetail() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 52, marginBottom: 16, flexWrap: 'wrap' }}>
           <FolderGit2 size={14} style={{ color: 'var(--fg-4)' }} />
           {release.projects.map((proj, i) => {
-            const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#7c3aed', '#0d9488', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', '#0891b2', 'var(--ds-text-success, #16a34a)', '#6366f1'];
+            const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-link, #0C66E4)', 'var(--ds-text-success, #16a34a)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
             const c = colors[i % colors.length];
             return (
               <span key={proj} style={{
@@ -280,7 +280,7 @@ function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl
       ) : (
         <div style={{
           width: 24, height: 24, borderRadius: '50%',
-          background: '#6366f1', color: 'var(--bg-app)',
+          background: 'var(--ds-background-discovery-bold, #6366f1)', color: 'var(--bg-app)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 9, fontWeight: 700,
         }}>

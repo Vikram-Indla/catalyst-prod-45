@@ -135,7 +135,7 @@ export function AddTestsSlideOver({
       {/* Overlay */}
       <div 
         className="fixed inset-0 z-50 transition-opacity"
-        style={{ backgroundColor: 'rgba(15, 23, 42, 0.5)' }}
+        style={{ backgroundColor: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.5))' }}
         onClick={onClose}
       />
       

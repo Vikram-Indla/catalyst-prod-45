@@ -124,7 +124,7 @@ function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
       id: a.reporter_account_id || 'none',
       name: reporterName,
       initials: initials(reporterName),
-      avatarColor: '#6B7280',
+      avatarColor: 'var(--ds-text-subtlest, #626F86)',
       avatarUrl: resolveAvatarUrl(reporterName) || undefined,
     },
     reporter: a.reporter_display_name || undefined,
@@ -137,12 +137,12 @@ function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
 // Left border color uses ADS border-intent tokens to visually separate tiers.
 // fontWeight 653 matches Jira section headers (CLAUDE.md 2026-05-12 re-probe).
 const BRACKET_ACCENT: Record<AgeBracket, string> = {
-  needsAttention: token('color.border.success', '#22A06B'),
+  needsAttention: token('color.border.success', 'var(--ds-background-success-bold, #1F845A)'),
   coolingDown:    token('color.border.warning', '#CF9F02'),
   archivingSoon:  token('color.border.warning', '#FF991F'),
-  thirtySixty:    token('color.border.information', '#1D7AFC'),
-  sixtyNinety:    token('color.border.bold', '#758195'),
-  ninetyPlus:     token('color.border.danger', '#E5493A'),
+  thirtySixty:    token('color.border.information', 'var(--ds-background-information-bold, #1D7AFC)'),
+  sixtyNinety:    token('color.border.bold', 'var(--ds-text-subtle, #44546F)'),
+  ninetyPlus:     token('color.border.danger', 'var(--ds-background-danger-bold, #C9372C)'),
 };
 
 function SectionHeading({ label, count, collapsed, onToggle, isArchived, bracket }: {
@@ -157,23 +157,23 @@ function SectionHeading({ label, count, collapsed, onToggle, isArchived, bracket
       style={{
         display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
         padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
-        background: token('color.background.neutral', '#F1F2F4'),
+        background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
         border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left',
         borderRadius: 0,
         borderLeft: `3px solid ${accent}`,
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
       }}
     >
       <span style={{
         transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
         transition: 'transform 150ms', display: 'inline-flex', fontSize: 12,
-        color: token('color.icon.subtle', '#6B778C'),
+        color: token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)'),
       }}>
         ▾
       </span>
       <span style={{
         fontSize: 14, fontWeight: 653, lineHeight: '20px',
-        color: token('color.text', '#292A2E'),
+        color: token('color.text', 'var(--ds-text, #172B4D)'),
       }}>
         {label}
       </span>
@@ -182,8 +182,8 @@ function SectionHeading({ label, count, collapsed, onToggle, isArchived, bracket
       )}
       <span style={{
         fontSize: 12, fontWeight: 400, lineHeight: '16px',
-        color: token('color.text.subtlest', '#6B778C'),
-        background: token('color.background.neutral', '#F1F2F4'),
+        color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+        background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
         padding: `0 ${token('space.100', '8px')}`, borderRadius: 999,
       }}>
         {count}
@@ -207,19 +207,19 @@ function ArchivedRow({ item }: {
           padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
           cursor: 'pointer', width: '100%',
           /* opacity removed — use color tokens for dimming, not blanket opacity (ADS) */
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         }}
       >
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <span style={{
           fontFamily: 'var(--ds-font-family-monospace, "Charlie Code", ui-monospace, monospace)', fontSize: 12, fontWeight: 500,
-          color: token('color.text.subtle', '#505258'),
+          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
           flexShrink: 0, minWidth: 72,
         }}>
           {item.issue_key}
         </span>
         <span dir="auto" style={{
-          fontSize: 14, color: token('color.text', '#292A2E'),
+          fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           flex: 1, minWidth: 0,
         }}>
@@ -227,14 +227,14 @@ function ArchivedRow({ item }: {
         </span>
         <JiraForYouLozenge status={item.status} statusCategory={item.status_category} />
         <span style={{
-          fontSize: 11, color: token('color.text.subtlest', '#6B778C'),
+          fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
           flexShrink: 0, minWidth: 40, textAlign: 'right',
         }}>
           {item.days_open}d
         </span>
         {item.archived_at && (
           <span style={{
-            fontSize: 11, color: token('color.text.subtlest', '#6B778C'),
+            fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             flexShrink: 0,
           }}>
             {formatDate(item.archived_at)}
@@ -248,36 +248,36 @@ function ArchivedRow({ item }: {
           onClick={() => setShowMessage(false)}
           style={{
             position: 'fixed', inset: 0,
-            background: 'rgba(9,30,66,0.54)', zIndex: 99999,
+            background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))', zIndex: 99999,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: token('elevation.surface.overlay', '#FFFFFF'),
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
               borderRadius: 8, padding: token('space.300', '24px'),
               maxWidth: 480, width: '90%',
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.25)'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.25))'),
             }}
           >
             <h2 style={{
               margin: 0, fontSize: 16, fontWeight: 653,
-              color: token('color.text', '#292A2E'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
               marginBottom: token('space.200', '16px'),
             }}>
               This item is archived
             </h2>
             <p style={{
               margin: 0, fontSize: 14, fontWeight: 500,
-              color: token('color.text', '#292A2E'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
               marginBottom: token('space.050', '4px'),
             }}>
               {item.issue_key} — {item.summary}
             </p>
             <p style={{
               margin: 0, fontSize: 13,
-              color: token('color.text.subtle', '#505258'),
+              color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
               marginBottom: token('space.200', '16px'),
             }}>
               This item is archived and read-only. To unarchive, go to the Archive manager.
@@ -320,11 +320,11 @@ function ActiveAgeingRow({ item, onSelect, isArchivingSoon, actions }: {
           fontSize: 11, fontWeight: 500,
           color: item.daysOpen >= 53
             ? token('color.text.warning', '#FF991F')
-            : token('color.text.subtlest', '#6B778C'),
+            : token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
         }}>
           {countdownText(item.daysOpen, item.jiraCreatedAt)}
         </span>
-        <span style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>
+        <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
           · Open {item.daysOpen}d
         </span>
       </div>
@@ -423,7 +423,7 @@ export function AgeingPanelView({
     return (
       <div style={{ padding: token('space.400', '32px'), display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
         <Spinner size="small" />
-        <span style={{ color: token('color.text.subtle', '#626F86'), fontSize: 14 }}>
+        <span style={{ color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 14 }}>
           Loading ageing items…
         </span>
       </div>
@@ -454,7 +454,7 @@ export function AgeingPanelView({
       <div style={{
         display: 'flex', alignItems: 'center', gap: token('space.200', '16px'),
         padding: `${token('space.150', '12px')} 0`,
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         marginBottom: token('space.100', '8px'),
       }}>
         <div style={{ flex: 1, maxWidth: 360 }}>
@@ -486,7 +486,7 @@ export function AgeingPanelView({
             {!collapsed && (
               <div style={{
                 background: isArchived
-                  ? token('color.background.neutral.subtle', '#F7F8F9')
+                  ? token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)')
                   : undefined,
               }}>
                 {isArchived
@@ -551,7 +551,7 @@ export function AgeingPanelView({
       {grouped.length === 0 && search && (
         <div style={{
           padding: token('space.400', '32px'), textAlign: 'center',
-          color: token('color.text.subtle', '#505258'), fontSize: 14,
+          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 14,
         }}>
           No items match "{search}".
         </div>
@@ -577,10 +577,10 @@ export function AgeingPanelView({
               alignItems: 'center',
               gap: 0,
               height: 44,
-              background: token('color.background.neutral.bold', '#44546F'),
-              color: token('color.text.inverse', '#FFFFFF'),
+              background: token('color.background.neutral.bold', 'var(--ds-icon, #44546F)'),
+              color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
               borderRadius: 8,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.28)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.12))'),
               overflow: 'hidden',
               fontSize: 14,
             }}
@@ -592,18 +592,18 @@ export function AgeingPanelView({
               style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: 44, height: 44, background: 'transparent', border: 'none',
-                color: token('color.text.inverse', '#FFFFFF'), cursor: 'pointer',
+                color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'), cursor: 'pointer',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface, rgba(255,255,255,0.10))')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <AkCloseIcon label="" size="small" />
             </button>
-            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-surface, rgba(255,255,255,0.20))' }} />
             <span style={{ padding: '0 16px', fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap', userSelect: 'none' }}>
               {selectedIds.size} {selectedIds.size === 1 ? 'item' : 'items'} selected
             </span>
-            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--ds-surface, rgba(255,255,255,0.20))' }} />
             <button
               type="button"
               disabled={archiving}
@@ -619,10 +619,10 @@ export function AgeingPanelView({
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 height: 44, padding: '0 16px', background: 'transparent', border: 'none',
-                color: token('color.text.inverse', '#FFFFFF'), cursor: archiving ? 'wait' : 'pointer',
+                color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'), cursor: archiving ? 'wait' : 'pointer',
                 fontSize: 14, fontWeight: 500, fontFamily: 'inherit',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface, rgba(255,255,255,0.10))')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <AkArchiveBoxIcon label="" size="small" />

@@ -10,7 +10,7 @@ import type { QueryResult } from './PersonalizedQueryProcessor';
 // sora → var(--ds-font-family-body)
 
 const PROJECT_COLORS: Record<string, string> = {
-  BAU: '#4C6EF5', SIMP: '#FA8C16', MDT: '#52C41A', ICP: '#722ED1',
+  BAU: 'var(--ds-background-discovery-bold, #6E5DC6)', SIMP: '#FA8C16', MDT: '#52C41A', ICP: 'var(--ds-background-discovery-bold, #6E5DC6)',
   IP: '#13C2C2', IRP: '#EB2F96', MWR: '#FAAD14', TAH: '#1890FF',
 };
 

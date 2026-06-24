@@ -133,7 +133,7 @@ export default function StoryDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--cp-font-body)', color: '#5E6C84' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text-subtle, #44546F)' }}>
         Loading…
       </div>
     );
@@ -143,9 +143,9 @@ export default function StoryDetailPage() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--cp-font-body)', gap: 12 }}>
         <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>Work item not found</span>
-        <span style={{ fontSize: 13, color: '#5E6C84' }}>itemId {itemId} could not be found or has been deleted.</span>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>itemId {itemId} could not be found or has been deleted.</span>
         {debugInfo && (
-          <span style={{ fontSize: 11, color: '#DE350B', fontFamily: 'var(--cp-font-mono)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: '#FFF5F5', border: '1px solid #FFCDD2', borderRadius: 4 }}>
+          <span style={{ fontSize: 11, color: 'var(--ds-background-danger-bold, #C9372C)', fontFamily: 'var(--cp-font-mono)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: '#FFF5F5', border: '1px solid #FFCDD2', borderRadius: 4 }}>
             {debugInfo}
           </span>
         )}

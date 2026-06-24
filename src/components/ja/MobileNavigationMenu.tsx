@@ -115,7 +115,7 @@ export function MobileNavigationMenu() {
                     fontFamily: 'var(--cp-font-body)',
                     textAlign: 'left',
                     transition: 'background 0.1s',
-                    borderLeft: isActive ? '3px solid #3B82F6' : '3px solid transparent',
+                    borderLeft: isActive ? '3px solid var(--ds-background-information-bold, #3b82f6)' : '3px solid transparent',
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive) e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(0,0,0,0.04))';

@@ -15,7 +15,7 @@ export function getStatusCategory(statusOrCategory: string | null | undefined): 
 }
 
 export const SC_COLORS = {
-  todo:     { dot: 'var(--cp-danger, #DC2626)', bg: '#FEE2E2', text: 'var(--cp-danger, #DC2626)', border: '#FCA5A5' },
-  progress: { dot: '#2563EB', bg: '#DBEAFE', text: '#2563EB', border: '#93C5FD' },
-  done:     { dot: 'var(--quality-high, #059669)', bg: '#D1FAE5', text: 'var(--quality-high, #059669)', border: '#6EE7B7' },
+  todo:     { dot: 'var(--cp-danger, #DC2626)', bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--cp-danger, #DC2626)', border: 'var(--ds-background-danger, #FFECEB)' },
+  progress: { dot: 'var(--ds-link, #2563eb)', bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link, #2563eb)', border: 'var(--ds-background-information-bold, #0C66E4)' },
+  done:     { dot: 'var(--quality-high, #059669)', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--quality-high, #059669)', border: 'var(--ds-background-success, #DFFCF0)' },
 };

@@ -10,10 +10,10 @@ interface RoadmapDatesTableProps {
 }
 
 const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
-  Q1: { bg: '#F3E8FF', color: '#6D28D9' },
+  Q1: { bg: 'var(--ds-background-discovery, #F3F0FF)', color: 'var(--ds-background-discovery-bold, #6d28d9)' },
   Q2: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
-  Q3: { bg: '#ECFDF5', color: '#065F46' },
-  Q4: { bg: '#FFF7ED', color: '#92400E' },
+  Q3: { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #216E4E)' },
+  Q4: { bg: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, #974F0C)' },
 };
 
 const headerStyle: React.CSSProperties = {

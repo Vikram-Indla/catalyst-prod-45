@@ -167,7 +167,7 @@ export function AddAssignmentModal({
         className="fixed inset-0 z-[1101] flex items-center justify-center p-4 animate-in fade-in slide-in-from-bottom-2 duration-200"
       >
         <div 
-          className="bg-card rounded-2xl w-full max-w-[420px] shadow-[0_20px_60px_rgba(0,0,0,0.25)] border border-border"
+          className="bg-card rounded-2xl w-full max-w-[420px] shadow-[0_20px_60px_var(--ds-shadow-raised, rgba(0,0,0,0.25))] border border-border"
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
@@ -188,7 +188,7 @@ export function AddAssignmentModal({
           </div>
 
           {/* Divider */}
-          <div className="h-1 bg-gradient-to-r from-primary via-[#0d9488] to-[#7c3aed]" />
+          <div className="h-1 bg-gradient-to-r from-primary via-[var(--ds-chart-teal-bold, #0d9488)] to-[var(--ds-background-discovery-bold, #7C3AED)]" />
 
           {/* Content */}
           <div className="px-6 py-5 space-y-6">
@@ -395,7 +395,7 @@ export function AddAssignmentModal({
             <Button
               onClick={handleSubmit}
               disabled={!selectedAssignmentId || !startPeriod || !endPeriod || isSubmitting}
-              className="flex-1 h-11 rounded-xl text-[13px] font-semibold bg-[#0d9488] hover:bg-[#14b8a6] text-white"
+              className="flex-1 h-11 rounded-xl text-[13px] font-semibold bg-[var(--ds-chart-teal-bold, #0d9488)] hover:bg-[var(--ds-background-accent-teal-bolder, #14b8a6)] text-white"
             >
               {isSubmitting ? 'Adding...' : '+ Add Assignment'}
             </Button>

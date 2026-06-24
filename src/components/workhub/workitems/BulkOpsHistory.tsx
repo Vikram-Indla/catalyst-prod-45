@@ -6,11 +6,11 @@ import { Clock, X } from '@/lib/atlaskit-icons';
 import { useBulkOpsLog } from '@/hooks/workhub/useBulkOpsLog';
 
 const OP_CONFIG: Record<string, { label: string; bg: string; color: string }> = {
-  assign_release: { label: 'Assign Release', bg: '#dbeafe', color: 'var(--ds-background-brand-bold-hovered, #1d4ed8)' },
-  assign_theme: { label: 'Assign Theme', bg: '#ccfbf1', color: '#0d9488' },
+  assign_release: { label: 'Assign Release', bg: 'var(--ds-background-information, #E9F2FF)', color: 'var(--ds-background-brand-bold-hovered, #1d4ed8)' },
+  assign_theme: { label: 'Assign Theme', bg: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bold, #0d9488)' },
   change_status: { label: 'Change Status', bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #3B82F6)' },
-  change_release_id: { label: 'Assign Release', bg: '#dbeafe', color: 'var(--ds-background-brand-bold-hovered, #1d4ed8)' },
-  change_theme_id: { label: 'Assign Theme', bg: '#ccfbf1', color: '#0d9488' },
+  change_release_id: { label: 'Assign Release', bg: 'var(--ds-background-information, #E9F2FF)', color: 'var(--ds-background-brand-bold-hovered, #1d4ed8)' },
+  change_theme_id: { label: 'Assign Theme', bg: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bold, #0d9488)' },
 };
 
 function relativeTime(dateStr: string): string {

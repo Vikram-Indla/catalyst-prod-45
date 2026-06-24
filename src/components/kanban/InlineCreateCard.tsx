@@ -115,7 +115,7 @@ function SmartPopover({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 6,
-        boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+        boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
       }}
     >
       {children}
@@ -482,20 +482,20 @@ function InlineCreateCardComponent({
           projectManagerUserId = (prof as { id: string } | null)?.id ?? null;
         }
 
-        /* Generate MDT-N request_key (same pattern as useKanbanMutations). */
+        /* Generate MDT-XXXXX request_key (5-digit zero-padded, same pattern as useKanbanMutations). */
         const { data: keyRows } = await (supabase as any)
           .from('business_requests').select('request_key').not('request_key', 'is', null).limit(2000);
         let maxNum = 0;
         ((keyRows ?? []) as Array<{ request_key: string | null }>).forEach((r) => {
-          const m = r.request_key?.match(/(?:MDT|MIM)-(\d+)/);
+          const m = r.request_key?.match(/MDT-(\d+)/);
           if (m) {
             const n = parseInt(m[1], 10);
             if (!Number.isNaN(n) && n > maxNum) maxNum = n;
           }
         });
         const requestKey = maxNum === 0
-          ? `MDT-${Date.now().toString().slice(-6)}`
-          : `MDT-${maxNum + 1}`;
+          ? `MDT-${Date.now().toString().slice(-5)}`
+          : `MDT-${String(maxNum + 1).padStart(5, '0')}`;
 
         const insertRow: Record<string, any> = {
           request_key: requestKey,
@@ -610,7 +610,7 @@ function InlineCreateCardComponent({
     background: 'var(--ds-surface-overlay, #FFFFFF)',
     border: '1px solid var(--ds-border, #DFE1E6)',
     borderRadius: 6,
-    boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+    boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
   };
 
   return (
@@ -626,7 +626,7 @@ function InlineCreateCardComponent({
         borderRadius: 6,
         /* Jira-parity: full clean blue outline around the whole card. */
         border: '2px solid var(--ds-border-selected, #0C66E4)',
-        boxShadow: '0 2px 8px rgba(9,30,66,0.06)',
+        boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
       }}
       onMouseDown={e => e.stopPropagation()}
       onClick={e => e.stopPropagation()}

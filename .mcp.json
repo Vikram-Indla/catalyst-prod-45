@@ -12,6 +12,21 @@
     "catalyst-storybook": {
       "type": "http",
       "url": "https://main--6a22d4960f743958c893234b.chromatic.com/mcp"
+    },
+    "supabase-staging": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=cyijbdeuehohvhnsywig"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_05d53b5a792ee45af388a71867b191a792accfde"
+      }
+    },
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=cyijbdeuehohvhnsywig"
     }
   }
 }

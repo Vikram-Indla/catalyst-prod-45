@@ -40,7 +40,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
           {MONTHS.map((m, i) => (
             <div key={m} className="flex items-center justify-center text-[10.5px] font-medium text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] border-l border-slate-100 dark:border-[var(--ds-surface-overlay,#1F1F1F)]" style={{
               height: 50,
-              background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
+              background: i % 2 === 0 ? 'var(--ds-surface, rgba(248,250,252,0.5))' : 'transparent',
             }}>
               {m}
             </div>
@@ -81,7 +81,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
                 <div key={i} className="absolute top-0 bottom-0 border-l border-dashed border-slate-100 dark:border-[var(--ds-surface-overlay,#1F1F1F)]" style={{
                   left: `${(i / 12) * 100}%`,
                   width: `${100 / 12}%`,
-                  background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
+                  background: i % 2 === 0 ? 'var(--ds-surface, rgba(248,250,252,0.5))' : 'transparent',
                 }} />
               ))}
 

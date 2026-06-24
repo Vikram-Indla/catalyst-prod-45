@@ -25,8 +25,8 @@ interface PresenceIndicatorProps {
 }
 
 const COLORS = {
-  online: '#36B37E', // ADS green
-  offline: '#626F86', // ADS muted
+  online: 'var(--ds-background-success-bold, #1F845A)', // ADS green
+  offline: 'var(--ds-icon-subtle, #626F86)', // ADS muted
 };
 
 const SIZES = {

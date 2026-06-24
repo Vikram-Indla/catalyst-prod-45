@@ -407,6 +407,16 @@ export function ReleasesPage() {
           onClose={() => { setIsMergeDialogOpen(false); setMergingRelease(null); }}
         />
       )}
+
+      {mergingRelease && (
+        <ReleaseMergeDialog
+          isOpen={isMergeDialogOpen}
+          release={mergingRelease as any}
+          projectKey={projectKey}
+          onClose={() => { setIsMergeDialogOpen(false); setMergingRelease(null); }}
+          onSuccess={() => setSuccessFlag(`Release "${mergingRelease.name}" has been merged.`)}
+        />
+      )}
     </div>
   );
 }

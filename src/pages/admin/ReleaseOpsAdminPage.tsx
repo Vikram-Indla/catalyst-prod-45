@@ -228,7 +228,7 @@ function SortableOptionRow({
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '6px 8px', borderRadius: 4,
         borderBottom: `1px solid ${T.border}`,
-        background: isDragging || isHovered ? 'rgba(9,30,66,0.04)' : undefined,
+        background: isDragging || isHovered ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))' : undefined,
         opacity: isDragging ? 0.5 : (option.is_active ? 1 : 0.55),
         transform: CSS.Transform.toString(transform),
         transition,
@@ -240,7 +240,7 @@ function SortableOptionRow({
         <span
           {...attributes}
           {...listeners}
-          style={{ color: '#8993A4', cursor: 'grab', fontSize: 15, width: 20, textAlign: 'center', flexShrink: 0, lineHeight: '1', userSelect: 'none' }}
+          style={{ color: 'var(--ds-text-disabled, #8590A2)', cursor: 'grab', fontSize: 15, width: 20, textAlign: 'center', flexShrink: 0, lineHeight: '1', userSelect: 'none' }}
           aria-label="Drag to reorder"
         >
           ⠿
@@ -382,7 +382,7 @@ function GroupSection({
         <div
           role="menu"
           onMouseDown={(e) => e.stopPropagation()}
-          style={{ position: 'fixed', top: menuState.top, right: menuState.right, background: 'var(--ds-surface-overlay, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, boxShadow: '0 8px 28px rgba(9,30,66,0.25)', zIndex: 9999, minWidth: 160, padding: '4px 0' }}
+          style={{ position: 'fixed', top: menuState.top, right: menuState.right, background: 'var(--ds-surface-overlay, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))', zIndex: 9999, minWidth: 160, padding: '4px 0' }}
         >
           <button
             role="menuitem"

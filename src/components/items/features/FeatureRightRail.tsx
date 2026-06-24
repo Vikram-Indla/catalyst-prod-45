@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -112,14 +113,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
     },
   });
 
-  const { data: profiles } = useQuery({
-    queryKey: ['profiles-list'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('profiles').select('id, full_name, email').order('full_name');
-      if (error) throw error;
-      return data || [];
-    },
-  });
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = approvedProfiles.map(p => ({ id: p.id, full_name: p.name, email: p.email }));
 
   const { data: departments } = useQuery({
     queryKey: ['departments-list'],
@@ -204,7 +199,7 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
               <SelectValue placeholder="Select assignee">
                 {featureData?.owner ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-[#0d9488] text-white flex items-center justify-center text-[10px] font-medium">
+                    <div className="w-5 h-5 rounded-full bg-[var(--ds-chart-teal-bold, #0d9488)] text-white flex items-center justify-center text-[10px] font-medium">
                       {getInitials(featureData.owner.full_name)}
                     </div>
                     <span className="truncate">{featureData.owner.full_name}</span>
@@ -217,7 +212,7 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
               {profiles?.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-[#0d9488] text-white flex items-center justify-center text-[10px] font-medium">
+                    <div className="w-5 h-5 rounded-full bg-[var(--ds-chart-teal-bold, #0d9488)] text-white flex items-center justify-center text-[10px] font-medium">
                       {getInitials(p.full_name || p.email || '')}
                     </div>
                     <span>{p.full_name || p.email}</span>

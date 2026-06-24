@@ -175,7 +175,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
       <span style={{
         fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
         padding: '1px 4px', borderRadius: 4,
-        background: '#CCFBF1', color: '#0F766E',
+        background: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bolder, #0f766e)',
         textTransform: 'uppercase', flexShrink: 0,
       }}>CATALYST</span>
     );
@@ -184,14 +184,14 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
     <span style={{
       fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
       padding: '1px 4px', borderRadius: 4,
-      background: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+      background: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
   );
 }
 
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
+const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))','var(--ds-link, #0C66E4)','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','var(--ds-chart-teal-bolder, #0f766e)'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -273,7 +273,7 @@ function DueDateCell({ date }: { date?: string }) {
   const dDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   let color = 'var(--fg-1)';
   if (dDate < today) color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-  else if (dDate.getTime() === today.getTime()) color = '#0284C7';
+  else if (dDate.getTime() === today.getTime()) color = 'var(--ds-link, #0284c7)';
   return (
     <span style={{ fontSize: 12, color }}>
       {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -603,9 +603,9 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                   letterSpacing: '0.06em',
                   padding: '1px 6px',
                   borderRadius: 4,
-                  background: '#ECFDF5',
+                  background: 'var(--ds-background-success, #DFFCF0)',
                   color: 'var(--quality-high, #059669)',
-                  border: '1px solid #6EE7B7',
+                  border: '1px solid var(--ds-background-success, #DFFCF0)',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   textTransform: 'uppercase',
@@ -745,7 +745,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             height: 36,
             minWidth: 1100,
                 background: 'var(--cp-bg-page, #F8FAFC)',
-                borderBottom: isDark ? '2px solid #2E2E2E' : '2px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                borderBottom: isDark ? '2px solid var(--ds-background-neutral, #F1F2F4)' : '2px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
           }}
         >
           <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -791,9 +791,9 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 display: 'grid',
                 gridTemplateColumns,
                 alignItems: 'center',
-                borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                borderBottom: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                 cursor: 'pointer',
-                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
+                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'var(--ds-background-information, rgba(37, 99, 235, 0.08))' : 'transparent',
               }}
             >
               <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -877,7 +877,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'} !important; border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
+        .hi-table-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'} !important; border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))'}; }
         .hi-table-row.checked { background: ${'var(--cp-primary-light, #EFF6FF)'} !important; }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
@@ -887,7 +887,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         .hi-work-column { overflow: hidden; min-width: 0; }
         /* Rule 3 paired .dark — surfaces already branched via isDark above;
            this selector adds ADS-token border-left for left-bar visibility on dark. */
-        .dark .hi-table-row:hover { border-left-color: #579DFF; }
+        .dark .hi-table-row:hover { border-left-color: var(--ds-background-information-bold, #0C66E4); }
       `}</style>
     </div>
   );

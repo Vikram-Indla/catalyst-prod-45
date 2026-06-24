@@ -71,7 +71,7 @@ function ChevronButton({
       data-cv-nav-next={direction === 'next' ? '' : undefined}
       style={{
         ...BTN_BASE,
-        color: '#42526E',
+        color: 'var(--ds-text-subtle, #42526E)',
         opacity: disabled ? 0.35 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}

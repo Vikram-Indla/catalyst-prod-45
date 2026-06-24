@@ -75,7 +75,7 @@ function FolderModal({
   return createPortal(
     <div
       style={{
-        position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.54)',
+        position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
         display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999,
       }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
@@ -85,7 +85,7 @@ function FolderModal({
         borderRadius: 8,
         width: 400,
         padding: '24px',
-        boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
+        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
         <h2 style={{ margin: '0 0 20px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
@@ -155,7 +155,7 @@ function FolderModal({
               padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
               border: 'none',
               background: !name.trim() || saving ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-background-brand-bold, #0052CC)',
-              color: !name.trim() || saving ? 'var(--ds-text-disabled, #A5ADBA)' : '#FFFFFF',
+              color: !name.trim() || saving ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text-inverse, #FFFFFF)',
               cursor: !name.trim() || saving ? 'not-allowed' : 'pointer',
             }}
           >
@@ -194,7 +194,7 @@ function RenameFolderModal({
   return createPortal(
     <div
       style={{
-        position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.54)',
+        position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
         display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999,
       }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
@@ -202,7 +202,7 @@ function RenameFolderModal({
       <div style={{
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         borderRadius: 8, width: 360, padding: '24px',
-        boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
+        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
         <h2 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
@@ -230,7 +230,7 @@ function RenameFolderModal({
               padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
               border: 'none',
               background: !name.trim() || saving ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-background-brand-bold, #0052CC)',
-              color: !name.trim() || saving ? 'var(--ds-text-disabled, #A5ADBA)' : '#FFFFFF',
+              color: !name.trim() || saving ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text-inverse, #FFFFFF)',
               cursor: !name.trim() || saving ? 'not-allowed' : 'pointer',
             }}
           >
@@ -288,7 +288,7 @@ function FolderContextMenu({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
-        boxShadow: '0 8px 28px rgba(9,30,66,0.18)',
+        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
         minWidth: 160,
         zIndex: 9999,
         padding: '4px 0',
@@ -347,13 +347,13 @@ function ArchiveModal({ count, onConfirm, onClose, saving }: {
   return createPortal(
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999,
-      background: 'rgba(9,30,66,0.54)',
+      background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <div style={{
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         borderRadius: 8, width: 400, padding: 24,
-        boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
+        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
         <h2 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
@@ -371,7 +371,7 @@ function ArchiveModal({ count, onConfirm, onClose, saving }: {
               padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
               border: 'none',
               background: saving ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-background-warning-bold, #0052CC)',
-              color: saving ? 'var(--ds-text-disabled, #A5ADBA)' : '#FFFFFF',
+              color: saving ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text-inverse, #FFFFFF)',
               cursor: saving ? 'not-allowed' : 'pointer',
             }}
           >
@@ -406,13 +406,13 @@ function CopyModal({ count, folders, onConfirm, onClose, saving }: {
   return createPortal(
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999,
-      background: 'rgba(9,30,66,0.54)',
+      background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <div style={{
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         borderRadius: 8, width: 440, padding: 24,
-        boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
+        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
         <h2 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
@@ -458,7 +458,7 @@ function CopyModal({ count, folders, onConfirm, onClose, saving }: {
               padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
               border: 'none',
               background: saving ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-background-brand-bold, #0052CC)',
-              color: saving ? 'var(--ds-text-disabled, #A5ADBA)' : '#FFFFFF',
+              color: saving ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text-inverse, #FFFFFF)',
               cursor: saving ? 'not-allowed' : 'pointer',
             }}
           >
@@ -509,7 +509,7 @@ function BulkDropdown({ triggerRef, onArchive, onCopy, onClose }: {
       background: 'var(--ds-surface-overlay, #FFFFFF)',
       border: '1px solid var(--ds-border, #DFE1E6)',
       borderRadius: 6,
-      boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+      boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
       padding: '4px 0',
       minWidth: 160,
       zIndex: 9999,
@@ -568,7 +568,7 @@ function StatusDropdown({ triggerRef, onSelect, onClose }: {
       position: 'fixed', top: rect.bottom + 4, left: rect.left,
       background: 'var(--ds-surface-overlay, #FFFFFF)',
       border: '1px solid var(--ds-border, #DFE1E6)',
-      borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+      borderRadius: 6, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
       padding: '4px 0', minWidth: 140, zIndex: 9999,
     }}>
       {CASE_STATUSES.map(s => (
@@ -615,7 +615,7 @@ function PriorityDropdown({ triggerRef, priorities, onSelect, onClose }: {
       position: 'fixed', top: rect.bottom + 4, left: rect.left,
       background: 'var(--ds-surface-overlay, #FFFFFF)',
       border: '1px solid var(--ds-border, #DFE1E6)',
-      borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+      borderRadius: 6, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
       padding: '4px 0', minWidth: 140, zIndex: 9999,
     }}>
       {priorities.length === 0 ? (
@@ -778,7 +778,7 @@ export default function RepositoryPage() {
         style={{
           padding: '6px 12px',
           background: 'var(--ds-background-brand-bold, #0052CC)',
-          color: '#FFFFFF', border: 'none', borderRadius: 4,
+          color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 4,
           fontSize: 13, fontWeight: 500, cursor: 'pointer',
           display: 'flex', alignItems: 'center', gap: 6,
         }}

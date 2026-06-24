@@ -116,7 +116,7 @@ export function T10AssigneeFieldNew({
         backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid var(--ds-border, #e5e7eb)',
         borderRadius: '8px',
-        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
+        boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
         // Must be above the side panel overlay (z=100000) and panel (z=100001)
         zIndex: 100002,
         pointerEvents: 'auto',
@@ -251,7 +251,7 @@ export function T10AssigneeFieldNew({
                     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     flexShrink: 0,
                     overflow: 'hidden',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                    boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
                   }}
                 >
                   {user.avatar_url ? (
@@ -269,7 +269,7 @@ export function T10AssigneeFieldNew({
                   )}
                 </div>
                 <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-                  <div style={{ fontWeight: 500, color: '#111827' }}>
+                  <div style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                     {user.full_name || 'Unknown User'}
                   </div>
                   {user.email && (
@@ -322,7 +322,7 @@ export function T10AssigneeFieldNew({
                   fontWeight: 600,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   overflow: 'hidden',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                  boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
                 }}
               >
                 {assigneeAvatar ? (

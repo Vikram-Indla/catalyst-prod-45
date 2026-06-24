@@ -112,7 +112,7 @@ function CategoryAccordion({
       {/* ── Category Header ──────────────────────────────────────── */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-3 hover:bg-[rgba(0,0,0,0.02)] transition-colors duration-150 cursor-pointer"
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-[var(--ds-shadow-raised, rgba(0,0,0,0.02))] transition-colors duration-150 cursor-pointer"
       >
         <div className="flex items-center gap-3">
           {isExpanded ? (

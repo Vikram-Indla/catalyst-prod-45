@@ -22,9 +22,9 @@ interface NewIncidentModalProps {
 
 const SEVERITIES = ['SEV1', 'SEV2', 'SEV3', 'SEV4'] as const;
 const SEV_STYLES: Record<string, { bg: string; border: string; text: string; darkBg: string; darkBorder: string; darkText: string }> = {
-  SEV1: { bg: '#FEE2E2', border: '#FECACA', text: 'var(--ds-text-danger, #991B1B)', darkBg: 'rgba(239,68,68,0.12)', darkBorder: 'rgba(239,68,68,0.2)', darkText: 'var(--ds-border-danger, #FCA5A5)' },
-  SEV2: { bg: '#FEF3C7', border: '#FDE68A', text: '#92400E', darkBg: 'rgba(251,191,36,0.12)', darkBorder: 'rgba(251,191,36,0.2)', darkText: '#FDE68A' },
-  SEV3: { bg: '#DBEAFE', border: '#BFDBFE', text: '#1E40AF', darkBg: 'rgba(59,130,246,0.12)', darkBorder: 'rgba(59,130,246,0.2)', darkText: '#93C5FD' },
+  SEV1: { bg: 'var(--ds-background-danger, #FFECEB)', border: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #991B1B)', darkBg: 'var(--ds-background-danger, rgba(239,68,68,0.12))', darkBorder: 'var(--ds-background-danger, rgba(239,68,68,0.2))', darkText: 'var(--ds-border-danger, #FCA5A5)' },
+  SEV2: { bg: 'var(--ds-background-warning, #FFF7D6)', border: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', darkBg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))', darkBorder: 'var(--ds-background-warning-bold, rgba(251,191,36,0.2))', darkText: 'var(--ds-background-warning, #FFF7D6)' },
+  SEV3: { bg: 'var(--ds-background-information, #E9F2FF)', border: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', darkBorder: 'var(--ds-background-information-bold, rgba(59,130,246,0.2))', darkText: 'var(--ds-background-information-bold, #0C66E4)' },
   SEV4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', text: 'var(--ds-text-subtle, #475569)', darkBg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', darkBorder: 'var(--ds-border-bold, #454545)', darkText: 'var(--ds-text-subtlest, #A1A1A1)' },
 };
 
@@ -64,9 +64,9 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[760px]" style={{ borderRadius: 8, padding: 0 }}>
-        <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+        <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
           <DialogTitle className="flex items-center gap-2" style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>
-            <div className="flex items-center justify-center rounded" style={{ width: 28, height: 28, backgroundColor: '#FEE2E2' }}>
+            <div className="flex items-center justify-center rounded" style={{ width: 28, height: 28, backgroundColor: 'var(--ds-background-danger, #FFECEB)' }}>
               <AlertTriangle size={14} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
             </div>
             New Incident
@@ -123,7 +123,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
           </div>
         </div>
 
-        <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
+        <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
           <Button variant="ghost" onClick={onClose} style={{ borderRadius: 6 }}>Cancel</Button>
           <Button onClick={handleSubmit} disabled={isSubmitting || !title.trim()} style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }}>
             {isSubmitting ? 'Creating...' : 'Create Incident'}

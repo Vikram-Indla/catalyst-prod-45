@@ -56,8 +56,8 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
   // Contract ring styles helper
   const getRingStyle = (status: string) => {
     const ringStyles: Record<string, string> = {
-      healthy: 'ring-[#0d9488]',
-      warning: 'ring-[#ca8a04]',
+      healthy: 'ring-[var(--ds-chart-teal-bold, #0d9488)]',
+      warning: 'ring-[var(--ds-text-warning, #974F0C)]',
       critical: 'ring-[#be123c]',
       expired: 'ring-muted-foreground/40',
       permanent: 'ring-muted-foreground/30'
@@ -143,7 +143,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
                 {flagUrl && (
                   <span
                     className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
-                    style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
+                    style={{ boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }}
                   >
                     <img
                       src={flagUrl}
@@ -236,14 +236,14 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               const startDate = new Date(alloc.start_date);
               const isCommitted = startDate <= now;
               const accentColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-warning, #f59e0b)'; // Blue for committed, Amber for forecast
-              const pctColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : '#92400e';
+              const pctColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-warning, #974F0C)';
 
               return (
                 <span
                   key={idx}
                   className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]"
                   style={{
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--ds-border, #DFE1E6)',
                     borderLeftWidth: '3px',
                     borderLeftColor: accentColor,
                   }}
@@ -292,13 +292,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
 
         // Department-specific colors from style guide
         const deptStyles: Record<string, { bg: string; text: string }> = {
-          'OPERATIONS': { bg: 'rgba(13,148,136,0.15)', text: '#115e59' },
-          'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: '#6d28d9' },
+          'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, #216E4E)' },
+          'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, #6d28d9)' },
           'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
-          'SUPPORT': { bg: 'rgba(16,185,129,0.12)', text: 'var(--quality-high, #059669)' },
+          'SUPPORT': { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))', text: 'var(--quality-high, #059669)' },
         };
 
-        const style = deptStyles[deptUpper] || { bg: 'rgba(100,116,139,0.12)', text: 'var(--ds-text-subtle, #475569)' };
+        const style = deptStyles[deptUpper] || { bg: 'var(--ds-text-subtlest, rgba(100,116,139,0.12))', text: 'var(--ds-text-subtle, #475569)' };
 
         return (
           <span
@@ -344,8 +344,8 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))))
         const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 90 ? 'warning' : 'safe';
         const textColors: Record<string, string> = {
-          critical: '#b91c1c',
-          warning: '#92400e',
+          critical: 'var(--ds-text-danger, #AE2A19)',
+          warning: 'var(--ds-text-warning, #974F0C)',
           safe: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
           expired: 'var(--ds-text-subtlest, #64748b)',
         };

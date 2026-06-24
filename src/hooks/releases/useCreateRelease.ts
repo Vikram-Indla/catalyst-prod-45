@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Release, CreateReleasePayload } from '@/types/phase3-releases';
 
+// Writes to ph_releases (Catalyst-local). New releases start as 'in_progress' (unreleased).
 export function useCreateRelease() {
   const queryClient = useQueryClient();
 
@@ -35,6 +36,7 @@ export function useCreateRelease() {
     onSuccess: (release) => {
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['releases', (release as any).project_id] });
+      queryClient.invalidateQueries({ queryKey: ['release-jira-progress'] });
     },
   });
 }

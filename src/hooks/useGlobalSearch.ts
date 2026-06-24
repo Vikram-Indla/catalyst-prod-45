@@ -4,6 +4,7 @@ import type { SearchResult, RecentSearchEntry, ActiveFilters } from '@/types/glo
 
 const SEARCH_SELECT = 'id, issue_key, summary, project_name, project_key, issue_type, jira_updated_at, jira_created_at, assignee_display_name, reporter_display_name, archived_at';
 const CAT_SELECT = 'id, issue_key, title, issue_type, assignee_id, created_at, updated_at, project_id, projects(name, key)';
+const BIZ_SELECT = 'id, request_key, title, request_type, updated_at, created_at';
 
 function mapIssueToSearchResult(row: any): SearchResult {
   return {
@@ -18,6 +19,22 @@ function mapIssueToSearchResult(row: any): SearchResult {
     reporter_name: row.reporter_display_name || null,
     viewed_at: row.jira_updated_at || row.jira_created_at || new Date().toISOString(),
     archived_at: row.archived_at || null,
+  };
+}
+
+function mapBizRequestToSearchResult(row: any): SearchResult {
+  return {
+    id: row.id,
+    item_key: row.request_key || 'UNKNOWN',
+    title: row.title || '(no title)',
+    hub: 'ProductHub',
+    project_name: null,
+    project_key: null,
+    item_type: 'Business Request' as any,
+    assignee_name: null,
+    reporter_name: null,
+    viewed_at: row.updated_at || row.created_at || new Date().toISOString(),
+    archived_at: null,
   };
 }
 
@@ -48,7 +65,7 @@ export function useRecentItems() {
   return useQuery({
     queryKey: ['global-search-recents'],
     queryFn: async () => {
-      const [phRes, catRes] = await Promise.all([
+      const [phRes, catRes, bizRes] = await Promise.all([
         supabase
           .from('ph_issues')
           .select(SEARCH_SELECT)
@@ -59,11 +76,18 @@ export function useRecentItems() {
           .select(CAT_SELECT)
           .order('updated_at', { ascending: false })
           .limit(100),
+        supabase
+          .from('business_requests')
+          .select(BIZ_SELECT)
+          .is('deleted_at', null)
+          .order('updated_at', { ascending: false })
+          .limit(100),
       ]);
       if (phRes.error) throw phRes.error;
       const jira = (phRes.data ?? []).map(mapIssueToSearchResult);
       const cat = (catRes.data ?? []).map(mapCatalystToSearchResult);
-      return mergeJiraWins(jira, cat, 100);
+      const biz = (bizRes.data ?? []).map(mapBizRequestToSearchResult);
+      return mergeJiraWins([...jira, ...biz], cat, 100);
     },
   });
 }
@@ -102,11 +126,20 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
       if (filters.projects.length) catQ = catQ.in('projects.key', filters.projects);
       if (filters.type) catQ = catQ.ilike('issue_type', filters.type.replace('_', ' '));
 
-      const [phRes, catRes] = await Promise.all([phQ, catQ]);
+      let bizQ = supabase
+        .from('business_requests')
+        .select(BIZ_SELECT)
+        .or(`request_key.ilike.%${query}%,title.ilike.%${query}%`)
+        .is('deleted_at', null)
+        .order('updated_at', { ascending: false })
+        .limit(50);
+
+      const [phRes, catRes, bizRes] = await Promise.all([phQ, catQ, bizQ]);
       if (phRes.error) throw phRes.error;
       const jira = (phRes.data ?? []).map(mapIssueToSearchResult);
       const cat = (catRes.data ?? []).map(mapCatalystToSearchResult);
-      return mergeJiraWins(jira, cat, 50);
+      const biz = (bizRes.data ?? []).map(mapBizRequestToSearchResult);
+      return mergeJiraWins([...jira, ...biz], cat, 50);
     },
     enabled: query.length >= 2,
     staleTime: 30000,
@@ -154,12 +187,25 @@ export function useInfiniteSearchResults(query: string, filters: ActiveFilters) 
       }
       if (filters.type) phQ = phQ.ilike('issue_type', filters.type.replace('_', ' '));
 
-      const { data, error, count } = await phQ;
+      // business_requests — searched on page 0 only (not paginated via ph_issues offset)
+      const bizPromise = offset === 0
+        ? supabase
+            .from('business_requests')
+            .select(BIZ_SELECT)
+            .or(`request_key.ilike.%${query}%,title.ilike.%${query}%`)
+            .is('deleted_at', null)
+            .order('updated_at', { ascending: false })
+            .limit(PAGE_SIZE)
+        : Promise.resolve({ data: [] as any[], error: null });
+
+      const [{ data, error, count }, bizRes] = await Promise.all([phQ, bizPromise]);
       if (error) throw error;
 
-      const results = (data ?? []).map(mapIssueToSearchResult);
-      const nextOffset = results.length === PAGE_SIZE ? offset + PAGE_SIZE : null;
-      return { results, total: count ?? null, nextOffset };
+      const jiraResults = (data ?? []).map(mapIssueToSearchResult);
+      const bizResults = (bizRes.data ?? []).map(mapBizRequestToSearchResult);
+      const results = offset === 0 ? mergeJiraWins([...jiraResults, ...bizResults], [], PAGE_SIZE * 2) : jiraResults;
+      const nextOffset = jiraResults.length === PAGE_SIZE ? offset + PAGE_SIZE : null;
+      return { results, total: (count ?? 0) + (offset === 0 ? bizResults.length : 0), nextOffset };
     },
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
     enabled: query.length >= 2,

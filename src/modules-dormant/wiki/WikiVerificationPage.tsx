@@ -14,7 +14,7 @@ export default function WikiVerificationPage() {
   const [refreshing, setRefreshing] = useState(false);
   const { isDark } = useTheme();
 
-  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))';
 
   const handleVerify = async (id: string) => {
     const { data: session } = await supabase.auth.getSession();
@@ -66,7 +66,7 @@ export default function WikiVerificationPage() {
         </div>
         <button onClick={handleRefreshFreshness} disabled={refreshing} style={{
           fontSize: 11, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
-          border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+          border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'var(--ds-shadow-raised, rgba(0,0,0,0.12))'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
           opacity: refreshing ? 0.6 : 1,
         }}>
@@ -101,7 +101,7 @@ export default function WikiVerificationPage() {
                 padding: '0 16px', height: 42, alignItems: 'center',
                 borderBottom: `0.75px solid ${border}`, fontSize: 12,
                 transition: 'background 80ms',
-              }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
+              }} onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-background-information, rgba(37,99,235,0.04))'}
                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
                   {stale && <AlertTriangle size={12} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', flexShrink: 0 }} />}
@@ -127,7 +127,7 @@ export default function WikiVerificationPage() {
                   }}><ShieldCheck size={11} /> Verify</button>
                   <button onClick={() => handleRequestChanges(a.id)} style={{
                     fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                    border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+                    border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'var(--ds-shadow-raised, rgba(0,0,0,0.12))'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
                     cursor: 'pointer',
                   }}>Request Changes</button>
                 </div>

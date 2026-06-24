@@ -85,7 +85,7 @@ export function TicketPicker({ query, coords, onSelect, onDismiss }: Props) {
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
-        boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
+        boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
         minWidth: 280,
         maxWidth: 400,
       }}

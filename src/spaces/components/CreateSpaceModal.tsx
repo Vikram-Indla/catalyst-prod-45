@@ -77,7 +77,7 @@ export function CreateSpaceModal({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        background: 'rgba(9, 30, 66, 0.54)',
+        background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
         paddingTop: 80,
         overflowY: 'auto',
       }}

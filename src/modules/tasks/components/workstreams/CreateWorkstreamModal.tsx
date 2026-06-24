@@ -22,7 +22,7 @@ const WORKSTREAM_COLORS = [
   { name: 'Teal', value: 'var(--ds-text, #14b8a6)' },
   { name: 'Blue', value: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
   { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
-  { name: 'Emerald', value: '#10b981' },
+  { name: 'Emerald', value: 'var(--ds-background-success-bold, #1F845A)' },
 ];
 
 interface CreateWorkstreamModalProps {
@@ -511,7 +511,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                           <button
                             onClick={() => removeResource(resource.id)}
                             className="w-4 h-4 flex items-center justify-center rounded-full transition-colors"
-                            style={{ background: 'var(--ds-border, #e5e7eb)', color: '#6b7280' }}
+                            style={{ background: 'var(--ds-border, #e5e7eb)', color: 'var(--ds-text-subtlest, #626F86)' }}
                           >
                             <X className="w-3 h-3" />
                           </button>

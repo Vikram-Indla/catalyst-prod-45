@@ -15,44 +15,44 @@
   /* Primary */
   --ct-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --ct-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --ct-primary-light: rgba(37, 99, 235, 0.08);
-  --ct-primary-border: rgba(37, 99, 235, 0.2);
+  --ct-primary-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  --ct-primary-border: var(--ds-background-information, rgba(37, 99, 235, 0.2));
 
   /* Budget/Resource Type Colors */
   --ct-insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --ct-insourced-light: rgba(37, 99, 235, 0.08);
-  --ct-cosourced: #8b5cf6;
-  --ct-cosourced-light: rgba(139, 92, 246, 0.08);
-  --ct-outsourced: #0d9488;
-  --ct-outsourced-light: rgba(13, 148, 136, 0.08);
+  --ct-insourced-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  --ct-cosourced: var(--ds-background-discovery-bold, #8b5cf6);
+  --ct-cosourced-light: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.08));
+  --ct-outsourced: var(--ds-chart-teal-bold, #0d9488);
+  --ct-outsourced-light: var(--ds-background-success, rgba(13, 148, 136, 0.08));
 
   /* Resource Type Badge Colors */
   --ct-fixed: var(--ds-text-warning, #d97706);
-  --ct-fixed-light: rgba(217, 119, 6, 0.08);
+  --ct-fixed-light: var(--ds-background-warning, rgba(217, 119, 6, 0.08));
   --ct-variable: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --ct-variable-light: rgba(37, 99, 235, 0.08);
-  --ct-freelance: #8b5cf6;
-  --ct-freelance-light: rgba(139, 92, 246, 0.08);
-  --ct-permanent: #0d9488;
-  --ct-permanent-light: rgba(13, 148, 136, 0.08);
+  --ct-variable-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
+  --ct-freelance: var(--ds-background-discovery-bold, #8b5cf6);
+  --ct-freelance-light: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.08));
+  --ct-permanent: var(--ds-chart-teal-bold, #0d9488);
+  --ct-permanent-light: var(--ds-background-success, rgba(13, 148, 136, 0.08));
 
   /* Semantic Colors */
-  --ct-teal: #0d9488;
-  --ct-teal-hover: #0f766e;
-  --ct-teal-light: rgba(13, 148, 136, 0.08);
-  --ct-violet: #8b5cf6;
-  --ct-violet-hover: #7c3aed;
-  --ct-violet-light: rgba(139, 92, 246, 0.08);
-  --ct-success: #10b981;
-  --ct-success-light: rgba(16, 185, 129, 0.08);
+  --ct-teal: var(--ds-chart-teal-bold, #0d9488);
+  --ct-teal-hover: var(--ds-chart-teal-bolder, #0f766e);
+  --ct-teal-light: var(--ds-background-success, rgba(13, 148, 136, 0.08));
+  --ct-violet: var(--ds-background-discovery-bold, #8b5cf6);
+  --ct-violet-hover: var(--ds-background-discovery-bold, #7C3AED);
+  --ct-violet-light: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.08));
+  --ct-success: var(--ds-background-success-bold, #059669);
+  --ct-success-light: var(--ds-background-success-bold, rgba(16, 185, 129, 0.08));
   --ct-warning: var(--ds-text-warning, #d97706);
-  --ct-warning-light: rgba(217, 119, 6, 0.08);
+  --ct-warning-light: var(--ds-background-warning, rgba(217, 119, 6, 0.08));
   --ct-danger: var(--ds-text-danger, #ef4444);
-  --ct-danger-light: rgba(239, 68, 68, 0.08);
+  --ct-danger-light: var(--ds-background-danger, rgba(239, 68, 68, 0.08));
 
   /* Neutral Colors */
   --ct-bg: var(--ds-surface-sunken, #f8fafc);
-  --ct-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --ct-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --ct-surface-hover: var(--ds-surface-sunken, #f1f5f9);
   --ct-text: var(--ds-text, #0f172a);
   --ct-text-secondary: var(--ds-text-subtle, #475569);
@@ -65,10 +65,10 @@
   --ct-font-mono: var(--cp-font-mono);
 
   /* Shadows */
-  --ct-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --ct-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --ct-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  --ct-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --ct-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
+  --ct-shadow-md: 0 4px 6px -1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 2px 4px -2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
+  --ct-shadow-lg: 0 10px 15px -3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 4px 6px -4px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
+  --ct-shadow-xl: 0 20px 25px -5px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)), 0 8px 10px -6px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
 
   /* Radii */
   --ct-radius-sm: 6px;
@@ -80,13 +80,13 @@
 /* Dark mode overrides */
 .dark {
   --ct-bg: var(--ds-text, #0f172a);
-  --ct-surface: #1e293b;
-  --ct-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  --ct-surface: var(--ds-text, #172B4D);
+  --ct-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
   --ct-text: var(--ds-surface-sunken, #f8fafc);
   --ct-text-secondary: var(--ds-text-disabled, #cbd5e1);
   --ct-text-muted: var(--ds-text-subtlest, #94a3b8);
-  --ct-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
-  --ct-border-light: #1e293b;
+  --ct-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
+  --ct-border-light: var(--ds-text, #172B4D);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -164,7 +164,7 @@
 .capacity-module .ct-badge.fixed,
 .capacity-module [data-resource-type="fixed"] .ct-badge {
   background: var(--ct-fixed-light) !important;
-  color: #b45309 !important;
+  color: var(--ds-background-warning-bold, #b45309) !important;
 }
 .capacity-module .ct-badge.fixed .ct-badge-dot {
   background: var(--ct-fixed) !important;
@@ -571,18 +571,18 @@
    ═══════════════════════════════════════════════════════════════ */
 
 /* Override any remnant Golden Hour colors */
-.capacity-module [style*="#C69C6D"],
-.capacity-module [style*="#c69c6d"] {
+.capacity-module [style*="var(--ds-text-subtle, #C69C6D)"],
+.capacity-module [style*="var(--ds-text-subtle, #C69C6D)"] {
   color: var(--ct-warning) !important;
 }
 
-.capacity-module [style*="#5C7C5C"],
-.capacity-module [style*="#5c7c5c"] {
+.capacity-module [style*="var(--ds-text-subtle, #5C7C5C)"],
+.capacity-module [style*="var(--ds-text-subtle, #5C7C5C)"] {
   color: var(--ct-teal) !important;
 }
 
-.capacity-module [style*="#8B7355"],
-.capacity-module [style*="#8b7355"] {
+.capacity-module [style*="var(--ds-text-subtle, #8B7355)"],
+.capacity-module [style*="var(--ds-text-subtle, #8B7355)"] {
   color: var(--ct-warning) !important;
 }
 
@@ -669,25 +669,25 @@
 .ct-category-badge.blue {
   background: var(--ct-insourced-light);
   color: var(--ct-insourced);
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  border: 1px solid var(--ds-background-information, rgba(37, 99, 235, 0.2));
 }
 
 .ct-category-badge.violet {
   background: var(--ct-cosourced-light);
   color: var(--ct-cosourced);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.2));
 }
 
 .ct-category-badge.teal {
   background: var(--ct-outsourced-light);
   color: var(--ct-outsourced);
-  border: 1px solid rgba(13, 148, 136, 0.2);
+  border: 1px solid var(--ds-background-success, rgba(13, 148, 136, 0.2));
 }
 
 .ct-category-badge.orange {
   background: var(--ct-warning-light);
   color: var(--ct-warning);
-  border: 1px solid rgba(217, 119, 6, 0.2);
+  border: 1px solid var(--ds-background-warning, rgba(217, 119, 6, 0.2));
 }
 
 .ct-category-value {
@@ -886,13 +886,13 @@
 .analytics-dept-pill.active {
   background: var(--ct-primary);
   border-color: var(--ct-primary);
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.25));
 }
 
 .analytics-dept-pill.active:hover {
   background: var(--ct-primary-hover);
   border-color: var(--ct-primary-hover);
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
 }

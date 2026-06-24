@@ -13,7 +13,7 @@ interface ThemeModalProps {
   theme?: Theme;
 }
 
-const COLOR_PRESETS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#0d9488', '#7c3aed', 'var(--ds-text-success, #16a34a)', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-text-subtle, #475569)', '#0891b2'];
+const COLOR_PRESETS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-text-success, #16a34a)', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-text-subtle, #475569)', 'var(--ds-link, #0C66E4)'];
 const STATUS_OPTIONS = ['Active', 'Completed', 'On Hold'] as const;
 
 export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
@@ -78,7 +78,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
       <div
         onClick={onClose}
         style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+          position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
           zIndex: 9998, backdropFilter: 'blur(2px)',
         }}
       />
@@ -86,7 +86,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         background: 'var(--cp-float)', borderRadius: 12, width: 480, maxWidth: '95vw',
-        boxShadow: '0 20px 60px rgba(0,0,0,.2)', zIndex: 9999,
+        boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,.2))', zIndex: 9999,
         fontFamily: 'var(--cp-font-body)',
       }}>
         {/* Header */}

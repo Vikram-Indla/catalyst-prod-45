@@ -57,7 +57,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
         <div className="relative w-[700px] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
           onClick={e => e.stopPropagation()}>
           {/* Header */}
-          <div className="sticky top-0 bg-white z-10 border-b border-[rgba(15,23,42,0.12)] px-6 py-4">
+          <div className="sticky top-0 bg-white z-10 border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] px-6 py-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-[16px] font-black text-[var(--cp-blue)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
@@ -87,9 +87,9 @@ export function ChgDrawer({ change: c, onClose }: Props) {
                 const isCurrent = i === currentIdx;
                 return (
                   <React.Fragment key={s}>
-                    {i > 0 && <div className={`flex-1 h-0.5 ${isDone || isCurrent ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'bg-[rgba(15,23,42,0.12)]'}`} />}
+                    {i > 0 && <div className={`flex-1 h-0.5 ${isDone || isCurrent ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'bg-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))]'}`} />}
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
-                      isDone ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' : isCurrent ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] border border-[rgba(15,23,42,0.12)]'
+                      isDone ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' : isCurrent ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))]'
                     }`}>
                       {isDone ? '✓' : isCurrent ? '●' : i + 1}
                     </div>
@@ -105,7 +105,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-[rgba(15,23,42,0.12)] px-6 flex gap-0">
+          <div className="border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] px-6 flex gap-0">
             {TABS.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
                 className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
@@ -175,7 +175,7 @@ function OverviewTab({ change: c }: { change: any }) {
 
       {/* Work Items count */}
       {(c.work_item_count > 0 || (c.rh_change_work_items?.length > 0)) && (
-        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE' }}>
+        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information, #E9F2FF)' }}>
           <span className="text-[12px] font-bold" style={{ color: 'var(--cp-blue)' }}>
             {c.work_item_count || c.rh_change_work_items?.length || 0} work items linked
           </span>
@@ -184,7 +184,7 @@ function OverviewTab({ change: c }: { change: any }) {
 
       {/* Pending sign-offs */}
       {c.pending_signoffs > 0 && (
-        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid #FCA5A5' }}>
+        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid var(--ds-background-danger, #FFECEB)' }}>
           <span className="text-[12px] font-bold" style={{ color: 'var(--sem-danger)' }}>
             {c.pending_signoffs} sign-off{c.pending_signoffs > 1 ? 's' : ''} pending
           </span>
@@ -214,13 +214,13 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
         <WorkItemTag key={wi.id || wi.work_item_key} workItemKey={wi.work_item_key} title={wi.work_item_title} type={wi.work_item_type} status={wi.work_item_status} />
       ))}
       {showLink ? (
-        <div className="border border-[rgba(15,23,42,0.12)] rounded-lg p-3 space-y-2">
+        <div className="border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] rounded-lg p-3 space-y-2">
           <input type="text" value={key} onChange={e => setKey(e.target.value)} placeholder="Key (e.g. BAU-4612)"
-            className="w-full h-8 px-2 rounded border border-[rgba(15,23,42,0.12)] text-[12px] font-mono" />
+            className="w-full h-8 px-2 rounded border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] text-[12px] font-mono" />
           <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Title"
-            className="w-full h-8 px-2 rounded border border-[rgba(15,23,42,0.12)] text-[12px]" />
+            className="w-full h-8 px-2 rounded border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] text-[12px]" />
           <div className="flex gap-2">
-            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[rgba(15,23,42,0.12)] text-[11px] text-[var(--ds-text-subtle,#475569)]">Cancel</button>
+            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] text-[11px] text-[var(--ds-text-subtle,#475569)]">Cancel</button>
             <button onClick={handleLink} disabled={!key || !title || linkWorkItem.isPending}
               className="h-7 px-3 rounded bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[11px] font-bold disabled:opacity-50">
               {linkWorkItem.isPending ? 'Linking...' : 'Link'}
@@ -228,7 +228,7 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[#DBEAFE] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">
+        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[var(--ds-background-information, #E9F2FF)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">
           + Link Work Item
         </button>
       )}
@@ -258,10 +258,10 @@ function SignoffsTab({ changeId }: { changeId: string }) {
         const waitHours = signoff?.wait_started_at ? differenceInHours(new Date(), new Date(signoff.wait_started_at)) : 0;
 
         return (
-          <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[rgba(15,23,42,0.06)] last:border-0">
+          <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.06))] last:border-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
               status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' :
-              status === 'pending' ? 'bg-[#0C66E4] text-white' :
+              status === 'pending' ? 'bg-[var(--ds-link, #0C66E4)] text-white' :
               status === 'rejected' ? 'bg-[var(--ds-background-danger,#FEF2F2)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]' :
               'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'
             }`}>
@@ -303,7 +303,7 @@ function ActivityTab({ changeId }: { changeId: string }) {
   return (
     <div className="space-y-2">
       {history.map((h: any) => (
-        <div key={h.id} className="flex items-start gap-3 py-2 border-b border-[rgba(15,23,42,0.06)] last:border-0">
+        <div key={h.id} className="flex items-start gap-3 py-2 border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.06))] last:border-0">
           <div className="w-2 h-2 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] mt-1.5 shrink-0" />
           <div>
             <p className="text-[12px] text-[var(--ds-text-subtle,#475569)]">

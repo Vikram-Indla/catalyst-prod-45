@@ -306,7 +306,7 @@ function ReleaseRow({
       onMouseEnter={(e) => {
         e.currentTarget.style.background = token(
           'color.background.neutral.subtle.hovered',
-          '#F1F2F4',
+          'var(--ds-background-neutral, #F1F2F4)',
         );
       }}
       onMouseLeave={(e) => {

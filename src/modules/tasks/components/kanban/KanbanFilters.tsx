@@ -18,6 +18,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
 
@@ -47,26 +48,6 @@ const SWIMLANE_OPTIONS: { value: SwimlaneGrouping; label: string }[] = [
   { value: 'assignee', label: 'By Assignee' },
   { value: 'priority', label: 'By Priority' },
 ];
-
-// Fetch profiles for assignee filter with stable caching
-function useProfiles() {
-  return useQuery({
-    queryKey: ['kanban-profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .order('full_name');
-      if (error) throw error;
-      return data;
-    },
-    // GUARDRAIL: Stable caching to prevent flickering
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-}
 
 // Fetch accessible workstreams based on user role
 function useWorkstreams() {
@@ -122,7 +103,8 @@ export function KanbanFilters({
   viewMode,
   onViewModeChange,
 }: KanbanFiltersProps) {
-  const { data: profiles = [] } = useProfiles();
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = approvedProfiles.map(p => ({ id: p.id, full_name: p.name }));
   const { data: workstreams = [] } = useWorkstreams();
 
   const hasActiveFilters = 

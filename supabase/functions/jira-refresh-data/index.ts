@@ -5,6 +5,13 @@ const JIRA_BASE_URL = Deno.env.get('JIRA_BASE_URL') || 'https://digital-transfor
 const JIRA_EMAIL = Deno.env.get('JIRA_EMAIL');
 const JIRA_API_TOKEN = Deno.env.get('JIRA_API_TOKEN');
 
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', ...cors } });
+
 interface RefreshDataRequest {
   projectKeys: string[];
   confirmationPhrase: string;
@@ -88,8 +95,9 @@ async function fetchAndTransformJiraIssues(projectKeys: string[]): Promise<any[]
 }
 
 serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'POST only' }), { status: 405 });
+    return json({ error: 'POST only' }, 405);
   }
 
   try {
@@ -109,15 +117,12 @@ serve(async (req: Request) => {
         environment === 'production' ? 'REFRESH PRODUCTION JIRA DATA' : 'REFRESH STAGING JIRA DATA';
 
       if (confirmationPhrase !== requiredPhrase) {
-        return new Response(
-          JSON.stringify({
-            environment,
-            recordsDeleted: 0,
-            recordsReloaded: 0,
-            errors: [{ reason: 'Invalid confirmation phrase' }],
-          }),
-          { status: 400 }
-        );
+        return json({
+          environment,
+          recordsDeleted: 0,
+          recordsReloaded: 0,
+          errors: [{ reason: 'Invalid confirmation phrase' }],
+        }, 400);
       }
     }
 
@@ -129,14 +134,12 @@ serve(async (req: Request) => {
         .eq('source', 'jira')
         .in('project_key', projectKeys);
 
-      return new Response(
-        JSON.stringify({
-          environment,
-          recordsDeleted: existingCount || 0,
-          recordsReloaded: 0,
-          errors: [],
-        })
-      );
+      return json({
+        environment,
+        recordsDeleted: existingCount || 0,
+        recordsReloaded: 0,
+        errors: [],
+      });
     }
 
     // Confirmed: delete + reload
@@ -148,15 +151,12 @@ serve(async (req: Request) => {
 
     if (deleteError) {
       console.error('Delete error:', deleteError);
-      return new Response(
-        JSON.stringify({
-          environment,
-          recordsDeleted: 0,
-          recordsReloaded: 0,
-          errors: [{ reason: deleteError.message }],
-        }),
-        { status: 500 }
-      );
+      return json({
+        environment,
+        recordsDeleted: 0,
+        recordsReloaded: 0,
+        errors: [{ reason: deleteError.message }],
+      }, 500);
     }
 
     // Fetch fresh from Jira
@@ -170,15 +170,12 @@ serve(async (req: Request) => {
 
     if (insertError) {
       console.error('Insert error:', insertError);
-      return new Response(
-        JSON.stringify({
-          environment,
-          recordsDeleted: projectKeys.length,
-          recordsReloaded: 0,
-          errors: [{ reason: insertError.message }],
-        }),
-        { status: 500 }
-      );
+      return json({
+        environment,
+        recordsDeleted: projectKeys.length,
+        recordsReloaded: 0,
+        errors: [{ reason: insertError.message }],
+      }, 500);
     }
 
     // Log to audit trail
@@ -190,24 +187,19 @@ serve(async (req: Request) => {
       records_reloaded: reloaded?.length || 0,
     });
 
-    return new Response(
-      JSON.stringify({
-        environment,
-        recordsDeleted: projectKeys.length,
-        recordsReloaded: reloaded?.length || 0,
-        errors: [],
-      })
-    );
+    return json({
+      environment,
+      recordsDeleted: projectKeys.length,
+      recordsReloaded: reloaded?.length || 0,
+      errors: [],
+    });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        environment: 'unknown',
-        recordsDeleted: 0,
-        recordsReloaded: 0,
-        errors: [{ reason: error instanceof Error ? error.message : 'Unknown error' }],
-      }),
-      { status: 500 }
-    );
+    return json({
+      environment: 'unknown',
+      recordsDeleted: 0,
+      recordsReloaded: 0,
+      errors: [{ reason: error instanceof Error ? error.message : 'Unknown error' }],
+    }, 500);
   }
 });

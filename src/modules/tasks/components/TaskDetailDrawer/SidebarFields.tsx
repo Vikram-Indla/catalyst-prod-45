@@ -14,6 +14,7 @@ import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { useAuth } from '@/lib/auth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { catalystToast } from '@/lib/catalystToast';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 interface SidebarFieldsProps {
   task: any;
@@ -23,27 +24,27 @@ interface SidebarFieldsProps {
 // Label colors
 const LABEL_COLORS: Record<string, { bg: string; text: string; hex: string }> = {
   red: { bg: 'bg-red-500', text: 'text-white', hex: 'var(--ds-text-danger, #ef4444)' },
-  orange: { bg: 'bg-orange-500', text: 'text-white', hex: '#f97316' },
-  yellow: { bg: 'bg-yellow-500', text: 'text-black', hex: '#eab308' },
+  orange: { bg: 'bg-orange-500', text: 'text-white', hex: 'var(--ds-background-warning-bold, #E2B203)' },
+  yellow: { bg: 'bg-yellow-500', text: 'text-black', hex: 'var(--ds-background-warning-bold, #E2B203)' },
   green: { bg: 'bg-green-500', text: 'text-white', hex: 'var(--ds-text-success, #22c55e)' },
   blue: { bg: 'bg-blue-500', text: 'text-white', hex: 'var(--ds-text-brand, #3b82f6)' },
   purple: { bg: 'bg-purple-500', text: 'text-white', hex: '#a855f7' },
-  pink: { bg: 'bg-pink-500', text: 'text-white', hex: '#ec4899' },
-  gray: { bg: 'bg-gray-500', text: 'text-white', hex: '#6b7280' },
+  pink: { bg: 'bg-pink-500', text: 'text-white', hex: 'var(--ds-background-accent-magenta-bolder, #BE185D)' },
+  gray: { bg: 'bg-gray-500', text: 'text-white', hex: 'var(--ds-text-subtlest, #626F86)' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   backlog: { label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
   planned: { label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
-  'in-progress': { label: 'In Progress', color: '#0284c7' },
-  in_progress: { label: 'In Progress', color: '#0284c7' },
-  review: { label: 'Review', color: '#8b5cf6' },
+  'in-progress': { label: 'In Progress', color: 'var(--ds-link, #0C66E4)' },
+  in_progress: { label: 'In Progress', color: 'var(--ds-link, #0C66E4)' },
+  review: { label: 'Review', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
   done: { label: 'Done', color: 'var(--ds-text-success, #16a34a)' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string; icon?: boolean }> = {
   critical: { label: 'Critical', color: 'var(--ds-text-danger, #dc2626)', icon: true },
-  high: { label: 'High', color: '#ca8a04' },
+  high: { label: 'High', color: 'var(--ds-text-warning, #974F0C)' },
   medium: { label: 'Medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
   low: { label: 'Low', color: 'var(--ds-text-subtlest, #94a3b8)' },
 };
@@ -56,21 +57,6 @@ function useStatuses() {
         .from('task_statuses')
         .select('*')
         .order('position');
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-function useProfiles() {
-  return useQuery({
-    queryKey: ['drawer-profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, email')
-        .order('full_name');
       if (error) throw error;
       return data || [];
     },
@@ -146,7 +132,11 @@ function getInitials(name: string | null) {
 
 export function SidebarFields({ task, onFieldChange }: SidebarFieldsProps) {
   const { data: statuses = [] } = useStatuses();
-  const { data: profiles = [] } = useProfiles();
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = useMemo(
+    () => approvedProfiles.map(p => ({ id: p.id, full_name: p.name, email: p.email, avatar_url: p.avatarUrl ?? null })),
+    [approvedProfiles]
+  );
   const { data: workstreams = [] } = useWorkstreams();
 
   const currentStatus = statuses.find((s: any) => s.id === task.status_id) || task.status;

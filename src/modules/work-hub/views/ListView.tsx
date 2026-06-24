@@ -414,7 +414,7 @@ export function ListView() {
                 placeholder="Search list"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 dark:bg-[#111111] border-transparent rounded focus:border-blue-400 focus:bg-white dark:focus:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]"
+                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] border-transparent rounded focus:border-blue-400 focus:bg-white dark:focus:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]"
               />
             </div>
             {/* Avatar group */}
@@ -448,7 +448,7 @@ export function ListView() {
                 <thead className="sticky top-0 z-10">
                   <tr>
                     {/* Checkbox column - center aligned */}
-                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-center">
+                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] border-b border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-center">
                       <div className="flex justify-center">
                         <Checkbox
                           checked={selectedItems.size === items.length && items.length > 0}
@@ -550,7 +550,7 @@ export function ListView() {
                         className="w-28"
                       />
                     )}
-                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                       <FieldPicker visibleFields={visibleFields} onToggleField={handleToggleField} />
                     </th>
                   </tr>
@@ -562,7 +562,7 @@ export function ListView() {
                         {Object.entries(groupedItems).map(([groupKey, groupItems]) => (
                           <React.Fragment key={groupKey}>
                             {groupBy !== 'none' && (
-                              <tr className="bg-slate-50 dark:bg-[#111111]">
+                              <tr className="bg-slate-50 dark:bg-[var(--ds-text, #172B4D)]">
                                 <td colSpan={12} className="px-4 py-2 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                                   <div className="flex items-center gap-2">
                                     <ChevronDown className="h-4 w-4 text-slate-500" />
@@ -589,7 +589,7 @@ export function ListView() {
                                       {...provided.draggableProps}
                                       className={cn(
                                         "transition-colors cursor-pointer",
-                                        isHovered && !isSelected && !isDetailOpen && "bg-slate-50 dark:bg-[#111111]",
+                                        isHovered && !isSelected && !isDetailOpen && "bg-slate-50 dark:bg-[var(--ds-text, #172B4D)]",
                                         isSelected && "bg-blue-50",
                                         isDetailOpen && "bg-blue-50",
                                         snapshot.isDragging && "bg-blue-100 shadow-lg"

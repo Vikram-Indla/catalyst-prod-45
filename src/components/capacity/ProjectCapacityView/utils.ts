@@ -180,19 +180,19 @@ export function getStaffingStatusConfig(status: 'full' | 'partial' | 'under' | '
   const configs = {
     full: {
       label: 'Fully Staffed',
-      color: '#0d9488',
-      bgClass: 'bg-[#f0fdfa] dark:bg-teal-950/30',
-      textClass: 'text-[#0d9488] dark:text-teal-400',
-      borderClass: 'border-[#0d9488] dark:border-teal-600',
-      dotClass: 'bg-[#0d9488]'
+      color: 'var(--ds-chart-teal-bold, #0d9488)',
+      bgClass: 'bg-[var(--ds-background-success, #DFFCF0)] dark:bg-teal-950/30',
+      textClass: 'text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-teal-400',
+      borderClass: 'border-[var(--ds-chart-teal-bold, #0d9488)] dark:border-teal-600',
+      dotClass: 'bg-[var(--ds-chart-teal-bold, #0d9488)]'
     },
     partial: {
       label: 'Partial',
-      color: '#6b7280',
+      color: 'var(--ds-text-subtlest, #626F86)',
       bgClass: 'bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-slate-950/30',
-      textClass: 'text-[#6b7280] dark:text-slate-400',
-      borderClass: 'border-[#6b7280] dark:border-slate-600',
-      dotClass: 'bg-[#6b7280]'
+      textClass: 'text-[var(--ds-text-subtlest, #626F86)] dark:text-slate-400',
+      borderClass: 'border-[var(--ds-text-subtlest, #626F86)] dark:border-slate-600',
+      dotClass: 'bg-[var(--ds-text-subtlest, #626F86)]'
     },
     under: {
       label: 'Understaffed',
@@ -204,11 +204,11 @@ export function getStaffingStatusConfig(status: 'full' | 'partial' | 'under' | '
     },
     over: {
       label: 'Over-Allocated',
-      color: '#0d9488',
-      bgClass: 'bg-[#f0fdfa] dark:bg-teal-950/30',
-      textClass: 'text-[#0d9488] dark:text-teal-400',
-      borderClass: 'border-[#0d9488] dark:border-teal-600',
-      dotClass: 'bg-[#0d9488]'
+      color: 'var(--ds-chart-teal-bold, #0d9488)',
+      bgClass: 'bg-[var(--ds-background-success, #DFFCF0)] dark:bg-teal-950/30',
+      textClass: 'text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-teal-400',
+      borderClass: 'border-[var(--ds-chart-teal-bold, #0d9488)] dark:border-teal-600',
+      dotClass: 'bg-[var(--ds-chart-teal-bold, #0d9488)]'
     }
   };
   
@@ -229,11 +229,11 @@ export function formatFTE(value: number): string {
  */
 const PROJECT_COLORS = [
   'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
-  '#0d9488', // Teal
-  '#10b981', // Green
-  '#6366f1', // Indigo
-  '#8b5cf6', // Violet
-  '#0891b2', // Cyan
+  'var(--ds-chart-teal-bold, #0d9488)', // Teal
+  'var(--ds-background-success-bold, #059669)', // Green
+  'var(--ds-background-discovery-bold, #6366f1)', // Indigo
+  'var(--ds-background-discovery-bold, #8b5cf6)', // Violet
+  'var(--ds-link, #0C66E4)', // Cyan
   'var(--quality-high, #059669)', // Emerald
   'var(--ds-text-brand, #3b82f6)', // Light Blue
 ];

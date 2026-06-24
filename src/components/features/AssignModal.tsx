@@ -180,7 +180,7 @@ export function AssignModal({
                 Current Owner
               </p>
               {selectedOwnerData ? (
-                <div className="flex items-center justify-between p-3 rounded-lg border bg-[rgba(37,99,235,0.12)] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">
+                <div className="flex items-center justify-between p-3 rounded-lg border bg-[var(--ds-background-information, rgba(37,99,235,0.12))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">
                   <div className="flex items-center gap-3">
                     <Avatar src={resolveAvatarUrl(selectedOwnerData.full_name) ?? selectedOwnerData.avatar_url ?? undefined} name={selectedOwnerData.full_name} size="small" />
                     <div>
@@ -194,7 +194,7 @@ export function AssignModal({
                     variant="ghost" 
                     size="sm" 
                     onClick={handleRemoveOwner}
-                    className="text-[var(--ds-text-danger,#ef4444)] hover:text-[var(--ds-text-danger,#dc2626)] hover:bg-[rgba(239,68,68,0.1)]"
+                    className="text-[var(--ds-text-danger,#ef4444)] hover:text-[var(--ds-text-danger,#dc2626)] hover:bg-[var(--ds-background-danger, rgba(239,68,68,0.1))]"
                   >
                     Remove
                   </Button>
@@ -242,7 +242,7 @@ export function AssignModal({
                           className={cn(
                             "w-full flex items-center justify-between p-2.5 rounded-lg transition-colors text-left",
                             isSelected 
-                              ? "bg-[rgba(37,99,235,0.12)] border-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" 
+                              ? "bg-[var(--ds-background-information, rgba(37,99,235,0.12))] border-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" 
                               : "hover:bg-muted/50 border-2 border-transparent"
                           )}
                         >

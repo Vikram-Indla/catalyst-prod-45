@@ -34,7 +34,7 @@ export function ResourceDrawerContent({ resource, projects }: ResourceDrawerCont
           <p className={cn(
             'text-2xl font-bold',
             resource.allocation > 100 ? 'text-[var(--ds-text-danger,#dc2626)]' :
-            resource.allocation > 80 ? 'text-[var(--ds-text-warning,#d97706)]' : 'text-[#0d9488]'
+            resource.allocation > 80 ? 'text-[var(--ds-text-warning,#d97706)]' : 'text-[var(--ds-icon-information, #1D7AFC)]'
           )}>
             {resource.allocation}%
           </p>
@@ -45,7 +45,7 @@ export function ResourceDrawerContent({ resource, projects }: ResourceDrawerCont
           <p className="text-xs text-muted-foreground">Projects</p>
         </div>
         <div className="text-center">
-          <p className="text-2xl font-bold text-[#0d9488]">{Math.max(0, 100 - resource.allocation)}%</p>
+          <p className="text-2xl font-bold text-[var(--ds-chart-teal-bold, #0d9488)]">{Math.max(0, 100 - resource.allocation)}%</p>
           <p className="text-xs text-muted-foreground">Available</p>
         </div>
       </div>

@@ -16,10 +16,10 @@ interface RoadmapSidePanelProps {
 
 const QUARTERS: RoadmapQuarter[] = ['Q1', 'Q2', 'Q3', 'Q4'];
 const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
-  Q1: { bg: '#F3E8FF', color: '#6D28D9' },
+  Q1: { bg: 'var(--ds-background-discovery, #F3F0FF)', color: 'var(--ds-background-discovery-bold, #6d28d9)' },
   Q2: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
-  Q3: { bg: '#ECFDF5', color: '#065F46' },
-  Q4: { bg: '#FFF7ED', color: '#92400E' },
+  Q3: { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #216E4E)' },
+  Q4: { bg: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, #974F0C)' },
 };
 const isConverted = (status: string) => status.toLowerCase() === 'converted';
 
@@ -97,14 +97,14 @@ export function RoadmapSidePanel({
         onClick={handleClose}
         style={{
           position: 'absolute', inset: 0,
-          background: visible ? 'rgba(15,23,42,0.2)' : 'transparent',
+          background: visible ? 'var(--ds-shadow-overlay, rgba(15,23,42,0.2))' : 'transparent',
           transition: 'background 200ms',
         }}
       />
 
       <div ref={panelRef} style={{
         position: 'absolute', top: 0, right: 0, bottom: 0, width: 480,
-        background: 'var(--bg-app)', boxShadow: '-4px 0 24px rgba(0,0,0,.12)',
+        background: 'var(--bg-app)', boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(0,0,0,.12))',
         transform: visible ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 200ms ease',
         display: 'flex', flexDirection: 'column', fontFamily: 'var(--cp-font-body)',
@@ -213,8 +213,8 @@ export function RoadmapSidePanel({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {MILESTONE_CONFIGS.map(m => {
                 const DOT_COLORS: Record<string, string> = {
-                  req: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', des: '#5B21B6', dev: '#15803D',
-                  uat: '#92400E', beta: '#0F766E', prod: '#065F46',
+                  req: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', des: 'var(--ds-background-discovery-bold, #5b21b6)', dev: 'var(--ds-background-success-bold, #1F845A)',
+                  uat: 'var(--ds-text-warning, #974F0C)', beta: 'var(--ds-chart-teal-bolder, #0f766e)', prod: 'var(--ds-text-success, #216E4E)',
                 };
                 return (
                 <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

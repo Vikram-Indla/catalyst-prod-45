@@ -18,7 +18,7 @@ const Cell = ({ value, highlight }: { value: any; highlight?: boolean }) => {
         borderBottom: "1px solid var(--divider, #222)",
         color: shouldHighlight ? "var(--ds-text-danger, #EF4444)" : "var(--fg-1, #e5e5e5)",
         fontWeight: shouldHighlight ? 700 : 400,
-        background: shouldHighlight ? "rgba(239,68,68,0.08)" : "transparent",
+        background: shouldHighlight ? "var(--ds-background-danger, rgba(239,68,68,0.08))" : "transparent",
         fontFamily: "monospace",
         fontSize: 13,
       }}

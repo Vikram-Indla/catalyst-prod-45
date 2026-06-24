@@ -68,8 +68,8 @@ export function CapacityAvatar({
         style={{
           backgroundColor: avatarUrl ? 'transparent' : 'var(--cp-blue-wash)',
           color: 'var(--cp-blue)',
-          border: '2px solid #93c5fd',
-          boxShadow: '0 1px 3px rgba(59, 130, 246, 0.1)',
+          border: '2px solid var(--ds-background-information-bold, #0C66E4)',
+          boxShadow: '0 1px 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))',
         }}
       >
         {avatarUrl ? (
@@ -87,7 +87,7 @@ export function CapacityAvatar({
             styles.flag
           )}
           style={{
-            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
             border: '1.5px solid white',
           }}
         >

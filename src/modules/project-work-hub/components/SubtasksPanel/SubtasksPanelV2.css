@@ -15,7 +15,7 @@
 }
 .sp-panel--v2 .sp-row--v2:focus-visible,
 .sp-panel--v2 .sp-row--focused {
-  box-shadow: inset 2px 0 0 var(--cp-primary-60, #0052CC);
+  box-shadow: inset 2px 0 0 var(--cp-primary-60, var(--ds-link, #0052CC));
   background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
 }
 
@@ -55,13 +55,13 @@
 }
 
 .sp-panel--v2 .sp-desc-trigger:hover {
-  background: #EBECF0;
+  background: var(--ds-border, #DFE1E6);
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 
 .sp-panel--v2 .sp-desc-trigger:focus-visible {
   outline: none;
-  border-color: var(--cp-primary-60, #0052CC);
+  border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
   opacity: 1;
 }
@@ -79,8 +79,8 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--cp-primary-60, #0052CC);
-  box-shadow: 0 0 0 1.5px var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-primary-60, var(--ds-link, #0052CC));
+  box-shadow: 0 0 0 1.5px var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
 
 /* ─── Description popover shell ─── */
@@ -117,6 +117,6 @@
 }
 
 /* DARK MODE OVERRIDES — added 2026-04-30 sweep */
-.dark .stp-v2-row { background: var(--cp-bg-elevated, #22272B); color: var(--cp-text-primary, var(--cp-bg-neutral, #EDEDED)); }
-.dark .stp-v2-row:hover { background: var(--cp-interact-hover, var(--cp-ink-1, #2E2E2E)); }
-.dark .stp-v2-cell { color: var(--cp-text-secondary, #C9CCD0); border-color: var(--cp-border-default, var(--cp-ink-1, #2E2E2E)); }
+.dark .stp-v2-row { background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)); color: var(--cp-text-primary, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4))); }
+.dark .stp-v2-row:hover { background: var(--cp-interact-hover, var(--cp-ink-1, var(--ds-background-neutral, #F1F2F4))); }
+.dark .stp-v2-cell { color: var(--cp-text-secondary, var(--ds-border, #DFE1E6)); border-color: var(--cp-border-default, var(--cp-ink-1, var(--ds-background-neutral, #F1F2F4))); }

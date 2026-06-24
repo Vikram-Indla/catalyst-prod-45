@@ -184,7 +184,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                 background: 'var(--ds-surface, #ffffff)',
                 borderRadius: 8,
                 border: '1px solid var(--ds-border, #EBECF0)',
-                boxShadow: '0 8px 24px rgba(9,30,66,0.15)',
+                boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
                 overflow: 'hidden',
               }}
             >
@@ -261,7 +261,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     </div>
                     {/* Rainbow-bordered suggestion button — CLAUDE.md AI CTA carve-out */}
                     <div style={{
-                      background: `conic-gradient(from 0deg, #FF3CAC 0deg, #784BA0 60deg, #2B86C5 120deg, #00C9FF 180deg, #92FE9D 240deg, #FFD700 300deg, #FF3CAC 360deg)`,
+                      background: `conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder, #BE185D) 0deg, var(--ds-background-discovery-bold, #6E5DC6) 60deg, var(--ds-link, #0C66E4) 120deg, var(--ds-background-information-bold, #0C66E4) 180deg, var(--ds-background-success, #DFFCF0) 240deg, var(--ds-background-warning-bold, #E2B203) 300deg, var(--ds-background-accent-magenta-bolder, #BE185D) 360deg)`,
                       animation: 'none',
                       padding: 1.8,
                       borderRadius: 20,
@@ -280,7 +280,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                           border: 'none',
                           borderRadius: 17,
                           cursor: 'pointer',
-                          background: '#FFFFFF',
+                          background: 'var(--ds-surface, #FFFFFF)',
                           fontSize: 13,
                           fontWeight: 500,
                           color: 'var(--ds-text, #172B4D)',

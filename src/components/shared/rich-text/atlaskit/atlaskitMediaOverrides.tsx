@@ -120,7 +120,7 @@ function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }) {
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0,
-        background: 'rgba(0,0,0,0.85)',
+        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.85))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: 1000, cursor: 'zoom-out',
       }}
@@ -218,7 +218,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
           background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <Loader2 size={24} style={{ color: '#6B6E76', animation: 'spin 0.86s cubic-bezier(0.4,0.15,0.6,0.85) infinite' }} />
+          <Loader2 size={24} style={{ color: 'var(--ds-text-subtlest, #6B6E76)', animation: 'spin 0.86s cubic-bezier(0.4,0.15,0.6,0.85) infinite' }} />
         </div>
       )}
       {/* Natural proportional rendering — width:100% of container, height:auto.
@@ -246,14 +246,14 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
           style={{
             position: 'absolute', top: 8, right: 8,
             width: 32, height: 32, borderRadius: 4,
-            background: 'rgba(9, 30, 66, 0.54)',
+            background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
             border: 'none', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 0.15s',
             zIndex: 2,
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.71)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.54)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.71))'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))'; }}
         >
           <Download size={16} />
         </button>

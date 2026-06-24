@@ -892,7 +892,7 @@ function CatalystShellContent() {
                   left: 0,
                   bottom: 0,
                   zIndex: 40,
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                  boxShadow: "0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.15))",
                 }
               : {}),
             // Loop 2 (2026-04-30): hide the inline rail at <1024px. The same
@@ -1024,7 +1024,7 @@ function LastLoginFlag() {
           icon={
             <InfoIcon
               label=""
-              color={token("color.icon.information", "#0055CC")}
+              color={token("color.icon.information", "var(--ds-link, #0C66E4)")}
             />
           }
           title="Welcome back"
@@ -1049,14 +1049,14 @@ function CatalystFlagStack() {
   const iconFor = (appearance: CatalystFlagAppearance) => {
     switch (appearance) {
       case "success":
-        return <SuccessIcon label="" color={token("color.icon.success", "#1F845A")} />;
+        return <SuccessIcon label="" color={token("color.icon.success", "var(--ds-background-success-bold, #1F845A)")} />;
       case "warning":
-        return <WarningIcon label="" color={token("color.icon.warning", "#B38600")} />;
+        return <WarningIcon label="" color={token("color.icon.warning", "var(--ds-text-warning, #974F0C)")} />;
       case "error":
-        return <ErrorIcon label="" color={token("color.icon.danger", "#AE2A19")} />;
+        return <ErrorIcon label="" color={token("color.icon.danger", "var(--ds-text-danger, #AE2A19)")} />;
       case "info":
       default:
-        return <InfoIcon label="" color={token("color.icon.information", "#0055CC")} />;
+        return <InfoIcon label="" color={token("color.icon.information", "var(--ds-link, #0C66E4)")} />;
     }
   };
 

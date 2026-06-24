@@ -31,6 +31,9 @@ interface BoardProps {
   onEditSummary?: (issue: BoardIssue, summary: string) => void;
   /** Returns a health request key for a card (product mode). Null/undefined = no badge. */
   cardHealthKey?: (issue: BoardIssue) => string | null | undefined;
+  /** When true, done-category columns are hidden and replaced with a collapsed "Archived" pill. */
+  hideDone?: boolean;
+  onToggleHideDone?: () => void;
 }
 
 const AddColumnSlot: React.FC<{ onAdd: (name: string) => void }> = ({ onAdd }) => {
@@ -52,21 +55,21 @@ const AddColumnSlot: React.FC<{ onAdd: (name: string) => void }> = ({ onAdd }) =
               // so clicking away always dismisses an empty input — no mode trap.
               onBlur={() => { name.trim() ? submit() : cancel(); }}
               placeholder="Column name"
-              style={{ flex: 1, minWidth: 0, height: 36, padding: '0 8px', borderRadius: 6, border: `2px solid ${token('color.border.focused', '#4C9AFF')}`, outline: 'none', fontSize: 13, fontFamily: 'inherit' }}
+              style={{ flex: 1, minWidth: 0, height: 36, padding: '0 8px', borderRadius: 6, border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold, #0C66E4)')}`, outline: 'none', fontSize: 13, fontFamily: 'inherit' }}
             />
             {/* onMouseDown fires before the input's blur, so cancel wins even with text typed */}
             <button
               type="button" aria-label="Cancel" title="Cancel"
               onMouseDown={(e) => { e.preventDefault(); cancel(); }}
-              style={{ width: 28, height: 28, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer', color: token('color.icon.subtle', '#626F86'), fontSize: 16, lineHeight: 1 }}
+              style={{ width: 28, height: 28, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer', color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 16, lineHeight: 1 }}
             >✕</button>
           </div>
-          <div style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86'), padding: '4px 2px 0' }}>Enter to add · Esc to cancel</div>
+          <div style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), padding: '4px 2px 0' }}>Enter to add · Esc to cancel</div>
         </div>
       ) : (
         <button
           aria-label="Create column" onClick={() => setAdding(true)}
-          style={{ width: 40, height: 40, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token('color.background.neutral', 'rgba(5,21,36,0.06)'), color: token('color.icon.subtle', '#626F86'), fontSize: 20, lineHeight: 1 }}
+          style={{ width: 40, height: 40, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token('color.background.neutral', 'rgba(5,21,36,0.06)'), color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 20, lineHeight: 1 }}
           onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(5,21,36,0.10)'); }}
           onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'rgba(5,21,36,0.06)'); }}
         >+</button>
@@ -119,6 +122,7 @@ function buildGroups(issues: BoardIssue[], groupBy: GroupByMode): Group[] {
 
 export const Board: React.FC<BoardProps> = ({
   boardConfig, issues, avatars, visibleFields, selectedId, groupBy, onSelect, onAvatarClick, renderMenu, columnFooter, onMove, onAddColumn, onEditSummary, cardHealthKey,
+  hideDone = true, onToggleHideDone,
 }) => {
   const [overKey, setOverKey] = useState<string | null>(null);
   const [overrides, setOverrides] = useState<Map<string, string>>(new Map());
@@ -189,6 +193,15 @@ export const Board: React.FC<BoardProps> = ({
     />
   );
 
+  const visibleColumns = useMemo(
+    () => hideDone ? boardConfig.columns.filter((c) => c.category !== 'done') : boardConfig.columns,
+    [boardConfig.columns, hideDone],
+  );
+  const doneColumns = useMemo(
+    () => boardConfig.columns.filter((c) => c.category === 'done'),
+    [boardConfig.columns],
+  );
+
   const bucketize = (groupIssues: BoardIssue[]) => {
     const bucket = new Map<string, BoardIssue[]>();
     boardConfig.columns.forEach((c) => bucket.set(c.id, []));
@@ -200,7 +213,7 @@ export const Board: React.FC<BoardProps> = ({
     <div ref={scrollWrapRef} className="kb-board-scroll" style={{
       flex: 1, minHeight: 0, minWidth: 0, overflowX: 'auto', overflowY: 'auto',
       height: boardHeight, maxHeight: boardHeight,
-      background: token('elevation.surface', '#FFFFFF'), display: 'flex', flexDirection: 'column',
+      background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), display: 'flex', flexDirection: 'column',
     }}>
       {/* Defer columns until the board height is measured, so each ColumnBody's
           card virtualizer mounts into an already-bounded scroll container (its
@@ -221,7 +234,7 @@ export const Board: React.FC<BoardProps> = ({
             )}
             {!isCollapsed && (
               <div style={{ display: 'flex', padding: `8px ${SIZES.PAGE_PADDING_X - 4}px 12px`, alignItems: 'stretch', ...(grouped ? {} : { flex: 1, minHeight: 0 }) }}>
-                {boardConfig.columns.map((column: KanbanColumn) => {
+                {visibleColumns.map((column: KanbanColumn) => {
                   const colIssues = bucket.get(column.id) ?? [];
                   // Every column is a grey box with header inside (flat + grouped),
                   // matching Jira (probed rgba(5,21,36,0.06) r6, no separate strip).
@@ -251,6 +264,83 @@ export const Board: React.FC<BoardProps> = ({
                     </div>
                   );
                 })}
+                {/* Archived pill — collapsed done column summary */}
+                {doneColumns.length > 0 && (() => {
+                  const doneCount = doneColumns.reduce((sum, c) => sum + (bucket.get(c.id)?.length ?? 0), 0);
+                  return (
+                    <div
+                      style={{
+                        width: hideDone ? 48 : SIZES.COLUMN_WIDTH,
+                        minWidth: hideDone ? 48 : SIZES.COLUMN_WIDTH,
+                        margin: '0 4px', flexShrink: 0,
+                        display: 'flex', flexDirection: 'column',
+                        background: token('color.background.neutral', 'rgba(5,21,36,0.06)'),
+                        borderRadius: 6, overflow: 'hidden',
+                        transition: 'width 200ms ease, min-width 200ms ease',
+                        ...(grouped ? {} : { height: '100%', minHeight: 0 }),
+                      }}
+                    >
+                      {hideDone ? (
+                        <button
+                          onClick={onToggleHideDone}
+                          title={`Show archived (${doneCount} items)`}
+                          aria-label={`Show archived column — ${doneCount} done items`}
+                          style={{
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                            gap: 6, height: '100%', width: '100%', border: 'none', background: 'transparent',
+                            cursor: 'pointer', padding: '12px 4px',
+                            color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                          }}
+                        >
+                          <span style={{ fontSize: 11, fontWeight: 600, writingMode: 'vertical-rl', transform: 'rotate(180deg)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'inherit' }}>
+                            Archived
+                          </span>
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            width: 24, height: 24, borderRadius: '50%',
+                            background: token('color.background.neutral.hovered', 'rgba(9,30,66,0.08)'),
+                            fontSize: 11, fontWeight: 600, color: 'inherit',
+                          }}>
+                            {doneCount}
+                          </span>
+                        </button>
+                      ) : (
+                        <>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px 6px' }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                              Archived ({doneCount})
+                            </span>
+                            <button
+                              onClick={onToggleHideDone}
+                              title="Collapse archived column"
+                              aria-label="Collapse archived column"
+                              style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 2, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}
+                            >✕</button>
+                          </div>
+                          {doneColumns.map((column) => {
+                            const colIssues = bucket.get(column.id) ?? [];
+                            return (
+                              <div key={column.id} style={{ marginBottom: 8 }}>
+                                <ColumnHeader column={column} count={colIssues.length} />
+                                <DroppableBody
+                                  colId={column.id}
+                                  groupKey={g.key}
+                                  ariaLabel={`${column.name} archived column, ${colIssues.length} items`}
+                                  fill={false}
+                                  overKey={overKey}
+                                  setOver={setOverKey}
+                                  footer={columnFooter?.(column.id)}
+                                  items={colIssues}
+                                  renderItem={renderCard}
+                                />
+                              </div>
+                            );
+                          })}
+                        </>
+                      )}
+                    </div>
+                  );
+                })()}
                 {gi === 0 && onAddColumn && <AddColumnSlot onAdd={onAddColumn} />}
               </div>
             )}

@@ -65,7 +65,7 @@ export function SummarizeMenu({ anchorRect, onSelect, onClose }: SummarizeMenuPr
         background: 'var(--cv2-bg-panel)',
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 8,
-        boxShadow: '0 12px 28px rgba(0,0,0,0.32)',
+        boxShadow: '0 12px 28px var(--ds-shadow-raised, rgba(0,0,0,0.32))',
         padding: '6px 0',
         zIndex: 9999,
         fontFamily: 'var(--cv2-font)',

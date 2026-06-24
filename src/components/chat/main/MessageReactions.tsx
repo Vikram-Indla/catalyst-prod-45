@@ -161,7 +161,7 @@ function ReactionChip({
             fontSize: 12,
             color: 'var(--ds-text, #172B4D)',
             whiteSpace: 'nowrap',
-            boxShadow: '0 2px 8px rgba(9,30,66,0.13)',
+            boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))',
           }}
         >
           {tooltipText}

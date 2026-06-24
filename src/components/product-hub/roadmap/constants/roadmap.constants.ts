@@ -14,7 +14,7 @@ export const TYPE_COLORS: Record<string, {
   hover: string;
 }> = {
   business_request: {
-    solid: 'var(--ds-icon-accent-yellow, #B38600)', light: '#FFFBEB', label: 'Business Request',
+    solid: 'var(--ds-icon-accent-yellow, #B38600)', light: 'var(--ds-background-warning, #FFF7D6)', label: 'Business Request',
     gradient: 'linear-gradient(135deg, var(--ds-icon-accent-yellow, #B38600), #8A6700)',
     hover: '#8A6700',
   },
@@ -23,15 +23,15 @@ export const TYPE_COLORS: Record<string, {
 // ── Priority Colors ──
 export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label: string }> = {
   P0: { color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Critical' },
-  P1: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', label: 'High' },
+  P1: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', label: 'High' },
   P2: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', label: 'Medium' },
 };
 
 // ── Status Colors ──
 export const STATUS_COLORS: Record<string, { color: string; bg: string; label: string }> = {
-  Active:    { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', label: 'Active' },
+  Active:    { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', label: 'Active' },
   Planned:   { color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', label: 'Planned' },
-  Completed: { color: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', label: 'Completed' },
+  Completed: { color: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-background-success, #DFFCF0)', label: 'Completed' },
   Cancelled: { color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Cancelled' },
 };
 
@@ -52,10 +52,10 @@ export const SURFACE = {
 
 // ── Dark Mode Variants (Dark mode One Surface Model) ──
 export const INK_DARK = {
-  1: 'rgba(255,255,255,0.92)',
-  2: 'rgba(255,255,255,0.72)',
-  3: 'rgba(255,255,255,0.60)',
-  4: 'rgba(255,255,255,0.50)',
+  1: 'var(--ds-surface, rgba(255,255,255,0.92))',
+  2: 'var(--ds-surface, rgba(255,255,255,0.72))',
+  3: 'var(--ds-surface, rgba(255,255,255,0.60))',
+  4: 'var(--ds-surface, rgba(255,255,255,0.50))',
 };
 
 export const SURFACE_DARK = {

@@ -277,37 +277,37 @@ export const CYCLE_STATUS_CONFIG: Record<CycleStatus, { label: string; color: st
   draft: {
     // neutral muted
     label: 'draft',
-    color: '#626F86',
+    color: 'var(--ds-icon-subtle, #626F86)',
     bgColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
   },
   planned: {
     // information
     label: 'planned',
-    color: '#0747A6',
-    bgColor: '#DEEBFF'
+    color: 'var(--ds-link-pressed, #0747A6)',
+    bgColor: 'var(--ds-background-information, #E9F2FF)'
   },
   active: {
     // success
     label: 'active',
-    color: '#006644',
-    bgColor: '#E3FCEF'
+    color: 'var(--ds-text-success, #006644)',
+    bgColor: 'var(--ds-background-success, #DFFCF0)'
   },
   paused: {
     // warning
     label: 'paused',
-    color: '#974F0C',
-    bgColor: '#FFF0B3'
+    color: 'var(--ds-text-warning, #974F0C)',
+    bgColor: 'var(--ds-background-warning, #FFF7D6)'
   },
   completed: {
     // success
     label: 'completed',
-    color: '#006644',
-    bgColor: '#E3FCEF'
+    color: 'var(--ds-text-success, #006644)',
+    bgColor: 'var(--ds-background-success, #DFFCF0)'
   },
   archived: {
     // neutral
     label: 'archived',
-    color: '#42526E',
+    color: 'var(--ds-text-subtle, #42526E)',
     bgColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'
   },
 };
@@ -332,6 +332,6 @@ export const ACTIVE_CYCLE_STATUSES: CycleStatus[] = [
 
 export const CYCLE_ROLE_CONFIG: Record<CycleRole, { label: string; color: string }> = {
   lead: { label: 'Lead', color: 'var(--cp-primary-60, #0052CC)' },       // information
-  tester: { label: 'Tester', color: '#006644' },   // success
-  reviewer: { label: 'Reviewer', color: '#974F0C' }, // warning
+  tester: { label: 'Tester', color: 'var(--ds-text-success, #006644)' },   // success
+  reviewer: { label: 'Reviewer', color: 'var(--ds-text-warning, #974F0C)' }, // warning
 };

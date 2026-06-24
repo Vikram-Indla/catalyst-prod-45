@@ -11,6 +11,7 @@ interface ActionsMenuProps {
   onArchive: (release: Release) => void;
   onRelease: (release: Release) => void;
   onDelete: (release: Release) => void;
+  onMerge?: (release: Release) => void;
 }
 
 export function ActionsMenu({
@@ -19,6 +20,7 @@ export function ActionsMenu({
   onArchive,
   onRelease,
   onDelete,
+  onMerge,
 }: ActionsMenuProps) {
   return (
     <DropdownMenu
@@ -49,8 +51,13 @@ export function ActionsMenu({
           Edit
         </DropdownItem>
 
-        {/* Merge - disabled/hidden for now (Tier 3 future) */}
-        {/* <DropdownItem isDisabled>Merge</DropdownItem> */}
+        {onMerge && (
+          <DropdownItem
+            onClick={() => onMerge(release)}
+          >
+            Merge
+          </DropdownItem>
+        )}
 
         {release.status !== 'unreleased' && (
           <DropdownItem

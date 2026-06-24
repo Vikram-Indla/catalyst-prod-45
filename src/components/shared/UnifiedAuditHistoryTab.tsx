@@ -91,6 +91,7 @@ export function UnifiedAuditHistoryTab({ entityId, entityType }: UnifiedAuditHis
         .range(from, to);
       if (error) throw error;
 
+      // TODO: replace with useApprovedProfiles when this hook can be lifted out of queryFn
       const actorIds = [...new Set((logs || []).map((l: any) => l.actor_id).filter(Boolean))];
       const profileMap = new Map<string, any>();
       if (actorIds.length > 0) {

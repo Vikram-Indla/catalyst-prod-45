@@ -37,8 +37,8 @@ interface ReassignModalProps {
 const getAvatarColor = (name: string): string => {
   const colors = [
     'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white',
-    'bg-[#0d9488] text-white',
-    'bg-[#6b7280] text-white',
+    'bg-[var(--ds-chart-teal-bold, #0d9488)] text-white',
+    'bg-[var(--ds-text-subtlest, #626F86)] text-white',
   ];
   const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
   return colors[index];

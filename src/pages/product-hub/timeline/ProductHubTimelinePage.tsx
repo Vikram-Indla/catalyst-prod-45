@@ -171,7 +171,7 @@ export default function ProductHubTimelinePage() {
 
   const mutations: TimelineMutations = useMemo(() => ({
     /* Bottom "Create business request" — inserts a new BR. */
-    onCreateEpic: async (summary) => {
+    onCreateEpic: async (summary, _issueType) => {
       if (!productId) return null;
       const requestKey = await generateRequestKey();
       const now = new Date().toISOString();

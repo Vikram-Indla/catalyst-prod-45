@@ -14,7 +14,7 @@ export type T10ItemStatus = 'todo' | 'done';
 
 export const T10_STATUS_COLORS = {
   active: 'var(--ds-text-success, #22c55e)',    // Green
-  inactive: '#6b7280',  // Gray
+  inactive: 'var(--ds-text-subtlest, #626F86)',  // Gray
   archived: 'var(--ds-text-subtlest, #94a3b8)',  // Light gray
   completed: 'var(--ds-text-brand, #3b82f6)', // Blue
 } as const;
@@ -28,20 +28,20 @@ export const T10_RANK_COLORS = {
 // Label color palette (15 colors)
 export const T10_LABEL_COLORS = [
   { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
-  { name: 'Orange', value: '#f97316' },
+  { name: 'Orange', value: 'var(--ds-background-warning-bold, #f97316)' },
   { name: 'Amber', value: 'var(--ds-text-warning, #f59e0b)' },
-  { name: 'Yellow', value: '#eab308' },
-  { name: 'Lime', value: '#84cc16' },
+  { name: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
+  { name: 'Lime', value: 'var(--ds-background-success-bold, #1F845A)' },
   { name: 'Green', value: 'var(--ds-text-success, #22c55e)' },
-  { name: 'Emerald', value: '#10b981' },
-  { name: 'Teal', value: '#14b8a6' },
-  { name: 'Cyan', value: '#06b6d4' },
+  { name: 'Emerald', value: 'var(--ds-background-success-bold, #059669)' },
+  { name: 'Teal', value: 'var(--ds-background-accent-teal-bolder, #14b8a6)' },
+  { name: 'Cyan', value: 'var(--ds-icon-information, #1D7AFC)' },
   { name: 'Blue', value: 'var(--ds-text-brand, #3b82f6)' },
-  { name: 'Indigo', value: '#6366f1' },
-  { name: 'Violet', value: '#8b5cf6' },
+  { name: 'Indigo', value: 'var(--ds-background-discovery-bold, #6366f1)' },
+  { name: 'Violet', value: 'var(--ds-background-discovery-bold, #8b5cf6)' },
   { name: 'Purple', value: '#a855f7' },
-  { name: 'Pink', value: '#ec4899' },
-  { name: 'Gray', value: '#6b7280' },
+  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder, #ec4899)' },
+  { name: 'Gray', value: 'var(--ds-text-subtlest, #626F86)' },
 ] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────

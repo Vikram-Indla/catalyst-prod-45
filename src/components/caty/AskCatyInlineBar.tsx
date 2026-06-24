@@ -274,7 +274,7 @@ export function AskCatyInlineBar({
                         : "var(--ds-background-neutral, #F4F5F7)",
                     color:
                       (query.trim() || ghostState.ghost) && !askCatyLoading
-                        ? "#FFFFFF"
+                        ? "var(--ds-surface, #FFFFFF)"
                         : "var(--ds-text-disabled, #8590A2)",
                     fontSize: 13,
                     fontWeight: 500,

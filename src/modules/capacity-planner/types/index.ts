@@ -179,39 +179,39 @@ export const CatalystColors = {
   brand: {
     blue: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     blueHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-    blueBg: 'rgba(37, 99, 235, 0.08)',
-    teal: '#0d9488',
-    tealHover: '#0f766e',
-    tealBg: 'rgba(13, 148, 136, 0.08)',
+    blueBg: 'var(--ds-background-information, rgba(37, 99, 235, 0.08))',
+    teal: 'var(--ds-chart-teal-bold, #0d9488)',
+    tealHover: 'var(--ds-chart-teal-bolder, #0f766e)',
+    tealBg: 'var(--ds-background-success, rgba(13, 148, 136, 0.08))',
   },
   secondary: {
-    olive: '#0d9488',
-    bronze: '#10b981',
+    olive: 'var(--ds-chart-teal-bold, #0d9488)',
+    bronze: 'var(--ds-background-success-bold, #059669)',
     champagne: 'var(--ds-text-brand, #3b82f6)',
     green: 'var(--ds-text-success, #22c55e)',
   },
   status: {
-    success: '#0d9488',
-    successBg: 'rgba(13, 148, 136, 0.08)',
+    success: 'var(--ds-chart-teal-bold, #0d9488)',
+    successBg: 'var(--ds-background-success, rgba(13, 148, 136, 0.08))',
     warning: 'var(--ds-text-warning, #d97706)',
-    warningBg: 'rgba(217, 119, 6, 0.08)',
+    warningBg: 'var(--ds-background-warning, rgba(217, 119, 6, 0.08))',
     danger: 'var(--ds-text-danger, #dc2626)',
-    dangerBg: 'rgba(220, 38, 38, 0.08)',
+    dangerBg: 'var(--ds-background-danger-bold, rgba(220, 38, 38, 0.08))',
   },
 };
 
 export const ProjectColors: Record<string, string> = {
-  'Digital Investor Portal': '#0d9488',
-  'Industrial Marketplace': '#10b981',
+  'Digital Investor Portal': 'var(--ds-chart-teal-bold, #0d9488)',
+  'Industrial Marketplace': 'var(--ds-background-success-bold, #059669)',
   'Industrial Platform Modernization': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   'Mobile App Request': 'var(--ds-text-brand, #3b82f6)',
-  default: '#6b7280',
+  default: 'var(--ds-text-subtlest, #626F86)',
 };
 
 export const DepartmentColors: Record<string, { bg: string; text: string; badge: string }> = {
   Product: { bg: 'bg-[var(--ds-text-brand,#3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#3b82f6)]/15 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
-  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/10 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
-  Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },
+  Delivery: { bg: 'bg-[var(--ds-chart-teal-bold, #0d9488)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/10 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
+  Support: { bg: 'bg-[var(--ds-background-success-bold, #059669)]', text: 'text-white', badge: 'bg-[var(--ds-background-success-bold, #059669)]/15 text-[var(--ds-background-success-bold, #059669)]' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };
 

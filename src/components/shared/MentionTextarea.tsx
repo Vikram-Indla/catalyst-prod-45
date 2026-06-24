@@ -269,7 +269,7 @@ export function MentionTextarea({
                     className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm"
                     style={{ 
                       backgroundColor: avatarColor,
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                      boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
                     }}
                   >
                     {getInitials(user.name)}
@@ -286,7 +286,7 @@ export function MentionTextarea({
                       <div 
                         className="text-xs truncate"
                         style={{ 
-                          color: isSelected ? 'rgba(255,255,255,0.8)' : 'hsl(var(--muted-foreground))',
+                          color: isSelected ? 'var(--ds-surface, rgba(255,255,255,0.8))' : 'hsl(var(--muted-foreground))',
                         }}
                       >
                         {user.role}

@@ -1059,14 +1059,14 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                           <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(166,144,94,0.3)', color: 'var(--ds-text, #DED6CA)' }}>{getStatusLabel(item.status)}</span>
                         </div>
                         <div className="flex items-center gap-2 py-2 px-3 rounded-md mb-3" style={{ backgroundColor: 'rgba(166,144,94,0.15)' }}>
-                          <Calendar className="w-3.5 h-3.5" style={{ color: '#A89778' }} />
-                          <span className="text-xs" style={{ color: '#D4CABC' }}>{startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                          <span style={{ color: '#A6905E' }}>→</span>
-                          <span className="text-xs" style={{ color: '#D4CABC' }}>{endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <Calendar className="w-3.5 h-3.5" style={{ color: 'var(--ds-chart-yellow-bold, #A89778)' }} />
+                          <span className="text-xs" style={{ color: 'var(--ds-chart-yellow-bolder, #D4CABC)' }}>{startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <span style={{ color: 'var(--ds-chart-orange-bold, #A6905E)' }}>→</span>
+                          <span className="text-xs" style={{ color: 'var(--ds-chart-yellow-bolder, #D4CABC)' }}>{endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                         </div>
                         {showMilestones && item.milestones.length > 0 && (
                           <div>
-                            <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: '#A89778' }}>
+                            <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--ds-chart-yellow-bold, #A89778)' }}>
                               {config.workItemType === 'theme' ? `CHILD EPICS (${item.milestones.length})` :
                                config.workItemType === 'epic' ? `CHILD FEATURES (${item.milestones.length})` :
                                `MILESTONES (${item.milestones.length})`}
@@ -1079,22 +1079,22 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
 
                                 return (
                                   <div key={idx} className="flex items-center gap-2 text-xs">
-                                    <div className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0" style={{ backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent', borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : '#957F51', color: ms.state === 'complete' ? 'white' : '#BFB097' }}>
+                                    <div className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0" style={{ backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent', borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'var(--ds-chart-orange-bolder, #957F51)', color: ms.state === 'complete' ? 'white' : 'var(--ds-chart-yellow-bold, #BFB097)' }}>
                                       {ms.state === 'complete' ? <Check className="w-2 h-2" /> : (idx + 1)}
                                     </div>
                                     {isEpicMarker ? (
                                       <>
-                                        <span className="font-medium" style={{ color: '#DED6CA' }}>{milestoneData.epicKey}</span>
-                                        <span className="truncate max-w-[120px]" style={{ color: '#BFB097' }}>{milestoneData.epicName}</span>
+                                        <span className="font-medium" style={{ color: 'var(--ds-chart-yellow-bolder, #DED6CA)' }}>{milestoneData.epicKey}</span>
+                                        <span className="truncate max-w-[120px]" style={{ color: 'var(--ds-chart-yellow-bold, #BFB097)' }}>{milestoneData.epicName}</span>
                                       </>
                                     ) : isFeatureMarker ? (
                                       <>
-                                        <span className="font-medium truncate max-w-[180px]" style={{ color: '#DED6CA' }}>{milestoneData.featureName}</span>
+                                        <span className="font-medium truncate max-w-[180px]" style={{ color: 'var(--ds-chart-yellow-bolder, #DED6CA)' }}>{milestoneData.featureName}</span>
                                       </>
                                     ) : (
-                                      <span style={{ color: '#D4CABC' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
+                                      <span style={{ color: 'var(--ds-chart-yellow-bolder, #D4CABC)' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
                                     )}
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'rgba(59,163,98,0.25)' : ms.state === 'current' ? 'rgba(191,149,64,0.25)' : 'rgba(166,144,94,0.2)', color: ms.state === 'complete' ? '#6BC98F' : ms.state === 'current' ? '#CCB27A' : '#B5A48A' }}>
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'rgba(59,163,98,0.25)' : ms.state === 'current' ? 'rgba(191,149,64,0.25)' : 'rgba(166,144,94,0.2)', color: ms.state === 'complete' ? 'var(--ds-background-success-bold, #1F845A)' : ms.state === 'current' ? 'var(--ds-chart-orange-bold, #CCB27A)' : 'var(--ds-chart-yellow-bold, #B5A48A)' }}>
                                       {isEpicMarker ? (milestoneData.epicStatus || 'proposed').replace('_', ' ') :
                                        isFeatureMarker ? (milestoneData.featureStatus || 'funnel').replace('_', ' ') :
                                        (ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending')}
@@ -1103,7 +1103,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                 );
                               })}
                               {item.milestones.length > 5 && (
-                                <div className="text-[10px] italic" style={{ color: '#A6905E' }}>
+                                <div className="text-[10px] italic" style={{ color: 'var(--ds-chart-orange-bold, #A6905E)' }}>
                                   +{item.milestones.length - 5} more {config.workItemType === 'theme' ? 'epics' : config.workItemType === 'epic' ? 'features' : 'milestones'}
                                 </div>
                               )}

@@ -139,10 +139,10 @@ export const PortalMenu: React.FC<PortalMenuProps> = ({ trigger, children, align
             top: pos?.top ?? -9999,
             left: pos?.left ?? -9999,
             visibility: pos ? 'visible' : 'hidden',
-            background: token('elevation.surface.overlay', '#FFFFFF'),
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
             border: `1px solid ${token('color.border', '#091E4224')}`,
             borderRadius: SIZES.DROPDOWN_RADIUS,
-            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
+            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))'),
             padding: '4px 0',
             minWidth,
             maxHeight: SIZES.DROPDOWN_MAX_HEIGHT,
@@ -170,8 +170,8 @@ export const MenuItem: React.FC<{
     onClick={onClick}
     style={{
       width: '100%', height: SIZES.MENU_ITEM_HEIGHT, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
-      border: 'none', background: selected ? token('color.background.selected', '#E9F2FF') : 'transparent',
-      color: selected ? token('color.text.selected', '#0C66E4') : token('color.text', '#172B4D'),
+      border: 'none', background: selected ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
+      color: selected ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
       fontSize: 14, lineHeight: '20px', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left',
     }}
     onMouseEnter={(e) => { if (!selected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
@@ -179,7 +179,7 @@ export const MenuItem: React.FC<{
   >
     {variant !== 'plain' && (
       <span style={{ width: 16, display: 'inline-flex', flexShrink: 0 }}>
-        {selected && <CheckIcon label="" size="small" primaryColor={token('color.icon.selected', '#0C66E4')} />}
+        {selected && <CheckIcon label="" size="small" primaryColor={token('color.icon.selected', 'var(--ds-link, #0C66E4)')} />}
       </span>
     )}
     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{children}</span>
@@ -188,6 +188,6 @@ export const MenuItem: React.FC<{
 
 export const TriggerChevron: React.FC = () => (
   <span style={{ display: 'inline-flex', flexShrink: 0 }}>
-    <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', '#626F86')} />
+    <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />
   </span>
 );

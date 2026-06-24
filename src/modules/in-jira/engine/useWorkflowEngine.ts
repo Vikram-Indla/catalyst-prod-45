@@ -19,8 +19,8 @@ const mockWorkflow: Workflow = {
     { id: 'backlog', name: 'Backlog', category: 'todo', color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
     { id: 'todo', name: 'To Do', category: 'todo', color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
     { id: 'in-progress', name: 'In Progress', category: 'in_progress', color: 'var(--cp-primary-60, #0052CC)' },
-    { id: 'in-review', name: 'In Review', category: 'in_progress', color: '#FF991F' },
-    { id: 'done', name: 'Done', category: 'done', color: '#36B37E' },
+    { id: 'in-review', name: 'In Review', category: 'in_progress', color: 'var(--ds-background-warning-bold, #E2B203)' },
+    { id: 'done', name: 'Done', category: 'done', color: 'var(--ds-background-success-bold, #1F845A)' },
   ],
   transitions: [
     {

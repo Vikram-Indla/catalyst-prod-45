@@ -188,7 +188,7 @@ export function useTeamMembers() {
   return useMemo(() => {
     if (!profiles) return [];
     
-    const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#0d9488', 'var(--ds-text-brand, #3b82f6)', '#8b5cf6', 'var(--ds-text-success, #22c55e)', 'var(--ds-text-warning, #f59e0b)'];
+    const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-brand, #3b82f6)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-text-success, #22c55e)', 'var(--ds-text-warning, #f59e0b)'];
     
     return profiles.map((p, idx) => {
       const name = p.full_name || 'Unknown';

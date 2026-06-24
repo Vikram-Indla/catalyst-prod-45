@@ -105,14 +105,14 @@ export function DataScope() {
       <span style={{
         width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-app, #fff)', position: 'absolute',
         top: 2, left: checked ? 18 : 2, transition: 'left .2s',
-        boxShadow: '0 1px 3px rgba(0,0,0,.2)',
+        boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.2))',
       }} />
     </button>
   )
 
   const cardStyle: React.CSSProperties = {
     background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8,
-    padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
+    padding: 20, marginBottom: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
   }
 
   const activeCount = includedProjects.length
@@ -155,7 +155,7 @@ export function DataScope() {
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
                   background: isOn ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-                  borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
+                  borderColor: isOn ? 'var(--ds-background-information, #E9F2FF)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                   opacity: isOn ? 1 : 0.5,
                   transition: 'all .15s',
                 }}
@@ -214,7 +214,7 @@ export function DataScope() {
         </div>
 
         <div style={{
-          background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: 8,
           padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 8,
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>

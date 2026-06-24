@@ -216,7 +216,7 @@ function Shimmer({ width }: { width: string }) {
         height: 12,
         borderRadius: 6,
         background:
-          'linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.04) 100%)',
+          'linear-gradient(90deg, var(--ds-surface, rgba(255,255,255,0.04)) 0%, var(--ds-surface, rgba(255,255,255,0.10)) 50%, var(--ds-surface, rgba(255,255,255,0.04)) 100%)',
         backgroundSize: '200% 100%',
         animation: 'cv2-summary-shimmer 1.6s ease-in-out infinite',
       }}
@@ -531,7 +531,7 @@ function ReferenceMarker({ index, onClick }: { index: number; onClick: () => voi
         height: 18,
         padding: '0 5px',
         background: 'rgba(29, 155, 209, 0.18)',
-        color: '#1D9BD1',
+        color: 'var(--ds-link, #0C66E4)',
         border: 'none',
         borderRadius: 4,
         fontSize: 11,

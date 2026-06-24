@@ -9,12 +9,12 @@ import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 const HUB_DOT_COLORS: Record<string, string> = {
   Project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   Product: 'var(--cp-purple-60, #7C3AED)',
-  Task: '#EA580C',
+  Task: 'var(--ds-background-warning-bold, #E2B203)',
   Incident: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   Release: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  Test: '#0891B2',
-  Strategy: '#0891B2',
-  Plan: '#6366F1',
+  Test: 'var(--ds-link, #0C66E4)',
+  Strategy: 'var(--ds-link, #0C66E4)',
+  Plan: 'var(--ds-background-discovery-bold, #6366f1)',
 };
 
 const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
@@ -115,7 +115,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             maxHeight: 340, overflowY: 'auto',
             background: 'var(--cp-float)', border: '1px solid var(--cp-bd)',
             borderRadius: 12,
-            boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+            boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
             zIndex: 50, padding: 6,
             animation: 'fy-dropIn 0.15s ease',
           }}

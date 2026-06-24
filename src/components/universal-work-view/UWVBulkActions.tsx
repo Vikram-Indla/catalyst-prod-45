@@ -62,7 +62,7 @@ export function UWVBulkActions({ selectedIds, allItems, project, onClear }: Prop
         alignItems: 'center',
         gap: 12,
         padding: '0 16px',
-        background: token('color.background.selected', '#E9F2FF'),
+        background: token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)'),
         borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
       }}
     >

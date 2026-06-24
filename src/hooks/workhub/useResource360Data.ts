@@ -8,6 +8,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 export interface Resource360Person {
   id: string;
@@ -51,8 +52,10 @@ export function useResource360Departments() {
 
 /** Main Resource 360 hook — profiles with ph_issues (Jira subtasks) */
 export function useResource360People() {
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+
   return useQuery({
-    queryKey: ['resource360', 'people'],
+    queryKey: ['resource360', 'people', approvedProfiles.length],
     queryFn: async () => {
       // 1. Get ALL active resources from resource_inventory (source of truth for headcount)
       const { data: resources, error: rErr } = await supabase
@@ -75,20 +78,26 @@ export function useResource360People() {
         });
       }
 
-      // 1b. Get profiles for avatar_url lookup (only those that exist)
+      // 1b. Build avatar map from approved profiles (canonical source — includes admin overrides)
       const profileIds = (resources ?? [])
         .map((r: any) => r.profile_id)
         .filter(Boolean);
-      
+
       const avatarMap = new Map<string, string>();
+      const approvedProfileMap = new Map(approvedProfiles.map(p => [p.id, p]));
+      for (const id of profileIds as string[]) {
+        const p = approvedProfileMap.get(id);
+        if (p?.avatarUrl) avatarMap.set(id, p.avatarUrl);
+      }
+
+      // department_id is not in useApprovedProfiles — fetch separately for dept fallback
       const profileDeptMap = new Map<string, string>();
       if (profileIds.length > 0) {
-        const { data: profiles } = await supabase
+        const { data: profileDepts } = await supabase
           .from('profiles')
-          .select('id, avatar_url, department_id')
-          .in('id', profileIds);
-        (profiles ?? []).forEach((p: any) => {
-          if (p.avatar_url) avatarMap.set(p.id, p.avatar_url);
+          .select('id, department_id')
+          .in('id', profileIds as string[]);
+        (profileDepts ?? []).forEach((p: any) => {
           if (p.department_id) profileDeptMap.set(p.id, p.department_id);
         });
       }

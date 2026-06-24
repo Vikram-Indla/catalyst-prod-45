@@ -91,31 +91,31 @@ export const type = {
  */
 export const text = {
   /** Primary — headlines, names, values, action text. */
-  primary: token('color.text', '#292A2E'),
+  primary: token('color.text', 'var(--ds-text, #172B4D)'),
 
   /** Subtle — verbs, meta, labels, placeholders-within-context. */
   subtle: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
 
   /** Subtlest — placeholder, disabled-but-readable, ghost text. */
-  subtlest: token('color.text.subtlest', '#626F86'),
+  subtlest: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
 
   /** Link — only for genuine hyperlinks. */
-  link: token('color.link', '#0C66E4'),
+  link: token('color.link', 'var(--ds-link, #0C66E4)'),
 
   /** Inverse — on dark surfaces. */
-  inverse: token('color.text.inverse', '#FFFFFF'),
+  inverse: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'),
 
   /** Danger — error copy, destructive labels. */
-  danger: token('color.text.danger', '#C9372C'),
+  danger: token('color.text.danger', 'var(--ds-background-danger-bold, #C9372C)'),
 
   /** Success — confirmation copy, completed states. */
-  success: token('color.text.success', '#216E4E'),
+  success: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
 
   /** Warning — caution labels. */
   warning: token('color.text.warning', '#A54800'),
 
   /** Discovery — AI / purple category accents. */
-  discovery: token('color.text.discovery', '#5E4DB2'),
+  discovery: token('color.text.discovery', 'var(--ds-background-discovery-bold, #6E5DC6)'),
 } as const;
 
 /**

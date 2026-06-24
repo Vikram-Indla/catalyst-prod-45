@@ -29,12 +29,12 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[760px]" style={{ borderRadius: 8, padding: 0 }}>
-        <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+        <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
           <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>Escalation Committee</DialogTitle>
         </DialogHeader>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 px-6" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+        <div className="flex items-center gap-1 px-6" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
           {TABS.map((tab, i) => (
             <button
               key={tab}
@@ -45,7 +45,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                 fontFamily: 'var(--cp-font-body)', fontSize: 12,
                 fontWeight: activeTab === i ? 650 : 400,
                 color: activeTab === i ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-                borderBottom: activeTab === i ? '2px solid #2563EB' : '2px solid transparent',
+                borderBottom: activeTab === i ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
               }}
             >
               {tab}
@@ -91,12 +91,12 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                             fontWeight: voteStatus === v ? 700 : 400,
                             borderRadius: 4,
                             backgroundColor: voteStatus === v
-                              ? (v === 'approved' ? 'var(--cp-lozenge-green-bg, #1B7F37)' : v === 'rejected' ? '#FEE2E2' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))')
+                              ? (v === 'approved' ? 'var(--cp-lozenge-green-bg, #1B7F37)' : v === 'rejected' ? 'var(--ds-background-danger, #FFECEB)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))')
                               : 'transparent',
                             color: voteStatus === v
-                              ? (v === 'approved' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : v === 'rejected' ? 'var(--ds-text-danger, #991B1B)' : '#42526E')
+                              ? (v === 'approved' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : v === 'rejected' ? 'var(--ds-text-danger, #991B1B)' : 'var(--ds-text-subtle, #42526E)')
                               : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-                            border: voteStatus === v ? 'none' : '1px solid rgba(15,23,42,0.08)',
+                            border: voteStatus === v ? 'none' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
                           }}
                         >
                           {v === 'approved' ? 'Approve' : v === 'rejected' ? 'Reject' : 'Pending'}
@@ -118,7 +118,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           )}
         </div>
 
-        <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
+        <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
           <Button variant="ghost" onClick={onClose} style={{ borderRadius: 6 }}>Close</Button>
           <Button
             disabled={!quorumMet}

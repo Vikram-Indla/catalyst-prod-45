@@ -20,11 +20,11 @@ export async function exportCapacityToPdf(data: ExportData): Promise<void> {
   // Header - Logo text
   pdf.setFontSize(24);
   pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(31, 41, 55); // #1f2937
+  pdf.setTextColor(31, 41, 55); // var(--ds-text, #172B4D)
   pdf.text('Cata', margin, 18);
   
   const cataWidth = pdf.getTextWidth('Cata');
-  pdf.setTextColor(198, 156, 109); // #c69c6d
+  pdf.setTextColor(198, 156, 109); // var(--ds-text-subtle, #C69C6D)
   pdf.text('lyst', margin + cataWidth, 18);
 
   // Title

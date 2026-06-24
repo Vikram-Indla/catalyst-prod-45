@@ -22,14 +22,14 @@ export function QualityGateBar({ passing, failing, pending, total, isWinner }: Q
   const majorityFailing = failing > total / 2;
   
   const Icon = allPassing ? CheckMarkIcon : majorityFailing ? CloseIcon : WarningIcon;
-  const iconColor = allPassing ? '#0d9488' : majorityFailing ? 'var(--ds-text-danger, #ef4444)' : 'var(--ds-text-warning, #d97706)';
+  const iconColor = allPassing ? 'var(--ds-chart-teal-bold, #0d9488)' : majorityFailing ? 'var(--ds-text-danger, #ef4444)' : 'var(--ds-text-warning, #d97706)';
   
   return (
     <div className="relative">
       {isWinner && (
         <div 
           className="absolute -top-1 -right-1 text-lg z-10"
-          style={{ color: '#0d9488' }}
+          style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}
         >
           ★
         </div>
@@ -49,7 +49,7 @@ export function QualityGateBar({ passing, failing, pending, total, isWinner }: Q
           {Array.from({ length: total }).map((_, i) => {
             let color = 'var(--ds-text-disabled, #cbd5e1)'; // Pending (Gray 300)
             if (i < passing) {
-              color = '#0d9488'; // Pass (Teal)
+              color = 'var(--ds-chart-teal-bold, #0d9488)'; // Pass (Teal)
             } else if (i < passing + failing) {
               color = 'var(--ds-text-danger, #ef4444)'; // Fail (Danger)
             }

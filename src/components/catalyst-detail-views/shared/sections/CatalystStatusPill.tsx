@@ -387,12 +387,12 @@ export function CatalystStatusPill({
             maxWidth: 280,
             maxHeight: 360,
             overflowY: 'auto',
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             borderRadius: 4,
             boxShadow: token(
               'elevation.shadow.overlay' as Parameters<typeof token>[0],
-              '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+              '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
             ),
             padding: '4px 0',
             zIndex: 9999,
@@ -416,7 +416,7 @@ export function CatalystStatusPill({
                       padding: '8px 8px 4px',
                       fontSize: 11,
                       fontWeight: 600,
-                      color: token('color.text.subtlest', '#8590A2'),
+                      color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                       letterSpacing: '0.06em',
                     }}
                   >
@@ -438,15 +438,15 @@ export function CatalystStatusPill({
                         data-testid={`catalyst-status-option-${st}`}
                         onClick={() => pick(st)}
                         onFocus={(e) => {
-                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.background = isSelected
-                            ? token('color.background.selected', '#E9F2FF')
+                            ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
                             : 'transparent';
                         }}
                         onMouseEnter={(e) => {
-                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
                         }}
                         onMouseLeave={(e) => {
                           const isFocused = e.currentTarget === document.activeElement;
@@ -460,7 +460,7 @@ export function CatalystStatusPill({
                           height: 32,
                           padding: '0 8px',
                           background: isSelected
-                            ? token('color.background.selected', '#E9F2FF')
+                            ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
                             : 'transparent',
                           border: 'none',
                           cursor: 'pointer',
@@ -485,7 +485,7 @@ export function CatalystStatusPill({
                           {st}
                         </span>
                         {isSelected && (
-                          <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>✓</span>
+                          <span style={{ fontSize: 12, color: token('color.text.brand', 'var(--ds-link, #0C66E4)'), fontWeight: 600 }}>✓</span>
                         )}
                       </button>
                     );
@@ -496,7 +496,7 @@ export function CatalystStatusPill({
           })()}
 
           {/* Separator */}
-          <div style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '4px 0' }} />
+          <div style={{ height: 1, background: token('color.border', 'var(--ds-border, #DFE1E6)'), margin: '4px 0' }} />
 
           {/* View workflow */}
           <button
@@ -509,9 +509,9 @@ export function CatalystStatusPill({
               setIsOpen(false);
               setWorkflowViewerOpen(true);
             }}
-            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
             onBlur={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
             onMouseLeave={(e) => {
               if (e.currentTarget !== document.activeElement) e.currentTarget.style.background = 'transparent';
             }}
@@ -527,11 +527,11 @@ export function CatalystStatusPill({
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontSize: 14,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
               outline: 'none',
             }}
           >
-            <RetryIcon size="small" label="" primaryColor={token('color.icon.subtle', '#626F86')} />
+            <RetryIcon size="small" label="" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />
             View workflow
           </button>
 
@@ -543,9 +543,9 @@ export function CatalystStatusPill({
             tabIndex={-1}
             data-testid="catalyst-status-explain-workflow"
             onClick={() => close(true)}
-            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
             onBlur={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
             onMouseLeave={(e) => {
               if (e.currentTarget !== document.activeElement) e.currentTarget.style.background = 'transparent';
             }}
@@ -561,11 +561,11 @@ export function CatalystStatusPill({
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontSize: 14,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
               outline: 'none',
             }}
           >
-            <QuestionCircleIcon size="small" label="" primaryColor={token('color.icon.subtle', '#626F86')} />
+            <QuestionCircleIcon size="small" label="" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />
             Explain workflow
           </button>
         </div>,

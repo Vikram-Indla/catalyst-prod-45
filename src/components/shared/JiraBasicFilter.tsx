@@ -266,7 +266,7 @@ function OptionAvatar({ option }: { option: FilterOption }) {
   }
   if (option.avatarType === 'person-icon') {
     return (
-      <span className="jf-avatar jf-avatar--circle" style={{ backgroundColor: 'rgb(24, 104, 219)' }}>
+      <span className="jf-avatar jf-avatar--circle" style={{ backgroundColor: 'var(--ds-link, rgb(24, 104, 219))' }}>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
           <path fill="var(--ds-surface, #fff)" fillRule="evenodd" d="M8 1.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4 4a4 4 0 1 1 8 0 4 4 0 0 1-8 0m-2 9a3.75 3.75 0 0 1 3.75-3.75h4.5A3.75 3.75 0 0 1 14 13v2h-1.5v-2a2.25 2.25 0 0 0-2.25-2.25h-4.5A2.25 2.25 0 0 0 3.5 13v2H2z" clipRule="evenodd" />
         </svg>
@@ -275,9 +275,9 @@ function OptionAvatar({ option }: { option: FilterOption }) {
   }
   if (option.avatarType === 'icon') {
     return (
-      <span className="jf-avatar jf-avatar--circle" style={{ backgroundColor: 'rgb(221, 222, 225)' }}>
+      <span className="jf-avatar jf-avatar--circle" style={{ backgroundColor: 'var(--ds-background-neutral, rgb(221, 222, 225))' }}>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-          <path fill="rgb(80,82,88)" fillRule="evenodd" d="M8 1.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4 4a4 4 0 1 1 8 0 4 4 0 0 1-8 0m-2 9a3.75 3.75 0 0 1 3.75-3.75h4.5A3.75 3.75 0 0 1 14 13v2h-1.5v-2a2.25 2.25 0 0 0-2.25-2.25h-4.5A2.25 2.25 0 0 0 3.5 13v2H2z" clipRule="evenodd" />
+          <path fill="var(--ds-text-subtle, rgb(80,82,88))" fillRule="evenodd" d="M8 1.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4 4a4 4 0 1 1 8 0 4 4 0 0 1-8 0m-2 9a3.75 3.75 0 0 1 3.75-3.75h4.5A3.75 3.75 0 0 1 14 13v2h-1.5v-2a2.25 2.25 0 0 0-2.25-2.25h-4.5A2.25 2.25 0 0 0 3.5 13v2H2z" clipRule="evenodd" />
         </svg>
       </span>
     );
@@ -304,7 +304,7 @@ function OptionAvatar({ option }: { option: FilterOption }) {
 function CheckboxSVG({ checked }: { checked: boolean }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="jf-checkbox-svg"
-      style={{ color: checked ? 'rgb(24, 104, 219)' : 'rgba(9, 30, 66, 0.14)' }}
+      style={{ color: checked ? 'var(--ds-link, rgb(24, 104, 219))' : 'var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.14))' }}
     >
       <g fillRule="evenodd">
         <rect x="5.5" y="5.5" width="13" height="13" rx="1.5" fill="currentColor" />
@@ -332,7 +332,7 @@ function SearchIcon() {
 function InfoIcon() {
   return (
     <svg width="16" height="16" viewBox="-8 -8 32 32" fill="none">
-      <path fill="rgb(24,104,219)" fillRule="evenodd" d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M6.5 6.75v1.5h.75v4.25h1.5v-5A.75.75 0 0 0 8 6.75zM8 3.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2" clipRule="evenodd" />
+      <path fill="var(--ds-link, rgb(24,104,219))" fillRule="evenodd" d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M6.5 6.75v1.5h.75v4.25h1.5v-5A.75.75 0 0 0 8 6.75zM8 3.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2" clipRule="evenodd" />
     </svg>
   );
 }

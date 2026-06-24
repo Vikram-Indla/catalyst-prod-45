@@ -141,9 +141,9 @@ function HamburgerIcon() {
 function RainbowHamburgerIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <line x1="3" y1="6" x2="21" y2="6" stroke="#FF3CAC" strokeWidth="2.2" strokeLinecap="round" />
-      <line x1="3" y1="12" x2="21" y2="12" stroke="#2B86C5" strokeWidth="2.2" strokeLinecap="round" />
-      <line x1="3" y1="18" x2="21" y2="18" stroke="#22A06B" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="3" y1="6" x2="21" y2="6" stroke="var(--ds-background-accent-magenta-bolder, #BE185D)" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="3" y1="12" x2="21" y2="12" stroke="var(--ds-link, #0C66E4)" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="3" y1="18" x2="21" y2="18" stroke="var(--ds-background-success-bold, #1F845A)" strokeWidth="2.2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -843,7 +843,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
                         {/* ads-scanner:ignore-next-line */}
                         <stop stopColor="#F79357"/>
                         {/* ads-scanner:ignore-next-line */}
-                        <stop offset="0.5" stopColor="#F53F68"/>
+                        <stop offset="0.5" stopColor="var(--ds-background-danger-bold, #C9372C)"/>
                         {/* ads-scanner:ignore-next-line */}
                         <stop offset="0.75" stopColor="#B41572"/>
                         {/* ads-scanner:ignore-next-line */}

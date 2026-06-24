@@ -181,7 +181,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: 'var(--ds-border, #e2e8f0)',
     hexFill: 'var(--ds-border, #e2e8f0)',
     textPrimary: 'var(--ds-text-subtle, #475569)',
-    textDark: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+    textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))',
   },
   'Stand-Alone Projects': {
     primary: 'var(--ds-text-subtle, #64748b)',
@@ -191,7 +191,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: 'var(--ds-border, #e2e8f0)',
     hexFill: 'var(--ds-border, #e2e8f0)',
     textPrimary: 'var(--ds-text-subtle, #475569)',
-    textDark: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+    textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))',
   },
   'Stand-Alone Projects Track': {
     primary: 'var(--ds-text-subtle, #64748b)',
@@ -201,7 +201,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: 'var(--ds-border, #e2e8f0)',
     hexFill: 'var(--ds-border, #e2e8f0)',
     textPrimary: 'var(--ds-text-subtle, #475569)',
-    textDark: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+    textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))',
   },
 
   // Tahommona — Orange palette (A7)
@@ -236,7 +236,7 @@ export const DEFAULT_WORKSTREAM_COLOR: WorkstreamColorSet = {
   hexLight: 'var(--ds-border, #e2e8f0)',
   hexFill: 'var(--ds-border, #e2e8f0)',
   textPrimary: 'var(--ds-text-subtle, #475569)',
-  textDark: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+  textDark: 'var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))',
 };
 
 /**

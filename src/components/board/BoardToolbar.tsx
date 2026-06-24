@@ -161,7 +161,7 @@ export function BoardToolbar({
         {/* Stats */}
         <div className="flex items-center gap-3 text-xs">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[#0d9488]" />
+            <span className="w-2 h-2 rounded-full bg-[var(--ds-chart-teal-bold, #0d9488)]" />
             Done: {doneCount}
           </span>
           <span className="flex items-center gap-1">
@@ -169,7 +169,7 @@ export function BoardToolbar({
             In Progress: {inProgressCount}
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[#c8ccd0]" />
+            <span className="w-2 h-2 rounded-full bg-[var(--ds-border, #DFE1E6)]" />
             Backlog: {backlogCount}
           </span>
         </div>

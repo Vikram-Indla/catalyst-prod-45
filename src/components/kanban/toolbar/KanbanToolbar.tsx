@@ -433,7 +433,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               position: 'absolute', top: '100%', right: 0, marginTop: 6,
               width: 240, background: tk.surfaceBg,
               border: `1px solid ${tk.border}`, borderRadius: 10,
-              boxShadow: '0 8px 24px rgba(0,0,0,0.18), 0 0 1px rgba(0,0,0,0.12)',
+              boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.18)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
               zIndex: 50,
               padding: '6px 0', fontFamily: 'var(--cp-font-body)',
             }}

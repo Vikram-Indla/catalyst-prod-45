@@ -71,7 +71,7 @@ function EditKebabMenu({
     background: 'transparent',
     textAlign: 'left',
     fontSize: 14,
-    color: token('color.text', '#292A2E'),
+    color: token('color.text', 'var(--ds-text, #172B4D)'),
     cursor: 'pointer',
     whiteSpace: 'nowrap',
   };
@@ -79,7 +79,7 @@ function EditKebabMenu({
     <button
       type="button"
       onClick={() => { fn(); setOpen(false); }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
       style={itemStyle}
     >
@@ -101,10 +101,10 @@ function EditKebabMenu({
           top: 'calc(100% + 4px)',
           right: 0,
           zIndex: 400,
-          background: token('elevation.surface.overlay', '#FFFFFF'),
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+          border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           borderRadius: 4,
-          boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
+          boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))'),
           minWidth: 200,
           padding: '4px 0',
         }}>
@@ -463,12 +463,12 @@ useEffect(() => {
   // Used for the Edit and Full Screen CTAs so they have visual lift above
   // the flat shell background (appearance="subtle" is dead-flat).
   const elevatedBtnStyle: React.CSSProperties = {
-    background: token('elevation.surface.raised', '#FFFFFF'),
+    background: token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
     boxShadow: token(
       'elevation.shadow.raised',
-      '0 1px 1px rgba(9,30,66,0.13), 0 0 1px rgba(9,30,66,0.21)',
+      '0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.21))',
     ),
-    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+    border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
     borderRadius: 3,
     display: 'inline-flex',
     alignItems: 'center',
@@ -477,7 +477,7 @@ useEffect(() => {
     height: 32,
     fontSize: 14,
     fontWeight: 500,
-    color: token('color.text', '#172B4D'),
+    color: token('color.text', 'var(--ds-text, #172B4D)'),
     cursor: 'pointer',
     whiteSpace: 'nowrap' as const,
     fontFamily: 'inherit',
@@ -506,8 +506,8 @@ useEffect(() => {
         style={elevatedBtnStyle}
         onClick={() => setIsFullScreen(true)}
         data-testid="dashboard-fullscreen"
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', '#FFFFFF'); }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'); }}
       >
         <Maximize2 size={13} />
         Full screen
@@ -517,8 +517,8 @@ useEffect(() => {
         style={elevatedBtnStyle}
         onClick={enterEditMode}
         data-testid="dashboard-edit-layout"
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', '#FFFFFF'); }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'); }}
       >
         <EditIcon size={13} />
         Edit
@@ -535,7 +535,7 @@ useEffect(() => {
           position: 'fixed',
           inset: 0,
           zIndex: 9999,
-          background: token('elevation.surface', '#FFFFFF'),
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -549,9 +549,9 @@ useEffect(() => {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '8px 16px',
-            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             flexShrink: 0,
-            background: token('elevation.surface', '#FFFFFF'),
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -560,10 +560,10 @@ useEffect(() => {
               projectKey={pKey}
               avatarUrl={(project as any)?.avatar_url ?? null}
               iconName={(project as any)?.icon ?? 'mountain'}
-              color={(project as any)?.color ?? '#2563EB'}
+              color={(project as any)?.color ?? 'var(--ds-link, #2563eb)'}
               name={(project as any)?.name ?? pKey}
             />
-            <span style={{ fontSize: 16, fontWeight: 500, color: token('color.text', '#172B4D'), fontFamily: "'Atlassian Sans', -apple-system, sans-serif" }}>
+            <span style={{ fontSize: 16, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)'), fontFamily: "'Atlassian Sans', -apple-system, sans-serif" }}>
               {(project as any)?.name ?? pKey} — Dashboard
             </span>
           </div>
@@ -571,11 +571,11 @@ useEffect(() => {
             type="button"
             style={{
               ...elevatedBtnStyle,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
             }}
             onClick={() => setIsFullScreen(false)}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', '#FFFFFF'); }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'); }}
           >
             <Minimize2 size={13} />
             Exit full screen
@@ -633,7 +633,7 @@ useEffect(() => {
                   style={{
                     height: 48,
                     borderRadius: token('border.radius', '8px'),
-                    background: token('color.background.neutral.subtle', '#F1F2F4'),
+                    background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
                   }}
                 />
                 <div
@@ -650,7 +650,7 @@ useEffect(() => {
                         gridColumn: 'span 4',
                         height: 160,
                         borderRadius: token('border.radius', '8px'),
-                        background: token('color.background.neutral.subtle', '#F1F2F4'),
+                        background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
                       }}
                     />
                   ))}

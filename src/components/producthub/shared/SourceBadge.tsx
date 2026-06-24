@@ -34,8 +34,8 @@ interface SourceBadgeProps {
 }
 
 const PALETTE: Record<'catalyst' | 'jira', { bg: string; bgSubtle: string; text: string; border: string }> = {
-  catalyst: { bg: '#3F3F46', bgSubtle: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
-  jira:     { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bgSubtle: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', border: '#BFDBFE' },
+  catalyst: { bg: 'var(--ds-text-subtle, #44546F)', bgSubtle: 'var(--ds-surface-sunken, #F7F8F9)', text: 'var(--ds-text-subtle, #44546F)', border: 'var(--ds-border, #DFE1E6)' },
+  jira:     { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bgSubtle: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', border: 'var(--ds-background-information, #E9F2FF)' },
 };
 
 export const SourceBadge: React.FC<SourceBadgeProps> = ({

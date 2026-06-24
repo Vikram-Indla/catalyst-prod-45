@@ -622,7 +622,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             gap: 4,
             fontSize: 11,
             color: 'var(--ds-text-subtle, #44546F)',
-            boxShadow: '0 1px 4px rgba(9,30,66,0.1)',
+            boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
           }}
           title={railHidden ? 'Show sidebar' : 'Expand to full width'}
           aria-label={railHidden ? 'Show sidebar' : 'Expand to full width'}
@@ -641,7 +641,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
       {catySummary.open && (
         <div
           style={{
-            position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.5)',
+            position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.5))',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 2000,
           }}
@@ -651,7 +651,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             style={{
               background: 'var(--ds-surface-overlay, #FFFFFF)',
               borderRadius: 8,
-              boxShadow: '0 8px 32px rgba(9,30,66,0.24)',
+              boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.24))',
               width: 520,
               maxWidth: '90vw',
               maxHeight: '70vh',
@@ -662,7 +662,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             onClick={(e) => e.stopPropagation()}
           >
             {/* Rainbow AI header */}
-            <div style={{ padding: '2px', background: 'conic-gradient(from 0deg, #FF3CAC, #784BA0, #2B86C5, #00C9FF, #92FE9D, #FFD700, #FF3CAC)', borderRadius: '8px 8px 0 0', flexShrink: 0 }}>
+            <div style={{ padding: '2px', background: 'conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder, #BE185D), var(--ds-background-discovery-bold, #6E5DC6), var(--ds-link, #0C66E4), var(--ds-background-information-bold, #0C66E4), var(--ds-background-success, #DFFCF0), var(--ds-background-warning-bold, #E2B203), var(--ds-background-accent-magenta-bolder, #BE185D))', borderRadius: '8px 8px 0 0', flexShrink: 0 }}>
               <div style={{ background: 'var(--ds-surface-overlay, #FFFFFF)', padding: '12px 16px', borderRadius: '6px 6px 0 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>✦ Ask Caty — Channel Summary</span>
                 <button type="button" onClick={() => setCatySummary({ open: false, loading: false, text: '' })} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16, lineHeight: 1 }} aria-label="Close">✕</button>

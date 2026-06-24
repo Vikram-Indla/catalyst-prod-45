@@ -200,7 +200,7 @@ function SwitcherPanel({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 6,
-        boxShadow: '0 8px 32px rgba(9,30,66,0.20), 0 0 1px rgba(9,30,66,0.14)',
+        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.20)), 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14))',
         zIndex: 9999,
         display: 'flex',
         flexDirection: 'column',

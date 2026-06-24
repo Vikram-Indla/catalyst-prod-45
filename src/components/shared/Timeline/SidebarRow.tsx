@@ -1,7 +1,7 @@
 /**
  * SidebarRow — single tree row in the Timeline sidebar.
  *
- * Hub-agnostic. Each interactive surface (checkbox, collapse toggle, progress bar,
+ * Hub-agnostic. Each interactive surface (checkbox, collapse toggle,
  * inline create, more-actions menu and its child modals) is gated by a feature
  * flag or the presence of a mutation callback. Pages provide whichever subset
  * applies; the row hides everything else cleanly.
@@ -26,7 +26,7 @@ import {
   ROW_H,
   JIRA_EPIC_COLORS,
 } from './types';
-import { computeEpicProgress, iconBtnStyle, flattenAll, formatDateCompact } from './utils';
+import { iconBtnStyle, flattenAll, formatDateCompact } from './utils';
 import { PortalMenu, MenuItemRow } from './primitives';
 import { EditDatesModal } from './EditDatesModal';
 import { ProductEditDatesModal } from './ProductEditDatesModal';
@@ -45,7 +45,6 @@ export interface SidebarRowProps {
   allItems: TimelineIssue[];
   /* feature flags */
   enableCheckbox?: boolean;
-  enableProgress?: boolean;
   enableInlineCreate?: boolean;
   enableMenu?: boolean;
   /* mutations (used by menu / inline create / edit dates) */
@@ -70,6 +69,12 @@ export interface SidebarRowProps {
    *  menuVariant === 'product-jira' so the Move submenu can compute first
    *  / last boundaries. */
   siblings?: TimelineIssue[];
+  /** This row IS the "located" work item (Jira locate-in-timeline) — its
+   *  title renders as a magenta pill. */
+  isLocated?: boolean;
+  /** This row is an ANCESTOR of the located work item — its collapse
+   *  chevron renders magenta. */
+  isLocatedAncestor?: boolean;
 }
 
 export function SidebarRow({
@@ -83,7 +88,6 @@ export function SidebarRow({
   buildIssueDetailRoute,
   allItems,
   enableCheckbox = true,
-  enableProgress = true,
   enableInlineCreate = true,
   enableMenu = true,
   mutations,
@@ -92,9 +96,10 @@ export function SidebarRow({
   childrenOnlyOnTopLevel = false,
   menuVariant = 'default',
   siblings = [],
+  isLocated = false,
+  isLocatedAncestor = false,
 }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
-  const progress = enableProgress && hasChildren ? computeEpicProgress(issue) : null;
   const [rowHovered, setRowHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editDatesOpen, setEditDatesOpen] = useState(false);
@@ -143,7 +148,7 @@ export function SidebarRow({
     : childrenOnlyOnGroupRows
       ? !!issue.isGroup
       : (!!childTypesOverride
-          || !['Sub-task', 'Backend', 'Frontend', 'Integration', 'Idea'].includes(issue.issueType ?? ''));
+          || (!issue.isGroup && !['Sub-task', 'Backend', 'Frontend', 'Integration', 'Idea'].includes(issue.issueType ?? '')));
 
   useEffect(() => {
     if (inlineCreateOpen && inlineCreateInputRef.current) inlineCreateInputRef.current.focus();
@@ -328,16 +333,17 @@ export function SidebarRow({
     ? true
     : (showCreateChildInMenu || showEditDatesInMenu || showRemoveDatesInMenu ||
        showMoveToReleaseInMenu || showChangeParentInMenu || showDepsInMenu || showEpicColorInMenu);
-  const renderMenu = enableMenu && anyMenuActionAvailable;
+  const renderMenu = enableMenu && anyMenuActionAvailable && !issue.isGroup;
 
   return (
     <>
     <div
       role="rowheader"
+      data-row-key={issue.issueKey}
       style={{
         height: ROW_H, display: 'flex', alignItems: 'center',
         paddingLeft: 8, paddingRight: 4, gap: 6,
-        borderBottom: '1px solid rgba(9,30,66,0.06)',
+        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         overflow: 'hidden', cursor: 'pointer',
         background: isSelected
           ? 'var(--ds-background-selected, #E9F2FE)'
@@ -389,9 +395,10 @@ export function SidebarRow({
         <div style={{ width: 16, flexShrink: 0 }} aria-hidden />
       )}
 
-      {/* collapse toggle */}
+      {/* collapse toggle — turns magenta when this row is an ancestor of the
+          located work item (Jira locate-in-timeline parity). */}
       <div
-        style={{ width: 20, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtle, #44546F)', marginLeft: depth * 28 }}
+        style={{ width: 20, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: isLocatedAncestor ? 'var(--ds-text-accent-magenta, #943D73)' : 'var(--ds-text-subtle, #44546F)', marginLeft: depth * 28 }}
         onClick={hasChildren ? e => { e.stopPropagation(); onToggle(issue.issueKey); } : undefined}
         aria-label={hasChildren ? (collapsed ? `Expand ${issue.issueKey}` : `Collapse ${issue.issueKey}`) : undefined}
       >
@@ -405,10 +412,12 @@ export function SidebarRow({
         )}
       </div>
 
-      {/* type icon */}
-      <div style={{ flexShrink: 0 }}>
-        <JiraIssueTypeIcon type={issue.issueType} size={14} />
-      </div>
+      {/* type icon — group/bucket headers have no work-item icon (Jira parity) */}
+      {!issue.isGroup && (
+        <div style={{ flexShrink: 0 }}>
+          <JiraIssueTypeIcon type={issue.issueType} size={14} />
+        </div>
+      )}
 
       {/* text block */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -426,7 +435,7 @@ export function SidebarRow({
               fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)',
               fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
             }}>
-              {issue.children.length}
+              {`– ${issue.children.length} work item${issue.children.length === 1 ? '' : 's'}`}
             </span>
           </div>
         ) : (
@@ -441,7 +450,8 @@ export function SidebarRow({
                 type="button"
                 onClick={e => { e.stopPropagation(); navigate(buildIssueDetailRoute(issue.issueKey)); }}
                 style={{
-                  fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+                  fontSize: 13, fontWeight: 400, color: 'var(--ds-link, #0C66E4)',
+                  textDecoration: 'underline',
                   whiteSpace: 'nowrap', lineHeight: 1.3,
                   background: 'none', border: 'none', padding: 0, cursor: 'pointer',
                   fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
@@ -453,9 +463,16 @@ export function SidebarRow({
             )}
             <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
               <span style={{
-                fontSize: 13, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
+                fontSize: 13, fontWeight: isLocated ? 500 : 400,
+                color: isLocated ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--ds-text, #172B4D)',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.3,
-                display: 'block', fontFamily: 'var(--ds-font-family-body)',
+                display: isLocated ? 'inline-block' : 'block',
+                maxWidth: '100%', boxSizing: 'border-box',
+                fontFamily: 'var(--ds-font-family-body)',
+                ...(isLocated ? {
+                  background: 'var(--ds-background-accent-magenta-bolder, #943D73)',
+                  padding: '1px 6px', borderRadius: 3,
+                } : null),
               }}>
                 {issue.summary}
               </span>
@@ -494,29 +511,6 @@ export function SidebarRow({
         >
           {[issue.startDate, issue.dueDate].filter(Boolean).map(d => formatDateCompact(d)).join(' → ')}
         </span>
-      )}
-
-      {/* progress bar */}
-      {progress && progress.total > 0 && (
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            left: 8 + (enableCheckbox ? 16 + 6 : 0) + depth * 28 + 20 + 6 + 14 + 6,
-            right: 8,
-            maxWidth: 200,
-            bottom: 4,
-            height: 3,
-            display: 'flex',
-            overflow: 'hidden',
-            borderRadius: 2,
-            pointerEvents: 'none',
-          }}
-        >
-          {progress.done > 0 && <div style={{ flex: progress.done, background: 'var(--ds-chart-success-bold, #94C748)' }} />}
-          {progress.inProgress > 0 && <div style={{ flex: progress.inProgress, background: 'var(--ds-chart-information-bold, #8FB8F6)' }} />}
-          {progress.toDo > 0 && <div style={{ flex: progress.toDo, background: 'var(--ds-background-neutral, #DDDEE1)' }} />}
-        </div>
       )}
 
       {/* + add child */}
@@ -661,7 +655,7 @@ export function SidebarRow({
                       width: 20, height: 20, borderRadius: '50%', padding: 0, cursor: 'pointer', flexShrink: 0,
                       background: hex, outline: 'none',
                       border: issue.epicColor === hex ? '2px solid var(--ds-border-selected, #0052CC)' : '2px solid transparent',
-                      boxShadow: issue.epicColor === hex ? '0 0 0 1.5px #fff inset' : 'none',
+                      boxShadow: issue.epicColor === hex ? '0 0 0 1.5px var(--ds-surface, #FFFFFF) inset' : 'none',
                     }}
                   />
                 ))}

@@ -5,7 +5,7 @@
  * keeps entries newest-first, and respects MAX_ENTRIES cap.
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { recordLocationVisit } from './useRecentProjects';
+import { recordLocationVisit, CANONICAL_NAV_SECTIONS } from './useRecentProjects';
 
 describe('recordLocationVisit — deduplication', () => {
   beforeEach(() => {
@@ -145,6 +145,17 @@ describe('recordLocationVisit — deduplication', () => {
     expect(stored[0].path).toBe('/project-hub/BAU/backlog');
     expect(stored[0].section).toBe('backlog');
     expect(stored[0].projectKey).toBe('BAU');
+  });
+});
+
+// 2026-06-24 — Project-hub Dependencies page footprint was never recorded on the
+// Home Recent rail. Root cause: `dependencies` was absent from CANONICAL_NAV_SECTIONS,
+// so useRecordProjectVisit early-returned at the gate and the read filter would also
+// drop any stored entry. Every other project-hub nav slug (dashboard, boards, timeline,
+// filters, …) is present. This pins `dependencies` into the recorded-section set.
+describe('CANONICAL_NAV_SECTIONS — project-hub coverage', () => {
+  it('records the Dependencies page section', () => {
+    expect(CANONICAL_NAV_SECTIONS.has('dependencies')).toBe(true);
   });
 });
 

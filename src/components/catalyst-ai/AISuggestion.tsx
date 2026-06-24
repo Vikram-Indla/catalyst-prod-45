@@ -19,7 +19,7 @@ export function AISuggestion({ icon, label, onClick }: AISuggestionProps) {
         "w-full flex items-center gap-3 px-3.5 py-3 bg-surface-0 border border-border-subtle rounded-[10px]",
         "text-[13px] font-medium text-text-secondary cursor-pointer mb-2",
         "shadow-sm transition-all duration-200 ease-out",
-        "hover:border-brand-primary hover:text-brand-primary hover:shadow-[0_2px_8px_rgba(37,99,235,0.1)] hover:translate-x-1",
+        "hover:border-brand-primary hover:text-brand-primary hover:shadow-[0_2px_8px_var(--ds-background-information, rgba(37,99,235,0.1))] hover:translate-x-1",
         "group text-left"
       )}
     >

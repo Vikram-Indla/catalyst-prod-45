@@ -110,18 +110,18 @@ export function areDemandFiltersEqual(a: DemandFilterState, b: DemandFilterState
 
 // Priority tier display config
 export const PRIORITY_TIER_CONFIG: { key: PriorityTier; label: string; color: string }[] = [
-  { key: 'high', label: 'High', color: '#ef4444' },
-  { key: 'medium', label: 'Medium', color: '#f59e0b' },
-  { key: 'low', label: 'Low', color: '#0d9488' },
-  { key: 'unscored', label: 'Unscored', color: '#6b7280' },
+  { key: 'high', label: 'High', color: 'var(--ds-background-danger-bold, #ef4444)' },
+  { key: 'medium', label: 'Medium', color: 'var(--ds-background-warning-bold, #f59e0b)' },
+  { key: 'low', label: 'Low', color: 'var(--ds-chart-teal-bold, #0d9488)' },
+  { key: 'unscored', label: 'Unscored', color: 'var(--ds-text-subtlest, #626F86)' },
 ];
 
 // Health display config
 export const HEALTH_CONFIG: { key: HealthStatus; label: string; color: string }[] = [
-  { key: 'on-track', label: 'On Track', color: '#0d9488' },
-  { key: 'at-risk', label: 'At Risk', color: '#f59e0b' },
-  { key: 'off-track', label: 'Off Track', color: '#ef4444' },
-  { key: 'unknown', label: 'Unknown', color: '#6b7280' },
+  { key: 'on-track', label: 'On Track', color: 'var(--ds-chart-teal-bold, #0d9488)' },
+  { key: 'at-risk', label: 'At Risk', color: 'var(--ds-background-warning-bold, #f59e0b)' },
+  { key: 'off-track', label: 'Off Track', color: 'var(--ds-background-danger-bold, #ef4444)' },
+  { key: 'unknown', label: 'Unknown', color: 'var(--ds-text-subtlest, #626F86)' },
 ];
 
 // Quarter config

@@ -37,18 +37,10 @@ export type ImproveIssueType =
   | string;
 
 /**
- * Trigger label that appears on the dropdown button — "Improve QA Bug",
- * "Improve Story", etc. Matches Jira's pattern verbatim.
+ * Trigger label that appears on the dropdown button.
  */
-export function improveTriggerLabel(issueType?: string | null): string {
-  if (!issueType) return 'Improve';
-  // Map a few legacy synonyms to canonical Jira-style labels.
-  const canonical: Record<string, string> = {
-    Bug: 'QA Bug',
-    Incident: 'Production Incident',
-  };
-  const label = canonical[issueType] ?? issueType;
-  return `Improve ${label}`;
+export function improveTriggerLabel(_issueType?: string | null): string {
+  return 'Improve';
 }
 
 /**

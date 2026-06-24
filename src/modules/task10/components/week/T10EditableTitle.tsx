@@ -84,7 +84,7 @@ export function T10EditableTitle({
         style={{
           padding: '0px 2px',
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: '2px solid #2563eb',
+          border: '2px solid var(--ds-link, #2563eb)',
           borderRadius: '4px',
           fontSize: 'inherit',
           fontWeight: 'inherit',
@@ -113,7 +113,7 @@ export function T10EditableTitle({
         display: 'inline-block',
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLSpanElement).style.backgroundColor = 'rgba(37, 99, 235, 0.05)';
+        (e.currentTarget as HTMLSpanElement).style.backgroundColor = 'var(--ds-background-information, rgba(37, 99, 235, 0.05))';
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLSpanElement).style.backgroundColor = 'transparent';

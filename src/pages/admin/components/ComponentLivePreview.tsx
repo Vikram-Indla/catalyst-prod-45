@@ -37,13 +37,13 @@ function ThemedFrame({ mode, children }: ThemedFrameProps) {
     <div
       data-color-mode={mode}
       style={{
-        border: `1px solid ${token('color.border', '#DCDFE4')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
         borderRadius: 6,
         padding: token('space.200', '16px'),
         background:
           mode === 'dark'
-            ? token('color.background.neutral', '#22272B')
-            : token('elevation.surface', '#FFFFFF'),
+            ? token('color.background.neutral', 'var(--ds-surface, #FFFFFF)')
+            : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         minHeight: 120,
         display: 'flex',
         flexDirection: 'column',
@@ -55,7 +55,7 @@ function ThemedFrame({ mode, children }: ThemedFrameProps) {
           fontSize: 11,
           fontWeight: 600,
           color: mode === 'dark'
-            ? token('color.text.inverse', '#FFFFFF')
+            ? token('color.text.inverse', 'var(--ds-surface, #FFFFFF)')
             : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           opacity: 0.8,
         }}
@@ -73,8 +73,8 @@ const PREVIEW_ERROR_FALLBACK = (
   <div
     style={{
       fontSize: 12,
-      color: token('color.text.danger', '#AE2A19'),
-      background: token('color.background.danger', '#FFEDEB'),
+      color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
+      background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
       padding: token('space.100', '8px'),
       borderRadius: 4,
     }}
@@ -99,15 +99,15 @@ export default function ComponentLivePreview({ entry }: ComponentLivePreviewProp
           style={{
             marginTop: token('space.100', '8px'),
             padding: token('space.200', '16px'),
-            border: `1px dashed ${token('color.border.warning', '#E2B203')}`,
+            border: `1px dashed ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}`,
             borderRadius: 6,
-            background: token('color.background.warning', '#FFF7D6'),
+            background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
             display: 'flex',
             flexDirection: 'column',
             gap: token('space.150', '12px'),
           }}
         >
-          <div style={{ fontSize: 13, color: token('color.text.warning', '#7F5F01') }}>
+          <div style={{ fontSize: 13, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>
             <strong>Inline preview unavailable.</strong>{' '}
             {deferred?.reason ?? 'No fixture provided for this entry.'}
           </div>
@@ -125,8 +125,8 @@ export default function ComponentLivePreview({ entry }: ComponentLivePreviewProp
                     gap: 4,
                     padding: '5px 12px',
                     borderRadius: 3,
-                    background: token('color.background.brand.bold', '#0C66E4'),
-                    color: '#fff',
+                    background: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'),
+                    color: 'var(--ds-text-inverse, #FFFFFF)',
                     textDecoration: 'none',
                     fontSize: 12,
                     fontWeight: 600,
@@ -146,9 +146,9 @@ export default function ComponentLivePreview({ entry }: ComponentLivePreviewProp
                     gap: 4,
                     padding: '5px 12px',
                     borderRadius: 3,
-                    border: `1px solid ${token('color.border.warning', '#E2B203')}`,
+                    border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}`,
                     background: 'transparent',
-                    color: token('color.text.warning', '#7F5F01'),
+                    color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
                     textDecoration: 'none',
                     fontSize: 12,
                     fontWeight: 600,
@@ -162,7 +162,7 @@ export default function ComponentLivePreview({ entry }: ComponentLivePreviewProp
                   href={`vscode://file/${entry.file_path ? '/Users/vikramindla/Documents/GitHub/catalyst-prod-45/' + deferred.sourceFile : ''}`}
                   style={{
                     fontSize: 11,
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                     textDecoration: 'none',
                     fontFamily: 'var(--ds-font-family-code)',
                   }}

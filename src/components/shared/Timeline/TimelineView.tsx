@@ -17,12 +17,12 @@
  */
 
 import React, { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { AtlaskitPageShell } from '@/components/ads';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronUpIcon from '@atlaskit/icon/glyph/chevron-up';
 import SearchIcon from '@atlaskit/icon/glyph/search';
-import MoreIcon from '@atlaskit/icon/glyph/more';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done';
@@ -32,6 +32,11 @@ import Tooltip from '@atlaskit/tooltip';
 import Avatar from '@atlaskit/avatar';
 import AvatarGroup from '@atlaskit/avatar-group';
 import Checkbox from '@atlaskit/checkbox';
+import Modal, { ModalTransition, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import TextField from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import {
   CanonicalFilter,
@@ -84,14 +89,28 @@ import {
   MenuItemRow,
   EmptyRowAdd,
   InlineEmptyOverlay,
+  TimelineEmptyState,
   ViewSettingsPanel,
   TimelineBarPopover,
 } from './primitives';
 import { EditDatesModal } from './EditDatesModal';
 import { SidebarRow } from './SidebarRow';
 import { TimelineBottomBar } from './TimelineBottomBar';
+import {
+  DependencyColumnHeaders,
+  DependencyColumnsBody,
+  DependencyAggregatePopover,
+  RowDependencyCard,
+  DEP_PANEL_W,
+} from './dependencies/DependencyUI';
+import { useTimelineDependencies } from './dependencies/useTimelineDependencies';
+import { aggregateGroup, relatedKeys, keysWithAnyDependency } from './dependencies/aggregate';
+import { getEntry } from './dependencies/normalize';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+
+/** Sentinel rowKey used by the group-header band's aggregate dependency popover. */
+const GROUP_DEP_KEY = '__group__';
 
 const TODAY = new Date();
 
@@ -109,7 +128,6 @@ export default function TimelineView(props: TimelineViewProps) {
     detailRouteOwnerKey,
     mutations,
     enableRowCheckbox = true,
-    enableRowProgress = true,
     enableInlineCreate = true,
     enableRowMenu = true,
     enableBarDrag = true,
@@ -122,10 +140,16 @@ export default function TimelineView(props: TimelineViewProps) {
     childrenOnlyOnTopLevel = false,
     menuVariant = 'default',
     detailEntityKind,
+    buildDependenciesRoute,
+    locatedKey,
   } = props;
 
   const navigate = useNavigate();
   const { workItemTypes, enableSavedFilters, savedFilters = [] } = filterOptions;
+
+  /* Jira locate-in-timeline highlight (magenta). Set from the locatedKey
+     prop, cleared when the user opens another work item. */
+  const [locatedActive, setLocatedActive] = useState<string | null>(null);
 
   /* row selection */
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -142,6 +166,7 @@ export default function TimelineView(props: TimelineViewProps) {
   const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; displayType: string } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
   const openDetail = useCallback((issue: TimelineIssue) => {
+    setLocatedActive(null);
     const itemType = resolveItemType(issue);
     // For task entities the detail panel reads from `tasks` by row UUID.
     // For release entities the detail panel reads from `rh_releases` by row UUID.
@@ -258,7 +283,7 @@ export default function TimelineView(props: TimelineViewProps) {
   const [openDropdown, setOpenDropdown] = useState<OpenDropdown>(null);
   const [sidebarHidden, setSidebarHidden] = useState(false);
 
-  /* create epic */
+  /* create epic (inline bottom row) */
   const [creatingEpic, setCreatingEpic] = useState(false);
   const [epicSummary, setEpicSummary] = useState('');
   const epicInputRef = useRef<HTMLInputElement>(null);
@@ -266,6 +291,39 @@ export default function TimelineView(props: TimelineViewProps) {
   useEffect(() => {
     if (creatingEpic && epicInputRef.current) epicInputRef.current.focus();
   }, [creatingEpic]);
+
+  /* create work modal */
+  const [createWorkOpen, setCreateWorkOpen] = useState(false);
+  const [createWorkSummary, setCreateWorkSummary] = useState('');
+  const [createWorkType, setCreateWorkType] = useState(createTopLevelConfig.iconType);
+  const [createAnother, setCreateAnother] = useState(false);
+  const [isCreatingWork, setIsCreatingWork] = useState(false);
+  const workItemBtnRef = useRef<HTMLButtonElement>(null);
+  const createWorkBtnRef = useRef<HTMLButtonElement>(null);
+
+  const openCreateWork = useCallback(() => {
+    setCreateWorkType(createTopLevelConfig.iconType);
+    setCreateWorkSummary('');
+    setCreateAnother(false);
+    setCreateWorkOpen(true);
+  }, [createTopLevelConfig.iconType]);
+
+  const handleCreateWork = useCallback(async () => {
+    if (!createWorkSummary.trim() || !mutations?.onCreateEpic) return;
+    setIsCreatingWork(true);
+    try {
+      await mutations.onCreateEpic(createWorkSummary.trim(), createWorkType);
+      if (createAnother) {
+        setCreateWorkSummary('');
+      } else {
+        setCreateWorkOpen(false);
+        setCreateWorkSummary('');
+        setCreateAnother(false);
+      }
+    } finally {
+      setIsCreatingWork(false);
+    }
+  }, [createWorkSummary, createAnother, mutations]);
 
   /* drag-to-resize / drag-to-move bars */
   const [dragging, setDragging] = useState<{
@@ -305,8 +363,16 @@ export default function TimelineView(props: TimelineViewProps) {
   const statusBtnRef = useRef<HTMLButtonElement>(null);
   const assigneeBtnRef = useRef<HTMLButtonElement>(null);
   const quickBtnRef = useRef<HTMLButtonElement>(null);
-  const moreBtnRef = useRef<HTMLButtonElement>(null);
   const viewSettingsBtnRef = useRef<HTMLButtonElement>(null);
+
+  /* dependency mode (Show dependencies / saved-view "Dependencies") */
+  const depBodyRef = useRef<HTMLDivElement>(null);
+  const viewMenuBtnRef = useRef<HTMLButtonElement>(null);
+  const [depMode, setDepMode] = useState(false);
+  const [viewMenuOpen, setViewMenuOpen] = useState(false);
+  const [depFilterKey, setDepFilterKey] = useState<string | null>(null);
+  const [depCard, setDepCard] = useState<{ key: string; anchor: DOMRect } | null>(null);
+  const [depPopover, setDepPopover] = useState<{ key: string; dir: 'blockedBy' | 'blocks'; anchor: DOMRect } | null>(null);
 
   const pxPerDay = ZOOM_PX_PER_DAY[zoom];
   const dateRange = useMemo(() => computeDateRange(tree), [tree]);
@@ -315,6 +381,59 @@ export default function TimelineView(props: TimelineViewProps) {
   const todayLeft = daysBetween(dateRange.start, TODAY) * pxPerDay;
 
   const allRows = useMemo(() => flattenTree(tree, collapsed), [tree, collapsed]);
+
+  /* ── dependency data (single source of truth: ph_issue_dependencies) ── */
+  const projectKeysInTree = useMemo(() => {
+    const s = new Set<string>();
+    const walk = (l: TimelineIssue[]) => l.forEach(n => { if (n.projectKey) s.add(n.projectKey); walk(n.children); });
+    walk(tree);
+    return Array.from(s);
+  }, [tree]);
+  const deps = useTimelineDependencies(projectKeysInTree);
+  const keyToIssue = useMemo(() => {
+    const m = new Map<string, TimelineIssue>();
+    const walk = (l: TimelineIssue[]) => l.forEach(n => { m.set(n.issueKey, n); walk(n.children); });
+    walk(tree);
+    /* Enrich with dependency targets that aren't in the loaded (2026-gated)
+       tree — synthetic reference rows so the dependency popovers render the
+       same icon + summary on BOTH ends. Type is real (from ph_issues) or null
+       (no icon — never a fabricated default). */
+    for (const [k, meta] of deps.issueMeta) {
+      if (m.has(k)) continue;
+      m.set(k, {
+        id: '',
+        issueKey: k,
+        projectKey: k.includes('-') ? k.split('-')[0] : '',
+        issueType: meta.issueType ?? '',
+        summary: meta.summary,
+        status: meta.status ?? '',
+        statusCategory: null,
+        priority: null,
+        assigneeDisplayName: meta.assigneeDisplayName,
+        assigneeAvatarUrl: resolveAvatarUrl(meta.assigneeDisplayName),
+        parentKey: null,
+        startDate: null,
+        dueDate: meta.dueDate,
+        epicColor: null,
+        fixVersions: [],
+        sprintEndDate: meta.sprintEndDate,
+        sprintName: meta.sprintName,
+        releaseDate: meta.releaseDate,
+        releaseName: meta.releaseName,
+        children: [],
+      });
+    }
+    return m;
+  }, [tree, deps.issueMeta]);
+  const depCandidateOptions = useMemo(() => {
+    const out: { label: string; value: string; issueType: string | null }[] = [];
+    const walk = (l: TimelineIssue[]) => l.forEach(n => {
+      if (!n.isGroup) out.push({ label: `${n.issueKey} — ${n.summary || '(no summary)'}`, value: n.issueKey, issueType: n.issueType ?? null });
+      walk(n.children);
+    });
+    walk(tree);
+    return out;
+  }, [tree]);
 
   const assigneeOptions = useMemo(() => {
     const seen = new Set<string>();
@@ -408,8 +527,49 @@ export default function TimelineView(props: TimelineViewProps) {
         }
       } catch {}
     }
+    /* Dependency mode row filter.
+       - Focused (depFilterKey): keep the focused item + its directly-related
+         dependency items only.
+       - Otherwise: keep ONLY tickets that have at least one dependency edge
+         (plus their ancestors, so parent rows stay for tree context). */
+    if (depMode) {
+      if (depFilterKey) {
+        const keep = relatedKeys(deps.index, depFilterKey);
+        result = result.filter(({ issue }) => keep.has(issue.issueKey));
+      } else {
+        const keep = keysWithAnyDependency(
+          allRows.map(({ issue }) => ({ issueKey: issue.issueKey, parentKey: issue.parentKey })),
+          deps.index,
+        );
+        result = result.filter(({ issue }) => keep.has(issue.issueKey));
+      }
+    }
     return result;
-  }, [allRows, searchQuery, issueTypeFilter, statusFilter, quickFilter, activeSavedFilter, assigneeFilter]);
+  }, [allRows, searchQuery, issueTypeFilter, statusFilter, quickFilter, activeSavedFilter, assigneeFilter, depMode, depFilterKey, deps.index]);
+
+  /* Per-row dependency counts. Jira shows each work item's OWN direct edges
+     (verified: a collapsed epic still shows only its own deps, never a subtree
+     roll-up). Only the group-header band aggregates — see groupDepCounts. */
+  const depCounts = useMemo(() => {
+    const m = new Map<string, { blockedBy: number; blocks: number }>();
+    if (!depMode) return m;
+    for (const { issue } of rows) {
+      const entry = getEntry(deps.index, issue.issueKey);
+      m.set(issue.issueKey, { blockedBy: entry.blockedBy.length, blocks: entry.blocks.length });
+    }
+    return m;
+  }, [depMode, rows, deps.index]);
+
+  /* Group-band roll-up ("N Work items") — total dependency edges across every
+     visible row, deduped by edge. Mirrors Jira's space/type group header. */
+  const groupDeps = useMemo(
+    () => aggregateGroup(rows.map(r => r.issue.issueKey), deps.index),
+    [rows, deps.index],
+  );
+  const groupDepCounts = useMemo(
+    () => ({ blockedBy: groupDeps.blockedBy.length, blocks: groupDeps.blocks.length }),
+    [groupDeps],
+  );
 
   const headerCols = useMemo(() => buildHeaderCols(dateRange.start, dateRange.end, zoom, pxPerDay), [dateRange, zoom, pxPerDay]);
   const subHeaderCols = useMemo(() => buildSubHeaderCols(dateRange.start, dateRange.end, zoom, pxPerDay), [dateRange, zoom, pxPerDay]);
@@ -430,6 +590,7 @@ export default function TimelineView(props: TimelineViewProps) {
     requestAnimationFrame(() => {
       if (headerScrollRef.current) headerScrollRef.current.scrollLeft = grid.scrollLeft;
       if (sidebarBodyRef.current) sidebarBodyRef.current.scrollTop = grid.scrollTop;
+      if (depBodyRef.current) depBodyRef.current.scrollTop = grid.scrollTop;
       if (todayLineRef.current) {
         const x = todayLeft - grid.scrollLeft;
         todayLineRef.current.style.left = x + 'px';
@@ -446,6 +607,7 @@ export default function TimelineView(props: TimelineViewProps) {
     isSyncingScroll.current = true;
     requestAnimationFrame(() => {
       if (gridRef.current) gridRef.current.scrollTop = sidebar.scrollTop;
+      if (depBodyRef.current) depBodyRef.current.scrollTop = sidebar.scrollTop;
       isSyncingScroll.current = false;
     });
   }, []);
@@ -588,6 +750,52 @@ export default function TimelineView(props: TimelineViewProps) {
     setCollapsed(new Set(parentKeys));
   }, [hubKey, parentKeys]);
 
+  /* ── Jira "Locate work item in timeline" ──────────────────────────────
+     locatedKey arrives via ?locate=<key>. Highlight the row (magenta title
+     pill) + its ancestor chevrons (magenta), expand every ancestor so the
+     row is visible, and scroll it into view. The highlight persists until
+     the user opens another work item (cleared in openDetail). */
+
+  /* Ancestor keys of the located row (every parent up the chain). */
+  const locatedAncestors = useMemo(() => {
+    const out = new Set<string>();
+    if (!locatedActive) return out;
+    const path: string[] = [];
+    const walk = (list: TimelineIssue[]): boolean => {
+      for (const n of list) {
+        if (n.issueKey === locatedActive) return true;
+        if (n.children.length) {
+          path.push(n.issueKey);
+          if (walk(n.children)) return true;
+          path.pop();
+        }
+      }
+      return false;
+    };
+    if (walk(tree)) path.forEach(k => out.add(k));
+    return out;
+  }, [tree, locatedActive]);
+
+  /* Sync internal state from the prop (re-fires if the user re-locates). */
+  useEffect(() => { setLocatedActive(locatedKey ?? null); }, [locatedKey]);
+
+  /* Expand ancestors + scroll the located row into view. Runs AFTER the
+     default-collapse effect above so the expand isn't clobbered. */
+  useEffect(() => {
+    if (!locatedActive) return;
+    if (locatedAncestors.size === 0) return;
+    setCollapsed(prev => {
+      const next = new Set(prev);
+      locatedAncestors.forEach(k => next.delete(k));
+      return next;
+    });
+    const t = setTimeout(() => {
+      const el = sidebarBodyRef.current?.querySelector(`[data-row-key="${locatedActive}"]`);
+      el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }, 120);
+    return () => clearTimeout(t);
+  }, [locatedActive, locatedAncestors]);
+
   const scrollToToday = useCallback(() => {
     if (!gridRef.current) return;
     gridRef.current.scrollLeft = todayLeft - gridRef.current.clientWidth / 2;
@@ -636,12 +844,10 @@ export default function TimelineView(props: TimelineViewProps) {
     );
   }
 
-  if (error) {
+  if (error || tree.length === 0) {
     return (
       <AtlaskitPageShell flush chromeBand={chromeBand}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-          <p style={{ color: 'var(--ds-text-danger, #AE2A19)', fontSize: 14 }}>Failed to load timeline data.</p>
-        </div>
+        <TimelineEmptyState projectKey={hubLabel} />
       </AtlaskitPageShell>
     );
   }
@@ -734,6 +940,29 @@ export default function TimelineView(props: TimelineViewProps) {
               />
             );
           })()}
+
+          {/* Show dependencies toggle — when off, full hierarchy shows automatically */}
+          <button
+            type="button"
+            aria-pressed={depMode}
+            onClick={() => {
+              if (depMode) { setDepMode(false); setDepFilterKey(null); }
+              else { setDepMode(true); setDepFilterKey(null); expandAll(); }
+            }}
+            style={{
+              display: 'flex', alignItems: 'center', height: 32, padding: '0 12px',
+              border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+              background: depMode ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface, #FFFFFF)',
+              color: depMode ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)',
+              fontWeight: depMode ? 600 : 400,
+              fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap',
+              fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+            }}
+            onMouseEnter={e => { if (!depMode) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+            onMouseLeave={e => { if (!depMode) e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+          >
+            Show dependencies
+          </button>
 
           {/* type filter — LEGACY (now hidden, replaced above) */}
           {false && (<>
@@ -962,31 +1191,6 @@ export default function TimelineView(props: TimelineViewProps) {
           </div>
           </>)}
 
-          {/* more dropdown */}
-          <div style={{ position: 'relative' }}>
-            <button
-              ref={moreBtnRef}
-              onClick={() => toggleDropdown('more')}
-              aria-haspopup="menu"
-              aria-expanded={openDropdown === 'more'}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: 32, height: 32, border: '1px solid var(--ds-border, #DFE1E6)',
-                borderRadius: 3, background: 'var(--ds-surface, #FFFFFF)',
-                cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)',
-              }}
-              aria-label="More filters"
-            >
-              <MoreIcon label="" size="small" />
-            </button>
-            <PortalMenu isOpen={openDropdown === 'more'} onClose={closeDropdown} triggerRef={moreBtnRef} minWidth={200}>
-              <MenuItemRow label="Show hierarchy" onClick={closeDropdown} />
-              <MenuItemRow label="Show dependencies" onClick={closeDropdown} />
-              <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
-              {hasActiveFilters && <MenuItemRow label="Clear all filters" onClick={() => { clearAllFilters(); closeDropdown(); }} />}
-            </PortalMenu>
-          </div>
-
           {/* active filter chips */}
           {activeSavedFilter && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 8px',
@@ -1046,36 +1250,136 @@ export default function TimelineView(props: TimelineViewProps) {
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-          <button
-            ref={viewSettingsBtnRef}
-            onClick={() => setViewSettingsOpen(v => !v)}
-            aria-label="View settings"
-            aria-haspopup="dialog"
-            aria-expanded={viewSettingsOpen}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px',
-              border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-              background: viewSettingsOpen ? 'var(--ds-background-neutral-hovered, #EBECF0)' : 'var(--ds-surface, #FFFFFF)',
-              cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
-              fontFamily: 'var(--ds-font-family-body)',
-            }}
-          >
-            <SettingsIcon label="" size="small" />
-            {!isNarrow && 'View settings'}
-          </button>
-          {viewSettingsOpen && (
-            <ViewSettingsPanel
-              showProgress={showProgress}
-              showReleases={showReleases}
-              onToggleProgress={() => setShowProgress(v => !v)}
-              onToggleReleases={() => setShowReleases(v => !v)}
-              onClose={() => setViewSettingsOpen(false)}
-              triggerRef={viewSettingsBtnRef}
-            />
-          )}
-        </div>
       </div>
+
+      {/* ── Create work popover (portal → escapes overflow:hidden, anchored below button) ── */}
+      {createWorkOpen && createPortal(
+        <>
+          <div
+            onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}
+            style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Create work item"
+            style={(() => {
+              const rect = createWorkBtnRef.current?.getBoundingClientRect();
+              return {
+                position: 'fixed',
+                top: rect ? rect.bottom + 4 : 80,
+                left: rect ? Math.min(rect.left, window.innerWidth - 554) : 100,
+                width: 550,
+                maxHeight: `calc(100vh - ${rect ? rect.bottom + 24 : 104}px)`,
+                background: 'var(--ds-surface-overlay, #FFFFFF)',
+                boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+                borderRadius: 6,
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                display: 'flex', flexDirection: 'column',
+                zIndex: 9999, fontFamily: 'var(--ds-font-family-body)',
+                overflow: 'hidden',
+              };
+            })()}
+          >
+            {/* Header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '20px 24px 16px',
+              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+            }}>
+              <span style={{ fontSize: 20, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+                Create work item
+              </span>
+              <button
+                onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--ds-text-subtle, #42526E)', borderRadius: 3, display: 'flex', alignItems: 'center' }}
+                aria-label="Close"
+              >
+                <CrossIcon label="Close" size="small" />
+              </button>
+            </div>
+            <div style={{ padding: '12px 24px 0', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+              Required fields are marked with an asterisk <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+            </div>
+            {/* Body */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Space */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, fontFamily: 'var(--ds-font-family-body)' }}>
+                  Space <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3, border: '1px solid var(--ds-border, #DFE1E6)', cursor: 'default' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ProjectIcon projectKey={hubKey.replace(/^(project|product)-/, '')} size="small" name={hubLabel} />
+                    <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{hubLabel}</span>
+                  </div>
+                  <ChevronDownIcon label="" size="small" />
+                </div>
+              </div>
+              {/* Work item type */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 8, fontFamily: 'var(--ds-font-family-body)' }}>
+                  Work type <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+                </div>
+                <Select
+                  inputId="create-work-type"
+                  placeholder="Choose work type"
+                  value={createWorkType ? { value: createWorkType, label: createWorkType } : null}
+                  onChange={(opt: any) => opt && setCreateWorkType(opt.value)}
+                  options={workItemTypes.map(t => ({ value: t, label: t }))}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 10000 }) }}
+                  formatOptionLabel={(opt: any) => (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <JiraIssueTypeIcon type={opt.value} size={16} />
+                      <span>{opt.label}</span>
+                    </div>
+                  )}
+                />
+              </div>
+              {/* Summary */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, fontFamily: 'var(--ds-font-family-body)' }}>
+                  Summary <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+                </div>
+                <TextField
+                  value={createWorkSummary}
+                  onChange={e => setCreateWorkSummary((e.target as HTMLInputElement).value)}
+                  placeholder="Enter summary"
+                  autoFocus
+                  onKeyDown={e => { if (e.key === 'Enter' && createWorkSummary.trim()) handleCreateWork(); }}
+                />
+              </div>
+            </div>
+            {/* Footer */}
+            <div style={{
+              borderTop: '1px solid var(--ds-border, #DFE1E6)', padding: '12px 24px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <Checkbox
+                label="Create another"
+                isChecked={createAnother}
+                onChange={e => setCreateAnother(e.target.checked)}
+              />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <Button appearance="subtle" onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}>
+                  Cancel
+                </Button>
+                <Button
+                  appearance="primary"
+                  onClick={handleCreateWork}
+                  isDisabled={!createWorkSummary.trim() || isCreatingWork}
+                  isLoading={isCreatingWork}
+                >
+                  Create
+                </Button>
+              </div>
+            </div>
+          </div>
+        </>,
+        document.body,
+      )}
 
       {/* ── body: sidebar + divider + grid ── */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
@@ -1086,7 +1390,7 @@ export default function TimelineView(props: TimelineViewProps) {
           }}>
             <div
               role="columnheader"
-              aria-label="Work"
+              aria-label="Work item"
               style={{
                 height: doubleHeaderH, flexShrink: 0,
                 borderBottom: '2px solid var(--ds-border, #DFE1E6)',
@@ -1096,65 +1400,44 @@ export default function TimelineView(props: TimelineViewProps) {
                 justifyContent: 'space-between',
               }}
             >
-              <span style={{
-                fontSize: 13, fontWeight: 653,
-                color: 'var(--ds-text, #172B4D)',
-                letterSpacing: '0.01em',
-                userSelect: 'none',
-              }}>
-                Work
-              </span>
-              {parentKeys.length > 0 && (
-                <div style={{
-                  display: 'flex', alignItems: 'center',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 4,
-                  overflow: 'hidden',
-                  background: 'var(--ds-surface, #FFFFFF)',
-                  boxShadow: '0 1px 2px rgba(9,30,66,0.08)',
-                }}>
-                  <Tooltip content="Expand all" position="top">
-                    <button
-                      onClick={expandAll}
-                      aria-label="Expand all rows"
-                      title="Expand all"
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        gap: 2,
-                        height: 26, padding: '0 7px',
-                        border: 'none',
-                        borderRight: '1px solid var(--ds-border, #DFE1E6)',
-                        background: collapsed.size === 0 ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
-                        cursor: 'pointer',
-                        color: collapsed.size === 0 ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
-                        transition: 'background 0.1s, color 0.1s',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <ChevronDownIcon label="" size="small" />
-                    </button>
-                  </Tooltip>
-                  <Tooltip content="Collapse all" position="top">
-                    <button
-                      onClick={collapseAll}
-                      aria-label="Collapse all rows"
-                      title="Collapse all"
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        gap: 2,
-                        height: 26, padding: '0 7px',
-                        border: 'none',
-                        background: collapsed.size === parentKeys.length ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
-                        cursor: 'pointer',
-                        color: collapsed.size === parentKeys.length ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
-                        transition: 'background 0.1s, color 0.1s',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <ChevronUpIcon label="" size="small" />
-                    </button>
-                  </Tooltip>
-                </div>
+              <button
+                ref={workItemBtnRef}
+                onClick={() => toggleDropdown('workitem')}
+                aria-haspopup="menu"
+                aria-expanded={openDropdown === 'workitem'}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  background: 'none', border: 'none', padding: '0 2px', cursor: 'pointer',
+                  fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
+                  fontFamily: 'var(--ds-font-family-body)',
+                  userSelect: 'none',
+                }}
+              >
+                Work item
+                <ChevronDownIcon label="" size="small" />
+              </button>
+              <PortalMenu isOpen={openDropdown === 'workitem'} onClose={closeDropdown} triggerRef={workItemBtnRef} minWidth={160}>
+                <MenuItemRow label="Expand all" onClick={() => { expandAll(); closeDropdown(); }} />
+                <MenuItemRow label="Collapse all" onClick={() => { collapseAll(); closeDropdown(); }} />
+              </PortalMenu>
+              {enableCreateEpicRow && mutations?.onCreateEpic && (
+                <button
+                  ref={createWorkBtnRef}
+                  onClick={openCreateWork}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '6px 12px',
+                    border: '1px solid rgba(11,18,14,0.14)', borderRadius: 3,
+                    background: 'transparent',
+                    cursor: 'pointer', fontSize: 14, fontWeight: 500,
+                    color: 'var(--ds-text-subtle, #505258)',
+                    fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <EditorAddIcon label="" size="small" />
+                  {!isNarrow && 'Create work'}
+                </button>
               )}
             </div>
 
@@ -1163,8 +1446,8 @@ export default function TimelineView(props: TimelineViewProps) {
                 <div
                   role="row"
                   style={{
-                    height: 36, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 4,
-                    borderBottom: '1px solid rgba(9,30,66,0.06)',
+                    height: ROW_H, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 6,
+                    borderBottom: '1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
                     background: 'var(--ds-background-neutral-subtle, #F7F8F9)', cursor: 'pointer',
                   }}
                   onClick={() => setReleasesCollapsed(v => !v)}
@@ -1176,6 +1459,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   }}>
                     <ChevronDownIcon label={releasesCollapsed ? 'Expand releases' : 'Collapse releases'} size="small" />
                   </div>
+                  <ProjectIcon projectKey={hubKey.replace(/^(project|product)-/, '')} size="small" name={hubLabel} />
                   <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
                     {hubLabel}
                   </span>
@@ -1219,7 +1503,6 @@ export default function TimelineView(props: TimelineViewProps) {
                     buildIssueDetailRoute={buildIssueDetailRoute}
                     allItems={tree}
                     enableCheckbox={enableRowCheckbox}
-                    enableProgress={enableRowProgress}
                     enableInlineCreate={enableInlineCreate}
                     enableMenu={enableRowMenu}
                     mutations={mutations}
@@ -1228,6 +1511,8 @@ export default function TimelineView(props: TimelineViewProps) {
                     childrenOnlyOnTopLevel={childrenOnlyOnTopLevel}
                     menuVariant={menuVariant}
                     siblings={siblings}
+                    isLocated={locatedActive === issue.issueKey}
+                    isLocatedAncestor={locatedAncestors.has(issue.issueKey)}
                   />
                 );
               })}
@@ -1238,96 +1523,33 @@ export default function TimelineView(props: TimelineViewProps) {
                 </div>
               )}
 
-              {/* Create Epic row */}
-              {showCreateEpicRow && (
-                <div style={{
-                  height: ROW_H,
-                  display: 'flex',
-                  alignItems: 'center',
-                  paddingLeft: 8,
-                  paddingRight: 4,
-                  gap: 6,
-                  borderBottom: '1px solid rgba(9,30,66,0.06)',
-                }}>
-                  {creatingEpic ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
-                      <div style={{ flexShrink: 0 }}>
-                        <JiraIssueTypeIcon type={createTopLevelConfig.iconType} size={14} />
-                      </div>
-                      <input
-                        ref={epicInputRef}
-                        value={epicSummary}
-                        onChange={e => setEpicSummary(e.target.value)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') handleCreateEpic();
-                          if (e.key === 'Escape') { setCreatingEpic(false); setEpicSummary(''); }
-                        }}
-                        placeholder="What needs to be done?"
-                        style={{
-                          flex: 1,
-                          height: 28,
-                          padding: '0 8px',
-                          border: '1px solid var(--ds-border-focused, #388BFF)',
-                          borderRadius: 3,
-                          fontSize: 13,
-                          background: 'var(--ds-background-input, #FFFFFF)',
-                          outline: 'none',
-                          fontFamily: 'var(--ds-font-family-body)',
-                          color: 'var(--ds-text, #172B4D)',
-                        }}
-                      />
-                      <button
-                        onClick={handleCreateEpic}
-                        disabled={!epicSummary.trim()}
-                        style={{
-                          ...iconBtnStyle,
-                          color: !epicSummary.trim()
-                            ? 'var(--ds-text-disabled, #A5ADBA)'
-                            : 'var(--ds-text-success, #1F845A)',
-                        }}
-                        title="Save epic"
-                      >
-                        <EditorDoneIcon label="Save" size="small" />
-                      </button>
-                      <button
-                        onClick={() => { setCreatingEpic(false); setEpicSummary(''); }}
-                        style={iconBtnStyle}
-                        title="Cancel"
-                      >
-                        <CrossIcon label="Cancel" size="small" />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setCreatingEpic(true)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        width: '100%',
-                        padding: '6px 4px',
-                        border: 'none',
-                        background: 'transparent',
-                        cursor: 'pointer',
-                        fontSize: 13,
-                        color: 'var(--ds-text-subtle, #42526E)',
-                        borderRadius: 3,
-                        fontFamily: 'var(--ds-font-family-body)',
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.background = 'transparent';
-                      }}
-                    >
-                      <EditorAddIcon label="" size="small" />
-                      {createTopLevelConfig.label}
-                    </button>
-                  )}
-                </div>
-              )}
             </div>
+          </div>
+        )}
+
+        {/* ── dependency columns (Blocked by / Blocks) — depMode only ── */}
+        {depMode && !isNarrow && !sidebarHidden && (
+          <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
+            <DependencyColumnHeaders height={doubleHeaderH} />
+            <DependencyColumnsBody
+              ref={depBodyRef}
+              rows={rows}
+              counts={depCounts}
+              groupCounts={groupDepCounts}
+              groupHeight={36}
+              showReleases={showReleases}
+              releasesCollapsed={releasesCollapsed}
+              showCreateEpicRow={showCreateEpicRow}
+              onOpenAggregate={(key, _dir, anchor) => {
+                // Every work item (leaf OR parent epic) opens the rich card —
+                // matches Jira, which shows each item's own deps in the columnar card.
+                setDepCard({ key, anchor }); setDepPopover(null);
+              }}
+              onOpenGroupAggregate={(dir, anchor) => {
+                // Group-header band opens the aggregate "Dependencies (...)" list.
+                setDepPopover({ key: GROUP_DEP_KEY, dir, anchor }); setDepCard(null);
+              }}
+            />
           </div>
         )}
 
@@ -1454,7 +1676,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   style={{
                     position: 'absolute', top: 0, left: 0, right: 0, height: ROW_H,
                     background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-                    borderBottom: '1px solid rgba(9,30,66,0.06)',
+                    borderBottom: '1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
                     display: 'flex', alignItems: 'center',
                   }}
                 />
@@ -1466,7 +1688,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   <div key={issue.issueKey + '_bg'} role="row" style={{
                     position: 'absolute', top: rowTop, left: 0, right: 0, height: ROW_H,
                     background: 'transparent',
-                    borderBottom: '1px solid rgba(9,30,66,0.06)',
+                    borderBottom: '1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
                   }} />
                 );
               })}
@@ -1509,7 +1731,7 @@ export default function TimelineView(props: TimelineViewProps) {
                             borderRadius: 2,
                             cursor: 'pointer',
                             zIndex: 2,
-                            boxShadow: '0 1px 2px rgba(9,30,66,0.18)',
+                            boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
                           }}
                         />
                       </TimelineBarPopover>
@@ -1656,6 +1878,47 @@ export default function TimelineView(props: TimelineViewProps) {
           issue={gridDatesIssue}
           onClose={() => setGridDatesIssue(null)}
           onSave={(start, due) => mutations.onUpdateDates!(gridDatesIssue.issueKey, start, due)}
+        />
+      )}
+
+      {/* ── dependency aggregate popover (group-header band roll-up) ── */}
+      {depPopover && (() => {
+        if (depPopover.key !== GROUP_DEP_KEY) return null;
+        const relations = depPopover.dir === 'blockedBy' ? groupDeps.blockedBy : groupDeps.blocks;
+        const title = depPopover.dir === 'blockedBy' ? 'Dependencies (blocked by)' : 'Dependencies (blocks)';
+        return (
+          <DependencyAggregatePopover
+            title={title}
+            dir={depPopover.dir}
+            relations={relations}
+            keyToIssue={keyToIssue}
+            anchor={depPopover.anchor}
+            onClose={() => setDepPopover(null)}
+            onOpenItem={(k) => { setDepPopover(null); navigate(buildDependenciesRoute ? buildDependenciesRoute(k) : buildIssueDetailRoute(k)); }}
+          />
+        );
+      })()}
+
+      {/* ── row dependency card (leaf rows) ── */}
+      {depCard && (
+        <RowDependencyCard
+          rowKey={depCard.key}
+          index={deps.index}
+          keyToIssue={keyToIssue}
+          candidateOptions={depCandidateOptions.filter(o => o.value !== depCard.key)}
+          anchor={depCard.anchor}
+          isFiltered={depFilterKey === depCard.key}
+          onClose={() => setDepCard(null)}
+          onRemove={deps.removeDependency}
+          onAdd={(direction, otherKey) => deps.addDependency({
+            rowKey: depCard.key,
+            direction,
+            otherKey,
+            projectKey: keyToIssue.get(depCard.key)?.projectKey ?? projectKeysInTree[0] ?? '',
+          })}
+          onShowOnCanvas={(k) => { setDepCard(null); navigate(buildDependenciesRoute ? buildDependenciesRoute(k) : buildIssueDetailRoute(k)); }}
+          onFilter={(k) => setDepFilterKey(k)}
+          onClearFilter={() => setDepFilterKey(null)}
         />
       )}
 

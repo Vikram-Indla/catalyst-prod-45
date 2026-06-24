@@ -117,14 +117,14 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
       style={{
         position: 'absolute', top: '100%', right: 0, marginTop: 4,
         width: 400, maxHeight: 400, background: 'var(--bg-app)',
-        border: '1px solid #e2e8f0', borderRadius: 12,
-        boxShadow: '0 12px 40px rgba(0,0,0,.15)', zIndex: 9999,
+        border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 12,
+        boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,.15))', zIndex: 9999,
         display: 'flex', flexDirection: 'column',
         fontFamily: 'var(--cp-font-body)',
       }}
     >
       {/* Search */}
-      <div style={{ padding: '10px 12px', borderBottom: '1px solid #f1f5f9' }}>
+      <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F7F8F9)' }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6,
           background: 'var(--bg-1)', borderRadius: 6, padding: '6px 10px',
@@ -196,7 +196,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
 
       {/* Footer */}
       <div style={{
-        padding: '10px 12px', borderTop: '1px solid #f1f5f9',
+        padding: '10px 12px', borderTop: '1px solid var(--ds-surface-sunken, #F7F8F9)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
         <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>

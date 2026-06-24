@@ -58,11 +58,12 @@ import {
 import { JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
 import { JQLEditor } from '@/components/filters/JQLEditor';
 import { useJQLValuePool } from '@/hooks/workhub/useJQLValuePool';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import type { FilterCategory as JiraFilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { WorkItem } from '@/types/workItem.types';
 import FilterIconCore from '@atlaskit/icon/core/filter';
 
-const SUBTLE = token('color.text.subtle', '#505258');
+const SUBTLE = token('color.text.subtle', 'var(--ds-text-subtle, #44546F)');
 const FilterIcon = () => <FilterIconCore label="" color={SUBTLE} />;
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -742,6 +743,9 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const members = useProjectMembers((isProduct || isIncident || isTasks || isRelease) ? undefined : projectKey);
   const jqlValuePool = useJQLValuePool(facetItems, projectKey);
 
+  // Single source of truth for user pickers: only APPROVED access management users.
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+
   // Load saved filter when navigated from FiltersListPage with ?filterId=
   const { data: loadedFilter } = useQuery({
     queryKey: ['ph_saved_filter', urlFilterId],
@@ -780,8 +784,25 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
     const ALL_FACETS = ['workType', 'status', 'assignee', ...MORE_FILTERS_FACETS] as const;
     const out: Record<string, FacetOption[]> = {};
     for (const f of ALL_FACETS) out[f] = distinctOptions(facetItems, f as any);
+
+    // Gate assignee options to APPROVED access management users only.
+    // Build from approved profiles with a jira_account_id so the server filter
+    // (.in('assignee_account_id', ...)) works correctly. This also eliminates
+    // duplicates: profiles has exactly one row per person regardless of how many
+    // Jira account IDs appear in ph_issues for that person.
+    const approvedAssignees: FacetOption[] = approvedProfiles
+      .filter(p => (p as any).jiraAccountId)
+      .map(p => ({ value: (p as any).jiraAccountId as string, label: p.name }));
+    if (approvedAssignees.length > 0) {
+      out['assignee'] = approvedAssignees;
+    } else {
+      // Fallback: keep ph_issues-derived options but filter by approved names
+      const approvedNames = new Set(approvedProfiles.map(p => p.name.toLowerCase()));
+      out['assignee'] = out['assignee'].filter(o => approvedNames.has(o.label.toLowerCase()));
+    }
+
     return out;
-  }, [facetItems]);
+  }, [facetItems, approvedProfiles]);
 
   // When a saved filter is loaded via ?filterId=, use its stored JQL directly.
   // In JQL mode, use the raw jqlText. Otherwise derive from chip state.
@@ -1143,7 +1164,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
             margin: 0,
             fontSize: 24,
             fontWeight: 653,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
             lineHeight: '28px',
           }}
         >
@@ -1170,7 +1191,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
           display: askCatyOpen ? 'none' : 'flex',
           flexDirection: 'column',
           flexShrink: 0,
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         }}
       >
         {/* ── Row 1: Ask Caty · Basic/JQL toggle · search · chips · active chips ── */}
@@ -1188,11 +1209,11 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
               style={{
                 height: 32, padding: '0 8px', fontSize: 14,
                 fontWeight: filterMode === 'basic' ? 600 : 400,
-                border: `1px solid ${filterMode === 'basic' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
-                borderRight: filterMode === 'basic' ? `1px solid ${token('color.border.focused', '#388BFF')}` : 'none',
+                border: `1px solid ${filterMode === 'basic' ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                borderRight: filterMode === 'basic' ? `1px solid ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}` : 'none',
                 borderRadius: '3px 0 0 3px',
                 background: 'transparent',
-                color: filterMode === 'basic' ? token('color.link', '#0C66E4') : token('color.text', '#172B4D'),
+                color: filterMode === 'basic' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
                 cursor: 'pointer',
               }}
             >
@@ -1203,10 +1224,10 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
               style={{
                 height: 32, padding: '0 8px', fontSize: 14,
                 fontWeight: filterMode === 'jql' ? 600 : 400,
-                border: `1px solid ${filterMode === 'jql' ? token('color.border.focused', '#388BFF') : token('color.border', '#DFE1E6')}`,
+                border: `1px solid ${filterMode === 'jql' ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 borderRadius: '0 3px 3px 0',
                 background: 'transparent',
-                color: filterMode === 'jql' ? token('color.link', '#0C66E4') : token('color.text', '#172B4D'),
+                color: filterMode === 'jql' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
                 cursor: 'pointer',
               }}
             >
@@ -1238,7 +1259,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
                     markDirty();
                   }}
                   elemBeforeInput={
-                    <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
+                    <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), display: 'flex', alignItems: 'center' }}>
                       <AkSearchIcon label="" size="small" />
                     </span>
                   }
@@ -1303,10 +1324,10 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
                         display: 'inline-flex', alignItems: 'center', gap: 4,
                         height: 28, padding: '0 8px',
                         borderRadius: 3,
-                        border: `1px solid ${token('color.border.focused', '#388BFF')}`,
+                        border: `1px solid ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`,
                         background: 'transparent',
                         fontSize: 14,
-                        color: token('color.link', '#0C66E4'),
+                        color: token('color.link', 'var(--ds-link, #0C66E4)'),
                         whiteSpace: 'nowrap', flexShrink: 0,
                       }}
                     >
@@ -1384,7 +1405,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
 
           <div style={{ flex: 1 }} />
 
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px', color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
             {isFetching && <Spinner size="small" />}
             {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
           </div>
@@ -1496,7 +1517,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
                 key={flag.id}
                 id={flag.id}
                 appearance="success"
-                icon={<AkInfoIcon label="Saved" color={token('color.icon.success', '#22A06B')} />}
+                icon={<AkInfoIcon label="Saved" color={token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)')} />}
                 title="Filter saved"
                 description="Your changes have been saved."
                 actions={[{ content: 'Dismiss', onClick: () => dismissFlag(flag.id) }]}
@@ -1509,7 +1530,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
                 key={flag.id}
                 id={flag.id}
                 appearance="info"
-                icon={<AkInfoIcon label="Info" color={token('color.icon.information', '#1868DB')} />}
+                icon={<AkInfoIcon label="Info" color={token('color.icon.information', 'var(--ds-link, #1868DB)')} />}
                 title="Filter saved — linked views updated"
                 description={
                   linkedEntities.length > 0
