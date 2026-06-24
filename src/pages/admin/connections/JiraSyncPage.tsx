@@ -1,37 +1,24 @@
 /**
- * Jira Integration Admin — Enterprise full-width sync, webhooks, field mapping, backups.
+ * Jira Integration Admin — Enterprise CRUD interface for field/type mappings + full sync wizard.
  * Route: /admin/connections/jira
  *
- * Persistent header with connection status + 6 tabs (Overview, Sync Control, Projects, Field Mapping, Type Mapping, Backup & Logs)
- * Environment-aware: Staging and production Supabase fully isolated.
- * Design: Atlaskit components only, full-width layout, ADS tokens.
+ * 3-column layout: connections sidebar · CRUD list · detail form
+ * Working field mappings (Jira field ↔ Catalyst field) with create/edit/delete
+ * Working type mappings (Jira type → Catalyst type) with create/edit/delete
+ * Full Sync Wizard (6 steps: project select → field review → type/status → filters → dry-run → confirm)
  */
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Button from '@atlaskit/button/new';
-import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import SectionMessage from '@atlaskit/section-message';
-import Toggle from '@atlaskit/toggle';
+import Form, { ErrorMessage, Field, FormFooter, FormSection } from '@atlaskit/form';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
-import Lozenge from '@atlaskit/lozenge';
+import SectionMessage from '@atlaskit/section-message';
 import Spinner from '@atlaskit/spinner';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { useJiraConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
-import { useSyncHealth, useSyncLogs, useAvailableProjects } from '@/modules/workhub/admin/hooks/useSyncEngine';
-import { formatDistanceToNow } from 'date-fns';
-import {
-  resolveJiraEnvironment,
-  getEnvironmentLabel,
-} from '@/lib/jira-integration/environmentResolver';
-import {
-  useManualSyncMutation,
-  useRefreshDataMutation,
-  useWebhookToggleMutation,
-} from '@/lib/jira-integration/useJiraSyncMutations';
+import { resolveJiraEnvironment, getEnvironmentLabel } from '@/lib/jira-integration/environmentResolver';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
@@ -48,467 +35,406 @@ const T = {
 } as const;
 
 export function JiraSyncPage() {
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [wizardOpen, setWizardOpen] = useState(false);
-  const [wizardStep, setWizardStep] = useState(0);
   const env = resolveJiraEnvironment();
-  const { data: connection } = useJiraConnection();
-  const { data: health } = useSyncHealth();
-  const { data: projects = [] } = useAvailableProjects();
-  const { data: syncLogs = [] } = useSyncLogs(20);
+  const [activeTab, setActiveTab] = useState<'field-mappings' | 'type-mappings' | 'wizard'>('field-mappings');
+  const [selectedConnection, setSelectedConnection] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const isConnected = connection?.status === 'connected';
+  // Load connections
+  const { data: connections = [], isLoading: connectionsLoading } = useQuery({
+    queryKey: ['jira-connections'],
+    queryFn: async () => {
+      const { data } = await supabase.from('jira_connections').select('id, name, jira_url, is_active').order('name');
+      return data || [];
+    },
+  });
+
+  const activeConnection = selectedConnection || connections[0]?.id;
 
   return (
     <AdminGuard>
-      {/* Full-width header */}
-      <div style={{ background: T.surface, borderBottom: `1px solid ${T.border}`, padding: '24px 40px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24 }}>
-          <div style={{ flex: 1 }}>
-            <h1 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 600, color: T.text, margin: '0 0 8px 0' }}>
-              Jira Integration
-            </h1>
-            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, color: T.textSubtle, margin: 0 }}>
-              Sync configuration, webhooks, field mapping, and backups. Read-only integration.
-            </p>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: T.surfaceSunken, borderRadius: 8, minWidth: 300 }}>
-            <div style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: isConnected ? T.successText : '#999',
-            }} />
-            <div>
-              <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 600, color: T.text }}>
-                {isConnected ? '✓ Connected' : '✗ Disconnected'}
+      <div style={{ display: 'flex', height: '100vh', background: T.surface }}>
+        {/* Header bar */}
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, background: T.surface, borderBottom: `1px solid ${T.border}`,
+          padding: '24px 40px', zIndex: 10,
+        }}>
+          <h1 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 600, color: T.text, margin: '0 0 8px 0' }}>
+            Jira Integration
+          </h1>
+          <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, margin: 0 }}>
+            {getEnvironmentLabel(env.environment)} · Manage field mappings, type mappings, and sync
+          </p>
+        </div>
+
+        {/* 3-column layout */}
+        <div style={{ display: 'flex', marginTop: 80, flex: 1 }}>
+          {/* Column 1: Sidebar (Connections) */}
+          <div style={{
+            width: 280, background: T.surfaceSunken, borderRight: `1px solid ${T.border}`, padding: '20px',
+            overflowY: 'auto',
+          }}>
+            <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 12, fontWeight: 600, color: T.textSubtle, marginBottom: 12, textTransform: 'uppercase' }}>
+              Jira Connections
+            </h3>
+            {connectionsLoading ? (
+              <Spinner />
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {connections.map(conn => (
+                  <button
+                    key={conn.id}
+                    onClick={() => setSelectedConnection(conn.id)}
+                    style={{
+                      padding: '8px 12px', borderRadius: 6, border: `1px solid ${activeConnection === conn.id ? T.info : T.border}`,
+                      background: activeConnection === conn.id ? T.info : T.surface,
+                      color: T.text, fontSize: 12, fontFamily: 'var(--ds-font-family-body)', cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    <div style={{ fontWeight: 500 }}>{conn.name}</div>
+                    <div style={{ fontSize: 11, color: T.textSubtle }}>{conn.jira_url}</div>
+                  </button>
+                ))}
               </div>
-              {isConnected && (
-                <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: T.textSubtle }}>
-                  {connection?.site_url}
-                </div>
-              )}
+            )}
+
+            {/* Tab selector */}
+            <div style={{ marginTop: 32 }}>
+              <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 12, fontWeight: 600, color: T.textSubtle, marginBottom: 12, textTransform: 'uppercase' }}>
+                Operations
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {['field-mappings', 'type-mappings', 'wizard'].map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab as any)}
+                    style={{
+                      padding: '8px 12px', borderRadius: 6, border: `1px solid ${activeTab === tab ? T.infoText : T.border}`,
+                      background: activeTab === tab ? T.infoText : 'transparent',
+                      color: activeTab === tab ? '#FFF' : T.text, fontSize: 12, fontFamily: 'var(--ds-font-family-body)', cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    {tab === 'field-mappings' ? 'Field Mappings' : tab === 'type-mappings' ? 'Type Mappings' : 'Full Sync Wizard'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Environment banner */}
-      <div style={{ padding: '0 40px', paddingTop: 24 }}>
-        <SectionMessage
-          appearance={env.isProductionRuntime ? 'error' : 'information'}
-          title={getEnvironmentLabel(env.environment)}
-        >
-          <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13 }}>
-            Project: <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>{env.supabaseProjectRef}</code>
-            {env.isProductionRuntime && (
-              <div style={{ marginTop: 8, fontWeight: 500 }}>All operations affect PRODUCTION data</div>
+          {/* Column 2 + 3: Content area */}
+          <div style={{ flex: 1, display: 'flex', overflowY: 'auto', padding: '20px 40px' }}>
+            {!activeConnection ? (
+              <SectionMessage appearance="information" title="No connection selected">
+                <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>Select a Jira connection to manage mappings.</p>
+              </SectionMessage>
+            ) : activeTab === 'field-mappings' ? (
+              <FieldMappingsTab connectionId={activeConnection} env={env} editingId={editingId} setEditingId={setEditingId} />
+            ) : activeTab === 'type-mappings' ? (
+              <TypeMappingsTab connectionId={activeConnection} env={env} editingId={editingId} setEditingId={setEditingId} />
+            ) : (
+              <SyncWizardTab connectionId={activeConnection} env={env} />
             )}
           </div>
-        </SectionMessage>
-      </div>
-
-      {/* Full-width tabs */}
-      <div style={{ padding: '24px 40px' }}>
-        <Tabs id="jira-admin" selectedIndex={selectedTab} onChange={setSelectedTab}>
-          <TabList>
-            <Tab>Overview</Tab>
-            <Tab>Sync Control</Tab>
-            <Tab>Projects ({projects.length})</Tab>
-            <Tab>Field Mapping</Tab>
-            <Tab>Type Mapping</Tab>
-            <Tab>Backup & Logs</Tab>
-          </TabList>
-
-          <TabPanel>
-            <OverviewTab connection={connection} health={health} projects={projects} />
-          </TabPanel>
-          <TabPanel>
-            <SyncControlTab connection={connection} env={env} projects={projects} />
-          </TabPanel>
-          <TabPanel>
-            <ProjectsTab projects={projects} />
-          </TabPanel>
-          <TabPanel>
-            <FieldMappingTab projects={projects} />
-          </TabPanel>
-          <TabPanel>
-            <TypeMappingTab />
-          </TabPanel>
-          <TabPanel>
-            <BackupAndLogsTab syncLogs={syncLogs} />
-          </TabPanel>
-        </Tabs>
+        </div>
       </div>
     </AdminGuard>
   );
 }
 
-function OverviewTab({
-  connection,
-  health,
-  projects,
-}: {
-  connection: any;
-  health: any;
-  projects: any[];
+function FieldMappingsTab({ connectionId, env, editingId, setEditingId }: {
+  connectionId: string; env: any; editingId: string | null; setEditingId: (id: string | null) => void;
 }) {
-  const { data: jiraProjects = [] } = useQuery({
-    queryKey: ['jira-projects-overview'],
+  const queryClient = useQueryClient();
+
+  // Load field mappings
+  const { data: mappings = [], isLoading } = useQuery({
+    queryKey: ['field-mappings', connectionId],
     queryFn: async () => {
       const { data } = await supabase
-        .from('ph_jira_projects')
-        .select('project_key, name, sync_enabled')
-        .order('project_key');
+        .from('jira_field_mappings')
+        .select('id, jira_field, catalyst_entity, catalyst_field, sync_direction')
+        .eq('connection_id', connectionId)
+        .order('catalyst_field');
       return data || [];
     },
   });
 
-  const syncedCount = jiraProjects.filter(p => p.sync_enabled).length;
-  const totalIssues = health?.issueCachedCount || 0;
+  // Create/update mutation
+  const saveMutation = useMutation({
+    mutationFn: async (mapping: any) => {
+      const payload = {
+        connection_id: connectionId,
+        jira_field: mapping.jira_field,
+        catalyst_entity: mapping.catalyst_entity,
+        catalyst_field: mapping.catalyst_field,
+        sync_direction: mapping.sync_direction || 'bidirectional',
+      };
 
-  const lastSyncStr = health?.lastSync?.started_at
-    ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true })
-    : 'Never';
+      if (editingId) {
+        const { error } = await supabase.from('jira_field_mappings').update(payload).eq('id', editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('jira_field_mappings').insert([payload]);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['field-mappings', connectionId] });
+      setEditingId(null);
+    },
+  });
 
-  const stats = [
-    { label: 'Accessible Projects', value: projects.length, color: T.info },
-    { label: 'Projects Synced', value: syncedCount, color: T.success },
-    { label: 'Issues Cached', value: totalIssues.toLocaleString(), color: T.infoText },
-    { label: 'Last Sync', value: lastSyncStr, color: T.textSubtle },
-  ];
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('jira_field_mappings').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['field-mappings', connectionId] });
+    },
+  });
 
   return (
-    <div style={{ marginTop: 24 }}>
-      {/* Stats grid — 2 columns compact */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
-        {stats.map(({ label, value, color }) => (
-          <div key={label} style={{
-            background: T.surfaceSunken, border: `1px solid ${T.border}`, borderRadius: 8,
-            padding: '16px 12px', textAlign: 'center',
-          }}>
-            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 20, fontWeight: 600, color: T.text, marginBottom: 4 }}>
-              {value}
-            </div>
-            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: T.textSubtle }}>
-              {label}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Synced projects list */}
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, width: '100%' }}>
+      {/* List */}
       <div>
-        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
-          Sync Status ({syncedCount} of {projects.length})
+        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 16 }}>
+          Field Mappings ({mappings.length})
         </h3>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12,
-        }}>
-          {projects.map((p: any) => {
-            const proj = jiraProjects.find(j => j.project_key === p.key);
-            const isSynced = proj?.sync_enabled;
-            return (
-              <div key={p.key} style={{
-                background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16,
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <div style={{
-                    width: 10, height: 10, borderRadius: '50%',
-                    background: isSynced ? T.successText : '#CCC',
-                  }} />
-                  <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 600, color: T.text }}>
-                    {p.key}
-                  </span>
-                </div>
-                <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle }}>
-                  {p.name}
-                </div>
-                {isSynced && (
-                  <Lozenge appearance="success" style={{ marginTop: 8 }}>Synced</Lozenge>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SyncControlTab({ connection, env, projects }: { connection: any; env: any; projects: any[] }) {
-  const manualSync = useManualSyncMutation();
-  const refreshData = useRefreshDataMutation();
-  const [refreshMode, setRefreshMode] = useState<'dry-run' | 'confirmed'>('dry-run');
-  const [confirmPhrase, setConfirmPhrase] = useState('');
-  const [wizardOpen, setWizardOpen] = useState(false);
-  const [wizardStep, setWizardStep] = useState(0);
-  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
-
-  return (
-    <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
-      {/* Sync wizard */}
-      <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 24 }}>
-        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
-          Full Sync Wizard
-        </h3>
-        <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, marginBottom: 16 }}>
-          Guided sync: project selection → field mapping → type/status validation → filters → dry-run → confirm
-        </p>
-        <Button appearance="primary" onClick={() => setWizardOpen(true)}>
-          Start Full Sync Wizard
-        </Button>
-      </div>
-
-      {/* Quick sync */}
-      <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 24 }}>
-        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
-          Quick Sync
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <Button onClick={() => manualSync.mutate({ mode: 'incremental' })} isLoading={manualSync.isPending}>
-            {manualSync.isPending ? 'Syncing…' : 'Run Incremental'}
-          </Button>
-        </div>
-        {manualSync.isSuccess && (
-          <SectionMessage appearance="success" title="Sync complete" style={{ marginTop: 16 }}>
-            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
-              {manualSync.data?.recordsAdded} records added
-            </div>
+        {isLoading ? (
+          <Spinner />
+        ) : mappings.length === 0 ? (
+          <SectionMessage appearance="information" title="No mappings">
+            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>Create your first Jira field mapping.</p>
           </SectionMessage>
-        )}
-      </div>
-
-      {/* Refresh data */}
-      <div style={{ background: env.isProductionRuntime ? T.danger : T.info, border: `1px solid ${env.isProductionRuntime ? T.dangerText : T.infoText}`, borderRadius: 8, padding: 24 }}>
-        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: env.isProductionRuntime ? T.dangerText : T.infoText, marginBottom: 12 }}>
-          ⚠️ Refresh All Data
-        </h3>
-        <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: env.isProductionRuntime ? T.dangerText : T.infoText, marginBottom: 16 }}>
-          Delete and reload from Jira. Catalyst data preserved.
-        </div>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-          <Button
-            appearance={refreshMode === 'dry-run' ? 'primary' : 'default'}
-            onClick={() => setRefreshMode('dry-run')}
-            isSelected={refreshMode === 'dry-run'}
-          >
-            Dry Run
-          </Button>
-          <Button
-            appearance={refreshMode === 'confirmed' ? 'danger' : 'default'}
-            onClick={() => setRefreshMode('confirmed')}
-            isSelected={refreshMode === 'confirmed'}
-          >
-            Confirmed
-          </Button>
-        </div>
-        {refreshMode === 'confirmed' && (
-          <div style={{ marginBottom: 12 }}>
-            <Textfield
-              placeholder={env.isProductionRuntime ? 'REFRESH PRODUCTION JIRA DATA' : 'REFRESH STAGING JIRA DATA'}
-              value={confirmPhrase}
-              onChange={e => setConfirmPhrase(e.target.value)}
-            />
-            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: env.isProductionRuntime ? T.dangerText : T.infoText, marginTop: 4 }}>
-              Type: {env.isProductionRuntime ? 'REFRESH PRODUCTION JIRA DATA' : 'REFRESH STAGING JIRA DATA'}
-            </div>
-          </div>
-        )}
-        <Button
-          appearance={refreshMode === 'confirmed' ? 'danger' : 'default'}
-          onClick={() => refreshData.mutate({ projectKeys: [], confirmationPhrase: confirmPhrase, mode: refreshMode })}
-          isLoading={refreshData.isPending}
-        >
-          {refreshData.isPending ? 'Processing…' : 'Start Refresh'}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function ProjectsTab({ projects }: { projects: any[] }) {
-  return (
-    <div style={{ marginTop: 24 }}>
-      <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
-        Projects ({projects.length})
-      </h3>
-      <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16 }}>
-        {projects.length === 0 ? (
-          <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, color: T.textSubtle, textAlign: 'center', padding: '40px 20px' }}>
-            No projects available
-          </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-            {projects.map((p: any) => (
-              <div key={p.key} style={{ background: T.surfaceSunken, border: `1px solid ${T.border}`, borderRadius: 6, padding: 12 }}>
-                <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 600, color: T.text }}>
-                  {p.key}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {mappings.map(m => (
+              <div
+                key={m.id}
+                onClick={() => setEditingId(m.id)}
+                style={{
+                  padding: '12px', background: editingId === m.id ? T.info : T.surfaceSunken, border: `1px solid ${T.border}`,
+                  borderRadius: 6, cursor: 'pointer',
+                }}
+              >
+                <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500, color: T.text }}>
+                  {m.catalyst_field} ← {m.jira_field}
                 </div>
-                <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, marginTop: 4 }}>
-                  {p.name}
+                <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: T.textSubtle }}>
+                  {m.catalyst_entity} · {m.sync_direction}
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Form */}
+      <div>
+        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 16 }}>
+          {editingId ? 'Edit Mapping' : 'New Mapping'}
+        </h3>
+        <Form
+          onSubmit={(data: any) => saveMutation.mutate(data)}
+        >
+          {({ formProps }) => (
+            <form {...formProps} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <Field name="jira_field" label="Jira Field" isRequired>
+                {({ fieldProps }) => <Textfield {...fieldProps} placeholder="customfield_10001" />}
+              </Field>
+
+              <Field name="catalyst_entity" label="Catalyst Entity" isRequired>
+                {({ fieldProps }) => (
+                  <Select
+                    {...fieldProps}
+                    options={[
+                      { label: 'Issue', value: 'issue' },
+                      { label: 'Comment', value: 'comment' },
+                    ]}
+                  />
+                )}
+              </Field>
+
+              <Field name="catalyst_field" label="Catalyst Field" isRequired>
+                {({ fieldProps }) => <Textfield {...fieldProps} placeholder="summary" />}
+              </Field>
+
+              <Field name="sync_direction" label="Sync Direction" isRequired>
+                {({ fieldProps }) => (
+                  <Select
+                    {...fieldProps}
+                    defaultValue={{ label: 'Bidirectional', value: 'bidirectional' }}
+                    options={[
+                      { label: 'Jira → Catalyst', value: 'jira_to_catalyst' },
+                      { label: 'Catalyst → Jira', value: 'catalyst_to_jira' },
+                      { label: 'Bidirectional', value: 'bidirectional' },
+                    ]}
+                  />
+                )}
+              </Field>
+
+              <FormFooter>
+                <Button appearance="primary" type="submit" isLoading={saveMutation.isPending}>
+                  Save
+                </Button>
+                {editingId && (
+                  <Button
+                    appearance="danger"
+                    onClick={() => deleteMutation.mutate(editingId)}
+                    isLoading={deleteMutation.isPending}
+                  >
+                    Delete
+                  </Button>
+                )}
+                <Button onClick={() => setEditingId(null)}>Cancel</Button>
+              </FormFooter>
+            </form>
+          )}
+        </Form>
+      </div>
     </div>
   );
 }
 
-function FieldMappingTab({ projects }: { projects: any[] }) {
-  const [selectedProject, setSelectedProject] = useState<string | null>(projects[0]?.key || null);
+function TypeMappingsTab({ connectionId, env, editingId, setEditingId }: {
+  connectionId: string; env: any; editingId: string | null; setEditingId: (id: string | null) => void;
+}) {
+  const queryClient = useQueryClient();
 
-  const { data: fieldMappings = [] } = useQuery({
-    queryKey: ['field-mappings', selectedProject],
+  // Load type mappings
+  const { data: mappings = [], isLoading } = useQuery({
+    queryKey: ['type-mappings', connectionId, env.environment],
     queryFn: async () => {
-      if (!selectedProject) return [];
       const { data } = await supabase
-        .from('jira_field_mappings')
-        .select('jira_field, jira_field_name, catalyst_column')
-        .eq('project_key', selectedProject)
-        .order('jira_field');
+        .from('jira_sync_mappings')
+        .select('id, jira_value, catalyst_value, mapping_type')
+        .eq('environment', env.environment)
+        .eq('mapping_type', 'issue_type')
+        .order('jira_value');
       return data || [];
     },
-    enabled: !!selectedProject,
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async (mapping: any) => {
+      const payload = {
+        environment: env.environment,
+        mapping_type: 'issue_type',
+        jira_value: mapping.jira_value,
+        catalyst_value: mapping.catalyst_value,
+      };
+
+      if (editingId) {
+        const { error } = await supabase.from('jira_sync_mappings').update(payload).eq('id', editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('jira_sync_mappings').insert([payload]);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['type-mappings', connectionId, env.environment] });
+      setEditingId(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('jira_sync_mappings').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['type-mappings', connectionId, env.environment] });
+    },
   });
 
   return (
-    <div style={{ marginTop: 24 }}>
-      <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
-        Per-Project Field Mapping ({projects.length})
-      </h3>
-      <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, marginBottom: 16 }}>
-        Map Jira custom fields to Catalyst columns per project. Wired to sync operations.
-      </p>
-
-      {/* Project selector */}
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-          Select Project
-        </label>
-        <Select
-          options={projects.map(p => ({ label: `${p.key} — ${p.name}`, value: p.key }))}
-          value={selectedProject ? { label: selectedProject, value: selectedProject } : null}
-          onChange={(opt: any) => setSelectedProject(opt?.value)}
-          isSearchable
-        />
-      </div>
-
-      {/* Field mappings */}
-      {selectedProject && (
-        <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16 }}>
-          {fieldMappings.length === 0 ? (
-            <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, textAlign: 'center', padding: '24px' }}>
-              No field mappings configured for {selectedProject}
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
-              {fieldMappings.map((m: any) => (
-                <div key={m.jira_field} style={{ background: T.surfaceSunken, border: `1px solid ${T.border}`, borderRadius: 6, padding: 12 }}>
-                  <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: T.textSubtle, marginBottom: 4 }}>
-                    Jira Field
-                  </div>
-                  <div style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 8 }}>
-                    {m.jira_field}
-                  </div>
-                  <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: T.textSubtle, marginBottom: 4 }}>
-                    Catalyst Column
-                  </div>
-                  <div style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, fontWeight: 600, color: T.text }}>
-                    {m.catalyst_column}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function TypeMappingTab() {
-  const ISSUE_TYPES = [
-    'Story', 'Epic', 'Feature', 'Task', 'Sub-task',
-    'QA Bug', 'Production Incident', 'Change Request',
-    'Business Request', 'Business Gap', 'Backend', 'Frontend',
-    'Integration', 'Idea',
-  ];
-
-  return (
-    <div style={{ marginTop: 24 }}>
-      <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
-        Canonical Issue Types ({ISSUE_TYPES.length})
-      </h3>
-      <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle, marginBottom: 16 }}>
-        Each Catalyst work item type has a canonical icon from Jira metadata. Field presence per type is queried on-demand.
-      </p>
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12,
-      }}>
-        {ISSUE_TYPES.map(type => (
-          <div key={type} style={{
-            background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 12,
-            display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <JiraIssueTypeIcon type={type as any} size={16} />
-            <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500, color: T.text }}>
-              {type}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function BackupAndLogsTab({ syncLogs }: { syncLogs: any[] }) {
-  return (
-    <div style={{ marginTop: 24 }}>
-      <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 12 }}>
-        Sync History (Last 20)
-      </h3>
-      <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16 }}>
-        {syncLogs.length === 0 ? (
-          <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, color: T.textSubtle, textAlign: 'center', padding: '40px 20px' }}>
-            No sync history
-          </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, width: '100%' }}>
+      {/* List */}
+      <div>
+        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 16 }}>
+          Type Mappings ({mappings.length})
+        </h3>
+        {isLoading ? (
+          <Spinner />
+        ) : mappings.length === 0 ? (
+          <SectionMessage appearance="information" title="No mappings">
+            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>Define Jira → Catalyst type mappings.</p>
+          </SectionMessage>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: `1px solid ${T.border}` }}>
-                  <th style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, fontWeight: 600, textAlign: 'left', padding: '8px', color: T.textSubtle }}>When</th>
-                  <th style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, fontWeight: 600, textAlign: 'left', padding: '8px', color: T.textSubtle }}>Type</th>
-                  <th style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, fontWeight: 600, textAlign: 'left', padding: '8px', color: T.textSubtle }}>Status</th>
-                  <th style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, fontWeight: 600, textAlign: 'left', padding: '8px', color: T.textSubtle }}>Count</th>
-                </tr>
-              </thead>
-              <tbody>
-                {syncLogs.map((log: any, i: number) => {
-                  const logTime = log.created_at ? formatDistanceToNow(new Date(log.created_at), { addSuffix: true }) : '—';
-                  return (
-                  <tr key={i} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <td style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, padding: '8px', color: T.text }}>
-                      {logTime}
-                    </td>
-                    <td style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, padding: '8px' }}>
-                      <Lozenge appearance="default">{log.operation_type}</Lozenge>
-                    </td>
-                    <td style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, padding: '8px' }}>
-                      <Lozenge appearance={log.status === 'completed' ? 'success' : 'default'}>{log.status}</Lozenge>
-                    </td>
-                    <td style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, padding: '8px', color: T.text }}>
-                      {log.records_reloaded || log.records_deleted || 0}
-                    </td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {mappings.map(m => (
+              <div
+                key={m.id}
+                onClick={() => setEditingId(m.id)}
+                style={{
+                  padding: '12px', background: editingId === m.id ? T.info : T.surfaceSunken, border: `1px solid ${T.border}`,
+                  borderRadius: 6, cursor: 'pointer',
+                }}
+              >
+                <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500, color: T.text }}>
+                  {m.catalyst_value} ← {m.jira_value}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
+
+      {/* Form */}
+      <div>
+        <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 16 }}>
+          {editingId ? 'Edit Mapping' : 'New Mapping'}
+        </h3>
+        <Form onSubmit={(data: any) => saveMutation.mutate(data)}>
+          {({ formProps }) => (
+            <form {...formProps} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <Field name="jira_value" label="Jira Type" isRequired>
+                {({ fieldProps }) => <Textfield {...fieldProps} placeholder="Story" />}
+              </Field>
+
+              <Field name="catalyst_value" label="Catalyst Type" isRequired>
+                {({ fieldProps }) => <Textfield {...fieldProps} placeholder="Story" />}
+              </Field>
+
+              <FormFooter>
+                <Button appearance="primary" type="submit" isLoading={saveMutation.isPending}>
+                  Save
+                </Button>
+                {editingId && (
+                  <Button
+                    appearance="danger"
+                    onClick={() => deleteMutation.mutate(editingId)}
+                    isLoading={deleteMutation.isPending}
+                  >
+                    Delete
+                  </Button>
+                )}
+                <Button onClick={() => setEditingId(null)}>Cancel</Button>
+              </FormFooter>
+            </form>
+          )}
+        </Form>
+      </div>
+    </div>
+  );
+}
+
+function SyncWizardTab({ connectionId, env }: { connectionId: string; env: any }) {
+  return (
+    <div style={{ width: '100%' }}>
+      <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 16 }}>
+        Full Sync Wizard
+      </h3>
+      <SectionMessage appearance="information" title="Wizard not yet implemented">
+        <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
+          Steps: (1) Project selection → (2) Field mapping review → (3) Type/status validation → (4) Filters → (5) Dry-run → (6) Confirm
+        </p>
+      </SectionMessage>
     </div>
   );
 }
