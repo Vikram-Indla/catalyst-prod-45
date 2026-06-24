@@ -10,9 +10,7 @@ import { useUnreadCount } from "@/hooks/useUnreadCount";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useActorProfiles } from "@/hooks/useActorProfiles";
 import { useTheme } from "@/hooks/useTheme";
-import NotificationItem from "./NotificationItem";
 import SectionHeader from "./SectionHeader";
 import EmptyState from "./EmptyState";
 import LoadingSkeleton from "./LoadingSkeleton";
@@ -195,12 +193,6 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     return true;
   });
 
-  // Batch-fetch actor profiles for all visible notifications
-  const actorIds = useMemo(
-    () => notifications.map(n => n.actor_user_id).filter((id): id is string => !!id),
-    [notifications]
-  );
-  const { data: actorProfiles } = useActorProfiles(actorIds);
 
 
   useEffect(() => {

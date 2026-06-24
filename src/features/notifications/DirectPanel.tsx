@@ -3,7 +3,7 @@ import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
 import { useDirectFromSync, useMarkSyncAsRead } from '@/hooks/useDirectFromSync';
-import { useActorProfiles } from '@/hooks/useActorProfiles';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './types';
 import { groupByDate } from './utils/date';
@@ -70,7 +70,7 @@ function mapStatusAppearance(statusType: StatusType) {
 
 function mapNotification(
   n: Notification,
-  profiles: Map<string, { full_name: string; avatar_url: string | null }>
+  profiles: Map<string, { full_name: string; avatarUrl?: string | null }>
 ): DirectNotification {
   const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
   // Show thread card if: there's a comment preview OR the notification is a comment verb.
@@ -93,7 +93,7 @@ function mapNotification(
   const resolvedDisplayName = profile?.full_name
     ?? n.actor?.full_name
     ?? (metadataActorName && metadataActorName.trim() ? metadataActorName : null);
-  const resolvedAvatarUrl = profile?.avatar_url
+  const resolvedAvatarUrl = profile?.avatarUrl
     ?? n.actor?.avatar_url
     ?? (metadataActorAvatar && metadataActorAvatar.trim() ? metadataActorAvatar : null);
 
@@ -268,14 +268,11 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
 
   const isLoading = notifLoading || syncLoading;
 
-  // Collect all actor IDs so we can batch-fetch their profiles (with avatar_url)
-  const actorIds = useMemo(
-    () => rawNotifications.map(n => n.actor_user_id).filter((id): id is string => !!id),
-    [rawNotifications]
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.id, p])),
+    [approvedProfiles]
   );
-
-  const { data: profilesMap } = useActorProfiles(actorIds);
-  const profiles = profilesMap ?? new Map();
 
   // Map raw DB rows → DirectNotification display shape
   const notifications = useMemo<DirectNotification[]>(
