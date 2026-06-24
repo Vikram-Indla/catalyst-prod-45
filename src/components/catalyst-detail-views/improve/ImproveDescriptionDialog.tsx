@@ -159,7 +159,7 @@ export function ImproveDescriptionDialog({
     <ModalDialog onClose={onClose} width={900}>
       <ModalHeader hasCloseButton>
         <ModalTitle>
-          {triggerLabel} — Improve description
+          Improve description
         </ModalTitle>
       </ModalHeader>
 

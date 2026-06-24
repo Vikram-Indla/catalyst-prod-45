@@ -541,7 +541,7 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
   }, []);
 
   const AI_ACTIONS = [
-    { label: 'Improve writing', icon: <Sparkles size={13} /> },
+    { label: 'Improve', icon: <Sparkles size={13} /> },
     { label: 'Fix spelling & grammar', icon: <Sparkles size={13} /> },
     { label: 'Make shorter', icon: <Sparkles size={13} /> },
     { label: 'Make longer', icon: <Sparkles size={13} /> },
@@ -554,7 +554,7 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
       <button
         onMouseDown={e => { e.preventDefault(); setOpen(v => !v); }}
         className="jde-tb-style-btn"
-        title="AI: Improve description"
+        title="Improve"
         style={{ color: 'var(--cp-purple-60, #7C3AED)', gap: 3 }}
       >
         <Sparkles size={13} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />

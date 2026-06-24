@@ -482,7 +482,7 @@ function EpicDescriptionEditorImpl({
   appearance: appearanceProp = 'comment',
   onAttachmentUploaded,
   onImprove,
-  improveLabel = 'Improve description',
+  improveLabel = 'Improve',
   improveDisabled = false,
   bodyOverlay,
   issue,

@@ -162,7 +162,7 @@ export function IssueDrawer() {
         appearance="subtle"
       />
     </Tooltip>,
-    <Tooltip content="Improve description" key="improve">
+    <Tooltip content="Improve" key="improve">
       <AKButton appearance="subtle" iconBefore={MagicWandIcon}>
         Improve
       </AKButton>

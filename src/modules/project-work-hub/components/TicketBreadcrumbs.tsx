@@ -154,6 +154,12 @@ export function TicketBreadcrumbs({
           Styling uses Catalyst --cp-* CSS custom properties so dark mode
           follows AdsThemeProvider automatically. */}
       <style>{`
+        .tk-breadcrumbs {
+          /* Scoped token override — Jira-canonical breadcrumb color (CLAUDE.md 2026-05-12: 14px/400/#42526E).
+             ADS deploys --ds-text-subtle as #505258 (neutral grey); Jira uses #42526E (blue-grey, more visual
+             weight). Overriding the token here means all var(--ds-text-subtle) children resolve correctly. */
+          --ds-text-subtle: #42526E;
+        }
         .tk-breadcrumbs nav > ol,
         .tk-breadcrumbs ol[role="list"],
         .tk-breadcrumbs ol {
@@ -207,17 +213,6 @@ export function TicketBreadcrumbs({
         .tk-breadcrumbs button > span,
         .tk-breadcrumbs [aria-current="page"] > span {
           line-height: 1;
-        }
-        /* Separator — lighter, smaller, recede into chrome */
-        .tk-breadcrumbs [aria-hidden="true"],
-        .tk-breadcrumbs span[role="presentation"] {
-          color: var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)));
-          font-size: 12px;
-          font-weight: 400;
-          margin: 0 6px;
-          opacity: 0.55;
-          line-height: 1;
-          user-select: none;
         }
         /* Icons inside crumbs sit on shared optical baseline */
         .tk-breadcrumbs svg {
