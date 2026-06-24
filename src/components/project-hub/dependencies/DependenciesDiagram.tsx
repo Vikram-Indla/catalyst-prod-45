@@ -27,7 +27,7 @@ import {
 } from '@xyflow/react';
 // ads-scanner:ignore-next-line — React Flow's stylesheet is required for the canvas to render
 import '@xyflow/react/dist/style.css';
-import { Plus, X, Minus, MoreHorizontal } from '@/lib/atlaskit-icons';
+import { Plus, Minus, MoreHorizontal, Link, Unlink } from '@/lib/atlaskit-icons';
 import Button from '@atlaskit/button/new';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusPill } from '@/components/shared/JiraTable/cells';
@@ -35,6 +35,15 @@ import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozeng
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import type { Dependency, IssueMeta } from './types';
+
+// Lift the edge-label layer above the card nodes so the "blocks" pills are
+// visible and clickable (React Flow paints labels below nodes by default).
+if (typeof document !== 'undefined' && !document.getElementById('dep-edgelabel-z')) {
+  const s = document.createElement('style');
+  s.id = 'dep-edgelabel-z';
+  s.textContent = '.react-flow__edgelabel-renderer { z-index: 6; }';
+  document.head.appendChild(s);
+}
 
 function fmtDate(d: string | null | undefined): string {
   if (!d) return '—';
@@ -269,7 +278,7 @@ function WorkItemNode({ data }: { data: any }) {
   );
 }
 
-/* ── Edge with label + on-hover delete ─────────────────────────────────── */
+/* ── Edge: smooth path + clickable label that opens the relationship popup ── */
 function DependencyEdge({
   id,
   sourceX,
@@ -281,7 +290,6 @@ function DependencyEdge({
   markerEnd,
   data,
 }: EdgeProps) {
-  const [hover, setHover] = useState(false);
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -290,52 +298,149 @@ function DependencyEdge({
     targetY,
     targetPosition,
   });
+  const d = data as any;
   return (
     <>
       <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={{ stroke: LINK, strokeWidth: 1.5 }} />
       <EdgeLabelRenderer>
-        <div
+        <button
+          type="button"
+          aria-label={`${d?.label ?? 'blocks'} — open relationship`}
+          onClick={(e) => { e.stopPropagation(); d?.onSelect?.(d, { x: e.clientX, y: e.clientY }); }}
           style={{
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
             pointerEvents: 'all',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
+            fontSize: 11,
+            color: 'var(--ds-text-subtle, #505258)',
             background: 'var(--ds-surface-overlay, #FFFFFF)',
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
-            padding: '4px 4px',
-            boxShadow: hover ? 'var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.16))' : 'none',
+            padding: '4px 8px',
+            whiteSpace: 'nowrap',
+            cursor: 'pointer',
           }}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
         >
-          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #505258)', whiteSpace: 'nowrap' }}>
-            {(data as any)?.label ?? 'blocks'}
-          </span>
-          <button
-            type="button"
-            aria-label="Remove dependency"
-            onClick={() => (data as any)?.onDelete?.((data as any).depId)}
+          {d?.label ?? 'blocks'}
+        </button>
+      </EdgeLabelRenderer>
+    </>
+  );
+}
+
+/* ── Relationship popup (edge click) — source / link / target + unlink ───── */
+function IssueRow({ k, meta }: { k: string; meta: any }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', minWidth: 0 }}>
+      {meta?.issue_type ? <JiraIssueTypeIcon type={meta.issue_type} size={16} /> : null}
+      <span style={{ fontSize: 14, fontWeight: 500, color: LINK, whiteSpace: 'nowrap' }}>{k}</span>
+      <span
+        style={{
+          fontSize: 14,
+          color: 'var(--ds-text, #292A2E)',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {meta?.summary ?? ''}
+      </span>
+    </div>
+  );
+}
+
+function RelationshipPopup({
+  sel,
+  onUnlink,
+  onClose,
+}: {
+  sel: { depId: number; label: string; sourceKey: string; targetKey: string; sourceMeta: any; targetMeta: any; x: number; y: number };
+  onUnlink: (depId: number) => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // defer mousedown listener one tick so the opening click doesn't self-close it
+    const onDown = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    };
+    const t = setTimeout(() => document.addEventListener('mousedown', onDown), 0);
+    document.addEventListener('keydown', onKey, true);
+    return () => { clearTimeout(t); document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey, true); };
+  }, [onClose]);
+
+  const width = 360;
+  let left = sel.x - width / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
+  const top = Math.min(sel.y + 12, window.innerHeight - 200);
+
+  return createPortal(
+    <div
+      ref={ref}
+      role="dialog"
+      aria-label="Dependency relationship"
+      style={{
+        position: 'fixed',
+        top,
+        left,
+        width,
+        zIndex: 9999,
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 8,
+        boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
+        overflow: 'hidden',
+      }}
+    >
+      <div style={{ background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
+        <IssueRow k={sel.sourceKey} meta={sel.sourceMeta} />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <span
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 18,
-              height: 18,
+              width: 24,
+              height: 24,
               borderRadius: '50%',
-              border: 'none',
-              cursor: 'pointer',
-              background: 'var(--ds-background-danger, #FFECEB)',
-              color: 'var(--ds-text-danger, #AE2A19)',
+              background: 'var(--ds-background-neutral-bold, #44546F)',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
             }}
           >
-            <X size={12} />
-          </button>
-        </div>
-      </EdgeLabelRenderer>
-    </>
+            <Link size={14} />
+          </span>
+          <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{sel.label}</span>
+        </span>
+        <button
+          type="button"
+          aria-label="Unlink dependency"
+          onClick={() => { onUnlink(sel.depId); onClose(); }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 28,
+            height: 28,
+            border: 'none',
+            borderRadius: 4,
+            background: 'transparent',
+            cursor: 'pointer',
+            color: 'var(--ds-text-subtle, #505258)',
+          }}
+        >
+          <Unlink size={16} />
+        </button>
+      </div>
+      <div style={{ background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
+        <IssueRow k={sel.targetKey} meta={sel.targetMeta} />
+      </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -487,6 +592,9 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
     return [frame, ...cards];
   }, [uniqueIssues, dependencies, issueMeta, projectKey, onAddClick]);
 
+  const [sel, setSel] = useState<any>(null);
+  const onSelectEdge = useCallback((d: any, point: { x: number; y: number }) => setSel({ ...d, x: point.x, y: point.y }), []);
+
   const edges: Edge[] = useMemo(
     () =>
       dependencies.map((dep) => ({
@@ -500,10 +608,14 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
         data: {
           label: dep.dependency_type === 'blocks' ? 'blocks' : 'is blocked by',
           depId: dep.id,
-          onDelete: handleDeleteDep,
+          sourceKey: dep.source_issue_key,
+          targetKey: dep.target_issue_key,
+          sourceMeta: issueMeta[dep.source_issue_key] ?? null,
+          targetMeta: issueMeta[dep.target_issue_key] ?? null,
+          onSelect: onSelectEdge,
         },
       })),
-    [dependencies, handleDeleteDep],
+    [dependencies, issueMeta, onSelectEdge],
   );
 
   const nodeTypes = useMemo(() => ({ workItem: WorkItemNode, frame: FrameNode }), []);
@@ -547,6 +659,7 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
           edges={flowEdges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onEdgeClick={(e, edge) => onSelectEdge(edge.data, { x: e.clientX, y: e.clientY })}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
@@ -561,6 +674,7 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
         />
         <ZoomBar zoomOnScroll={zoomOnScroll} onToggleScroll={() => setZoomOnScroll((v) => !v)} />
       </div>
+      {sel ? <RelationshipPopup sel={sel} onUnlink={handleDeleteDep} onClose={() => setSel(null)} /> : null}
     </div>
   );
 }
