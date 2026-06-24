@@ -9,6 +9,8 @@ import { useWHReleases } from '@/hooks/workhub/useReleases';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
 import { JiraTable } from '@/components/shared/JiraTable';
 import { ReleaseCreateModal } from '@/components/releases/ReleaseCreateModal';
+import { ShareFeedbackModal } from '@/components/releases/ShareFeedbackModal';
+import FeedbackIcon from '@atlaskit/icon/core/feedback';
 import { ReleaseEditModal } from '@/components/releases/ReleaseEditModal';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
@@ -120,6 +122,7 @@ export function ReleasesPage() {
   const [confirmingRelease, setConfirmingRelease] = useState<CellRelease | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deletingRelease, setDeletingRelease] = useState<CellRelease | null>(null);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
   const progressByVersion = useMemo(() => {
     const m = new Map<string, ProgressRow>();
@@ -291,7 +294,11 @@ export function ReleasesPage() {
         />
         <GroupFilter value={groupBy} onChange={setGroupBy} />
         <div style={{ flex: 1 }} />
-        <Button appearance="subtle">
+        <Button
+          appearance="subtle"
+          iconBefore={(iconProps) => <FeedbackIcon {...iconProps} label="" />}
+          onClick={() => setIsFeedbackModalOpen(true)}
+        >
           Give feedback
         </Button>
         <Button appearance="primary" onClick={() => setIsCreateModalOpen(true)}>
@@ -365,6 +372,11 @@ export function ReleasesPage() {
           onSuccess={() => setSuccessFlag(`Release "${deletingRelease.name}" has been deleted.`)}
         />
       )}
+
+      <ShareFeedbackModal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
+      />
     </div>
   );
 }
