@@ -134,7 +134,7 @@ function PopupShell({
         minWidth: Math.max(width, pos.width),
         maxHeight: 360,
         zIndex: 10000,
-        background: '#FFFFFF',
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
         boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
@@ -171,7 +171,7 @@ function SearchInput({
         padding: '0 8px',
         borderRadius: 3,
         border: `1px solid ${focused ? PILL_BLUE : 'var(--ds-border, #DFE1E6)'}`,
-        background: '#FFFFFF',
+        background: 'var(--ds-surface, #FFFFFF)',
         boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
         transition: 'border-color 80ms ease, box-shadow 80ms ease',
       }}
@@ -586,6 +586,7 @@ export function ProductSelect({
   searchPlaceholder = 'Search products',
   hasError = false,
   width = '100%',
+  disabled = false,
 }: {
   options: ProductOption[];
   value: string | null;
@@ -594,6 +595,7 @@ export function ProductSelect({
   searchPlaceholder?: string;
   hasError?: boolean;
   width?: number | string;
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -621,15 +623,16 @@ export function ProductSelect({
     padding: '0 10px',
     borderRadius: 3,
     border: `1px solid ${open ? PILL_BLUE : hasError ? 'var(--ds-border-danger, #AE2A19)' : 'var(--ds-border, #DFE1E6)'}`,
-    background: '#FFFFFF',
-    color: selected ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
+    background: disabled ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-surface, #FFFFFF)',
+    color: disabled ? 'var(--ds-text-disabled, #A5ADBA)' : selected ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
     fontSize: 14,
     fontWeight: 400,
     fontFamily: 'inherit',
-    cursor: 'pointer',
+    cursor: disabled ? 'not-allowed' : 'pointer',
     outline: 'none',
     textAlign: 'left',
     boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+    opacity: disabled ? 0.7 : 1,
   };
 
   return (
@@ -639,7 +642,8 @@ export function ProductSelect({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
+        disabled={disabled}
+        onClick={() => { if (!disabled) setOpen((v) => !v); }}
         style={fieldStyle}
       >
         <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

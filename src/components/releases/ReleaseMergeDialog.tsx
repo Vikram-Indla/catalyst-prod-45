@@ -91,8 +91,8 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Prop
           <ModalHeader hasCloseButton>
             <ModalTitle>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: '#F5A623', display: 'inline-flex' }}>
-                  <WarningIcon label="" primaryColor="#F5A623" size="medium" />
+                <span style={{ color: 'var(--ds-icon-warning, #E2B203)', display: 'inline-flex' }}>
+                  <WarningIcon label="" primaryColor="var(--ds-icon-warning, #E2B203)" size="medium" />
                 </span>
                 <span>Merge {release.name}</span>
               </span>

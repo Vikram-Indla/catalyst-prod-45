@@ -27,9 +27,9 @@ const DANGER = 'var(--ds-text-danger, #AE2A19)';
 // ─── Status pill ──────────────────────────────────────────────────────────
 
 const STATUS_BORDER: Record<ReleaseStatus, string> = {
-  released:   '#22A06B',
-  unreleased: '#1868DB',
-  archived:   '#8993A4',
+  released:   'var(--ds-border-success, #22A06B)',
+  unreleased: 'var(--ds-border-selected, #1868DB)',
+  archived:   'var(--ds-icon-subtle, #8993A4)',
 };
 
 const STATUS_LABEL: Record<ReleaseStatus, string> = {
@@ -48,7 +48,7 @@ function StatusPill({ status }: { status: ReleaseStatus }) {
         padding: '0 8px',
         borderRadius: 3,
         border: `1.5px solid ${STATUS_BORDER[status]}`,
-        background: '#FFFFFF',
+        background: 'var(--ds-surface, #FFFFFF)',
         color: TEXT,
         fontSize: 11,
         fontWeight: 700,
@@ -64,9 +64,9 @@ function StatusPill({ status }: { status: ReleaseStatus }) {
 
 // ─── Progress bar ─────────────────────────────────────────────────────────
 
-const PROGRESS_DONE = '#22A06B';
-const PROGRESS_IN_PROGRESS = '#1868DB';
-const PROGRESS_TODO = '#DFE1E6';
+const PROGRESS_DONE = 'var(--ds-background-success-bold, #22A06B)';
+const PROGRESS_IN_PROGRESS = 'var(--ds-background-information-bold, #1868DB)';
+const PROGRESS_TODO = 'var(--ds-border, #DFE1E6)';
 
 function ProgressBar({ progress }: { progress: ReleaseProgress | null }) {
   if (!progress || !progress.total) {
@@ -219,14 +219,16 @@ function ActionsMenu({ release, onRelease, onArchive, onMerge, onEdit, onDelete 
             right: pos.right,
             zIndex: 10001,
             minWidth: 160,
-            background: '#FFFFFF',
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
             border: `1px solid ${GRAY_BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
             padding: '4px 0',
           }}
         >
-          <MenuItem label="Release" onClick={() => { onRelease(release); setOpen(false); }} />
+          {release.status === 'unreleased' && (
+            <MenuItem label="Release" onClick={() => { onRelease(release); setOpen(false); }} />
+          )}
           <MenuItem label="Archive" onClick={() => { onArchive(release); setOpen(false); }} />
           <MenuItem label="Merge" onClick={() => { onMerge(release); setOpen(false); }} />
           <MenuItem label="Edit" onClick={() => { onEdit(release); setOpen(false); }} />
