@@ -1416,7 +1416,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   onClick={openCreateWork}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '6px 12px',
-                    border: 'none', borderRadius: 3,
+                    border: '1px solid rgba(11,18,14,0.14)', borderRadius: 3,
                     background: 'transparent',
                     cursor: 'pointer', fontSize: 14, fontWeight: 500,
                     color: 'var(--ds-text-subtle, #505258)',
