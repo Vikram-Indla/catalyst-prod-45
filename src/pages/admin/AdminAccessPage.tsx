@@ -18,6 +18,8 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
+import { useResourceAvatarOverrides } from '@/hooks/useResourceAvatarOverrides';
+import { uploadResourceAvatar, removeResourceAvatar } from '@/services/resourceAvatarService';
 import { useInviteUser } from '@/hooks/useInviteUser';
 import { useAuth } from '@/lib/auth';
 import { catalystToast } from '@/lib/catalystToast';
@@ -1325,6 +1327,102 @@ function PeopleTableSkeleton() {
   );
 }
 
+// ─── Inline avatar upload cell ───────────────────────────────────────────────
+// Renders the avatar with a hover overlay — click to upload, hover to reveal
+// "Remove" if an override exists. Uses the same service as /admin/avatars.
+
+interface AvatarCellProps {
+  userId: string;
+  name: string;
+  avatarUrl?: string | null;
+  hasOverride: boolean;
+  uploadedBy: string;
+  overrideStoragePath?: string;
+  onChanged: () => void;
+}
+
+function AvatarCell({ userId, name, avatarUrl, hasOverride, uploadedBy, overrideStoragePath, onChanged }: AvatarCellProps) {
+  const fileRef = React.useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      catalystToast.error(`Unsupported type. Use PNG / JPG / WEBP.`);
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      catalystToast.error(`File too large. Max 2 MB.`);
+      e.target.value = '';
+      return;
+    }
+    setBusy(true);
+    try {
+      await uploadResourceAvatar({ profileId: userId, file, uploadedBy, previousStoragePath: overrideStoragePath ?? null });
+      onChanged();
+      catalystToast.success(`Avatar updated`);
+    } catch (err) {
+      catalystToast.error(`Upload failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setBusy(false);
+      e.target.value = '';
+    }
+  }
+
+  async function handleRemove(e: React.MouseEvent) {
+    e.stopPropagation();
+    setBusy(true);
+    try {
+      await removeResourceAvatar(userId);
+      onChanged();
+      catalystToast.success(`Avatar reset`);
+    } catch (err) {
+      catalystToast.error(`Remove failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      style={{ position: 'relative', display: 'inline-flex', cursor: busy ? 'wait' : 'pointer', flexShrink: 0 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={e => { e.stopPropagation(); fileRef.current?.click(); }}
+      title={hasOverride ? 'Click to replace photo' : 'Click to upload photo'}
+    >
+      <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" style={{ display: 'none' }} onChange={handleUpload} disabled={busy} />
+      <CatalystAvatar name={name} src={avatarUrl} size="small" />
+      {hovered && !busy && (
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: '50%',
+          background: 'rgba(0,0,0,0.45)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <span style={{ color: '#fff', fontSize: 9, fontWeight: 600, textAlign: 'center', lineHeight: 1.2 }}>
+            {hasOverride ? '✎' : '+'}
+          </span>
+        </div>
+      )}
+      {hovered && hasOverride && !busy && (
+        <button
+          onClick={handleRemove}
+          style={{
+            position: 'absolute', top: -4, right: -4, width: 14, height: 14,
+            borderRadius: '50%', border: 'none', background: 'var(--ds-text-danger, #AE2A19)',
+            color: '#fff', fontSize: 8, fontWeight: 700, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+          }}
+          title="Remove custom photo"
+        >✕</button>
+      )}
+    </div>
+  );
+}
+
 function PeopleTab() {
   const { user: currentUser } = useAuth();
   const qc = useQueryClient();
@@ -1376,6 +1474,7 @@ function PeopleTab() {
 
   // Merge resolved avatars (bundled photos + admin overrides) into user list
   const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const { data: avatarOverrides = {}, refetch: refetchOverrides } = useResourceAvatarOverrides();
   const resolvedAvatarMap = useMemo(
     () => new Map(approvedProfiles.map(p => [p.id, p.avatarUrl])),
     [approvedProfiles]
@@ -1384,6 +1483,12 @@ function PeopleTab() {
     () => users.map(u => ({ ...u, avatar_url: resolvedAvatarMap.get(u.id) ?? u.avatar_url })),
     [users, resolvedAvatarMap]
   );
+
+  function handleAvatarChanged() {
+    refetchOverrides();
+    qc.invalidateQueries({ queryKey: ['approved-profiles'] });
+    qc.invalidateQueries({ queryKey: ['resource-avatar-overrides'] });
+  }
 
   const adminCount = useMemo(() => usersWithAvatars.filter(u => u.role === 'admin').length, [usersWithAvatars]);
 
@@ -1532,10 +1637,14 @@ function PeopleTab() {
                 >
                   <td style={{ padding: '8px 16px', fontWeight: 500, overflow: 'hidden' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
-                      <CatalystAvatar
+                      <AvatarCell
+                        userId={u.id}
                         name={u.full_name || u.email || '?'}
-                        src={u.avatar_url}
-                        size="small"
+                        avatarUrl={u.avatar_url}
+                        hasOverride={!!avatarOverrides[u.id]}
+                        uploadedBy={currentUser?.id ?? ''}
+                        overrideStoragePath={avatarOverrides[u.id]?.storage_path}
+                        onChanged={handleAvatarChanged}
                       />
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name || '—'}</span>
                     </div>
