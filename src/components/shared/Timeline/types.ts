@@ -127,7 +127,7 @@ export interface SavedFilterRow {
 export interface TimelineMutations {
   onUpdateDates?: (issueKey: string, startDate: string | null, dueDate: string | null) => Promise<void>;
   onRemoveDates?: (issueKey: string) => Promise<void>;
-  onCreateEpic?: (summary: string) => Promise<TimelineIssue | null>;
+  onCreateEpic?: (summary: string, issueType?: string) => Promise<TimelineIssue | null>;
   onCreateChild?: (parentKey: string, parentType: string, type: string, summary: string) => Promise<TimelineIssue | null>;
   onChangeParent?: (issueKey: string, newParentKey: string) => Promise<void>;
   onAddDependency?: (issueKey: string, linkType: string, targetKey: string) => Promise<void>;

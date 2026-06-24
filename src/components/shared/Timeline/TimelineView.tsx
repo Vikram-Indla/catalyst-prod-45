@@ -17,6 +17,7 @@
  */
 
 import React, { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { AtlaskitPageShell } from '@/components/ads';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -309,7 +310,7 @@ export default function TimelineView(props: TimelineViewProps) {
     if (!createWorkSummary.trim() || !mutations?.onCreateEpic) return;
     setIsCreatingWork(true);
     try {
-      await mutations.onCreateEpic(createWorkSummary.trim());
+      await mutations.onCreateEpic(createWorkSummary.trim(), createWorkType);
       if (createAnother) {
         setCreateWorkSummary('');
       } else {
@@ -1249,25 +1250,61 @@ export default function TimelineView(props: TimelineViewProps) {
 
       </div>
 
-      {/* ── Create work modal ── */}
-      <ModalTransition>
-        {createWorkOpen && (
-          <Modal onClose={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }} width="medium">
-            <ModalHeader>
-              <ModalTitle>Create work</ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              {/* Project row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-                <ProjectIcon projectKey={hubKey.replace(/^(project|product)-/, '')} size="small" name={hubLabel} />
-                <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>
-                  {hubLabel}
-                </span>
+      {/* ── Create work panel (portal → escapes overflow:hidden) ── */}
+      {createWorkOpen && createPortal(
+        <>
+          <div
+            onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.54)', zIndex: 9998 }}
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Create work item"
+            style={{
+              position: 'fixed', right: 0, top: 0, bottom: 0, width: 480,
+              background: 'var(--ds-surface-overlay, #FFFFFF)',
+              boxShadow: '-8px 0 24px rgba(9,30,66,0.18)',
+              display: 'flex', flexDirection: 'column',
+              zIndex: 9999, fontFamily: 'var(--ds-font-family-body)',
+            }}
+          >
+            {/* Header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '20px 24px 16px',
+              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+            }}>
+              <span style={{ fontSize: 20, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+                Create work item
+              </span>
+              <button
+                onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--ds-text-subtle, #42526E)', borderRadius: 3, display: 'flex', alignItems: 'center' }}
+                aria-label="Close"
+              >
+                <CrossIcon label="Close" size="small" />
+              </button>
+            </div>
+            <div style={{ padding: '12px 24px 0', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+              Required fields are marked with an asterisk <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+            </div>
+            {/* Body */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Space */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)' }}>
+                  SPACE
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3, border: '1px solid var(--ds-border, #DFE1E6)' }}>
+                  <ProjectIcon projectKey={hubKey.replace(/^(project|product)-/, '')} size="small" name={hubLabel} />
+                  <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{hubLabel}</span>
+                </div>
               </div>
-              {/* Work item type picker */}
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 8, fontFamily: 'var(--ds-font-family-body)', letterSpacing: '0.04em' }}>
-                  WORK ITEM TYPE
+              {/* Work item type */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 8, letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)' }}>
+                  WORK ITEM TYPE <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {workItemTypes.map(type => (
@@ -1292,10 +1329,10 @@ export default function TimelineView(props: TimelineViewProps) {
                   ))}
                 </div>
               </div>
-              {/* Summary field */}
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, fontFamily: 'var(--ds-font-family-body)', letterSpacing: '0.04em' }}>
-                  SUMMARY
+              {/* Summary */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)' }}>
+                  SUMMARY <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                 </div>
                 <TextField
                   value={createWorkSummary}
@@ -1305,32 +1342,35 @@ export default function TimelineView(props: TimelineViewProps) {
                   onKeyDown={e => { if (e.key === 'Enter' && createWorkSummary.trim()) handleCreateWork(); }}
                 />
               </div>
-            </ModalBody>
-            <ModalFooter>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <Checkbox
-                  label="Create another"
-                  isChecked={createAnother}
-                  onChange={e => setCreateAnother(e.target.checked)}
-                />
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <Button appearance="subtle" onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}>
-                    Cancel
-                  </Button>
-                  <Button
-                    appearance="primary"
-                    onClick={handleCreateWork}
-                    isDisabled={!createWorkSummary.trim() || isCreatingWork}
-                    isLoading={isCreatingWork}
-                  >
-                    Create
-                  </Button>
-                </div>
+            </div>
+            {/* Footer */}
+            <div style={{
+              borderTop: '1px solid var(--ds-border, #DFE1E6)', padding: '12px 24px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <Checkbox
+                label="Create another"
+                isChecked={createAnother}
+                onChange={e => setCreateAnother(e.target.checked)}
+              />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <Button appearance="subtle" onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}>
+                  Cancel
+                </Button>
+                <Button
+                  appearance="primary"
+                  onClick={handleCreateWork}
+                  isDisabled={!createWorkSummary.trim() || isCreatingWork}
+                  isLoading={isCreatingWork}
+                >
+                  Create
+                </Button>
               </div>
-            </ModalFooter>
-          </Modal>
-        )}
-      </ModalTransition>
+            </div>
+          </div>
+        </>,
+        document.body,
+      )}
 
       {/* ── body: sidebar + divider + grid ── */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
@@ -1376,14 +1416,14 @@ export default function TimelineView(props: TimelineViewProps) {
                   onClick={openCreateWork}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 10px',
-                    border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-                    background: 'var(--ds-surface, #FFFFFF)',
+                    border: '1px solid var(--ds-border-brand, #0C66E4)', borderRadius: 3,
+                    background: '#FFFFFF',
                     cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                    color: 'var(--ds-text, #172B4D)',
+                    color: 'var(--ds-link, #0C66E4)',
                     fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-subtlest, #E9F2FF)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
                 >
                   <EditorAddIcon label="" size="small" />
                   {!isNarrow && 'Create work'}
