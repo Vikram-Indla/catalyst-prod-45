@@ -46,22 +46,30 @@ async function fetchAndTransformJiraIssues(projectKeys: string[]): Promise<any[]
       }
 
       const data = await response.json();
-      const projectIssues = (data.issues || []).map((issue: any) => ({
-        issue_key: issue.key,
-        project_key: issue.fields.project.key,
-        summary: issue.fields.summary,
-        issue_type: issue.fields.issuetype.name,
-        status: issue.fields.status?.name || 'Unknown',
-        status_category: issue.fields.status?.statusCategory?.name || 'To Do',
-        assignee_account_id: issue.fields.assignee?.accountId || null,
-        reporter_account_id: issue.fields.reporter?.accountId || null,
-        parent_key: issue.fields.parent?.key || null,
-        jira_issue_id: issue.id,
-        jira_created_at: issue.fields.created,
-        jira_updated_at: issue.fields.updated,
-        source: 'jira' as const,
-        raw_json: issue,
-      }));
+      const projectIssues = (data.issues || [])
+        .map((issue: any) => {
+          const f = issue?.fields;
+          const pk = f?.project?.key;
+          const it = f?.issuetype?.name;
+          if (!issue?.key || !f || !pk || !it) return null;
+          return {
+            issue_key: issue.key,
+            project_key: pk,
+            summary: f.summary ?? null,
+            issue_type: it,
+            status: f.status?.name || 'Unknown',
+            status_category: f.status?.statusCategory?.name || 'To Do',
+            assignee_account_id: f.assignee?.accountId || null,
+            reporter_account_id: f.reporter?.accountId || null,
+            parent_key: f.parent?.key || null,
+            jira_issue_id: issue.id,
+            jira_created_at: f.created,
+            jira_updated_at: f.updated,
+            source: 'jira' as const,
+            raw_json: issue,
+          };
+        })
+        .filter((r: any) => r !== null);
 
       issues.push(...projectIssues);
     } catch (error) {

@@ -58,20 +58,28 @@ async function fetchJiraIssues(
   }
 }
 
-function transformJiraIssue(issue: any): any {
+// Returns a ph_issues row, or null when the issue is missing required fields.
+// Never throws — a single malformed issue must not 500 the whole batch.
+function transformJiraIssue(issue: any): any | null {
+  const f = issue?.fields;
+  const projectKey = f?.project?.key;
+  const issueType = f?.issuetype?.name;
+  if (!issue?.key || !f || !projectKey || !issueType) {
+    return null;
+  }
   return {
     issue_key: issue.key,
-    project_key: issue.fields.project.key,
-    summary: issue.fields.summary,
-    issue_type: issue.fields.issuetype.name,
-    status: issue.fields.status?.name || 'Unknown',
-    status_category: issue.fields.status?.statusCategory?.name || 'To Do',
-    assignee_account_id: issue.fields.assignee?.accountId || null,
-    reporter_account_id: issue.fields.reporter?.accountId || null,
-    parent_key: issue.fields.parent?.key || null,
+    project_key: projectKey,
+    summary: f.summary ?? null,
+    issue_type: issueType,
+    status: f.status?.name || 'Unknown',
+    status_category: f.status?.statusCategory?.name || 'To Do',
+    assignee_account_id: f.assignee?.accountId || null,
+    reporter_account_id: f.reporter?.accountId || null,
+    parent_key: f.parent?.key || null,
     jira_issue_id: issue.id,
-    jira_created_at: issue.fields.created,
-    jira_updated_at: issue.fields.updated,
+    jira_created_at: f.created,
+    jira_updated_at: f.updated,
     source: 'jira' as const,
     raw_json: issue,
   };
@@ -133,8 +141,21 @@ serve(async (req: Request) => {
       );
     }
 
-    // Transform and insert into ph_issues
-    const rows = jiraIssues.map(transformJiraIssue);
+    // Transform and insert into ph_issues. Skip (don't crash on) malformed issues.
+    const rows = jiraIssues.map(transformJiraIssue).filter((r) => r !== null);
+    const skippedTransform = jiraIssues.length - rows.length;
+
+    if (rows.length === 0) {
+      return new Response(
+        JSON.stringify({
+          environment,
+          recordsAdded: 0,
+          recordsSkipped: skippedTransform,
+          errors: skippedTransform > 0 ? [{ issue: 'batch', reason: `${skippedTransform} issues missing required fields` }] : [],
+        })
+      );
+    }
+
     const { data: inserted, error: insertError } = await supabase
       .from('ph_issues')
       .upsert(rows, { onConflict: 'issue_key' })
@@ -156,8 +177,8 @@ serve(async (req: Request) => {
       JSON.stringify({
         environment,
         recordsAdded: inserted?.length || 0,
-        recordsSkipped: 0,
-        errors: [],
+        recordsSkipped: skippedTransform,
+        errors: skippedTransform > 0 ? [{ issue: 'batch', reason: `${skippedTransform} issues skipped (missing required fields)` }] : [],
       })
     );
   } catch (error) {
