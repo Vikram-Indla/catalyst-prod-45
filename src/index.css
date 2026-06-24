@@ -5215,36 +5215,40 @@ input[type="range"]::-moz-range-thumb {
    — it beats the lower-specificity .dark / [data-theme="dark"] token blocks.
    Light untouched. */
 html.dark, html[data-color-mode="dark"] {
-  /* ADS ramp — every tier (sunken/base/raised/overlay) collapses to one tone;
-     elevation stays via shadow + borders, never a color step. */
-  --ds-surface: var(--ds-surface, #FFFFFF) !important;
-  --ds-surface-raised: var(--ds-surface, #FFFFFF) !important;
-  --ds-surface-sunken: var(--ds-surface, #FFFFFF) !important;
-  --ds-surface-overlay: var(--ds-surface, #FFFFFF) !important;
-  --cp-bg-overlay: var(--ds-surface, #FFFFFF) !important;
-  --cp-float: var(--ds-surface, #FFFFFF) !important;
+  /* ADS dark surface ramp — Jira parity (2026-06-24 fix: was using white fallback).
+     #1D2125 = page canvas (background.neutral)
+     #22272B = raised (surface / sidebar / header)
+     #282E33 = elevated cards/overlays
+     #161A1D = sunken/inset */
+  --ds-surface:         #22272B !important;
+  --ds-surface-raised:  #282E33 !important;
+  --ds-surface-sunken:  #161A1D !important;
+  --ds-surface-overlay: #282E33 !important;
+  --cp-bg-overlay:      #282E33 !important;
+  --cp-float:           #282E33 !important;
 
   /* Catalyst --cp page/canvas tier */
-  --cp-bg: var(--ds-surface, #FFFFFF) !important;
-  --cp-bg-page: var(--ds-surface, #FFFFFF) !important;
-  --cp-bg-hub-page: var(--ds-surface, #FFFFFF) !important;
-  --cp-bg-canvas: var(--ds-surface, #FFFFFF) !important;
-  --cp-bg-sunken: var(--ds-surface, #FFFFFF) !important;
+  --cp-bg:           #1D2125 !important;
+  --cp-bg-page:      #1D2125 !important;
+  --cp-bg-hub-page:  #1D2125 !important;
+  --cp-bg-canvas:    #1D2125 !important;
+  --cp-bg-sunken:    #161A1D !important;
+  --cp-bg-elevated:  #22272B !important;
 
   /* Legacy --surface-* / --bg-* tier (older Catalyst components + inputs) */
-  --surface-page: var(--ds-surface, #FFFFFF) !important;
-  --surface-bg: var(--ds-surface, #FFFFFF) !important;
-  --surface-subtle: var(--ds-surface, #FFFFFF) !important;
-  --bg: var(--ds-surface, #FFFFFF) !important;
-  --bg-0: var(--ds-surface, #FFFFFF) !important;
-  --bg-1: var(--ds-surface, #FFFFFF) !important;
-  --bg-app: var(--ds-surface, #FFFFFF) !important;
-  --bg-workspace: var(--ds-surface, #FFFFFF) !important;
-  --bg-sidebar: var(--ds-surface, #FFFFFF) !important;
-  --bg-cream: var(--ds-surface, #FFFFFF) !important;
-  --industry-bg-page: var(--ds-surface, #FFFFFF) !important;
-  --table-section-bg: var(--ds-surface, #FFFFFF) !important;
-  --table-toolbar-bg: var(--ds-surface, #FFFFFF) !important;
+  --surface-page:        #1D2125 !important;
+  --surface-bg:          #1D2125 !important;
+  --surface-subtle:      #161A1D !important;
+  --bg:                  #1D2125 !important;
+  --bg-0:                #1D2125 !important;
+  --bg-1:                #22272B !important;
+  --bg-app:              #1D2125 !important;
+  --bg-workspace:        #1D2125 !important;
+  --bg-sidebar:          #22272B !important;
+  --bg-cream:            #22272B !important;
+  --industry-bg-page:    #1D2125 !important;
+  --table-section-bg:    #1D2125 !important;
+  --table-toolbar-bg:    #22272B !important;
 
   /* shadcn HSL tier — page surfaces (#22272B ≈ hsl(210 13% 15%)) */
   --background: 210 13% 15% !important;
@@ -5256,7 +5260,7 @@ html.dark, html[data-color-mode="dark"] {
   /* 2026-06-18 (Vikram): uniform shell — body matches the elevated #22272B
      tone used across header/sidebar/canvas so edges/scroll gutter never expose
      a darker band. Light body stays white (separate rule). */
-  background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)) !important;
+  background: var(--cp-bg-elevated, #22272B) !important;
 }
 
 /* 2026-06-18 (Vikram): For You feed type-icon tile. Light keeps the grey
@@ -5264,7 +5268,7 @@ html.dark, html[data-color-mode="dark"] {
    surface so the icon is not a pale lifted box. !important beats the inline
    token. Light untouched. */
 html.dark .cp-feed-type-tile, [data-theme="dark"] .cp-feed-type-tile {
-  background-color: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)) !important;
+  background-color: var(--cp-bg-elevated, #22272B) !important;
 }
 
 .dark [data-sidebar] [class*="group-label"],
