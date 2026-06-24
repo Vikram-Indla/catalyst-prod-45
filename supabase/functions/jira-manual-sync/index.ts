@@ -5,6 +5,13 @@ const JIRA_BASE_URL = Deno.env.get('JIRA_BASE_URL') || 'https://digital-transfor
 const JIRA_EMAIL = Deno.env.get('JIRA_EMAIL');
 const JIRA_API_TOKEN = Deno.env.get('JIRA_API_TOKEN');
 
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', ...cors } });
+
 interface ManualSyncRequest {
   projectKey?: string;
   mode: 'full' | 'incremental' | 'dry-run';
@@ -93,8 +100,9 @@ function transformJiraIssue(issue: any): any | null {
 }
 
 serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'POST only' }), { status: 405 });
+    return json({ error: 'POST only' }, 405);
   }
 
   try {
@@ -117,15 +125,12 @@ serve(async (req: Request) => {
         .select('status')
         .maybeSingle();
       if (conn?.status !== 'connected') {
-        return new Response(
-          JSON.stringify({
-            environment,
-            recordsAdded: 0,
-            recordsSkipped: 0,
-            errors: [{ issue: 'connection', reason: `Sync blocked: Jira connection status is "${conn?.status ?? 'not configured'}". Configure and test the connection first.` }],
-          }),
-          { status: 412 },
-        );
+        return json({
+          environment,
+          recordsAdded: 0,
+          recordsSkipped: 0,
+          errors: [{ issue: 'connection', reason: `Sync blocked: Jira connection status is "${conn?.status ?? 'not configured'}". Configure and test the connection first.` }],
+        }, 412);
       }
     }
 
@@ -138,15 +143,12 @@ serve(async (req: Request) => {
       .maybeSingle();
 
     if (projectKey && !filters) {
-      return new Response(
-        JSON.stringify({
-          environment,
-          recordsAdded: 0,
-          recordsSkipped: 0,
-          errors: [{ issue: projectKey, reason: 'No sync filter configured' }],
-        }),
-        { status: 400 }
-      );
+      return json({
+        environment,
+        recordsAdded: 0,
+        recordsSkipped: 0,
+        errors: [{ issue: projectKey, reason: 'No sync filter configured' }],
+      }, 400);
     }
 
     // Fetch Jira issues
@@ -158,15 +160,13 @@ serve(async (req: Request) => {
     console.log(`[jira-manual-sync] fetched ${jiraIssues.length} from Jira`);
 
     if (mode === 'dry-run') {
-      return new Response(
-        JSON.stringify({
-          environment,
-          recordsAdded: 0,
-          recordsSkipped: 0,
-          errors: [],
-          estimatedCount: jiraIssues.length,
-        })
-      );
+      return json({
+        environment,
+        recordsAdded: 0,
+        recordsSkipped: 0,
+        errors: [],
+        estimatedCount: jiraIssues.length,
+      });
     }
 
     // Transform and insert into ph_issues. Skip (don't crash on) malformed issues.
@@ -174,14 +174,12 @@ serve(async (req: Request) => {
     const skippedTransform = jiraIssues.length - rows.length;
 
     if (rows.length === 0) {
-      return new Response(
-        JSON.stringify({
-          environment,
-          recordsAdded: 0,
-          recordsSkipped: skippedTransform,
-          errors: skippedTransform > 0 ? [{ issue: 'batch', reason: `${skippedTransform} issues missing required fields` }] : [],
-        })
-      );
+      return json({
+        environment,
+        recordsAdded: 0,
+        recordsSkipped: skippedTransform,
+        errors: skippedTransform > 0 ? [{ issue: 'batch', reason: `${skippedTransform} issues missing required fields` }] : [],
+      });
     }
 
     const { data: inserted, error: insertError } = await supabase
@@ -191,34 +189,27 @@ serve(async (req: Request) => {
 
     if (insertError) {
       console.error('Insert error:', insertError);
-      return new Response(
-        JSON.stringify({
-          environment,
-          recordsAdded: 0,
-          recordsSkipped: jiraIssues.length,
-          errors: [{ issue: 'batch', reason: insertError.message }],
-        })
-      );
+      return json({
+        environment,
+        recordsAdded: 0,
+        recordsSkipped: jiraIssues.length,
+        errors: [{ issue: 'batch', reason: insertError.message }],
+      });
     }
 
-    return new Response(
-      JSON.stringify({
-        environment,
-        recordsAdded: inserted?.length || 0,
-        recordsSkipped: skippedTransform,
-        errors: skippedTransform > 0 ? [{ issue: 'batch', reason: `${skippedTransform} issues skipped (missing required fields)` }] : [],
-      })
-    );
+    return json({
+      environment,
+      recordsAdded: inserted?.length || 0,
+      recordsSkipped: skippedTransform,
+      errors: skippedTransform > 0 ? [{ issue: 'batch', reason: `${skippedTransform} issues skipped (missing required fields)` }] : [],
+    });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        environment: 'unknown',
-        recordsAdded: 0,
-        recordsSkipped: 0,
-        errors: [{ issue: 'system', reason: error instanceof Error ? error.message : 'Unknown error' }],
-      }),
-      { status: 500 }
-    );
+    return json({
+      environment: 'unknown',
+      recordsAdded: 0,
+      recordsSkipped: 0,
+      errors: [{ issue: 'system', reason: error instanceof Error ? error.message : 'Unknown error' }],
+    }, 500);
   }
 });
