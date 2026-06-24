@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { HeatmapResource, ProjectAllocation, MonthlyUtilization } from '@/types/capacity-heatmap';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { getUtilizationStatus, calculateOrgStats } from '@/lib/capacity-heatmap/utils';
 import { CATALYST_COLORS } from '@/types/capacity-heatmap';
 import { getContractStatus } from '@/hooks/useResourceProfiles';
@@ -264,7 +265,7 @@ export function useCapacityHeatmapData(monthCount = 12) {
             countryFlagUrl: profile?.country_flag_svg_url || null,
             location: profile?.location || null,
             vendor: ri.vendor_id ? vendorMap.get(ri.vendor_id) || profile?.vendor || ri.vendor_name || null : profile?.vendor || ri.vendor_name || null,
-            avatarUrl: profile?.avatar_url || null,
+            avatarUrl: resolveAvatarUrl(profile?.full_name ?? null) ?? profile?.avatar_url ?? null,
           };
         });
       

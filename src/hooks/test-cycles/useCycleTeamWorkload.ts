@@ -6,6 +6,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export interface TeamMemberWorkload {
   userId: string;
@@ -39,7 +40,7 @@ export function useCycleTeamWorkload(cycleId: string | null) {
         userId: row.user_id,
         userName: row.user_name,
         userInitials: row.user_initials,
-        avatarUrl: row.avatar_url,
+        avatarUrl: resolveAvatarUrl(row.user_name ?? null) ?? row.avatar_url ?? null,
         totalTests: Number(row.total_tests) || 0,
         passed: Number(row.passed) || 0,
         failed: Number(row.failed) || 0,
