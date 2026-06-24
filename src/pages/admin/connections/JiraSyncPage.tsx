@@ -49,6 +49,15 @@ const FH = 'var(--ds-font-family-heading)';
 const FB = 'var(--ds-font-family-body)';
 const FC = 'var(--ds-font-family-code)';
 
+type Readiness = 'NOT_CONFIGURED' | 'CONNECTED_NOT_DISCOVERED' | 'NEEDS_MAPPING' | 'READY_TO_SYNC';
+
+const READINESS_LABEL: Record<Readiness, { title: string; detail: string; ok: boolean }> = {
+  NOT_CONFIGURED: { title: 'Not configured', detail: 'Configure and test the Jira connection before any sync or discovery.', ok: false },
+  CONNECTED_NOT_DISCOVERED: { title: 'Connected — no projects', detail: 'Connection works. Run a sync to populate projects and issues.', ok: false },
+  NEEDS_MAPPING: { title: 'No synced data', detail: 'No project carries synced Jira data yet. Run an incremental sync.', ok: false },
+  READY_TO_SYNC: { title: 'Ready to sync', detail: 'Connected with synced data. Sync and refresh are available.', ok: true },
+};
+
 // Canonical Jira → Catalyst type mapping (convention; both render via JiraIssueTypeIcon)
 const TYPE_MAP: Array<{ jira: string; catalyst: string }> = [
   { jira: 'Epic', catalyst: 'Epic' },
@@ -149,9 +158,17 @@ export function JiraSyncPage() {
 
   const isConnected = connection?.status === 'connected';
   const enabledProjects = projects.filter(p => p.sync_enabled);
-  // Type/Status/Field mappings are canonical (always "Mapped"). Validity here = at least
-  // one project carries synced data. module_target is informational routing, not a sync gate.
-  const mappingValid = enabledProjects.length > 0;
+  const totalJiraIssues = Object.values(issueCounts).reduce((a: number, b: number) => a + b, 0);
+
+  // Single readiness state — Overview/Sync read THIS, never local flags.
+  // Nothing renders "ready / synced / mappings complete" unless the connection is
+  // actually configured. This is what kills the contradictory states.
+  const readiness: Readiness =
+    !isConnected ? 'NOT_CONFIGURED'
+    : projects.length === 0 ? 'CONNECTED_NOT_DISCOVERED'
+    : enabledProjects.length === 0 ? 'NEEDS_MAPPING'
+    : 'READY_TO_SYNC';
+  const syncAllowed = readiness === 'READY_TO_SYNC';
 
   return (
     <AdminGuard>
@@ -208,10 +225,10 @@ export function JiraSyncPage() {
             <ConnectionTab connection={connection} health={health} env={env} />
           </TabPanel>
           <TabPanel>
-            <OverviewTab projects={projects} health={health} mappingValid={mappingValid} />
+            <OverviewTab projects={projects} health={health} readiness={readiness} isConnected={isConnected} totalJiraIssues={totalJiraIssues} env={env} onConfigure={() => setSelectedTab(0)} />
           </TabPanel>
           <TabPanel>
-            <SyncControlTab mappingValid={mappingValid} env={env} onRefreshClick={() => setRefreshOpen(true)} />
+            <SyncControlTab readiness={readiness} isConnected={isConnected} syncAllowed={syncAllowed} env={env} onRefreshClick={() => setRefreshOpen(true)} onConfigure={() => setSelectedTab(0)} />
           </TabPanel>
           <TabPanel>
             <ProjectsTab projects={projects} onManage={setProjectDetailKey} />
@@ -342,40 +359,37 @@ function ConnectionTab({ connection, health, env }: any) {
   );
 }
 
-function OverviewTab({ projects, health, mappingValid }: any) {
-  const syncedCount = projects.filter((p: any) => p.sync_enabled).length;
-  const totalIssues = health?.issueCachedCount ?? 0;
+function OverviewTab({ projects, health, readiness, isConnected, totalJiraIssues, env, onConfigure }: any) {
+  const r = READINESS_LABEL[readiness as Readiness];
+  const syncedCount = isConnected ? projects.filter((p: any) => p.sync_enabled).length : 0;
   const lastSync = health?.lastSync?.started_at
     ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true })
     : 'Never';
+  // Cached count is only meaningful when connected. When not, it is stale cache — label it so.
+  const cachedLabel = isConnected ? 'Issues Cached' : 'Issues Cached (stale)';
 
   return (
     <div style={{ marginTop: 20 }}>
-      {/* Mapping validation */}
-      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, marginBottom: 24 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: '0 0 16px 0', fontFamily: FH }}>Mapping Validation</h3>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-          <div style={{ fontSize: 36, fontWeight: 600, color: C.text }}>{mappingValid ? '✓' : '⚠'}</div>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 600, fontFamily: FB, color: mappingValid ? C.textSuccess : C.textDanger }}>
-              {mappingValid ? 'Mappings complete — sync enabled' : 'No synced data yet'}
-            </div>
-            <div style={{ fontSize: 12, color: C.textSubtle, marginTop: 4, fontFamily: FB }}>
-              {mappingValid
-                ? 'Type, status, and field mappings are canonical. Projects with cached data can sync and refresh.'
-                : 'Run a sync to populate Catalyst from Jira before refresh is available.'}
-            </div>
-          </div>
+      {/* Readiness — single source of truth; cannot show ready unless backend state says so */}
+      <div style={{
+        background: r.ok ? C.bgSuccess : C.bgDanger, border: `1px solid ${r.ok ? C.textSuccess : C.textDanger}`,
+        borderRadius: 8, padding: 24, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16,
+      }}>
+        <div style={{ fontSize: 32 }}>{r.ok ? '✓' : '⚠'}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 15, fontWeight: 600, fontFamily: FB, color: r.ok ? C.textSuccess : C.textDanger }}>{r.title}</div>
+          <div style={{ fontSize: 12, color: r.ok ? C.textSuccess : C.textDanger, marginTop: 4, fontFamily: FB }}>{r.detail}</div>
         </div>
+        {!isConnected && <Button appearance="primary" onClick={onConfigure}>Configure</Button>}
       </div>
 
-      {/* Metrics */}
+      {/* Metrics — honest. No "synced" when not connected. */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {[
-          { label: 'Accessible Projects', value: projects.length },
+          { label: 'Environment', value: getEnvironmentLabel(env.environment).replace(/^[^ ]+ /, '') },
+          { label: 'Projects', value: isConnected ? projects.length : 0 },
           { label: 'Sync Enabled', value: syncedCount },
-          { label: 'Issues Cached', value: totalIssues.toLocaleString() },
-          { label: 'Last Sync', value: lastSync },
+          { label: cachedLabel, value: (totalJiraIssues ?? 0).toLocaleString() },
         ].map(({ label, value }) => (
           <div key={label} style={{ background: C.surfaceSunken, border: `1px solid ${C.border}`, borderRadius: 8, padding: '20px 16px', textAlign: 'center' }}>
             <div style={{ fontSize: 22, fontWeight: 600, color: C.text, fontFamily: FB }}>{value}</div>
@@ -384,11 +398,15 @@ function OverviewTab({ projects, health, mappingValid }: any) {
         ))}
       </div>
 
-      {/* Sync scope */}
+      {/* Sync scope — only when connected; otherwise blocked state */}
       <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, marginBottom: 16, fontFamily: FH }}>Sync Scope</h3>
-      {projects.length === 0 ? (
-        <SectionMessage appearance="information" title="No accessible projects">
-          <p style={{ fontFamily: FB, fontSize: 12 }}>Configure the Jira connection to discover accessible projects.</p>
+      {!isConnected ? (
+        <SectionMessage appearance="warning" title="Sync blocked — not configured">
+          <p style={{ fontFamily: FB, fontSize: 12 }}>Configure and test the Jira connection on the Connection tab. No project can sync until then.</p>
+        </SectionMessage>
+      ) : projects.length === 0 ? (
+        <SectionMessage appearance="information" title="No projects discovered">
+          <p style={{ fontFamily: FB, fontSize: 12 }}>Connection works but no projects are cached yet. Run a sync on the Sync Control tab.</p>
         </SectionMessage>
       ) : (
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
@@ -414,26 +432,32 @@ function OverviewTab({ projects, health, mappingValid }: any) {
   );
 }
 
-function SyncControlTab({ mappingValid, env, onRefreshClick }: any) {
+function SyncControlTab({ readiness, isConnected, syncAllowed, env, onRefreshClick, onConfigure }: any) {
   const manualSync = useManualSyncMutation();
+  const r = READINESS_LABEL[readiness as Readiness];
 
   return (
     <div style={{ marginTop: 20 }}>
-      {!mappingValid && (
-        <SectionMessage appearance="warning" title="Mapping required">
-          <p style={{ fontFamily: FB, fontSize: 12 }}>Enable at least one project with a Catalyst module target before full sync is allowed. Discovery and incremental remain available.</p>
+      {!isConnected ? (
+        <SectionMessage appearance="error" title="Jira not configured">
+          <p style={{ fontFamily: FB, fontSize: 12 }}>All sync actions are blocked until the Jira connection is configured and tested.</p>
+          <div style={{ marginTop: 8 }}><Button appearance="primary" onClick={onConfigure}>Go to Connection</Button></div>
+        </SectionMessage>
+      ) : !syncAllowed && (
+        <SectionMessage appearance="warning" title={r.title}>
+          <p style={{ fontFamily: FB, fontSize: 12 }}>{r.detail}</p>
         </SectionMessage>
       )}
 
-      {/* Manual sync */}
-      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, marginTop: 20, marginBottom: 20 }}>
+      {/* Manual sync — every Jira button disabled unless connected */}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, marginTop: 20, marginBottom: 20, opacity: isConnected ? 1 : 0.6 }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: '0 0 12px 0', fontFamily: FH }}>Manual Sync</h3>
         <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-          <Button appearance="primary" isDisabled={!mappingValid || manualSync.isPending} onClick={() => manualSync.mutate({ mode: 'full' })}>
+          <Button appearance="primary" isDisabled={!isConnected || !syncAllowed || manualSync.isPending} onClick={() => manualSync.mutate({ mode: 'full' })}>
             {manualSync.isPending ? 'Syncing…' : 'Run Full Sync'}
           </Button>
-          <Button isDisabled={manualSync.isPending} onClick={() => manualSync.mutate({ mode: 'incremental' })}>Run Incremental</Button>
-          <Button isDisabled={manualSync.isPending} onClick={() => manualSync.mutate({ mode: 'dry-run' })}>Dry Run</Button>
+          <Button isDisabled={!isConnected || manualSync.isPending} onClick={() => manualSync.mutate({ mode: 'incremental' })}>Run Incremental</Button>
+          <Button isDisabled={!isConnected || manualSync.isPending} onClick={() => manualSync.mutate({ mode: 'dry-run' })}>Dry Run</Button>
         </div>
         {manualSync.isSuccess && (
           <SectionMessage appearance="success">
@@ -449,13 +473,13 @@ function SyncControlTab({ mappingValid, env, onRefreshClick }: any) {
         )}
       </div>
 
-      {/* Refresh data — destructive */}
-      <div style={{ background: C.bgDanger, border: `1px solid ${C.textDanger}`, borderRadius: 8, padding: 24 }}>
+      {/* Refresh data — destructive, blocked unless connected */}
+      <div style={{ background: C.bgDanger, border: `1px solid ${C.textDanger}`, borderRadius: 8, padding: 24, opacity: isConnected ? 1 : 0.6 }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, color: C.textDanger, margin: '0 0 12px 0', fontFamily: FH }}>⚠ Refresh Data</h3>
         <p style={{ fontSize: 12, color: C.textDanger, margin: '0 0 16px 0', fontFamily: FB }}>
           Delete Jira-origin rows and reload fresh from Jira. Catalyst-native records preserved. Cannot be undone.
         </p>
-        <Button appearance="danger" onClick={onRefreshClick}>Refresh Data…</Button>
+        <Button appearance="danger" isDisabled={!isConnected} onClick={onRefreshClick}>Refresh Data…</Button>
       </div>
     </div>
   );
