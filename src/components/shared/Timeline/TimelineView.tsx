@@ -299,6 +299,7 @@ export default function TimelineView(props: TimelineViewProps) {
   const [createAnother, setCreateAnother] = useState(false);
   const [isCreatingWork, setIsCreatingWork] = useState(false);
   const workItemBtnRef = useRef<HTMLButtonElement>(null);
+  const createWorkBtnRef = useRef<HTMLButtonElement>(null);
 
   const openCreateWork = useCallback(() => {
     setCreateWorkType(createTopLevelConfig.iconType);
@@ -1251,20 +1252,34 @@ export default function TimelineView(props: TimelineViewProps) {
 
       </div>
 
-      {/* ── Create work panel (portal → escapes overflow:hidden) ── */}
+      {/* ── Create work popover (portal → escapes overflow:hidden, anchored below button) ── */}
       {createWorkOpen && createPortal(
         <>
+          <div
+            onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}
+            style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+          />
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Create work item"
-            style={{
-              position: 'fixed', right: 0, top: 0, bottom: 0, width: 480,
-              background: 'var(--ds-surface-overlay, #FFFFFF)',
-              boxShadow: '-8px 0 24px rgba(9,30,66,0.18)',
-              display: 'flex', flexDirection: 'column',
-              zIndex: 9999, fontFamily: 'var(--ds-font-family-body)',
-            }}
+            style={(() => {
+              const rect = createWorkBtnRef.current?.getBoundingClientRect();
+              return {
+                position: 'fixed',
+                top: rect ? rect.bottom + 4 : 80,
+                left: rect ? Math.min(rect.left, window.innerWidth - 424) : 100,
+                width: 420,
+                maxHeight: `calc(100vh - ${rect ? rect.bottom + 24 : 104}px)`,
+                background: 'var(--ds-surface-overlay, #FFFFFF)',
+                boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+                borderRadius: 6,
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                display: 'flex', flexDirection: 'column',
+                zIndex: 9999, fontFamily: 'var(--ds-font-family-body)',
+                overflow: 'hidden',
+              };
+            })()}
           >
             {/* Header */}
             <div style={{
@@ -1404,6 +1419,7 @@ export default function TimelineView(props: TimelineViewProps) {
               </PortalMenu>
               {enableCreateEpicRow && mutations?.onCreateEpic && (
                 <button
+                  ref={createWorkBtnRef}
                   onClick={openCreateWork}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '6px 12px',
