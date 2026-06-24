@@ -10,6 +10,7 @@ import { formatRelativeTime, getVerbText } from '../utils/date';
 import { Star } from '@/lib/atlaskit-icons';
 import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
 import { workItemStarType } from '@/lib/starType';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 interface Props {
   notification: DirectNotification;
@@ -75,7 +76,8 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
 
   const handleClick = useCallback(() => {
     if (!isRead) onMarkRead(notification.id);
-  }, [isRead, notification.id, onMarkRead]);
+    useGlobalSearchStore.getState().openDetail({ id: notification.target.key });
+  }, [isRead, notification.id, onMarkRead, notification.target.key]);
 
   const handleMarkReadBtn = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
