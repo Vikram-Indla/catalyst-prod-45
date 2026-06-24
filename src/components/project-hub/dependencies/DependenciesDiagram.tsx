@@ -6,7 +6,8 @@
  * dependency), and a bottom-right zoom bar (− / % / + / Fit / Zoom on scroll).
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -26,7 +27,7 @@ import {
 } from '@xyflow/react';
 // ads-scanner:ignore-next-line — React Flow's stylesheet is required for the canvas to render
 import '@xyflow/react/dist/style.css';
-import { Plus, X, Minus } from '@/lib/atlaskit-icons';
+import { Plus, X, Minus, MoreHorizontal } from '@/lib/atlaskit-icons';
 import Button from '@atlaskit/button/new';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusPill } from '@/components/shared/JiraTable/cells';
@@ -107,6 +108,107 @@ function FrameNode({ data }: { data: any }) {
   );
 }
 
+/* ── Card kebab menu (portal — React Flow canvas has transforms, so
+ *    @atlaskit/dropdown-menu / Popper would land at (0,0); CLAUDE.md 2026-06-13). */
+function CardKebab({ onAddDependency, onLocate }: { onAddDependency?: () => void; onLocate?: () => void }) {
+  const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) && !btnRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setOpen(false); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey, true); };
+  }, [open]);
+
+  const item = (label: string, opts: { onClick?: () => void; disabled?: boolean; chevron?: boolean }) => (
+    <button
+      type="button"
+      role="menuitem"
+      disabled={opts.disabled}
+      onClick={() => { if (opts.disabled) return; setOpen(false); opts.onClick?.(); }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        padding: '8px 16px',
+        border: 'none',
+        background: 'transparent',
+        textAlign: 'left',
+        fontSize: 14,
+        whiteSpace: 'nowrap',
+        cursor: opts.disabled ? 'not-allowed' : 'pointer',
+        color: opts.disabled ? 'var(--ds-text-disabled, #B3B9C4)' : 'var(--ds-text, #292A2E)',
+      }}
+    >
+      {label}
+      {opts.chevron ? <span style={{ marginLeft: 24 }}>›</span> : null}
+    </button>
+  );
+
+  const rect = btnRef.current?.getBoundingClientRect();
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        aria-label="Work item actions"
+        className="nodrag"
+        onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 24,
+          height: 24,
+          border: 'none',
+          borderRadius: 4,
+          background: 'transparent',
+          cursor: 'pointer',
+          color: 'var(--ds-text-subtle, #505258)',
+        }}
+      >
+        <MoreHorizontal size={16} />
+      </button>
+      {open && rect
+        ? createPortal(
+            <div
+              ref={menuRef}
+              role="menu"
+              aria-label="Work item actions"
+              style={{
+                position: 'fixed',
+                top: rect.bottom + 4,
+                left: rect.left - 180,
+                minWidth: 220,
+                zIndex: 9999,
+                background: 'var(--ds-surface-overlay, #FFFFFF)',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 8,
+                boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
+                padding: '4px 0',
+              }}
+            >
+              {item('Add dependency', { onClick: onAddDependency })}
+              {item('Filter by this work item', { disabled: true })}
+              {item('Highlight related work item', { disabled: true, chevron: true })}
+              {item('Locate work item in timeline', { onClick: onLocate })}
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
+  );
+}
+
 /* ── Issue card node ───────────────────────────────────────────────────── */
 function WorkItemNode({ data }: { data: any }) {
   const m = data.meta || {};
@@ -128,10 +230,13 @@ function WorkItemNode({ data }: { data: any }) {
       }}
     >
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-        {m.issue_type ? <JiraIssueTypeIcon type={m.issue_type} size={16} /> : null}
-        <span style={{ fontSize: 14, fontWeight: 500, color: LINK }}>{label}</span>
-      </span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+          {m.issue_type ? <JiraIssueTypeIcon type={m.issue_type} size={16} /> : null}
+          <span style={{ fontSize: 14, fontWeight: 500, color: LINK }}>{label}</span>
+        </span>
+        <CardKebab onAddDependency={data.onAddDependency} onLocate={data.onLocate} />
+      </div>
       {m.summary ? (
         <span
           style={{
@@ -365,7 +470,14 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
     const cards: Node[] = uniqueIssues.map((k) => ({
       id: k,
       type: 'workItem',
-      data: { label: k, meta: issueMeta[k] ?? null },
+      data: {
+        label: k,
+        meta: issueMeta[k] ?? null,
+        onAddDependency: onAddClick,
+        onLocate: () => {
+          window.location.href = `/project-hub/${projectKey}/timeline`;
+        },
+      },
       position: { x: PAD_X + (depth[k] ?? 0) * COL_W, y: HEADER_H + rowOf[k] * ROW_H },
       draggable: true,
       // frame (0) < edges (1) < cards (2): edges draw over the opaque frame.
@@ -373,7 +485,7 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
     }));
 
     return [frame, ...cards];
-  }, [uniqueIssues, dependencies, issueMeta, projectKey]);
+  }, [uniqueIssues, dependencies, issueMeta, projectKey, onAddClick]);
 
   const edges: Edge[] = useMemo(
     () =>
