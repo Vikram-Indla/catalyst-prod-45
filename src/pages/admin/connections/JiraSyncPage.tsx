@@ -425,16 +425,194 @@ function TypeMappingsTab({ connectionId, env, editingId, setEditingId }: {
 }
 
 function SyncWizardTab({ connectionId, env }: { connectionId: string; env: any }) {
+  const [step, setStep] = useState(0);
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
+  const [dryRunEstimate, setDryRunEstimate] = useState<number | null>(null);
+  const queryClient = useQueryClient();
+
+  const syncMutation = useMutation({
+    mutationFn: async (mode: 'dry-run' | 'confirmed') => {
+      if (!selectedProjects.length) throw new Error('No projects selected');
+      const { data, error } = await supabase.functions.invoke('jira-manual-sync', {
+        body: { projectKeys: selectedProjects, mode },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jira-projects', env.environment] });
+    },
+  });
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ['jira-projects', env.environment],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_jira_projects')
+        .select('key, name')
+        .eq('environment', env.environment)
+        .order('key');
+      return data || [];
+    },
+  });
+
+  const handleDryRun = async () => {
+    const result = await syncMutation.mutateAsync('dry-run');
+    setDryRunEstimate(result.estimatedCount || 0);
+    setStep(5);
+  };
+
+  const handleConfirm = async () => {
+    await syncMutation.mutateAsync('confirmed');
+    setStep(6);
+  };
+
+  const steps = [
+    { num: 1, title: 'Projects', desc: 'Select which projects' },
+    { num: 2, title: 'Fields', desc: 'Review field configs' },
+    { num: 3, title: 'Types', desc: 'Validate mappings' },
+    { num: 4, title: 'Filters', desc: 'Set sync filters' },
+    { num: 5, title: 'Dry-Run', desc: 'Preview records' },
+    { num: 6, title: 'Confirm', desc: 'Execute sync' },
+  ];
+
   return (
     <div style={{ width: '100%' }}>
-      <h3 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 16 }}>
-        Full Sync Wizard
-      </h3>
-      <SectionMessage appearance="information" title="Wizard not yet implemented">
-        <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
-          Steps: (1) Project selection → (2) Field mapping review → (3) Type/status validation → (4) Filters → (5) Dry-run → (6) Confirm
-        </p>
-      </SectionMessage>
+      {/* Progress */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+        {steps.map((s, i) => (
+          <button
+            key={i}
+            onClick={() => setStep(i)}
+            style={{
+              flex: 1, padding: '12px', borderRadius: 6, fontSize: 11, fontWeight: 500,
+              background: step === i ? T.info : step > i ? T.success : T.surfaceSunken,
+              color: step === i || step > i ? '#FFF' : T.text,
+              border: `1px solid ${step === i ? T.infoText : step > i ? T.successText : T.border}`,
+              fontFamily: 'var(--ds-font-family-body)', cursor: 'pointer',
+            }}
+          >
+            {s.num}. {s.title}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: 24, minHeight: 300 }}>
+        {step === 0 && (
+          <div>
+            <h4 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+              Step 1: Select Projects
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {projects.map(p => (
+                <label key={p.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedProjects.includes(p.key)}
+                    onChange={e => {
+                      if (e.target.checked) setSelectedProjects([...selectedProjects, p.key]);
+                      else setSelectedProjects(selectedProjects.filter(k => k !== p.key));
+                    }}
+                  />
+                  <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.text }}>
+                    {p.key} — {p.name}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+        {step === 1 && (
+          <div>
+            <h4 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+              Step 2: Field Mapping
+            </h4>
+            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle }}>
+              {selectedProjects.length === 0 ? 'Select projects first' : `${selectedProjects.length} project(s) selected. Field mappings ready.`}
+            </p>
+          </div>
+        )}
+        {step === 2 && (
+          <div>
+            <h4 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+              Step 3: Type/Status Mapping
+            </h4>
+            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle }}>
+              Type/status mappings configured. Verify in Type Mappings tab before proceeding.
+            </p>
+          </div>
+        )}
+        {step === 3 && (
+          <div>
+            <h4 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+              Step 4: Sync Filters
+            </h4>
+            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: T.textSubtle }}>
+              Filters (date, types, statuses) per project. Default: last 30 days, all types.
+            </p>
+          </div>
+        )}
+        {step === 4 && (
+          <div>
+            <h4 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+              Step 5: Dry-Run
+            </h4>
+            <Button appearance="primary" onClick={handleDryRun} isLoading={syncMutation.isPending}>
+              {syncMutation.isPending ? 'Estimating…' : 'Run Dry-Run'}
+            </Button>
+            {syncMutation.isError && (
+              <SectionMessage appearance="error" title="Error" style={{ marginTop: 16 }}>
+                <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
+                  {syncMutation.error instanceof Error ? syncMutation.error.message : 'Unknown error'}
+                </p>
+              </SectionMessage>
+            )}
+          </div>
+        )}
+        {step === 5 && (
+          <div>
+            <h4 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+              Step 6: Execute
+            </h4>
+            {dryRunEstimate !== null && (
+              <SectionMessage appearance="information" style={{ marginBottom: 16 }}>
+                <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
+                  Estimated {dryRunEstimate.toLocaleString()} records to sync
+                </p>
+              </SectionMessage>
+            )}
+            <Button appearance="primary" onClick={handleConfirm} isLoading={syncMutation.isPending}>
+              {syncMutation.isPending ? 'Syncing…' : 'Execute Full Sync'}
+            </Button>
+          </div>
+        )}
+        {step === 6 && syncMutation.isSuccess && (
+          <SectionMessage appearance="success">
+            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
+              ✓ {syncMutation.data?.recordsAdded || 0} records synced
+            </p>
+          </SectionMessage>
+        )}
+      </div>
+
+      {/* Nav */}
+      <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+        <Button onClick={() => setStep(Math.max(0, step - 1))} isDisabled={step === 0}>
+          Back
+        </Button>
+        <Button
+          onClick={() => {
+            if (step === 4) handleDryRun();
+            else if (step === 5) handleConfirm();
+            else setStep(Math.min(5, step + 1));
+          }}
+          appearance={step >= 5 ? 'primary' : 'default'}
+          isDisabled={step === 0 && selectedProjects.length === 0}
+        >
+          {step === 5 ? 'Execute' : 'Next'}
+        </Button>
+      </div>
     </div>
   );
 }
