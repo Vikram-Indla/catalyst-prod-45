@@ -100,16 +100,19 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
       style={{
         display: 'flex',
         width: '100%',
-        padding: '8px 16px 10px',
+        padding: '12px 16px',
         background: rowBg,
-        border: 'none',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 4,
+        boxShadow: hovered ? '0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.16))' : '0 1px 3px rgba(9, 30, 66, 0.08)',
         cursor: 'pointer',
         textAlign: 'left',
-        transition: 'background-color 150ms ease',
+        transition: 'all 150ms ease',
         outline: 'none',
         gap: 10,
         alignItems: 'flex-start',
         opacity: isRead ? 0.85 : 1,
+        marginBottom: 8,
       }}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
