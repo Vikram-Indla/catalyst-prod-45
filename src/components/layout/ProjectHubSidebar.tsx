@@ -12,6 +12,7 @@ import { ContextSwitcher } from './ContextSwitcher';
 import {
   LayoutGrid,
   Settings,
+  Link2,
 } from '@/lib/atlaskit-icons';
 import {
   NavDashboardIcon,
@@ -126,6 +127,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             { id: 'allwork', title: 'Work', path: `${base}/allwork`, icon: NavWorkIcon, exact: false },
             { id: 'filters', title: 'Filters', path: `${base}/filters`, icon: NavFiltersIcon, exact: false },
             { id: 'timeline', title: 'Timeline', path: `${base}/timeline`, icon: NavTimelineIcon, exact: false },
+            { id: 'dependencies', title: 'Dependencies', path: `${base}/dependencies`, icon: Link2, exact: false },
             /* 2026-06-15: Standups sidebar item retired. The history is now
                reachable from the board's kebab menu → "Standup history"
                (which navigates to /:hub/:key/standups). */
