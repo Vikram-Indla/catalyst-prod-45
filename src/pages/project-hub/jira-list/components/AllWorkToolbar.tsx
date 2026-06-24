@@ -29,6 +29,7 @@ import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { jqlClause } from "@/lib/filters/jqlClause";
+import { useApprovedProfiles } from "@/hooks/useApprovedProfiles";
 import Textfield from "@atlaskit/textfield";
 import Textarea from "@atlaskit/textarea";
 import AvatarGroup from "@atlaskit/avatar-group";
@@ -305,6 +306,10 @@ export function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOpt
   }
 
   const map = new Map<string, FacetOption>();
+  // Secondary dedup for assignees: same person can have 2+ Jira account IDs in
+  // ph_issues (account migration, multiple Jira accounts). Dedup by lowercase
+  // display name so only one entry appears per human.
+  const assigneeNamesSeen = new Set<string>();
   for (const i of items) {
     switch (facet) {
       case "sprintReleases": {
@@ -331,7 +336,9 @@ export function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOpt
         // name here caused the server filter to match nothing (name !== UUID).
         const id = toLabel(i.assigneeId);
         const nm = toLabel(i.assignee?.name);
-        if (id && nm && !map.has(id)) {
+        const nmKey = nm.toLowerCase();
+        if (id && nm && !assigneeNamesSeen.has(nmKey)) {
+          assigneeNamesSeen.add(nmKey);
           map.set(id, { value: id, label: nm });
         }
         break;
@@ -1333,6 +1340,8 @@ export function AllWorkToolbar({
     },
   });
 
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+
   const facetOptions = useMemo(() => {
     // Priority: caller-supplied pool (Product Hub BRs) > full-project ph_issues
     // rows > current page items. The caller-supplied pool guarantees correct
@@ -1340,8 +1349,22 @@ export function AllWorkToolbar({
     const pool = facetOptionItems ?? (allProjectRows.length > 0 ? allProjectRows : items);
     const out = {} as Record<FilterFacet, FacetOption[]>;
     for (const f of FACET_ORDER) out[f] = distinctOptions(pool, f);
+
+    // Gate assignee options to APPROVED profiles only (single source of truth).
+    const approvedAssignees = approvedProfiles
+      .filter((p) => (p as any).jiraAccountId)
+      .map((p) => ({ value: (p as any).jiraAccountId as string, label: p.name }));
+    if (approvedAssignees.length > 0) {
+      out['assignee'] = approvedAssignees;
+    } else {
+      const approvedNames = new Set(approvedProfiles.map((p) => p.name.toLowerCase()));
+      out['assignee'] = (out['assignee'] ?? []).filter((o) =>
+        approvedNames.has(o.label.toLowerCase()),
+      );
+    }
+
     return out;
-  }, [facetOptionItems, allProjectRows, items]);
+  }, [facetOptionItems, allProjectRows, items, approvedProfiles]);
 
   const totalCount = totalSelected(selectedFilters);
 

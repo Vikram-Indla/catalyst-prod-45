@@ -292,7 +292,8 @@ export function EditableAssignee({
       const { data: profs } = await supabase
         .from("profiles")
         .select("id, full_name, email, jira_account_id")
-        .in("id", ids);
+        .in("id", ids)
+        .eq("approval_status", "APPROVED");
       const map = new Map((profs ?? []).map((p) => [p.id, p as any]));
       return pm
         .map((row) => {
@@ -485,7 +486,8 @@ export function EditableReporter({
       const { data: profs } = await supabase
         .from("profiles")
         .select("id, full_name, email, jira_account_id")
-        .in("id", ids);
+        .in("id", ids)
+        .eq("approval_status", "APPROVED");
       const map = new Map((profs ?? []).map((p) => [p.id, p as any]));
       return pm
         .map((row) => {
