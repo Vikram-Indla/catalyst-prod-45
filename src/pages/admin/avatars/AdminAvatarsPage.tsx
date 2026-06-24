@@ -52,9 +52,11 @@ interface ResourceProfile {
 // ─── Data ────────────────────────────────────────────────────────────
 
 async function fetchProfiles(): Promise<ResourceProfile[]> {
+  // Business rule: only APPROVED users can have avatars managed here.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase.from as any)('profiles')
     .select('id, full_name, email, role')
+    .eq('approval_status', 'APPROVED')
     .order('full_name', { ascending: true });
   if (error) throw error;
   return (data ?? []) as ResourceProfile[];
@@ -146,7 +148,10 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
         uploadedBy: user.id,
         previousStoragePath: overrideStoragePath ?? null,
       });
-      await queryClient.invalidateQueries({ queryKey: ['resource-avatar-overrides'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['resource-avatar-overrides'] }),
+        queryClient.invalidateQueries({ queryKey: ['approved-profiles'] }),
+      ]);
       catalystToast.success(`${profile.full_name ?? profile.email ?? 'Resource'} avatar updated`, {
         description: 'Visible across every Catalyst surface that renders this person.',
         duration: 6000,
@@ -163,7 +168,10 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
     setBusy(true);
     try {
       await removeResourceAvatar(profile.id);
-      await queryClient.invalidateQueries({ queryKey: ['resource-avatar-overrides'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['resource-avatar-overrides'] }),
+        queryClient.invalidateQueries({ queryKey: ['approved-profiles'] }),
+      ]);
       catalystToast.success(`${profile.full_name ?? profile.email ?? 'Resource'} avatar reset`);
     } catch (err) {
       catalystToast.error(`Remove failed: ${err instanceof Error ? err.message : String(err)}`);

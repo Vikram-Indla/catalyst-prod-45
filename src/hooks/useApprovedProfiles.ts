@@ -7,34 +7,36 @@ export interface ApprovedProfile {
   name: string;
   initials: string;
   email: string;
-  avatarUrl?: string;
+  /** Resolved avatar URL. Priority: admin override > profiles.avatar_url > null (→ initials). */
+  avatarUrl?: string | null;
   /** Jira account UUID — matches ph_issues.assignee_account_id. Null for non-Jira users. */
   jiraAccountId?: string | null;
 }
 
 /**
- * Hook to fetch ALL approved profiles from the system.
- * This is different from useAllTeamMembers which only returns users in teams.
- * Use this for reassignment modals where any user can be assigned.
+ * Fetches all APPROVED profiles merged with admin avatar overrides from
+ * catalyst_resource_avatars. This is the single source of truth for every
+ * user picker in Catalyst.
+ *
+ * Avatar priority: catalyst_resource_avatars.avatar_url > profiles.avatar_url > null
+ *
+ * Business rules enforced here:
+ *   - Only approval_status = 'APPROVED' users are returned.
+ *   - Avatar shown in any picker = the override set at /admin/avatars if present.
  */
 export function useApprovedProfiles() {
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription with debouncing
   useEffect(() => {
     let debounceTimer: ReturnType<typeof setTimeout>;
     const channel = supabase
       .channel(`approved-profiles-sync`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'profiles' },
-        () => {
-          clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(() => {
-            queryClient.invalidateQueries({ queryKey: ['approved-profiles'] });
-          }, 1000);
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ['approved-profiles'] });
+        }, 1000);
+      })
       .subscribe();
 
     return () => {
@@ -46,29 +48,46 @@ export function useApprovedProfiles() {
   return useQuery({
     queryKey: ['approved-profiles'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, avatar_url, jira_account_id')
-        .eq('approval_status', 'APPROVED')
-        .order('full_name', { ascending: true });
+      // Fetch approved profiles and avatar overrides in parallel
+      const [profilesResult, overridesResult] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, full_name, email, avatar_url, jira_account_id')
+          .eq('approval_status', 'APPROVED')
+          .order('full_name', { ascending: true }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (supabase.from as any)('catalyst_resource_avatars')
+          .select('profile_id, avatar_url'),
+      ]);
 
-      if (error) throw error;
+      if (profilesResult.error) throw profilesResult.error;
 
-      return (data || []).map((profile) => {
+      // Build override map: profile_id → avatar_url
+      const overrideMap = new Map<string, string>();
+      if (Array.isArray(overridesResult.data)) {
+        for (const row of overridesResult.data as { profile_id: string; avatar_url: string }[]) {
+          if (row.profile_id && row.avatar_url) overrideMap.set(row.profile_id, row.avatar_url);
+        }
+      }
+
+      return (profilesResult.data || []).map((profile) => {
         const name = profile.full_name || profile.email || 'Unknown';
         const initials = name
           .split(' ')
-          .map((n) => n[0])
+          .map((n: string) => n[0])
           .join('')
           .toUpperCase()
           .slice(0, 2);
+
+        // Override wins over profiles.avatar_url
+        const avatarUrl = overrideMap.get(profile.id) ?? (profile.avatar_url as string | null) ?? null;
 
         return {
           id: profile.id,
           name,
           initials,
           email: profile.email || '',
-          avatarUrl: profile.avatar_url,
+          avatarUrl,
           jiraAccountId: (profile as any).jira_account_id ?? null,
         } as ApprovedProfile;
       });
@@ -78,7 +97,6 @@ export function useApprovedProfiles() {
 
 /**
  * Returns a Set of lowercase full_names for all APPROVED profiles.
- * Use this to gate any user picker: only show entries whose label is in this set.
  */
 export function useApprovedProfileNames(): Set<string> {
   const { data = [] } = useApprovedProfiles();
@@ -87,7 +105,6 @@ export function useApprovedProfileNames(): Set<string> {
 
 /**
  * Returns a Map from jira_account_id → ApprovedProfile.
- * Use this to resolve ph_issues.assignee_account_id back to a canonical profile.
  */
 export function useApprovedProfilesByJiraId(): Map<string, ApprovedProfile> {
   const { data = [] } = useApprovedProfiles();
