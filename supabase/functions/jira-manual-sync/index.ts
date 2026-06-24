@@ -85,7 +85,6 @@ function transformJiraIssue(issue: any): any | null {
     assignee_account_id: f.assignee?.accountId || null,
     reporter_account_id: f.reporter?.accountId || null,
     parent_key: f.parent?.key || null,
-    jira_issue_id: issue.id,
     jira_created_at: f.created,
     jira_updated_at: f.updated,
     source: 'jira' as const,
