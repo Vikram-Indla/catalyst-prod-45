@@ -44,6 +44,12 @@ export default function DependenciesPage() {
         throw new Error(supabaseError.message || supabaseError.code || 'Unknown error');
       }
 
+      const { data: projectRow } = await (supabase as any)
+        .from('ph_jira_projects')
+        .select('name, color')
+        .eq('project_key', key)
+        .maybeSingle();
+
       const deps = (data || []) as Dependency[];
       const keys = Array.from(
         new Set(deps.flatMap((d) => [d.source_issue_key, d.target_issue_key])),
@@ -69,13 +75,20 @@ export default function DependenciesPage() {
         );
       }
 
-      return { dependencies: deps, issueMeta };
+      return {
+        dependencies: deps,
+        issueMeta,
+        projectName: (projectRow?.name as string | undefined) ?? null,
+        projectColor: (projectRow?.color as string | undefined) ?? null,
+      };
     },
     enabled: !!key,
   });
 
   const dependencies = data?.dependencies;
   const issueMeta = data?.issueMeta ?? {};
+  const projectName = data?.projectName ?? null;
+  const projectColor = data?.projectColor ?? null;
 
   const handleAddSuccess = () => {
     setIsModalOpen(false);
@@ -105,6 +118,8 @@ export default function DependenciesPage() {
         ) : (
           <DependenciesDiagram
             projectKey={key || ''}
+            projectName={projectName}
+            projectColor={projectColor}
             dependencies={dependencies!}
             issueMeta={issueMeta}
             onAddClick={() => setIsModalOpen(true)}

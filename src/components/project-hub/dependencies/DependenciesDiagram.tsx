@@ -30,6 +30,7 @@ import '@xyflow/react/dist/style.css';
 import { Plus, Minus, MoreHorizontal, Link, Unlink, ChevronDown, User } from '@/lib/atlaskit-icons';
 import Button from '@atlaskit/button/new';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { StatusPill } from '@/components/shared/JiraTable/cells';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import { supabase } from '@/integrations/supabase/client';
@@ -125,22 +126,9 @@ function FrameNode({ data }: { data: any }) {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px' }}>
-        <span
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 4,
-            background: 'var(--ds-background-brand-bold, #1868DB)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
-            fontSize: 11,
-            fontWeight: 700,
-          }}
-        >
-          {String(data.label || '?').slice(0, 1)}
-        </span>
+        {data.projectKey ? (
+          <ProjectIcon projectKey={data.projectKey} name={data.label} color={data.color} size="small" />
+        ) : null}
         <span style={{ fontSize: 14, fontWeight: 653, color: 'var(--ds-text, #292A2E)' }}>{data.label}</span>
       </div>
     </div>
@@ -675,13 +663,17 @@ function ChipSelect<T extends string>({
 
 interface DependenciesDiagramProps {
   projectKey: string;
+  /** Full project name (e.g. "Senaei BAU"). Falls back to projectKey when absent. */
+  projectName?: string | null;
+  /** Project brand color (hex) for the frame chip icon. */
+  projectColor?: string | null;
   dependencies: Dependency[];
   issueMeta?: IssueMeta;
   onAddClick: () => void;
   onChanged: () => void;
 }
 
-function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, onChanged }: DependenciesDiagramProps) {
+function DiagramInner({ projectKey, projectName, projectColor, dependencies, issueMeta = {}, onAddClick, onChanged }: DependenciesDiagramProps) {
   const handleDeleteDep = useCallback(
     async (depId: number) => {
       try {
@@ -759,7 +751,7 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
         id: 'frame:project',
         type: 'frame',
         position: { x: 0, y: 0 },
-        data: { label: projectKey },
+        data: { label: projectName || projectKey, color: projectColor, projectKey },
         draggable: false,
         selectable: false,
         style: { width: PAD_X * 2 + maxDepth * COL_W + CARD_W, height: HEADER_H + (maxRows - 1) * ROW_H + 140 + PAD_Y, zIndex: 0 },
@@ -805,7 +797,7 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
       cumY += frameHeight + LANE_GAP;
     }
     return [...frames, ...cards];
-  }, [uniqueIssues, filteredDeps, issueMeta, projectKey, groupBy, locked, cardData]);
+  }, [uniqueIssues, filteredDeps, issueMeta, projectKey, projectName, projectColor, groupBy, locked, cardData]);
 
   const [sel, setSel] = useState<any>(null);
   const onSelectEdge = useCallback((d: any, point: { x: number; y: number }) => setSel({ ...d, x: point.x, y: point.y }), []);
@@ -899,9 +891,29 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
         <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)' }}>
           {filteredDeps.length} {filteredDeps.length === 1 ? 'dependency' : 'dependencies'}
         </span>
-        <Button appearance="default" iconBefore={Plus} onClick={onAddClick}>
+        <button
+          type="button"
+          onClick={onAddClick}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            height: 32,
+            padding: '0 12px',
+            background: 'var(--ds-surface, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 8,
+            color: 'var(--ds-text, #172B4D)',
+            fontSize: 14,
+            fontWeight: 500,
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+        >
+          <Plus size={16} />
           Add dependency
-        </Button>
+        </button>
       </div>
 
       {/* Canvas */}
