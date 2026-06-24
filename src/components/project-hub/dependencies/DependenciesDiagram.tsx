@@ -452,7 +452,7 @@ function ZoomBar({
   zoomOnScroll: boolean;
   onToggleScroll: () => void;
 }) {
-  const { zoomIn, zoomOut, fitView } = useReactFlow();
+  const { zoomIn, zoomOut, fitView, setViewport } = useReactFlow();
   const { zoom } = useViewport();
   const btn: React.CSSProperties = {
     border: 'none',
@@ -498,6 +498,9 @@ function ZoomBar({
       {/* ads-scanner:ignore-next-line — React Flow fitView padding ratio, not CSS px */}
       <button type="button" style={btn} onClick={() => fitView({ padding: 0.2, duration: 200 })}>
         Fit
+      </button>
+      <button type="button" style={btn} onClick={() => setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 200 })}>
+        Reset
       </button>
     </div>
   );
