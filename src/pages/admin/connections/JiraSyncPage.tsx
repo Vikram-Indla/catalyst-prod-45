@@ -92,7 +92,7 @@ export function JiraSyncPage() {
   const { data: accessibleProjects = [] } = useAvailableProjects();
   const { data: syncLogs = [] } = useSyncLogs(20);
 
-  // Per-project sync state from ph_jira_projects (real columns: is_active, sync_config, last_synced_at)
+  // Per-project sync state from ph_jira_projects (config table — may be empty)
   const { data: syncProjects = [] } = useQuery({
     queryKey: ['jira-sync-projects', env.environment],
     queryFn: async () => {
@@ -104,22 +104,54 @@ export function JiraSyncPage() {
     },
   });
 
-  // Merge accessible (from connection JSON) with sync state (from ph_jira_projects)
-  const projects = accessibleProjects.map((ap: any) => {
-    const sp = syncProjects.find((s: any) => s.project_key === ap.key);
+  // GROUND TRUTH: distinct project_key + count from actual synced jira issues.
+  // Config tables (ph_jira_projects, connection.accessible_projects) are often empty
+  // even when ph_issues holds synced data — so the real project universe is here.
+  const { data: issueCounts = {} } = useQuery({
+    queryKey: ['jira-issue-project-counts', env.environment],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('project_key')
+        .eq('source', 'jira')
+        .limit(20000);
+      const tally: Record<string, number> = {};
+      for (const r of (data || [])) {
+        const k = (r as any).project_key;
+        if (k) tally[k] = (tally[k] || 0) + 1;
+      }
+      return tally;
+    },
+  });
+
+  // Project universe = union of (issues with data) ∪ (accessible) ∪ (config rows).
+  const allKeys = new Set<string>([
+    ...Object.keys(issueCounts),
+    ...accessibleProjects.map((p: any) => p.key),
+    ...syncProjects.map((s: any) => s.project_key),
+  ]);
+
+  const projects = Array.from(allKeys).sort().map((key) => {
+    const ap = accessibleProjects.find((p: any) => p.key === key);
+    const sp = syncProjects.find((s: any) => s.project_key === key);
     const cfg = (sp?.sync_config && typeof sp.sync_config === 'object') ? sp.sync_config as any : {};
+    const cached = issueCounts[key] || 0;
     return {
-      key: ap.key,
-      name: ap.name,
-      sync_enabled: sp?.is_active ?? false,
+      key,
+      name: ap?.name || sp?.name || key,
+      // A project is effectively synced if it has cached jira data OR config marks it active.
+      sync_enabled: cached > 0 || (sp?.is_active ?? false),
       module_target: cfg.module_target ?? null,
       last_synced_at: sp?.last_synced_at ?? null,
+      issues_cached: cached,
     };
   });
 
   const isConnected = connection?.status === 'connected';
   const enabledProjects = projects.filter(p => p.sync_enabled);
-  const mappingValid = enabledProjects.length > 0 && enabledProjects.every(p => p.module_target);
+  // Type/Status/Field mappings are canonical (always "Mapped"). Validity here = at least
+  // one project carries synced data. module_target is informational routing, not a sync gate.
+  const mappingValid = enabledProjects.length > 0;
 
   return (
     <AdminGuard>
@@ -232,12 +264,12 @@ function OverviewTab({ projects, health, mappingValid }: any) {
           <div style={{ fontSize: 36, fontWeight: 600, color: C.text }}>{mappingValid ? '✓' : '⚠'}</div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, fontFamily: FB, color: mappingValid ? C.textSuccess : C.textDanger }}>
-              {mappingValid ? 'All enabled projects mapped' : 'Mapping incomplete'}
+              {mappingValid ? 'Mappings complete — sync enabled' : 'No synced data yet'}
             </div>
             <div style={{ fontSize: 12, color: C.textSubtle, marginTop: 4, fontFamily: FB }}>
               {mappingValid
-                ? 'Sync enabled — every sync-on project has a Catalyst module target.'
-                : 'Enable at least one project and assign a Catalyst module target before sync.'}
+                ? 'Type, status, and field mappings are canonical. Projects with cached data can sync and refresh.'
+                : 'Run a sync to populate Catalyst from Jira before refresh is available.'}
             </div>
           </div>
         </div>
@@ -268,7 +300,7 @@ function OverviewTab({ projects, health, mappingValid }: any) {
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr style={{ background: C.surfaceSunken }}>
-              {['Project', 'Catalyst Target', 'Sync', 'Last Synced', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
+              {['Project', 'Catalyst Target', 'Sync', 'Issues Cached', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
             </tr></thead>
             <tbody>
               {projects.map((p: any, i: number) => (
@@ -276,8 +308,8 @@ function OverviewTab({ projects, health, mappingValid }: any) {
                   <td style={TD}><code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '2px 6px', borderRadius: 3 }}>{p.key}</code> <span style={{ color: C.textSubtle }}>{p.name}</span></td>
                   <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
                   <td style={TD}><Lozenge appearance={p.sync_enabled ? 'success' : 'default'}>{p.sync_enabled ? 'ON' : 'OFF'}</Lozenge></td>
-                  <td style={{ ...TD, fontSize: 12, color: C.textSubtle }}>{p.last_synced_at ? formatDistanceToNow(new Date(p.last_synced_at), { addSuffix: true }) : '—'}</td>
-                  <td style={TD}><Lozenge appearance={p.sync_enabled && p.module_target ? 'success' : 'removed'}>{p.sync_enabled && p.module_target ? 'Ready' : 'Review'}</Lozenge></td>
+                  <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
+                  <td style={TD}><Lozenge appearance={p.issues_cached > 0 ? 'success' : 'removed'}>{p.issues_cached > 0 ? 'Synced' : 'No data'}</Lozenge></td>
                 </tr>
               ))}
             </tbody>
@@ -351,7 +383,7 @@ function ProjectsTab({ projects, onManage }: any) {
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr style={{ background: C.surfaceSunken }}>
-              {['Key', 'Name', 'Sync', 'Catalyst Target', 'Last Synced', 'Manage', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
+              {['Key', 'Name', 'Sync', 'Catalyst Target', 'Issues Cached', 'Manage', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
             </tr></thead>
             <tbody>
               {filtered.map((p: any, i: number) => (
@@ -360,9 +392,9 @@ function ProjectsTab({ projects, onManage }: any) {
                   <td style={TD}>{p.name}</td>
                   <td style={TD}><Lozenge appearance={p.sync_enabled ? 'success' : 'default'}>{p.sync_enabled ? 'ON' : 'OFF'}</Lozenge></td>
                   <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
-                  <td style={{ ...TD, fontSize: 12, color: C.textSubtle }}>{p.last_synced_at ? formatDistanceToNow(new Date(p.last_synced_at), { addSuffix: true }) : '—'}</td>
+                  <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
                   <td style={TD}><Button appearance="subtle" onClick={() => onManage(p.key)}>Manage</Button></td>
-                  <td style={TD}><Lozenge appearance={p.sync_enabled && p.module_target ? 'success' : 'removed'}>{p.sync_enabled && p.module_target ? 'Ready' : 'Review'}</Lozenge></td>
+                  <td style={TD}><Lozenge appearance={p.issues_cached > 0 ? 'success' : 'removed'}>{p.issues_cached > 0 ? 'Synced' : 'No data'}</Lozenge></td>
                 </tr>
               ))}
             </tbody>
@@ -536,7 +568,7 @@ function ProjectDetailModal({ projectKey, projects, onClose }: { projectKey: str
               {project.key} — {project.name}
             </h2>
             <p style={{ fontSize: 12, color: C.textSubtle, margin: '0 0 24px 0', fontFamily: FB }}>
-              {project.last_synced_at ? `Last synced ${formatDistanceToNow(new Date(project.last_synced_at), { addSuffix: true })}` : 'Never synced'} · Target: {project.module_target || 'unmapped'}
+              {project.issues_cached > 0 ? `${project.issues_cached.toLocaleString()} issues cached` : 'No issues cached'} · Target: {project.module_target || 'unmapped'}
             </p>
             <div style={{ marginBottom: 24 }}>
               <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, margin: '0 0 12px 0', fontFamily: FH }}>Date Filter</h3>
@@ -571,6 +603,7 @@ function RefreshDataModal({ isOpen, env, enabledProjects, onClose }: { isOpen: b
   const [confirmPhrase, setConfirmPhrase] = useState('');
   const requiredPhrase = env.isProductionRuntime ? 'REFRESH PRODUCTION JIRA DATA' : 'REFRESH STAGING JIRA DATA';
   const canConfirm = confirmPhrase === requiredPhrase && enabledProjects.length > 0;
+  const totalRecords = enabledProjects.reduce((sum, p) => sum + (p.issues_cached || 0), 0);
 
   const handleConfirm = async () => {
     await refreshData.mutateAsync({
@@ -592,7 +625,7 @@ function RefreshDataModal({ isOpen, env, enabledProjects, onClose }: { isOpen: b
             </p>
             <div style={{ background: C.bgDanger, border: `1px solid ${C.textDanger}`, borderRadius: 8, padding: 16, marginBottom: 24 }}>
               <div style={{ fontSize: 12, color: C.textDanger, fontFamily: FB }}>
-                <strong>⚠ Cannot be undone.</strong> Affects {enabledProjects.length} enabled project(s): {enabledProjects.map(p => p.key).join(', ') || 'none'}.
+                <strong>⚠ Cannot be undone.</strong> Affects {enabledProjects.length} synced project(s): {enabledProjects.map(p => p.key).join(', ') || 'none'} — {totalRecords.toLocaleString()} Jira-origin records.
               </div>
             </div>
             <div style={{ marginBottom: 24 }}>
