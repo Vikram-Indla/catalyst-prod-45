@@ -17,6 +17,7 @@ import CloseIcon from '@atlaskit/icon/core/close';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { useInviteUser } from '@/hooks/useInviteUser';
 import { useAuth } from '@/lib/auth';
 import { catalystToast } from '@/lib/catalystToast';
@@ -1373,10 +1374,21 @@ function PeopleTab() {
     staleTime: 60_000,
   });
 
-  const adminCount = useMemo(() => users.filter(u => u.role === 'admin').length, [users]);
+  // Merge resolved avatars (bundled photos + admin overrides) into user list
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const resolvedAvatarMap = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.id, p.avatarUrl])),
+    [approvedProfiles]
+  );
+  const usersWithAvatars = useMemo(
+    () => users.map(u => ({ ...u, avatar_url: resolvedAvatarMap.get(u.id) ?? u.avatar_url })),
+    [users, resolvedAvatarMap]
+  );
+
+  const adminCount = useMemo(() => usersWithAvatars.filter(u => u.role === 'admin').length, [usersWithAvatars]);
 
   const filtered = useMemo(() => {
-    let result = users;
+    let result = usersWithAvatars;
     if (statusFilter.value === 'all_approved') {
       result = result.filter(u => { const s = userState(u); return s === 'active' || s === 'pending' || s === 'locked'; });
     } else if (statusFilter.value === 'active') {
