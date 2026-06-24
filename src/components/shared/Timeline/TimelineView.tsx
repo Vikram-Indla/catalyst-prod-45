@@ -1333,6 +1333,89 @@ export default function TimelineView(props: TimelineViewProps) {
         </div>
       </div>
 
+      {/* ── Create work modal ── */}
+      <ModalTransition>
+        {createWorkOpen && (
+          <Modal onClose={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }} width="medium">
+            <ModalHeader>
+              <ModalTitle>Create work</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              {/* Project row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                <ProjectIcon projectKey={hubKey} size="small" name={hubLabel} />
+                <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>
+                  {hubLabel}
+                </span>
+              </div>
+              {/* Work item type picker */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 8, fontFamily: 'var(--ds-font-family-body)', letterSpacing: '0.04em' }}>
+                  WORK ITEM TYPE
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {workItemTypes.map(type => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setCreateWorkType(type)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        padding: '6px 12px',
+                        border: `1.5px solid ${createWorkType === type ? 'var(--ds-border-selected, #388BFF)' : 'var(--ds-border, #DFE1E6)'}`,
+                        borderRadius: 3, cursor: 'pointer',
+                        background: createWorkType === type ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)',
+                        fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                        fontFamily: 'var(--ds-font-family-body)',
+                        fontWeight: createWorkType === type ? 600 : 400,
+                      }}
+                    >
+                      <JiraIssueTypeIcon type={type} size={16} />
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Summary field */}
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, fontFamily: 'var(--ds-font-family-body)', letterSpacing: '0.04em' }}>
+                  SUMMARY
+                </div>
+                <TextField
+                  value={createWorkSummary}
+                  onChange={e => setCreateWorkSummary((e.target as HTMLInputElement).value)}
+                  placeholder="What needs to be done?"
+                  autoFocus
+                  onKeyDown={e => { if (e.key === 'Enter' && createWorkSummary.trim()) handleCreateWork(); }}
+                />
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <Checkbox
+                  label="Create another"
+                  isChecked={createAnother}
+                  onChange={e => setCreateAnother(e.target.checked)}
+                />
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <Button appearance="subtle" onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}>
+                    Cancel
+                  </Button>
+                  <Button
+                    appearance="primary"
+                    onClick={handleCreateWork}
+                    isDisabled={!createWorkSummary.trim() || isCreatingWork}
+                    isLoading={isCreatingWork}
+                  >
+                    Create
+                  </Button>
+                </div>
+              </div>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
       {/* ── body: sidebar + divider + grid ── */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
@@ -1342,7 +1425,7 @@ export default function TimelineView(props: TimelineViewProps) {
           }}>
             <div
               role="columnheader"
-              aria-label="Work"
+              aria-label="Work item"
               style={{
                 height: doubleHeaderH, flexShrink: 0,
                 borderBottom: '2px solid var(--ds-border, #DFE1E6)',
