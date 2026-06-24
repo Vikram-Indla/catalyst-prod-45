@@ -70,30 +70,32 @@ function mapStatusAppearance(statusType: StatusType) {
 
 function mapNotification(
   n: Notification,
-  profiles: Map<string, { full_name: string; avatarUrl?: string | null }>
+  profiles: Map<string, { name: string; avatarUrl?: string | null }>,
+  profilesByName: Map<string, { name: string; avatarUrl?: string | null }>
 ): DirectNotification {
   const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
-  // Show thread card if: there's a comment preview OR the notification is a comment verb.
-  // This ensures "View thread" is always visible on comment-type notifications,
-  // not only when metadata.comment_preview is populated in the DB.
   const isCommentVerb = ['commented', 'mentioned'].includes(mapVerb(n.notification_type));
   const hasThread = !!(n.metadata?.comment_preview) || isCommentVerb;
 
-  // 2026-05-17 design-critique: actor resolution now uses 3 fallback layers
-  // so the row never renders a faceless silhouette when ANY actor data exists.
-  //   1. profile join (when actor_user_id is set)
-  //   2. notification.actor embedded object (when webhook stored a snapshot)
-  //   3. metadata.actor_display_name / metadata.actor_avatar_url
-  //      — this is where the Jira webhook actually stores the actor for
-  //      issues where the actor has no Catalyst profile (e.g. external Jira
-  //      users like "Nada alfassam" / "dalia abdullah"). Previously the
-  //      `actor: n.actor_user_id ? ... : null` ternary dropped this entirely.
-  const metadataActorName = (n.metadata as Record<string, unknown> | undefined)?.actor_display_name as string | undefined;
-  const metadataActorAvatar = (n.metadata as Record<string, unknown> | undefined)?.actor_avatar_url as string | undefined;
-  const resolvedDisplayName = profile?.full_name
+  // Actor resolution — 4 fallback layers:
+  //   1. profile by actor_user_id (Catalyst profile UUID, carries override avatar)
+  //   2. notification.actor embedded object (webhook snapshot)
+  //   3. metadata.actor_name (sync feed stores reporter_display_name here)
+  //      NOTE: sync feed uses 'actor_name', webhook uses 'actor_display_name' — check both
+  //   4. metadata.actor_display_name (Jira webhook actor for external users)
+  const meta = n.metadata as Record<string, unknown> | undefined;
+  const metadataActorName = (meta?.actor_name ?? meta?.actor_display_name) as string | undefined;
+  const metadataActorAvatar = meta?.actor_avatar_url as string | undefined;
+  const resolvedDisplayName = profile?.name
     ?? n.actor?.full_name
     ?? (metadataActorName && metadataActorName.trim() ? metadataActorName : null);
+  // Avatar: try id-based profile first, then name-based lookup (for sync reporter),
+  // then the webhook-embedded avatar URL.
+  const nameBasedProfile = resolvedDisplayName
+    ? profilesByName.get(resolvedDisplayName.toLowerCase())
+    : null;
   const resolvedAvatarUrl = profile?.avatarUrl
+    ?? nameBasedProfile?.avatarUrl
     ?? n.actor?.avatar_url
     ?? (metadataActorAvatar && metadataActorAvatar.trim() ? metadataActorAvatar : null);
 
@@ -273,11 +275,15 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
     () => new Map(approvedProfiles.map(p => [p.id, p])),
     [approvedProfiles]
   );
+  const profilesByName = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.name.toLowerCase(), p])),
+    [approvedProfiles]
+  );
 
   // Map raw DB rows → DirectNotification display shape
   const notifications = useMemo<DirectNotification[]>(
-    () => rawNotifications.map(n => mapNotification(n, profiles)),
-    [rawNotifications, profiles]
+    () => rawNotifications.map(n => mapNotification(n, profiles, profilesByName)),
+    [rawNotifications, profiles, profilesByName]
   );
 
   // Read-state: merge DB read_at, local optimistic state, and external state
