@@ -16,6 +16,8 @@ import {
   MiniMap,
   useNodesState,
   useEdgesState,
+  Handle,
+  Position,
   Node,
   Edge,
   MarkerType,
@@ -24,6 +26,8 @@ import {
 import '@xyflow/react/dist/style.css';
 import { Plus } from '@/lib/atlaskit-icons';
 import Button from '@atlaskit/button/new';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import type { IssueMeta } from './DependencyList';
 
 type Dependency = {
   id: number;
@@ -47,6 +51,7 @@ const COLORS = {
 interface DependenciesDiagramProps {
   projectKey: string;
   dependencies: Dependency[];
+  issueMeta?: IssueMeta;
   onAddClick: () => void;
   onDelete: () => void;
 }
@@ -55,19 +60,25 @@ function WorkItemNode({ data }: { data: any }) {
   return (
     <div
       style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
         padding: '8px 12px',
         borderRadius: 3,
         background: data.bgColor || COLORS.default,
         border: `1px solid var(--ds-border, #DFE1E6)`,
         minWidth: 120,
-        textAlign: 'center',
         fontSize: 12,
         fontWeight: 500,
         whiteSpace: 'nowrap',
         boxShadow: 'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.13))',
       }}
     >
+      <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
+      {data.issueType ? <JiraIssueTypeIcon type={data.issueType} size={16} /> : null}
       {data.label}
+      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
     </div>
   );
 }
@@ -75,6 +86,7 @@ function WorkItemNode({ data }: { data: any }) {
 export default function DependenciesDiagram({
   projectKey,
   dependencies,
+  issueMeta = {},
   onAddClick,
   onDelete,
 }: DependenciesDiagramProps) {
@@ -94,10 +106,10 @@ export default function DependenciesDiagram({
       uniqueIssues.map((key, idx) => ({
         id: key,
         type: 'workItem',
-        data: { label: key, bgColor: COLORS.default },
+        data: { label: key, bgColor: COLORS.default, issueType: issueMeta[key]?.issue_type ?? null },
         position: { x: idx * 200, y: 100 },
       })),
-    [uniqueIssues]
+    [uniqueIssues, issueMeta]
   );
 
   // Create edges from dependencies

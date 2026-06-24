@@ -21,6 +21,7 @@ import Spinner from '@atlaskit/spinner';
 import { catalystToast } from '@/lib/catalystToast';
 import DependenciesEmptyState from '@/components/project-hub/dependencies/DependenciesEmptyState';
 import DependenciesDiagram from '@/components/project-hub/dependencies/DependenciesDiagram';
+import DependencyList, { type IssueMeta } from '@/components/project-hub/dependencies/DependencyList';
 import AddDependencyModal from '@/components/project-hub/dependencies/AddDependencyModal';
 
 const T = {
@@ -46,7 +47,7 @@ export default function DependenciesPage() {
   const { key } = useParams<{ key: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: dependencies, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['dependencies', key],
     queryFn: async () => {
       if (!key) throw new Error('Project key required');
@@ -62,10 +63,32 @@ export default function DependenciesPage() {
         console.error('[Dependencies] load failed', supabaseError);
         throw new Error(supabaseError.message || supabaseError.code || 'Unknown error');
       }
-      return (data || []) as Dependency[];
+
+      const deps = (data || []) as Dependency[];
+
+      // Fetch type + summary for every referenced issue so rows/nodes can show
+      // the locked JiraIssueTypeIcon. Unknown keys simply stay absent from the map.
+      const keys = Array.from(
+        new Set(deps.flatMap((d) => [d.source_issue_key, d.target_issue_key])),
+      );
+      let issueMeta: IssueMeta = {};
+      if (keys.length > 0) {
+        const { data: issues } = await supabase
+          .from('ph_issues')
+          .select('issue_key, issue_type, summary')
+          .in('issue_key', keys);
+        issueMeta = Object.fromEntries(
+          (issues || []).map((r: any) => [r.issue_key, { issue_type: r.issue_type ?? null, summary: r.summary ?? null }]),
+        );
+      }
+
+      return { dependencies: deps, issueMeta };
     },
     enabled: !!key,
   });
+
+  const dependencies = data?.dependencies;
+  const issueMeta = data?.issueMeta ?? {};
 
   const handleAddSuccess = () => {
     setIsModalOpen(false);
@@ -101,12 +124,18 @@ export default function DependenciesPage() {
         {isEmpty ? (
           <DependenciesEmptyState projectKey={key || ''} onAddClick={() => setIsModalOpen(true)} />
         ) : (
-          <DependenciesDiagram
-            projectKey={key || ''}
-            dependencies={dependencies}
-            onAddClick={() => setIsModalOpen(true)}
-            onDelete={refetch}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16, flex: 1, minHeight: 0 }}>
+            <DependencyList dependencies={dependencies!} issueMeta={issueMeta} onChanged={refetch} />
+            <div style={{ flex: 1, minHeight: 240, display: 'flex' }}>
+              <DependenciesDiagram
+                projectKey={key || ''}
+                dependencies={dependencies!}
+                issueMeta={issueMeta}
+                onAddClick={() => setIsModalOpen(true)}
+                onDelete={refetch}
+              />
+            </div>
+          </div>
         )}
       </div>
 

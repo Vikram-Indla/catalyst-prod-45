@@ -6,7 +6,7 @@
 
 import React from 'react';
 import Button from '@atlaskit/button/new';
-import { Plus } from '@/lib/atlaskit-icons';
+import { Plus, Link2 } from '@/lib/atlaskit-icons';
 
 const T = {
   headline: { fontSize: 20, fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: '16px 0 8px 0' },
@@ -30,7 +30,7 @@ interface DependenciesEmptyStateProps {
 export default function DependenciesEmptyState({ projectKey, onAddClick }: DependenciesEmptyStateProps) {
   return (
     <div style={T.container}>
-      {/* Illustration placeholder */}
+      {/* Illustration — ADS Link2 glyph in a neutral tile (no emoji; enterprise guardrail) */}
       <div
         style={{
           width: 120,
@@ -41,10 +41,10 @@ export default function DependenciesEmptyState({ projectKey, onAddClick }: Depen
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 24,
-          fontSize: 48,
+          color: 'var(--ds-text-subtlest, #6B778C)',
         }}
       >
-        ⛓️
+        <Link2 size={48} />
       </div>
 
       {/* Headline */}
