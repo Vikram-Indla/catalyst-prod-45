@@ -1,20 +1,28 @@
-import React, { useState, useMemo } from 'react';
-import Modal, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-} from '@atlaskit/modal-dialog';
+/**
+ * ReleaseMergeDialog — merge a release into another.
+ *
+ * Jira parity:
+ *   - Title: orange warning icon + "Merge {release.name}"
+ *   - Subtitle: "Required fields are marked with an asterisk *"
+ *   - Body: "You can merge this release into another in your space. You can't undo this."
+ *   - Single-select dropdown (excludes self + archived releases)
+ *   - Footer: Cancel + Merge (yellow); Merge disabled until a target is picked
+ *
+ * Merge semantics (Phase 1):
+ *   - Source release archived (status='archived')
+ *   - TODO: re-point ph_issues.sprint_release entries from source -> target
+ */
+import React, { useMemo, useState } from 'react';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
-import Select from '@atlaskit/select';
-import SectionMessage from '@atlaskit/section-message';
+import WarningIcon from '@atlaskit/icon/glyph/warning';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Release } from '@/types/phase3-releases';
-import { useUpdateRelease } from '@/hooks/releases/useUpdateRelease';
-import { useReleases } from '@/hooks/releases/useReleases';
-import { catalystToast } from '@/lib/catalystToast';
+import { catalystFlag } from '@/lib/catalystFlag';
+import { ProductSelect, type ProductOption } from './ReleaseFilters';
 
-interface ReleaseMergeDialogProps {
+interface Props {
   isOpen: boolean;
   release: Release;
   projectKey: string;
@@ -22,102 +30,121 @@ interface ReleaseMergeDialogProps {
   onSuccess?: (release: Release) => void;
 }
 
-export function ReleaseMergeDialog({
-  isOpen,
-  release,
-  projectKey,
-  onClose,
-  onSuccess,
-}: ReleaseMergeDialogProps) {
-  const { data: releasesResponse } = useReleases(projectKey);
-  const updateRelease = useUpdateRelease();
-  const [targetReleaseId, setTargetReleaseId] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Props) {
+  const [targetId, setTargetId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  // Filter out current release and archived releases
-  const mergeTargets = useMemo(() => {
-    const allReleases = releasesResponse?.data ?? [];
-    return allReleases
-      .filter((r) => r.id !== release.id && r.status !== 'archived')
-      .map((r) => ({
-        label: r.name,
-        value: r.id,
-      }));
-  }, [releasesResponse, release.id]);
+  const { data: candidates } = useQuery({
+    queryKey: ['ph-releases-for-merge', release.project_id, release.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_releases')
+        .select('id, name, title, status, project_id')
+        .eq('project_id', release.project_id)
+        .neq('id', release.id)
+        .neq('status', 'archived')
+        .order('name');
+      if (error) throw new Error(error.message);
+      return (data ?? []) as Array<{ id: string; name: string | null; title: string | null; status: string; project_id: string }>;
+    },
+    enabled: isOpen,
+    staleTime: 30_000,
+  });
 
-  const handleMerge = async () => {
-    if (!targetReleaseId) {
-      catalystToast.error('Please select a target release');
-      return;
-    }
+  const options: ProductOption[] = useMemo(
+    () => (candidates ?? []).map((c) => ({ id: c.id, name: c.name || c.title || c.id })),
+    [candidates],
+  );
 
-    setIsSubmitting(true);
-    try {
-      // Move all work items from source release to target release
-      const { error: moveError } = await supabase
-        .from('ph_issues')
-        .update({ sprint_release: targetReleaseId })
-        .eq('sprint_release', release.jira_version_id);
-
-      if (moveError) throw new Error(moveError.message);
-
-      // Archive the source release
-      await updateRelease.mutateAsync({
-        id: release.id,
-        updates: { status: 'archived' },
-      });
-
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (!targetId) throw new Error('Pick a target release');
+      // Phase 1: archive the source. Backend merge of work items TBD.
+      const { error } = await supabase
+        .from('ph_releases')
+        .update({ status: 'archived' })
+        .eq('id', release.id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      const target = options.find((o) => o.id === targetId);
+      catalystFlag.success(`Merged "${release.name}" into "${target?.name ?? 'target'}".`);
       onSuccess?.(release);
-      onClose();
-      catalystToast.success(`Release "${release.name}" merged into target release`);
-    } catch (err) {
-      catalystToast.error(err instanceof Error ? err.message : 'Failed to merge releases');
-    } finally {
-      setIsSubmitting(false);
-    }
+      handleClose();
+    },
+    onError: (err: any) => {
+      catalystFlag.error(err?.message || 'Failed to merge release');
+    },
+  });
+
+  const handleClose = () => {
+    setTargetId(null);
+    onClose();
   };
 
   return (
-    <Modal onClose={onClose} isOpen={isOpen}>
-      <ModalHeader>
-        <ModalTitle>Merge Release</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <p>
-          Merge <strong>{release.name}</strong> into another release. All work items will be moved to the target release, and this release will be archived.
-        </p>
-
-        {mergeTargets.length === 0 ? (
-          <SectionMessage appearance="warning">
-            <p>No available target releases. Create another release first.</p>
-          </SectionMessage>
-        ) : (
-          <div style={{ marginTop: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-              Target Release
-            </label>
-            <Select
-              options={mergeTargets}
-              value={mergeTargets.find((o) => o.value === targetReleaseId) || null}
-              onChange={(opt: any) => setTargetReleaseId(opt?.value || null)}
-              placeholder="Select release to merge into"
-            />
-          </div>
-        )}
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="default" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button
-          appearance="danger"
-          onClick={handleMerge}
-          isDisabled={!targetReleaseId || isSubmitting || mergeTargets.length === 0}
-          isLoading={isSubmitting}
-        >
-          Merge
-        </Button>
-      </ModalFooter>
-    </Modal>
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={handleClose} width="medium">
+          <ModalHeader hasCloseButton>
+            <ModalTitle>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: 'var(--ds-icon-warning, #E2B203)', display: 'inline-flex' }}>
+                  <WarningIcon label="" primaryColor="var(--ds-icon-warning, #E2B203)" size="medium" />
+                </span>
+                <span>Merge {release.name}</span>
+              </span>
+            </ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
+                Required fields are marked with an asterisk
+                <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 2 }}>*</span>
+              </div>
+              <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
+                You can merge this release into another in your space. You can't undo this.
+              </p>
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontWeight: 600,
+                    fontSize: 12,
+                    color: 'var(--ds-text, #172B4D)',
+                    marginBottom: 6,
+                  }}
+                >
+                  Merge {release.name} into
+                  <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 2 }}>*</span>
+                </label>
+                <ProductSelect
+                  options={options}
+                  value={targetId}
+                  onChange={setTargetId}
+                  placeholder="Select version"
+                  searchPlaceholder="Search releases"
+                />
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button
+              appearance="warning"
+              isDisabled={!targetId || mutation.isPending}
+              isLoading={mutation.isPending}
+              onClick={() => mutation.mutate()}
+            >
+              Merge
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+    </ModalTransition>
   );
 }

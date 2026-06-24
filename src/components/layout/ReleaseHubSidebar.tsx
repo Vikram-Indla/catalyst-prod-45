@@ -41,7 +41,7 @@ export const buildReleaseHubSections = (pendingSignoffs: number): SidebarSection
   {
     title: 'Releases',
     items: [
-      { id: 'release-management', title: 'Release', path: '/release-hub/releases-management', icon: List, exact: true },
+      { id: 'release-management', title: 'Releases', path: '/release-hub/releases-management', icon: List, exact: true },
       { id: 'release-kanban', title: 'Board', path: '/release-hub/release-kanban', icon: NavKanbanIcon, exact: false },
       { id: 'work', title: 'Work', path: '/release-hub/work', icon: NavWorkIcon, exact: false },
       { id: 'timeline', title: 'Timeline', path: '/release-hub/timeline', icon: NavTimelineIcon, exact: false },
