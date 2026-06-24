@@ -58,6 +58,7 @@ export function useCatalystWatchers(issueKey: string | null | undefined) {
 
       const rows = data ?? [];
 
+      // TODO: replace with useApprovedProfiles when this hook can be lifted out of queryFn
       // Hydrate profiles for the manage-watchers popover.
       let watchers: WatcherProfile[] = [];
       if (rows.length > 0) {
