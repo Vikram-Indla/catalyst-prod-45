@@ -178,10 +178,11 @@ function CardKebab({ onAddDependency, onLocate }: { onAddDependency?: () => void
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
-        padding: '8px 16px',
+        padding: '12px 16px',
         border: 'none',
         background: 'transparent',
         textAlign: 'left',
+        fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")',
         fontSize: 14,
         whiteSpace: 'nowrap',
         cursor: opts.disabled ? 'not-allowed' : 'pointer',
@@ -226,14 +227,15 @@ function CardKebab({ onAddDependency, onLocate }: { onAddDependency?: () => void
               style={{
                 position: 'fixed',
                 top: rect.bottom + 4,
-                left: rect.left - 180,
-                minWidth: 220,
+                left: rect.left - 240,
+                minWidth: 280,
                 zIndex: 9999,
                 background: 'var(--ds-surface-overlay, #FFFFFF)',
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 borderRadius: 8,
                 boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
-                padding: '4px 0',
+                padding: '8px 0',
+                fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")',
               }}
             >
               {item('Add dependency', { onClick: onAddDependency })}
@@ -423,6 +425,7 @@ function RelationshipPopup({
         borderRadius: 8,
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
         overflow: 'hidden',
+        fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")',
       }}
     >
       <div style={{ background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
@@ -550,7 +553,11 @@ function ZoomBar({
   );
 }
 
-/* ── Filter chip (portal dropdown) ─────────────────────────────────────── */
+/* ── Filter chip — Atlaskit Button trigger (Atlassian Sans) + portal-anchored
+ *    menu. NOT @atlaskit/dropdown-menu: this toolbar sits inside an
+ *    overflow:hidden ancestor, so Popper lands the menu at (0,0)
+ *    (CLAUDE.md 2026-06-13). createPortal + getBoundingClientRect anchors it
+ *    under the chip reliably. */
 function ChipSelect<T extends string>({
   label,
   value,
@@ -567,12 +574,13 @@ function ChipSelect<T extends string>({
   disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const anchorRef = useRef<HTMLSpanElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      if (!menuRef.current?.contains(e.target as Node) && !btnRef.current?.contains(e.target as Node)) setOpen(false);
+      if (!menuRef.current?.contains(e.target as Node) && !anchorRef.current?.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setOpen(false); } };
     document.addEventListener('mousedown', onDown);
@@ -581,32 +589,20 @@ function ChipSelect<T extends string>({
   }, [open]);
 
   const current = options.find((o) => o.value === value)?.label ?? '';
-  const rect = btnRef.current?.getBoundingClientRect();
+  const text = active && current ? `${label}: ${current}` : label;
+  const rect = anchorRef.current?.getBoundingClientRect();
+
   return (
-    <>
-      <button
-        ref={btnRef}
-        type="button"
-        disabled={disabled}
+    <span ref={anchorRef} style={{ display: 'inline-flex' }}>
+      <Button
+        appearance="default"
+        iconAfter={ChevronDown}
+        isSelected={active}
+        isDisabled={disabled}
         onClick={() => !disabled && setOpen((v) => !v)}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 4,
-          height: 32,
-          padding: '0 8px',
-          borderRadius: 3,
-          border: `1px solid ${active ? 'transparent' : 'var(--ds-border, #DFE1E6)'}`,
-          background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)',
-          color: disabled ? 'var(--ds-text-disabled, #B3B9C4)' : active ? 'var(--ds-text-selected, #1868DB)' : 'var(--ds-text, #292A2E)',
-          fontSize: 14,
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          whiteSpace: 'nowrap',
-        }}
       >
-        {label}{active && current ? `: ${current}` : ''}
-        {!disabled ? <ChevronDown size={16} /> : null}
-      </button>
+        {text}
+      </Button>
       {open && rect
         ? createPortal(
             <div
@@ -616,43 +612,64 @@ function ChipSelect<T extends string>({
                 position: 'fixed',
                 top: rect.bottom + 4,
                 left: rect.left,
-                minWidth: 180,
+                minWidth: 200,
                 zIndex: 9999,
                 background: 'var(--ds-surface-overlay, #FFFFFF)',
                 border: '1px solid var(--ds-border, #DFE1E6)',
-                borderRadius: 8,
+                borderRadius: 4,
                 boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
                 padding: '4px 0',
+                fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")',
               }}
             >
-              {options.map((o) => (
-                <button
-                  key={o.value}
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={o.value === value}
-                  onClick={() => { setOpen(false); onChange(o.value); }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    padding: '8px 16px',
-                    border: 'none',
-                    background: o.value === value ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
-                    textAlign: 'left',
-                    fontSize: 14,
-                    cursor: 'pointer',
-                    color: 'var(--ds-text, #292A2E)',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {o.label}
-                </button>
-              ))}
+              {options.map((o) => {
+                const selected = o.value === value;
+                return (
+                  <button
+                    key={o.value}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={selected}
+                    onClick={() => { setOpen(false); onChange(o.value); }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: 'none',
+                      background: 'transparent',
+                      textAlign: 'left',
+                      fontFamily: 'inherit',
+                      fontSize: 14,
+                      color: 'var(--ds-text, #292A2E)',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        border: `2px solid ${selected ? 'var(--ds-border-selected, #1868DB)' : 'var(--ds-border-bold, #8590A2)'}`,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {selected ? <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-background-selected-bold, #1868DB)' }} /> : null}
+                    </span>
+                    {o.label}
+                  </button>
+                );
+              })}
             </div>,
             document.body,
           )
         : null}
-    </>
+    </span>
   );
 }
 
@@ -829,7 +846,7 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
   }, [nodes, edges, setNodes, setEdges]);
 
   return (
-    <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")' }}>
       {/* Filter toolbar (Jira Plans parity) */}
       <div
         style={{
