@@ -3,7 +3,9 @@
  * Stage D: Includes source provenance fields from real DB
  */
 import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 export interface WorkItemRow {
   id: string;
@@ -48,6 +50,12 @@ export interface WorkItemRow {
 }
 
 export function useProjectWorkItems(projectId: string | undefined, sourceFilter?: 'all' | 'catalyst' | 'jira') {
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profileMap = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.id, p])),
+    [approvedProfiles],
+  );
+
   return useQuery({
     queryKey: ['ph-work-items', projectId, sourceFilter],
     queryFn: async (): Promise<WorkItemRow[]> => {
@@ -74,25 +82,12 @@ export function useProjectWorkItems(projectId: string | undefined, sourceFilter?
         throw error;
       }
 
-      // Batch-fetch assignee profiles
-      const assigneeIds = [...new Set((data || []).map((r: any) => r.assignee_id).filter(Boolean))] as string[];
-      const profileMap = new Map<string, { full_name: string; avatar_url: string | null }>();
-      if (assigneeIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name, avatar_url')
-          .in('id', assigneeIds as string[]);
-        for (const p of profiles || []) {
-          profileMap.set(p.id, { full_name: p.full_name || '', avatar_url: p.avatar_url });
-        }
-      }
-
       // Derive sync_status for ph_work_items (which don't have it natively)
       // Logic: if sync_source='jira' and last_synced_at older than 3 days → stale
       const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
       return (data || []).map((row: any) => {
-        const profile = profileMap.get(row.assignee_id);
+        const profile = row.assignee_id ? profileMap.get(row.assignee_id) : undefined;
         const syncSource = row.sync_source || 'catalyst';
         let syncStatus: string | null = null;
 
@@ -136,8 +131,8 @@ export function useProjectWorkItems(projectId: string | undefined, sourceFilter?
           status_name: row.ph_workflow_statuses?.name ?? 'Backlog',
           status_category: row.ph_workflow_statuses?.category ?? 'todo',
           status_color: row.ph_workflow_statuses?.color ?? 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
-          assignee_name: profile?.full_name ?? null,
-          assignee_avatar: profile?.avatar_url ?? null,
+          assignee_name: profile?.name ?? null,
+          assignee_avatar: profile?.avatarUrl ?? null,
           // Source provenance
           source: syncSource as 'catalyst' | 'jira',
           sync_status: syncStatus,

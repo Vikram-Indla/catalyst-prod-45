@@ -16,6 +16,7 @@ import { useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTypeWorkflow } from '@/hooks/useTypeWorkflow';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { translate } from '@/lib/jql/translator';
 import { applyJqlToQuery } from '@/lib/jql';
 import type { BoardConfig, BoardIssue, BoardOption, KanbanColumn, StatusCategory } from '../types';
@@ -182,6 +183,13 @@ export function useKanbanData(
   const isRelease = mode === 'release';
   const isTest = mode === 'test';
 
+  /* ── Approved profiles — single source of truth for all assignee lookups ── */
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const approvedProfileMap = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.id, p])),
+    [approvedProfiles],
+  );
+
   /* ── PROJECT meta ─────────────────────────────────────────────────────── */
   const { data: projMeta } = useQuery({
     queryKey: ['kb-project-meta', key],
@@ -306,21 +314,14 @@ export function useKanbanData(
     () => Array.from(new Set((releaseRows as any[]).map((r) => r.release_manager_id).filter(Boolean))),
     [releaseRows],
   );
-  const { data: releaseManagerNames = new Map<string, string>() } = useQuery({
-    queryKey: ['kb-release-managers', releaseManagerIds.length, releaseManagerIds.slice().sort().join(',')],
-    queryFn: async () => {
-      if (!releaseManagerIds.length) return new Map<string, string>();
-      const { data } = await supabase
-        .from('profiles').select('id, full_name').in('id', releaseManagerIds as string[]);
-      const m = new Map<string, string>();
-      ((data ?? []) as Array<{ id: string; full_name: string | null }>).forEach((p) => {
-        if (p.full_name) m.set(p.id, p.full_name);
-      });
-      return m;
-    },
-    enabled: isRelease && releaseManagerIds.length > 0,
-    staleTime: 60_000,
-  });
+  const releaseManagerNames = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const id of releaseManagerIds as string[]) {
+      const p = approvedProfileMap.get(id);
+      if (p) m.set(id, p.name);
+    }
+    return m;
+  }, [releaseManagerIds, approvedProfileMap]);
 
   /* ── TEST rows (mode='test'): tm_test_cases scoped to first TM project ── */
   const { data: testProjectsRow = [] } = useQuery({
@@ -361,21 +362,14 @@ export function useKanbanData(
     () => Array.from(new Set((testRows as any[]).map((r) => r.assigned_to).filter(Boolean))),
     [testRows],
   );
-  const { data: testAssigneeNames = new Map<string, string>() } = useQuery({
-    queryKey: ['kb-test-assignees', testAssigneeIds.length, testAssigneeIds.slice().sort().join(',')],
-    queryFn: async () => {
-      if (!testAssigneeIds.length) return new Map<string, string>();
-      const { data } = await supabase
-        .from('profiles').select('id, full_name').in('id', testAssigneeIds as string[]);
-      const m = new Map<string, string>();
-      ((data ?? []) as Array<{ id: string; full_name: string | null }>).forEach((p) => {
-        if (p.full_name) m.set(p.id, p.full_name);
-      });
-      return m;
-    },
-    enabled: isTest && testAssigneeIds.length > 0,
-    staleTime: 60_000,
-  });
+  const testAssigneeNames = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const id of testAssigneeIds as string[]) {
+      const p = approvedProfileMap.get(id);
+      if (p) m.set(id, p.name);
+    }
+    return m;
+  }, [testAssigneeIds, approvedProfileMap]);
 
   function mapTestRow(r: any): BoardIssue {
     const status = (r.status ?? 'DRAFT').toString();
@@ -617,22 +611,15 @@ export function useKanbanData(
   });
 
   /* ── Assignee name map for product mode (project_manager_user_id → name). */
-  const { data: assigneeNames = new Map<string, string>() } = useQuery({
-    queryKey: ['kb-product-assignees', productId, productRows.length],
-    queryFn: async () => {
-      const ids = Array.from(new Set(productRows.map((r: any) => r.project_manager_user_id).filter(Boolean)));
-      if (!ids.length) return new Map<string, string>();
-      const { data } = await supabase
-        .from('profiles').select('id, full_name').in('id', ids as string[]);
-      const m = new Map<string, string>();
-      ((data ?? []) as Array<{ id: string; full_name: string | null }>).forEach((p) => {
-        if (p.full_name) m.set(p.id, p.full_name);
-      });
-      return m;
-    },
-    enabled: isProduct && productRows.length > 0,
-    staleTime: 60_000,
-  });
+  const assigneeNames = useMemo(() => {
+    const ids = Array.from(new Set((productRows as any[]).map((r) => r.project_manager_user_id).filter(Boolean)));
+    const m = new Map<string, string>();
+    for (const id of ids as string[]) {
+      const p = approvedProfileMap.get(id);
+      if (p) m.set(id, p.name);
+    }
+    return m;
+  }, [productRows, approvedProfileMap]);
 
   /* ── Parent key+summary map for product mode (parent_request_id → request_key). */
   const { data: parentKeyById = new Map<string, { key: string | null; summary: string | null }>() } = useQuery({
@@ -670,21 +657,14 @@ export function useKanbanData(
     () => Array.from(new Set((tasksRows as any[]).map((t) => t.assignee_id).filter(Boolean))),
     [tasksRows],
   );
-  const { data: taskAssigneeNames = new Map<string, string>() } = useQuery({
-    queryKey: ['kb-tasks-assignees', taskAssigneeIds.length, taskAssigneeIds.slice().sort().join(',')],
-    queryFn: async () => {
-      if (!taskAssigneeIds.length) return new Map<string, string>();
-      const { data } = await supabase
-        .from('profiles').select('id, full_name').in('id', taskAssigneeIds as string[]);
-      const m = new Map<string, string>();
-      ((data ?? []) as Array<{ id: string; full_name: string | null }>).forEach((p) => {
-        if (p.full_name) m.set(p.id, p.full_name);
-      });
-      return m;
-    },
-    enabled: isTasks && taskAssigneeIds.length > 0,
-    staleTime: 60_000,
-  });
+  const taskAssigneeNames = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const id of taskAssigneeIds as string[]) {
+      const p = approvedProfileMap.get(id);
+      if (p) m.set(id, p.name);
+    }
+    return m;
+  }, [taskAssigneeIds, approvedProfileMap]);
 
   function mapTaskRow(r: any): BoardIssue {
     const statusName = statusNameById.get(r.status_id) ?? '';
