@@ -1,46 +1,26 @@
 /**
- * Project Dependencies — Diagram visualization of work item dependencies
+ * Project Dependencies — full-bleed canvas of work item dependencies.
  *
  * Route: /project-hub/:key/dependencies
- * Features:
- *   - Empty state with CTA button
- *   - React Flow diagram showing blocks/is_blocked_by relationships
- *   - Modal form to add dependencies
- *   - Project scope: only members can view/edit
- *
- * Phase 7 (UI build) + Phase 8 (DB wiring)
+ * Canvas-first (no list): React Flow fills the surface; toolbar + zoom
+ * controls live on the canvas; delete happens on the edge. Mirrors Jira
+ * Plans' dependency report.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
-import { Button } from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
 import { catalystToast } from '@/lib/catalystToast';
 import DependenciesEmptyState from '@/components/project-hub/dependencies/DependenciesEmptyState';
 import DependenciesDiagram from '@/components/project-hub/dependencies/DependenciesDiagram';
-import DependencyList, { type IssueMeta } from '@/components/project-hub/dependencies/DependencyList';
 import AddDependencyModal from '@/components/project-hub/dependencies/AddDependencyModal';
+import type { Dependency, IssueMeta } from '@/components/project-hub/dependencies/types';
 
 const T = {
   surface: 'var(--ds-surface, #FFFFFF)',
-  text: 'var(--ds-text, #292A2E)',
-  subtle: 'var(--ds-text-subtle, #505258)',
-  border: 'var(--ds-border, #DFE1E6)',
-};
-
-type Dependency = {
-  id: number;
-  project_key: string;
-  source_issue_key: string;
-  target_issue_key: string;
-  dependency_type: 'blocks' | 'is_blocked_by';
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
 };
 
 export default function DependenciesPage() {
@@ -65,9 +45,6 @@ export default function DependenciesPage() {
       }
 
       const deps = (data || []) as Dependency[];
-
-      // Fetch type + summary for every referenced issue so rows/nodes can show
-      // the locked JiraIssueTypeIcon. Unknown keys simply stay absent from the map.
       const keys = Array.from(
         new Set(deps.flatMap((d) => [d.source_issue_key, d.target_issue_key])),
       );
@@ -105,50 +82,36 @@ export default function DependenciesPage() {
     catalystToast.success('Dependency added');
   };
 
-  if (isLoading) {
-    return (
-      <div style={{ padding: '32px', display: 'flex', justifyContent: 'center' }}>
-        <Spinner size="large" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ padding: '32px', color: 'var(--ds-text-danger, #AE2A19)' }}>
-        Error loading dependencies: {(error as any)?.message ?? String(error)}
-      </div>
-    );
-  }
-
   const isEmpty = !dependencies || dependencies.length === 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: T.surface }}>
-      {/* Header */}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, background: T.surface }}>
       <ProjectPageHeader title="Dependencies" projectKey={key || ''} />
 
-      {/* Content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        {isEmpty ? (
+      {/* Explicit responsive height: the project shell does not bound height:100%
+          to the viewport, so a flex:1 canvas collapses. 150px ≈ top nav + page header. */}
+      <div style={{ height: 'calc(100dvh - 150px)', minHeight: 420, display: 'flex', flexDirection: 'column' }}>
+        {isLoading ? (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Spinner size="large" />
+          </div>
+        ) : error ? (
+          <div style={{ padding: 32, color: 'var(--ds-text-danger, #AE2A19)' }}>
+            Error loading dependencies: {(error as any)?.message ?? String(error)}
+          </div>
+        ) : isEmpty ? (
           <DependenciesEmptyState projectKey={key || ''} onAddClick={() => setIsModalOpen(true)} />
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16, flex: 1, minHeight: 0 }}>
-            <DependencyList dependencies={dependencies!} issueMeta={issueMeta} onChanged={refetch} />
-            <div style={{ height: 600, minHeight: 600, display: 'flex' }}>
-              <DependenciesDiagram
-                projectKey={key || ''}
-                dependencies={dependencies!}
-                issueMeta={issueMeta}
-                onAddClick={() => setIsModalOpen(true)}
-                onDelete={refetch}
-              />
-            </div>
-          </div>
+          <DependenciesDiagram
+            projectKey={key || ''}
+            dependencies={dependencies!}
+            issueMeta={issueMeta}
+            onAddClick={() => setIsModalOpen(true)}
+            onChanged={refetch}
+          />
         )}
       </div>
 
-      {/* Modal */}
       <AddDependencyModal
         projectKey={key || ''}
         isOpen={isModalOpen}
