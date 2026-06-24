@@ -242,6 +242,42 @@ export function InlineEmptyOverlay({ projectKey, onDismiss }: { projectKey: stri
   );
 }
 
+/* ─────────────────────────────── full-page empty state ─────────────── */
+
+/**
+ * Shown when the timeline has no items to render — either the project has no
+ * scheduled work yet, or the data layer returned nothing. Replaces the bare
+ * "Failed to load" error text with a proper centered empty state.
+ */
+export function TimelineEmptyState({ projectKey }: { projectKey: string }) {
+  return (
+    <div style={{
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '48px 32px',
+      textAlign: 'center',
+    }}>
+      <div style={{
+        width: 120, height: 120, borderRadius: 8,
+        background: 'var(--ds-surface-sunken, #F7F8F9)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        marginBottom: 24, color: 'var(--ds-text-subtlest, #6B778C)',
+      }}>
+        <GanttChart style={{ width: 48, height: 48 }} />
+      </div>
+      <h4 style={{ fontSize: 20, fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: '0 0 8px 0' }}>
+        Nothing scheduled yet
+      </h4>
+      <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #292A2E)', margin: 0, maxWidth: 400 }}>
+        Work items in {projectKey} will appear here on the timeline. Add start or due dates to issues to plot them across the schedule.
+      </p>
+    </div>
+  );
+}
+
 /* ─────────────────────────────── view settings panel ───────────────── */
 
 interface ViewSettingsPanelProps {

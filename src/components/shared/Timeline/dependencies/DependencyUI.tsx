@@ -1,0 +1,499 @@
+/**
+ * DependencyUI — presentational pieces for the timeline dependency mode.
+ * All gated behind TimelineView's `depMode`; renders nothing when off.
+ *
+ * Reuses canonical primitives: JiraIssueTypeIcon, StatusPill + statusToLozenge,
+ * @atlaskit/avatar, @atlaskit/select, @atlaskit/button. No hand-rolled lozenges.
+ */
+
+import React, { forwardRef, useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import Avatar from '@atlaskit/avatar';
+import Select from '@atlaskit/select';
+import Tooltip from '@atlaskit/tooltip';
+import Lozenge from '@atlaskit/lozenge';
+import { Plus, Trash2, X, Check } from '@/lib/atlaskit-icons';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusPill } from '@/components/shared/JiraTable/cells';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
+import { ROW_H } from '../types';
+import type { TimelineIssue } from '../types';
+import type { DependencyIndex, UiDirection } from './normalize';
+import { getEntry } from './normalize';
+import type { AggRelation } from './aggregate';
+import {
+  resolveEffectiveEnd,
+  computeLeadTimeDays,
+  formatLeadTime,
+  sourceLabel,
+  type EndDateSource,
+} from './leadTime';
+
+export const BLOCKED_COL_W = 104;
+export const BLOCKS_COL_W = 104;
+export const DEP_PANEL_W = BLOCKED_COL_W + BLOCKS_COL_W;
+
+const cellBorder = '1px solid var(--ds-border, #DFE1E6)';
+
+function fmtDate(d: string | null | undefined): string {
+  if (!d) return '—';
+  const t = new Date(d);
+  if (Number.isNaN(t.getTime())) return '—';
+  return t.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+/* Source → ADS Lozenge appearance: due=neutral, sprint=blue, release=green. */
+const SOURCE_APPEARANCE: Record<EndDateSource, 'default' | 'inprogress' | 'success'> = {
+  due: 'default',
+  sprint: 'inprogress',
+  release: 'success',
+};
+
+/**
+ * Lead time = calendar days from today to the dependency item's EFFECTIVE end
+ * date, resolved via due → sprint → release. A small badge shows which field
+ * produced the date (End date / Sprint / Release) with a tooltip naming it.
+ */
+function LeadTimeCell({ issue }: { issue?: TimelineIssue }) {
+  const resolved = resolveEffectiveEnd({
+    dueDate: issue?.dueDate ?? null,
+    sprintEndDate: issue?.sprintEndDate ?? null,
+    sprintName: issue?.sprintName ?? null,
+    releaseDate: issue?.releaseDate ?? null,
+    releaseName: issue?.releaseName ?? null,
+  });
+  if (!resolved.source) {
+    return <span style={{ color: 'var(--ds-text-subtlest, #8590A2)', fontSize: 14 }}>—</span>;
+  }
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const text = formatLeadTime(computeLeadTimeDays(resolved.endDate, todayIso));
+  const label = sourceLabel(resolved.source);
+  const tip = resolved.source === 'due'
+    ? `End date: ${fmtDate(resolved.endDate)}`
+    : `${resolved.source === 'sprint' ? 'Sprint' : 'Release'}: ${resolved.sourceName ?? '(unnamed)'} · ends ${fmtDate(resolved.endDate)}`;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+      <span style={{ color: 'var(--ds-text, #292A2E)', fontSize: 14, whiteSpace: 'nowrap' }}>{text}</span>
+      <Tooltip content={tip} position="top">
+        <span><Lozenge appearance={SOURCE_APPEARANCE[resolved.source]}>{label}</Lozenge></span>
+      </Tooltip>
+    </span>
+  );
+}
+
+/* ───────────────────────────── column headers ─────────────────────────── */
+
+export function DependencyColumnHeaders({ height }: { height: number }) {
+  const base: React.CSSProperties = {
+    height, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtle, #44546F)',
+    background: 'var(--ds-surface-sunken, #F7F8F9)',
+    borderBottom: '2px solid var(--ds-border, #DFE1E6)',
+    borderLeft: cellBorder, userSelect: 'none',
+  };
+  return (
+    <div style={{ display: 'flex', flexShrink: 0 }} role="row">
+      <div role="columnheader" style={{ ...base, width: BLOCKED_COL_W }}>Blocked by</div>
+      <div role="columnheader" style={{ ...base, width: BLOCKS_COL_W }}>Blocks</div>
+    </div>
+  );
+}
+
+/* ───────────────────────────── columns body ───────────────────────────── */
+
+export interface DepRowCount {
+  issueKey: string;
+  blockedBy: number;
+  blocks: number;
+}
+
+interface DependencyColumnsBodyProps {
+  rows: { issue: TimelineIssue; depth: number }[];
+  counts: Map<string, { blockedBy: number; blocks: number }>;
+  /** Group-band roll-up shown on the `hubLabel` header row (Jira "N Work items"). */
+  groupCounts: { blockedBy: number; blocks: number };
+  groupHeight: number;
+  showReleases: boolean;
+  releasesCollapsed: boolean;
+  showCreateEpicRow: boolean;
+  onOpenAggregate: (issueKey: string, dir: 'blockedBy' | 'blocks', anchor: DOMRect) => void;
+  onOpenGroupAggregate: (dir: 'blockedBy' | 'blocks', anchor: DOMRect) => void;
+}
+
+export const DependencyColumnsBody = forwardRef<HTMLDivElement, DependencyColumnsBodyProps>(
+  function DependencyColumnsBody({ rows, counts, groupCounts, groupHeight, showReleases, releasesCollapsed, showCreateEpicRow, onOpenAggregate, onOpenGroupAggregate }, ref) {
+    // Jira aligns dependency cell content to the left edge, not centred.
+    const cellBase: React.CSSProperties = {
+      display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+      borderBottom: cellBorder, borderLeft: cellBorder, paddingLeft: 8, overflow: 'hidden',
+    };
+    const dash = <span style={{ color: 'var(--ds-text-subtlest, #8590A2)', fontSize: 14 }}>—</span>;
+    return (
+      <div ref={ref} style={{ width: DEP_PANEL_W, flex: 1, minHeight: 0, flexShrink: 0, overflowY: 'hidden', overflowX: 'hidden', borderLeft: cellBorder }}>
+        {showReleases && (
+          <div style={{ display: 'flex', height: groupHeight, flexShrink: 0 }} role="row">
+            <div style={{ ...cellBase, width: BLOCKED_COL_W, borderLeft: 'none', height: groupHeight }}>
+              {groupCounts.blockedBy > 0
+                ? <GroupAggCount count={groupCounts.blockedBy} dir="blockedBy" onOpen={(rect) => onOpenGroupAggregate('blockedBy', rect)} />
+                : null}
+            </div>
+            <div style={{ ...cellBase, width: BLOCKS_COL_W, height: groupHeight }}>
+              {groupCounts.blocks > 0
+                ? <GroupAggCount count={groupCounts.blocks} dir="blocks" onOpen={(rect) => onOpenGroupAggregate('blocks', rect)} />
+                : null}
+            </div>
+          </div>
+        )}
+        {!releasesCollapsed && rows.map(({ issue }) => {
+          const c = counts.get(issue.issueKey) ?? { blockedBy: 0, blocks: 0 };
+          return (
+            <div key={issue.issueKey} style={{ display: 'flex' }} role="row">
+              <div style={{ ...cellBase, width: BLOCKED_COL_W, borderLeft: 'none', height: ROW_H }}>
+                {c.blockedBy > 0
+                  ? <ItemAggCount count={c.blockedBy} aria={`blocked by, ${issue.issueKey}`} onOpen={(rect) => onOpenAggregate(issue.issueKey, 'blockedBy', rect)} />
+                  : dash}
+              </div>
+              <div style={{ ...cellBase, width: BLOCKS_COL_W, height: ROW_H }}>
+                {c.blocks > 0
+                  ? <ItemAggCount count={c.blocks} aria={`blocks, ${issue.issueKey}`} onOpen={(rect) => onOpenAggregate(issue.issueKey, 'blocks', rect)} />
+                  : dash}
+              </div>
+            </div>
+          );
+        })}
+        {showCreateEpicRow && <div style={{ height: ROW_H, borderBottom: cellBorder, flexShrink: 0 }} aria-hidden />}
+      </div>
+    );
+  },
+);
+
+/* Work-item count — Jira renders plain dark "N work item(s)" text (no pill), left-aligned. */
+function ItemAggCount({ count, aria, onOpen }: { count: number; aria: string; onOpen: (rect: DOMRect) => void }) {
+  return (
+    <button
+      type="button"
+      aria-label={`${count} work item${count === 1 ? '' : 's'} ${aria}`}
+      onClick={(e) => onOpen((e.currentTarget as HTMLElement).getBoundingClientRect())}
+      style={{
+        display: 'inline-flex', alignItems: 'center', height: ROW_H, padding: 0,
+        border: 'none', background: 'transparent', whiteSpace: 'nowrap',
+        color: 'var(--ds-text, #292A2E)', fontSize: 14, fontWeight: 400,
+        cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
+      }}
+    >
+      {count} work item{count === 1 ? '' : 's'}
+    </button>
+  );
+}
+
+/* Group-band roll-up — Jira renders "N Work items": number in primary text, label in subtle grey. */
+function GroupAggCount({ count, dir, onOpen }: { count: number; dir: 'blockedBy' | 'blocks'; onOpen: (rect: DOMRect) => void }) {
+  return (
+    <button
+      type="button"
+      aria-label={`${count} work items ${dir === 'blockedBy' ? 'blocked by' : 'blocks'}`}
+      onClick={(e) => onOpen((e.currentTarget as HTMLElement).getBoundingClientRect())}
+      style={{
+        display: 'inline-flex', alignItems: 'baseline', gap: 4, padding: 0,
+        border: 'none', background: 'transparent', whiteSpace: 'nowrap',
+        cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
+      }}
+    >
+      <span style={{ color: 'var(--ds-text, #292A2E)', fontSize: 14, fontWeight: 400 }}>{count}</span>
+      <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 14, fontWeight: 400 }}>Work items</span>
+    </button>
+  );
+}
+
+/* ───────────────────────── aggregate popover ──────────────────────────── */
+
+export interface AggregatePopoverProps {
+  title: string;
+  dir: 'blockedBy' | 'blocks';
+  relations: AggRelation[];
+  keyToIssue: Map<string, TimelineIssue>;
+  anchor: DOMRect;
+  onClose: () => void;
+  onOpenItem: (issueKey: string) => void;
+}
+
+export function DependencyAggregatePopover({ title, dir, relations, keyToIssue, anchor, onClose, onOpenItem }: AggregatePopoverProps) {
+  const AGG_W = 867;
+  const top = Math.min(anchor.bottom + 6, window.innerHeight - 360);
+  const left = Math.min(Math.max(8, anchor.left - 180), window.innerWidth - (AGG_W + 8));
+  const verb = dir === 'blockedBy' ? 'is blocked by' : 'blocks';
+  return createPortal(
+    <>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9998 }} aria-hidden />
+      <div
+        role="dialog"
+        aria-label={title}
+        style={{
+          position: 'fixed', top, left, width: AGG_W, maxHeight: 340, zIndex: 9999,
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          borderRadius: 4,
+          boxShadow: 'var(--ds-shadow-overlay, rgba(30,31,33,0.15) 0px 8px 12px 0px, rgba(30,31,33,0.31) 0px 0px 1px 0px)',
+          display: 'flex', flexDirection: 'column',
+          fontFamily: 'var(--ds-font-family-body)',
+        }}
+      >
+        <div style={{ padding: '12px 16px 8px', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B6E76)' }}>
+          {title}
+        </div>
+        <div style={{ overflowY: 'auto', paddingBottom: 8 }}>
+          {relations.length === 0 && (
+            <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>No dependencies</div>
+          )}
+          {relations.map((rel) => {
+            const member = keyToIssue.get(rel.memberKey);
+            const other = keyToIssue.get(rel.otherKey);
+            return (
+              <div
+                key={`${rel.edgeId}`}
+                style={{
+                  display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 130px minmax(0,1fr)',
+                  alignItems: 'center', gap: 8, padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #292A2E)',
+                }}
+              >
+                <DepItemRef issue={member} fallbackKey={rel.memberKey} onOpen={onOpenItem} />
+                <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', flexShrink: 0 }}>{verb}</span>
+                <DepItemRef issue={other} fallbackKey={rel.otherKey} onOpen={onOpenItem} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </>,
+    document.body,
+  );
+}
+
+function DepItemRef({ issue, fallbackKey, onOpen }: { issue?: TimelineIssue; fallbackKey: string; onOpen: (k: string) => void }) {
+  const type = issue?.issueType ?? null;
+  const summary = issue?.summary ?? '';
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+      {type ? <JiraIssueTypeIcon type={type} size={16} /> : null}
+      <button
+        type="button"
+        onClick={() => onOpen(fallbackKey)}
+        style={{ color: 'var(--ds-link, #1868DB)', fontWeight: 500, textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0, fontSize: 14, fontFamily: 'var(--ds-font-family-body)' }}
+      >
+        {fallbackKey}
+      </button>
+      {summary && (
+        <span style={{ color: 'var(--ds-text, #292A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {summary}
+        </span>
+      )}
+    </span>
+  );
+}
+
+/* ─────────────────────────── row dependency card ──────────────────────── */
+
+type PickerOption = { label: string; value: string; issueType: string | null };
+
+export interface RowDependencyCardProps {
+  rowKey: string;
+  index: DependencyIndex;
+  keyToIssue: Map<string, TimelineIssue>;
+  candidateOptions: PickerOption[];
+  anchor: DOMRect;
+  isFiltered: boolean;
+  onClose: () => void;
+  onRemove: (edgeId: number | string) => Promise<{ ok: boolean; error?: string }>;
+  onAdd: (direction: UiDirection, otherKey: string) => Promise<{ ok: boolean; error?: string }>;
+  onShowOnCanvas: (key: string) => void;
+  onFilter: (key: string) => void;
+  onClearFilter: () => void;
+}
+
+export function RowDependencyCard(props: RowDependencyCardProps) {
+  const { rowKey, index, keyToIssue, candidateOptions, anchor, isFiltered, onClose, onRemove, onAdd, onShowOnCanvas, onFilter, onClearFilter } = props;
+  const [adding, setAdding] = useState(false);
+  const [dir, setDir] = useState<UiDirection>('is_blocked_by');
+  const [picked, setPicked] = useState<PickerOption | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const entry = getEntry(index, rowKey);
+  const relRows = useMemo(() => [
+    ...entry.blockedBy.map(r => ({ kind: 'Is blocked by' as const, key: r.key, edgeId: r.edgeId, createdAt: r.createdAt })),
+    ...entry.blocks.map(r => ({ kind: 'Blocks' as const, key: r.key, edgeId: r.edgeId, createdAt: r.createdAt })),
+  ], [entry]);
+
+  const dirOptions: { label: string; value: UiDirection }[] = [
+    { label: 'Is blocked by', value: 'is_blocked_by' },
+    { label: 'Blocks', value: 'blocks' },
+  ];
+
+  const CARD_W = 750;
+  const top = Math.min(anchor.bottom + 6, window.innerHeight - 380);
+  const left = Math.min(Math.max(8, anchor.left), window.innerWidth - (CARD_W + 8));
+
+  const handleSave = async () => {
+    if (!picked) return;
+    setBusy(true); setError(null);
+    const res = await onAdd(dir, picked.value);
+    setBusy(false);
+    if (!res.ok) { setError(res.error ?? 'Failed to add'); return; }
+    setAdding(false); setPicked(null); setDir('is_blocked_by');
+  };
+
+  // Jira column layout: Type 150 · Work item flex · Status 94 · Assignee 94 · Lead time 132 · delete 32.
+  const GRID = '150px minmax(0,1fr) 94px 94px 132px 32px';
+  const HEADERS = ['Type', 'Work item', 'Status', 'Assignee', 'Lead time', ''];
+  const colStyle: React.CSSProperties = { fontSize: 14, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B6E76)', textTransform: 'none' };
+
+  return createPortal(
+    <>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9998 }} aria-hidden />
+      <div
+        role="dialog"
+        aria-label={`Dependencies for ${rowKey}`}
+        style={{
+          position: 'fixed', top, left, width: CARD_W, maxHeight: 420, zIndex: 9999,
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          borderRadius: 4,
+          boxShadow: 'var(--ds-shadow-overlay, rgba(30,31,33,0.15) 0px 8px 12px 0px, rgba(30,31,33,0.31) 0px 0px 1px 0px)',
+          display: 'flex', flexDirection: 'column',
+          fontFamily: 'var(--ds-font-family-body)',
+        }}
+      >
+        {/* table header */}
+        <div style={{ display: 'grid', gridTemplateColumns: GRID, gap: 8, padding: '12px 16px 8px' }}>
+          {HEADERS.map((h, i) => <div key={i} style={colStyle}>{h}</div>)}
+        </div>
+
+        <div style={{ overflowY: 'auto', flex: 1 }}>
+          {relRows.length === 0 && !adding && (
+            <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>No dependencies yet</div>
+          )}
+          {relRows.map((r) => {
+            const issue = keyToIssue.get(r.key);
+            return (
+              <div key={`${r.edgeId}`} style={{ position: 'relative', display: 'grid', gridTemplateColumns: GRID, gap: 8, alignItems: 'flex-start', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
+                {/* Jira dependency marker bar (warning-bold orange) hugging the row's left edge */}
+                <span aria-hidden style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, background: 'var(--ds-background-warning-bold, #FF991F)' }} />
+                <span style={{ color: 'var(--ds-text, #292A2E)' }}>{r.kind}</span>
+                <DepItemRef issue={issue} fallbackKey={r.key} onOpen={onShowOnCanvas} />
+                <span>{issue?.status ? <StatusPill appearance={statusToLozenge(issue.status)}>{issue.status}</StatusPill> : '—'}</span>
+                <span>
+                  {issue?.assigneeDisplayName
+                    ? <Avatar size="small" name={issue.assigneeDisplayName} src={issue.assigneeAvatarUrl ?? undefined} />
+                    : <Avatar size="small" />}
+                </span>
+                <LeadTimeCell issue={issue} />
+                <Tooltip content="Remove dependency" position="top">
+                  <button
+                    type="button"
+                    aria-label={`Remove dependency on ${r.key}`}
+                    onClick={() => onRemove(r.edgeId)}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtle, #626F86)', borderRadius: 3 }}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </Tooltip>
+              </div>
+            );
+          })}
+
+          {/* inline add row */}
+          {adding && (
+            <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr 64px', gap: 8, alignItems: 'center', padding: '12px 16px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)' }}>
+              <Select
+                options={dirOptions}
+                value={dirOptions.find(o => o.value === dir)}
+                onChange={(o) => o && setDir(o.value)}
+                isDisabled={busy}
+                menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+                styles={{ menuPortal: (b: any) => ({ ...b, zIndex: 10000 }) }}
+                spacing="compact"
+              />
+              <Select
+                options={candidateOptions}
+                value={picked}
+                onChange={(o) => setPicked(o as PickerOption)}
+                placeholder="Choose a work item..."
+                isClearable
+                isDisabled={busy}
+                formatOptionLabel={((opt: PickerOption) => (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                    {opt.issueType ? <JiraIssueTypeIcon type={opt.issueType} size={16} /> : null}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label}</span>
+                  </span>
+                )) as any}
+                menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+                styles={{ menuPortal: (b: any) => ({ ...b, zIndex: 10000 }) }}
+                spacing="compact"
+              />
+              <div style={{ display: 'flex', gap: 2 }}>
+                <button
+                  type="button"
+                  aria-label="Save dependency"
+                  disabled={!picked || busy}
+                  onClick={handleSave}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: 'none', background: 'transparent', cursor: !picked || busy ? 'not-allowed' : 'pointer', color: !picked || busy ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text-success, #1F845A)', borderRadius: 3 }}
+                >
+                  <Check size={16} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Cancel add dependency"
+                  onClick={() => { setAdding(false); setPicked(null); setError(null); }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtle, #626F86)', borderRadius: 3 }}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+          {error && (
+            <div style={{ padding: '8px 16px', color: 'var(--ds-text-danger, #AE2A19)', fontSize: 12 }}>{error}</div>
+          )}
+        </div>
+
+        {/* footer */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 16px 16px' }}>
+          {!adding && (
+            <button
+              type="button"
+              onClick={() => { setAdding(true); setError(null); }}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                width: '100%', height: 36, padding: '0 8px',
+                border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4,
+                background: 'transparent', color: 'var(--ds-text, #292A2E)',
+                fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
+              }}
+            >
+              <Plus size={16} /> Add dependency
+            </button>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button type="button" onClick={() => onShowOnCanvas(rowKey)} style={footerLinkStyle}>
+              Show dependencies for {rowKey}
+            </button>
+            <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>·</span>
+            {isFiltered ? (
+              <button type="button" onClick={onClearFilter} style={footerLinkStyle}>
+                Clear filter for {rowKey}
+              </button>
+            ) : (
+              <button type="button" onClick={() => onFilter(rowKey)} style={footerLinkStyle}>
+                Filter by dependencies of {rowKey}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </>,
+    document.body,
+  );
+}
+
+const footerLinkStyle: React.CSSProperties = {
+  background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+  color: 'var(--ds-link, #1868DB)', fontSize: 14, fontWeight: 500, fontFamily: 'var(--ds-font-family-body)',
+};

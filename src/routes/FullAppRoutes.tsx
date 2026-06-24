@@ -45,7 +45,6 @@ const ProjectListPageLazy = lazy(() => import("../pages/project-hub/ProjectListP
 const ProjectDashboardPageLazy = lazy(() => import("../pages/project-hub/ProjectDashboardPage"));
 const StandupHistoryPageLazy = lazy(() => import("../pages/standups/StandupHistoryPage"));
 const PHProjectSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectSettingsPage"));
-const ProjectBoardPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardPage"));
 const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardManagerPage"));
 const ProjectBoardSettingsPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardSettingsPage"));
 // KanbanBoardPage (legacy /boards/:id view) deprecated → LegacyBoardRedirect.
@@ -1042,7 +1041,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/story-backlog" element={<LegacyBacklogRedirect />} />
         <Route path="/project-hub/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/issue/:issueKey" element={<IssueRedirectToBrowse />} />
-        <Route path="/project-hub/:key/board" element={<S><ProjectBoardPageLazy /></S>} />
+        <Route path="/project-hub/:key/board" element={<S><KanbanFeaturePageLazy /></S>} />
         <Route path="/project-hub/:key/boards" element={<S><ProjectBoardManagerPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId/settings" element={<S><ProjectBoardSettingsPageLazy /></S>} />

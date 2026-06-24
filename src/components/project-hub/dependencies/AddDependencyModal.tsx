@@ -40,6 +40,13 @@ function renderIssueOption(opt: IssueOption) {
 
 type DependencyType = 'blocks' | 'is_blocked_by';
 
+// Portal the select menu to <body> so the autocomplete dropdown floats ABOVE
+// the modal instead of being clipped inside ModalBody's scroll area (Jira parity).
+const MENU_PORTAL_PROPS = {
+  menuPortalTarget: typeof document !== 'undefined' ? document.body : undefined,
+  styles: { menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) },
+} as const;
+
 interface AddDependencyModalProps {
   projectKey: string;
   isOpen: boolean;
@@ -161,6 +168,7 @@ export default function AddDependencyModal({ projectKey, isOpen, onClose, onSucc
                     isDisabled={isSubmitting}
                     isClearable
                     formatOptionLabel={renderIssueOption as any}
+                    {...MENU_PORTAL_PROPS}
                   />
                 </div>
 
@@ -174,6 +182,7 @@ export default function AddDependencyModal({ projectKey, isOpen, onClose, onSucc
                     value={depTypeOptions.find((opt) => opt.value === depType)}
                     onChange={(opt) => opt && setDepType(opt.value)}
                     isDisabled={isSubmitting}
+                    {...MENU_PORTAL_PROPS}
                   />
                 </div>
 
@@ -190,6 +199,7 @@ export default function AddDependencyModal({ projectKey, isOpen, onClose, onSucc
                     isDisabled={isSubmitting}
                     isClearable
                     formatOptionLabel={renderIssueOption as any}
+                    {...MENU_PORTAL_PROPS}
                   />
                 </div>
 

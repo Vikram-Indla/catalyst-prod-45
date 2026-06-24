@@ -186,7 +186,7 @@ export function ReleaseDetailContent({ releaseId, hideChromeHeader = false }: { 
     return (
       <div style={{ padding: 48, textAlign: 'center', background: T.surface, minHeight: '100%' }}>
         <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.subtle }}>Release not found.</p>
-        <button onClick={() => navigate('/release-hub/releases')} style={{ marginTop: 8, fontFamily: RH.fontBody, fontSize: 13, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer' }}>← Back to releases</button>
+        <button onClick={() => navigate('/release-hub/releases-management')} style={{ marginTop: 8, fontFamily: RH.fontBody, fontSize: 13, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer' }}>← Back to releases</button>
       </div>
     );
   }

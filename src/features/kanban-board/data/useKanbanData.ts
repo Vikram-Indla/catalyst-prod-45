@@ -79,6 +79,7 @@ async function fetchIssuePage(key: string, from: number, to: number, jql?: strin
     .select(ISSUE_SELECT)
     .eq('project_key', key)
     .is('deleted_at', null)
+    .is('jira_removed_at', null)
     .is('archived_at', null);
   if (jql) {
     // Defensive: a malformed/unsupported saved filter must never break the board —

@@ -28,6 +28,12 @@ export interface TimelineIssue {
   dueDate: string | null;
   epicColor: string | null;
   fixVersions: string[];
+  /** Lead-time fallback fields (resolved due → sprint → release). Optional —
+   *  populated from raw_json when the sync provides them; null otherwise. */
+  sprintEndDate?: string | null;
+  sprintName?: string | null;
+  releaseDate?: string | null;
+  releaseName?: string | null;
   children: TimelineIssue[];
   /** Synthetic group header row (e.g. product hub's "Feature" bucket).
    *  Group rows render in the sidebar with collapse + per-group "+" but
@@ -63,7 +69,7 @@ export interface HeaderCol { label: string; left: number; width: number; }
 
 /* ─────────────────────────────── sizing constants ─────────────────────── */
 
-export const ROW_H = 40;
+export const ROW_H = 52;
 export const DEFAULT_SIDEBAR_W = 384;
 export const MIN_SIDEBAR_W = 350;
 export const MAX_SIDEBAR_W = 560;
@@ -164,13 +170,15 @@ export interface TimelineViewProps {
   buildIssueDetailRoute: (issueKey: string) => string;     // full-page navigation
   resolveItemType: (issue: TimelineIssue) => string;        // for detail panel itemType
   detailRouteOwnerKey: string;                              // project key for CatalystDetailPanel
+  /** Build the dependencies-canvas route for "Show dependencies for <key>".
+   *  When omitted, the dependency-mode "Show on canvas" action is a no-op. */
+  buildDependenciesRoute?: (issueKey: string) => string;
 
   /* mutations (opt-in) */
   mutations?: TimelineMutations;
 
   /* feature flags */
   enableRowCheckbox?: boolean;
-  enableRowProgress?: boolean;
   enableInlineCreate?: boolean;
   enableRowMenu?: boolean;
   enableBarDrag?: boolean;
@@ -216,4 +224,10 @@ export interface TimelineViewProps {
   /* the query client used for cache invalidations after mutations.
      Pages keep ownership of the cache key so the view never hardcodes it. */
   queryClient?: ReturnType<typeof useQueryClient>;
+
+  /** Jira "Locate work item in timeline": when set, the view expands the
+   *  item's ancestors, scrolls it into view, paints its title as a magenta
+   *  pill and its ancestor chevrons magenta — until the user opens another
+   *  item. Sourced from the `?locate=<key>` query param. */
+  locatedKey?: string;
 }

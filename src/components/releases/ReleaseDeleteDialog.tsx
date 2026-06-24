@@ -11,6 +11,7 @@ import Flag from '@atlaskit/flag';
 import { useReleases } from '@/hooks/releases/useReleases';
 import { Release } from '@/types/phase3-releases';
 import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReleaseDeleteDialogProps {
   isOpen: boolean;
@@ -74,34 +75,17 @@ export function ReleaseDeleteDialog({
 
     setIsDeleting(true);
     try {
-      const payload: any = {
-        fix_version_action: fixVersionAction,
-        affected_version_action: affectedVersionAction,
-      };
-
-      if (fixVersionAction === 'move') {
-        payload.move_to_fix_version_id = moveToFixVersionId;
-      }
-      if (affectedVersionAction === 'move') {
-        payload.move_to_affected_version_id = moveToAffectedVersionId;
-      }
-
-      const res = await fetch(`/api/releases/${release.id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.details || 'Failed to delete release');
-      }
+      // Unlink any work items that reference this release, then delete (Catalyst-local).
+      await supabase.from('ph_work_items').update({ release_id: null } as any).eq('release_id', release.id);
+      const { error } = await supabase.from('ph_releases').delete().eq('id', release.id);
+      if (error) throw new Error(error.message);
 
       setFlagMessage({
         type: 'success',
         text: `Version ${release.name} has been deleted.`,
       });
 
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['releases', projectKey] });
       onSuccess?.();
       setTimeout(() => onClose(), 600);

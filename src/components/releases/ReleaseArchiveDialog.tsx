@@ -9,6 +9,7 @@ import Button from '@atlaskit/button/new';
 import Flag from '@atlaskit/flag';
 import { Release } from '@/types/phase3-releases';
 import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReleaseArchiveDialogProps {
   isOpen: boolean;
@@ -30,26 +31,23 @@ export function ReleaseArchiveDialog({
   const handleArchive = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/releases/${release.id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const { data: result, error } = await supabase
+        .from('ph_releases')
+        .update({ status: 'archived' } as any)
+        .eq('id', release.id)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
 
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.details || `Archive failed: ${res.statusText}`);
-      }
-
-      const result = await res.json();
       setFlagMessage({
         type: 'success',
         text: `Version ${release.name} has been archived.`,
       });
 
-      // Invalidate releases list
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
       queryClient.invalidateQueries({ queryKey: ['releases', release.project_id] });
 
-      onSuccess?.(result);
+      onSuccess?.(result as unknown as Release);
       onClose();
     } catch (error) {
       setFlagMessage({

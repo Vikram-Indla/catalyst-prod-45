@@ -38,7 +38,7 @@ DO $$ BEGIN
         FROM project_members pm
         WHERE pm.project_id = p.id
     ) mc ON true
-    WHERE p.status = 'active'::program_status
+    WHERE p.status::text = 'active'
 
     UNION ALL
 

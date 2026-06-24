@@ -187,9 +187,9 @@ export default function CommandCenterPage() {
       {/* 5-metric command strip */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, marginBottom: 16, overflow: 'hidden' }}>
         {([
-          { label: 'Active releases', value: kpis.active, sub: lowConfidenceCount > 0 ? `${lowConfidenceCount} low confidence` : 'all clear', subColor: lowConfidenceCount > 0 ? T.danger : T.success, onClick: () => navigate('/release-hub/releases') },
+          { label: 'Active releases', value: kpis.active, sub: lowConfidenceCount > 0 ? `${lowConfidenceCount} low confidence` : 'all clear', subColor: lowConfidenceCount > 0 ? T.danger : T.success, onClick: () => navigate('/release-hub/releases-management') },
           { label: 'Pending approvals', value: kpis.pending, sub: kpis.pending > 0 ? 'needs action' : 'none pending', subColor: kpis.pending > 0 ? T.warning : T.success, onClick: () => navigate('/release-hub/sign-off-queue') },
-          { label: 'Open risk items', value: openRiskItems, sub: openRiskItems > 0 ? 'defects + incidents' : 'no open items', subColor: openRiskItems > 0 ? T.danger : T.success, onClick: () => navigate('/release-hub/releases') },
+          { label: 'Open risk items', value: openRiskItems, sub: openRiskItems > 0 ? 'defects + incidents' : 'no open items', subColor: openRiskItems > 0 ? T.danger : T.success, onClick: () => navigate('/release-hub/releases-management') },
           { label: 'Freeze conflicts', value: kpis.freezeConflicts, sub: kpis.freezeConflicts > 0 ? 'resolve before deploy' : 'no conflicts', subColor: kpis.freezeConflicts > 0 ? T.danger : T.success, onClick: () => navigate('/release-hub/freeze-windows') },
           { label: 'Events this week', value: kpis.prodThisWeek, sub: kpis.prodThisWeek > 0 ? 'production deployments' : 'none this week', subColor: kpis.prodThisWeek > 0 ? T.success : T.subtlest, onClick: () => navigate('/release-hub/production-events') },
         ] as const).map((m, i) => (

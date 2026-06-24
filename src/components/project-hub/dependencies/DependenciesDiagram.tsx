@@ -29,13 +29,17 @@ import {
 import '@xyflow/react/dist/style.css';
 import { Plus, Minus, MoreHorizontal, Link, Unlink, ChevronDown, User } from '@/lib/atlaskit-icons';
 import Button from '@atlaskit/button/new';
+import Avatar from '@atlaskit/avatar';
+import Tooltip from '@atlaskit/tooltip';
+import Textfield from '@atlaskit/textfield';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { StatusPill } from '@/components/shared/JiraTable/cells';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import type { Dependency, IssueMeta } from './types';
+import type { Dependency, IssueMeta, Hierarchy } from './types';
 
 // Lift the edge-label layer above the card nodes so the "blocks" pills are
 // visible and clickable (React Flow paints labels below nodes by default).
@@ -61,11 +65,13 @@ const PAD_X = 32;
 const PAD_Y = 32;
 const LANE_GAP = 24;
 const LINK = 'var(--ds-link, #0C66E4)';
-// Probed from live Jira Plans dependency report (2026-06-24): edges are
-// gray rgb(80,82,88) 1px, frame fill rgba(5,21,36,0.06).
-const EDGE_COLOR = 'var(--ds-text-subtle, #505258)';
+// Re-probed from live Jira Plans dependency report (2026-06-24, Vikram screenshot):
+// edges are SOLID BLUE (Atlassian link blue), ~2px, with a filled arrowhead and a
+// white "blocks" pill centred on the line. Supersedes the earlier grey-1px reading.
+const EDGE_COLOR = 'var(--ds-link, #0C66E4)';
 // ads-scanner:ignore-next-line — SVG marker fill needs a concrete color, not a CSS var()
-const EDGE_HEX = '#505258';
+const EDGE_HEX = '#0C66E4';
+const EDGE_WIDTH = 2;
 
 type GroupBy = 'none' | 'status' | 'type' | 'assignee';
 type LinkType = 'all' | 'blocks' | 'is_blocked_by';
@@ -253,8 +259,12 @@ function WorkItemNode({ data }: { data: any }) {
         padding: 16,
         borderRadius: 8,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
-        boxShadow: 'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.13))',
+        border: data.focused
+          ? '2px solid var(--ds-border-selected, #388BFF)'
+          : '1px solid var(--ds-border, #DFE1E6)',
+        boxShadow: data.focused
+          ? 'var(--ds-shadow-overlay, 0 0 0 3px rgba(56,139,255,0.3))'
+          : 'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.13))',
         textAlign: 'left',
       }}
     >
@@ -281,17 +291,34 @@ function WorkItemNode({ data }: { data: any }) {
         </span>
       ) : null}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
-        <span style={{ display: 'flex', gap: 12 }}>
-          <span style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={metaStyle}>Start date</span>
-            <span style={{ fontSize: 12, color: 'var(--ds-text, #292A2E)' }}>—</span>
+        <span style={{ display: 'flex', gap: 12, minWidth: 0 }}>
+          <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <span style={metaStyle}>Release</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text, #292A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 110 }}>{m.release || '—'}</span>
           </span>
-          <span style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={metaStyle}>End date</span>
-            <span style={{ fontSize: 12, color: 'var(--ds-text, #292A2E)' }}>{fmtDate(m.due_date)}</span>
+          <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <span style={metaStyle}>Sprint/iteration</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text, #292A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 110 }}>{m.sprint || '—'}</span>
           </span>
         </span>
-        {m.status ? <StatusPill appearance={statusToLozenge(m.status)}>{m.status}</StatusPill> : null}
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          {/* Assignee avatar — real name on hover (Vikram 2026-06-24). Never a
+              faceless "unassigned" when an assignee exists. */}
+          {(() => {
+            const name = m.assignee_display_name as string | null | undefined;
+            const tip = name || 'Unassigned';
+            return (
+              <Tooltip content={tip}>
+                {(tooltipProps) => (
+                  <span {...tooltipProps} style={{ display: 'inline-flex' }}>
+                    <Avatar size="small" name={tip} src={name ? (resolveAvatarUrl(name) ?? undefined) : undefined} />
+                  </span>
+                )}
+              </Tooltip>
+            );
+          })()}
+          {m.status ? <StatusPill appearance={statusToLozenge(m.status)}>{m.status}</StatusPill> : null}
+        </span>
       </div>
       <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
     </div>
@@ -321,7 +348,7 @@ function DependencyEdge({
   const d = data as any;
   return (
     <>
-      <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={{ stroke: EDGE_COLOR, strokeWidth: 1 }} />
+      <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={{ stroke: EDGE_COLOR, strokeWidth: EDGE_WIDTH }} />
       <EdgeLabelRenderer>
         <button
           type="button"
@@ -331,10 +358,10 @@ function DependencyEdge({
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
             pointerEvents: 'all',
-            fontSize: 11,
-            color: 'var(--ds-text-subtle, #505258)',
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            fontSize: 12,
+            color: 'var(--ds-text, #292A2E)',
+            background: 'var(--ds-surface, #FFFFFF)',
+            border: 'none',
             borderRadius: 4,
             padding: '4px 8px',
             whiteSpace: 'nowrap',
@@ -469,16 +496,21 @@ function RelationshipPopup({
 function ZoomBar({
   zoomOnScroll,
   onToggleScroll,
-  locked,
-  onToggleLock,
 }: {
   zoomOnScroll: boolean;
   onToggleScroll: () => void;
-  locked: boolean;
-  onToggleLock: () => void;
 }) {
   const { zoomIn, zoomOut, fitView, setViewport } = useReactFlow();
   const { zoom } = useViewport();
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const SHORTCUTS: { keyLabel: string; action: string }[] = [
+    { keyLabel: '←', action: 'Pan to the left' },
+    { keyLabel: '→', action: 'Pan to the right' },
+    { keyLabel: '↑', action: 'Pan to the top' },
+    { keyLabel: '↓', action: 'Pan to the bottom' },
+    { keyLabel: '+', action: 'Zoom the report in' },
+    { keyLabel: '−', action: 'Zoom the report out' },
+  ];
   const btn: React.CSSProperties = {
     border: 'none',
     background: 'transparent',
@@ -528,15 +560,51 @@ function ZoomBar({
         Reset
       </button>
       <span style={{ width: 1, height: 20, background: 'var(--ds-border, #DFE1E6)' }} />
-      <button
-        type="button"
-        aria-label={locked ? 'Unlock canvas (enable drag)' : 'Lock canvas (disable drag)'}
-        aria-pressed={locked}
-        style={{ ...btn, color: locked ? 'var(--ds-text-selected, #1868DB)' : 'var(--ds-text, #292A2E)' }}
-        onClick={onToggleLock}
-      >
-        <User size={16} />
-      </button>
+      <div style={{ position: 'relative', display: 'flex' }}>
+        <button
+          type="button"
+          aria-label="Keyboard shortcuts"
+          aria-haspopup="dialog"
+          aria-expanded={shortcutsOpen}
+          style={{ ...btn, color: shortcutsOpen ? 'var(--ds-text-selected, #1868DB)' : 'var(--ds-text, #292A2E)' }}
+          onClick={() => setShortcutsOpen((v) => !v)}
+        >
+          <User size={16} />
+        </button>
+        {shortcutsOpen && (
+          <>
+            <div onClick={() => setShortcutsOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 6 }} aria-hidden />
+            <div
+              role="dialog"
+              aria-label="Keyboard shortcuts"
+              style={{
+                position: 'absolute', bottom: 'calc(100% + 8px)', right: 0, zIndex: 7,
+                width: 260, padding: 16, borderRadius: 8,
+                background: 'var(--ds-surface-overlay, #FFFFFF)',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
+              }}
+            >
+              <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 12 }}>
+                Keyboard shortcuts
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {SHORTCUTS.map((s) => (
+                  <div key={s.action} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      minWidth: 24, height: 24, padding: '0 4px', borderRadius: 4,
+                      border: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)',
+                      fontSize: 13, color: 'var(--ds-text, #292A2E)',
+                    }}>{s.keyLabel}</span>
+                    <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{s.action}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -546,6 +614,8 @@ function ZoomBar({
  *    overflow:hidden ancestor, so Popper lands the menu at (0,0)
  *    (CLAUDE.md 2026-06-13). createPortal + getBoundingClientRect anchors it
  *    under the chip reliably. */
+type ChipOption<T extends string> = { value: T; label: string; icon?: React.ReactNode };
+
 function ChipSelect<T extends string>({
   label,
   value,
@@ -553,15 +623,20 @@ function ChipSelect<T extends string>({
   onChange,
   active,
   disabled,
+  searchable,
+  searchPlaceholder,
 }: {
   label: string;
   value: T;
-  options: Array<{ value: T; label: string }>;
+  options: Array<ChipOption<T>>;
   onChange: (v: T) => void;
   active?: boolean;
   disabled?: boolean;
+  searchable?: boolean;
+  searchPlaceholder?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
   const anchorRef = useRef<HTMLSpanElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -576,9 +651,15 @@ function ChipSelect<T extends string>({
     return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey, true); };
   }, [open]);
 
+  // Reset the search query whenever the menu closes.
+  useEffect(() => { if (!open) setQuery(''); }, [open]);
+
   const current = options.find((o) => o.value === value)?.label ?? '';
   const text = active && current ? `${label}: ${current}` : label;
   const rect = anchorRef.current?.getBoundingClientRect();
+  const visibleOptions = searchable && query.trim()
+    ? options.filter((o) => o.label.toLowerCase().includes(query.trim().toLowerCase()))
+    : options;
 
   return (
     <span ref={anchorRef} style={{ display: 'inline-flex' }}>
@@ -600,7 +681,10 @@ function ChipSelect<T extends string>({
                 position: 'fixed',
                 top: rect.bottom + 4,
                 left: rect.left,
-                minWidth: 200,
+                minWidth: searchable ? 320 : 200,
+                maxWidth: 420,
+                maxHeight: 360,
+                overflowY: 'auto',
                 zIndex: 9999,
                 background: 'var(--ds-surface-overlay, #FFFFFF)',
                 border: '1px solid var(--ds-border, #DFE1E6)',
@@ -610,7 +694,21 @@ function ChipSelect<T extends string>({
                 fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")',
               }}
             >
-              {options.map((o) => {
+              {searchable && (
+                <div style={{ padding: '4px 8px 8px' }}>
+                  <Textfield
+                    autoFocus
+                    isCompact
+                    value={query}
+                    onChange={(e) => setQuery((e.target as HTMLInputElement).value)}
+                    placeholder={searchPlaceholder ?? 'Search…'}
+                  />
+                </div>
+              )}
+              {visibleOptions.length === 0 && (
+                <div style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>No matches</div>
+              )}
+              {visibleOptions.map((o) => {
                 const selected = o.value === value;
                 return (
                   <button
@@ -626,7 +724,7 @@ function ChipSelect<T extends string>({
                       width: '100%',
                       padding: '8px 12px',
                       border: 'none',
-                      background: 'transparent',
+                      background: searchable && selected ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
                       textAlign: 'left',
                       fontFamily: 'inherit',
                       fontSize: 14,
@@ -635,21 +733,24 @@ function ChipSelect<T extends string>({
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    <span
-                      style={{
-                        width: 16,
-                        height: 16,
-                        borderRadius: '50%',
-                        border: `2px solid ${selected ? 'var(--ds-border-selected, #1868DB)' : 'var(--ds-border-bold, #8590A2)'}`,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {selected ? <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-background-selected-bold, #1868DB)' }} /> : null}
-                    </span>
-                    {o.label}
+                    {!searchable && (
+                      <span
+                        style={{
+                          width: 16,
+                          height: 16,
+                          borderRadius: '50%',
+                          border: `2px solid ${selected ? 'var(--ds-border-selected, #1868DB)' : 'var(--ds-border-bold, #8590A2)'}`,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {selected ? <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-background-selected-bold, #1868DB)' }} /> : null}
+                      </span>
+                    )}
+                    {o.icon ? <span style={{ display: 'inline-flex', flexShrink: 0 }}>{o.icon}</span> : null}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.label}</span>
                   </button>
                 );
               })}
@@ -671,9 +772,19 @@ interface DependenciesDiagramProps {
   issueMeta?: IssueMeta;
   onAddClick: () => void;
   onChanged: () => void;
+  /** When set, the canvas centers on + highlights this work item on mount
+   *  (driven by the timeline "Show dependencies for <key>" flow, ?focus=). */
+  focusKey?: string | null;
+  /** Hierarchy map (card keys + ancestors) for the "Roll-up to" filter. */
+  hierarchy?: Hierarchy;
+  /** All projects from the project module — for the "Project" filter. */
+  projects?: Array<{ project_key: string; name: string | null; color?: string | null; avatar_url?: string | null; icon?: string | null }>;
 }
 
-function DiagramInner({ projectKey, projectName, projectColor, dependencies, issueMeta = {}, onAddClick, onChanged }: DependenciesDiagramProps) {
+type RollUpLevel = 'none' | 'Business Request' | 'Epic' | 'Feature' | 'Story';
+
+function DiagramInner({ projectKey, projectName, projectColor, dependencies, issueMeta = {}, hierarchy = {}, projects = [], onAddClick, onChanged, focusKey }: DependenciesDiagramProps) {
+  const { setCenter, setViewport, getViewport, zoomIn, zoomOut } = useReactFlow();
   const handleDeleteDep = useCallback(
     async (depId: number) => {
       try {
@@ -694,12 +805,120 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
 
   const [groupBy, setGroupBy] = useState<GroupBy>('none');
   const [linkType, setLinkType] = useState<LinkType>('all');
-  const [locked, setLocked] = useState(false);
+  const [rollUp, setRollUp] = useState<RollUpLevel>('none');
+  const [projectFilter, setProjectFilter] = useState<string>('all');
+  const [sprint, setSprint] = useState<string>('all');
+  const [release, setRelease] = useState<string>('all');
+  const [workItem, setWorkItem] = useState<string>('all');
 
-  const filteredDeps = useMemo(
-    () => (linkType === 'all' ? dependencies : dependencies.filter((d) => d.dependency_type === linkType)),
-    [dependencies, linkType],
-  );
+  /* Project options — ALL projects from the project module (ph_jira_projects),
+     not just those present in the dependency set. */
+  const projectOptions = useMemo(() => {
+    const mk = (p: { project_key: string; name?: string | null; color?: string | null; avatar_url?: string | null; icon?: string | null }) => ({
+      value: p.project_key,
+      label: p.name ? `${p.project_key} — ${p.name}` : p.project_key,
+      icon: (
+        <ProjectIcon
+          projectKey={p.project_key}
+          name={p.name ?? p.project_key}
+          color={p.color ?? undefined}
+          avatarUrl={p.avatar_url ?? undefined}
+          iconName={p.icon ?? undefined}
+          size="xsmall"
+        />
+      ),
+    });
+    const opts = (projects ?? []).filter((p) => p.project_key).map(mk);
+    const known = new Set(opts.map((o) => o.value));
+    Object.values(issueMeta).forEach((m) => {
+      if (m.project_key && !known.has(m.project_key)) { known.add(m.project_key); opts.push(mk({ project_key: m.project_key })); }
+    });
+    opts.sort((a, b) => a.value.localeCompare(b.value));
+    return [{ value: 'all', label: 'All projects' }, ...opts];
+  }, [projects, issueMeta]);
+
+  const sprintOptions = useMemo(() => {
+    const s = new Set<string>();
+    Object.values(issueMeta).forEach((m) => { if (m.sprint) s.add(m.sprint); });
+    return [{ value: 'all', label: 'All sprints' }, ...Array.from(s).sort().map((p) => ({ value: p, label: p }))];
+  }, [issueMeta]);
+
+  const releaseOptions = useMemo(() => {
+    const s = new Set<string>();
+    Object.values(issueMeta).forEach((m) => { if (m.release) m.release.split(', ').forEach((r) => { if (r) s.add(r); }); });
+    return [{ value: 'all', label: 'All releases' }, ...Array.from(s).sort().map((p) => ({ value: p, label: p }))];
+  }, [issueMeta]);
+
+  /* Work item options — Jira parity: native type icon + key + title, searchable. */
+  const workItemOptions = useMemo(() => {
+    const keys = new Set<string>();
+    dependencies.forEach((d) => { keys.add(d.source_issue_key); keys.add(d.target_issue_key); });
+    const opts = Array.from(keys).sort().map((k) => {
+      const meta = issueMeta[k];
+      const summary = meta?.summary ?? '';
+      const type = meta?.issue_type ?? hierarchy[k]?.issue_type ?? null;
+      return {
+        value: k,
+        label: summary ? `${k} ${summary}` : k,
+        icon: type ? <JiraIssueTypeIcon type={type} size={16} /> : undefined,
+      };
+    });
+    return [{ value: 'all', label: 'All work items' }, ...opts];
+  }, [dependencies, issueMeta, hierarchy]);
+
+  /* Resolve a key to its ancestor of the requested hierarchy level (or itself). */
+  const resolveAncestor = useCallback((key: string, level: RollUpLevel): string => {
+    if (level === 'none') return key;
+    let cur: string | undefined = key;
+    const seen = new Set<string>();
+    while (cur && !seen.has(cur)) {
+      seen.add(cur);
+      const node = hierarchy[cur] ?? (issueMeta[cur] ? { issue_type: issueMeta[cur].issue_type, parent_key: issueMeta[cur].parent_key ?? null, summary: issueMeta[cur].summary } : null);
+      if (!node) break;
+      if ((node.issue_type ?? '') === level) return cur;
+      cur = node.parent_key ?? undefined;
+    }
+    return key; // no ancestor of that level — keep the original card
+  }, [hierarchy, issueMeta]);
+
+  const matchesCardFilters = useCallback((key: string): boolean => {
+    const m = issueMeta[key];
+    if (projectFilter !== 'all' && (m?.project_key ?? '') !== projectFilter) return false;
+    if (sprint !== 'all' && (m?.sprint ?? '') !== sprint) return false;
+    if (release !== 'all') {
+      const rels = (m?.release ?? '').split(', ').filter(Boolean);
+      if (!rels.includes(release)) return false;
+    }
+    return true;
+  }, [issueMeta, projectFilter, sprint, release]);
+
+  /* Apply link-type + project/sprint/release/work-item filters, then roll-up remap. */
+  const filteredDeps = useMemo(() => {
+    let result = linkType === 'all' ? dependencies : dependencies.filter((d) => d.dependency_type === linkType);
+
+    if (projectFilter !== 'all' || sprint !== 'all' || release !== 'all') {
+      // keep an edge if EITHER endpoint matches (cross-boundary deps stay visible)
+      result = result.filter((d) => matchesCardFilters(d.source_issue_key) || matchesCardFilters(d.target_issue_key));
+    }
+    if (workItem !== 'all') {
+      result = result.filter((d) => d.source_issue_key === workItem || d.target_issue_key === workItem);
+    }
+    if (rollUp !== 'none') {
+      const seenEdge = new Set<string>();
+      const rolled: Dependency[] = [];
+      for (const d of result) {
+        const s = resolveAncestor(d.source_issue_key, rollUp);
+        const t = resolveAncestor(d.target_issue_key, rollUp);
+        if (s === t) continue; // collapsed onto itself
+        const sig = `${s}|${t}|${d.dependency_type}`;
+        if (seenEdge.has(sig)) continue;
+        seenEdge.add(sig);
+        rolled.push({ ...d, source_issue_key: s, target_issue_key: t });
+      }
+      result = rolled;
+    }
+    return result;
+  }, [dependencies, linkType, projectFilter, sprint, release, workItem, rollUp, matchesCardFilters, resolveAncestor]);
 
   const uniqueIssues = useMemo(() => {
     const keys = new Set<string>();
@@ -710,15 +929,44 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
     return Array.from(keys).sort();
   }, [filteredDeps]);
 
+  /* Card meta: prefer full issueMeta; fall back to hierarchy (type+summary)
+     for roll-up ancestor cards that weren't in the dependency set. */
   const cardData = useCallback(
-    (k: string) => ({
-      label: k,
-      meta: issueMeta[k] ?? null,
-      onAddDependency: onAddClick,
-      onLocate: () => { window.location.href = `/project-hub/${projectKey}/timeline`; },
-    }),
-    [issueMeta, onAddClick, projectKey],
+    (k: string) => {
+      const meta = issueMeta[k] ?? (hierarchy[k]
+        ? { issue_type: hierarchy[k].issue_type, summary: hierarchy[k].summary }
+        : null);
+      return {
+        label: k,
+        meta,
+        onAddDependency: onAddClick,
+        onLocate: () => { window.location.href = `/project-hub/${projectKey}/timeline?locate=${encodeURIComponent(k)}`; },
+      };
+    },
+    [issueMeta, hierarchy, onAddClick, projectKey],
   );
+
+  /* Keyboard shortcuts (Jira parity): arrows pan, +/- zoom. Active while the
+     canvas is focused / hovered and no text input is targeted. */
+  const PAN_STEP = 80;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable) return;
+      switch (e.key) {
+        case 'ArrowLeft': { const v = getViewport(); setViewport({ ...v, x: v.x + PAN_STEP }, { duration: 120 }); break; }
+        case 'ArrowRight': { const v = getViewport(); setViewport({ ...v, x: v.x - PAN_STEP }, { duration: 120 }); break; }
+        case 'ArrowUp': { const v = getViewport(); setViewport({ ...v, y: v.y + PAN_STEP }, { duration: 120 }); break; }
+        case 'ArrowDown': { const v = getViewport(); setViewport({ ...v, y: v.y - PAN_STEP }, { duration: 120 }); break; }
+        case '+': case '=': zoomIn({ duration: 120 }); break;
+        case '-': case '_': zoomOut({ duration: 120 }); break;
+        default: return;
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [getViewport, setViewport, zoomIn, zoomOut]);
 
   const nodes: Node[] = useMemo(() => {
     const depth = computeDepth(
@@ -728,10 +976,11 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
     const card = (k: string, x: number, y: number): Node => ({
       id: k,
       type: 'workItem',
-      data: cardData(k),
+      data: { ...cardData(k), focused: k === focusKey },
       position: { x, y },
-      draggable: !locked,
-      zIndex: 2, // frame(0) < edges(1) < cards(2)
+      selected: k === focusKey,
+      draggable: true,
+      zIndex: k === focusKey ? 3 : 2, // frame(0) < edges(1) < cards(2) < focused(3)
     });
 
     if (groupBy === 'none') {
@@ -747,16 +996,9 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
         maxRows = Math.max(maxRows, r + 1);
         maxDepth = Math.max(maxDepth, d);
       }
-      const frame: Node = {
-        id: 'frame:project',
-        type: 'frame',
-        position: { x: 0, y: 0 },
-        data: { label: projectName || projectKey, color: projectColor, projectKey },
-        draggable: false,
-        selectable: false,
-        style: { width: PAD_X * 2 + maxDepth * COL_W + CARD_W, height: HEADER_H + (maxRows - 1) * ROW_H + 140 + PAD_Y, zIndex: 0 },
-      };
-      return [frame, ...uniqueIssues.map((k) => card(k, PAD_X + (depth[k] ?? 0) * COL_W, HEADER_H + rowOf[k] * ROW_H))];
+      // No project frame box when ungrouped — cards float directly on the grey
+      // canvas (Jira parity; the frame box read as an unwanted "small container").
+      return uniqueIssues.map((k) => card(k, PAD_X + (depth[k] ?? 0) * COL_W, HEADER_H + rowOf[k] * ROW_H));
     }
 
     // Grouped: one frame per group value, stacked vertically.
@@ -797,7 +1039,7 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
       cumY += frameHeight + LANE_GAP;
     }
     return [...frames, ...cards];
-  }, [uniqueIssues, filteredDeps, issueMeta, projectKey, projectName, projectColor, groupBy, locked, cardData]);
+  }, [uniqueIssues, filteredDeps, issueMeta, projectKey, projectName, projectColor, groupBy, cardData, focusKey]);
 
   const [sel, setSel] = useState<any>(null);
   const onSelectEdge = useCallback((d: any, point: { x: number; y: number }) => setSel({ ...d, x: point.x, y: point.y }), []);
@@ -811,7 +1053,7 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
         type: 'dependency',
         zIndex: 1,
         // ads-scanner:ignore-next-line — SVG marker requires a concrete color, not a CSS var()
-        markerEnd: { type: MarkerType.ArrowClosed, color: EDGE_HEX },
+        markerEnd: { type: MarkerType.ArrowClosed, color: EDGE_HEX, width: 18, height: 18 },
         data: {
           label: dep.dependency_type === 'blocks' ? 'blocks' : 'is blocked by',
           depId: dep.id,
@@ -837,6 +1079,17 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
     setEdges(edges);
   }, [nodes, edges, setNodes, setEdges]);
 
+  /* Center + highlight the focused work item (?focus= from the timeline). */
+  React.useEffect(() => {
+    if (!focusKey) return;
+    const target = nodes.find((n) => n.id === focusKey);
+    if (!target) return;
+    const t = setTimeout(() => {
+      setCenter(target.position.x + CARD_W / 2, target.position.y + ROW_H / 2, { zoom: 1, duration: 500 });
+    }, 120);
+    return () => clearTimeout(t);
+  }, [focusKey, nodes, setCenter]);
+
   return (
     <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")' }}>
       {/* Filter toolbar (Jira Plans parity) */}
@@ -851,9 +1104,21 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
           flexWrap: 'wrap',
         }}
       >
-        {/* Roll-up to / Space / Sprint / Work item: rendered for parity but
-            not applicable to a single Catalyst project — disabled. */}
-        <ChipSelect label="Roll-up to" value={'story' as any} options={[{ value: 'story' as any, label: 'Story' }]} onChange={() => {}} disabled />
+        {/* Roll-up to: collapse dependency endpoints onto their ancestor of
+            the chosen hierarchy level (Epic / Feature / Story). */}
+        <ChipSelect<RollUpLevel>
+          label="Roll-up to"
+          value={rollUp}
+          active={rollUp !== 'none'}
+          options={[
+            { value: 'none', label: 'None' },
+            { value: 'Business Request', label: 'Business Request', icon: <JiraIssueTypeIcon type="Business Request" size={16} /> },
+            { value: 'Epic', label: 'Epic', icon: <JiraIssueTypeIcon type="Epic" size={16} /> },
+            { value: 'Feature', label: 'Feature', icon: <JiraIssueTypeIcon type="Feature" size={16} /> },
+            { value: 'Story', label: 'Story', icon: <JiraIssueTypeIcon type="Story" size={16} /> },
+          ]}
+          onChange={setRollUp}
+        />
         <ChipSelect<GroupBy>
           label="Group by"
           value={groupBy}
@@ -866,9 +1131,36 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
           ]}
           onChange={setGroupBy}
         />
-        <ChipSelect label="Space" value={'x' as any} options={[{ value: 'x' as any, label: '' }]} onChange={() => {}} disabled />
-        <ChipSelect label="Sprint" value={'x' as any} options={[{ value: 'x' as any, label: '' }]} onChange={() => {}} disabled />
-        <ChipSelect label="Work item" value={'x' as any} options={[{ value: 'x' as any, label: '' }]} onChange={() => {}} disabled />
+        <ChipSelect<string>
+          label="Project"
+          value={projectFilter}
+          active={projectFilter !== 'all'}
+          options={projectOptions}
+          onChange={setProjectFilter}
+        />
+        <ChipSelect<string>
+          label="Sprint"
+          value={sprint}
+          active={sprint !== 'all'}
+          options={sprintOptions}
+          onChange={setSprint}
+        />
+        <ChipSelect<string>
+          label="Release"
+          value={release}
+          active={release !== 'all'}
+          options={releaseOptions}
+          onChange={setRelease}
+        />
+        <ChipSelect<string>
+          label="Work item"
+          value={workItem}
+          active={workItem !== 'all'}
+          options={workItemOptions}
+          onChange={setWorkItem}
+          searchable
+          searchPlaceholder="Choose a work item..."
+        />
         <ChipSelect<LinkType>
           label="Issue link type"
           value={linkType}
@@ -882,7 +1174,7 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
         />
         <button
           type="button"
-          onClick={() => { setGroupBy('none'); setLinkType('all'); }}
+          onClick={() => { setGroupBy('none'); setLinkType('all'); setRollUp('none'); setProjectFilter('all'); setSprint('all'); setRelease('all'); setWorkItem('all'); }}
           style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 14, cursor: 'pointer', padding: '0 8px', height: 32 }}
         >
           Reset
@@ -916,8 +1208,8 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
         </button>
       </div>
 
-      {/* Canvas */}
-      <div style={{ position: 'relative', flex: 1, minHeight: 0, background: 'var(--ds-surface, #FFFFFF)' }}>
+      {/* Canvas — grey tint spans the whole surface (Jira parity). */}
+      <div style={{ position: 'relative', flex: 1, minHeight: 0, background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
         <ReactFlow
           nodes={flowNodes}
           edges={flowEdges}
@@ -931,17 +1223,15 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
           fitViewOptions={{ padding: 0.2 }}
           minZoom={0.2}
           maxZoom={2}
-          nodesDraggable={!locked}
+          nodesDraggable
           zoomOnScroll={zoomOnScroll}
           panOnScroll
           proOptions={{ hideAttribution: true }}
-          style={{ background: 'var(--ds-surface, #FFFFFF)' }}
+          style={{ background: 'var(--ds-surface-sunken, #F7F8F9)' }}
         />
         <ZoomBar
           zoomOnScroll={zoomOnScroll}
           onToggleScroll={() => setZoomOnScroll((v) => !v)}
-          locked={locked}
-          onToggleLock={() => setLocked((v) => !v)}
         />
       </div>
       {sel ? <RelationshipPopup sel={sel} onUnlink={handleDeleteDep} onClose={() => setSel(null)} /> : null}

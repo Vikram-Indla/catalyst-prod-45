@@ -13,7 +13,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,6 +72,8 @@ function locateSiblings(
 
 export default function ProjectHubTimelinePage() {
   const { key: projectKey } = useParams<{ key: string }>();
+  const [searchParams] = useSearchParams();
+  const locateKey = searchParams.get('locate');
   const queryClient = useQueryClient();
   const { data: tree = [], isLoading, error } = useProjectHubTimeline(projectKey);
   const { data: savedFilters = [] } = useFiltersForProject(projectKey, 'project');
@@ -389,10 +391,12 @@ export default function ProjectHubTimelinePage() {
         savedFilters,
       }}
       buildIssueDetailRoute={(issueKey) => `/project-hub/${projectKey}/timeline/${issueKey}`}
+      buildDependenciesRoute={(issueKey) => `/project-hub/${projectKey}/dependencies?focus=${encodeURIComponent(issueKey)}`}
       resolveItemType={resolveItemType}
       detailRouteOwnerKey={projectKey ?? ''}
       mutations={mutations}
       menuVariant="jira"
+      locatedKey={locateKey ?? undefined}
     />
   );
 }

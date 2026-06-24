@@ -14,7 +14,6 @@ import { useState, Fragment } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@atlaskit/button/new';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import Lozenge from '@atlaskit/lozenge';
 import SectionMessage from '@atlaskit/section-message';
 import Textfield from '@atlaskit/textfield';
 import Spinner from '@atlaskit/spinner';
@@ -66,16 +65,24 @@ const READINESS_LABEL: Record<Readiness, { title: string; detail: string; ok: bo
   READY_TO_SYNC: { title: 'Ready to sync', detail: 'Connected with synced data. Sync and refresh are available.', ok: true },
 };
 
-// Canonical Jira → Catalyst type mapping (convention; both render via JiraIssueTypeIcon)
-const TYPE_MAP: Array<{ jira: string; catalyst: string }> = [
-  { jira: 'Epic', catalyst: 'Epic' },
-  { jira: 'Story', catalyst: 'Story' },
-  { jira: 'Task', catalyst: 'Task' },
-  { jira: 'Sub-task', catalyst: 'Sub-task' },
-  { jira: 'Bug', catalyst: 'QA Bug' },
-  { jira: 'Change Request', catalyst: 'Change Request' },
-  { jira: 'Incident', catalyst: 'Production Incident' },
+// Canonical Jira → Catalyst type mapping (convention; both render via JiraIssueTypeIcon).
+// Most types land in ph_issues (Projects module). Business Request is the Products-module
+// root — it routes to business_requests, NOT ph_issues (see PRODUCTS_MODULE_PROJECTS).
+const TYPE_MAP: Array<{ jira: string; catalyst: string; table: string }> = [
+  { jira: 'Epic', catalyst: 'Epic', table: 'ph_issues' },
+  { jira: 'Story', catalyst: 'Story', table: 'ph_issues' },
+  { jira: 'Task', catalyst: 'Task', table: 'ph_issues' },
+  { jira: 'Sub-task', catalyst: 'Sub-task', table: 'ph_issues' },
+  { jira: 'Bug', catalyst: 'QA Bug', table: 'ph_issues' },
+  { jira: 'Change Request', catalyst: 'Change Request', table: 'ph_issues' },
+  { jira: 'Incident', catalyst: 'Production Incident', table: 'ph_issues' },
+  { jira: 'Business Request', catalyst: 'Business Request', table: 'business_requests' },
 ];
+
+// Products-module projects: their Jira items are Business Requests routed to the Products
+// module (business_requests), NEVER ph_issues. Mirrors wh-jira-sync PRODUCTS_MODULE_PROJECTS.
+// Surfaced in Sync Scope so they are visible (mapped) rather than silently absent.
+const PRODUCTS_MODULE_PROJECTS = new Set<string>(['MDT']);
 
 // Canonical status-category mapping (Jira statusCategory → Catalyst status_category)
 const STATUS_MAP: Array<{ category: string; catalyst: string; terminal: boolean }> = [
@@ -190,9 +197,10 @@ export function JiraSyncPage() {
   const connSiteUrl = connection?.site_url ?? backendReadiness?.siteUrl ?? null;
   const connLastTested = connection?.last_tested_at ?? backendReadiness?.lastTestedAt ?? null;
   const enabledProjects = projects.filter(p => p.sync_enabled);
-  // Never surface no-data projects in record listings (Vikram, 2026-06-24): a project is
-  // only "brought" once it carries cached Jira issues. Drives the Projects tab + its count.
-  const dataProjects = projects.filter(p => p.issues_cached > 0);
+  // Projects tab = projects with cached Jira data, PLUS Products-module projects (e.g. MDT →
+  // Investor Journey) and any explicitly-mapped project (Vikram, 2026-06-24: MDT must be
+  // visible, not silently excluded). Random no-data accessible projects are still hidden.
+  const dataProjects = projects.filter(p => p.issues_cached > 0 || PRODUCTS_MODULE_PROJECTS.has(p.key) || p.module_target);
   const totalJiraIssues = Object.values(issueCounts).reduce((a: number, b: number) => a + b, 0);
 
   // Backend readiness is authoritative when reachable; client derivation is the fallback.
@@ -223,11 +231,12 @@ export function JiraSyncPage() {
         ) : (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, padding: '12px 16px', borderRadius: 8,
-            background: isConnected ? C.bgSuccess : C.neutral,
-            border: `1px solid ${isConnected ? C.textSuccess : C.border}`,
+            background: C.neutral,
+            border: `1px solid ${C.border}`,
           }}>
-            <span style={{ fontWeight: 600, fontFamily: FB, color: isConnected ? C.textSuccess : C.textSubtle }}>
-              {isConnected ? '✓ Connected' : 'Not configured'}
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: isConnected ? C.textSubtle : C.textSubtlest }} />
+            <span style={{ fontWeight: 600, fontFamily: FB, color: C.text }}>
+              {isConnected ? 'Connected' : 'Not configured'}
             </span>
             {connSiteUrl && (
               <code style={{ fontSize: 12, fontFamily: FC, background: C.neutral, padding: '2px 6px', borderRadius: 3 }}>
@@ -302,6 +311,23 @@ export function JiraSyncPage() {
 const TH = { padding: '12px 16px', textAlign: 'left' as const, fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}`, fontFamily: FB };
 const TD = { padding: '12px 16px', fontSize: 13, fontFamily: FB, color: C.text };
 
+// Neutral-enterprise status pill (Vikram 2026-06-24): no green/lime anywhere in the Jira
+// integration — Atlaskit's stock success Lozenge resolves to lime (#EFFFD6/#4C6B1F). Status
+// reads as restrained ADS neutral; red is reserved strictly for errors/danger. Labels stay
+// sentence-case (ADS typography rule — never all-caps).
+function StatusPill({ children, tone = 'neutral' }: { children: any; tone?: 'neutral' | 'danger' }) {
+  const palette = {
+    neutral: { bg: 'var(--ds-background-neutral, #DCDFE4)', fg: 'var(--ds-text-subtle, #44546F)' },
+    danger: { bg: 'var(--ds-background-danger, #FFECEB)', fg: 'var(--ds-text-danger, #AE2A19)' },
+  } as const;
+  const c = palette[tone];
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 8px', borderRadius: 3, background: c.bg, color: c.fg, fontFamily: FB, fontSize: 11, fontWeight: 600, lineHeight: '20px' }}>
+      {children}
+    </span>
+  );
+}
+
 function ConnectionTab({ connection, health, env, readiness }: any) {
   const testConn = useTestConnection();
   const saveConn = useUpdateJiraConnection();
@@ -325,12 +351,12 @@ function ConnectionTab({ connection, health, env, readiness }: any) {
       {/* Status card — folds in readiness so the standalone banner is no longer needed */}
       <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', background: isConnected ? C.textSuccess : C.textSubtlest }} />
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: isConnected ? C.textSubtle : C.textSubtlest }} />
           <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: 0, fontFamily: FH }}>
             {isConnected ? 'Connected to Jira' : 'Jira not configured'}
           </h3>
-          <Lozenge appearance={isConnected ? 'success' : 'default'}>{getEnvironmentLabel(env.environment)}</Lozenge>
-          {r && <Lozenge appearance={r.ok ? 'success' : 'moved'}>{r.title}</Lozenge>}
+          <StatusPill>{getEnvironmentLabel(env.environment)}</StatusPill>
+          {r && <StatusPill>{r.title}</StatusPill>}
         </div>
 
         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
@@ -365,7 +391,7 @@ function ConnectionTab({ connection, health, env, readiness }: any) {
         </div>
 
         {testConn.isSuccess && (
-          <SectionMessage appearance="success" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 12 }}>Connection test passed.</p></SectionMessage>
+          <div style={{ marginTop: 16, fontSize: 12, color: C.textSubtle, fontFamily: FB }}>✓ Connection test passed.</div>
         )}
         {testConn.isError && (
           <SectionMessage appearance="error" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 12 }}>{testConn.error instanceof Error ? testConn.error.message : 'Test failed'}</p></SectionMessage>
@@ -436,7 +462,10 @@ function OverviewTab({ projects, health, isConnected, totalJiraIssues, env }: an
       </div>
 
       {/* Sync scope — only when connected; otherwise blocked state */}
-      <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, marginBottom: 16, fontFamily: FH }}>Sync Scope</h3>
+      <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, marginBottom: 4, fontFamily: FH }}>Sync Scope</h3>
+      <p style={{ fontSize: 12, color: C.textSubtle, margin: '0 0 16px 0', fontFamily: FB, maxWidth: 760 }}>
+        <strong>Catalyst target</strong> is the Catalyst module a project's items route into. <strong>—</strong> means the project keeps its own Project Hub, keyed by its project code (the default). A named target means items are routed elsewhere — e.g. <code style={{ fontFamily: FC }}>MDT</code> is a Products-module project: its Jira items are Business Requests that land in <code style={{ fontFamily: FC }}>business_requests</code> (Investor Journey), never in <code style={{ fontFamily: FC }}>ph_issues</code>.
+      </p>
       {!isConnected ? (
         <SectionMessage appearance="warning" title="Sync blocked — not configured">
           <p style={{ fontFamily: FB, fontSize: 12 }}>Configure and test the Jira connection on the Connection tab. No project can sync until then.</p>
@@ -452,21 +481,26 @@ function OverviewTab({ projects, health, isConnected, totalJiraIssues, env }: an
               {['Project', 'Catalyst target', 'Sync', 'Issues cached', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
             </tr></thead>
             <tbody>
-              {projects.filter((p: any) => p.issues_cached > 0).map((p: any, i: number, arr: any[]) => (
-                <tr key={p.key} style={{ borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                  <td style={TD}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                      <ProjectIcon projectKey={p.key} name={p.name} size="xsmall" />
-                      <span style={{ color: C.text, fontWeight: 500 }}>{p.name}</span>
-                      <code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
-                    </span>
-                  </td>
-                  <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
-                  <td style={TD}><Lozenge appearance={p.sync_enabled ? 'success' : 'default'}>{p.sync_enabled ? 'ON' : 'OFF'}</Lozenge></td>
-                  <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
-                  <td style={TD}><Lozenge appearance={p.issues_cached > 0 ? 'success' : 'default'}>{p.issues_cached > 0 ? 'Synced' : 'No data'}</Lozenge></td>
-                </tr>
-              ))}
+              {projects
+                .filter((p: any) => p.issues_cached > 0 || PRODUCTS_MODULE_PROJECTS.has(p.key) || p.module_target)
+                .map((p: any, i: number, arr: any[]) => {
+                  const isProduct = PRODUCTS_MODULE_PROJECTS.has(p.key);
+                  return (
+                    <tr key={p.key} style={{ borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : 'none' }}>
+                      <td style={TD}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                          <ProjectIcon projectKey={p.key} name={p.name} size="xsmall" />
+                          <span style={{ color: C.text, fontWeight: 500 }}>{p.name}</span>
+                          <code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
+                        </span>
+                      </td>
+                      <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
+                      <td style={TD}><StatusPill>{isProduct ? 'Products' : (p.sync_enabled ? 'On' : 'Off')}</StatusPill></td>
+                      <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
+                      <td style={TD}><StatusPill>{isProduct ? 'Products module' : (p.issues_cached > 0 ? 'Synced' : 'Not synced')}</StatusPill></td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
@@ -491,12 +525,43 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
     { label: 'All time', value: 'All time' },
   ];
 
-  const runArgs = (mode: 'full' | 'incremental' | 'dry-run') => {
-    const projectKeys = selectedProjects.length ? selectedProjects.map(o => o.value) : undefined;
+  // Per-project run: full/incremental sync sequentially so the user sees which project is in
+  // flight and a real percentage — not an indeterminate bar. Dry-run = single read-only estimate.
+  const [run, setRun] = useState<any>(null);
+  const syncing = !!run && !run.finished;
+
+  const runSync = async (mode: 'full' | 'incremental' | 'dry-run') => {
     const lookbackOverride = dateOption.value === 'Per-project' ? undefined : (DATE_MODE_TO_LOOKBACK[dateOption.value] ?? undefined);
-    return { mode, projectKeys, lookbackOverride };
+    const list = selectedProjects.length
+      ? selectedProjects.map(o => ({ key: o.value, name: o.label.split(' — ')[1] || o.value }))
+      : enabledProjects.map((p: any) => ({ key: p.key, name: p.name }));
+    if (!list.length) return;
+
+    if (mode === 'dry-run') {
+      setRun({ mode, total: list.length, done: 0, currentKey: null, currentName: null, fetched: 0, updated: 0, failed: 0, finished: false });
+      try {
+        const res = await manualSync.mutateAsync({ mode, projectKeys: list.map(t => t.key), lookbackOverride });
+        setRun((r0: any) => ({ ...r0, done: list.length, estimate: res?.estimatedCount ?? 0, finished: true }));
+      } catch (e: any) {
+        setRun((r0: any) => ({ ...r0, finished: true, error: e?.message ?? 'Dry run failed' }));
+      }
+      return;
+    }
+
+    setRun({ mode, total: list.length, done: 0, currentKey: list[0].key, currentName: list[0].name, fetched: 0, updated: 0, failed: 0, finished: false });
+    let fetched = 0, updated = 0, failed = 0;
+    for (let i = 0; i < list.length; i++) {
+      const t = list[i];
+      setRun((r0: any) => ({ ...r0, currentKey: t.key, currentName: t.name, done: i }));
+      try {
+        const res = await manualSync.mutateAsync({ mode, projectKeys: [t.key], lookbackOverride });
+        fetched += res?.issuesFetched ?? 0;
+        updated += res?.recordsAdded ?? 0;
+      } catch { failed += 1; }
+      setRun((r0: any) => ({ ...r0, done: i + 1, fetched, updated, failed }));
+    }
+    setRun((r0: any) => ({ ...r0, currentKey: null, currentName: null, finished: true }));
   };
-  const runScopeLabel = selectedProjects.length ? `${selectedProjects.length} project${selectedProjects.length > 1 ? 's' : ''}` : `all ${enabledProjects.length} enabled`;
 
   return (
     <div style={{ marginTop: 20 }}>
@@ -522,7 +587,7 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
             <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 6, fontFamily: FB }}>Projects</label>
             <Select
               isMulti
-              isDisabled={!isConnected || manualSync.isPending}
+              isDisabled={!isConnected || syncing}
               options={projectOptions}
               value={selectedProjects}
               onChange={(v: any) => setSelectedProjects(v ? [...v] : [])}
@@ -543,7 +608,7 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
           <div>
             <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 6, fontFamily: FB }}>Date window</label>
             <Select
-              isDisabled={!isConnected || manualSync.isPending}
+              isDisabled={!isConnected || syncing}
               options={dateOptions}
               value={dateOption}
               onChange={(v: any) => setDateOption(v)}
@@ -556,37 +621,70 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
         </div>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Button appearance="primary" isDisabled={!isConnected || !syncAllowed || manualSync.isPending} iconBefore={manualSync.isPending ? () => <Spinner size="small" appearance="invert" /> : undefined} onClick={() => manualSync.mutate(runArgs('full'))}>
-            {manualSync.isPending ? 'Syncing…' : 'Run Full Sync'}
+          <Button appearance="primary" isDisabled={!isConnected || !syncAllowed || syncing} iconBefore={syncing && run?.mode === 'full' ? () => <Spinner size="small" appearance="invert" /> : undefined} onClick={() => runSync('full')}>
+            {syncing && run?.mode === 'full' ? 'Syncing…' : 'Run Full Sync'}
           </Button>
-          <Button isDisabled={!isConnected || manualSync.isPending} onClick={() => manualSync.mutate(runArgs('incremental'))}>Run Incremental</Button>
-          <Button isDisabled={!isConnected || manualSync.isPending} onClick={() => manualSync.mutate(runArgs('dry-run'))}>Dry Run</Button>
+          <Button isDisabled={!isConnected || syncing} onClick={() => runSync('incremental')}>Run Incremental</Button>
+          <Button isDisabled={!isConnected || syncing} onClick={() => runSync('dry-run')}>Dry Run</Button>
         </div>
 
-        {/* In-progress indicator */}
-        {manualSync.isPending && (
-          <div style={{ marginTop: 16 }} role="status" aria-live="polite">
-            <div style={{ fontSize: 12, color: C.textSubtle, marginBottom: 6, fontFamily: FB }}>Syncing {runScopeLabel} from Jira…</div>
-            <ProgressBar isIndeterminate ariaLabel="Sync in progress" />
+        {/* What each action does */}
+        <div style={{ display: 'flex', gap: 24, marginTop: 16, flexWrap: 'wrap' }}>
+          {[
+            { t: 'Full sync', d: "Re-pulls every issue in scope using each project's saved filter (2026+). Use to backfill or after changing filters." },
+            { t: 'Incremental', d: 'Only issues created or updated since the last successful sync. Fast — the routine refresh.' },
+            { t: 'Dry run', d: 'Counts how many issues would sync. Reads only — writes nothing.' },
+          ].map(x => (
+            <div key={x.t} style={{ flex: '1 1 200px', minWidth: 200, maxWidth: 300 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.text, fontFamily: FB }}>{x.t}</div>
+              <div style={{ fontSize: 11, color: C.textSubtlest, fontFamily: FB, marginTop: 4, lineHeight: 1.4 }}>{x.d}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Live per-project progress — which project is in flight + a real percentage */}
+        {syncing && run?.mode !== 'dry-run' && (
+          <div style={{ marginTop: 16, padding: 16, background: C.surfaceSunken, border: `1px solid ${C.border}`, borderRadius: 8 }} role="status" aria-live="polite">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              {run.currentKey && <ProjectIcon projectKey={run.currentKey} name={run.currentName || run.currentKey} size="xsmall" />}
+              <span style={{ fontSize: 13, fontWeight: 600, color: C.text, fontFamily: FB }}>Syncing {run.currentName || '…'}</span>
+              <span style={{ marginLeft: 'auto', fontSize: 12, color: C.textSubtle, fontFamily: FB, fontVariantNumeric: 'tabular-nums' }}>
+                {Math.min(run.done + 1, run.total)} of {run.total} · {Math.round((run.done / run.total) * 100)}%
+              </span>
+            </div>
+            <ProgressBar value={run.done / run.total} ariaLabel={`Sync progress ${Math.round((run.done / run.total) * 100)} percent`} />
+            {(run.fetched > 0 || run.updated > 0) && (
+              <div style={{ fontSize: 11, color: C.textSubtlest, fontFamily: FB, marginTop: 8 }}>
+                {run.fetched.toLocaleString()} fetched · {run.updated.toLocaleString()} new or updated so far
+              </div>
+            )}
           </div>
         )}
-        {manualSync.isSuccess && !manualSync.isPending && (
-          <SectionMessage appearance="success">
+        {syncing && run?.mode === 'dry-run' && (
+          <div style={{ marginTop: 16 }} role="status" aria-live="polite">
+            <div style={{ fontSize: 12, color: C.textSubtle, marginBottom: 8, fontFamily: FB }}>Estimating issues across {run.total} project{run.total === 1 ? '' : 's'}…</div>
+            <ProgressBar isIndeterminate ariaLabel="Estimating" />
+          </div>
+        )}
+        {/* Completion — neutral text for success (no green); red/amber only on failure */}
+        {run?.finished && !run.error && !run.failed && (
+          <div style={{ marginTop: 16, fontSize: 12, color: C.textSubtle, fontFamily: FB }}>
+            {run.mode === 'dry-run'
+              ? `Dry run: ${(run.estimate ?? 0).toLocaleString()} issue${run.estimate === 1 ? '' : 's'} would sync.`
+              : (run.fetched === 0 && run.updated === 0
+                  ? `Up to date — no new or changed issues across ${run.total} project${run.total === 1 ? '' : 's'}.`
+                  : `Fetched ${run.fetched.toLocaleString()} issue${run.fetched === 1 ? '' : 's'} across ${run.total} project${run.total === 1 ? '' : 's'} · ${run.updated.toLocaleString()} new or updated.`)}
+          </div>
+        )}
+        {run?.finished && !run.error && run.failed > 0 && (
+          <SectionMessage appearance="warning">
             <p style={{ fontFamily: FB, fontSize: 12 }}>
-              {manualSync.data?.estimatedCount != null
-                ? `Dry run: ${manualSync.data.estimatedCount.toLocaleString()} issues would sync`
-                : (() => {
-                    const f = manualSync.data?.issuesFetched ?? 0;
-                    const u = manualSync.data?.recordsAdded ?? 0;
-                    const p = manualSync.data?.projectsSynced;
-                    if (f === 0) return `Up to date — no new or changed issues since the last sync${p != null ? ` (${p} project${p === 1 ? '' : 's'} checked)` : ''}.`;
-                    return `Fetched ${f.toLocaleString()} issue${f === 1 ? '' : 's'}${p != null ? ` across ${p} project${p === 1 ? '' : 's'}` : ''} · ${u.toLocaleString()} new or updated.`;
-                  })()}
+              Synced {run.total - run.failed} of {run.total} project{run.total === 1 ? '' : 's'} · {run.updated.toLocaleString()} new or updated. {run.failed} project{run.failed === 1 ? '' : 's'} failed.
             </p>
           </SectionMessage>
         )}
-        {manualSync.isError && (
-          <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{manualSync.error instanceof Error ? manualSync.error.message : 'Sync failed'}</p></SectionMessage>
+        {run?.finished && run.error && (
+          <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{run.error}</p></SectionMessage>
         )}
       </div>
 
@@ -626,22 +724,25 @@ function ProjectsTab({ projects, onManage }: any) {
               {['Key', 'Name', 'Sync', 'Catalyst target', 'Issues cached', 'Manage', 'Status'].map(h => <th key={h} style={TH}>{h}</th>)}
             </tr></thead>
             <tbody>
-              {filtered.map((p: any, i: number) => (
-                <tr key={p.key} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                  <td style={TD}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                      <ProjectIcon projectKey={p.key} name={p.name} size="xsmall" />
-                      <code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
-                    </span>
-                  </td>
-                  <td style={{ ...TD, fontWeight: 500 }}>{p.name}</td>
-                  <td style={TD}><Lozenge appearance={p.sync_enabled ? 'success' : 'default'}>{p.sync_enabled ? 'ON' : 'OFF'}</Lozenge></td>
-                  <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
-                  <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
-                  <td style={TD}><Button appearance="subtle" onClick={() => onManage(p.key)}>Manage</Button></td>
-                  <td style={TD}><Lozenge appearance={p.issues_cached > 0 ? 'success' : 'default'}>{p.issues_cached > 0 ? 'Synced' : 'No data'}</Lozenge></td>
-                </tr>
-              ))}
+              {filtered.map((p: any, i: number) => {
+                const isProduct = PRODUCTS_MODULE_PROJECTS.has(p.key);
+                return (
+                  <tr key={p.key} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
+                    <td style={TD}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                        <ProjectIcon projectKey={p.key} name={p.name} size="xsmall" />
+                        <code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
+                      </span>
+                    </td>
+                    <td style={{ ...TD, fontWeight: 500 }}>{p.name}</td>
+                    <td style={TD}><StatusPill>{isProduct ? 'Products' : (p.sync_enabled ? 'On' : 'Off')}</StatusPill></td>
+                    <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
+                    <td style={TD}>{p.issues_cached > 0 ? p.issues_cached.toLocaleString() : '—'}</td>
+                    <td style={TD}><Button appearance="subtle" onClick={() => onManage(p.key)}>Manage</Button></td>
+                    <td style={TD}><StatusPill>{isProduct ? 'Products module' : (p.issues_cached > 0 ? 'Synced' : 'No data')}</StatusPill></td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -654,7 +755,7 @@ function TypeMappingTab() {
   return (
     <div style={{ marginTop: 20 }}>
       <SectionMessage appearance="information" title="Type Mappings">
-        <p style={{ fontFamily: FB, fontSize: 12 }}>Jira issue types map to Catalyst work item types. All land in <code style={{ fontFamily: FC }}>ph_issues</code>; the type drives icon, hierarchy, and field availability.</p>
+        <p style={{ fontFamily: FB, fontSize: 12 }}>Jira issue types map to Catalyst work item types. Most land in <code style={{ fontFamily: FC }}>ph_issues</code> (Projects module); the type drives icon, hierarchy, and field availability. <strong>Business Request</strong> is the exception — it is the Products-module root and routes to <code style={{ fontFamily: FC }}>business_requests</code>, never <code style={{ fontFamily: FC }}>ph_issues</code>.</p>
       </SectionMessage>
       <div style={{ marginTop: 20, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -666,8 +767,8 @@ function TypeMappingTab() {
               <tr key={t.jira} style={{ borderBottom: i < TYPE_MAP.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><JiraIssueTypeIcon type={t.catalyst as any} size={16} />{t.jira}</span></td>
                 <td style={TD}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><JiraIssueTypeIcon type={t.catalyst as any} size={16} />{t.catalyst}</span></td>
-                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>ph_issues</td>
-                <td style={TD}><Lozenge appearance="success">Mapped</Lozenge></td>
+                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{t.table}</td>
+                <td style={TD}><StatusPill>Mapped</StatusPill></td>
               </tr>
             ))}
           </tbody>
@@ -693,7 +794,7 @@ function StatusMappingTab() {
               <tr key={s.category} style={{ borderBottom: i < STATUS_MAP.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}>{s.category}</td>
                 <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{s.catalyst}</td>
-                <td style={TD}><Lozenge appearance={s.terminal ? 'success' : 'default'}>{s.terminal ? 'Yes' : 'No'}</Lozenge></td>
+                <td style={TD}><StatusPill>{s.terminal ? 'Yes' : 'No'}</StatusPill></td>
               </tr>
             ))}
           </tbody>
@@ -728,7 +829,7 @@ function FieldMappingTab() {
               <tr key={f.jira} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}>{f.jira}</td>
                 <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{f.catalyst}</td>
-                <td style={TD}><Lozenge appearance={f.mapped ? 'success' : 'default'}>{f.mapped ? 'Mapped' : 'Raw JSON'}</Lozenge></td>
+                <td style={TD}><StatusPill>{f.mapped ? 'Mapped' : 'Raw JSON'}</StatusPill></td>
               </tr>
             ))}
           </tbody>
@@ -788,8 +889,8 @@ function BackupAndLogsTab({ syncLogs }: { syncLogs: any[] }) {
                 return (
                   <tr key={log.id ?? i} style={{ borderBottom: i < syncLogs.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                     <td style={{ ...TD, fontSize: 12 }}>{when}</td>
-                    <td style={TD}><Lozenge appearance="default">{log.sync_type || 'sync'}</Lozenge></td>
-                    <td style={TD}><Lozenge appearance={log.status === 'success' ? 'success' : log.status === 'warning' ? 'moved' : 'removed'}>{log.status}</Lozenge></td>
+                    <td style={TD}><StatusPill>{log.sync_type || 'sync'}</StatusPill></td>
+                    <td style={TD}><StatusPill tone={log.status === 'error' || log.status === 'failed' ? 'danger' : 'neutral'}>{log.status}</StatusPill></td>
                     <td style={{ ...TD, fontSize: 12 }}>{log.issues_upserted ?? 0}</td>
                   </tr>
                 );

@@ -14,6 +14,7 @@ import { ReleaseEditModal } from '@/components/releases/ReleaseEditModal';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
 import { ReleaseDeleteDialog } from '@/components/releases/ReleaseDeleteDialog';
+import { ReleaseMergeDialog } from '@/components/releases/ReleaseMergeDialog';
 import {
   makeReleaseNameCell,
   makeStatusCell,
@@ -99,6 +100,8 @@ export function ReleasesPage() {
   const [confirmingRelease, setConfirmingRelease] = useState<CellRelease | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deletingRelease, setDeletingRelease] = useState<CellRelease | null>(null);
+  const [isMergeDialogOpen, setIsMergeDialogOpen] = useState(false);
+  const [mergingRelease, setMergingRelease] = useState<CellRelease | null>(null);
 
   const progressByVersion = useMemo(() => {
     const m = new Map<string, ProgressRow>();
@@ -168,6 +171,7 @@ export function ReleasesPage() {
       (r) => { setArchivingRelease(r); setIsArchiveDialogOpen(true); },
       (r) => { setConfirmingRelease(r); setIsConfirmModalOpen(true); },
       (r) => { setDeletingRelease(r); setIsDeleteDialogOpen(true); },
+      (r) => { setMergingRelease(r); setIsMergeDialogOpen(true); },
     ),
   ];
 
@@ -240,7 +244,17 @@ export function ReleasesPage() {
           />
         </div>
         <div style={{ flex: 1 }} />
-        <Button appearance="subtle">
+        <Button
+          appearance="subtle"
+          onClick={() => {
+            // Open feedback modal or toast
+            const feedback = prompt('Please share your feedback about the Releases feature:');
+            if (feedback) {
+              // Placeholder: In production, integrate with feedback service
+              console.log('Feedback:', feedback);
+            }
+          }}
+        >
           Give feedback
         </Button>
         <Button appearance="primary" onClick={() => setIsCreateModalOpen(true)}>
@@ -308,6 +322,16 @@ export function ReleasesPage() {
           projectKey={projectKey}
           onClose={() => { setIsDeleteDialogOpen(false); setDeletingRelease(null); }}
           onSuccess={() => setSuccessFlag(`Release "${deletingRelease.name}" has been deleted.`)}
+        />
+      )}
+
+      {mergingRelease && (
+        <ReleaseMergeDialog
+          isOpen={isMergeDialogOpen}
+          release={mergingRelease as any}
+          projectKey={projectKey}
+          onClose={() => { setIsMergeDialogOpen(false); setMergingRelease(null); }}
+          onSuccess={() => setSuccessFlag(`Release "${mergingRelease.name}" has been merged.`)}
         />
       )}
     </div>

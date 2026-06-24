@@ -22,7 +22,6 @@ import { AtlaskitPageShell } from '@/components/ads';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronUpIcon from '@atlaskit/icon/glyph/chevron-up';
 import SearchIcon from '@atlaskit/icon/glyph/search';
-import MoreIcon from '@atlaskit/icon/glyph/more';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done';
@@ -84,14 +83,28 @@ import {
   MenuItemRow,
   EmptyRowAdd,
   InlineEmptyOverlay,
+  TimelineEmptyState,
   ViewSettingsPanel,
   TimelineBarPopover,
 } from './primitives';
 import { EditDatesModal } from './EditDatesModal';
 import { SidebarRow } from './SidebarRow';
 import { TimelineBottomBar } from './TimelineBottomBar';
+import {
+  DependencyColumnHeaders,
+  DependencyColumnsBody,
+  DependencyAggregatePopover,
+  RowDependencyCard,
+  DEP_PANEL_W,
+} from './dependencies/DependencyUI';
+import { useTimelineDependencies } from './dependencies/useTimelineDependencies';
+import { aggregateGroup, relatedKeys, keysWithAnyDependency } from './dependencies/aggregate';
+import { getEntry } from './dependencies/normalize';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+
+/** Sentinel rowKey used by the group-header band's aggregate dependency popover. */
+const GROUP_DEP_KEY = '__group__';
 
 const TODAY = new Date();
 
@@ -109,7 +122,6 @@ export default function TimelineView(props: TimelineViewProps) {
     detailRouteOwnerKey,
     mutations,
     enableRowCheckbox = true,
-    enableRowProgress = true,
     enableInlineCreate = true,
     enableRowMenu = true,
     enableBarDrag = true,
@@ -122,10 +134,16 @@ export default function TimelineView(props: TimelineViewProps) {
     childrenOnlyOnTopLevel = false,
     menuVariant = 'default',
     detailEntityKind,
+    buildDependenciesRoute,
+    locatedKey,
   } = props;
 
   const navigate = useNavigate();
   const { workItemTypes, enableSavedFilters, savedFilters = [] } = filterOptions;
+
+  /* Jira locate-in-timeline highlight (magenta). Set from the locatedKey
+     prop, cleared when the user opens another work item. */
+  const [locatedActive, setLocatedActive] = useState<string | null>(null);
 
   /* row selection */
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -142,6 +160,7 @@ export default function TimelineView(props: TimelineViewProps) {
   const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; displayType: string } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
   const openDetail = useCallback((issue: TimelineIssue) => {
+    setLocatedActive(null);
     const itemType = resolveItemType(issue);
     // For task entities the detail panel reads from `tasks` by row UUID.
     // For release entities the detail panel reads from `rh_releases` by row UUID.
@@ -305,8 +324,16 @@ export default function TimelineView(props: TimelineViewProps) {
   const statusBtnRef = useRef<HTMLButtonElement>(null);
   const assigneeBtnRef = useRef<HTMLButtonElement>(null);
   const quickBtnRef = useRef<HTMLButtonElement>(null);
-  const moreBtnRef = useRef<HTMLButtonElement>(null);
   const viewSettingsBtnRef = useRef<HTMLButtonElement>(null);
+
+  /* dependency mode (Show dependencies / saved-view "Dependencies") */
+  const depBodyRef = useRef<HTMLDivElement>(null);
+  const viewMenuBtnRef = useRef<HTMLButtonElement>(null);
+  const [depMode, setDepMode] = useState(false);
+  const [viewMenuOpen, setViewMenuOpen] = useState(false);
+  const [depFilterKey, setDepFilterKey] = useState<string | null>(null);
+  const [depCard, setDepCard] = useState<{ key: string; anchor: DOMRect } | null>(null);
+  const [depPopover, setDepPopover] = useState<{ key: string; dir: 'blockedBy' | 'blocks'; anchor: DOMRect } | null>(null);
 
   const pxPerDay = ZOOM_PX_PER_DAY[zoom];
   const dateRange = useMemo(() => computeDateRange(tree), [tree]);
@@ -315,6 +342,59 @@ export default function TimelineView(props: TimelineViewProps) {
   const todayLeft = daysBetween(dateRange.start, TODAY) * pxPerDay;
 
   const allRows = useMemo(() => flattenTree(tree, collapsed), [tree, collapsed]);
+
+  /* ── dependency data (single source of truth: ph_issue_dependencies) ── */
+  const projectKeysInTree = useMemo(() => {
+    const s = new Set<string>();
+    const walk = (l: TimelineIssue[]) => l.forEach(n => { if (n.projectKey) s.add(n.projectKey); walk(n.children); });
+    walk(tree);
+    return Array.from(s);
+  }, [tree]);
+  const deps = useTimelineDependencies(projectKeysInTree);
+  const keyToIssue = useMemo(() => {
+    const m = new Map<string, TimelineIssue>();
+    const walk = (l: TimelineIssue[]) => l.forEach(n => { m.set(n.issueKey, n); walk(n.children); });
+    walk(tree);
+    /* Enrich with dependency targets that aren't in the loaded (2026-gated)
+       tree — synthetic reference rows so the dependency popovers render the
+       same icon + summary on BOTH ends. Type is real (from ph_issues) or null
+       (no icon — never a fabricated default). */
+    for (const [k, meta] of deps.issueMeta) {
+      if (m.has(k)) continue;
+      m.set(k, {
+        id: '',
+        issueKey: k,
+        projectKey: k.includes('-') ? k.split('-')[0] : '',
+        issueType: meta.issueType ?? '',
+        summary: meta.summary,
+        status: meta.status ?? '',
+        statusCategory: null,
+        priority: null,
+        assigneeDisplayName: meta.assigneeDisplayName,
+        assigneeAvatarUrl: resolveAvatarUrl(meta.assigneeDisplayName),
+        parentKey: null,
+        startDate: null,
+        dueDate: meta.dueDate,
+        epicColor: null,
+        fixVersions: [],
+        sprintEndDate: meta.sprintEndDate,
+        sprintName: meta.sprintName,
+        releaseDate: meta.releaseDate,
+        releaseName: meta.releaseName,
+        children: [],
+      });
+    }
+    return m;
+  }, [tree, deps.issueMeta]);
+  const depCandidateOptions = useMemo(() => {
+    const out: { label: string; value: string; issueType: string | null }[] = [];
+    const walk = (l: TimelineIssue[]) => l.forEach(n => {
+      if (!n.isGroup) out.push({ label: `${n.issueKey} — ${n.summary || '(no summary)'}`, value: n.issueKey, issueType: n.issueType ?? null });
+      walk(n.children);
+    });
+    walk(tree);
+    return out;
+  }, [tree]);
 
   const assigneeOptions = useMemo(() => {
     const seen = new Set<string>();
@@ -408,8 +488,49 @@ export default function TimelineView(props: TimelineViewProps) {
         }
       } catch {}
     }
+    /* Dependency mode row filter.
+       - Focused (depFilterKey): keep the focused item + its directly-related
+         dependency items only.
+       - Otherwise: keep ONLY tickets that have at least one dependency edge
+         (plus their ancestors, so parent rows stay for tree context). */
+    if (depMode) {
+      if (depFilterKey) {
+        const keep = relatedKeys(deps.index, depFilterKey);
+        result = result.filter(({ issue }) => keep.has(issue.issueKey));
+      } else {
+        const keep = keysWithAnyDependency(
+          allRows.map(({ issue }) => ({ issueKey: issue.issueKey, parentKey: issue.parentKey })),
+          deps.index,
+        );
+        result = result.filter(({ issue }) => keep.has(issue.issueKey));
+      }
+    }
     return result;
-  }, [allRows, searchQuery, issueTypeFilter, statusFilter, quickFilter, activeSavedFilter, assigneeFilter]);
+  }, [allRows, searchQuery, issueTypeFilter, statusFilter, quickFilter, activeSavedFilter, assigneeFilter, depMode, depFilterKey, deps.index]);
+
+  /* Per-row dependency counts. Jira shows each work item's OWN direct edges
+     (verified: a collapsed epic still shows only its own deps, never a subtree
+     roll-up). Only the group-header band aggregates — see groupDepCounts. */
+  const depCounts = useMemo(() => {
+    const m = new Map<string, { blockedBy: number; blocks: number }>();
+    if (!depMode) return m;
+    for (const { issue } of rows) {
+      const entry = getEntry(deps.index, issue.issueKey);
+      m.set(issue.issueKey, { blockedBy: entry.blockedBy.length, blocks: entry.blocks.length });
+    }
+    return m;
+  }, [depMode, rows, deps.index]);
+
+  /* Group-band roll-up ("N Work items") — total dependency edges across every
+     visible row, deduped by edge. Mirrors Jira's space/type group header. */
+  const groupDeps = useMemo(
+    () => aggregateGroup(rows.map(r => r.issue.issueKey), deps.index),
+    [rows, deps.index],
+  );
+  const groupDepCounts = useMemo(
+    () => ({ blockedBy: groupDeps.blockedBy.length, blocks: groupDeps.blocks.length }),
+    [groupDeps],
+  );
 
   const headerCols = useMemo(() => buildHeaderCols(dateRange.start, dateRange.end, zoom, pxPerDay), [dateRange, zoom, pxPerDay]);
   const subHeaderCols = useMemo(() => buildSubHeaderCols(dateRange.start, dateRange.end, zoom, pxPerDay), [dateRange, zoom, pxPerDay]);
@@ -430,6 +551,7 @@ export default function TimelineView(props: TimelineViewProps) {
     requestAnimationFrame(() => {
       if (headerScrollRef.current) headerScrollRef.current.scrollLeft = grid.scrollLeft;
       if (sidebarBodyRef.current) sidebarBodyRef.current.scrollTop = grid.scrollTop;
+      if (depBodyRef.current) depBodyRef.current.scrollTop = grid.scrollTop;
       if (todayLineRef.current) {
         const x = todayLeft - grid.scrollLeft;
         todayLineRef.current.style.left = x + 'px';
@@ -446,6 +568,7 @@ export default function TimelineView(props: TimelineViewProps) {
     isSyncingScroll.current = true;
     requestAnimationFrame(() => {
       if (gridRef.current) gridRef.current.scrollTop = sidebar.scrollTop;
+      if (depBodyRef.current) depBodyRef.current.scrollTop = sidebar.scrollTop;
       isSyncingScroll.current = false;
     });
   }, []);
@@ -588,6 +711,52 @@ export default function TimelineView(props: TimelineViewProps) {
     setCollapsed(new Set(parentKeys));
   }, [hubKey, parentKeys]);
 
+  /* ── Jira "Locate work item in timeline" ──────────────────────────────
+     locatedKey arrives via ?locate=<key>. Highlight the row (magenta title
+     pill) + its ancestor chevrons (magenta), expand every ancestor so the
+     row is visible, and scroll it into view. The highlight persists until
+     the user opens another work item (cleared in openDetail). */
+
+  /* Ancestor keys of the located row (every parent up the chain). */
+  const locatedAncestors = useMemo(() => {
+    const out = new Set<string>();
+    if (!locatedActive) return out;
+    const path: string[] = [];
+    const walk = (list: TimelineIssue[]): boolean => {
+      for (const n of list) {
+        if (n.issueKey === locatedActive) return true;
+        if (n.children.length) {
+          path.push(n.issueKey);
+          if (walk(n.children)) return true;
+          path.pop();
+        }
+      }
+      return false;
+    };
+    if (walk(tree)) path.forEach(k => out.add(k));
+    return out;
+  }, [tree, locatedActive]);
+
+  /* Sync internal state from the prop (re-fires if the user re-locates). */
+  useEffect(() => { setLocatedActive(locatedKey ?? null); }, [locatedKey]);
+
+  /* Expand ancestors + scroll the located row into view. Runs AFTER the
+     default-collapse effect above so the expand isn't clobbered. */
+  useEffect(() => {
+    if (!locatedActive) return;
+    if (locatedAncestors.size === 0) return;
+    setCollapsed(prev => {
+      const next = new Set(prev);
+      locatedAncestors.forEach(k => next.delete(k));
+      return next;
+    });
+    const t = setTimeout(() => {
+      const el = sidebarBodyRef.current?.querySelector(`[data-row-key="${locatedActive}"]`);
+      el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }, 120);
+    return () => clearTimeout(t);
+  }, [locatedActive, locatedAncestors]);
+
   const scrollToToday = useCallback(() => {
     if (!gridRef.current) return;
     gridRef.current.scrollLeft = todayLeft - gridRef.current.clientWidth / 2;
@@ -636,12 +805,10 @@ export default function TimelineView(props: TimelineViewProps) {
     );
   }
 
-  if (error) {
+  if (error || tree.length === 0) {
     return (
       <AtlaskitPageShell flush chromeBand={chromeBand}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-          <p style={{ color: 'var(--ds-text-danger, #AE2A19)', fontSize: 14 }}>Failed to load timeline data.</p>
-        </div>
+        <TimelineEmptyState projectKey={hubLabel} />
       </AtlaskitPageShell>
     );
   }
@@ -734,6 +901,45 @@ export default function TimelineView(props: TimelineViewProps) {
               />
             );
           })()}
+
+          {/* Hierarchy vs Dependencies — mutually-exclusive view toggle, sat
+              next to the Filter button. "Show hierarchy" = full tree (all
+              items). "Show dependencies" = only items that have a dependency
+              edge (ancestors kept for context); also expands the tree so the
+              dependency items are visible. */}
+          <div role="group" aria-label="Timeline view mode" style={{
+            display: 'flex', alignItems: 'center', height: 32, flexShrink: 0,
+            border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, overflow: 'hidden',
+          }}>
+            {([
+              { id: 'hierarchy', label: 'Show hierarchy', active: !depMode },
+              { id: 'dependencies', label: 'Show dependencies', active: depMode },
+            ] as const).map((opt, i) => (
+              <button
+                key={opt.id}
+                type="button"
+                aria-pressed={opt.active}
+                onClick={() => {
+                  if (opt.id === 'dependencies') { setDepMode(true); setDepFilterKey(null); expandAll(); }
+                  else { setDepMode(false); setDepFilterKey(null); }
+                }}
+                style={{
+                  display: 'flex', alignItems: 'center', height: '100%', padding: '0 12px',
+                  border: 'none',
+                  borderLeft: i === 0 ? 'none' : '1px solid var(--ds-border, #DFE1E6)',
+                  background: opt.active ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface, #FFFFFF)',
+                  color: opt.active ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)',
+                  fontWeight: opt.active ? 600 : 400,
+                  fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap',
+                  fontFamily: 'var(--ds-font-family-body)',
+                }}
+                onMouseEnter={e => { if (!opt.active) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                onMouseLeave={e => { if (!opt.active) e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
 
           {/* type filter — LEGACY (now hidden, replaced above) */}
           {false && (<>
@@ -962,31 +1168,6 @@ export default function TimelineView(props: TimelineViewProps) {
           </div>
           </>)}
 
-          {/* more dropdown */}
-          <div style={{ position: 'relative' }}>
-            <button
-              ref={moreBtnRef}
-              onClick={() => toggleDropdown('more')}
-              aria-haspopup="menu"
-              aria-expanded={openDropdown === 'more'}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: 32, height: 32, border: '1px solid var(--ds-border, #DFE1E6)',
-                borderRadius: 3, background: 'var(--ds-surface, #FFFFFF)',
-                cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)',
-              }}
-              aria-label="More filters"
-            >
-              <MoreIcon label="" size="small" />
-            </button>
-            <PortalMenu isOpen={openDropdown === 'more'} onClose={closeDropdown} triggerRef={moreBtnRef} minWidth={200}>
-              <MenuItemRow label="Show hierarchy" onClick={closeDropdown} />
-              <MenuItemRow label="Show dependencies" onClick={closeDropdown} />
-              <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
-              {hasActiveFilters && <MenuItemRow label="Clear all filters" onClick={() => { clearAllFilters(); closeDropdown(); }} />}
-            </PortalMenu>
-          </div>
-
           {/* active filter chips */}
           {activeSavedFilter && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 8px',
@@ -1047,6 +1228,42 @@ export default function TimelineView(props: TimelineViewProps) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+          {/* view-mode selector (Jira saved-views parity) — actually drives the timeline */}
+          <div style={{ position: 'relative' }}>
+            <button
+              ref={viewMenuBtnRef}
+              onClick={() => setViewMenuOpen(v => !v)}
+              aria-haspopup="menu"
+              aria-expanded={viewMenuOpen}
+              aria-label="Saved views"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px',
+                border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+                background: viewMenuOpen ? 'var(--ds-background-neutral-hovered, #EBECF0)' : 'var(--ds-surface, #FFFFFF)',
+                cursor: 'pointer', color: 'var(--ds-text, #172B4D)', fontSize: 13,
+                fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+              }}
+            >
+              {depMode ? 'Dependencies' : 'Basic view'}
+              <ChevronDownIcon label="" size="small" />
+            </button>
+            <PortalMenu isOpen={viewMenuOpen} onClose={() => setViewMenuOpen(false)} triggerRef={viewMenuBtnRef} minWidth={224}>
+              <div style={{ padding: '4px 12px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: '0.06em', fontFamily: 'var(--ds-font-family-body)' }}>
+                Saved views
+              </div>
+              <MenuItemRow label="Dependencies" isChecked={depMode} onClick={() => { setDepMode(true); setViewMenuOpen(false); }} />
+              <MenuItemRow label="Basic view" isChecked={!depMode} onClick={() => { setDepMode(false); setDepFilterKey(null); setViewMenuOpen(false); }} />
+              <MenuItemRow label="Capacity view" onClick={() => { setDepMode(false); setDepFilterKey(null); setViewMenuOpen(false); }} />
+              <MenuItemRow label="Top-level view" onClick={() => { setDepMode(false); setDepFilterKey(null); collapseAll(); setViewMenuOpen(false); }} />
+              <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+              <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtlest, #8590A2)', fontFamily: 'var(--ds-font-family-body)' }} aria-disabled>
+                Manage saved views (coming soon)
+              </div>
+              <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtlest, #8590A2)', fontFamily: 'var(--ds-font-family-body)' }} aria-disabled>
+                Create a new view (coming soon)
+              </div>
+            </PortalMenu>
+          </div>
           <button
             ref={viewSettingsBtnRef}
             onClick={() => setViewSettingsOpen(v => !v)}
@@ -1219,7 +1436,6 @@ export default function TimelineView(props: TimelineViewProps) {
                     buildIssueDetailRoute={buildIssueDetailRoute}
                     allItems={tree}
                     enableCheckbox={enableRowCheckbox}
-                    enableProgress={enableRowProgress}
                     enableInlineCreate={enableInlineCreate}
                     enableMenu={enableRowMenu}
                     mutations={mutations}
@@ -1228,6 +1444,8 @@ export default function TimelineView(props: TimelineViewProps) {
                     childrenOnlyOnTopLevel={childrenOnlyOnTopLevel}
                     menuVariant={menuVariant}
                     siblings={siblings}
+                    isLocated={locatedActive === issue.issueKey}
+                    isLocatedAncestor={locatedAncestors.has(issue.issueKey)}
                   />
                 );
               })}
@@ -1328,6 +1546,32 @@ export default function TimelineView(props: TimelineViewProps) {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* ── dependency columns (Blocked by / Blocks) — depMode only ── */}
+        {depMode && !isNarrow && !sidebarHidden && (
+          <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
+            <DependencyColumnHeaders height={doubleHeaderH} />
+            <DependencyColumnsBody
+              ref={depBodyRef}
+              rows={rows}
+              counts={depCounts}
+              groupCounts={groupDepCounts}
+              groupHeight={36}
+              showReleases={showReleases}
+              releasesCollapsed={releasesCollapsed}
+              showCreateEpicRow={showCreateEpicRow}
+              onOpenAggregate={(key, _dir, anchor) => {
+                // Every work item (leaf OR parent epic) opens the rich card —
+                // matches Jira, which shows each item's own deps in the columnar card.
+                setDepCard({ key, anchor }); setDepPopover(null);
+              }}
+              onOpenGroupAggregate={(dir, anchor) => {
+                // Group-header band opens the aggregate "Dependencies (...)" list.
+                setDepPopover({ key: GROUP_DEP_KEY, dir, anchor }); setDepCard(null);
+              }}
+            />
           </div>
         )}
 
@@ -1656,6 +1900,47 @@ export default function TimelineView(props: TimelineViewProps) {
           issue={gridDatesIssue}
           onClose={() => setGridDatesIssue(null)}
           onSave={(start, due) => mutations.onUpdateDates!(gridDatesIssue.issueKey, start, due)}
+        />
+      )}
+
+      {/* ── dependency aggregate popover (group-header band roll-up) ── */}
+      {depPopover && (() => {
+        if (depPopover.key !== GROUP_DEP_KEY) return null;
+        const relations = depPopover.dir === 'blockedBy' ? groupDeps.blockedBy : groupDeps.blocks;
+        const title = depPopover.dir === 'blockedBy' ? 'Dependencies (blocked by)' : 'Dependencies (blocks)';
+        return (
+          <DependencyAggregatePopover
+            title={title}
+            dir={depPopover.dir}
+            relations={relations}
+            keyToIssue={keyToIssue}
+            anchor={depPopover.anchor}
+            onClose={() => setDepPopover(null)}
+            onOpenItem={(k) => { setDepPopover(null); navigate(buildDependenciesRoute ? buildDependenciesRoute(k) : buildIssueDetailRoute(k)); }}
+          />
+        );
+      })()}
+
+      {/* ── row dependency card (leaf rows) ── */}
+      {depCard && (
+        <RowDependencyCard
+          rowKey={depCard.key}
+          index={deps.index}
+          keyToIssue={keyToIssue}
+          candidateOptions={depCandidateOptions.filter(o => o.value !== depCard.key)}
+          anchor={depCard.anchor}
+          isFiltered={depFilterKey === depCard.key}
+          onClose={() => setDepCard(null)}
+          onRemove={deps.removeDependency}
+          onAdd={(direction, otherKey) => deps.addDependency({
+            rowKey: depCard.key,
+            direction,
+            otherKey,
+            projectKey: keyToIssue.get(depCard.key)?.projectKey ?? projectKeysInTree[0] ?? '',
+          })}
+          onShowOnCanvas={(k) => { setDepCard(null); navigate(buildDependenciesRoute ? buildDependenciesRoute(k) : buildIssueDetailRoute(k)); }}
+          onFilter={(k) => setDepFilterKey(k)}
+          onClearFilter={() => setDepFilterKey(null)}
         />
       )}
 

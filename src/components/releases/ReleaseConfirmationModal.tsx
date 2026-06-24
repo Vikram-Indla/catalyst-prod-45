@@ -14,6 +14,7 @@ import Flag from '@atlaskit/flag';
 import { useUpdateRelease } from '@/hooks/releases/useUpdateRelease';
 import { useReleases } from '@/hooks/releases/useReleases';
 import { Release } from '@/types/phase3-releases';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReleaseConfirmationModalProps {
   isOpen: boolean;
@@ -23,14 +24,18 @@ interface ReleaseConfirmationModalProps {
   onSuccess?: (release: Release) => void;
 }
 
-// Mock unresolved count - in real implementation would fetch from API
-// GET /api/releases/:id/issues?status=unresolved
-const getUnresolvedCount = async (releaseId: string): Promise<number> => {
+// Unresolved = todo + in_progress work items for this release's Jira version,
+// computed from vw_release_jira_progress (matched by jira_version_id).
+const getUnresolvedCount = async (jiraVersionId?: string): Promise<number> => {
+  if (!jiraVersionId) return 0;
   try {
-    const res = await fetch(`/api/releases/${releaseId}/issues?status=unresolved`);
-    if (!res.ok) return 0;
-    const data = await res.json();
-    return data.count || 0;
+    const { data, error } = await supabase
+      .from('vw_release_jira_progress')
+      .select('todo, in_progress')
+      .eq('version_id', jiraVersionId)
+      .maybeSingle();
+    if (error || !data) return 0;
+    return (data.todo ?? 0) + (data.in_progress ?? 0);
   } catch {
     return 0;
   }
@@ -59,9 +64,9 @@ export function ReleaseConfirmationModal({
   // Fetch unresolved issues count
   useEffect(() => {
     if (isOpen) {
-      getUnresolvedCount(release.id).then(setUnresolvedCount);
+      getUnresolvedCount((release as any).jira_version_id).then(setUnresolvedCount);
     }
-  }, [isOpen, release.id]);
+  }, [isOpen, release]);
 
   // Filter to unreleased versions, exclude self
   const unreleaseVersionOptions = useMemo(() => {
@@ -73,8 +78,8 @@ export function ReleaseConfirmationModal({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Must select action
-    if (!actionType) {
+    // Must select action only when there are unresolved items to handle
+    if (unresolvedCount > 0 && !actionType) {
       newErrors.action = 'You must select how to handle unresolved items.';
     }
 
@@ -97,22 +102,13 @@ export function ReleaseConfirmationModal({
     if (!validate()) return;
 
     try {
-      // If move action selected, move issues first
-      if (actionType === 'move' && moveToReleaseId) {
-        const moveRes = await fetch(`/api/releases/${release.id}/move-issues`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ target_release_id: moveToReleaseId }),
-        });
-        if (!moveRes.ok) {
-          throw new Error('Failed to move issues to target release');
-        }
-      }
-
-      // Update release status to released
+      // Catalyst-local release: mark released + record actual date.
+      // (Work items link to Jira versions via ph_issues.sprint_release JSONB, which
+      //  Catalyst does not reassign while wh-jira-sync is parked — so no move step.)
       const payload: any = {
         status: 'released',
         release_date: releaseDate,
+        actual_date: releaseDate,
       };
 
       updateMutation.mutate(payload, {
