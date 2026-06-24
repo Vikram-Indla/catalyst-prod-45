@@ -4,6 +4,51 @@ These rules apply to every implementation task. No exceptions. **Applies to ALL 
 
 ---
 
+## 🌐 SUPABASE ENVIRONMENTS
+
+| Environment | Project ID | Purpose | CLI Command |
+|---|---|---|---|
+| **Production** | `lmqwtldpfacrrlvdnmld` | Live data, serves jira-sync, API | `supabase link --project-ref lmqwtldpfacrrlvdnmld` |
+| **Staging** | `cyijbdeuehohvhnsywig` | Pre-prod testing, backfill source for local dev | `supabase link --project-ref cyijbdeuehohvhnsywig` |
+| **Local** | `localhost:54322` (via `supabase start`) | Dev machine, RLS testing | `supabase start && supabase db push --local` |
+
+**Sync staging → local:**
+```bash
+supabase link --project-ref cyijbdeuehohvhnsywig
+supabase db pull
+supabase start
+supabase db push --local
+```
+
+### 🔑 READING STAGING DATA — USE THE CLI, NOT THE MCP (learned 2026-06-24, P0)
+
+**The Supabase MCP (`mcp__*__execute_sql`, `list_projects`) is org-scoped to PRODUCTION's org (`wxrdscstztinvcjdcgka`). Staging lives in a SEPARATE org (`xtrdfmquqljdkpxyltmn`).** So MCP returns "You do not have permission" for staging and `list_projects` shows only prod. This is the integration boundary, NOT a missing-access bug.
+
+**To query REMOTE staging, use the authenticated Supabase CLI (staging is the linked project):**
+```bash
+# Runs against the LINKED remote project (staging) via Management API — NOT local.
+supabase db query --linked "SELECT count(*) FROM ph_issues WHERE source='jira';"
+```
+- `supabase db query "<sql>"` WITHOUT `--linked` hits the LOCAL db (localhost:54322) — easy to misread as "remote is empty".
+- `--linked` = remote linked project. `--db-url "<percent-encoded conn>"` = any explicit db.
+- `supabase projects list` shows both orgs (CLI auth is broader than the MCP token).
+
+**Tool-selection rule:** PROD reads → Supabase MCP (`execute_sql` on `lmqwtldpfacrrlvdnmld`). STAGING reads → `supabase db query --linked`. **Never conclude "staging is empty / rows didn't land" from an MCP permission error or an anon-key REST call** (RLS hides everything) — those are access artifacts, not data truths. Confirm with `supabase db query --linked` before claiming any staging data state. (2026-06-24: a stale-deploy `syncedIssues:0` + anon RLS reads led to a false "trigger-trap, sync broken" conclusion; `supabase db query --linked` showed 2003 real jira issues across 7 projects — sync was working the whole time.)
+
+### 🟢 STAGING-FIRST DEVELOPMENT (P0, Non-Negotiable — added 2026-06-24)
+
+**All development and feature building MUST happen on STAGING first, never directly on production.** Schema changes, migrations, edge functions, RLS policies, and any new feature are built and validated against staging (`cyijbdeuehohvhnsywig`) before any promotion to production (`lmqwtldpfacrrlvdnmld`).
+
+- **Default target for every build task = staging.** Probe, migrate, deploy edge functions, and test against staging until the feature is verified.
+- **Production is promotion-only.** Changes reach production only after they pass on staging — never as the first write.
+- **Staging Supabase MCP** is the connected MCP server for staging operations. Use it (and the staging PAT below) for all `apply_migration`, `execute_sql`, `deploy_edge_function`, `list_tables`, etc. during development.
+- **Staging Supabase PAT:** `sbp_05d53b5a792ee45af388a71867b191a792accfde`
+  - ⚠️ This is a full-access management token. If this repo is shared, rotate the PAT and move it to a local `.env` / MCP config that is NOT committed. Do not assume it is safe in a tracked file.
+
+**Severity:** P0 — building directly on production risks corrupting live data. Staging is the build surface; production is the promotion target.
+
+---
+
 ## 🔤 FONTS BANNED EXCEPT ADS (P0, Non-Negotiable — added 2026-06-09)
 
 **Only the Atlassian Design System CDN and Atlassian-hosted font families are allowed in Catalyst. Every other font source — Google Fonts, Typekit, Fontsource npm packages, self-hosted woff2, system stacks declared as primary — is permanently banned across CSS, TSX, HTML, inline styles, npm dependencies, and CDN links.**

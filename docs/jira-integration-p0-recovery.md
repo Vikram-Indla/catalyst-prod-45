@@ -61,4 +61,6 @@ Production route (`JiraSyncPage.tsx`) findings:
 
 ## Status log
 - Connection pipeline verified working on staging (test-connection 200, manual-sync recordsAdded:100).
+- **2026-06-24 verified via `supabase db query --linked`:** staging `ph_issues` holds **2003 jira issues across 7 projects** (BAU 1510, MWR 177, IN 84, IRP 77, TAH 68, IP 60, ICP 27). Sync works. ph_jira_connection status='connected'.
+- **Correction:** an earlier "Finding B — sync silent-failure / trigger trap" was WRONG — caused by a stale `jira-sync-readiness` deploy returning `syncedIssues:0` + anon-RLS reads. No trigger trap exists; staging has no `guard_2026` on ph_issues. Lesson recorded in CLAUDE.md (read staging only via `supabase db query --linked`, never MCP/anon).
 - This is a multi-increment recovery; no "done" claim until the route works as real software per §21.

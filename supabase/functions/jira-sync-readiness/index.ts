@@ -43,14 +43,18 @@ serve(async (req: Request) => {
   if (!jiraConfigured) reasons.push('No Jira connection saved.');
   else if (!connectionValid) reasons.push(`Connection status is "${conn?.status ?? 'unknown'}", not "connected". Test the connection.`);
 
-  // Discovery / synced data (real counts)
-  const { count: discoveredProjects } = await supabase
-    .from('ph_jira_projects')
-    .select('project_key', { count: 'exact', head: true });
+  // Synced issues + discovered projects from GROUND TRUTH (ph_issues), not the
+  // ph_jira_projects config table which is often empty even when issues exist.
   const { count: syncedIssues } = await supabase
     .from('ph_issues')
     .select('id', { count: 'exact', head: true })
     .eq('source', 'jira');
+  const { data: projectKeyRows } = await supabase
+    .from('ph_issues')
+    .select('project_key')
+    .eq('source', 'jira')
+    .limit(20000);
+  const discoveredProjects = new Set((projectKeyRows || []).map((r: any) => r.project_key).filter(Boolean)).size;
   const { count: enabledProjects } = await supabase
     .from('ph_jira_projects')
     .select('project_key', { count: 'exact', head: true })
