@@ -66,6 +66,7 @@ interface Props {
   releaseName: string;
   projectId: string;
   projectKey: string | null;
+  onOpenItem?: (item: { issueKey: string; issueType: string | null }) => void;
 }
 
 type DisplayKey = 'priority' | 'status' | 'assignee' | 'featureFlag';
@@ -107,7 +108,7 @@ function AssigneeAvatar({
   );
 }
 
-export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey }: Props) {
+export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey, onOpenItem }: Props) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -140,24 +141,24 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
     return () => window.removeEventListener('catalyst:warning-settings', h as any);
   }, []);
 
-  // Fetch work items linked to this release. Try server-side contains; if it
-  // returns 0 or errors, fall back to a paginated text-ilike on sprint_release::text.
-  const { data: items = [] } = useQuery<Issue[]>({
+  const { data: items = [], isLoading, error } = useQuery<Issue[]>({
     queryKey: ['release-work-items', releaseId, releaseName],
     queryFn: async () => {
       const target = (releaseName || '').trim();
       if (!target) return [];
 
+      const select = 'id, issue_key, summary, issue_type, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, jira_created_at, sprint_release';
       const containsResult = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, jira_created_at, sprint_release')
+        .select(select)
         .contains('sprint_release', JSON.stringify([{ name: target }]) as any)
         .limit(2000);
-      if ((containsResult.data?.length ?? 0) > 0) return containsResult.data as Issue[];
-      // Fallback — paginated client filter when contains doesn't match.
+      if ((containsResult.data?.length ?? 0) > 0) {
+        return containsResult.data as Issue[];
+      }
       const fb = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, jira_created_at, sprint_release')
+        .select(select)
         .not('sprint_release', 'is', null)
         .limit(5000);
       if (!fb.data) return [];
@@ -167,7 +168,6 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
       }) as Issue[];
     },
     enabled: !!releaseName,
-    staleTime: 15_000,
   });
 
   // Epic candidates derived from items (unique parent_key)
@@ -462,19 +462,32 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                 maxHeight: 560,
               }}
             >
-              {visibleItems.map((it, idx) => (
-                <WorkItemRow
-                  key={it.id}
-                  item={it}
-                  display={display}
-                  releaseName={releaseName}
-                  projectId={projectId}
-                  isLast={!hasMore && idx === visibleItems.length - 1}
-                  onRemove={() => removeMutation.mutate(it.id)}
-                />
-              ))}
-              {sorted.length === 0 && (
-                <div style={{ padding: '16px 12px', color: SUBTLEST, fontSize: 13 }}>No work items match.</div>
+              {visibleItems
+                .filter((it) => (it.issue_key || '').trim() && (it.summary || '').trim())
+                .map((it, idx, arr) => (
+                  <WorkItemRow
+                    key={it.id}
+                    item={it}
+                    display={display}
+                    releaseName={releaseName}
+                    projectId={projectId}
+                    isLast={!hasMore && idx === arr.length - 1}
+                    onRemove={() => removeMutation.mutate(it.id)}
+                    onOpen={() => onOpenItem?.({ issueKey: it.issue_key, issueType: it.issue_type })}
+                  />
+                ))}
+              {isLoading && (
+                <div style={{ padding: '16px 12px', color: SUBTLEST, fontSize: 13 }}>Loading work items…</div>
+              )}
+              {error && (
+                <div style={{ padding: '16px 12px', color: 'var(--ds-text-danger, #C9372C)', fontSize: 13 }}>
+                  Query error: {(error as any)?.message || String(error)}
+                </div>
+              )}
+              {!isLoading && !error && sorted.length === 0 && (
+                <div style={{ padding: '16px 12px', color: SUBTLEST, fontSize: 13 }}>
+                  No work items in this release.
+                </div>
               )}
               {hasMore && (
                 <div
@@ -930,7 +943,7 @@ function pillBtn(active: boolean): React.CSSProperties {
 // ─── Single work-item row ───────────────────────────────────────────────────
 
 function WorkItemRow({
-  item, display, releaseName, projectId, isLast, onRemove,
+  item, display, releaseName, projectId, isLast, onRemove, onOpen,
 }: {
   item: Issue;
   display: Record<DisplayKey, boolean>;
@@ -938,6 +951,7 @@ function WorkItemRow({
   projectId: string;
   isLast: boolean;
   onRemove: () => void;
+  onOpen?: () => void;
 }) {
   const [hover, setHover] = useState(false);
   const [open, setOpen] = useState(false);
@@ -989,6 +1003,10 @@ function WorkItemRow({
       <div
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
+        onClick={(e) => {
+          if ((e.target as HTMLElement).closest('button, a')) return;
+          onOpen?.();
+        }}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -996,19 +1014,20 @@ function WorkItemRow({
           padding: '10px 12px',
           borderBottom: isLast ? 'none' : `1px solid ${BORDER}`,
           background: hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
+          cursor: 'pointer',
         }}
       >
-        <span style={{ display: 'inline-flex' }}>
-          <JiraIssueTypeIcon type={item.issue_type as any} size={16} />
+        <span style={{ display: 'inline-flex', width: 16, flexShrink: 0 }}>
+          {item.issue_type ? <JiraIssueTypeIcon type={item.issue_type as any} size={16} /> : null}
         </span>
         <a
           href="#"
-          onClick={(e) => e.preventDefault()}
-          style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500, fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap' }}
+          onClick={(e) => { e.preventDefault(); onOpen?.(); }}
+          style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500, fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap', cursor: 'pointer', flexShrink: 0 }}
         >
           {item.issue_key}
         </a>
-        <span style={{ flex: 1, color: TEXT, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ flex: 1, minWidth: 0, color: TEXT, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {item.summary}
         </span>
         {display.priority && (

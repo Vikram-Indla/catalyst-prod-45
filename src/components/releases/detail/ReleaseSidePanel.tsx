@@ -34,6 +34,7 @@ const BLUE_TEXT = 'var(--ds-text-selected, #0C66E4)';
 const TEXT = 'var(--ds-text, #292A2E)';
 const SUBTLE = 'var(--ds-text-subtle, #505258)';
 const SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
+const LINK = 'var(--ds-link, #0C66E4)';
 const HOVER_BG = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
 
 type DBStatus = 'planning' | 'in_progress' | 'released' | 'archived';
@@ -187,9 +188,605 @@ export function ReleaseSidePanel(props: Props) {
           }}
         />
       </div>
+
+      <ApproversCard releaseId={releaseId} />
     </div>
   );
 }
+
+// ─── Approvers card ────────────────────────────────────────────────────────
+
+type ApproverStatus = 'pending' | 'approved' | 'rejected';
+interface Approver {
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+  status: ApproverStatus;
+  description: string;
+}
+
+const STATUS_BORDER: Record<ApproverStatus, string> = {
+  pending: 'var(--ds-border, #DFE1E6)',
+  approved: 'var(--ds-border-success, #22A06B)',
+  rejected: 'var(--ds-border-danger, #C9372C)',
+};
+
+interface ApproverRow {
+  id: string;
+  release_id: string;
+  user_id: string;
+  status: ApproverStatus;
+  description: string | null;
+  profile: { id: string; full_name: string | null; avatar_url: string | null } | null;
+}
+
+function ApproversCard({ releaseId }: { releaseId: string }) {
+  const queryClient = useQueryClient();
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerPos, setPickerPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const plusRef = useRef<HTMLButtonElement>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  const queryKey = ['ph-release-approvers', releaseId];
+
+  const { data: rows = [] } = useQuery<ApproverRow[]>({
+    queryKey,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('ph_release_approvers')
+        .select('id, release_id, user_id, status, description, profile:profiles!ph_release_approvers_user_id_fkey(id, full_name, avatar_url)')
+        .eq('release_id', releaseId)
+        .order('created_at', { ascending: true });
+      if (error) throw new Error(error.message);
+      return (data ?? []) as ApproverRow[];
+    },
+    enabled: !!releaseId,
+  });
+
+  const approvers: Approver[] = useMemo(() => rows.map((r) => ({
+    userId: r.user_id,
+    name: r.profile?.full_name || 'Unknown',
+    avatarUrl: r.profile?.avatar_url ?? null,
+    status: r.status,
+    description: r.description ?? '',
+  })), [rows]);
+
+  const rowByUserId = useMemo(() => {
+    const m = new Map<string, ApproverRow>();
+    rows.forEach((r) => m.set(r.user_id, r));
+    return m;
+  }, [rows]);
+
+  const addApprover = useMutation({
+    mutationFn: async (userId: string) => {
+      const { data: auth } = await supabase.auth.getUser();
+      const { error } = await (supabase as any)
+        .from('ph_release_approvers')
+        .insert({
+          release_id: releaseId,
+          user_id: userId,
+          status: 'pending',
+          added_by: auth.user?.id ?? null,
+        });
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      catalystFlag.success('Approver added.');
+    },
+    onError: (e: any) => catalystFlag.error(e?.message || 'Failed to add approver'),
+  });
+
+  const removeApprover = useMutation({
+    mutationFn: async (rowId: string) => {
+      const { error } = await (supabase as any)
+        .from('ph_release_approvers')
+        .delete()
+        .eq('id', rowId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      catalystFlag.success('Approver removed.');
+    },
+    onError: (e: any) => catalystFlag.error(e?.message || 'Failed to remove approver'),
+  });
+
+  const updateDescription = useMutation({
+    mutationFn: async ({ rowId, description }: { rowId: string; description: string }) => {
+      const { error } = await (supabase as any)
+        .from('ph_release_approvers')
+        .update({ description })
+        .eq('id', rowId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      catalystFlag.success('Description updated.');
+    },
+    onError: (e: any) => catalystFlag.error(e?.message || 'Failed to update description'),
+  });
+
+  useEffect(() => {
+    if (!pickerOpen || !plusRef.current) return;
+    const update = () => {
+      const r = plusRef.current!.getBoundingClientRect();
+      setPickerPos({ top: r.bottom + 6, left: r.right - 280, width: 280 });
+    };
+    update();
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update, true);
+      window.removeEventListener('resize', update);
+    };
+  }, [pickerOpen]);
+
+  useEffect(() => {
+    if (!pickerOpen) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (plusRef.current?.contains(t)) return;
+      if (pickerRef.current?.contains(t)) return;
+      setPickerOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setPickerOpen(false); }
+    };
+    document.addEventListener('mousedown', onDown, true);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown, true);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [pickerOpen]);
+
+  const handleSelectUser = (u: { id: string; full_name: string | null; avatar_url: string | null }) => {
+    if (rowByUserId.has(u.id)) return;
+    addApprover.mutate(u.id);
+    setPickerOpen(false);
+  };
+
+  const handleRemove = (userId: string) => {
+    const row = rowByUserId.get(userId);
+    if (!row) return;
+    removeApprover.mutate(row.id);
+    if (expandedId === userId) setExpandedId(null);
+  };
+
+  const handleDescriptionSave = (userId: string, next: string) => {
+    const row = rowByUserId.get(userId);
+    if (!row) return;
+    updateDescription.mutate({ rowId: row.id, description: next });
+  };
+
+  const selectedIds = new Set(approvers.map((a) => a.userId));
+
+  return (
+    <div
+      style={{
+        border: `1px solid ${BORDER}`,
+        borderRadius: 6,
+        padding: 16,
+        background: 'var(--ds-surface, #FFFFFF)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>Approvers</span>
+        <button
+          ref={plusRef}
+          type="button"
+          aria-label="Add approver"
+          onClick={() => setPickerOpen((v) => !v)}
+          style={{
+            all: 'unset',
+            cursor: 'pointer',
+            width: 24,
+            height: 24,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 3,
+            color: SUBTLE,
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = HOVER_BG; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </button>
+      </div>
+
+      {approvers.length === 0 ? (
+        <span style={{ fontSize: 14, color: SUBTLE }}>No approvers have been added</span>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {approvers.map((a) => (
+            <ApproverRow
+              key={a.userId}
+              approver={a}
+              expanded={expandedId === a.userId}
+              onToggle={() => setExpandedId((prev) => prev === a.userId ? null : a.userId)}
+              onRemove={() => handleRemove(a.userId)}
+              onDescriptionSave={(next) => handleDescriptionSave(a.userId, next)}
+            />
+          ))}
+        </div>
+      )}
+
+      {pickerOpen && pickerPos && createPortal(
+        <UserPickerDropdown
+          ref={pickerRef}
+          pos={pickerPos}
+          selectedIds={selectedIds}
+          onSelect={handleSelectUser}
+        />,
+        document.body,
+      )}
+    </div>
+  );
+}
+
+// ─── Approver row (collapsed pill + expand panel) ─────────────────────────
+
+function ApproverRow({
+  approver, expanded, onToggle, onRemove, onDescriptionSave,
+}: {
+  approver: Approver;
+  expanded: boolean;
+  onToggle: () => void;
+  onRemove: () => void;
+  onDescriptionSave: (next: string) => void;
+}) {
+  const { data: profile } = useCatalystAvatarProfile(approver.userId);
+  const [hover, setHover] = useState(false);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '6px 8px',
+          margin: '0 -8px',
+          borderRadius: 3,
+          background: hover || expanded ? HOVER_BG : 'transparent',
+        }}
+      >
+        <CatalystAvatar size="small" name={approver.name} src={profile?.avatar_url || approver.avatarUrl || undefined} />
+        <span style={{ flex: 1, fontSize: 14, color: LINK, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {approver.name}
+        </span>
+        <StatusPill status={approver.status} />
+        <button
+          type="button"
+          aria-label={expanded ? 'Collapse' : 'Expand'}
+          onClick={onToggle}
+          style={{
+            all: 'unset',
+            cursor: 'pointer',
+            width: 20,
+            height: 20,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: LINK,
+            transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 120ms ease',
+          }}
+        >
+          <ChevronDownIcon label="" size="small" />
+        </button>
+      </div>
+
+      {expanded && (
+        <ApproverExpandPanel
+          description={approver.description}
+          onSave={onDescriptionSave}
+          onRemove={onRemove}
+        />
+      )}
+    </div>
+  );
+}
+
+function StatusPill({ status }: { status: ApproverStatus }) {
+  const label = status === 'pending' ? 'PENDING' : status === 'approved' ? 'APPROVED' : 'REJECTED';
+  return (
+    <span
+      style={{
+        fontSize: 11,
+        fontWeight: 700,
+        color: TEXT,
+        padding: '2px 6px',
+        border: `1px solid ${STATUS_BORDER[status]}`,
+        borderRadius: 3,
+        letterSpacing: 0.3,
+        background: 'var(--ds-surface, #FFFFFF)',
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+// ─── Approver expand panel (description + remove) ─────────────────────────
+
+function ApproverExpandPanel({
+  description, onSave, onRemove,
+}: {
+  description: string;
+  onSave: (next: string) => void;
+  onRemove: () => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(description);
+  const [hover, setHover] = useState(false);
+  const taRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (editing) {
+      setDraft(description);
+      setTimeout(() => taRef.current?.focus(), 0);
+    }
+  }, [editing, description]);
+
+  const canSave = draft.trim().length > 0 && draft !== description;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 0 0' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: TEXT }}>Description</span>
+        {editing ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+            <textarea
+              ref={taRef}
+              value={draft}
+              onChange={(e) => setDraft(e.currentTarget.value)}
+              rows={4}
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                padding: 8,
+                border: `2px solid ${BLUE}`,
+                borderRadius: 3,
+                outline: 'none',
+                resize: 'vertical',
+                fontFamily: 'inherit',
+                fontSize: 14,
+                color: TEXT,
+              }}
+            />
+            <div style={{ display: 'inline-flex', gap: 6 }}>
+              <button
+                type="button"
+                aria-label="Save"
+                disabled={!canSave}
+                onClick={() => { onSave(draft.trim()); setEditing(false); }}
+                style={{
+                  all: 'unset',
+                  cursor: canSave ? 'pointer' : 'not-allowed',
+                  width: 28,
+                  height: 28,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: `1px solid ${BORDER}`,
+                  borderRadius: 3,
+                  background: 'var(--ds-surface, #FFFFFF)',
+                  color: canSave ? TEXT : SUBTLEST,
+                  opacity: canSave ? 1 : 0.5,
+                }}
+              >
+                <CheckIcon label="" size="small" />
+              </button>
+              <button
+                type="button"
+                aria-label="Cancel"
+                onClick={() => { setDraft(description); setEditing(false); }}
+                style={{
+                  all: 'unset',
+                  cursor: 'pointer',
+                  width: 28,
+                  height: 28,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: `1px solid ${BORDER}`,
+                  borderRadius: 3,
+                  background: 'var(--ds-surface, #FFFFFF)',
+                  color: TEXT,
+                }}
+              >
+                <EditorCloseIcon label="" size="small" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            style={{
+              all: 'unset',
+              cursor: 'pointer',
+              padding: '4px 6px',
+              margin: '-4px -6px',
+              borderRadius: 3,
+              fontSize: 14,
+              fontStyle: description ? 'normal' : 'italic',
+              color: description ? TEXT : SUBTLEST,
+              background: hover ? HOVER_BG : 'transparent',
+              whiteSpace: 'pre-wrap',
+              minHeight: 22,
+            }}
+          >
+            {description || 'No description added'}
+          </button>
+        )}
+      </div>
+
+      <div style={{ height: 1, background: BORDER, margin: '12px 0 8px' }} />
+
+      <button
+        type="button"
+        onClick={onRemove}
+        style={{
+          all: 'unset',
+          cursor: 'pointer',
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: '4px 6px',
+          margin: '0 -6px',
+          borderRadius: 3,
+          fontSize: 14,
+          color: TEXT,
+          alignSelf: 'flex-start',
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = HOVER_BG; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+      >
+        Remove approver
+      </button>
+    </div>
+  );
+}
+
+// ─── User picker dropdown (portal — search + list) ────────────────────────
+
+const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
+  pos: { top: number; left: number; width: number };
+  selectedIds: Set<string>;
+  onSelect: (u: { id: string; full_name: string | null; avatar_url: string | null }) => void;
+}>(function UserPickerDropdown({ pos, selectedIds, onSelect }, ref) {
+  const [query, setQuery] = useState('');
+  const [focused, setFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }, []);
+
+  const { data: users = [] } = useQuery({
+    queryKey: ['approver-picker-users'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .order('full_name');
+      if (error) throw new Error(error.message);
+      return (data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null }>;
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  const filtered = useMemo(() => {
+    const available = users.filter((u) => !selectedIds.has(u.id));
+    const q = query.trim().toLowerCase();
+    if (!q) return available;
+    return available.filter((u) => (u.full_name || '').toLowerCase().includes(q));
+  }, [users, query, selectedIds]);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'fixed',
+        top: pos.top,
+        left: pos.left,
+        width: pos.width,
+        zIndex: 10010,
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        border: `1px solid ${BORDER}`,
+        borderRadius: 6,
+        boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+        padding: 8,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 6,
+        maxHeight: 360,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '6px 10px',
+          border: `2px solid ${focused ? BLUE : BORDER}`,
+          borderRadius: 3,
+          background: 'var(--ds-surface, #FFFFFF)',
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={SUBTLE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        <input
+          ref={inputRef}
+          value={query}
+          onChange={(e) => setQuery(e.currentTarget.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            flex: 1,
+            border: 'none',
+            outline: 'none',
+            background: 'transparent',
+            fontSize: 14,
+            color: TEXT,
+          }}
+        />
+      </div>
+
+      <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        {filtered.length === 0 ? (
+          <div style={{ padding: '8px 12px', fontSize: 13, color: SUBTLEST }}>No users</div>
+        ) : (
+          filtered.map((u) => {
+            const isSelected = selectedIds.has(u.id);
+            return (
+              <button
+                key={u.id}
+                type="button"
+                disabled={isSelected}
+                onClick={() => onSelect(u)}
+                style={{
+                  all: 'unset',
+                  cursor: isSelected ? 'default' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '6px 10px',
+                  borderRadius: 3,
+                  opacity: isSelected ? 0.5 : 1,
+                  background: isSelected ? BLUE_BG : 'transparent',
+                }}
+                onMouseEnter={(e) => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = HOVER_BG; }}
+                onMouseLeave={(e) => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+              >
+                <CatalystAvatar size="small" name={u.full_name || undefined} src={u.avatar_url || undefined} />
+                <span style={{ fontSize: 14, color: TEXT, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {u.full_name || 'Unknown'}
+                </span>
+              </button>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+});
 
 // ─── Status dropdown ────────────────────────────────────────────────────────
 

@@ -23,6 +23,10 @@ import { WorkItemsSection } from '@/components/releases/detail/WorkItemsSection'
 import { ReleaseSidePanel } from '@/components/releases/detail/ReleaseSidePanel';
 import { Description } from '@/components/catalyst-detail-views/shared/sections/Description';
 import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/Description';
+import { ReleaseSummaryCard } from '@/components/releases/detail/summarize/ReleaseSummaryCard';
+import { useCatyReleaseSummarize } from '@/components/releases/detail/summarize/catyReleaseSummarizeStore';
+import { useReleaseSummaryStream } from '@/components/releases/detail/summarize/useReleaseSummaryStream';
+import { WorkItemSidePanel } from '@/components/releases/detail/WorkItemSidePanel';
 
 const BORDER = 'var(--ds-border, #DFE1E6)';
 const TEXT = 'var(--ds-text, #292A2E)';
@@ -49,6 +53,7 @@ export function ReleaseDetailPage() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [collapsedNote, setCollapsedNote] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<{ issueKey: string; issueType: string | null } | null>(null);
 
   const { data: release, isLoading } = useQuery<ReleaseRow>({
     queryKey: ['ph-release', releaseId],
@@ -123,11 +128,34 @@ export function ReleaseDetailPage() {
   const sectionNameInitial = useMemo(() => '', []);
   const [sectionName, setSectionName] = useState<string>(sectionNameInitial);
 
+  // ── Release summary (Summarize release button) ──────────────────
+  useReleaseSummaryStream({ mountedForReleaseId: releaseId ?? null });
+  const summaryPayload = useCatyReleaseSummarize((s) => s.payload);
+  const summaryStatus = useCatyReleaseSummarize((s) => s.status);
+  const summaryText = useCatyReleaseSummarize((s) => s.streamingText);
+  const summaryError = useCatyReleaseSummarize((s) => s.errorMessage);
+  const summaryAuto = useCatyReleaseSummarize((s) => s.autoEnabled);
+  const dismissSummary = useCatyReleaseSummarize((s) => s.dismiss);
+  const setSummaryAuto = useCatyReleaseSummarize((s) => s.setAuto);
+  const startSummary = useCatyReleaseSummarize((s) => s.start);
+  const [feedbackVote, setFeedbackVote] = useState<'up' | 'down' | null>(null);
+
+  const showSummaryCard =
+    !!releaseId &&
+    summaryPayload?.releaseId === releaseId &&
+    summaryStatus !== 'idle';
+
   if (isLoading || !release) {
     return <div style={{ padding: 24 }}>Loading release…</div>;
   }
 
-  const handleSummarize = () => catalystFlag.success('Summarize release — coming soon.');
+  const handleSummarize = () => {
+    setFeedbackVote(null);
+    startSummary({
+      releaseId: release.id,
+      releaseName: release.name || release.title || null,
+    });
+  };
 
   return (
     <div style={{ display: 'flex', alignItems: 'stretch', minHeight: '100%', paddingRight: sidebarCollapsed ? 20 : 0 }}>
@@ -201,12 +229,27 @@ export function ReleaseDetailPage() {
         />
       </EditableSectionName>
 
+      {showSummaryCard && (
+        <ReleaseSummaryCard
+          status={summaryStatus}
+          text={summaryText}
+          errorMessage={summaryError}
+          releaseId={release.id}
+          onDismiss={dismissSummary}
+          autoEnabled={summaryAuto}
+          onToggleAuto={setSummaryAuto}
+          onFeedback={(vote) => setFeedbackVote(vote)}
+          selectedVote={feedbackVote}
+        />
+      )}
+
       {/* Work items section */}
       <WorkItemsSection
         releaseId={release.id}
         releaseName={(release.name || release.title || '')}
         projectId={release.project_id}
         projectKey={project?.key ?? null}
+        onOpenItem={(it) => setSelectedItem(it)}
       />
 
       <ShareFeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
@@ -254,18 +297,28 @@ export function ReleaseDetailPage() {
       </div>
 
       {!sidebarCollapsed && (
-        <div style={{ width: 360, flexShrink: 0, padding: '24px 32px 24px 24px' }}>
-          <ReleaseSidePanel
-            releaseId={release.id}
-            releaseName={release.name || release.title || ''}
-            status={release.status}
-            startDate={release.start_date}
-            releaseDate={release.release_date}
+        selectedItem ? (
+          <WorkItemSidePanel
+            issueKey={selectedItem.issueKey}
+            issueType={selectedItem.issueType}
             projectId={release.project_id}
-            projectKey={project?.key ?? null}
-            description={release.description}
+            projectKey={project?.key ?? ''}
+            onClose={() => setSelectedItem(null)}
           />
-        </div>
+        ) : (
+          <div style={{ width: 360, flexShrink: 0, padding: '24px 32px 24px 24px' }}>
+            <ReleaseSidePanel
+              releaseId={release.id}
+              releaseName={release.name || release.title || ''}
+              status={release.status}
+              startDate={release.start_date}
+              releaseDate={release.release_date}
+              projectId={release.project_id}
+              projectKey={project?.key ?? null}
+              description={release.description}
+            />
+          </div>
+        )
       )}
     </div>
   );
