@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Release, CreateReleasePayload } from '@/types/phase3-releases';
 
 export function useCreateRelease() {
@@ -6,20 +7,34 @@ export function useCreateRelease() {
 
   return useMutation({
     mutationFn: async (payload: CreateReleasePayload): Promise<Release> => {
-      const res = await fetch('/api/releases', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.details || `Create failed: ${res.statusText}`);
+      const row: Record<string, unknown> = {
+        project_id: payload.project_id,
+        name: payload.name,
+        title: payload.name, // ph_releases.title is NOT NULL — mirror name
+        // ph_releases.status CHECK accepts: planning | in_progress | released | archived
+        // 'unreleased' is the UI bucket, NOT the DB value.
+        status: 'planning',
+      };
+      if (payload.description) row.description = payload.description;
+      if (payload.start_date) row.start_date = payload.start_date;
+      if (payload.release_date) {
+        row.release_date = payload.release_date;
+        // Some ph_releases schemas use target_date; write both for safety.
+        row.target_date = payload.release_date;
       }
-      return res.json();
+
+      const { data, error } = await supabase
+        .from('ph_releases')
+        .insert(row)
+        .select()
+        .single();
+
+      if (error) throw new Error(error.message);
+      return data as unknown as Release;
     },
     onSuccess: (release) => {
-      // Invalidate releases list for the project
-      queryClient.invalidateQueries({ queryKey: ['releases', release.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
+      queryClient.invalidateQueries({ queryKey: ['releases', (release as any).project_id] });
     },
   });
 }

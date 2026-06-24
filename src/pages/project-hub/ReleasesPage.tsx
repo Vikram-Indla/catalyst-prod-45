@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
-import Flag from '@atlaskit/flag';
 import { useQuery } from '@tanstack/react-query';
+import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useWHReleases } from '@/hooks/workhub/useReleases';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
@@ -91,7 +91,6 @@ export function ReleasesPage() {
   const [statusFilter, setStatusFilter] = useState<StatusValue[]>(['unreleased']);
   const [productFilter, setProductFilter] = useState<string[]>([]);
   const [groupBy, setGroupBy] = useState<GroupValue>('none');
-  const [successFlag, setSuccessFlag] = useState<string | null>(null);
 
   // Products = ph_projects (releases live under projects in this schema)
   const { data: productsRaw } = useQuery({
@@ -233,17 +232,6 @@ export function ReleasesPage() {
 
   return (
     <div style={{ padding: '24px' }}>
-      {successFlag && (
-        <Flag
-          appearance="success"
-          icon={<span />}
-          onDismissed={() => setSuccessFlag(null)}
-          title={successFlag}
-          description=""
-          id="release-success"
-        />
-      )}
-
       {/* Header: title + release count */}
       <div
         style={{
@@ -330,7 +318,7 @@ export function ReleasesPage() {
         projectKey={projectKey}
         projectId={projectId}
         onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={(release: any) => setSuccessFlag(`Release "${release.name}" has been created.`)}
+        onSuccess={(release: any) => catalystToast.success(`Release "${release.name}" has been created.`)}
       />
 
       {editingRelease && (
@@ -339,7 +327,7 @@ export function ReleasesPage() {
           projectKey={projectKey}
           release={editingRelease as any}
           onClose={() => { setIsEditModalOpen(false); setEditingRelease(null); }}
-          onSuccess={(release: any) => setSuccessFlag(`Release "${release.name}" has been updated.`)}
+          onSuccess={(release: any) => catalystToast.success(`Release "${release.name}" has been updated.`)}
         />
       )}
 
@@ -349,7 +337,7 @@ export function ReleasesPage() {
           release={archivingRelease as any}
           projectKey={projectKey}
           onClose={() => { setIsArchiveDialogOpen(false); setArchivingRelease(null); }}
-          onSuccess={() => setSuccessFlag(`Release "${archivingRelease.name}" has been archived.`)}
+          onSuccess={() => catalystToast.success(`Release "${archivingRelease.name}" has been archived.`)}
         />
       )}
 
@@ -359,7 +347,7 @@ export function ReleasesPage() {
           release={confirmingRelease as any}
           projectKey={projectKey}
           onClose={() => { setIsConfirmModalOpen(false); setConfirmingRelease(null); }}
-          onSuccess={(release: any) => setSuccessFlag(`Release "${release.name}" published.`)}
+          onSuccess={(release: any) => catalystToast.success(`Release "${release.name}" published.`)}
         />
       )}
 
@@ -369,7 +357,7 @@ export function ReleasesPage() {
           release={deletingRelease as any}
           projectKey={projectKey}
           onClose={() => { setIsDeleteDialogOpen(false); setDeletingRelease(null); }}
-          onSuccess={() => setSuccessFlag(`Release "${deletingRelease.name}" has been deleted.`)}
+          onSuccess={() => catalystToast.success(`Release "${deletingRelease.name}" has been deleted.`)}
         />
       )}
 

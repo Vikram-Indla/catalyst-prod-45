@@ -122,7 +122,6 @@ export function ReleaseCreateModal({
 
     createMutation.mutate(payload, {
       onSuccess: (result) => {
-        catalystToast.success(`Release "${result.name}" created`);
         onSuccess?.(result);
         handleClose();
       },
