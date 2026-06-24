@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
-import Select from '@atlaskit/select';
 import Flag from '@atlaskit/flag';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,13 +22,14 @@ import {
   makeDescriptionCell,
   makeActionsCell,
 } from '@/components/releases/cells';
-
-const STATUS_OPTIONS = [
-  { label: 'Unreleased', value: 'unreleased' },
-  { label: 'Released', value: 'released' },
-  { label: 'Archived', value: 'archived' },
-  { label: 'All', value: 'all' },
-];
+import {
+  StatusFilter,
+  ProductFilter,
+  GroupFilter,
+  type StatusValue,
+  type GroupValue,
+  type ProductOption,
+} from '@/components/releases/ReleaseFilters';
 
 // DB status (planning|in_progress|released|archived) -> cell status (unreleased|released|archived)
 function toCellStatus(s: string | null | undefined): ReleaseStatus {
@@ -86,8 +86,29 @@ export function ReleasesPage() {
   });
 
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('unreleased'); // Jira default
+  const [statusFilter, setStatusFilter] = useState<StatusValue[]>(['unreleased']);
+  const [productFilter, setProductFilter] = useState<string[]>([]);
+  const [groupBy, setGroupBy] = useState<GroupValue>('none');
   const [successFlag, setSuccessFlag] = useState<string | null>(null);
+
+  // Products = ph_projects (releases live under projects in this schema)
+  const { data: productsRaw } = useQuery({
+    queryKey: ['ph-projects-for-release-filter'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_projects')
+        .select('id, key, name')
+        .order('name');
+      if (error) throw new Error(error.message);
+      return (data ?? []) as Array<{ id: string; key: string; name: string }>;
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  const productOptions: ProductOption[] = useMemo(
+    () => (productsRaw ?? []).map((p) => ({ id: p.id, name: p.name, tag: p.key })),
+    [productsRaw],
+  );
 
   // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -133,10 +154,41 @@ export function ReleasesPage() {
     const q = search.toLowerCase();
     return releases.filter((r) => {
       const matchesSearch = r.name.toLowerCase().includes(q);
-      const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesStatus = statusFilter.length === 0 || statusFilter.includes(r.status);
+      const matchesProduct = productFilter.length === 0 || productFilter.includes(r.project_id);
+      return matchesSearch && matchesStatus && matchesProduct;
     });
-  }, [releases, search, statusFilter]);
+  }, [releases, search, statusFilter, productFilter]);
+
+  const grouped = useMemo(() => {
+    if (groupBy === 'none') return null;
+    const productNameById = new Map(productOptions.map((p) => [p.id, p.name]));
+    const buckets = new Map<string, CellRelease[]>();
+    const keyFor = (r: CellRelease): string => {
+      switch (groupBy) {
+        case 'status':
+          return r.status;
+        case 'product':
+          return productNameById.get(r.project_id) ?? '— No product —';
+        case 'release_date':
+          return r.release_date ? new Date(r.release_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '— No release date —';
+        case 'start_date':
+          return r.start_date ? new Date(r.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '— No start date —';
+        default:
+          return '';
+      }
+    };
+    filtered.forEach((r) => {
+      const k = keyFor(r);
+      if (!buckets.has(k)) buckets.set(k, []);
+      buckets.get(k)!.push(r);
+    });
+    return Array.from(buckets.entries()).map(([label, rows]) => ({
+      id: label,
+      label,
+      rows,
+    }));
+  }, [filtered, groupBy, productOptions]);
 
   const calculateProgress = (release: CellRelease): ReleaseProgress | null => {
     const p = release.jira_version_id ? progressByVersion.get(release.jira_version_id) : undefined;
@@ -213,13 +265,14 @@ export function ReleasesPage() {
         </span>
       </div>
 
-      {/* Toolbar: search + filter + give feedback + create */}
+      {/* Toolbar: search + filters + give feedback + create */}
       <div
         style={{
           display: 'flex',
           gap: '8px',
           alignItems: 'center',
           marginBottom: '16px',
+          flexWrap: 'wrap',
         }}
       >
         <div style={{ width: '240px' }}>
@@ -230,15 +283,13 @@ export function ReleasesPage() {
             isCompact
           />
         </div>
-        <div style={{ width: '160px' }}>
-          <Select
-            options={STATUS_OPTIONS}
-            value={STATUS_OPTIONS.find((o) => o.value === statusFilter)}
-            onChange={(opt: any) => setStatusFilter(opt.value)}
-            isSearchable={false}
-            spacing="compact"
-          />
-        </div>
+        <StatusFilter value={statusFilter} onChange={setStatusFilter} />
+        <ProductFilter
+          options={productOptions}
+          value={productFilter}
+          onChange={setProductFilter}
+        />
+        <GroupFilter value={groupBy} onChange={setGroupBy} />
         <div style={{ flex: 1 }} />
         <Button appearance="subtle">
           Give feedback
@@ -250,7 +301,11 @@ export function ReleasesPage() {
 
       {/* Flat releases table (matches Jira; no collapsible sections) */}
       {filtered.length > 0 ? (
-        <JiraTable rows={filtered} columns={columns} getRowKey={(r) => r.id} />
+        grouped ? (
+          <JiraTable groups={grouped} columns={columns} getRowId={(r) => r.id} />
+        ) : (
+          <JiraTable data={filtered} columns={columns} getRowId={(r) => r.id} />
+        )
       ) : (
         <div
           style={{

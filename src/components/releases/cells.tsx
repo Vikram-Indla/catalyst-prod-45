@@ -1,7 +1,7 @@
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
-import ProgressBar from '@atlaskit/progress-bar';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
+import type { Column, CellProps } from '@/components/shared/JiraTable/types';
 import { ActionsMenu } from './ActionsMenu';
 
 // ── Release Name Cell (link to detail)
@@ -9,12 +9,12 @@ export function makeReleaseNameCell(
   getReleaseName: (row: Release) => string,
   onOpenDetail: (id: string) => void,
   getHref?: (id: string) => string
-) {
+): Column<Release> {
   return {
-    key: 'release_name',
-    header: 'Release',
-    width: 300,
-    render: (row: Release) => {
+    id: 'release_name',
+    label: 'Release',
+    width: 25,
+    cell: ({ row }: CellProps<Release>) => {
       const name = getReleaseName(row);
       const href = getHref?.(row.id) || `#`;
       return (
@@ -40,12 +40,12 @@ export function makeReleaseNameCell(
 }
 
 // ── Status Lozenge Cell
-export function makeStatusCell() {
+export function makeStatusCell(): Column<Release> {
   return {
-    key: 'status',
-    header: 'Status',
-    width: 120,
-    render: (row: Release) => {
+    id: 'status',
+    label: 'Status',
+    width: 10,
+    cell: ({ row }: CellProps<Release>) => {
       const appearanceMap: Record<ReleaseStatus, string> = {
         unreleased: 'inprogress',
         released: 'success',
@@ -72,14 +72,17 @@ export function makeStatusCell() {
 
 // ── Progress Bar Cell
 export function makeProgressCell(
-  calculateProgress: (row: Release) => ReleaseProgress
-) {
+  calculateProgress: (row: Release) => ReleaseProgress | null
+): Column<Release> {
   return {
-    key: 'progress',
-    header: 'Progress',
-    width: 200,
-    render: (row: Release) => {
+    id: 'progress',
+    label: 'Progress',
+    width: 17,
+    cell: ({ row }: CellProps<Release>) => {
       const progress = calculateProgress(row);
+      if (!progress || !progress.total) {
+        return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>;
+      }
       const donePercent = Math.round((progress.done / progress.total) * 100);
       const inProgressPercent = Math.round(
         (progress.inProgress / progress.total) * 100
@@ -102,7 +105,7 @@ export function makeProgressCell(
               <div
                 style={{
                   width: `${donePercent}%`,
-                  backgroundColor: '#00875A', // G400 done green
+                  backgroundColor: '#00875A',
                 }}
               />
             )}
@@ -110,7 +113,7 @@ export function makeProgressCell(
               <div
                 style={{
                   width: `${inProgressPercent}%`,
-                  backgroundColor: '#0052CC', // B400 in progress blue
+                  backgroundColor: '#0052CC',
                 }}
               />
             )}
@@ -125,30 +128,34 @@ export function makeProgressCell(
 }
 
 // ── Start Date Cell
-export function makeStartDateCell() {
+export function makeStartDateCell(): Column<Release> {
   return {
-    key: 'start_date',
-    header: 'Start date',
-    width: 130,
-    render: (row: Release) => {
-      if (!row.start_date) return '—';
-      return new Date(row.start_date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      });
+    id: 'start_date',
+    label: 'Start date',
+    width: 11,
+    cell: ({ row }: CellProps<Release>) => {
+      if (!row.start_date) return <>—</>;
+      return (
+        <>
+          {new Date(row.start_date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          })}
+        </>
+      );
     },
   };
 }
 
 // ── Release Date Cell (red if overdue)
-export function makeReleaseDateCell() {
+export function makeReleaseDateCell(): Column<Release> {
   return {
-    key: 'release_date',
-    header: 'Release date',
-    width: 130,
-    render: (row: Release) => {
-      if (!row.release_date) return '—';
+    id: 'release_date',
+    label: 'Release date',
+    width: 11,
+    cell: ({ row }: CellProps<Release>) => {
+      if (!row.release_date) return <>—</>;
 
       const isOverdue =
         row.status === 'unreleased' && new Date(row.release_date) < new Date();
@@ -169,13 +176,14 @@ export function makeReleaseDateCell() {
 }
 
 // ── Description Cell (truncated)
-export function makeDescriptionCell() {
+export function makeDescriptionCell(): Column<Release> {
   return {
-    key: 'description',
-    header: 'Description',
-    width: 200,
-    render: (row: Release) => {
-      if (!row.description) return '—';
+    id: 'description',
+    label: 'Description',
+    width: 17,
+    flex: true,
+    cell: ({ row }: CellProps<Release>) => {
+      if (!row.description) return <>—</>;
       const truncated =
         row.description.length > 60
           ? row.description.substring(0, 60) + '…'
@@ -191,12 +199,13 @@ export function makeActionsCell(
   onArchive: (release: Release) => void,
   onRelease: (release: Release) => void,
   onDelete: (release: Release) => void
-) {
+): Column<Release> {
   return {
-    key: 'actions',
-    header: '',
-    width: 80,
-    render: (row: Release) => (
+    id: 'actions',
+    label: '',
+    width: 6,
+    align: 'end',
+    cell: ({ row }: CellProps<Release>) => (
       <ActionsMenu
         release={row}
         onEdit={onEdit}

@@ -29,9 +29,6 @@ const RAGAuditPage = ENABLE_AI ? lazy(() => import("../pages/RAGAuditPage")) : (
 // pure redirects, so the page imports are no longer needed. Files remain
 // in src/pages/admin/ until a follow-up cleanup commit removes them.
 
-// Dev-only prototypes
-const EvidenceToExecutionFullLazy = lazy(() => import("../pages/dev/EvidenceToExecutionFull"));
-
 const Resource360PageNew = lazy(() => import("../components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("../pages/Resource360MemberDetail"));
 const ResourceListingPageLazy = lazy(() => import("../pages/ResourceListingPage"));
@@ -276,7 +273,6 @@ const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepart
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
 const JiraSyncPage = lazy(() => import("../pages/admin/connections/JiraSyncPage").then(m => ({ default: m.JiraSyncPage })));
-const JiraSyncPageMockup = lazy(() => import("../pages/admin/connections/JiraSyncPageMockup").then(m => ({ default: m.JiraSyncPageMockup })));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 // Connections hub — each integration gets a page under /admin/connections/*
 const NotionConnectionPage = lazy(() => import("../pages/admin/connections/NotionConnectionPage"));
@@ -462,9 +458,6 @@ export default function FullAppRoutes() {
         <Route path="/kb-admin" element={<Navigate to="/admin/kb" replace />} />
         <Route path="/kb-data-audit" element={<S><KBDataAuditPage /></S>} />
         <Route path="/chat" element={<S><ChatPageLazy /></S>} />
-
-        {/* ═══ Dev Prototypes (Dev Only) ═══ */}
-        <Route path="/dev/product/evidence-to-execution" element={<S><EvidenceToExecutionFullLazy /></S>} />
 
         <Route path="/work-hub-test" element={<S><WorkHubLayout /></S>}>
           <Route index element={<Navigate to="summary" replace />} />
@@ -953,10 +946,6 @@ export default function FullAppRoutes() {
               a page; old workhub paths redirect for backward compatibility.    */}
           <Route path="connections" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="connections/jira" element={<S><JiraSyncPage /></S>} />
-          {/* Mockup is a dev-only design reference (sample data). Never in production. */}
-          {import.meta.env.DEV && (
-            <Route path="connections/jira/mockup" element={<S><JiraSyncPageMockup /></S>} />
-          )}
           <Route path="workflows/hierarchy" element={<S><WorkHubHierarchyPage /></S>} />
           <Route path="connections/jira/hierarchy" element={<Navigate to="/admin/workflows/hierarchy" replace />} />
           <Route path="connections/notion" element={<S><NotionConnectionPage /></S>} />
