@@ -38,7 +38,7 @@ async function fetchJiraIssues(
   // /rest/api/3/search/jql requires an explicit `fields` list in a POST body —
   // GET without fields returns issues with NO fields object (all would be skipped).
   const fields = [
-    'summary', 'status', 'assignee', 'reporter', 'issuetype', 'parent',
+    'project', 'summary', 'status', 'assignee', 'reporter', 'issuetype', 'parent',
     'priority', 'created', 'updated', 'fixVersions', 'labels', 'duedate',
   ];
 

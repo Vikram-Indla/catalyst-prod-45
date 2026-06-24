@@ -29,7 +29,7 @@ async function fetchAndTransformJiraIssues(projectKeys: string[]): Promise<any[]
   const issues: any[] = [];
 
   const fields = [
-    'summary', 'status', 'assignee', 'reporter', 'issuetype', 'parent',
+    'project', 'summary', 'status', 'assignee', 'reporter', 'issuetype', 'parent',
     'priority', 'created', 'updated', 'fixVersions', 'labels', 'duedate',
   ];
 
