@@ -17,6 +17,22 @@ interface ProjectConfig {
   statuses?: string[]
   issue_types?: string[]
   sprint_release?: string[]
+  field_map?: Record<string, string>  // ph_issues column -> jira field id, per-project remap
+}
+
+// Coerce a raw Jira field value into the shape ph_issues expects for `target`.
+function coerceJiraValue(raw: any, target: string): any {
+  if (raw === null || raw === undefined) return null
+  const scalar = (v: any) => typeof v === 'string' ? v : (v?.name ?? v?.value ?? v?.key ?? v?.accountId ?? null)
+  switch (target) {
+    case 'assignee_account_id': return typeof raw === 'string' ? raw : (raw?.accountId ?? null)
+    case 'parent_key':          return typeof raw === 'string' ? raw : (raw?.key ?? null)
+    case 'due_date':            return typeof raw === 'string' ? raw : null
+    case 'labels':              return Array.isArray(raw) ? raw.map((x: any) => typeof x === 'string' ? x : scalar(x)).filter(Boolean) : []
+    case 'components':          return Array.isArray(raw) ? raw.map((x: any) => scalar(x)).filter(Boolean) : []
+    case 'fix_versions':        return Array.isArray(raw) ? raw.map((v: any) => ({ id: v?.id, name: v?.name ?? scalar(v), releaseDate: v?.releaseDate })) : []
+    default:                    return scalar(raw)  // priority, status, other text columns
+  }
 }
 
 serve(async (req) => {
@@ -264,6 +280,9 @@ serve(async (req) => {
     for (const projectKey of projectsToSync) {
       const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], sprint_release: [] }
       const lookbackMonths = pConfig.lookback_months ?? 3
+      // Per-project field remap: { [ph_issues column]: jira_field }. Ensure mapped fields are requested.
+      const fieldMap: Record<string, string> = pConfig.field_map || {}
+      const projectFields = [...new Set([...fields, ...Object.values(fieldMap).filter(Boolean)])]
 
       // Build JQL — SUPER STRICT GUARDRAIL: enforce 2026+ data window
       const jqlParts: string[] = [`project = "${projectKey}"`]
@@ -324,7 +343,7 @@ serve(async (req) => {
 
       do {
         // NOTE: No 'expand: changelog' — this was causing CPU Time exceeded for large projects
-        const reqBody: Record<string, any> = { jql, fields, maxResults }
+        const reqBody: Record<string, any> = { jql, fields: projectFields, maxResults }
         if (nextPageToken) reqBody.nextPageToken = nextPageToken
 
         const res = await fetch(searchUrl, { method: 'POST', headers: postHeaders, body: JSON.stringify(reqBody) })
@@ -355,7 +374,7 @@ serve(async (req) => {
             updated: c.updated,
           }))
 
-          return {
+          const row: Record<string, any> = {
             issue_key: issue.key,
             project_key: issue.key.split('-')[0],
             project_name: projectNameLookup[issue.key.split('-')[0]] || null,
@@ -393,6 +412,16 @@ serve(async (req) => {
             changelog: [],
             raw_json: null,
           }
+          // Per-project field remap: override only when the mapped Jira field is actually present
+          // (undefined => field not returned; keep the engine default, never null it out).
+          for (const [target, jiraField] of Object.entries(fieldMap)) {
+            if (!jiraField) continue
+            const raw = issue.fields?.[jiraField]
+            if (raw === undefined) continue
+            const rowKey = target === 'fix_versions' ? 'sprint_release' : target
+            row[rowKey] = coerceJiraValue(raw, target)
+          }
+          return row
         })
         // ── 2026 GUARDRAIL — only sync items created or updated in 2026+ ──
         .filter((r: any) => {

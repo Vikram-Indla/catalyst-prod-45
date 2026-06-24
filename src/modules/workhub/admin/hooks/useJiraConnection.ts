@@ -73,3 +73,17 @@ export function useTestConnection() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['wh', 'jira-connection'] }),
   });
 }
+
+export function useDisconnectJiraConnection() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (connectionId: string) => {
+      const { error } = await supabase
+        .from('ph_jira_connection')
+        .update({ status: 'not_configured', last_test_result: null })
+        .eq('id', connectionId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['wh', 'jira-connection'] }),
+  });
+}
