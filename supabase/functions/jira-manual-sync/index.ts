@@ -108,6 +108,27 @@ serve(async (req: Request) => {
 
     console.log(`[jira-manual-sync] ${environment} mode=${mode} projectKey=${projectKey}`);
 
+    // Server-side readiness gate (spec §13: backend rejects even if the frontend is bypassed).
+    // Writes (full/incremental) require a configured+connected Jira connection.
+    // dry-run is a read-only preview and is allowed without the gate.
+    if (mode !== 'dry-run') {
+      const { data: conn } = await supabase
+        .from('ph_jira_connection')
+        .select('status')
+        .maybeSingle();
+      if (conn?.status !== 'connected') {
+        return new Response(
+          JSON.stringify({
+            environment,
+            recordsAdded: 0,
+            recordsSkipped: 0,
+            errors: [{ issue: 'connection', reason: `Sync blocked: Jira connection status is "${conn?.status ?? 'not configured'}". Configure and test the connection first.` }],
+          }),
+          { status: 412 },
+        );
+      }
+    }
+
     // Fetch sync filters for this environment
     const { data: filters } = await supabase
       .from('jira_project_sync_filters')

@@ -101,6 +101,17 @@ export function JiraSyncPage() {
   const { data: accessibleProjects = [] } = useAvailableProjects();
   const { data: syncLogs = [] } = useSyncLogs(20);
 
+  // Backend readiness (spec §11/§17) — authoritative when reachable.
+  const { data: backendReadiness } = useQuery({
+    queryKey: ['jira-sync-readiness', env.environment],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('jira-sync-readiness');
+      if (error) return null;
+      return data as { readiness: Readiness; allowedActions: Record<string, boolean>; reasons: string[] } | null;
+    },
+    staleTime: 15_000,
+  });
+
   // Per-project sync state from ph_jira_projects (config table — may be empty)
   const { data: syncProjects = [] } = useQuery({
     queryKey: ['jira-sync-projects', env.environment],
@@ -160,15 +171,14 @@ export function JiraSyncPage() {
   const enabledProjects = projects.filter(p => p.sync_enabled);
   const totalJiraIssues = Object.values(issueCounts).reduce((a: number, b: number) => a + b, 0);
 
-  // Single readiness state — Overview/Sync read THIS, never local flags.
-  // Nothing renders "ready / synced / mappings complete" unless the connection is
-  // actually configured. This is what kills the contradictory states.
-  const readiness: Readiness =
+  // Backend readiness is authoritative when reachable; client derivation is the fallback.
+  const clientReadiness: Readiness =
     !isConnected ? 'NOT_CONFIGURED'
     : projects.length === 0 ? 'CONNECTED_NOT_DISCOVERED'
     : enabledProjects.length === 0 ? 'NEEDS_MAPPING'
     : 'READY_TO_SYNC';
-  const syncAllowed = readiness === 'READY_TO_SYNC';
+  const readiness: Readiness = (backendReadiness?.readiness as Readiness) ?? clientReadiness;
+  const syncAllowed = backendReadiness?.allowedActions?.fullSync ?? (readiness === 'READY_TO_SYNC');
 
   return (
     <AdminGuard>
