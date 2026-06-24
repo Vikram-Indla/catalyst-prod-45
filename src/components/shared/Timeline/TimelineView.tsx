@@ -1247,90 +1247,6 @@ export default function TimelineView(props: TimelineViewProps) {
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-          {/* Create work — toolbar CTA matching Jira Plans */}
-          {enableCreateEpicRow && mutations?.onCreateEpic && (
-            <button
-              onClick={openCreateWork}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px',
-                border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-                background: 'var(--ds-surface, #FFFFFF)',
-                cursor: 'pointer', fontSize: 14, fontWeight: 500,
-                color: 'var(--ds-text, #172B4D)',
-                fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
-            >
-              <EditorAddIcon label="" size="small" />
-              Create work
-            </button>
-          )}
-          {/* view-mode selector (Jira saved-views parity) — actually drives the timeline */}
-          <div style={{ position: 'relative' }}>
-            <button
-              ref={viewMenuBtnRef}
-              onClick={() => setViewMenuOpen(v => !v)}
-              aria-haspopup="menu"
-              aria-expanded={viewMenuOpen}
-              aria-label="Saved views"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px',
-                border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-                background: viewMenuOpen ? 'var(--ds-background-neutral-hovered, #EBECF0)' : 'var(--ds-surface, #FFFFFF)',
-                cursor: 'pointer', color: 'var(--ds-text, #172B4D)', fontSize: 13,
-                fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
-              }}
-            >
-              {depMode ? 'Dependencies' : 'Basic view'}
-              <ChevronDownIcon label="" size="small" />
-            </button>
-            <PortalMenu isOpen={viewMenuOpen} onClose={() => setViewMenuOpen(false)} triggerRef={viewMenuBtnRef} minWidth={224}>
-              <div style={{ padding: '4px 12px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: '0.06em', fontFamily: 'var(--ds-font-family-body)' }}>
-                Saved views
-              </div>
-              <MenuItemRow label="Dependencies" isChecked={depMode} onClick={() => { setDepMode(true); setViewMenuOpen(false); }} />
-              <MenuItemRow label="Basic view" isChecked={!depMode} onClick={() => { setDepMode(false); setDepFilterKey(null); setViewMenuOpen(false); }} />
-              <MenuItemRow label="Capacity view" onClick={() => { setDepMode(false); setDepFilterKey(null); setViewMenuOpen(false); }} />
-              <MenuItemRow label="Top-level view" onClick={() => { setDepMode(false); setDepFilterKey(null); collapseAll(); setViewMenuOpen(false); }} />
-              <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
-              <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtlest, #8590A2)', fontFamily: 'var(--ds-font-family-body)' }} aria-disabled>
-                Manage saved views (coming soon)
-              </div>
-              <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtlest, #8590A2)', fontFamily: 'var(--ds-font-family-body)' }} aria-disabled>
-                Create a new view (coming soon)
-              </div>
-            </PortalMenu>
-          </div>
-          <button
-            ref={viewSettingsBtnRef}
-            onClick={() => setViewSettingsOpen(v => !v)}
-            aria-label="View settings"
-            aria-haspopup="dialog"
-            aria-expanded={viewSettingsOpen}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px',
-              border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-              background: viewSettingsOpen ? 'var(--ds-background-neutral-hovered, #EBECF0)' : 'var(--ds-surface, #FFFFFF)',
-              cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
-              fontFamily: 'var(--ds-font-family-body)',
-            }}
-          >
-            <SettingsIcon label="" size="small" />
-            {!isNarrow && 'View settings'}
-          </button>
-          {viewSettingsOpen && (
-            <ViewSettingsPanel
-              showProgress={showProgress}
-              showReleases={showReleases}
-              onToggleProgress={() => setShowProgress(v => !v)}
-              onToggleReleases={() => setShowReleases(v => !v)}
-              onClose={() => setViewSettingsOpen(false)}
-              triggerRef={viewSettingsBtnRef}
-            />
-          )}
-        </div>
       </div>
 
       {/* ── Create work modal ── */}
@@ -1455,6 +1371,24 @@ export default function TimelineView(props: TimelineViewProps) {
                 <MenuItemRow label="Expand all" onClick={() => { expandAll(); closeDropdown(); }} />
                 <MenuItemRow label="Collapse all" onClick={() => { collapseAll(); closeDropdown(); }} />
               </PortalMenu>
+              {enableCreateEpicRow && mutations?.onCreateEpic && (
+                <button
+                  onClick={openCreateWork}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 10px',
+                    border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+                    background: 'var(--ds-surface, #FFFFFF)',
+                    cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                    color: 'var(--ds-text, #172B4D)',
+                    fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+                >
+                  <EditorAddIcon label="" size="small" />
+                  {!isNarrow && 'Create work'}
+                </button>
+              )}
             </div>
 
             <div ref={sidebarBodyRef} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
