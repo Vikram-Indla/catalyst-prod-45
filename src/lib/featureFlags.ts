@@ -7,7 +7,8 @@
 
 export const ENABLE_AI = import.meta.env.VITE_ENABLE_AI !== 'false';
 export const ENABLE_HEAVY_EXPORTS = import.meta.env.VITE_ENABLE_HEAVY_EXPORTS !== 'false';
-export const ENABLE_WIKI = import.meta.env.VITE_ENABLE_WIKI !== 'false';
+// DEPRECATED 2026-06-25: Wiki module removed; all routes redirect to /for-you
+export const ENABLE_WIKI = false;
 export const ENABLE_KNOWLEDGE_HUB = import.meta.env.VITE_ENABLE_KNOWLEDGE_HUB !== 'false';
 
 /**

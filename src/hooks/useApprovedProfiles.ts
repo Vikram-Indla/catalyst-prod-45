@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useMemo } from 'react';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export interface ApprovedProfile {
   id: string;
   name: string;
   initials: string;
   email: string;
-  /** Resolved avatar URL. Priority: admin override > profiles.avatar_url > null (→ initials). */
+  /** Resolved avatar URL. Priority: admin override > bundled local photo > null (→ initials). */
   avatarUrl?: string | null;
   /** Jira account UUID — matches ph_issues.assignee_account_id. Null for non-Jira users. */
   jiraAccountId?: string | null;
@@ -59,8 +60,9 @@ export function useApprovedProfiles() {
           .toUpperCase()
           .slice(0, 2);
 
-        // Override wins over profiles.avatar_url
-        const avatarUrl = overrideMap.get(profile.id) ?? (profile.avatar_url as string | null) ?? null;
+        // Priority: admin override > bundled local photo > null (→ initials)
+        // profiles.avatar_url (Gravatar) is intentionally skipped — external URLs are banned
+        const avatarUrl = overrideMap.get(profile.id) ?? resolveAvatarUrl(name) ?? null;
 
         return {
           id: profile.id,

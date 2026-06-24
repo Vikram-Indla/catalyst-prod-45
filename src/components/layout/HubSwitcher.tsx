@@ -61,7 +61,12 @@ interface HubEntry {
   moduleKey: string;
 }
 
-const HUBS: HubEntry[] = [
+interface DeprecatedHubEntry extends HubEntry {
+  /** Mark as deprecated and non-navigable (dead option) */
+  deprecated?: boolean;
+}
+
+const HUBS: DeprecatedHubEntry[] = [
   { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1', moduleKey: 'home' },
   { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'enterprise' },
   { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3', moduleKey: 'product' },
@@ -71,8 +76,8 @@ const HUBS: HubEntry[] = [
   { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7', moduleKey: 'testhub' },
   { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8', moduleKey: 'operations' },
   { key: 'task',     label: 'Tasks',    href: '/tasks/overview',             section: 'build_ship', tone: 'yellow',  shortcut: '9', moduleKey: 'planner' },
-  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0', moduleKey: 'planner' },
-  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-', moduleKey: 'wiki' },
+  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0', moduleKey: 'planner', deprecated: true },
+  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-', moduleKey: 'wiki', deprecated: true },
 ];
 
 const SECTIONS: { key: SectionKey; title: string }[] = [
@@ -281,6 +286,36 @@ export function HubSwitcher() {
             return (
               <Section key={key} title={title}>
                 {rows.map((hub) => {
+                  // Deprecated hub: shown but grayed-out, non-navigable.
+                  if (hub.deprecated) {
+                    return (
+                      <div
+                        key={hub.key}
+                        role="menuitem"
+                        aria-disabled="true"
+                        data-hub-deprecated={hub.key}
+                        title="This module has been deprecated"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '8px 12px',
+                          cursor: 'not-allowed',
+                          opacity: 0.55,
+                          userSelect: 'none',
+                        }}
+                      >
+                        <img
+                          src={HUB_ICON_REGISTRY[hub.key]}
+                          alt={hub.label}
+                          style={{ width: 32, height: 32, display: 'block', filter: 'grayscale(1)' }}
+                        />
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
+                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{hub.label} (deprecated)</span>
+                        </span>
+                      </div>
+                    );
+                  }
                   // Inaccessible hub: shown but grayed-out, non-navigable, locked.
                   if (!isAccessible(hub)) {
                     return (
