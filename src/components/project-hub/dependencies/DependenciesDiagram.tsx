@@ -42,24 +42,13 @@ function fmtDate(d: string | null | undefined): string {
   return t.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
-const COL_W = 320;
-const ROW_H = 168;
-const HEADER_H = 40;
-const PAD_X = 24;
-const PAD_Y = 16;
-const LANE_GAP = 16;
+const CARD_W = 280;
+const COL_W = 400;
+const ROW_H = 190;
+const HEADER_H = 48;
+const PAD_X = 32;
+const PAD_Y = 32;
 const LINK = 'var(--ds-link, #0C66E4)';
-
-const LANE_ORDER = ['To Do', 'In Progress', 'Done', 'No status'];
-
-function normalizeCategory(cat: string | null | undefined): string {
-  if (!cat) return 'No status';
-  const c = cat.toLowerCase().replace(/[_\s]/g, '');
-  if (c === 'todo' || c === 'new') return 'To Do';
-  if (c === 'inprogress' || c === 'indeterminate') return 'In Progress';
-  if (c === 'done' || c === 'complete') return 'Done';
-  return 'No status';
-}
 
 function computeDepth(
   keys: string[],
@@ -80,13 +69,13 @@ function computeDepth(
   return depth;
 }
 
-/* ── Status swimlane frame ─────────────────────────────────────────────── */
-function LaneNode({ data }: { data: any }) {
+/* ── Project frame (single swimlane) ───────────────────────────────────── */
+function FrameNode({ data }: { data: any }) {
   return (
     <div
       style={{
-        // Pure visual backdrop — must not intercept clicks meant for the
-        // edge labels / delete buttons that sit over the lane.
+        // Pure visual backdrop — must not intercept clicks meant for the edge
+        // labels / cards on top, and lets canvas-pan work when dragged over.
         pointerEvents: 'none',
         width: '100%',
         height: '100%',
@@ -95,8 +84,24 @@ function LaneNode({ data }: { data: any }) {
         border: '1px solid var(--ds-border, #DFE1E6)',
       }}
     >
-      <div style={{ padding: '12px 16px', fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtle, #505258)' }}>
-        {data.label}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px' }}>
+        <span
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 4,
+            background: 'var(--ds-background-brand-bold, #1868DB)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
+            fontSize: 11,
+            fontWeight: 700,
+          }}
+        >
+          {String(data.label || '?').slice(0, 1)}
+        </span>
+        <span style={{ fontSize: 14, fontWeight: 653, color: 'var(--ds-text, #292A2E)' }}>{data.label}</span>
       </div>
     </div>
   );
@@ -113,9 +118,9 @@ function WorkItemNode({ data }: { data: any }) {
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
-        width: 240,
-        padding: 12,
-        borderRadius: 6,
+        width: CARD_W,
+        padding: 16,
+        borderRadius: 8,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         boxShadow: 'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.13))',
@@ -296,7 +301,7 @@ interface DependenciesDiagramProps {
   onChanged: () => void;
 }
 
-function DiagramInner({ dependencies, issueMeta = {}, onAddClick, onChanged }: DependenciesDiagramProps) {
+function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, onChanged }: DependenciesDiagramProps) {
   const handleDeleteDep = useCallback(
     async (depId: number) => {
       try {
@@ -329,59 +334,46 @@ function DiagramInner({ dependencies, issueMeta = {}, onAddClick, onChanged }: D
       uniqueIssues,
       dependencies.map((d) => ({ source: d.source_issue_key, target: d.target_issue_key })),
     );
-    const maxDepth = uniqueIssues.reduce((m, k) => Math.max(m, depth[k] ?? 0), 0);
-    const frameWidth = PAD_X * 2 + (maxDepth + 1) * COL_W;
-
-    const laneKeys: Record<string, string[]> = {};
+    // Free graph layout inside ONE frame: x = dependency depth (column),
+    // y = row within column. Cards are top-level + draggable; the frame is a
+    // pure visual backdrop so canvas-pan works when dragged over it.
+    const colCount: Record<number, number> = {};
+    const rowOf: Record<string, number> = {};
+    let maxRows = 1;
+    let maxDepth = 0;
     for (const k of uniqueIssues) {
-      const lane = normalizeCategory(issueMeta[k]?.status_category);
-      (laneKeys[lane] ||= []).push(k);
+      const d = depth[k] ?? 0;
+      const r = colCount[d] ?? 0;
+      rowOf[k] = r;
+      colCount[d] = r + 1;
+      maxRows = Math.max(maxRows, r + 1);
+      maxDepth = Math.max(maxDepth, d);
     }
-    const lanes = LANE_ORDER.filter((l) => laneKeys[l]?.length);
+    const frameWidth = PAD_X * 2 + maxDepth * COL_W + CARD_W;
+    const frameHeight = HEADER_H + (maxRows - 1) * ROW_H + 140 + PAD_Y;
 
-    const frameNodes: Node[] = [];
-    const cardNodes: Node[] = [];
-    let cumY = 0;
+    const frame: Node = {
+      id: 'frame:project',
+      type: 'frame',
+      position: { x: 0, y: 0 },
+      data: { label: projectKey },
+      draggable: false,
+      selectable: false,
+      style: { width: frameWidth, height: frameHeight, zIndex: 0 },
+    };
 
-    for (const lane of lanes) {
-      const keys = laneKeys[lane];
-      const colCount: Record<number, number> = {};
-      const rowOf: Record<string, number> = {};
-      let maxRows = 1;
-      for (const k of keys) {
-        const d = depth[k] ?? 0;
-        const r = colCount[d] ?? 0;
-        rowOf[k] = r;
-        colCount[d] = r + 1;
-        maxRows = Math.max(maxRows, r + 1);
-      }
-      const laneHeight = HEADER_H + maxRows * ROW_H + PAD_Y;
+    const cards: Node[] = uniqueIssues.map((k) => ({
+      id: k,
+      type: 'workItem',
+      data: { label: k, meta: issueMeta[k] ?? null },
+      position: { x: PAD_X + (depth[k] ?? 0) * COL_W, y: HEADER_H + rowOf[k] * ROW_H },
+      draggable: true,
+      // frame (0) < edges (1) < cards (2): edges draw over the opaque frame.
+      zIndex: 2,
+    }));
 
-      frameNodes.push({
-        id: `lane:${lane}`,
-        type: 'lane',
-        position: { x: 0, y: cumY },
-        data: { label: lane },
-        draggable: false,
-        selectable: false,
-        style: { width: frameWidth, height: laneHeight, zIndex: 0, pointerEvents: 'none' },
-      });
-
-      for (const k of keys) {
-        cardNodes.push({
-          id: k,
-          type: 'workItem',
-          parentId: `lane:${lane}`,
-          extent: 'parent',
-          data: { label: k, meta: issueMeta[k] ?? null },
-          position: { x: PAD_X + (depth[k] ?? 0) * COL_W, y: HEADER_H + rowOf[k] * ROW_H },
-        });
-      }
-      cumY += laneHeight + LANE_GAP;
-    }
-
-    return [...frameNodes, ...cardNodes];
-  }, [uniqueIssues, dependencies, issueMeta]);
+    return [frame, ...cards];
+  }, [uniqueIssues, dependencies, issueMeta, projectKey]);
 
   const edges: Edge[] = useMemo(
     () =>
@@ -390,6 +382,7 @@ function DiagramInner({ dependencies, issueMeta = {}, onAddClick, onChanged }: D
         source: dep.source_issue_key,
         target: dep.target_issue_key,
         type: 'dependency',
+        zIndex: 1,
         // ads-scanner:ignore-next-line — SVG marker requires a concrete color, not a CSS var()
         markerEnd: { type: MarkerType.ArrowClosed, color: '#0C66E4' },
         data: {
@@ -401,7 +394,7 @@ function DiagramInner({ dependencies, issueMeta = {}, onAddClick, onChanged }: D
     [dependencies, handleDeleteDep],
   );
 
-  const nodeTypes = useMemo(() => ({ workItem: WorkItemNode, lane: LaneNode }), []);
+  const nodeTypes = useMemo(() => ({ workItem: WorkItemNode, frame: FrameNode }), []);
   const edgeTypes = useMemo(() => ({ dependency: DependencyEdge }), []);
 
   const [flowNodes, setNodes, onNodesChange] = useNodesState(nodes);
@@ -430,7 +423,7 @@ function DiagramInner({ dependencies, issueMeta = {}, onAddClick, onChanged }: D
           {dependencies.length} {dependencies.length === 1 ? 'dependency' : 'dependencies'}
         </span>
         <span style={{ flex: 1 }} />
-        <Button appearance="primary" iconBefore={Plus} onClick={onAddClick}>
+        <Button appearance="default" iconBefore={Plus} onClick={onAddClick}>
           Add dependency
         </Button>
       </div>
