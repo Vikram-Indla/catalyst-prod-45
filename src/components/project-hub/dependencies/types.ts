@@ -20,5 +20,6 @@ export type IssueMeta = Record<
     status?: string | null;
     status_category?: string | null;
     due_date?: string | null;
+    assignee_account_id?: string | null;
   }
 >;

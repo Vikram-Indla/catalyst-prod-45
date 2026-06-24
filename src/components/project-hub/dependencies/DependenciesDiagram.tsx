@@ -27,7 +27,7 @@ import {
 } from '@xyflow/react';
 // ads-scanner:ignore-next-line — React Flow's stylesheet is required for the canvas to render
 import '@xyflow/react/dist/style.css';
-import { Plus, Minus, MoreHorizontal, Link, Unlink } from '@/lib/atlaskit-icons';
+import { Plus, Minus, MoreHorizontal, Link, Unlink, ChevronDown, User } from '@/lib/atlaskit-icons';
 import Button from '@atlaskit/button/new';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusPill } from '@/components/shared/JiraTable/cells';
@@ -58,7 +58,32 @@ const ROW_H = 190;
 const HEADER_H = 48;
 const PAD_X = 32;
 const PAD_Y = 32;
+const LANE_GAP = 24;
 const LINK = 'var(--ds-link, #0C66E4)';
+
+type GroupBy = 'none' | 'status' | 'type' | 'assignee';
+type LinkType = 'all' | 'blocks' | 'is_blocked_by';
+
+const STATUS_ORDER = ['To Do', 'In Progress', 'Done', 'No status'];
+
+function normalizeCategory(cat: string | null | undefined): string {
+  if (!cat) return 'No status';
+  const c = cat.toLowerCase().replace(/[_\s]/g, '');
+  if (c === 'todo' || c === 'new') return 'To Do';
+  if (c === 'inprogress' || c === 'indeterminate') return 'In Progress';
+  if (c === 'done' || c === 'complete') return 'Done';
+  return 'No status';
+}
+
+function groupValue(meta: any, by: GroupBy): string {
+  if (by === 'status') return normalizeCategory(meta?.status_category);
+  if (by === 'type') return meta?.issue_type ?? 'No type';
+  if (by === 'assignee') {
+    const a = meta?.assignee_account_id;
+    return a ? `Assignee …${String(a).slice(-4)}` : 'Unassigned';
+  }
+  return 'all';
+}
 
 function computeDepth(
   keys: string[],
@@ -448,9 +473,13 @@ function RelationshipPopup({
 function ZoomBar({
   zoomOnScroll,
   onToggleScroll,
+  locked,
+  onToggleLock,
 }: {
   zoomOnScroll: boolean;
   onToggleScroll: () => void;
+  locked: boolean;
+  onToggleLock: () => void;
 }) {
   const { zoomIn, zoomOut, fitView, setViewport } = useReactFlow();
   const { zoom } = useViewport();
@@ -502,7 +531,123 @@ function ZoomBar({
       <button type="button" style={btn} onClick={() => setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 200 })}>
         Reset
       </button>
+      <span style={{ width: 1, height: 20, background: 'var(--ds-border, #DFE1E6)' }} />
+      <button
+        type="button"
+        aria-label={locked ? 'Unlock canvas (enable drag)' : 'Lock canvas (disable drag)'}
+        aria-pressed={locked}
+        style={{ ...btn, color: locked ? 'var(--ds-text-selected, #1868DB)' : 'var(--ds-text, #292A2E)' }}
+        onClick={onToggleLock}
+      >
+        <User size={16} />
+      </button>
     </div>
+  );
+}
+
+/* ── Filter chip (portal dropdown) ─────────────────────────────────────── */
+function ChipSelect<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+  active,
+  disabled,
+}: {
+  label: string;
+  value: T;
+  options: Array<{ value: T; label: string }>;
+  onChange: (v: T) => void;
+  active?: boolean;
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) && !btnRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setOpen(false); } };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey, true); };
+  }, [open]);
+
+  const current = options.find((o) => o.value === value)?.label ?? '';
+  const rect = btnRef.current?.getBoundingClientRect();
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        disabled={disabled}
+        onClick={() => !disabled && setOpen((v) => !v)}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          height: 32,
+          padding: '0 8px',
+          borderRadius: 4,
+          border: `1px solid ${active ? 'var(--ds-border-selected, #1868DB)' : 'var(--ds-border, #DFE1E6)'}`,
+          background: 'var(--ds-surface, #FFFFFF)',
+          color: disabled ? 'var(--ds-text-disabled, #B3B9C4)' : active ? 'var(--ds-text-selected, #1868DB)' : 'var(--ds-text, #292A2E)',
+          fontSize: 14,
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {label}{active && current ? `: ${current}` : ''}
+        {!disabled ? <ChevronDown size={16} /> : null}
+      </button>
+      {open && rect
+        ? createPortal(
+            <div
+              ref={menuRef}
+              role="menu"
+              style={{
+                position: 'fixed',
+                top: rect.bottom + 4,
+                left: rect.left,
+                minWidth: 180,
+                zIndex: 9999,
+                background: 'var(--ds-surface-overlay, #FFFFFF)',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 8,
+                boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
+                padding: '4px 0',
+              }}
+            >
+              {options.map((o) => (
+                <button
+                  key={o.value}
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={o.value === value}
+                  onClick={() => { setOpen(false); onChange(o.value); }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '8px 16px',
+                    border: 'none',
+                    background: o.value === value ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                    textAlign: 'left',
+                    fontSize: 14,
+                    cursor: 'pointer',
+                    color: 'var(--ds-text, #292A2E)',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   );
 }
 
@@ -533,74 +678,119 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
     [onChanged],
   );
 
+  const [groupBy, setGroupBy] = useState<GroupBy>('none');
+  const [linkType, setLinkType] = useState<LinkType>('all');
+  const [locked, setLocked] = useState(false);
+
+  const filteredDeps = useMemo(
+    () => (linkType === 'all' ? dependencies : dependencies.filter((d) => d.dependency_type === linkType)),
+    [dependencies, linkType],
+  );
+
   const uniqueIssues = useMemo(() => {
     const keys = new Set<string>();
-    dependencies.forEach((dep) => {
+    filteredDeps.forEach((dep) => {
       keys.add(dep.source_issue_key);
       keys.add(dep.target_issue_key);
     });
     return Array.from(keys).sort();
-  }, [dependencies]);
+  }, [filteredDeps]);
+
+  const cardData = useCallback(
+    (k: string) => ({
+      label: k,
+      meta: issueMeta[k] ?? null,
+      onAddDependency: onAddClick,
+      onLocate: () => { window.location.href = `/project-hub/${projectKey}/timeline`; },
+    }),
+    [issueMeta, onAddClick, projectKey],
+  );
 
   const nodes: Node[] = useMemo(() => {
     const depth = computeDepth(
       uniqueIssues,
-      dependencies.map((d) => ({ source: d.source_issue_key, target: d.target_issue_key })),
+      filteredDeps.map((d) => ({ source: d.source_issue_key, target: d.target_issue_key })),
     );
-    // Free graph layout inside ONE frame: x = dependency depth (column),
-    // y = row within column. Cards are top-level + draggable; the frame is a
-    // pure visual backdrop so canvas-pan works when dragged over it.
-    const colCount: Record<number, number> = {};
-    const rowOf: Record<string, number> = {};
-    let maxRows = 1;
-    let maxDepth = 0;
-    for (const k of uniqueIssues) {
-      const d = depth[k] ?? 0;
-      const r = colCount[d] ?? 0;
-      rowOf[k] = r;
-      colCount[d] = r + 1;
-      maxRows = Math.max(maxRows, r + 1);
-      maxDepth = Math.max(maxDepth, d);
-    }
-    const frameWidth = PAD_X * 2 + maxDepth * COL_W + CARD_W;
-    const frameHeight = HEADER_H + (maxRows - 1) * ROW_H + 140 + PAD_Y;
-
-    const frame: Node = {
-      id: 'frame:project',
-      type: 'frame',
-      position: { x: 0, y: 0 },
-      data: { label: projectKey },
-      draggable: false,
-      selectable: false,
-      style: { width: frameWidth, height: frameHeight, zIndex: 0 },
-    };
-
-    const cards: Node[] = uniqueIssues.map((k) => ({
+    const card = (k: string, x: number, y: number): Node => ({
       id: k,
       type: 'workItem',
-      data: {
-        label: k,
-        meta: issueMeta[k] ?? null,
-        onAddDependency: onAddClick,
-        onLocate: () => {
-          window.location.href = `/project-hub/${projectKey}/timeline`;
-        },
-      },
-      position: { x: PAD_X + (depth[k] ?? 0) * COL_W, y: HEADER_H + rowOf[k] * ROW_H },
-      draggable: true,
-      // frame (0) < edges (1) < cards (2): edges draw over the opaque frame.
-      zIndex: 2,
-    }));
+      data: cardData(k),
+      position: { x, y },
+      draggable: !locked,
+      zIndex: 2, // frame(0) < edges(1) < cards(2)
+    });
 
-    return [frame, ...cards];
-  }, [uniqueIssues, dependencies, issueMeta, projectKey, onAddClick]);
+    if (groupBy === 'none') {
+      const colCount: Record<number, number> = {};
+      const rowOf: Record<string, number> = {};
+      let maxRows = 1;
+      let maxDepth = 0;
+      for (const k of uniqueIssues) {
+        const d = depth[k] ?? 0;
+        const r = colCount[d] ?? 0;
+        rowOf[k] = r;
+        colCount[d] = r + 1;
+        maxRows = Math.max(maxRows, r + 1);
+        maxDepth = Math.max(maxDepth, d);
+      }
+      const frame: Node = {
+        id: 'frame:project',
+        type: 'frame',
+        position: { x: 0, y: 0 },
+        data: { label: projectKey },
+        draggable: false,
+        selectable: false,
+        style: { width: PAD_X * 2 + maxDepth * COL_W + CARD_W, height: HEADER_H + (maxRows - 1) * ROW_H + 140 + PAD_Y, zIndex: 0 },
+      };
+      return [frame, ...uniqueIssues.map((k) => card(k, PAD_X + (depth[k] ?? 0) * COL_W, HEADER_H + rowOf[k] * ROW_H))];
+    }
+
+    // Grouped: one frame per group value, stacked vertically.
+    const buckets: Record<string, string[]> = {};
+    for (const k of uniqueIssues) (buckets[groupValue(issueMeta[k], groupBy)] ||= []).push(k);
+    const order = (a: string, b: string) => {
+      if (groupBy === 'status') return STATUS_ORDER.indexOf(a) - STATUS_ORDER.indexOf(b);
+      return a.localeCompare(b);
+    };
+    const groups = Object.keys(buckets).sort(order);
+    const maxDepth = uniqueIssues.reduce((m, k) => Math.max(m, depth[k] ?? 0), 0);
+    const frameWidth = PAD_X * 2 + maxDepth * COL_W + CARD_W;
+
+    const frames: Node[] = [];
+    const cards: Node[] = [];
+    let cumY = 0;
+    for (const g of groups) {
+      const keys = buckets[g];
+      const colCount: Record<number, number> = {};
+      const rowOf: Record<string, number> = {};
+      let maxRows = 1;
+      for (const k of keys) {
+        const d = depth[k] ?? 0;
+        const r = colCount[d] ?? 0;
+        rowOf[k] = r; colCount[d] = r + 1; maxRows = Math.max(maxRows, r + 1);
+      }
+      const frameHeight = HEADER_H + (maxRows - 1) * ROW_H + 140 + PAD_Y;
+      frames.push({
+        id: `frame:${g}`,
+        type: 'frame',
+        position: { x: 0, y: cumY },
+        data: { label: g },
+        draggable: false,
+        selectable: false,
+        style: { width: frameWidth, height: frameHeight, zIndex: 0 },
+      });
+      for (const k of keys) cards.push(card(k, PAD_X + (depth[k] ?? 0) * COL_W, cumY + HEADER_H + rowOf[k] * ROW_H));
+      cumY += frameHeight + LANE_GAP;
+    }
+    return [...frames, ...cards];
+  }, [uniqueIssues, filteredDeps, issueMeta, projectKey, groupBy, locked, cardData]);
 
   const [sel, setSel] = useState<any>(null);
   const onSelectEdge = useCallback((d: any, point: { x: number; y: number }) => setSel({ ...d, x: point.x, y: point.y }), []);
 
   const edges: Edge[] = useMemo(
     () =>
-      dependencies.map((dep) => ({
+      filteredDeps.map((dep) => ({
         id: `dep-${dep.id}`,
         source: dep.source_issue_key,
         target: dep.target_issue_key,
@@ -618,7 +808,7 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
           onSelect: onSelectEdge,
         },
       })),
-    [dependencies, issueMeta, onSelectEdge],
+    [filteredDeps, issueMeta, onSelectEdge],
   );
 
   const nodeTypes = useMemo(() => ({ workItem: WorkItemNode, frame: FrameNode }), []);
@@ -635,21 +825,58 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
 
   return (
     <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-      {/* Toolbar */}
+      {/* Filter toolbar (Jira Plans parity) */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 12,
+          gap: 8,
           padding: '12px 16px',
           borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           background: 'var(--ds-surface, #FFFFFF)',
+          flexWrap: 'wrap',
         }}
       >
-        <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)' }}>
-          {dependencies.length} {dependencies.length === 1 ? 'dependency' : 'dependencies'}
-        </span>
+        {/* Roll-up to / Space / Sprint / Work item: rendered for parity but
+            not applicable to a single Catalyst project — disabled. */}
+        <ChipSelect label="Roll-up to" value={'story' as any} options={[{ value: 'story' as any, label: 'Story' }]} onChange={() => {}} disabled />
+        <ChipSelect<GroupBy>
+          label="Group by"
+          value={groupBy}
+          active={groupBy !== 'none'}
+          options={[
+            { value: 'none', label: 'None' },
+            { value: 'status', label: 'Status' },
+            { value: 'type', label: 'Type' },
+            { value: 'assignee', label: 'Assignee' },
+          ]}
+          onChange={setGroupBy}
+        />
+        <ChipSelect label="Space" value={'x' as any} options={[{ value: 'x' as any, label: '' }]} onChange={() => {}} disabled />
+        <ChipSelect label="Sprint" value={'x' as any} options={[{ value: 'x' as any, label: '' }]} onChange={() => {}} disabled />
+        <ChipSelect label="Work item" value={'x' as any} options={[{ value: 'x' as any, label: '' }]} onChange={() => {}} disabled />
+        <ChipSelect<LinkType>
+          label="Issue link type"
+          value={linkType}
+          active={linkType !== 'all'}
+          options={[
+            { value: 'all', label: 'All' },
+            { value: 'blocks', label: 'Blocks' },
+            { value: 'is_blocked_by', label: 'Is blocked by' },
+          ]}
+          onChange={setLinkType}
+        />
+        <button
+          type="button"
+          onClick={() => { setGroupBy('none'); setLinkType('all'); }}
+          style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 14, cursor: 'pointer', padding: '0 8px', height: 32 }}
+        >
+          Reset
+        </button>
         <span style={{ flex: 1 }} />
+        <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #505258)' }}>
+          {filteredDeps.length} {filteredDeps.length === 1 ? 'dependency' : 'dependencies'}
+        </span>
         <Button appearance="default" iconBefore={Plus} onClick={onAddClick}>
           Add dependency
         </Button>
@@ -670,12 +897,18 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
           fitViewOptions={{ padding: 0.2 }}
           minZoom={0.2}
           maxZoom={2}
+          nodesDraggable={!locked}
           zoomOnScroll={zoomOnScroll}
           panOnScroll
           proOptions={{ hideAttribution: true }}
           style={{ background: 'var(--ds-surface, #FFFFFF)' }}
         />
-        <ZoomBar zoomOnScroll={zoomOnScroll} onToggleScroll={() => setZoomOnScroll((v) => !v)} />
+        <ZoomBar
+          zoomOnScroll={zoomOnScroll}
+          onToggleScroll={() => setZoomOnScroll((v) => !v)}
+          locked={locked}
+          onToggleLock={() => setLocked((v) => !v)}
+        />
       </div>
       {sel ? <RelationshipPopup sel={sel} onUnlink={handleDeleteDep} onClose={() => setSel(null)} /> : null}
     </div>
