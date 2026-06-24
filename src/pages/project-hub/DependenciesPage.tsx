@@ -135,7 +135,7 @@ export default function DependenciesPage() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16, flex: 1, minHeight: 0 }}>
             <DependencyList dependencies={dependencies!} issueMeta={issueMeta} onChanged={refetch} />
-            <div style={{ flex: 1, minHeight: 240, display: 'flex' }}>
+            <div style={{ height: 600, minHeight: 600, display: 'flex' }}>
               <DependenciesDiagram
                 projectKey={key || ''}
                 dependencies={dependencies!}

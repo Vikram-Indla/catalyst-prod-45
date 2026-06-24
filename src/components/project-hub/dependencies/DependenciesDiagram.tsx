@@ -40,16 +40,31 @@ function fmtDate(d: string | null | undefined): string {
 
 const COL_W = 320;
 const ROW_H = 160;
+const HEADER_H = 36;
+const PAD_X = 24;
+const PAD_Y = 12;
+const LANE_GAP = 16;
+
+// Swimlane order; any other/unknown category falls into "No status".
+const LANE_ORDER = ['To Do', 'In Progress', 'Done', 'No status'];
+
+function normalizeCategory(cat: string | null | undefined): string {
+  if (!cat) return 'No status';
+  const c = cat.toLowerCase().replace(/[_\s]/g, '');
+  if (c === 'todo' || c === 'new') return 'To Do';
+  if (c === 'inprogress' || c === 'indeterminate') return 'In Progress';
+  if (c === 'done' || c === 'complete') return 'Done';
+  return 'No status';
+}
 
 /**
- * Layered left→right layout for a dependency DAG. Each node's column = longest
- * path from a root (a node with no incoming edge); nodes sharing a column stack
- * vertically. Relaxation is capped at N iterations so a cyclic graph terminates.
+ * Longest-path depth per node (column). Relaxation capped at N iterations so a
+ * cyclic graph terminates.
  */
-function layeredLayout(
+function computeDepth(
   keys: string[],
   edges: Array<{ source: string; target: string }>,
-): Record<string, { x: number; y: number }> {
+): Record<string, number> {
   const depth: Record<string, number> = Object.fromEntries(keys.map((k) => [k, 0]));
   for (let i = 0; i < keys.length; i++) {
     let changed = false;
@@ -62,15 +77,33 @@ function layeredLayout(
     }
     if (!changed) break;
   }
-  const byCol: Record<number, string[]> = {};
-  for (const k of keys) (byCol[depth[k]] ||= []).push(k);
-  const pos: Record<string, { x: number; y: number }> = {};
-  for (const col of Object.keys(byCol)) {
-    byCol[+col].forEach((k, row) => {
-      pos[k] = { x: +col * COL_W, y: row * ROW_H + 40 };
-    });
-  }
-  return pos;
+  return depth;
+}
+
+/** Renders a status swimlane frame (header label + bordered container). */
+function LaneNode({ data }: { data: any }) {
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        borderRadius: 6,
+        background: 'var(--ds-surface-sunken, #F7F8F9)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+      }}
+    >
+      <div
+        style={{
+          padding: '8px 12px',
+          fontSize: 12,
+          fontWeight: 653,
+          color: 'var(--ds-text-subtle, #505258)',
+        }}
+      >
+        {data.label}
+      </div>
+    </div>
+  );
 }
 
 type Dependency = {
@@ -173,18 +206,68 @@ export default function DependenciesDiagram({
     return Array.from(keys).sort();
   }, [dependencies]);
 
-  // Layered left→right layout driven by the dependency edges (source → target).
+  // Grouped layout: vertical status swimlanes (frames), cards placed by
+  // dependency depth (x) within their status lane (y). Mirrors Jira Plans'
+  // "Group by" dependency report.
   const nodes: Node[] = useMemo(() => {
-    const layout = layeredLayout(
+    const depth = computeDepth(
       uniqueIssues,
       dependencies.map((d) => ({ source: d.source_issue_key, target: d.target_issue_key })),
     );
-    return uniqueIssues.map((key) => ({
-      id: key,
-      type: 'workItem',
-      data: { label: key, meta: issueMeta[key] ?? null },
-      position: layout[key] ?? { x: 0, y: 0 },
-    }));
+    const maxDepth = uniqueIssues.reduce((m, k) => Math.max(m, depth[k] ?? 0), 0);
+    const frameWidth = PAD_X * 2 + (maxDepth + 1) * COL_W;
+
+    // Bucket keys by lane, preserving LANE_ORDER and dropping empty lanes.
+    const laneKeys: Record<string, string[]> = {};
+    for (const k of uniqueIssues) {
+      const lane = normalizeCategory(issueMeta[k]?.status_category);
+      (laneKeys[lane] ||= []).push(k);
+    }
+    const lanes = LANE_ORDER.filter((l) => laneKeys[l]?.length);
+
+    const frameNodes: Node[] = [];
+    const cardNodes: Node[] = [];
+    let cumY = 0;
+
+    for (const lane of lanes) {
+      const keys = laneKeys[lane];
+      // Row within (lane, column): index among same-lane same-depth nodes.
+      const colCount: Record<number, number> = {};
+      const rowOf: Record<string, number> = {};
+      let maxRows = 1;
+      for (const k of keys) {
+        const d = depth[k] ?? 0;
+        const r = colCount[d] ?? 0;
+        rowOf[k] = r;
+        colCount[d] = r + 1;
+        maxRows = Math.max(maxRows, r + 1);
+      }
+      const laneHeight = HEADER_H + maxRows * ROW_H + PAD_Y;
+
+      frameNodes.push({
+        id: `lane:${lane}`,
+        type: 'lane',
+        position: { x: 0, y: cumY },
+        data: { label: lane },
+        draggable: false,
+        selectable: false,
+        style: { width: frameWidth, height: laneHeight, zIndex: 0 },
+      });
+
+      for (const k of keys) {
+        cardNodes.push({
+          id: k,
+          type: 'workItem',
+          parentId: `lane:${lane}`,
+          extent: 'parent',
+          data: { label: k, meta: issueMeta[k] ?? null },
+          position: { x: PAD_X + (depth[k] ?? 0) * COL_W, y: HEADER_H + rowOf[k] * ROW_H },
+        });
+      }
+      cumY += laneHeight + LANE_GAP;
+    }
+
+    return [...frameNodes, ...cardNodes];
   }, [uniqueIssues, dependencies, issueMeta]);
 
   // Create edges from dependencies
@@ -208,6 +291,7 @@ export default function DependenciesDiagram({
   const nodeTypes = useMemo(
     () => ({
       workItem: WorkItemNode,
+      lane: LaneNode,
     }),
     []
   );
