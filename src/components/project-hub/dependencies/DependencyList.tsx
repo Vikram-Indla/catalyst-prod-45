@@ -16,7 +16,16 @@ import { catalystToast } from '@/lib/catalystToast';
 import { IconButton } from '@atlaskit/button/new';
 import { Trash2 } from '@/lib/atlaskit-icons';
 
-export type IssueMeta = Record<string, { issue_type: string | null; summary: string | null }>;
+export type IssueMeta = Record<
+  string,
+  {
+    issue_type: string | null;
+    summary: string | null;
+    status?: string | null;
+    status_category?: string | null;
+    due_date?: string | null;
+  }
+>;
 
 type Dependency = {
   id: number;

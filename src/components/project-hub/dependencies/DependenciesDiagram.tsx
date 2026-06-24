@@ -27,7 +27,16 @@ import '@xyflow/react/dist/style.css';
 import { Plus } from '@/lib/atlaskit-icons';
 import Button from '@atlaskit/button/new';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusPill } from '@/components/shared/JiraTable/cells';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import type { IssueMeta } from './DependencyList';
+
+function fmtDate(d: string | null | undefined): string {
+  if (!d) return '—';
+  const t = new Date(d);
+  if (Number.isNaN(t.getTime())) return '—';
+  return t.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
 
 type Dependency = {
   id: number;
@@ -41,13 +50,6 @@ type Dependency = {
   deleted_at: string | null;
 };
 
-const COLORS = {
-  todo: 'var(--ds-background-neutral, #DFE1E6)',
-  inprogress: 'var(--ds-background-information-bold, #669DF1)',
-  done: 'var(--ds-background-success-bold, #94C748)',
-  default: 'var(--ds-background-neutral, #F1F2F4)',
-};
-
 interface DependenciesDiagramProps {
   projectKey: string;
   dependencies: Dependency[];
@@ -57,27 +59,63 @@ interface DependenciesDiagramProps {
 }
 
 function WorkItemNode({ data }: { data: any }) {
+  const m = data.meta || {};
+  const label = data.label as string;
+  const meta = { fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' };
   return (
     <div
       style={{
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 6,
-        padding: '8px 12px',
+        flexDirection: 'column',
+        gap: 8,
+        width: 220,
+        padding: 12,
         borderRadius: 3,
-        background: data.bgColor || COLORS.default,
+        background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: `1px solid var(--ds-border, #DFE1E6)`,
-        minWidth: 120,
-        fontSize: 12,
-        fontWeight: 500,
-        whiteSpace: 'nowrap',
         boxShadow: 'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.13))',
+        textAlign: 'left',
       }}
     >
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
-      {data.issueType ? <JiraIssueTypeIcon type={data.issueType} size={16} /> : null}
-      {data.label}
+
+      {/* Row 1 — type icon + key */}
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        {m.issue_type ? <JiraIssueTypeIcon type={m.issue_type} size={16} /> : null}
+        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-link, #0C66E4)' }}>{label}</span>
+      </span>
+
+      {/* Row 2 — summary (2-line clamp) */}
+      {m.summary ? (
+        <span
+          style={{
+            fontSize: 14,
+            color: 'var(--ds-text, #292A2E)',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {m.summary}
+        </span>
+      ) : null}
+
+      {/* Row 3 — dates + status */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
+        <span style={{ display: 'flex', gap: 12 }}>
+          <span style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={meta}>Start date</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text, #292A2E)' }}>—</span>
+          </span>
+          <span style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={meta}>End date</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text, #292A2E)' }}>{fmtDate(m.due_date)}</span>
+          </span>
+        </span>
+        {m.status ? <StatusPill appearance={statusToLozenge(m.status)}>{m.status}</StatusPill> : null}
+      </div>
+
       <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
     </div>
   );
@@ -106,8 +144,8 @@ export default function DependenciesDiagram({
       uniqueIssues.map((key, idx) => ({
         id: key,
         type: 'workItem',
-        data: { label: key, bgColor: COLORS.default, issueType: issueMeta[key]?.issue_type ?? null },
-        position: { x: idx * 200, y: 100 },
+        data: { label: key, meta: issueMeta[key] ?? null },
+        position: { x: idx * 320, y: 80 },
       })),
     [uniqueIssues, issueMeta]
   );

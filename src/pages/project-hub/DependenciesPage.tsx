@@ -75,10 +75,19 @@ export default function DependenciesPage() {
       if (keys.length > 0) {
         const { data: issues } = await supabase
           .from('ph_issues')
-          .select('issue_key, issue_type, summary')
+          .select('issue_key, issue_type, summary, status, status_category, due_date')
           .in('issue_key', keys);
         issueMeta = Object.fromEntries(
-          (issues || []).map((r: any) => [r.issue_key, { issue_type: r.issue_type ?? null, summary: r.summary ?? null }]),
+          (issues || []).map((r: any) => [
+            r.issue_key,
+            {
+              issue_type: r.issue_type ?? null,
+              summary: r.summary ?? null,
+              status: r.status ?? null,
+              status_category: r.status_category ?? null,
+              due_date: r.due_date ?? null,
+            },
+          ]),
         );
       }
 
