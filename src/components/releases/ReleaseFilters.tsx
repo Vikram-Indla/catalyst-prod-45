@@ -18,6 +18,7 @@ import {
 import { createPortal } from 'react-dom';
 import { Checkbox } from '@atlaskit/checkbox';
 import SearchIcon from '@atlaskit/icon/glyph/search';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 import Tooltip from '@atlaskit/tooltip';
 
 // ───────────────────────── shared pill + portal ─────────────────────────
@@ -228,6 +229,8 @@ function CheckboxRow({
         display: 'flex',
         alignItems: 'center',
         gap: 8,
+        width: '100%',
+        boxSizing: 'border-box',
         padding: '6px 12px 6px 16px',
         cursor: 'pointer',
         background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
@@ -285,6 +288,8 @@ function RadioRow({
         display: 'flex',
         alignItems: 'center',
         gap: 8,
+        width: '100%',
+        boxSizing: 'border-box',
         padding: '8px 12px 8px 16px',
         cursor: 'pointer',
         background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
@@ -562,6 +567,152 @@ export function GroupFilter({
               }}
             />
           ))}
+        </div>
+      </PopupShell>
+    </>
+  );
+}
+
+// ───────────────────────── Product select (single value, search) ─────────────────────────
+// Single-select autofill — used inside forms (Create release modal, etc.).
+// Trigger renders as a full-width form field: white bg, gray border idle,
+// blue border on open. Selected value shown as plain text inside.
+
+export function ProductSelect({
+  options,
+  value,
+  onChange,
+  placeholder = 'Select a product',
+  searchPlaceholder = 'Search products',
+  hasError = false,
+  width = '100%',
+}: {
+  options: ProductOption[];
+  value: string | null;
+  onChange: (id: string | null) => void;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  hasError?: boolean;
+  width?: number | string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const pos = useAnchoredPopup(open, triggerRef);
+  useDismiss(open, () => { setOpen(false); setQuery(''); }, triggerRef, popupRef);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return options;
+    return options.filter(
+      (o) => o.name.toLowerCase().includes(q) || (o.tag?.toLowerCase().includes(q) ?? false),
+    );
+  }, [options, query]);
+
+  const selected = options.find((o) => o.id === value) ?? null;
+
+  const fieldStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width,
+    height: 36,
+    padding: '0 10px',
+    borderRadius: 3,
+    border: `1px solid ${open ? PILL_BLUE : hasError ? 'var(--ds-border-danger, #AE2A19)' : 'var(--ds-border, #DFE1E6)'}`,
+    background: '#FFFFFF',
+    color: selected ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
+    fontSize: 14,
+    fontWeight: 400,
+    fontFamily: 'inherit',
+    cursor: 'pointer',
+    outline: 'none',
+    textAlign: 'left',
+    boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+  };
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        style={fieldStyle}
+      >
+        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {selected ? selected.name : placeholder}
+        </span>
+        {selected && (
+          <span
+            role="button"
+            tabIndex={0}
+            aria-label="Clear product"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onChange(null);
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                onChange(null);
+              }
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 20,
+              height: 20,
+              marginLeft: 8,
+              borderRadius: 3,
+              color: 'var(--ds-text-subtle, #6B778C)',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+              (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #292A2E)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'transparent';
+              (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #6B778C)';
+            }}
+          >
+            <CrossIcon label="" size="small" />
+          </span>
+        )}
+      </button>
+      <PopupShell open={open} pos={pos} popupRef={popupRef} width={280}>
+        <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+          <SearchInput value={query} onChange={setQuery} placeholder={searchPlaceholder} />
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
+          {filtered.length === 0 ? (
+            <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              No matches
+            </div>
+          ) : (
+            filtered.map((opt) => (
+              <RadioRow
+                key={opt.id}
+                checked={value === opt.id}
+                label={opt.tag ? `${opt.name} (${opt.tag})` : opt.name}
+                onSelect={() => {
+                  onChange(opt.id);
+                  setOpen(false);
+                  setQuery('');
+                }}
+              />
+            ))
+          )}
         </div>
       </PopupShell>
     </>
