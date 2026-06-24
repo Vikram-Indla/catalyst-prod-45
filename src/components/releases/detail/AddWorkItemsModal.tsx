@@ -167,7 +167,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
     },
     onSuccess: async (updatedCount) => {
       await queryClient.refetchQueries({
-        predicate: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === 'release-work-items',
+        predicate: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === 'ph_release_items',
       });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
       catalystFlag.success(`Added ${updatedCount} work item${updatedCount === 1 ? '' : 's'} to "${release.name}".`);

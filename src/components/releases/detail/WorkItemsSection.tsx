@@ -142,7 +142,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
   }, []);
 
   const { data: items = [], isLoading, error } = useQuery<Issue[]>({
-    queryKey: ['release-work-items', releaseId, releaseName],
+    queryKey: ['ph_release_items', releaseId, releaseName],
     queryFn: async () => {
       const target = (releaseName || '').trim();
       if (!target) return [];
@@ -310,7 +310,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['release-work-items', releaseId, releaseName] });
+      queryClient.invalidateQueries({ queryKey: ['ph_release_items', releaseId, releaseName] });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
       catalystFlag.success('Removed from version.');
     },
@@ -462,20 +462,18 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                 maxHeight: 560,
               }}
             >
-              {visibleItems
-                .filter((it) => (it.issue_key || '').trim() && (it.summary || '').trim())
-                .map((it, idx, arr) => (
-                  <WorkItemRow
-                    key={it.id}
-                    item={it}
-                    display={display}
-                    releaseName={releaseName}
-                    projectId={projectId}
-                    isLast={!hasMore && idx === arr.length - 1}
-                    onRemove={() => removeMutation.mutate(it.id)}
-                    onOpen={() => onOpenItem?.({ issueKey: it.issue_key, issueType: it.issue_type })}
-                  />
-                ))}
+              {visibleItems.map((it, idx) => (
+                <WorkItemRow
+                  key={it.id}
+                  item={it}
+                  display={display}
+                  releaseName={releaseName}
+                  projectId={projectId}
+                  isLast={!hasMore && idx === visibleItems.length - 1}
+                  onRemove={() => removeMutation.mutate(it.id)}
+                  onOpen={() => onOpenItem?.({ issueKey: it.issue_key, issueType: it.issue_type })}
+                />
+              ))}
               {isLoading && (
                 <div style={{ padding: '16px 12px', color: SUBTLEST, fontSize: 13 }}>Loading work items…</div>
               )}

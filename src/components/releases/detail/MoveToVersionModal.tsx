@@ -70,7 +70,7 @@ export function MoveToVersionModal({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
-      queryClient.invalidateQueries({ queryKey: ['release-work-items'] });
+      queryClient.invalidateQueries({ queryKey: ['ph_release_items'] });
       catalystFlag.success('Work item moved.');
       onSuccess?.();
       onClose();

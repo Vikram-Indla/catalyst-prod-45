@@ -68,13 +68,13 @@ export function ReleaseSidePanel(props: Props) {
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
   };
 
-  // Contributors: derive from assignees of items linked to this release
-  // (uses same cache key as WorkItemsSection — cache hit, no extra fetch).
+  // Contributors: derive from assignees of items linked to this release.
+  // SEPARATE queryKey from WorkItemsSection — earlier the two shared a key
+  // but their queryFns selected different columns, so this minimal fetch
+  // would overwrite the full-row cache on re-mount and wipe key/summary.
   const { data: items = [] } = useQuery({
-    queryKey: ['release-work-items', releaseId, releaseName],
+    queryKey: ['ph_release_contributors', releaseId, releaseName],
     queryFn: async () => {
-      // No-op fetch — only consume cache; WorkItemsSection is the producer.
-      // If cache miss (rare), do a minimal fetch for assignee fields only.
       const { data } = await supabase
         .from('ph_issues')
         .select('assignee_account_id, assignee_display_name, sprint_release')

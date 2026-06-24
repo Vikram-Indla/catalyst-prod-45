@@ -26,7 +26,7 @@ import type { AdfDoc } from '@/components/catalyst-detail-views/shared/sections/
 import { ReleaseSummaryCard } from '@/components/releases/detail/summarize/ReleaseSummaryCard';
 import { useCatyReleaseSummarize } from '@/components/releases/detail/summarize/catyReleaseSummarizeStore';
 import { useReleaseSummaryStream } from '@/components/releases/detail/summarize/useReleaseSummaryStream';
-import { WorkItemSidePanel } from '@/components/releases/detail/WorkItemSidePanel';
+import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 
 const BORDER = 'var(--ds-border, #DFE1E6)';
 const TEXT = 'var(--ds-text, #292A2E)';
@@ -298,11 +298,16 @@ export function ReleaseDetailPage() {
 
       {!sidebarCollapsed && (
         selectedItem ? (
-          <WorkItemSidePanel
-            issueKey={selectedItem.issueKey}
-            issueType={selectedItem.issueType}
+          <CatalystDetailPanel
+            isOpen
+            inline
+            width={440}
+            itemId={selectedItem.issueKey}
+            itemType={selectedItem.issueType ?? undefined}
+            typeIconLabel={selectedItem.issueType ?? undefined}
             projectId={release.project_id}
             projectKey={project?.key ?? ''}
+            entityKind="ph_issue"
             onClose={() => setSelectedItem(null)}
           />
         ) : (
