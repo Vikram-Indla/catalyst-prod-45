@@ -261,7 +261,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
             {/* Week Preview Banner */}
             <div className={`flex items-start gap-3 p-4 rounded-lg border ${
               selectedWeek.isUpcoming
-                ? 'bg-slate-50 dark:bg-[#111111] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]'
+                ? 'bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]'
                 : 'bg-blue-50 border-blue-200'
             }`}>
               <Calendar 
@@ -290,7 +290,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[#111111]">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[var(--ds-text, #172B4D)]">
             <button
               type="button"
               onClick={onClose}

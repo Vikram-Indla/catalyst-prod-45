@@ -148,7 +148,7 @@ export default function TestRunStatusesPage() {
                         <label style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>Color override:</label>
                         <input
                           type="color"
-                          value={editColor || '#F1F2F4'}
+                          value={editColor || 'var(--ds-background-neutral, #F1F2F4)'}
                           onChange={e => setEditColor(e.target.value)}
                           style={{ width: 32, height: 24, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}
                         />

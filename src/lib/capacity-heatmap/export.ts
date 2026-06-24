@@ -12,7 +12,7 @@ export async function exportToPNG(element: HTMLElement, filename: string): Promi
   const html2canvas = await loadHtml2Canvas();
   const canvas = await html2canvas(element, {
     scale: 2,
-    backgroundColor: '#ffffff',
+    backgroundColor: 'var(--ds-surface, #FFFFFF)',
     logging: false,
   });
   
@@ -26,7 +26,7 @@ export async function exportToPDF(element: HTMLElement, filename: string): Promi
   const html2canvas = await loadHtml2Canvas();
   const canvas = await html2canvas(element, {
     scale: 2,
-    backgroundColor: '#ffffff',
+    backgroundColor: 'var(--ds-surface, #FFFFFF)',
     logging: false,
   });
   

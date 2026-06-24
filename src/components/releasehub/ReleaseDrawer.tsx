@@ -178,7 +178,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
       <div className="relative w-[700px] h-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
         onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] z-10 border-b border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] px-6 py-4">
+        <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] z-10 border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] px-6 py-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <SourceBadge source={release.source || 'catalyst'} />
@@ -250,7 +250,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-[rgba(15,23,42,0.12)] px-6 flex gap-0">
+        <div className="border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] px-6 flex gap-0">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
@@ -439,15 +439,15 @@ Do not use jargon. Do not hallucinate features not listed above.`;
       </div>
 
       {/* ── AI Release Notes Panel ── */}
-      <div className="border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md p-4 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
+      <div className="border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md p-4 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
         <div className="flex justify-between items-center mb-3">
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[#F5F3FF] text-[var(--cp-purple-60, #7C3AED)] border border-[#DDD6FE]">
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[var(--ds-background-discovery, #F3F0FF)] text-[var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))] border border-[var(--ds-background-discovery, #F3F0FF)]">
             ✦ Catalyst AI
           </span>
           <button
             onClick={generateReleaseNotes}
             disabled={notesState === 'loading'}
-            className="inline-flex items-center gap-1 bg-[var(--cp-purple-60, #7C3AED)] hover:bg-[var(--ds-background-discovery-bold-hovered,#6D28D9)] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
+            className="inline-flex items-center gap-1 bg-[var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))] hover:bg-[var(--ds-background-discovery-bold-hovered,#6D28D9)] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
           >
             <Sparkles size={12} />
             {notesState === 'success' ? 'Regenerate' : 'Generate'}
@@ -462,7 +462,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
         )}
 
         {notesState === 'loading' && (
-          <div className="flex items-center gap-2 py-6 justify-center text-[var(--cp-purple-60, #7C3AED)] text-[13px]">
+          <div className="flex items-center gap-2 py-6 justify-center text-[var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))] text-[13px]">
             <Loader2 size={16} className="animate-spin" />
             <span>Generating release notes…</span>
           </div>
@@ -476,7 +476,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[12px] font-medium text-[var(--ds-text-subtle,var(--ds-text-subtle,#475569))] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))] text-[12px] font-medium text-[var(--ds-text-subtle,var(--ds-text-subtle,#475569))] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
               >
                 <Copy size={12} />
                 {copied ? 'Copied!' : 'Copy'}
@@ -497,7 +497,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <span className="text-[var(--ds-text-subtle,#475569)]">Could not generate notes.</span>
             <button
               onClick={generateReleaseNotes}
-              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
             >
               <RefreshCw size={12} /> Try again
             </button>
@@ -514,7 +514,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
   return (
     <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
       <thead>
-        <tr className="border-b border-[rgba(15,23,42,0.12)]">
+        <tr className="border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))]">
           {['KEY', 'TITLE', 'STATUS', 'RISK', 'DATE'].map(h => (
             <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{h}</th>
           ))}
@@ -522,7 +522,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
       </thead>
       <tbody>
         {changes.map((c: any) => (
-          <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ height: 50, background: 'var(--bg-app)' }}>
+          <tr key={c.id} className="border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.06))]" style={{ height: 50, background: 'var(--bg-app)' }}>
             <td className="px-3 py-2"><span className="font-medium text-[var(--cp-blue)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span></td>
             <td className="px-3 py-2 truncate max-w-[200px]" title={c.title}>{c.title}</td>
             <td className="px-3 py-2"><StatusLozenge status={c.status} /></td>
@@ -585,7 +585,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
             const daysLeft = release.days_remaining ?? 99;
             const atRisk = cycle?.status === 'running' && daysLeft < 7 && passRate < 50;
             return (
-              <div key={tc.id} className="border border-[rgba(15,23,42,0.12)] rounded-lg p-4 group relative">
+              <div key={tc.id} className="border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] rounded-lg p-4 group relative">
                 <button
                   onClick={() => handleUnlink(tc.test_cycle_id)}
                   className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] hover:bg-[var(--ds-background-danger,#FEF2F2)] transition-opacity"
@@ -629,8 +629,8 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                   key={cycle.id}
                   disabled={alreadyLinked}
                   onClick={() => handleLink(cycle.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-left border-b border-[rgba(15,23,42,0.06)] last:border-0 transition-colors ${
-                    alreadyLinked ? 'opacity-50 cursor-default' : 'hover:bg-[rgba(0,0,0,0.04)] cursor-pointer'
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-left border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.06))] last:border-0 transition-colors ${
+                    alreadyLinked ? 'opacity-50 cursor-default' : 'hover:bg-[var(--ds-shadow-raised, rgba(0,0,0,0.04))] cursor-pointer'
                   }`}
                 >
                   <div className="flex-1 min-w-0">
@@ -686,10 +686,10 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
         const status = allApproved ? 'approved' : hasPending ? 'pending' : stageSignoffs.length > 0 ? 'pending' : 'locked';
 
         return (
-          <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[rgba(15,23,42,0.06)] last:border-0">
+          <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.06))] last:border-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
-              status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' :
-              status === 'pending' ? 'bg-[#0C66E4] text-white' :
+              status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))] text-white' :
+              status === 'pending' ? 'bg-[var(--ds-link, #0C66E4)] text-white' :
               'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'
             }`}>
               {status === 'approved' ? '✓' : status === 'pending' ? i + 1 : '🔒'}
@@ -708,7 +708,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             {hasPending && stageSignoffs.filter((so: any) => so.status === 'pending').map((so: any) => (
               <div key={so.id} className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => catalystToast.success('Approved') })}
-                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
+                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => catalystToast.success('Rejected') })}
                   className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]">Reject</button>
               </div>
@@ -743,7 +743,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
     return (
       <div className="text-center py-12">
         <Activity size={32} style={{ color: 'var(--ds-border-disabled, #C1C7D0)', margin: '0 auto 12px' }} />
-        <p style={{ fontSize: 14, fontWeight: 500, color: '#42526E', marginBottom: 4 }}>No activity yet</p>
+        <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>No activity yet</p>
         <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
           Activity will appear here as changes progress through their lifecycle.
         </p>
@@ -755,8 +755,8 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
     <div className="space-y-0">
       {entries.map((entry: any, idx: number) => {
         const isAI = !!entry.is_ai;
-        const avatarBg = isAI ? '#F3E8FF' : 'var(--ds-background-selected, #EFF6FF)';
-        const avatarColor = isAI ? 'var(--cp-purple-60, #7C3AED)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+        const avatarBg = isAI ? 'var(--ds-background-discovery, #F3F0FF)' : 'var(--ds-background-selected, #EFF6FF)';
+        const avatarColor = isAI ? 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
         const initials = isAI ? 'AI' : (entry.actor_initials || '??');
 
         return (
@@ -777,7 +777,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
                   <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                     {entry.actor_name || (isAI ? 'Catalyst AI' : 'System')}
                   </span>
-                  <span style={{ fontSize: 12, fontWeight: 400, color: '#42526E' }}>
+                  <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--ds-text-subtle, #42526E)' }}>
                     {entry.action}
                   </span>
                 </div>
@@ -786,7 +786,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
                     {entry.detail}
                   </p>
                 )}
-                <p style={{ fontSize: 11, fontWeight: 400, color: '#97A0AF', marginTop: 2 }}>
+                <p style={{ fontSize: 11, fontWeight: 400, color: 'var(--ds-text-disabled, #8590A2)', marginTop: 2 }}>
                   {relativeTime(entry.created_at)}
                 </p>
               </div>

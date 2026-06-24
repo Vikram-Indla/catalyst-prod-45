@@ -12,25 +12,25 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string; a
   'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Re-Open',     accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Requirements',accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', tx: 'var(--ds-text-warning, #974F0C)', label: 'Awaiting',    accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  'In Review':            { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: 'var(--cp-teal-60, #0D9488)' },
-  'In QA':                { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA',       accent: 'var(--cp-teal-60, #0D9488)' },
-  'Ready for QA':         { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA',    accent: 'var(--cp-teal-60, #0D9488)' },
-  'Retest':               { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest',      accent: 'var(--cp-teal-60, #0D9488)' },
-  'Code Review':          { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: 'var(--cp-teal-60, #0D9488)' },
-  'In UAT':               { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT',     accent: 'var(--cp-purple-60, #7C3AED)' },
-  'UAT Ready':            { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready',  accent: 'var(--cp-purple-60, #7C3AED)' },
-  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked',     accent: 'var(--ds-text-danger, #EF4444)' },
-  'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected',    accent: 'var(--ds-text-danger, #EF4444)' },
+  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #172B4D)', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #172B4D)', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #172B4D)', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  'In Review':            { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In Review',   accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
+  'In QA':                { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In QA',       accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
+  'Ready for QA':         { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Ready QA',    accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
+  'Retest':               { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Retest',      accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
+  'Code Review':          { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In Review',   accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
+  'In UAT':               { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-background-discovery, #F3F0FF)', tx: '#4C1D95', label: 'In UAT',     accent: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' },
+  'UAT Ready':            { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-background-discovery, #F3F0FF)', tx: '#4C1D95', label: 'UAT Ready',  accent: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' },
+  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #AE2A19)', label: 'Blocked',     accent: 'var(--ds-text-danger, #EF4444)' },
+  'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: 'var(--ds-text-danger, #AE2A19)', label: 'Rejected',    accent: 'var(--ds-text-danger, #EF4444)' },
 };
-const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', tx: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', label: 'Unknown', accent: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' };
+const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', tx: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', label: 'Unknown', accent: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' };
 
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];
@@ -45,13 +45,13 @@ function resolveStatus(item: any) {
 
 // ═══ JIRA ICONS ═══
 const BugIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#E5493A"/><circle cx="8" cy="8" r="3" fill="white"/></svg>
+  <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="var(--ds-background-danger-bold, #C9372C)"/><circle cx="8" cy="8" r="3" fill="white"/></svg>
 );
 const TaskIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#4BADE8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-information-bold, #1D7AFC)"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
 );
 const StoryIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#63BA3C"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
 );
 const EpicIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#904EE2"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
@@ -69,7 +69,7 @@ const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success,
 const trunc = (s: string, l: number) => s && s.length > l ? s.slice(0, l) + '…' : s || '';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 
 const SPOTS = [
@@ -197,7 +197,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       <div style={{ position: 'absolute', left: '50%', top: `${centerTopPct}%`, transform: 'translate(-50%, -50%)', textAlign: 'center', zIndex: 5 }}>
         <div style={{
           width: '96px', height: '96px', borderRadius: '50%', border: '3px solid var(--cp-blue)',
-          overflow: 'hidden', margin: '0 auto 6px', boxShadow: '0 0 0 6px rgba(37,99,235,.12)', background: 'var(--bg-app)',
+          overflow: 'hidden', margin: '0 auto 6px', boxShadow: '0 0 0 6px var(--ds-background-information, rgba(37,99,235,.12))', background: 'var(--bg-app)',
         }}>
           <img src={member?.avatar_url || `/admin/users/${avatarSlug}/avatar`} alt={memberName}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -224,11 +224,11 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: '195px',
             background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',
             padding: '10px 12px 10px 15px', cursor: 'pointer', zIndex: 3,
-            boxShadow: '0 1px 3px rgba(15,23,42,.05)', fontFamily: 'var(--cp-font-body)',
+            boxShadow: '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.05))', fontFamily: 'var(--cp-font-body)',
             transition: 'border-color .15s, box-shadow .15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 3px 10px rgba(15,23,42,.08)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(15,23,42,.05)'; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 3px 10px var(--ds-shadow-overlay, rgba(15,23,42,.08))'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-shadow-overlay, rgba(15,23,42,.05))'; }}
           >
             <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.accent }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -241,12 +241,12 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
               <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
               {item.project_key && (
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: projColor }}>{item.project_key}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', background: projColor }}>{item.project_key}</span>
               )}
               <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
             <div style={{
-              fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, #020617)', lineHeight: '1.35', marginBottom: '5px',
+              fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, var(--ds-text, #172B4D))', lineHeight: '1.35', marginBottom: '5px',
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
             } as React.CSSProperties}>
               {trunc(item.title, 48)}
@@ -279,18 +279,18 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             }}
           >
             <div style={{
-              width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
               fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: showDone
-                ? '0 0 0 3px rgba(22,163,74,.25), 0 2px 8px rgba(22,163,74,.3)'
-                : '0 2px 8px rgba(22,163,74,.3)',
+                ? '0 0 0 3px var(--ds-background-success-bold, rgba(22,163,74,.25)), 0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))'
+                : '0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))',
               transition: 'box-shadow .15s',
               fontVariantNumeric: 'tabular-nums',
             }}>
               {doneCount}
             </div>
             <span style={{
-              fontSize: '9.5px', fontWeight: 700, color: '#14532D', textTransform: 'uppercase',
+              fontSize: '9.5px', fontWeight: 700, color: 'var(--ds-text-success, #216E4E)', textTransform: 'uppercase',
               letterSpacing: '.06em', writingMode: 'vertical-rl',
             } as React.CSSProperties}>
               COMPLETED
@@ -303,7 +303,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               position: 'absolute', right: '64px', top: '50%', transform: 'translateY(-50%)',
               width: '340px', maxHeight: '420px', background: 'var(--cp-float)',
               border: '1px solid var(--divider)', borderRadius: '12px',
-              boxShadow: '0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06)',
+              boxShadow: '0 8px 30px var(--ds-shadow-overlay, rgba(15,23,42,.12)), 0 2px 8px var(--ds-shadow-overlay, rgba(15,23,42,.06))',
               overflow: 'hidden', zIndex: 11,
             }}>
               {/* Header */}
@@ -317,13 +317,13 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     color: 'var(--ds-surface, #FFF)', fontSize: '12px', fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>✓</div>
-                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--cp-text-primary, #020617)' }}>
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--cp-text-primary, var(--ds-text, #172B4D))' }}>
                     Completed This Week
                   </span>
                 </div>
                 <span style={{
-                  fontSize: '11px', fontWeight: 700, color: '#14532D',
-                  background: '#F0FDF4', padding: '2px 10px', borderRadius: '12px',
+                  fontSize: '11px', fontWeight: 700, color: 'var(--ds-text-success, #216E4E)',
+                  background: 'var(--ds-background-success, #DFFCF0)', padding: '2px 10px', borderRadius: '12px',
                 }}>
                   {doneCount}
                 </span>
@@ -342,13 +342,13 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                       padding: '10px 16px', cursor: 'pointer',
                       borderBottom: '1px solid var(--bg-1)', transition: 'background .1s',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#F0FDF4')}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-success, #DFFCF0)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     {/* Green check circle */}
                     <div style={{
                       width: '22px', height: '22px', borderRadius: '50%',
-                      background: '#F0FDF4', border: '1.5px solid var(--cp-success, #16A34A)',
+                      background: 'var(--ds-background-success, #DFFCF0)', border: '1.5px solid var(--cp-success, var(--ds-background-success-bold, #1F845A))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0, marginTop: '1px',
                     }}>
@@ -374,7 +374,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                         </span>
                       </div>
                       <div style={{
-                        fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, #020617)', lineHeight: '1.3',
+                        fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, var(--ds-text, #172B4D))', lineHeight: '1.3',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}>
                         {item.title}

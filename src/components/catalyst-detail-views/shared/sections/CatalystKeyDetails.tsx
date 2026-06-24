@@ -30,7 +30,7 @@ import { CatalystParentLinker } from './CatalystParentLinker';
 import type { CatalystItemType } from '../types';
 
 /* FieldRow — identical to the sidebar's FieldRow atom so rows line up
-   visually in both columns. 14/500/#505258 label, 96px min label width,
+   visually in both columns. 14/500/var(--ds-text-subtle, #44546F) label, 96px min label width,
    20px gap, 11px vertical padding.
    Exported so every CatalystView* can build type-specific FieldRows and
    pass them through `extraRows` — this keeps bug / incident / task

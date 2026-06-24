@@ -16,11 +16,11 @@ export interface BacklogHub {
 
 const HUB_ICON_STYLES: Record<string, { bg: string; color: string; letter: string }> = {
   IncidentHub: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', letter: 'I' },
-  ProductHub: { bg: '#F0FDFA', color: 'var(--cp-teal-60, #0D9488)', letter: 'P' },
-  TestHub: { bg: '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', letter: 'T' },
+  ProductHub: { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--cp-teal-60, #0D9488)', letter: 'P' },
+  TestHub: { bg: 'var(--ds-background-discovery, #F3F0FF)', color: 'var(--cp-purple-60, #7C3AED)', letter: 'T' },
   ProjectHub: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', letter: 'J' },
-  ReleaseHub: { bg: '#FFFBEB', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', letter: 'R' },
-  Other: { bg: '#F4F4F5', color: '#71717A', letter: 'O' },
+  ReleaseHub: { bg: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', letter: 'R' },
+  Other: { bg: 'var(--ds-surface-sunken, #F7F8F9)', color: 'var(--ds-text-subtlest, #626F86)', letter: 'O' },
 };
 
 function countColor(n: number): string {

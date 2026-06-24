@@ -23,13 +23,13 @@
    * ─────────────────────────────────────────────────────────────────────── */
 
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS success.bold=#1F845A, actual=rgb(179,223,114) */
-  --cp-jira-status-success-bg: rgb(179, 223, 114);
+  --cp-jira-status-success-bg: var(--ds-background-success-bold, rgb(179, 223, 114));
 
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS inprogress.bold=#0055CC, actual=rgb(143,184,246) */
-  --cp-jira-status-inprogress-bg: rgb(143, 184, 246);
+  --cp-jira-status-inprogress-bg: var(--ds-background-information, rgb(143, 184, 246));
 
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS default/neutral, actual=rgb(221,222,225) */
-  --cp-jira-status-default-bg: rgb(221, 222, 225);
+  --cp-jira-status-default-bg: var(--ds-background-neutral, rgb(221, 222, 225));
 
   /* JIRA-PARITY: probed 2026-05-07 BAU list — moved/on-hold category, actual=rgb(243,214,100) */
   --cp-jira-status-moved-bg: rgb(243, 214, 100);
@@ -42,7 +42,7 @@
 
   /* StatusPill foreground — same for all appearances */
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS text.subtle=var(--cp-text-secondary, var(--cp-text-secondary, #44546F)), actual=rgb(41,42,46) */
-  --cp-jira-status-fg: rgb(41, 42, 46);
+  --cp-jira-status-fg: var(--ds-text, rgb(41, 42, 46));
 
   /* ─── Parent / Epic chip — table cell parent lozenge ────────────────────
    * Measured 2026-04-26 digital-transformation.atlassian.net
@@ -50,7 +50,7 @@
    * ─────────────────────────────────────────────────────────────────────── */
 
   /* JIRA-PARITY: probed 2026-04-26 BAU parent chip — ADS background.success=unresolved, actual=#B3DF72 */
-  --cp-jira-epic-chip-bg: #B3DF72;
+  --cp-jira-epic-chip-bg: var(--ds-background-success-bold, #6A9A23);
 
   /* JIRA-PARITY: re-probed 2026-05-16 BAU parent chip — text color, jira-compare JC-2 measured rgb(31,132,9) */
   --cp-jira-epic-chip-fg: rgb(31, 132, 9);
@@ -61,13 +61,13 @@
    * ─────────────────────────────────────────────────────────────────────── */
 
   /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — done category dot, actual=#94C748 */
-  --cp-jira-dot-done: #94C748;
+  --cp-jira-dot-done: var(--ds-background-success-bold, #6A9A23);
 
   /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — in-progress category dot, actual=#669DF1 */
   --cp-jira-dot-inprogress: #669DF1;
 
   /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — to-do category dot, actual=#5E6C84 */
-  --cp-jira-dot-todo: #5E6C84;
+  --cp-jira-dot-todo: var(--ds-text-subtle, #44546F);
 
   /* ─── Detail-view header status pill ─────────────────────────────────────
    * Measured 2026-05-07 from BAU issue detail view header.
@@ -76,17 +76,17 @@
    * ─────────────────────────────────────────────────────────────────────── */
 
   /* JIRA-PARITY: probed 2026-05-07 BAU issue header — done category, actual=#94C748 */
-  --cp-jira-header-status-done-bg: #94C748;
+  --cp-jira-header-status-done-bg: var(--ds-background-success-bold, #6A9A23);
 
   /* JIRA-PARITY: probed 2026-05-07 BAU issue header — in-progress category, actual=#8FB8F6 */
-  --cp-jira-header-status-inprogress-bg: #8FB8F6;
+  --cp-jira-header-status-inprogress-bg: var(--ds-background-information, #E9F2FF);
 
   /* JIRA-PARITY: probed 2026-05-07 BAU issue header — to-do category, actual=rgba(5,21,36,0.06) */
-  --cp-jira-header-status-todo-bg: rgba(5, 21, 36, 0.06);
+  --cp-jira-header-status-todo-bg: var(--ds-shadow-overlay, rgba(5, 21, 36, 0.06));
 
   /* Foreground for header status pill */
   /* JIRA-PARITY: probed 2026-05-07 BAU issue header — text color, actual=#292A2E / fontWeight 500 */
-  --cp-jira-header-status-fg: #292A2E;
+  --cp-jira-header-status-fg: var(--ds-text, #172B4D);
 
   /* ─── Sprint/Iteration pill (right rail) ─────────────────────────────────────
    * Jira renders sprint/releases as bordered secondary pills in the right rail.
@@ -94,11 +94,11 @@
    * ─────────────────────────────────────────────────────────────────────── */
 
   /* JIRA-PARITY: probed (pending DOM inspection) — sprint/release border color */
-  --cp-jira-fixver-border: #dfe1e6;
+  --cp-jira-fixver-border: var(--ds-border, #DFE1E6);
 
   /* JIRA-PARITY: probed (pending DOM inspection) — sprint/release background */
-  --cp-jira-fixver-bg: #f1f2f4;
+  --cp-jira-fixver-bg: var(--ds-background-neutral, #F1F2F4);
 
   /* JIRA-PARITY: probed (pending DOM inspection) — sprint/release text color */
-  --cp-jira-fixver-fg: #172b4d;
+  --cp-jira-fixver-fg: var(--ds-text, #172B4D);
 }

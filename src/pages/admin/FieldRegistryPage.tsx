@@ -85,7 +85,7 @@ function PortalMenu({ isOpen, onClose, triggerRef, children }: PortalMenuProps) 
         background: T.surface,
         border: `1px solid ${T.border}`,
         borderRadius: 4,
-        boxShadow: '0 8px 24px rgba(9,30,66,0.2)',
+        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
         padding: '4px 0',
         minWidth: 160,
         zIndex: 9999,
@@ -251,14 +251,14 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
     <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex' }}>
       {/* Backdrop */}
       <div
-        style={{ position: 'absolute', inset: 0, background: 'rgba(9,30,66,0.4)' }}
+        style={{ position: 'absolute', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.4))' }}
         onClick={onClose}
       />
       {/* Drawer panel */}
       <div style={{
         position: 'absolute', right: 0, top: 0, bottom: 0,
         width: 520, background: T.surface,
-        boxShadow: '-4px 0 24px rgba(9,30,66,0.15)',
+        boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
         display: 'flex', flexDirection: 'column',
         overflow: 'hidden',
       }}>
@@ -440,7 +440,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
             style={{
               padding: '8px 16px', fontSize: 14, borderRadius: 4,
               border: 'none', background: T.brand,
-              color: '#FFFFFF', cursor: saving ? 'not-allowed' : 'pointer',
+              color: 'var(--ds-text-inverse, #FFFFFF)', cursor: saving ? 'not-allowed' : 'pointer',
               opacity: saving ? 0.7 : 1,
             }}
           >
@@ -485,7 +485,7 @@ export default function FieldRegistryPage() {
             onClick={() => { setEditTarget(null); setDrawerOpen(true); }}
             style={{
               padding: '8px 16px', fontSize: 14, fontWeight: 500, borderRadius: 4,
-              border: 'none', background: T.brand, color: '#FFFFFF', cursor: 'pointer',
+              border: 'none', background: T.brand, color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
               whiteSpace: 'nowrap',
             }}
           >

@@ -450,7 +450,8 @@ export function SidebarRow({
                 type="button"
                 onClick={e => { e.stopPropagation(); navigate(buildIssueDetailRoute(issue.issueKey)); }}
                 style={{
-                  fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+                  fontSize: 13, fontWeight: 400, color: 'var(--ds-link, #0C66E4)',
+                  textDecoration: 'underline',
                   whiteSpace: 'nowrap', lineHeight: 1.3,
                   background: 'none', border: 'none', padding: 0, cursor: 'pointer',
                   fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
@@ -654,7 +655,7 @@ export function SidebarRow({
                       width: 20, height: 20, borderRadius: '50%', padding: 0, cursor: 'pointer', flexShrink: 0,
                       background: hex, outline: 'none',
                       border: issue.epicColor === hex ? '2px solid var(--ds-border-selected, #0052CC)' : '2px solid transparent',
-                      boxShadow: issue.epicColor === hex ? '0 0 0 1.5px #fff inset' : 'none',
+                      boxShadow: issue.epicColor === hex ? '0 0 0 1.5px var(--ds-surface, #FFFFFF) inset' : 'none',
                     }}
                   />
                 ))}

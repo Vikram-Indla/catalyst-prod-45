@@ -27,13 +27,13 @@ import { fetchFunction } from '@/integrations/supabase/functionsRouter';
 
 const ASK_CATY_RAINBOW = `conic-gradient(
   from 0deg,
-  #FF3CAC 0deg,
-  #784BA0 60deg,
-  #2B86C5 120deg,
-  #00C9FF 180deg,
-  #92FE9D 240deg,
-  #FFD700 300deg,
-  #FF3CAC 360deg
+  var(--ds-background-accent-magenta-bolder, #BE185D) 0deg,
+  var(--ds-background-discovery-bold, #6E5DC6) 60deg,
+  var(--ds-link, #0C66E4) 120deg,
+  var(--ds-background-information-bold, #0C66E4) 180deg,
+  var(--ds-background-success, #DFFCF0) 240deg,
+  var(--ds-background-warning-bold, #E2B203) 300deg,
+  var(--ds-background-accent-magenta-bolder, #BE185D) 360deg
 )`;
 
 export interface DigestMention {
@@ -162,12 +162,12 @@ export function SummarizeDigestModal({
         gap: 8,
         padding: '0 12px',
         borderRadius: 17,
-        background: '#FFFFFF',
+        background: 'var(--ds-surface, #FFFFFF)',
       }}>
-        <span style={{ fontSize: 14, fontWeight: 700, color: token('color.text', '#172B4D') }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
           ✦ Caty's digest
         </span>
-        <span style={{ fontSize: 13, color: token('color.text.subtle', '#44546F') }}>
+        <span style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
           {stats.done} of {stats.total} mentions summarized
         </span>
       </div>
@@ -175,7 +175,7 @@ export function SummarizeDigestModal({
   );
 
   const body = mentions.length === 0 ? (
-    <div style={{ padding: 24, textAlign: 'center', color: token('color.text.subtle', '#44546F') }}>
+    <div style={{ padding: 24, textAlign: 'center', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
       Nothing to summarize. Caty needs at least one mention to triage.
     </div>
   ) : (
@@ -197,7 +197,7 @@ export function SummarizeDigestModal({
   );
 
   const footerNote = (
-    <span style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), marginInlineEnd: 'auto' }}>
+    <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginInlineEnd: 'auto' }}>
       Powered by Caty
       {stats.errors > 0 && ` · ${stats.errors} shown as original (AI unavailable)`}
     </span>
@@ -217,7 +217,7 @@ export function SummarizeDigestModal({
           border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
           borderRadius: 8,
           padding: 12,
-          background: token('elevation.surface', '#FFFFFF'),
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
@@ -233,7 +233,7 @@ export function SummarizeDigestModal({
               borderRadius: 3,
               fontSize: 18,
               lineHeight: 1,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             }}
           >
             ×
@@ -280,10 +280,10 @@ function DigestRow({
         gap: 12,
         padding: 12,
         borderRadius: 6,
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         background: hover
-          ? token('elevation.surface.hovered', '#F0F1F2')
-          : token('elevation.surface', '#FFFFFF'),
+          ? token('elevation.surface.hovered', 'var(--ds-background-neutral, #F1F2F4)')
+          : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         transition: 'background-color 120ms ease',
       }}
     >
@@ -298,15 +298,15 @@ function DigestRow({
           fontSize: 13,
           marginBlockEnd: 6,
         }}>
-          <span style={{ fontWeight: 600, color: token('color.text', '#172B4D') }}>{mention.mentionerName}</span>
-          <span style={{ color: token('color.text.subtle', '#44546F') }}>on</span>
+          <span style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{mention.mentionerName}</span>
+          <span style={{ color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>on</span>
           <button
             type="button"
             onClick={onOpenTicket}
             style={{
               all: 'unset',
               cursor: 'pointer',
-              color: token('color.text.brand', '#0052CC'),
+              color: token('color.text.brand', 'var(--ds-link, #0052CC)'),
               fontWeight: 600,
               fontFamily: 'var(--cp-font-mono, ui-monospace, "SF Mono", Menlo, Consolas, monospace)',
               fontSize: 12,
@@ -314,7 +314,7 @@ function DigestRow({
           >
             {mention.issueKey}
           </button>
-          <span style={{ color: token('color.text.subtle', '#44546F'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+          <span style={{ color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
             — {mention.issueSummary}
           </span>
         </div>
@@ -323,12 +323,12 @@ function DigestRow({
         <div style={{
           fontSize: 14,
           lineHeight: '20px',
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'),
           marginBlockEnd: 10,
           minHeight: 20,
         }}>
           {state.phase === 'loading' && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: token('color.text.subtle', '#44546F') }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
               <Spinner size="xsmall" />
               Caty is reading…
             </div>
@@ -338,7 +338,7 @@ function DigestRow({
             <>
               {/* Graceful fallback — show the original comment without alarming the user.
                   AI failure is a backend issue, not something the user did wrong. */}
-              <span style={{ color: token('color.text', '#172B4D') }}>
+              <span style={{ color: token('color.text', 'var(--ds-text, #172B4D)') }}>
                 {mention.commentBody.length > 240
                   ? `${mention.commentBody.slice(0, 240).trim()}…`
                   : mention.commentBody}
@@ -347,7 +347,7 @@ function DigestRow({
                 display: 'block',
                 marginBlockStart: 4,
                 fontSize: 11,
-                color: token('color.text.subtlest', '#626F86'),
+                color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               }}>
                 AI summary unavailable — showing original
               </span>

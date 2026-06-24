@@ -56,12 +56,12 @@ function flattenTree(nodes: TreeNode[], expanded: Set<string>): TreeNode[] {
 
 const HUB_COLORS: Record<string, { border: string; text: string; bg: string }> = {
   project: { border: 'var(--cp-blue)', text: 'var(--cp-blue)', bg: 'var(--cp-primary-5)' },
-  product: { border: 'var(--fg-2)', text: 'var(--fg-2)', bg: '#F4F4F5' },
-  task: { border: '#D4D4D8', text: 'var(--fg-3)', bg: '#F4F4F5' },
+  product: { border: 'var(--fg-2)', text: 'var(--fg-2)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
+  task: { border: 'var(--ds-border, #DFE1E6)', text: 'var(--fg-3)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
   incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
 
-const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#F5222D'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)', '#13C2C2', '#F5222D'];
 
 function getHubType(issueType: string): string {
   const t = issueType.toLowerCase();
@@ -306,7 +306,7 @@ const TableRow = memo(function TableRow({
         height: 44,
         maxHeight: 44,
         borderBottom: '0.75px solid var(--bd-subtle, var(--cp-ink-1, #292929))',
-        backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)',
+        backgroundColor: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)',
         transition: 'background-color 80ms ease',
       }}
       onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--hover, #1F1F1F)'); }}

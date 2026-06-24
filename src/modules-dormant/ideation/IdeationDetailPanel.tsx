@@ -58,18 +58,18 @@ function useUpdateIdea() {
 
 // ─── Status Lozenge — 3-color guardrail, NO DOTS ─────────────────
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
-  'Draft':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
-  'New':          { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
-  'Submitted':    { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Under Review': { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'In Progress':  { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Draft':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
+  'New':          { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
+  'Submitted':    { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Under Review': { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'In Progress':  { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Approved':     { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Converted':    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Done':         { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 function StatusLozenge({ status }: { status: string }) {
-  const s = STATUS_LOZENGE[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' };
+  const s = STATUS_LOZENGE[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' };
   return (
     <span style={{
       display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
@@ -99,11 +99,11 @@ function PriorityLozenge({ priority }: { priority: string }) {
 // ─── Shared styles ───────────────────────────────────────────────
 // Note: selectStyle/inputStyle are used in edit mode — dark mode applied inline via isDark
 const selectStyle: React.CSSProperties = {
-  height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
+  height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
   padding: '0 8px', fontSize: '13px', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: '100%', outline: 'none',
 };
 const inputStyle: React.CSSProperties = {
-  height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
+  height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
   padding: '0 8px', fontSize: '13px', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: '100%', outline: 'none',
 };
 
@@ -230,7 +230,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   if (!ideaKey) return null;
   if (isLoading) return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 200 }} />
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: dk.t3, fontSize: '14px' }}>Loading...</span>
       </div>
@@ -246,10 +246,10 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 200 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.40))', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px',
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -457,7 +457,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     position: 'absolute', top: '3px',
                     left: localIsCommitted ? '23px' : '3px',
                     transition: 'left 200ms ease',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                    boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
                   }} />
                 </button>
               </div>
@@ -507,8 +507,8 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 ...(impactScore >= 3.5
                   ? { backgroundColor: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }
                   : impactScore >= 2.0
-                    ? { backgroundColor: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }
-                    : { backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' }),
+                    ? { backgroundColor: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }
+                    : { backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' }),
               }}>
                 {impactScore >= 3.5 ? 'HIGH' : impactScore >= 2.0 ? 'MEDIUM' : 'LOW'}
               </span>

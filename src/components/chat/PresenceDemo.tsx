@@ -209,7 +209,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
                 cursor: pointer;
 
                 &:hover {
-                  background-color: #0747a6;
+                  background-color: var(--ds-link-pressed, #0747A6);
                 }
               `}
             >

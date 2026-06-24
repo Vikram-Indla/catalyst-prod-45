@@ -174,8 +174,8 @@ export interface TaskMention {
 // Priority configuration
 export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string; bgColor: string }> = {
   critical: { label: 'Critical', color: 'var(--ds-text-danger, #ef4444)', bgColor: 'var(--ds-background-danger, #fef2f2)' },
-  high: { label: 'High', color: 'var(--ds-text-warning, #f59e0b)', bgColor: '#fffbeb' },
-  medium: { label: 'Medium', color: '#8b5cf6', bgColor: '#f5f3ff' },
+  high: { label: 'High', color: 'var(--ds-text-warning, #f59e0b)', bgColor: 'var(--ds-background-warning, #FFF7D6)' },
+  medium: { label: 'Medium', color: 'var(--ds-background-discovery-bold, #8b5cf6)', bgColor: 'var(--ds-background-discovery, #F3F0FF)' },
   low: { label: 'Low', color: 'var(--ds-text-subtlest, #94a3b8)', bgColor: 'var(--ds-surface-sunken, #f8fafc)' },
 };
 
@@ -184,17 +184,17 @@ export const TIME_SECTION_CONFIG: Record<TimeSection, { label: string; icon: str
   overdue: { label: 'Overdue', icon: 'alert-circle', color: 'var(--ds-text-danger, #ef4444)' },
   today: { label: 'Today', icon: 'calendar', color: 'var(--ds-text-warning, #f59e0b)' },
   this_week: { label: 'This Week', icon: 'calendar-days', color: 'var(--ds-text-brand, #3b82f6)' },
-  upcoming: { label: 'Upcoming', icon: 'calendar-plus', color: '#8b5cf6' },
+  upcoming: { label: 'Upcoming', icon: 'calendar-plus', color: 'var(--ds-background-discovery-bold, #8b5cf6)' },
   someday: { label: 'Someday', icon: 'cloud', color: 'var(--ds-text-subtlest, #94a3b8)' },
-  completed: { label: 'Completed', icon: 'check-circle', color: '#10b981' },
+  completed: { label: 'Completed', icon: 'check-circle', color: 'var(--ds-background-success-bold, #059669)' },
 };
 
 // Involvement configuration
 export const INVOLVEMENT_CONFIG: Record<InvolvementType, { label: string; icon: string; color: string }> = {
   assignee: { label: 'Assigned to you', icon: 'user', color: 'var(--ds-text-brand, #3b82f6)' },
-  creator: { label: 'Created by you', icon: 'plus', color: '#8b5cf6' },
-  reporter: { label: 'Reported by you', icon: 'clipboard', color: '#06b6d4' },
+  creator: { label: 'Created by you', icon: 'plus', color: 'var(--ds-background-discovery-bold, #8b5cf6)' },
+  reporter: { label: 'Reported by you', icon: 'clipboard', color: 'var(--ds-icon-information, #1D7AFC)' },
   reviewer: { label: 'Needs your review', icon: 'check-square', color: 'var(--ds-text-warning, #f59e0b)' },
   watcher: { label: "You're watching", icon: 'eye', color: 'var(--ds-text-subtlest, #64748b)' },
-  mentioned: { label: 'You were mentioned', icon: 'at-sign', color: '#ec4899' },
+  mentioned: { label: 'You were mentioned', icon: 'at-sign', color: 'var(--ds-background-accent-magenta-bolder, #ec4899)' },
 };

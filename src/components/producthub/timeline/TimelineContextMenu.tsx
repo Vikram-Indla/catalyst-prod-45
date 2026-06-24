@@ -113,7 +113,7 @@ export const TimelineContextMenu: React.FC<TimelineContextMenuProps> = ({
       style={{
         left: clampedX,
         top: clampedY,
-        boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
+        boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
       }}
     >
       <MenuItem icon={Eye} label="View Details" onClick={() => { openDetail(request.id); onClose(); }} />
@@ -136,7 +136,7 @@ export const TimelineContextMenu: React.FC<TimelineContextMenuProps> = ({
         {showStatusSub && (
           <div
             className="absolute left-full top-0 ml-1 min-w-[160px] bg-card border border-border rounded-lg p-1 z-[401]"
-            style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.12)' }}
+            style={{ boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12))' }}
             onMouseEnter={() => setShowStatusSub(true)}
             onMouseLeave={() => setShowStatusSub(false)}
           >

@@ -20,7 +20,7 @@ export default function DeactivatedPage() {
         maxWidth: 480,
         width: '100%',
         textAlign: 'center',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+        boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
       }}>
         <div style={{ fontSize: 40, marginBottom: 16 }}>🔒</div>
         <h1 style={{

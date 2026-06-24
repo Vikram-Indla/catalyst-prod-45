@@ -170,13 +170,13 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
     display: 'block',
     fontSize: 12,
     fontWeight: 600,
-    color: token('color.text.subtle', '#6B778C'),
+    color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
     marginBottom: 4,
   } as const;
 
   const errorStyle = {
     fontSize: 12,
-    color: token('color.text.danger', '#AE2A19'),
+    color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
     marginTop: 4,
   } as const;
 

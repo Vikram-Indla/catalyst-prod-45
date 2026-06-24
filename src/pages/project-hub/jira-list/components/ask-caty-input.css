@@ -64,10 +64,10 @@
      Caty brand colour while keeping a gradient AI signifier. */
   background: conic-gradient(
     from 0deg,
-    #ff3cac 0deg,
+    var(--ds-background-accent-magenta-bolder, #BE185D) 0deg,
     #cd519d 120deg,
-    #784ba0 240deg,
-    #ff3cac 360deg
+    var(--ds-background-discovery-bold, #6E5DC6) 240deg,
+    var(--ds-background-accent-magenta-bolder, #BE185D) 360deg
   );
   pointer-events: none;
 }

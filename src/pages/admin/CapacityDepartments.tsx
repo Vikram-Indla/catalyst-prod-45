@@ -133,9 +133,9 @@ export default function CapacityDepartmentsPage() {
             <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
               <tr>
                 <th style={{ width: 40, padding: "8px 16px" }}></th>
-                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", width: 96, borderBottom: "1.67px solid rgba(11, 18, 14, 0.14)" }}>DID</th>
-                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", borderBottom: "1.67px solid rgba(11, 18, 14, 0.14)" }}>Name</th>
-                <th style={{ textAlign: "center", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", borderBottom: "1.67px solid rgba(11, 18, 14, 0.14)" }}>Actions</th>
+                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", width: 96, borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>DID</th>
+                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>Name</th>
+                <th style={{ textAlign: "center", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -306,7 +306,7 @@ export default function CapacityDepartmentsPage() {
             {linkedResources.length === 0 && !checkingLinks && (
               <AlertDialogAction
                 onClick={handleConfirmDelete}
-                style={{ background: 'var(--ds-background-danger-bold, #CA3521)', color: '#FFFFFF' }}
+                style={{ background: 'var(--ds-background-danger-bold, #CA3521)', color: 'var(--ds-surface, #FFFFFF)' }}
               >
                 Delete
               </AlertDialogAction>

@@ -297,12 +297,12 @@ export function BrAttachmentsSection({ request }: Props) {
           borderRadius: 6,
           border: `2px dashed ${
             dragging
-              ? token('color.border.brand', '#1868DB')
+              ? token('color.border.brand', 'var(--ds-link, #1868DB)')
               : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')
           }`,
           background: dragging
-            ? token('color.background.selected', '#E9F2FF')
-            : token('elevation.surface.sunken', '#F7F8F9'),
+            ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
+            : token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
           cursor: 'pointer',
           textAlign: 'center',
           transition: 'border-color 120ms, background 120ms',
@@ -318,12 +318,12 @@ export function BrAttachmentsSection({ request }: Props) {
           }}
         >
           Drag files here or{' '}
-          <span style={{ color: token('color.link', '#0C66E4'), fontWeight: 600 }}>browse</span>
+          <span style={{ color: token('color.link', 'var(--ds-link, #0C66E4)'), fontWeight: 600 }}>browse</span>
         </div>
         <div
           style={{
             fontSize: 11,
-            color: token('color.text.subtlest', '#8590A2'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             fontFamily: 'var(--cp-font-body)',
           }}
         >
@@ -350,7 +350,7 @@ export function BrAttachmentsSection({ request }: Props) {
           alignItems: 'center',
           gap: 8,
           fontSize: 11,
-          color: token('color.text.subtlest', '#6B6E76'),
+          color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'),
           fontFamily: 'var(--cp-font-body)',
         }}
       >
@@ -360,7 +360,7 @@ export function BrAttachmentsSection({ request }: Props) {
             flex: 1,
             height: 4,
             borderRadius: 4,
-            background: token('color.background.neutral', '#F4F5F7'),
+            background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
             overflow: 'hidden',
           }}
         >
@@ -370,10 +370,10 @@ export function BrAttachmentsSection({ request }: Props) {
               height: '100%',
               background:
                 usedPct > 95
-                  ? token('color.background.danger.bold', '#C9372C')
+                  ? token('color.background.danger.bold', 'var(--ds-background-danger-bold, #C9372C)')
                   : usedPct > 80
                     ? token('color.background.warning.bold', '#946F00')
-                    : token('color.background.brand.bold', '#0C66E4'),
+                    : token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'),
               transition: 'width 200ms',
             }}
           />
@@ -398,7 +398,7 @@ export function BrAttachmentsSection({ request }: Props) {
               borderRadius: 6,
               textAlign: 'center',
               fontSize: 13,
-              color: token('color.text.subtle', '#6B6E76'),
+              color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
               fontFamily: 'var(--cp-font-body)',
               display: 'flex',
               flexDirection: 'column',
@@ -423,7 +423,7 @@ export function BrAttachmentsSection({ request }: Props) {
                   padding: '8px 12px',
                   border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                   borderRadius: 6,
-                  background: token('elevation.surface', '#FFFFFF'),
+                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                   fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -449,7 +449,7 @@ export function BrAttachmentsSection({ request }: Props) {
                     style={{
                       fontSize: 13,
                       fontWeight: 600,
-                      color: token('color.text', '#292A2E'),
+                      color: token('color.text', 'var(--ds-text, #172B4D)'),
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
@@ -460,7 +460,7 @@ export function BrAttachmentsSection({ request }: Props) {
                   <div
                     style={{
                       fontSize: 11,
-                      color: token('color.text.subtlest', '#6B6E76'),
+                      color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'),
                       marginTop: 2,
                     }}
                   >

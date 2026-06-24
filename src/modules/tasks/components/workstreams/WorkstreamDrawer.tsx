@@ -89,7 +89,7 @@ const formatDate = (dateString: string): string => {
 
 // Generate avatar color from name
 const getAvatarColor = (name: string): string => {
-  const colors = ['#8B5CF6', 'var(--ds-text-brand, #3B82F6)', '#10B981', 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
+  const colors = ['var(--ds-background-discovery-bold, #8b5cf6)', 'var(--ds-text-brand, #3B82F6)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', 'var(--ds-text-danger, #EF4444)', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -104,20 +104,20 @@ const getAvatarColor = (name: string): string => {
 const HEALTH_CONFIG: Record<string, { color: string; bgColor: string; borderColor: string; label: string }> = {
   'healthy': {
     color: 'var(--ds-text-success, #16a34a)',
-    bgColor: '#f0fdf4',
-    borderColor: '#bbf7d0',
+    bgColor: 'var(--ds-background-success, #DFFCF0)',
+    borderColor: 'var(--ds-background-success, #DFFCF0)',
     label: 'On Track'
   },
   'at-risk': {
     color: 'var(--ds-text-warning, #f59e0b)',
-    bgColor: '#fffbeb',
-    borderColor: '#fde68a',
+    bgColor: 'var(--ds-background-warning, #FFF7D6)',
+    borderColor: 'var(--ds-background-warning, #FFF7D6)',
     label: 'At Risk'
   },
   'critical': {
     color: 'var(--ds-text-danger, #dc2626)',
     bgColor: 'var(--ds-background-danger, #fef2f2)',
-    borderColor: '#fecaca',
+    borderColor: 'var(--ds-background-danger, #FFECEB)',
     label: 'Critical'
   }
 };
@@ -487,7 +487,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.4)',
+          backgroundColor: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.4))',
           backdropFilter: 'blur(2px)',
           zIndex: 998,
           opacity: isOpen ? 1 : 0,
@@ -505,8 +505,8 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           width: '420px',
           maxWidth: '100vw',
           height: '100vh',
-          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          boxShadow: '-8px 0 30px rgba(0, 0, 0, 0.12)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+          boxShadow: '-8px 0 30px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
           zIndex: 999,
           display: 'flex',
           flexDirection: 'column',
@@ -517,7 +517,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         {/* ============================================================ */}
         {/* HEADER SECTION */}
         {/* ============================================================ */}
-        <div style={{ padding: '20px 20px 16px 20px', borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ padding: '20px 20px 16px 20px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
           {/* TOP ROW: Health dot + Title + Actions */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
             {/* Left: Health dot + Title */}
@@ -593,9 +593,9 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               top: 0,
               zIndex: 20,
               padding: '16px 20px',
-              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              borderTop: '1px solid #e2e8f0',
-              borderBottom: '1px solid #e2e8f0',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+              borderTop: '1px solid var(--ds-border, #DFE1E6)',
+              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
             }}
           >
             <div style={{ marginBottom: '12px' }}>
@@ -622,7 +622,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   onClose();
                 }}
                 style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, #fef2f2)'; e.currentTarget.style.borderColor = '#fecaca'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, #fef2f2)'; e.currentTarget.style.borderColor = 'var(--ds-background-danger, #FFECEB)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'; }}
               >
                 <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--ds-text-danger, #dc2626)', lineHeight: 1 }}>{workstream.overdueCount || 0}</div>
@@ -668,8 +668,8 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       padding: '12px',
                       fontSize: '14px',
                       lineHeight: 1.6,
-                      color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-                      border: '1px solid #cbd5e1',
+                      color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
+                      border: '1px solid var(--ds-border, #DFE1E6)',
                       borderRadius: '8px',
                       resize: 'vertical',
                       fontFamily: 'inherit',
@@ -687,7 +687,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   </div>
                 </div>
               ) : (
-                <p style={{ fontSize: '14px', lineHeight: 1.7, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', margin: 0 }}>
+                <p style={{ fontSize: '14px', lineHeight: 1.7, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', margin: 0 }}>
                   {workstream.description || <span style={{ color: 'var(--ds-text-subtlest, #94a3b8)', fontStyle: 'italic' }}>No description added.</span>}
                 </p>
               )}
@@ -715,7 +715,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                         gap: '10px',
                         padding: '8px 12px',
                         backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid var(--ds-border, #DFE1E6)',
                         borderRadius: '8px',
                         cursor: 'pointer',
                         minWidth: '200px',
@@ -736,7 +736,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                     {/* Lead Dropdown */}
                     {showLeadPicker && (
                       <div style={dropdownStyle}>
-                        <div style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>
+                        <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
                           <div style={{ position: 'relative' }}>
                             <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94a3b8)' }} />
                             <input
@@ -823,7 +823,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       width: '100%',
                       padding: '14px',
                       backgroundColor: 'transparent',
-                      border: '2px dashed #e2e8f0',
+                      border: '2px dashed var(--ds-border, #DFE1E6)',
                       borderRadius: '12px',
                       cursor: 'pointer',
                       color: 'var(--ds-text-subtlest, #64748b)',
@@ -839,7 +839,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   {/* Member Dropdown */}
                   {showMemberPicker && (
                     <div style={{ ...dropdownStyle, bottom: '100%', top: 'auto', marginBottom: '4px' }}>
-                      <div style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>
+                      <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
                         <div style={{ position: 'relative' }}>
                           <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94a3b8)' }} />
                           <input
@@ -890,8 +890,8 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             display: 'flex',
             gap: '8px',
             padding: '12px 20px',
-            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            borderTop: '1px solid #e2e8f0'
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+            borderTop: '1px solid var(--ds-border, #DFE1E6)'
           }}
         >
           <button onClick={navigateToTasks} style={navTabStyle(true)}>
@@ -975,7 +975,7 @@ const primaryButtonStyle: React.CSSProperties = {
   gap: '6px',
   padding: '8px 16px',
   backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
   border: 'none',
   borderRadius: '6px',
   fontSize: '13px',
@@ -987,7 +987,7 @@ const secondaryButtonStyle: React.CSSProperties = {
   padding: '8px 16px',
   backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
   color: 'var(--ds-text-subtle, #475569)',
-  border: '1px solid #e2e8f0',
+  border: '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: '6px',
   fontSize: '13px',
   fontWeight: 500,
@@ -1004,7 +1004,7 @@ const avatarStyle = (color: string, size = 32): React.CSSProperties => ({
   justifyContent: 'center',
   fontSize: size > 32 ? '14px' : '12px',
   fontWeight: 600,
-  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
   flexShrink: 0
 });
 
@@ -1014,14 +1014,14 @@ const memberCardStyle: React.CSSProperties = {
   gap: '12px',
   padding: '12px 14px',
   backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
-  border: '1px solid #e2e8f0',
+  border: '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: '12px'
 };
 
 const statCardStyle: React.CSSProperties = {
   padding: '16px',
   backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
-  border: '1px solid #e2e8f0',
+  border: '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: '12px',
   textAlign: 'center'
 };
@@ -1032,10 +1032,10 @@ const dropdownStyle: React.CSSProperties = {
   left: 0,
   right: 0,
   marginTop: '4px',
-  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  border: '1px solid #e2e8f0',
+  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+  border: '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: '12px',
-  boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
+  boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
   zIndex: 9999,
   overflow: 'hidden'
 };
@@ -1044,7 +1044,7 @@ const searchInputStyle: React.CSSProperties = {
   width: '100%',
   padding: '8px 8px 8px 36px',
   fontSize: '14px',
-  border: '1px solid #e2e8f0',
+  border: '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: '6px',
   outline: 'none'
 };
@@ -1069,9 +1069,9 @@ const navTabStyle = (isActive: boolean): React.CSSProperties => ({
   justifyContent: 'center',
   gap: '6px',
   padding: '10px 16px',
-  backgroundColor: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #475569)',
-  border: isActive ? 'none' : '1px solid #e2e8f0',
+  backgroundColor: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+  color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : 'var(--ds-text-subtle, #475569)',
+  border: isActive ? 'none' : '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: '8px',
   fontSize: '13px',
   fontWeight: 500,

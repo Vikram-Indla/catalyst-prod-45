@@ -26,7 +26,7 @@ export function DefectBreakdown({ blocker, critical, major, minor, isWinner }: D
       {isWinner && (
         <div 
           className="absolute -top-1 -right-1 text-lg z-10"
-          style={{ color: '#0d9488' }}
+          style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}
         >
           ★
         </div>

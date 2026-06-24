@@ -242,7 +242,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                         top: 0,
                         height: '100%',
                         width: `${release.completion_percent}%`,
-                        background: 'rgba(0,0,0,0.15)',
+                        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.15))',
                         borderRadius: '4px 0 0 4px',
                       }} />
                     )}
@@ -283,7 +283,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           left: tooltip.x,
           top: tooltip.y - 10,
           transform: 'translate(-50%, -100%)',
-          background: '#1e293b',
+          background: 'var(--ds-text, #172B4D)',
           color: 'var(--bg-app)',
           borderRadius: 8,
           padding: '8px 12px',

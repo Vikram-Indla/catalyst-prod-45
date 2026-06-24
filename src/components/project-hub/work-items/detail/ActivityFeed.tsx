@@ -190,7 +190,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
           {pickerOpen && (
             <div
               className="absolute left-0 bottom-full mb-1 flex gap-0.5 rounded-md p-1 bg-[var(--cp-float)]"
-              style={{ border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }}
+              style={{ border: '1px solid var(--divider)', boxShadow: '0 8px 20px var(--ds-shadow-raised, rgba(0,0,0,0.18))', zIndex: 9999 }}
             >
               {EMOJI_OPTIONS.map(e => (
                 <button

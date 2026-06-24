@@ -58,9 +58,9 @@ export default function BlockedTasksWidget({ collapsed, onToggleCollapse }: Widg
           <div
             style={{
               display: 'flex',
-              background: token('elevation.surface.sunken', '#F7F8F9'),
+              background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
               borderRadius: token('border.radius', '4px'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               overflow: 'hidden',
             }}
           >
@@ -87,7 +87,7 @@ export default function BlockedTasksWidget({ collapsed, onToggleCollapse }: Widg
                     minHeight: 36,
                   }}
                 >
-                  <span style={{ ...BODY, color: token('color.link', '#0C66E4'), whiteSpace: 'nowrap' }}>
+                  <span style={{ ...BODY, color: token('color.link', 'var(--ds-link, #0C66E4)'), whiteSpace: 'nowrap' }}>
                     {t.key}
                   </span>
                   <span
@@ -96,7 +96,7 @@ export default function BlockedTasksWidget({ collapsed, onToggleCollapse }: Widg
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      color: token('color.text', '#172B4D'),
+                      color: token('color.text', 'var(--ds-text, #172B4D)'),
                     }}
                   >
                     {t.title}
@@ -105,7 +105,7 @@ export default function BlockedTasksWidget({ collapsed, onToggleCollapse }: Widg
                     {reason ? (
                       <Lozenge appearance="moved">{reason.slice(0, 24)}</Lozenge>
                     ) : (
-                      <span style={{ ...SMALL, color: token('color.text.subtlest', '#6B778C') }}>
+                      <span style={{ ...SMALL, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                         No reason given
                       </span>
                     )}
@@ -130,7 +130,7 @@ function SkeletonRows({ count }: { count: number }) {
           style={{
             height: 36,
             borderRadius: token('border.radius', '4px'),
-            background: token('color.background.neutral.subtle', '#F1F2F4'),
+            background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
           }}
         />
       ))}
@@ -157,11 +157,11 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '8px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
       }}
     >
       <span style={{ ...LABEL, textTransform: 'none', letterSpacing: '0.04em' }}>{label}</span>
-      <span style={{ ...H_NUM, lineHeight: 1.1, color: accent ?? token('color.text', '#292A2E') }}>
+      <span style={{ ...H_NUM, lineHeight: 1.1, color: accent ?? token('color.text', 'var(--ds-text, #172B4D)') }}>
         {value}
       </span>
     </div>

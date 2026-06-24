@@ -149,7 +149,7 @@ export function WeeklySummaryView() {
                 <EmptyState title="releases" icon={Rocket} />
               ) : (
                 releases.slice(0, 5).map((release: any) => (
-                  <div key={release.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[#111111] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
+                  <div key={release.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-600 text-white font-bold text-xs">
                       REL
                     </div>
@@ -182,7 +182,7 @@ export function WeeklySummaryView() {
                 <EmptyState title="incidents" icon={AlertTriangle} />
               ) : (
                 incidents.slice(0, 5).map((incident: any) => (
-                  <div key={incident.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[#111111] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
+                  <div key={incident.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
                     <div className={cn(
                       "w-2.5 h-2.5 rounded-full flex-shrink-0",
                       incident.severity === 'critical' && "bg-red-500 animate-pulse",
@@ -219,7 +219,7 @@ export function WeeklySummaryView() {
                 <EmptyState title="defects" icon={Bug} />
               ) : (
                 defects.slice(0, 5).map((defect: any) => (
-                  <div key={defect.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[#111111] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
+                  <div key={defect.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
                     <div className={cn(
                       "w-2.5 h-2.5 rounded-full flex-shrink-0",
                       defect.severity === 'critical' && "bg-red-500",
@@ -255,7 +255,7 @@ export function WeeklySummaryView() {
                 <EmptyState title="stories" icon={GitBranch} />
               ) : (
                 stories.slice(0, 5).map((story: any) => (
-                  <div key={story.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[#111111] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
+                  <div key={story.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                         {story.title}

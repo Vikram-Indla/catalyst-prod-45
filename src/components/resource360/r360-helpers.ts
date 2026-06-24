@@ -60,29 +60,29 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   if (lower === 'todo' || lower === 'to do')
     return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
   if (lower === 'in progress' || lower === 'under implementation' || lower === 'in development')
-    return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
+    return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text, #172B4D)', category: 'started' };
   if (lower === 'in review' || lower === 'in qa' || lower === 'ready for qa' || lower === 'retest')
-    return { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', text: '#134E4A', category: 'started' };
+    return { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'started' };
   if (lower === 'in uat' || lower === 'uat ready')
-    return { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', text: '#4C1D95', category: 'started' };
+    return { dot: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-background-discovery, #F3F0FF)', text: '#4C1D95', category: 'started' };
   if (lower === 'done' || lower === 'closed' || lower === 'resolved' || lower === 'ready for production' || lower === 'beta ready')
-    return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#14532D', category: 'completed' };
+    return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'completed' };
   if (lower === 'blocked')
-    return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: '#7F1D1D', category: 'blocked' };
+    return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #AE2A19)', category: 'blocked' };
   if (lower === 're-open' || lower === 'reopen')
     return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
   if (lower === 'in requirements' || lower === 'awaiting info')
     return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
   if (lower === 'rejected')
-    return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: '#7F1D1D', category: 'completed' };
+    return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #AE2A19)', category: 'completed' };
 
   // Fallback to statusCategory if available
   if (statusCategory) {
     const catLower = statusCategory.toLowerCase();
     if (catLower === 'done' || catLower === 'complete')
-      return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#14532D', category: 'completed' };
+      return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'completed' };
     if (catLower === 'in progress' || catLower === 'indeterminate')
-      return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
+      return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text, #172B4D)', category: 'started' };
     if (catLower === 'to do' || catLower === 'new')
       return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
   }
@@ -99,7 +99,7 @@ export function getPriorityColor(priority: string): string {
   switch (priority?.toLowerCase()) {
     case 'critical': return '#BE123C';
     case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-    case 'high': return '#EA580C';
+    case 'high': return 'var(--ds-background-warning-bold, #E2B203)';
     case 'medium': return 'var(--ds-text-warning, #974F0C)';
     case 'low': return '#57534E';
     default: return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';

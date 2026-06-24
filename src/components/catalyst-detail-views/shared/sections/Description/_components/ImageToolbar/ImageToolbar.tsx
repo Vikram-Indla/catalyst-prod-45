@@ -252,7 +252,7 @@ export function ImageToolbar({
           border: '1px solid var(--ds-border, #DFE1E6)',
           borderRadius: 4,
           boxShadow:
-            '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+            '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
           fontFamily:
             '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, sans-serif',
         }}
@@ -494,7 +494,7 @@ function EllipsisMenu({
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
         boxShadow:
-          '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+          '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
       }}
     >
       <MenuRow icon={<LinkIcon label="" />} label="Add link" onClick={onAddLink} />
@@ -617,7 +617,7 @@ function BorderMenu({
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
         boxShadow:
-          '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+          '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
       }}
     >
       <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 6 }}>Color</div>
@@ -632,7 +632,7 @@ function BorderMenu({
               width: 24, height: 24,
               border: color === c
                 ? '2px solid var(--ds-border-selected, #0C66E4)'
-                : '1px solid rgba(0,0,0,0.1)',
+                : '1px solid var(--ds-shadow-raised, rgba(0,0,0,0.1))',
               borderRadius: 3,
               background: BORDER_COLOR_HEX[c],
               cursor: 'pointer',

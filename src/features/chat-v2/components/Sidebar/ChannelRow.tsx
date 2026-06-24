@@ -74,7 +74,7 @@ export function ChannelRow({ conversation, isActive, onClick }: ChannelRowProps)
             padding: '0 5px',
             borderRadius: 9,
             background: 'var(--cv2-unread)',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             fontSize: 11,
             fontWeight: 700,
             display: 'inline-flex',

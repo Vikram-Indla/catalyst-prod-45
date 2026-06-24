@@ -24,14 +24,14 @@ export const T10_RANK_TIERS = {
 
 // Colors
 export const T10_COLORS = {
-  brand: '#0d9488',
-  brandDark: '#0f766e',
+  brand: 'var(--ds-chart-teal-bold, #0d9488)',
+  brandDark: 'var(--ds-chart-teal-bolder, #0f766e)',
   blue: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   blueDark: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-  success: '#10b981',
+  success: 'var(--ds-background-success-bold, #059669)',
   warning: 'var(--ds-text-warning, #f59e0b)',
   danger: 'var(--ds-text-danger, #ef4444)',
-  purple: '#8b5cf6',
+  purple: 'var(--ds-background-discovery-bold, #8b5cf6)',
 } as const;
 
 // Activity Types - must match t10_activity_activity_type_check constraint

@@ -87,7 +87,7 @@ export function useAllocationDrawer({ resource, onClose }: UseAllocationDrawerPr
         return assignColorsToAssignments((rawData || []).map(d => ({
           id: d.id,
           name: d.name,
-          color: d.color || '#2563eb'
+          color: d.color || 'var(--ds-link, #2563eb)'
         })));
       }
       
@@ -104,7 +104,7 @@ export function useAllocationDrawer({ resource, onClose }: UseAllocationDrawerPr
       return assignColorsToAssignments((rawData || []).map(d => ({
         id: d.id,
         name: d.name,
-        color: d.color || '#2563eb'
+        color: d.color || 'var(--ds-link, #2563eb)'
       })));
     },
   });

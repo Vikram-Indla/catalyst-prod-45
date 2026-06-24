@@ -36,7 +36,7 @@ const COLORS = {
 
 // Generate avatar background color from user ID
 const getAvatarColor = (userId: string): string => {
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#7c3aed', '#db2777', '#ea580c', 'var(--ds-text-success, #16a34a)', '#0891b2', '#4f46e5', '#be185d'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-text-success, #16a34a)', 'var(--ds-link, #0C66E4)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-accent-magenta-bolder, #be185d)'];
   const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
 };

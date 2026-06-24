@@ -55,11 +55,11 @@ export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: G
   const uniqueThemes = themes?.length ?? new Set(goals.map(g => g.theme_id)).size;
 
   const cards = [
-    { label: 'Total Goals', value: totalGoals, icon: Target, iconBg: isDark ? 'rgba(37,99,235,0.12)' : 'var(--cp-blue-wash)', iconColor: 'var(--cp-blue)', sub: `across ${uniqueThemes} themes` },
+    { label: 'Total Goals', value: totalGoals, icon: Target, iconBg: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--cp-blue-wash)', iconColor: 'var(--cp-blue)', sub: `across ${uniqueThemes} themes` },
     { label: 'On Track', value: `${onTrackPct}%`, icon: CheckCircle2, iconBg: 'var(--cp-success-light, #DCFCE7)', iconColor: 'var(--sem-success)', sub: `${onTrackGoals} of ${totalGoals} goals` },
     { label: 'Avg Progress', value: `${avgProgress}%`, icon: Activity, iconBg: 'var(--cp-warning-light, #FEF3C7)', iconColor: 'var(--sem-warning)', sub: `${100 - avgProgress}% to target` },
     { label: 'Total KRs', value: totalKRs, icon: BarChart3, iconBg: 'var(--cp-primary-light, #DBEAFE)', iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', sub: `~${krsPerGoal} per goal` },
-    { label: 'Overdue KRs', value: overdueKRs, icon: AlertTriangle, iconBg: isDark ? (overdueKRs > 0 ? 'rgba(239,68,68,0.12)' : 'var(--ds-surface-overlay, #1F1F1F)') : (overdueKRs > 0 ? '#FEE2E2' : 'var(--cp-bd-zone)'), iconColor: overdueKRs > 0 ? 'var(--sem-danger)' : 'var(--fg-4)', sub: overdueKRs > 0 ? 'needs attention' : 'all on schedule' },
+    { label: 'Overdue KRs', value: overdueKRs, icon: AlertTriangle, iconBg: isDark ? (overdueKRs > 0 ? 'var(--ds-background-danger, rgba(239,68,68,0.12))' : 'var(--ds-surface-overlay, #1F1F1F)') : (overdueKRs > 0 ? 'var(--ds-background-danger, #FFECEB)' : 'var(--cp-bd-zone)'), iconColor: overdueKRs > 0 ? 'var(--sem-danger)' : 'var(--fg-4)', sub: overdueKRs > 0 ? 'needs attention' : 'all on schedule' },
   ];
 
   return (

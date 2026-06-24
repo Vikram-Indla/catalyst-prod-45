@@ -181,7 +181,7 @@ const PRIORITY_GLYPH: Record<string, { glyph: string; color: string }> = {
   High:    { glyph: '↑',  color: '#E2483D' },
   Medium:  { glyph: '=',  color: '#E1A20B' },
   Low:     { glyph: '↓',  color: '#2884FF' },
-  Lowest:  { glyph: '↓↓', color: '#0C66E4' },
+  Lowest:  { glyph: '↓↓', color: 'var(--ds-link, #0C66E4)' },
 };
 
 function StatusValue({ value, statusMap }: { value: string | null; statusMap?: Map<string, string | null> }) {

@@ -191,7 +191,7 @@ export function TicketBreadcrumbs({
           border-radius: 3px;
         }
         /* jira-compare 2026-05-16 re-probe (corrected): Jira breadcrumb items
-           are 14px/400/rgb(80,82,88) — grey at rest for ALL items including
+           are 14px/400/var(--ds-text-subtle, rgb(80,82,88)) — grey at rest for ALL items including
            anchor links. No blue link colour at rest (muted text is Jira UX). */
         .tk-breadcrumbs a:hover {
           color: var(--ds-link, #1868DB);

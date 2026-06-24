@@ -88,7 +88,7 @@ function ThemeSelector({ issueKey, currentThemeId }: { issueKey: string; current
           style={{
             minWidth: '220px',
             maxHeight: '240px',
-            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
+            boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
             borderColor: 'var(--divider)',
           }}
         >
@@ -197,7 +197,7 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full" style={{
                     backgroundColor: item.priority === 'Highest' ? 'var(--sem-danger)' :
-                      item.priority === 'High' ? '#ea580c' :
+                      item.priority === 'High' ? 'var(--ds-background-warning-bold, #E2B203)' :
                       item.priority === 'Medium' ? 'var(--sem-warning)' :
                       item.priority === 'Low' ? 'var(--cp-blue)' : 'var(--fg-3)'
                   }} />
@@ -217,7 +217,7 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
                     <>
                       <span
                         className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
-                        style={{ backgroundColor: '#6366f1' }}
+                        style={{ backgroundColor: 'var(--ds-background-discovery-bold, #6366f1)' }}
                       >
                         {item.assignee_display_name[0]?.toUpperCase()}
                       </span>

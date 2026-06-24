@@ -4,15 +4,15 @@
  */
 
 const DEPARTMENT_CONFIG: Record<string, { bg: string; text: string }> = {
-  Engineering: { bg: '#dbeafe', text: 'var(--ds-background-brand-bold-hovered, #1d4ed8)' },
-  Design:      { bg: '#fce7f3', text: '#9d174d' },
-  QA:          { bg: '#d1fae5', text: '#065f46' },
-  Platform:    { bg: '#e0e7ff', text: '#3730a3' },
-  Data:        { bg: '#ccfbf1', text: '#134e4a' },
-  Security:    { bg: '#fee2e2', text: 'var(--ds-text-danger, #991b1b)' },
-  Product:     { bg: '#fef3c7', text: '#92400e' },
+  Engineering: { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-background-brand-bold-hovered, #1d4ed8)' },
+  Design:      { bg: 'var(--ds-background-accent-magenta-subtle, #fce7f3)', text: 'var(--ds-background-accent-magenta-bolder, #9d174d)' },
+  QA:          { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' },
+  Platform:    { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)' },
+  Data:        { bg: 'var(--ds-background-success, #DCFFF1)', text: 'var(--ds-text-success, #216E4E)' },
+  Security:    { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #991b1b)' },
+  Product:     { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
   DevOps:      { bg: 'var(--ds-surface-sunken, #f1f5f9)', text: 'var(--ds-text-subtle, #475569)' },
-  Management:  { bg: '#f5f3ff', text: '#5b21b6' },
+  Management:  { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)' },
 };
 
 export { DEPARTMENT_CONFIG };

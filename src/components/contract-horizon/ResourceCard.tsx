@@ -20,7 +20,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
       onClick={onClick}
       className={cn(
         "relative p-3 bg-card border border-border rounded-[10px] cursor-pointer transition-all duration-200",
-        "hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]",
+        "hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_var(--ds-shadow-raised, rgba(0,0,0,0.08))]",
         "group"
       )}
     >
@@ -31,7 +31,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
           "group-hover:top-0 group-hover:bottom-0 group-hover:rounded-l-[10px] group-hover:rounded-r-none",
           resource.status === 'critical' && "bg-[var(--ds-text-danger,#ef4444)]",
           resource.status === 'warning' && "bg-[var(--ds-text-warning,#d97706)]",
-          resource.status === 'safe' && "bg-[#0d9488]"
+          resource.status === 'safe' && "bg-[var(--ds-chart-teal-bold, #0d9488)]"
         )}
       />
       

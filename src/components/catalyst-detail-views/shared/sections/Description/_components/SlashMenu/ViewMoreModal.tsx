@@ -78,14 +78,14 @@ interface Props {
 }
 
 const COLOR_TO_HEX: Record<ModalIconColor, string> = {
-  green: '#22A06B',
-  blue: '#1868DB',
+  green: 'var(--ds-background-success-bold, #1F845A)',
+  blue: 'var(--ds-link, #1868DB)',
   orange: '#E56910',
-  purple: '#8270DB',
-  red: '#C9372C',
-  gray: '#626F86',
+  purple: 'var(--ds-background-discovery-bold, #6E5DC6)',
+  red: 'var(--ds-background-danger-bold, #C9372C)',
+  gray: 'var(--ds-icon-subtle, #626F86)',
   pink: '#E774BB',
-  brand: '#1868DB',
+  brand: 'var(--ds-link, #1868DB)',
 };
 
 function renderIcon(el: ModalElement) {
@@ -214,7 +214,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(9,30,66,0.54)',
+        background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -231,7 +231,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
           borderRadius: 8,
           /* Drop shadow only — removed the 1px hairline ring so the modal
              has no border, just elevation. */
-          boxShadow: '0 12px 24px -8px rgba(9,30,66,0.30)',
+          boxShadow: '0 12px 24px -8px var(--ds-shadow-raised, rgba(9,30,66,0.30))',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',

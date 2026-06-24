@@ -331,7 +331,7 @@ function UnifiedDataGrid({
   const groupedItems = groupItemsByTimePeriod(items);
 
   return (
-    <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+    <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_var(--ds-shadow-raised, rgba(0,0,0,0.4))]">
       {/* Sticky Header */}
       <div 
         className="grid items-center py-2.5 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"
@@ -767,7 +767,7 @@ export function HomeContent() {
               )}
             >
               {/* Header with blue accent per design system v2.0 */}
-              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[#525252] dark:text-[#a3a3a3] border-b border-border pb-2">
+              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[var(--ds-text-subtle, #44546F)] dark:text-[var(--ds-text-disabled, #8590A2)] border-b border-border pb-2">
                 <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] rounded-r" />
                 My focus
               </div>

@@ -62,7 +62,7 @@ function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
-const AVATAR_COLORS = ['#6554C0', '#2684FF', '#36B37E', '#FF5630', '#FFAB00', '#00B8D9'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-link, #0C66E4)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-warning-bold, #E2B203)', '#00B8D9'];
 function hashColor(id: string): string {
   let h = 0;
   for (let i = 0; i < id.length; i++) h = ((h << 5) - h + id.charCodeAt(i)) | 0;

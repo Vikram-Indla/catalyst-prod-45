@@ -20,7 +20,7 @@ export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: R
           style={{
             height: 24, padding: '0 10px', borderRadius: 100, border: 'none', cursor: 'pointer',
             fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
-            background: activeTeam === t ? '#1E293B' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+            background: activeTeam === t ? 'var(--ds-text, #172B4D)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             color: activeTeam === t ? 'var(--bg-app)' : 'var(--fg-3)',
             transition: 'background 120ms, color 120ms',
           }}

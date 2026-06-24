@@ -29,12 +29,12 @@ interface ColumnActionsProps {
 const STATUS_COLORS = [
   { name: 'Slate', value: 'var(--ds-text-subtlest, #94a3b8)' },
   { name: 'Blue', value: 'var(--ds-text-brand, #3b82f6)' },
-  { name: 'Teal', value: '#14b8a6' },
+  { name: 'Teal', value: 'var(--ds-icon-information, #1D7AFC)' },
   { name: 'Green', value: 'var(--ds-text-success, #22c55e)' },
-  { name: 'Yellow', value: '#eab308' },
-  { name: 'Orange', value: '#f97316' },
+  { name: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
+  { name: 'Orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
   { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
-  { name: 'Purple', value: '#8b5cf6' },
+  { name: 'Purple', value: 'var(--ds-background-discovery-bold, #6E5DC6)' },
 ];
 
 export function ColumnActions({ column }: ColumnActionsProps) {

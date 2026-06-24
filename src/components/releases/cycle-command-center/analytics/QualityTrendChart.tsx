@@ -52,18 +52,18 @@ export function QualityTrendChart({ cycleId, days = 14 }: QualityTrendChartProps
               <XAxis 
                 dataKey="dateLabel" 
                 tick={{ fontSize: 11 }} 
-                stroke="#9ca3af"
+                stroke="var(--ds-text-subtlest, #626F86)"
               />
               <YAxis 
                 domain={[0, 100]} 
                 tick={{ fontSize: 11 }} 
-                stroke="#9ca3af"
+                stroke="var(--ds-text-subtlest, #626F86)"
                 tickFormatter={(v) => `${v}%`}
               />
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: 'white', 
-                  border: '1px solid #e5e7eb',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: '8px',
                   fontSize: '12px'
                 }}

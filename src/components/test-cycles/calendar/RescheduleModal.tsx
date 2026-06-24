@@ -163,9 +163,9 @@ export function RescheduleModal({
 
           {/* Warning */}
           {isExtendingPastCycle && (
-            <div className="flex items-start gap-2 p-3 bg-[#fef3c7] rounded-lg">
+            <div className="flex items-start gap-2 p-3 bg-[var(--ds-background-warning, #FFF7D6)] rounded-lg">
               <AlertTriangle className="h-4 w-4 text-[var(--ds-text-warning,#d97706)] shrink-0 mt-0.5" />
-              <div className="text-xs text-[#92400e]">
+              <div className="text-xs text-[var(--ds-text-warning, #974F0C)]">
                 <strong>Warning:</strong> This will extend tests past the cycle end date
                 ({format(cycleRange.end, 'MMM d')}). Consider extending the cycle.
               </div>

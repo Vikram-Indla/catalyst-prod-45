@@ -33,7 +33,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 10001,
-      background: 'rgba(0,0,0,0.4)',
+      background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }} onClick={onCancel}>
       <div
@@ -43,7 +43,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
         onClick={e => e.stopPropagation()}
         style={{
           width: 420, background: tk.surfaceBg, borderRadius: 8,
-          border: `1px solid ${tk.border}`, boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+          border: `1px solid ${tk.border}`, boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.3))',
           padding: 24, fontFamily: 'var(--cp-font-body)',
         }}
       >
@@ -90,7 +90,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             disabled={!canDelete}
             style={{
               padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-              border: 'none', background: canDelete ? '#D32F2F' : '#E0E0E0',
+              border: 'none', background: canDelete ? '#D32F2F' : 'var(--ds-border, #DFE1E6)',
               color: canDelete ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : '#9E9E9E', cursor: canDelete ? 'pointer' : 'not-allowed',
               opacity: canDelete ? 1 : 0.6,
             }}

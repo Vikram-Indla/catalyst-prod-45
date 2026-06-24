@@ -43,25 +43,25 @@ import {
 // ── Dark palette matching Jira Workflow Builder ─────────────────────────────
 const DARK = {
   canvas: '#1A1C1E',
-  surface: '#22272B',
-  surfaceHover: '#2C333A',
+  surface: 'var(--ds-surface, #FFFFFF)',
+  surfaceHover: 'var(--ds-background-neutral, #F1F2F4)',
   border: '#3B4349',
-  borderHover: '#579DFF',
-  text: '#C7D1DB',
+  borderHover: 'var(--ds-background-information-bold, #0C66E4)',
+  text: 'var(--ds-border, #DFE1E6)',
   textSubtle: '#8696A7',
-  textBrand: '#579DFF',
+  textBrand: 'var(--ds-background-information-bold, #0C66E4)',
   textDanger: '#F87168',
-  nodeTodo: '#2C333A',
+  nodeTodo: 'var(--ds-background-neutral, #F1F2F4)',
   nodeInProgress: '#1D3557',
   nodeDone: '#1B3A2D',
   nodeBorderTodo: '#3B4349',
   nodeBorderInProgress: '#2D6A9F',
   nodeBorderDone: '#2D7A4F',
-  textTodo: '#C7D1DB',
+  textTodo: 'var(--ds-border, #DFE1E6)',
   textInProgress: '#85B8FF',
-  textDone: '#7EE2B8',
+  textDone: 'var(--ds-background-success, #DCFFF1)',
   edge: '#4A5568',
-  edgeHover: '#579DFF',
+  edgeHover: 'var(--ds-background-information-bold, #0C66E4)',
 };
 
 const NODE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
@@ -76,13 +76,13 @@ function StatusNode({ data, selected }: NodeProps) {
   const colors = NODE_COLORS[d.category] ?? NODE_COLORS.todo;
 
   const borderColor = d.isCurrent
-    ? '#0C66E4'
+    ? 'var(--ds-link, #0C66E4)'
     : selected
     ? DARK.borderHover
     : colors.border;
 
   const boxShadow = d.isCurrent
-    ? '0 0 0 3px rgba(12,102,228,0.45), 0 0 12px rgba(12,102,228,0.25)'
+    ? '0 0 0 3px var(--ds-link, rgba(12,102,228,0.45)), 0 0 12px var(--ds-link, rgba(12,102,228,0.25))'
     : selected
     ? `0 0 0 2px ${DARK.borderHover}40`
     : 'none';
@@ -177,7 +177,7 @@ function StatusNode({ data, selected }: NodeProps) {
           fontSize: 9,
           fontWeight: 700,
           letterSpacing: '0.08em',
-          color: '#0C66E4',
+          color: 'var(--ds-link, #0C66E4)',
           background: DARK.canvas,
           padding: '1px 5px',
           borderRadius: 2,
@@ -217,7 +217,7 @@ function StartNode(_: NodeProps) {
       fontSize: 9,
       fontWeight: 700,
       letterSpacing: '0.06em',
-      color: '#C7D1DB',
+      color: 'var(--ds-border, #DFE1E6)',
     }}>
       START
       <Handle
@@ -305,7 +305,7 @@ function DeletableEdge({
                 justifyContent: 'center',
                 fontSize: 11,
                 fontWeight: 700,
-                color: '#FFFFFF',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
                 lineHeight: 1,
               }}
               title="Delete transition"
@@ -611,8 +611,8 @@ export function CatalystWorkflowBuilder({
                 border: 'none',
                 borderRadius: 3,
                 cursor: newStatusName.trim() ? 'pointer' : 'not-allowed',
-                background: newStatusName.trim() ? '#0C66E4' : DARK.border,
-                color: '#FFFFFF',
+                background: newStatusName.trim() ? 'var(--ds-link, #0C66E4)' : DARK.border,
+                color: 'var(--ds-text-inverse, #FFFFFF)',
                 fontFamily: 'inherit',
               }}
             >

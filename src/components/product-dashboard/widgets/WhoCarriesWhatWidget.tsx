@@ -7,7 +7,7 @@ import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
 
 // ── Avatar colours — cycling through 6 brand colours ─────────────────────────
 
-const AVATAR_COLORS = ['#6554C0', '#00A3BF', '#FF8B00', '#36B37E', '#6E5DC6', '#DE350B'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6554C0)', '#00A3BF', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-danger-bold, #C9372C)'];
 
 function avatarColor(name: string): string {
   let h = 0;
@@ -42,7 +42,7 @@ function WorkloadRow({
   const isHeavy  = pct >= 90;
   const isMedium = pct >= 50 && !isHeavy;
   const barColor = isHeavy
-    ? token('color.text.danger', '#AE2A19')
+    ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
     : isMedium
     ? '#F5A623'
     : '#8A7CFF';
@@ -66,7 +66,7 @@ function WorkloadRow({
             height: 24,
             borderRadius: '50%',
             background: avatarColor(name),
-            color: '#fff',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             fontSize: 11,
             fontWeight: 600,
             display: 'inline-flex',
@@ -95,7 +95,7 @@ function WorkloadRow({
         style={{
           height: 18,
           borderRadius: 3,
-          background: token('color.background.neutral.subtle', '#F4F5F7'),
+          background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
           overflow: 'hidden',
         }}
       >
@@ -155,7 +155,7 @@ function WorkloadCol({
         <div
           style={{
             fontSize: 13,
-            color: token('color.text.subtlest', '#8993A4'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             padding: '12px 0',
           }}
         >
@@ -207,8 +207,8 @@ export function WhoCarriesWhatWidget() {
         style={{
           height: 200,
           borderRadius: 8,
-          background: token('color.background.neutral', '#F4F5F7'),
-          boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
     );
@@ -276,7 +276,7 @@ export function WhoCarriesWhatWidget() {
           style={{
             padding: 24,
             fontSize: 13,
-            color: token('color.text.subtlest', '#8993A4'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             textAlign: 'center',
           }}
         >

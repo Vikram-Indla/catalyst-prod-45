@@ -13,10 +13,10 @@ export const HubIcon = () => (
         <stop offset="100%" style={{stopColor:'var(--ds-background-brand-bold-hovered, #1d4ed8)'}}/>
       </linearGradient>
     </defs>
-    <line x1="50" y1="50" x2="22" y2="22" stroke="#93c5fd" strokeWidth="4" strokeLinecap="round"/>
-    <line x1="50" y1="50" x2="78" y2="22" stroke="#93c5fd" strokeWidth="4" strokeLinecap="round"/>
-    <line x1="50" y1="50" x2="22" y2="78" stroke="#93c5fd" strokeWidth="4" strokeLinecap="round"/>
-    <line x1="50" y1="50" x2="78" y2="78" stroke="#93c5fd" strokeWidth="4" strokeLinecap="round"/>
+    <line x1="50" y1="50" x2="22" y2="22" stroke="var(--ds-background-information-bold, #0C66E4)" strokeWidth="4" strokeLinecap="round"/>
+    <line x1="50" y1="50" x2="78" y2="22" stroke="var(--ds-background-information-bold, #0C66E4)" strokeWidth="4" strokeLinecap="round"/>
+    <line x1="50" y1="50" x2="22" y2="78" stroke="var(--ds-background-information-bold, #0C66E4)" strokeWidth="4" strokeLinecap="round"/>
+    <line x1="50" y1="50" x2="78" y2="78" stroke="var(--ds-background-information-bold, #0C66E4)" strokeWidth="4" strokeLinecap="round"/>
     <circle cx="22" cy="22" r="12" fill="url(#catalystBlue)"/>
     <circle cx="78" cy="22" r="12" fill="url(#catalystBlue)"/>
     <circle cx="22" cy="78" r="12" fill="url(#catalystBlue)"/>

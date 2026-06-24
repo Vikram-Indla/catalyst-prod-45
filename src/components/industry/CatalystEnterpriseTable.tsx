@@ -603,7 +603,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
               <span
                 className={cn(
                   column.editable && "inline-block px-2 py-1 -mx-2 -my-1 rounded border border-transparent transition-all cursor-pointer",
-                  column.editable && "hover:border-[rgba(37,99,235,0.3)] hover:bg-[rgba(37,99,235,0.05)]"
+                  column.editable && "hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] hover:bg-[var(--ds-background-information, rgba(37,99,235,0.05))]"
                 )}
               >
                 {value ?? <span className="text-[var(--table-text-muted)]">—</span>}
@@ -657,7 +657,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
         // Light mode: subtle border
         "border-[var(--table-container-border)]",
         // Dark mode: very subtle border (darker than content, never bright)
-        "dark:border-[#262626]",
+        "dark:border-[var(--ds-text, #172B4D)]",
         "shadow-[var(--shadow-elev-1)]"
       )}>
         {/* Request count header - subtle separation via background, minimal border */}

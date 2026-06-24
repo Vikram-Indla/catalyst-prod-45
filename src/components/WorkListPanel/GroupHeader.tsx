@@ -35,7 +35,7 @@ export const GroupHeader = memo(function GroupHeader({
         transition: 'background-color 150ms',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+        e.currentTarget.style.backgroundColor = 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.05))';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';
@@ -50,7 +50,7 @@ export const GroupHeader = memo(function GroupHeader({
           width: '20px',
           height: '20px',
           fontSize: '12px',
-          color: '#626F86',
+          color: 'var(--ds-icon-subtle, #626F86)',
           transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
           transition: 'transform 150ms',
         }}
@@ -70,10 +70,10 @@ export const GroupHeader = memo(function GroupHeader({
       <span
         style={{
           fontSize: '12px',
-          color: '#626F86',
+          color: 'var(--ds-icon-subtle, #626F86)',
           fontWeight: 500,
           padding: '2px 6px',
-          backgroundColor: '#F1F2F4',
+          backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
           borderRadius: '3px',
         }}
       >

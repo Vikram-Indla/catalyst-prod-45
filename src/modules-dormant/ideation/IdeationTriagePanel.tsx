@@ -146,10 +146,10 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 250 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.40))', zIndex: 250 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 251,
-        boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)', display: 'flex', flexDirection: 'column',
+        boxShadow: isDark ? 'none' : '-8px 0 32px var(--ds-shadow-raised, rgba(0,0,0,0.12))', display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
         <div style={{ padding: '16px 20px', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
@@ -276,7 +276,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
   const { isDark } = useTheme();
   const dotColor = DOT_COLORS[badge] || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: '12px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: '12px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.04))' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--cp-text-secondary, #475569)', padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
           <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />

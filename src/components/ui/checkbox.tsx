@@ -23,7 +23,7 @@ const Checkbox = React.forwardRef<
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#3b82f6)] dark:focus-visible:ring-[var(--ds-text-brand,#60a5fa)] focus-visible:ring-offset-2",
       "disabled:cursor-not-allowed disabled:opacity-50",
       // Hover state for unchecked
-      "data-[state=unchecked]:hover:border-[hsl(217,91%,53%)]/70 dark:data-[state=unchecked]:hover:border-[#7D7D7D]",
+      "data-[state=unchecked]:hover:border-[hsl(217,91%,53%)]/70 dark:data-[state=unchecked]:hover:border-[var(--ds-text-subtlest, #626F86)]",
       "transition-colors duration-150",
       className,
     )}

@@ -161,12 +161,12 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.prolog,
     .adf-light-renderer .catalyst-code-block .token.doctype,
     .adf-light-renderer .catalyst-code-block .token.cdata {
-      color: #6B778C;
+      color: var(--ds-text-subtlest, #6B778C);
       font-style: italic;
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.punctuation,
     .adf-light-renderer .catalyst-code-block .token.punctuation {
-      color: #5E6C84;
+      color: var(--ds-text-subtle, #44546F);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.namespace,
     .adf-light-renderer .catalyst-code-block .token.namespace {
@@ -182,13 +182,13 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.constant,
     .adf-light-renderer .catalyst-code-block .token.symbol,
     .adf-light-renderer .catalyst-code-block .token.deleted {
-      color: #AE2A19;
+      color: var(--ds-text-danger, #AE2A19);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.boolean,
     .catalyst-tiptap-editor .catalyst-code-block .token.number,
     .adf-light-renderer .catalyst-code-block .token.boolean,
     .adf-light-renderer .catalyst-code-block .token.number {
-      color: #974F0C;
+      color: var(--ds-text-warning, #974F0C);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.selector,
     .catalyst-tiptap-editor .catalyst-code-block .token.attr-name,
@@ -202,7 +202,7 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.char,
     .adf-light-renderer .catalyst-code-block .token.builtin,
     .adf-light-renderer .catalyst-code-block .token.inserted {
-      color: #216E4E;
+      color: var(--ds-text-success, #216E4E);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.operator,
     .catalyst-tiptap-editor .catalyst-code-block .token.entity,
@@ -212,7 +212,7 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.operator,
     .adf-light-renderer .catalyst-code-block .token.entity,
     .adf-light-renderer .catalyst-code-block .token.url {
-      color: #5E4DB2;
+      color: var(--ds-background-discovery-bold, #6E5DC6);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.atrule,
     .catalyst-tiptap-editor .catalyst-code-block .token.attr-value,
@@ -220,14 +220,14 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.atrule,
     .adf-light-renderer .catalyst-code-block .token.attr-value,
     .adf-light-renderer .catalyst-code-block .token.keyword {
-      color: #0055CC;
+      color: var(--ds-link, #0C66E4);
       font-weight: 500;
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.function,
     .catalyst-tiptap-editor .catalyst-code-block .token.class-name,
     .adf-light-renderer .catalyst-code-block .token.function,
     .adf-light-renderer .catalyst-code-block .token.class-name {
-      color: #5E4DB2;
+      color: var(--ds-background-discovery-bold, #6E5DC6);
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.regex,
     .catalyst-tiptap-editor .catalyst-code-block .token.important,
@@ -402,12 +402,12 @@ export function injectEditorStyles(): void {
     @keyframes catalyst-translate-border {
       0% {
         box-shadow:
-          0 0 0 2px #0C66E4,
-          0 0 14px 3px rgba(12,102,228,0.30);
+          0 0 0 2px var(--ds-link, #0C66E4),
+          0 0 14px 3px var(--ds-link, rgba(12,102,228,0.30));
       }
       33% {
         box-shadow:
-          0 0 0 2px #8270DB,
+          0 0 0 2px var(--ds-background-discovery-bold, #6E5DC6),
           0 0 14px 3px rgba(130,112,219,0.30);
       }
       66% {
@@ -417,8 +417,8 @@ export function injectEditorStyles(): void {
       }
       100% {
         box-shadow:
-          0 0 0 2px #0C66E4,
-          0 0 14px 3px rgba(12,102,228,0.30);
+          0 0 0 2px var(--ds-link, #0C66E4),
+          0 0 14px 3px var(--ds-link, rgba(12,102,228,0.30));
       }
     }
 
@@ -439,7 +439,7 @@ export function injectEditorStyles(): void {
       width: 8px;
       height: 8px;
       margin-top: -4px;
-      border: 1px solid #0C66E4;
+      border: 1px solid var(--ds-link, #0C66E4);
       border-radius: 50%;
       background: transparent;
       box-sizing: border-box;
@@ -515,7 +515,7 @@ export function injectEditorStyles(): void {
        column"), red wins by source order. */
     .catalyst-tiptap-editor table .catalyst-cell-danger {
       background: rgba(255, 86, 48, 0.18) !important;
-      outline: 1px solid #F15B50 !important;
+      outline: 1px solid var(--ds-background-danger-bold, #C9372C) !important;
       outline-offset: -1px !important;
     }
 

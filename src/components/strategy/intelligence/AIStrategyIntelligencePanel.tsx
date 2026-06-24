@@ -94,7 +94,7 @@ export function AIStrategyIntelligencePanel({
       <div className="px-7 pt-4 pb-0 shrink-0">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), #1E3A8A)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-text-inverse, #1e3a8a))' }}>
               <Sparkles size={16} className="text-white" />
             </div>
             <h2 className="text-[15px] font-[700]" style={{ color: 'var(--fg-1)' }}>Strategy Intelligence</h2>
@@ -124,13 +124,13 @@ export function AIStrategyIntelligencePanel({
           {!metrics.initiativeKey && (
             <>
               <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
-              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', background: '#FFFBEB', border: '1px solid #FDE68A' }}>⚠ No Request</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', background: 'var(--ds-background-warning, #FFF7D6)', border: '1px solid var(--ds-background-warning, #FFF7D6)' }}>⚠ No Request</span>
             </>
           )}
           {!metrics.epicKey && (
             <>
               <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
-              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#1E40AF', background: '#DBEAFE', border: '1px solid #93C5FD' }}>⚠ No Epic</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-link-pressed, #1e40af)', background: 'var(--ds-background-information, #E9F2FF)', border: '1px solid var(--ds-background-information-bold, #0C66E4)' }}>⚠ No Epic</span>
             </>
           )}
         </div>
@@ -231,7 +231,7 @@ function StatusDot({ status }: { status: 'on_track' | 'at_risk' | 'critical' }) 
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: '#1E293B', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text, #172B4D)', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
       {children}
     </div>
   );
@@ -366,7 +366,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
       ) : briefError ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="flex items-center justify-center rounded-xl mb-4"
-            style={{ width: 48, height: 48, background: '#FFFBEB' }}>
+            style={{ width: 48, height: 48, background: 'var(--ds-background-warning, #FFF7D6)' }}>
             <X size={20} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
           </div>
           <p className="font-semibold text-slate-900 mb-1" style={{ fontSize: 15 }}>Briefing Unavailable</p>
@@ -628,7 +628,7 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
               <>
                 <div className="flex h-3 rounded-full overflow-hidden mb-2">
                   {m.storiesInProd > 0 && <div style={{ width: `${m.storiesInProd / m.storiesTotal * 100}%`, background: 'var(--sem-success)' }} />}
-                  {(m.storiesDone - m.storiesInProd) > 0 && <div style={{ width: `${(m.storiesDone - m.storiesInProd) / m.storiesTotal * 100}%`, background: '#86EFAC' }} />}
+                  {(m.storiesDone - m.storiesInProd) > 0 && <div style={{ width: `${(m.storiesDone - m.storiesInProd) / m.storiesTotal * 100}%`, background: 'var(--ds-background-success, #DFFCF0)' }} />}
                   {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />}
                   {m.storiesBlocked > 0 && <div style={{ width: `${m.storiesBlocked / m.storiesTotal * 100}%`, background: 'var(--sem-danger)' }} />}
                   {m.storiesBacklog > 0 && <div style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%`, background: 'var(--divider)' }} />}

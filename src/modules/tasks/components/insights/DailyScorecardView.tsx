@@ -15,7 +15,7 @@ export function DailyScorecardView() {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-[#111111]">
+      <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-[var(--ds-text, #172B4D)]">
         <Loader2 className="w-8 h-8 animate-spin text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
       </div>
     );
@@ -23,7 +23,7 @@ export function DailyScorecardView() {
 
   if (error || !data) {
     return (
-      <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-[#111111]">
+      <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-[var(--ds-text, #172B4D)]">
         <p className="text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Failed to load scorecard data</p>
       </div>
     );
@@ -31,7 +31,7 @@ export function DailyScorecardView() {
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-6 bg-slate-50 dark:bg-[#111111] min-h-full">
+      <div className="p-6 bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] min-h-full">
         {/* Main Card */}
         <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl shadow-md border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
           {/* Hero Section */}
@@ -122,7 +122,7 @@ export function DailyScorecardView() {
                   {/* Member Rows */}
                   <div className="p-5 space-y-2">
                     {team.members.map(member => (
-                      <div key={member.id} className="flex items-center gap-3.5 p-3 bg-slate-50 dark:bg-[#111111] rounded-[10px] hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
+                      <div key={member.id} className="flex items-center gap-3.5 p-3 bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] rounded-[10px] hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
                         <div 
                           className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
                           style={{ background: member.avatarColor }}

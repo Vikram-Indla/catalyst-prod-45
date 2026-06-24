@@ -267,7 +267,7 @@ export default function CatalystViewBusinessRequestV3({
           />
         </KeyDetailsFieldRow>
         {health && (
-          <KeyDetailsFieldRow label="Health" alignBlock="center">
+          <KeyDetailsFieldRow label="Delivery" alignBlock="start">
             <HealthStatusBadge health={health} />
           </KeyDetailsFieldRow>
         )}

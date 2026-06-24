@@ -5,9 +5,9 @@ import { getBrandColorHex } from '@/components/admin/BrandColorPicker';
 
 // Category → dot color token (for steps that have no explicit color set)
 const CATEGORY_DOT: Record<string, string> = {
-  todo:        token('color.text.subtlest', '#6B778C'),
-  in_progress: token('color.text.information', '#0052CC'),
-  done:        token('color.text.success', '#006644'),
+  todo:        token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+  in_progress: token('color.text.information', 'var(--ds-link, #0052CC)'),
+  done:        token('color.text.success', 'var(--ds-text-success, #006644)'),
 };
 
 export function DashboardWorkflowPath() {
@@ -20,7 +20,7 @@ export function DashboardWorkflowPath() {
         style={{
           height: 32,
           borderRadius: 4,
-          background: token('color.background.neutral', '#F4F5F7'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
           animation: 'pulse 1.5s ease-in-out infinite',
         }}
       />
@@ -38,7 +38,7 @@ export function DashboardWorkflowPath() {
         alignItems: 'center',
         gap: token('space.100', '8px'),
         padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-        background: token('color.background.neutral.subtle', '#FAFBFC'),
+        background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
         borderRadius: 4,
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}
@@ -47,7 +47,7 @@ export function DashboardWorkflowPath() {
         style={{
           fontSize: 11,
           fontWeight: 600,
-          color: token('color.text.subtlest', '#8993A4'),
+          color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
           whiteSpace: 'nowrap',
           marginRight: token('space.100', '8px'),
         }}
@@ -69,7 +69,7 @@ export function DashboardWorkflowPath() {
         }}
       >
         {sorted.map((step, idx) => {
-          const color = token('color.text.information', '#0052CC');
+          const color = token('color.text.information', 'var(--ds-link, #0052CC)');
           const isLast = idx === sorted.length - 1;
           return (
             <li
@@ -103,7 +103,7 @@ export function DashboardWorkflowPath() {
                   style={{
                     fontSize: 11,
                     fontWeight: 500,
-                    color: token('color.text.subtle', '#505258'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',

@@ -22,10 +22,10 @@ export function BrandedCheckbox({ checked, onChange, disabled = false, className
         // Catalyst V5: Use semantic tokens for dark mode compatibility
         checked
           ? "bg-primary border-primary"
-          : "bg-transparent border-[hsl(var(--border-default))] dark:border-[#7D7D7D]",
+          : "bg-transparent border-[hsl(var(--border-default))] dark:border-[var(--ds-text-subtlest, #626F86)]",
         disabled && "opacity-50 cursor-not-allowed",
         !disabled && "cursor-pointer",
-        !disabled && !checked && "hover:border-primary dark:hover:border-[#7D7D7D]",
+        !disabled && !checked && "hover:border-primary dark:hover:border-[var(--ds-text-subtlest, #626F86)]",
         !disabled && "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-1 dark:focus:ring-offset-[hsl(var(--background))]",
         className
       )}

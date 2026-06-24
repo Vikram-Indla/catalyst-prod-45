@@ -46,7 +46,7 @@ export const CreateModal = memo(function CreateModal({
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.5))',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -58,12 +58,12 @@ export const CreateModal = memo(function CreateModal({
     >
       <div
         style={{
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'var(--ds-surface, #FFFFFF)',
           borderRadius: '3px',
           padding: '24px',
           maxWidth: '400px',
           width: '90%',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+          boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
         }}
       >
         <h2
@@ -99,7 +99,7 @@ export const CreateModal = memo(function CreateModal({
                 onClick={() => setSelectedType(null)}
                 style={{
                   padding: '8px 12px',
-                  backgroundColor: '#F1F2F4',
+                  backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
                   color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
                   border: 'none',
                   borderRadius: '3px',
@@ -112,7 +112,7 @@ export const CreateModal = memo(function CreateModal({
                   e.currentTarget.style.backgroundColor = '#DCDFE6';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F1F2F4';
+                  e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral, #F1F2F4)';
                 }}
               >
                 Back
@@ -121,7 +121,7 @@ export const CreateModal = memo(function CreateModal({
                 onClick={handleCancel}
                 style={{
                   padding: '8px 12px',
-                  backgroundColor: '#F1F2F4',
+                  backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
                   color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
                   border: 'none',
                   borderRadius: '3px',
@@ -148,7 +148,7 @@ export const CreateModal = memo(function CreateModal({
               onClick={handleCancel}
               style={{
                 padding: '8px 12px',
-                backgroundColor: '#F1F2F4',
+                backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
                 color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
                 border: 'none',
                 borderRadius: '3px',

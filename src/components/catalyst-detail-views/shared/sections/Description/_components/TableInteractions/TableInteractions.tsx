@@ -70,7 +70,7 @@ const ROD_LENGTH = 24;
 const ROD_THICKNESS = 3;
 /* Lighter than the original gray so the rod reads as a hint rather
    than a structural line — but still distinct from the table border. */
-const ROD_COLOR = '#C1C7D0';
+const ROD_COLOR = 'var(--ds-border, #DFE1E6)';
 /* Expanded pill with 6-dot grip (shown when cursor is in the hitbox).
    Hitbox dimensions stay constant whether or not the cursor is inside,
    so mouse-enter/leave can't oscillate as the visual pill changes size. */
@@ -568,7 +568,7 @@ function GripDots({
             width: 2,
             height: 2,
             borderRadius: '50%',
-            background: '#FFFFFF',
+            background: 'var(--ds-surface, #FFFFFF)',
           }}
         />
       ))}
@@ -600,7 +600,7 @@ function buildDragPreview(
     'opacity: 0.55',
     'pointer-events: none',
     'z-index: 2147483645',
-    'box-shadow: 0 6px 20px rgba(9,30,66,0.2)',
+    'box-shadow: 0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
     'overflow: hidden',
     'background: var(--ds-surface, #FFFFFF)',
   ].join(';');

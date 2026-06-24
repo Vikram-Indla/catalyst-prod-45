@@ -52,13 +52,13 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
       style={{
         width: 280,
         borderRadius: 8,
-        boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.60)' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
+        boxShadow: isDark ? '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.60))' : '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07)), 0 2px 4px -2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
         fontFamily: 'var(--cp-font-body)',
       }}
     >
       {/* Search */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-        <Search size={13} className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" />
+        <Search size={13} className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" />
         <input
           autoFocus
           value={search}
@@ -85,7 +85,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
           {pinned.length > 0 ? 'Recent' : 'All Projects'}
         </div>
         {recent.length === 0 ? (
-          <div className="px-3 py-3 text-center text-[var(--fg-4)] dark:text-[#7D7D7D]" style={{ fontSize: 12 }}>
+          <div className="px-3 py-3 text-center text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 12 }}>
             No projects found
           </div>
         ) : (
@@ -114,7 +114,7 @@ function ProjectRow({
       onClick={() => onSelect(project.key)}
       className={`flex items-center gap-2.5 w-full px-3 py-1.5 transition-colors ${
         isCurrent
-          ? 'bg-[var(--cp-blue-wash)] dark:bg-[rgba(59,130,246,0.10)]'
+          ? 'bg-[var(--cp-blue-wash)] dark:bg-[var(--ds-background-information-bold, rgba(59,130,246,0.10))]'
           : 'hover:bg-[var(--cp-blue-wash)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
       }`}
       style={{
@@ -132,7 +132,7 @@ function ProjectRow({
         <span className="truncate w-full text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 12, fontWeight: 500 }}>
           {project.name}
         </span>
-        <span className="text-[var(--fg-4)] dark:text-[#7D7D7D]" style={{ fontSize: 10 }}>{project.key}</span>
+        <span className="text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 10 }}>{project.key}</span>
       </div>
     </button>
   );

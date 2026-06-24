@@ -11,7 +11,7 @@ export function openImagePreview(src: string): void {
   overlay.style.cssText = [
     "position:fixed",
     "inset:0",
-    "background:rgba(9,30,66,0.85)",
+    "background:var(--ds-shadow-raised, rgba(9,30,66,0.85))",
     "display:flex",
     "align-items:center",
     "justify-content:center",
@@ -27,7 +27,7 @@ export function openImagePreview(src: string): void {
     "object-fit:contain",
     "border-radius:3px",
     "cursor:default",
-    "box-shadow:0 8px 16px -4px rgba(9,30,66,0.4)",
+    "box-shadow:0 8px 16px -4px var(--ds-shadow-raised, rgba(9,30,66,0.4))",
   ].join(";");
   img.addEventListener("click", (e) => e.stopPropagation());
 
@@ -42,8 +42,8 @@ export function openImagePreview(src: string): void {
     "height:36px",
     "border-radius:50%",
     "border:none",
-    "background:rgba(255,255,255,0.15)",
-    "color:#fff",
+    "background:var(--ds-surface, rgba(255,255,255,0.15))",
+    "color:var(--ds-surface, #FFFFFF)",
     "font-size:24px",
     "cursor:pointer",
     "display:flex",

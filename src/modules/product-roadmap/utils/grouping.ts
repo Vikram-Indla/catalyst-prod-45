@@ -64,7 +64,7 @@ export function groupDemands(
       case 'product':
         if (key === 'unassigned') {
           label = 'Unassigned';
-          color = '#c8ccd0';
+          color = 'var(--ds-border, #DFE1E6)';
         } else {
           const product = products.find((p) => p.id === key);
           label = product?.name || 'Unknown Product';

@@ -22,9 +22,9 @@ interface Props {
 
 function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    active:    { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+    active:    { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
     completed: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-    planning:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+    planning:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
   };
   const m = map[status] ?? map.planning;
   return (
@@ -116,7 +116,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
   return (
     <>
       {/* Backdrop on top of drawer */}
-      <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 80 }} onClick={onClose} />
+      <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.35))', zIndex: 80 }} onClick={onClose} />
 
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
@@ -158,10 +158,10 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                   style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: '8px 10px', borderRadius: 4, cursor: 'pointer',
-                    background: selectedProject?.id === p.id ? 'rgba(37,99,235,0.08)' : 'transparent',
+                    background: selectedProject?.id === p.id ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : 'transparent',
                     transition: 'background 100ms',
                   }}
-                  onMouseEnter={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+                  onMouseEnter={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.04))'; }}
                   onMouseLeave={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{p.name}</span>
@@ -176,7 +176,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={onClose} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Cancel</button>
             </div>
           </>
@@ -213,7 +213,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => setStep(1)} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Back</button>
               <button
                 onClick={handlePublish}

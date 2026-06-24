@@ -79,8 +79,8 @@ export const TriggerRow = memo(function TriggerRow({
     <div
       className={`grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 items-center border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors duration-150 group ${
         isSelected
-          ? 'bg-[rgba(37,99,235,0.04)]'
-          : 'hover:bg-[rgba(0,0,0,0.02)]'
+          ? 'bg-[var(--ds-background-information, rgba(37,99,235,0.04))]'
+          : 'hover:bg-[var(--ds-shadow-raised, rgba(0,0,0,0.02))]'
       }`}
       style={{ height: 50, maxHeight: 50 }}
     >

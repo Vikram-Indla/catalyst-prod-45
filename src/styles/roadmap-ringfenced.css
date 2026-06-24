@@ -21,32 +21,32 @@
   /* ─── TYPE COLORS (bars, legends, icons, dots) ────────────────── */
   
   /* Enhancement = Teal (from CP V11 teal scale) */
-  --roadmap-type-enhancement:       var(--cp-teal-60);       /* var(--cp-teal-60, #0D9488) */
-  --roadmap-type-enhancement-bg:    var(--cp-teal-5);        /* #F0FDFA */
-  --roadmap-type-enhancement-bar:   linear-gradient(135deg, var(--cp-teal-60, #0D9488), #0F766E);
-  --roadmap-type-enhancement-hover: var(--cp-teal-70);       /* #0F766E */
-  --roadmap-type-enhancement-light: rgba(13, 148, 136, 0.12);
+  --roadmap-type-enhancement:       var(--cp-teal-60);       /* var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488)) */
+  --roadmap-type-enhancement-bg:    var(--cp-teal-5);        /* var(--ds-background-success, #DFFCF0) */
+  --roadmap-type-enhancement-bar:   linear-gradient(135deg, var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488)), var(--ds-chart-teal-bolder, #0f766e));
+  --roadmap-type-enhancement-hover: var(--cp-teal-70);       /* var(--ds-chart-teal-bolder, #0f766e) */
+  --roadmap-type-enhancement-light: var(--ds-background-success, rgba(13, 148, 136, 0.12));
 
   /* Project = Deep Slate/Navy (NOT blue—reserved for avatar; NOT purple—AI color) */
   --roadmap-type-project:           var(--ds-text-subtle, #475569);
   --roadmap-type-project-bg:        var(--ds-surface-sunken, #F8FAFC);
-  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtle, #475569), var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))));
-  --roadmap-type-project-hover:     var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
-  --roadmap-type-project-light:     rgba(71, 85, 105, 0.12);
+  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtle, #475569), var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))));
+  --roadmap-type-project-hover:     var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
+  --roadmap-type-project-light:     var(--ds-background-neutral, rgba(71, 85, 105, 0.12));
 
   /* Entity Integration = Amber/Warning (NOT purple—AI color) */
   --roadmap-type-entity:            var(--cp-warning-60);    /* var(--ds-text-warning, var(--cp-warning, #D97706)) */
-  --roadmap-type-entity-bg:         var(--cp-warning-5);     /* #FFFBEB */
-  --roadmap-type-entity-bar:        linear-gradient(135deg, var(--ds-text-warning, var(--cp-warning, #D97706)), #B45309);
-  --roadmap-type-entity-hover:      var(--cp-warning-70);    /* #B45309 */
-  --roadmap-type-entity-light:      rgba(217, 119, 6, 0.12);
+  --roadmap-type-entity-bg:         var(--cp-warning-5);     /* var(--ds-background-warning, #FFF7D6) */
+  --roadmap-type-entity-bar:        linear-gradient(135deg, var(--ds-text-warning, var(--cp-warning, #D97706)), var(--ds-background-warning-bold, #b45309));
+  --roadmap-type-entity-hover:      var(--cp-warning-70);    /* var(--ds-background-warning-bold, #b45309) */
+  --roadmap-type-entity-light:      var(--ds-background-warning, rgba(217, 119, 6, 0.12));
 
   /* Improvement = Success Green */
   --roadmap-type-improvement:       var(--cp-success-60);    /* var(--ds-text-success, var(--cp-success, #16A34A)) */
-  --roadmap-type-improvement-bg:    #F0FDF4;
-  --roadmap-type-improvement-bar:   linear-gradient(135deg, var(--ds-text-success, var(--cp-success, #16A34A)), #15803D);
-  --roadmap-type-improvement-hover: #15803D;
-  --roadmap-type-improvement-light: rgba(22, 163, 74, 0.12);
+  --roadmap-type-improvement-bg:    var(--ds-background-success, #DFFCF0);
+  --roadmap-type-improvement-bar:   linear-gradient(135deg, var(--ds-text-success, var(--cp-success, #16A34A)), var(--ds-background-success-bold, #1F845A));
+  --roadmap-type-improvement-hover: var(--ds-background-success-bold, #1F845A);
+  --roadmap-type-improvement-light: var(--ds-background-success-bold, rgba(22, 163, 74, 0.12));
 
   /* ─── AVATAR ──────────────────────────────────────────────────── */
   --roadmap-avatar-bg:              var(--cp-primary-60);    /* var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) — always blue */
@@ -100,8 +100,8 @@
   --roadmap-bar-radius:             5px;
   --roadmap-bar-font-size:          11px;
   --roadmap-bar-font-weight:        600;
-  --roadmap-bar-shadow:             0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06);
-  --roadmap-bar-shadow-hover:       0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.08);
+  --roadmap-bar-shadow:             0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06));
+  --roadmap-bar-shadow-hover:       0 4px 8px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 2px 4px var(--ds-shadow-raised, rgba(0,0,0,0.08));
   --roadmap-bar-date-font-size:     9px;
   --roadmap-bar-date-opacity:       0.7;
 
@@ -134,20 +134,20 @@
 .dark [data-theme="dark"],
 .dark , [data-theme="dark"] {
   --roadmap-type-enhancement:       var(--cp-teal-40);
-  --roadmap-type-enhancement-bg:    rgba(13, 148, 136, 0.15);
-  --roadmap-type-enhancement-bar:   linear-gradient(135deg, #14B8A6, var(--cp-teal-60, #0D9488));
+  --roadmap-type-enhancement-bg:    var(--ds-background-success, rgba(13, 148, 136, 0.15));
+  --roadmap-type-enhancement-bar:   linear-gradient(135deg, var(--ds-background-accent-teal-bolder, #14b8a6), var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488)));
   
   --roadmap-type-project:           var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)));
-  --roadmap-type-project-bg:        rgba(71, 85, 105, 0.15);
+  --roadmap-type-project-bg:        var(--ds-background-neutral, rgba(71, 85, 105, 0.15));
   --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))), var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B))));
   
   --roadmap-type-entity:            var(--cp-warning-40);
-  --roadmap-type-entity-bg:         rgba(217, 119, 6, 0.15);
-  --roadmap-type-entity-bar:        linear-gradient(135deg, #FBBF24, var(--ds-text-warning, var(--cp-warning, #D97706)));
+  --roadmap-type-entity-bg:         var(--ds-background-warning, rgba(217, 119, 6, 0.15));
+  --roadmap-type-entity-bar:        linear-gradient(135deg, var(--ds-background-warning-bold, #E2B203), var(--ds-text-warning, var(--cp-warning, #D97706)));
   
-  --roadmap-type-improvement:       #4ADE80;
-  --roadmap-type-improvement-bg:    rgba(22, 163, 74, 0.15);
-  --roadmap-type-improvement-bar:   linear-gradient(135deg, #4ADE80, var(--ds-text-success, #22C55E));
+  --roadmap-type-improvement:       var(--ds-background-success, #DFFCF0);
+  --roadmap-type-improvement-bg:    var(--ds-background-success-bold, rgba(22, 163, 74, 0.15));
+  --roadmap-type-improvement-bar:   linear-gradient(135deg, var(--ds-background-success, #DFFCF0), var(--ds-text-success, #22C55E));
 
   --roadmap-timeline-header-bg:     var(--ds-surface-overlay, #1F1F1F);
   --roadmap-timeline-quarter-text:  var(--ds-text-subtlest, #A1A1A1);
@@ -164,7 +164,7 @@
   --roadmap-kpi-border:             var(--ds-border, var(--cp-ink-1, #2E2E2E));
   
   --roadmap-bar-shadow:             none;
-  --roadmap-bar-shadow-hover:       0 4px 12px rgba(0,0,0,0.3);
+  --roadmap-bar-shadow-hover:       0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.3));
 }
 .dark .roadmap-group-header:hover,
 .dark .roadmap-group-header:hover , [data-theme="dark"] .roadmap-group-header:hover {

@@ -76,7 +76,7 @@ function CatPill({ cat, label, bold }: { cat: StatusCategory; label?: string; bo
 }
 
 function StatusPillInline({ name, category }: { name: string; category: string }) {
-  const bg = STATUS_CATEGORY_COLORS[category as StatusCategory] ?? '#DDDEE1';
+  const bg = STATUS_CATEGORY_COLORS[category as StatusCategory] ?? 'var(--ds-border, #DFE1E6)';
   return (
     <span
       style={{
@@ -207,10 +207,10 @@ function RowMenu({
         position: 'fixed',
         top: rect.bottom + 4,
         left: rect.left,
-        background: '#FFFFFF',
+        background: 'var(--ds-surface, #FFFFFF)',
         border: `1px solid ${T.border}`,
         borderRadius: '6px',
-        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         padding: '4px 0',
         minWidth: '180px',
         zIndex: 9999,
@@ -258,10 +258,10 @@ function OverflowMenu({
         position: 'fixed',
         top: rect.bottom + 4,
         right: window.innerWidth - rect.right,
-        background: '#FFFFFF',
+        background: 'var(--ds-surface, #FFFFFF)',
         border: `1px solid ${T.border}`,
         borderRadius: '6px',
-        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         padding: '4px 0',
         minWidth: '220px',
         zIndex: 9999,
@@ -381,7 +381,7 @@ function StatusRow({
       {isInitial && (
         <span
           title="Initial status — new items start here"
-          style={{ color: '#FFD700', fontSize: '11px', flexShrink: 0, lineHeight: 1 }}
+          style={{ color: 'var(--ds-background-warning-bold, #E2B203)', fontSize: '11px', flexShrink: 0, lineHeight: 1 }}
         >
           ★
         </span>
@@ -891,7 +891,7 @@ function TemplateCard({
                         borderRadius: 3,
                         fontSize: 11,
                         fontWeight: 500,
-                        background: STATUS_CATEGORY_COLORS[s.category as StatusCategory] ?? '#DDDEE1',
+                        background: STATUS_CATEGORY_COLORS[s.category as StatusCategory] ?? 'var(--ds-border, #DFE1E6)',
                         color: STATUS_TEXT,
                       }}
                     >
@@ -928,7 +928,7 @@ function TemplateCard({
                     borderRadius: 4,
                     border: 'none',
                     background: 'var(--ds-background-brand-bold, #0C66E4)',
-                    color: '#FFFFFF',
+                    color: 'var(--ds-text-inverse, #FFFFFF)',
                     fontSize: 12,
                     fontWeight: 600,
                     cursor: applying ? 'not-allowed' : 'pointer',
@@ -1171,7 +1171,7 @@ export default function WorkflowAdminPage() {
                     background: pageMode === mode ? T.surface : 'transparent',
                     color: pageMode === mode ? T.text : T.textSubtlest,
                     cursor: 'pointer',
-                    boxShadow: pageMode === mode ? `0 1px 2px rgba(9,30,66,0.12)` : 'none',
+                    boxShadow: pageMode === mode ? `0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))` : 'none',
                     fontFamily: 'inherit',
                     textTransform: 'capitalize',
                   }}
@@ -1321,7 +1321,7 @@ export default function WorkflowAdminPage() {
                       background: viewMode === mode ? T.surface : 'transparent',
                       color: viewMode === mode ? T.text : T.textSubtlest,
                       cursor: 'pointer',
-                      boxShadow: viewMode === mode ? `0 1px 2px rgba(9,30,66,0.12)` : 'none',
+                      boxShadow: viewMode === mode ? `0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))` : 'none',
                       fontFamily: 'inherit',
                       textTransform: 'capitalize',
                     }}

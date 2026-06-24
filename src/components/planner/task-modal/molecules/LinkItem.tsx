@@ -35,7 +35,7 @@ export const LinkItem: React.FC<LinkItemProps> = ({
         backgroundColor: COLORS.surfaceCard,
         border: `1px solid ${isHovered ? COLORS.borderDefault : COLORS.borderLight}`,
         borderRadius: '12px',
-        boxShadow: isHovered ? '0 2px 8px rgba(0, 0, 0, 0.04)' : 'none',
+        boxShadow: isHovered ? '0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04))' : 'none',
         transition: 'all 0.15s ease'
       }}
     >

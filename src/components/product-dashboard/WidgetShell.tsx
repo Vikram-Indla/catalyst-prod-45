@@ -25,7 +25,7 @@ export function WidgetIconBtn({
         width: 32,
         height: 32,
         border: 'none',
-        background: hover ? token('color.background.neutral.hovered', '#F1F2F4') : 'transparent',
+        background: hover ? token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)') : 'transparent',
         borderRadius: 4,
         color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         cursor: 'pointer',
@@ -69,9 +69,9 @@ export function WidgetShell({
     <article
       aria-label={ariaLabel ?? title}
       style={{
-        background: token('elevation.surface', '#FFFFFF'),
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         borderRadius: 8,
-        boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+        boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -157,7 +157,7 @@ export function WidgetShell({
                   href="#"
                   onClick={e => e.preventDefault()}
                   style={{
-                    color: token('color.link', '#0C66E4'),
+                    color: token('color.link', 'var(--ds-link, #0C66E4)'),
                     textDecoration: 'none',
                     fontWeight: 500,
                   }}

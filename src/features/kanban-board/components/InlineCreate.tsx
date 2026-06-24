@@ -48,13 +48,13 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
         style={{
           display: 'flex', alignItems: 'center', gap: 6, width: 'calc(100% - 16px)',
           padding: '6px 8px', margin: '2px 8px 4px', border: 'none', borderRadius: SIZES.CARD_RADIUS,
-          background: 'transparent', color: token('color.text.subtle', '#44546F'),
+          background: 'transparent', color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
           fontSize: 14, fontFamily: 'inherit', cursor: 'pointer',
         }}
         onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
       >
-        <AddIcon label="" size="small" primaryColor={token('color.icon.subtle', '#626F86')} />
+        <AddIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />
         {STRINGS.CREATE_ISSUE}
       </button>
     );
@@ -63,8 +63,8 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
   return (
     <div style={{
       margin: '2px 8px 4px', padding: 8, display: 'flex', flexDirection: 'column', gap: 8,
-      background: token('elevation.surface.raised', '#FFFFFF'),
-      border: `2px solid ${token('color.border.focused', '#4C9AFF')}`, borderRadius: SIZES.CARD_RADIUS,
+      background: token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
+      border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold, #0C66E4)')}`, borderRadius: SIZES.CARD_RADIUS,
       boxShadow: token('elevation.shadow.raised', '0 1px 1px #091E4240, 0 0 1px #091E424F'),
     }}>
       <input
@@ -78,7 +78,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
         disabled={busy}
         style={{
           width: '100%', minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
-          fontSize: 14, lineHeight: '20px', color: token('color.text', '#172B4D'), fontFamily: 'inherit',
+          fontSize: 14, lineHeight: '20px', color: token('color.text', 'var(--ds-text, #172B4D)'), fontFamily: 'inherit',
         }}
       />
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -99,10 +99,10 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
         <button
           aria-label="Set due date"
           onClick={() => setShowDue((v) => !v)}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 2, border: 'none', background: dueDate ? token('color.background.selected', '#E9F2FF') : 'transparent', borderRadius: 3, padding: 2, cursor: 'pointer' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 2, border: 'none', background: dueDate ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent', borderRadius: 3, padding: 2, cursor: 'pointer' }}
         >
-          <CalendarIcon label="" size="small" primaryColor={dueDate ? token('color.icon.selected', '#0C66E4') : token('color.icon.subtle', '#626F86')} />
-          {dueDate && <span style={{ fontSize: 11, color: token('color.text.selected', '#0C66E4') }}>{dueDate.slice(5)}</span>}
+          <CalendarIcon label="" size="small" primaryColor={dueDate ? token('color.icon.selected', 'var(--ds-link, #0C66E4)') : token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />
+          {dueDate && <span style={{ fontSize: 11, color: token('color.text.selected', 'var(--ds-link, #0C66E4)') }}>{dueDate.slice(5)}</span>}
         </button>
         {showDue && (
           <input
@@ -122,9 +122,9 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24,
             border: `1px solid ${token('color.border', '#091E4224')}`, borderRadius: 3,
-            background: token('elevation.surface', '#FFFFFF'), cursor: summary.trim() ? 'pointer' : 'not-allowed',
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), cursor: summary.trim() ? 'pointer' : 'not-allowed',
             opacity: summary.trim() ? 1 : 0.5,
-            color: token('color.icon.subtle', '#626F86'), fontSize: 14, lineHeight: 1,
+            color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 14, lineHeight: 1,
           }}
         >
           ↵

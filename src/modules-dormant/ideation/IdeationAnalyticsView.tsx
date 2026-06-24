@@ -23,7 +23,7 @@ const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
   { key: 'rejected', label: 'Rejected', color: 'var(--ds-text-danger, #EF4444)' },
 ];
 
-const DEPT_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-text-danger, #EF4444)', 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', '#0F766E', '#6366F1', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
+const DEPT_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-text-danger, #EF4444)', 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', 'var(--ds-chart-teal-bolder, #0f766e)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
 
 function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);

@@ -21,22 +21,22 @@
   --ws-primary-light: var(--ds-background-selected, #eff6ff);
   
   /* Semantic Colors */
-  --ws-success: #10b981;
-  --ws-success-light: #ecfdf5;
+  --ws-success: var(--ds-background-success-bold, #059669);
+  --ws-success-light: var(--ds-background-success, #DFFCF0);
   --ws-warning: var(--ds-text-warning, #d97706);
-  --ws-warning-light: #fffbeb;
+  --ws-warning-light: var(--ds-background-warning, #FFF7D6);
   --ws-danger: var(--ds-text-danger, #ef4444);
   --ws-danger-light: var(--ds-background-danger, #fef2f2);
-  --ws-teal: #0d9488;
+  --ws-teal: var(--ds-chart-teal-bold, #0d9488);
   
   /* Workstream Identity Colors */
-  --ws-color-senaei: #06b6d4;
-  --ws-color-catalyst: #8b5cf6;
-  --ws-color-tahommona: #6366f1;
-  --ws-color-delivery: #f97316;
-  --ws-color-mim: #ec4899;
-  --ws-color-standalone: #84cc16;
-  --ws-color-dataai: #14b8a6;
+  --ws-color-senaei: var(--ds-icon-information, #1D7AFC);
+  --ws-color-catalyst: var(--ds-background-discovery-bold, #8b5cf6);
+  --ws-color-tahommona: var(--ds-background-discovery-bold, #6366f1);
+  --ws-color-delivery: var(--ds-background-warning-bold, #f97316);
+  --ws-color-mim: var(--ds-background-accent-magenta-bolder, #ec4899);
+  --ws-color-standalone: var(--ds-background-success-bold, #1F845A);
+  --ws-color-dataai: var(--ds-background-accent-teal-bolder, #14b8a6);
   
   /* Neutral Scale */
   --ws-slate-50: var(--ds-surface-sunken, #f8fafc);
@@ -46,12 +46,12 @@
   --ws-slate-400: var(--ds-text-subtlest, #94a3b8);
   --ws-slate-500: var(--ds-text-subtlest, #64748b);
   --ws-slate-600: var(--ds-text-subtle, #475569);
-  --ws-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
-  --ws-slate-800: #1e293b;
+  --ws-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
+  --ws-slate-800: var(--ds-text, #172B4D);
   --ws-slate-900: var(--ds-text, #0f172a);
   
   /* Semantic Mappings - Light Mode */
-  --ws-bg-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --ws-bg-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --ws-bg-secondary: var(--ws-slate-50);
   --ws-bg-tertiary: var(--ws-slate-100);
   --ws-text-primary: var(--ws-slate-900);
@@ -104,10 +104,10 @@
   --ws-text-muted: var(--ws-slate-500);
   --ws-border-primary: var(--ws-slate-700);
   --ws-border-secondary: var(--ws-slate-800);
-  --ws-primary-light: #1e3a5f;
-  --ws-warning-light: #451a03;
-  --ws-danger-light: #450a0a;
-  --ws-success-light: #064e3b;
+  --ws-primary-light: var(--ds-text, #172B4D);
+  --ws-warning-light: var(--ds-text-warning, #974F0C);
+  --ws-danger-light: var(--ds-background-danger, #FFECEB);
+  --ws-success-light: var(--ds-text-success, #216E4E);
 }
 
 /* ==========================================================================
@@ -303,7 +303,7 @@
 .ws-search-input input:focus {
   outline: none;
   border-color: var(--ws-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
 
 .ws-search-input input::placeholder {
@@ -800,7 +800,7 @@
 .ws-drawer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
   z-index: 200;
   opacity: 0;
   visibility: hidden;
@@ -886,7 +886,7 @@
 .ws-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
   z-index: 300;
   display: flex;
   align-items: center;
@@ -990,7 +990,7 @@
 .ws-form-input:focus {
   outline: none;
   border-color: var(--ws-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
 
 .ws-form-input::placeholder {
@@ -1053,7 +1053,7 @@
 .ws-stepper-circle.active {
   background: var(--ws-primary);
   color: white;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0 0 4px var(--ds-background-information, rgba(37, 99, 235, 0.2));
 }
 
 .ws-stepper-circle.pending {
@@ -1320,7 +1320,7 @@
 
 .ws-card-v2:hover {
   border-color: var(--ws-primary);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 4px 12px var(--ds-background-information, rgba(37, 99, 235, 0.1));
   transform: translateY(-2px);
 }
 

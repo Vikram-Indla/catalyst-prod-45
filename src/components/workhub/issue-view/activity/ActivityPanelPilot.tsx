@@ -38,7 +38,7 @@ interface ActivityPanelPilotProps {
 // Helpers
 // ════════════════════════════════════════
 
-const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 function avatarBg(name: string) {
   return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length];
 }
@@ -142,9 +142,9 @@ function HistoryRow({ entry, showTypePill = false }: { entry: any; showTypePill?
                 display: 'inline-block',
                 padding: '2px 8px',
                 borderRadius: 3,
-                border: '1px solid #DFE1E6',
-                background: '#F4F5F7',
-                color: '#42526E',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-background-neutral-subtle, #F4F5F7)',
+                color: 'var(--ds-text-subtle, #42526E)',
                 fontSize: 11,
                 fontWeight: 700,
                 letterSpacing: 0.5,

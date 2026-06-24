@@ -8,7 +8,7 @@ import type * as D3Type from 'd3';
 
 const DOMAIN_COLORS: Record<string, string> = {
   D1: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', D2: 'var(--cp-teal-60, #0D9488)', D3: 'var(--ds-text-warning, var(--cp-warning, #D97706))', D4: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  D5: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', D6: '#0891B2', D7: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', D8: '#4F46E5', D9: '#CA8A04',
+  D5: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', D6: 'var(--ds-link, #0C66E4)', D7: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', D8: 'var(--ds-background-discovery-bold, #6E5DC6)', D9: 'var(--ds-text-warning, #974F0C)',
 };
 
 interface GNode extends D3Type.SimulationNodeDatum {
@@ -178,13 +178,13 @@ export default function WikiKnowledgeGraphPage() {
         </div>
       </div>
 
-      <div style={{ flex: 1, position: 'relative', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)' }}>
+      <div style={{ flex: 1, position: 'relative', borderTop: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))' }}>
         <svg ref={svgRef} style={{ width: '100%', height: '100%', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         {tooltip && (
           <div style={{
             position: 'absolute', left: tooltip.x + 12, top: tooltip.y - 8,
-            background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6,
-            padding: '8px 12px', boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
+            background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6,
+            padding: '8px 12px', boxShadow: isDark ? '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.3))' : '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
             pointerEvents: 'none', zIndex: 10, fontSize: 12, maxWidth: 200,
           }}>
             <div style={{ fontWeight: 600, marginBottom: 2, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>{tooltip.title}</div>

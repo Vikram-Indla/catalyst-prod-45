@@ -82,8 +82,8 @@ export const CreateForm = memo(function CreateForm({
         onClick={handleSubmit}
         style={{
           padding: '8px 12px',
-          backgroundColor: '#0055CC',
-          color: '#FFFFFF',
+          backgroundColor: 'var(--ds-link, #0C66E4)',
+          color: 'var(--ds-text-inverse, #FFFFFF)',
           border: 'none',
           borderRadius: '3px',
           fontSize: '14px',
@@ -95,7 +95,7 @@ export const CreateForm = memo(function CreateForm({
           e.currentTarget.style.backgroundColor = '#0044A3';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#0055CC';
+          e.currentTarget.style.backgroundColor = 'var(--ds-link, #0C66E4)';
         }}
       >
         Create

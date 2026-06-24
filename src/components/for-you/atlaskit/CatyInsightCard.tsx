@@ -16,8 +16,8 @@ interface CatyInsightCardProps {
 export function CatyInsightCard({ title, children, isLoading, onDismiss, onRefresh }: CatyInsightCardProps) {
   return (
     <div style={{
-      background: token('elevation.surface.raised', '#FFFFFF'),
-      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+      background: token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
+      border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
       borderRadius: 8,
       padding: 16,
       marginBlockEnd: 16,
@@ -35,7 +35,7 @@ export function CatyInsightCard({ title, children, isLoading, onDismiss, onRefre
           <CatyHead size={20} />
           <span style={{
             font: `600 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
           }}>
             {title}
           </span>
@@ -53,7 +53,7 @@ export function CatyInsightCard({ title, children, isLoading, onDismiss, onRefre
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer',
                     background: 'transparent',
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -75,7 +75,7 @@ export function CatyInsightCard({ title, children, isLoading, onDismiss, onRefre
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer',
                     background: 'transparent',
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -94,7 +94,7 @@ export function CatyInsightCard({ title, children, isLoading, onDismiss, onRefre
       ) : (
         <div style={{
           font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
         }}>
           {children}
         </div>

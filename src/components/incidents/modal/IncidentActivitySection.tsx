@@ -163,10 +163,10 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">Activity</h2>
         <div className="flex items-center gap-1">
-          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[#42526E]">
+          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtle, #42526E)]">
             <Filter className="w-4 h-4" />
           </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[#42526E]">
+          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtle, #42526E)]">
             <ArrowUpDown className="w-4 h-4" />
           </button>
         </div>
@@ -180,8 +180,8 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
             className={cn(
               'px-3 py-1.5 rounded text-sm transition-colors border',
               activeTab === tab.id
-                ? 'bg-[#E9F2FF] text-[var(--cp-primary-60, #0052CC)] border-[var(--cp-primary-60, #0052CC)]'
-                : 'text-[#42526E] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] border-transparent',
+                ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--cp-primary-60, #0052CC)] border-[var(--cp-primary-60, #0052CC)]'
+                : 'text-[var(--ds-text-subtle, #42526E)] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] border-transparent',
             )}
             onClick={() => setActiveTab(tab.id)}
           >
@@ -198,7 +198,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
         <div className="flex-1">
           {!isComposerExpanded ? (
             <div
-              className="border border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] rounded p-3 cursor-text hover:border-[#A5ADBA] text-sm text-[#A5ADBA]"
+              className="border border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] rounded p-3 cursor-text hover:border-[var(--ds-text-subtlest, #626F86)] text-sm text-[var(--ds-text-subtlest, #626F86)]"
               onClick={() => setIsComposerExpanded(true)}
             >
               Add a comment...
@@ -214,7 +214,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
               />
               <div className="flex gap-2 mt-2 justify-end">
                 <button
-                  className="px-3 h-8 rounded text-sm font-medium bg-[var(--cp-primary-60, #0052CC)] text-white hover:bg-[#0747A6] disabled:opacity-50"
+                  className="px-3 h-8 rounded text-sm font-medium bg-[var(--cp-primary-60, #0052CC)] text-white hover:bg-[var(--ds-link-pressed, #0747A6)] disabled:opacity-50"
                   onClick={handleSaveComment}
                   disabled={isSaving || !comment.trim()}
                 >
@@ -278,7 +278,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
                         {entry.old_value}
                       </span>
                     )}
-                    {entry.old_value && entry.new_value && <span className="text-[#A5ADBA]">→</span>}
+                    {entry.old_value && entry.new_value && <span className="text-[var(--ds-text-subtlest, #626F86)]">→</span>}
                     {entry.new_value && (
                       <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] bg-white text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">
                         {entry.new_value}

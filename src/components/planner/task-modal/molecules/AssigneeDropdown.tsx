@@ -66,7 +66,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none'
         }}
       >
         {/* AVATAR — 26px */}
@@ -104,7 +104,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
             zIndex: 99999,
             padding: '6px',
             maxHeight: '280px',

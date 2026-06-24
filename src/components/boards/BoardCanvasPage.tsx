@@ -32,12 +32,12 @@ const BOARD_ACCENT: Record<string, string> = {
 /* ── StatusLozenge V12 3-color guardrail ── */
 function StatusLozenge({ status }: { status: string }) {
   const s = status.toLowerCase().replace(/[\s_-]+/g, '');
-  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color = '#42526E', label = status.toUpperCase();
+  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color = 'var(--ds-text-subtle, #42526E)', label = status.toUpperCase();
   let leftBorder: string | undefined;
 
   // Blue: in-progress family
   if (['inprogress','indev','inreview','inqa','active','inbeta','processing','testing','review'].includes(s)) {
-    bg = '#0C66E4'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+    bg = 'var(--ds-link, #0C66E4)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   }
   // Green: done family
   else if (['done','completed','production','prodready','approved','resolved','passed','closed'].includes(s)) {
@@ -248,7 +248,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-1)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--bg-app)', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0, padding: '12px 24px 0' }}>
+      <div style={{ background: 'var(--bg-app)', borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', flexShrink: 0, padding: '12px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-3)', marginBottom: 6 }}>
           <button onClick={() => navigate(boardBasePath)} style={{
             border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
@@ -305,7 +305,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
             <button style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               height: 28, padding: '0 10px', borderRadius: 4,
-              background: 'var(--cp-bd-zone)', border: '0.75px solid rgba(15,23,42,0.06)',
+              background: 'var(--cp-bd-zone)', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
               fontSize: 12, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
               cursor: 'pointer',
             }}>
@@ -314,7 +314,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
             </button>
             <button onClick={() => setSettingsOpen(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5, height: 32, padding: '8px 12px',
-              background: 'transparent', border: '0.75px solid rgba(15,23,42,0.12)',
+              background: 'transparent', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
               borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 500,
               color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
             }}>
@@ -331,7 +331,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
         padding: '8px 24px',
-        background: 'var(--bg-app)', borderBottom: '0.75px solid rgba(15,23,42,0.08)',
+        background: 'var(--bg-app)', borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
         flexShrink: 0,
       }}>
         {columns.map(col => {
@@ -356,7 +356,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               }}>{col.name}</span>
               <span style={{
                 fontSize: 10.5, fontWeight: 600, padding: '1px 6px', borderRadius: 8,
-                background: col.isDone ? '#F0FDF4' : 'var(--bg-1)',
+                background: col.isDone ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-1)',
                 color: col.isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                 fontFamily: 'var(--cp-font-mono)',
               }}>{count}</span>
@@ -382,7 +382,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
             const pct = lane.count > 0 ? Math.round((lane.doneCount / lane.count) * 100) : 0;
             return (
               <div key={lane.id} style={{
-                background: 'var(--bg-app)', border: '0.75px solid rgba(15,23,42,0.08)',
+                background: 'var(--bg-app)', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
                 borderRadius: 8, marginBottom: 10,
               }}>
                 {/* Swimlane header */}
@@ -390,9 +390,9 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   display: 'flex', alignItems: 'center', gap: 8, width: '100%',
                   padding: '10px 14px', border: 'none', background: 'transparent',
                   cursor: 'pointer', textAlign: 'left',
-                  borderBottom: collapsed ? 'none' : '0.75px solid rgba(15,23,42,0.06)',
+                  borderBottom: collapsed ? 'none' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'flex' }}>
@@ -403,7 +403,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', gap: 5,
                     height: 20, padding: '0 8px', borderRadius: 12,
-                    background: 'var(--cp-bd-zone)', border: '0.75px solid rgba(15,23,42,0.10)',
+                    background: 'var(--cp-bd-zone)', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.10))',
                   }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--sem-success)' }} />
                     <span style={{
@@ -463,7 +463,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                           }}>{col.name}</span>
                           <span style={{
                             fontSize: 10, fontWeight: 600, padding: '1px 5px', borderRadius: 6,
-                            background: col.isDone ? '#F0FDF4' : 'var(--bg-1)',
+                            background: col.isDone ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-1)',
                             color: col.isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                             fontFamily: 'var(--cp-font-mono)',
                           }}>{laneCards.length}</span>
@@ -480,7 +480,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
 
           <DragOverlay>
             {dragCard && (
-              <div style={{ opacity: 0.9, transform: 'rotate(2deg) scale(1.02)', filter: 'drop-shadow(0 8px 24px rgba(15,23,42,0.18))' }}>
+              <div style={{ opacity: 0.9, transform: 'rotate(2deg) scale(1.02)', filter: 'drop-shadow(0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.18)))' }}>
                 <KanbanCardComponent card={dragCard} />
               </div>
             )}

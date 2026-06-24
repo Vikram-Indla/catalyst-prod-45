@@ -76,7 +76,7 @@ export function ThemeToolbar(props: Props) {
             width: 'auto', minWidth: 110,
             ...(props.statusFilter
               ? (isDark
-                ? { background: 'rgba(59,130,246,0.12)', borderColor: 'var(--ds-text-brand, #3B82F6)', color: '#93C5FD' }
+                ? { background: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', borderColor: 'var(--ds-text-brand, #3B82F6)', color: 'var(--ds-background-information, #E9F2FF)' }
                 : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
@@ -100,7 +100,7 @@ export function ThemeToolbar(props: Props) {
             width: 'auto', minWidth: 120,
             ...(props.ownerFilter
               ? (isDark
-                ? { background: 'rgba(59,130,246,0.12)', borderColor: 'var(--ds-text-brand, #3B82F6)', color: '#93C5FD' }
+                ? { background: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', borderColor: 'var(--ds-text-brand, #3B82F6)', color: 'var(--ds-background-information, #E9F2FF)' }
                 : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
@@ -121,7 +121,7 @@ export function ThemeToolbar(props: Props) {
             width: 'auto', minWidth: 110,
             ...(props.bscFilter
               ? (isDark
-                ? { background: 'rgba(59,130,246,0.12)', borderColor: 'var(--ds-text-brand, #3B82F6)', color: '#93C5FD' }
+                ? { background: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', borderColor: 'var(--ds-text-brand, #3B82F6)', color: 'var(--ds-background-information, #E9F2FF)' }
                 : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
@@ -145,7 +145,7 @@ export function ThemeToolbar(props: Props) {
             width: 'auto', minWidth: 90,
             ...(props.fyFilter
               ? (isDark
-                ? { background: 'rgba(59,130,246,0.12)', borderColor: 'var(--ds-text-brand, #3B82F6)', color: '#93C5FD' }
+                ? { background: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', borderColor: 'var(--ds-text-brand, #3B82F6)', color: 'var(--ds-background-information, #E9F2FF)' }
                 : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
@@ -172,10 +172,10 @@ export function ThemeToolbar(props: Props) {
             style={{
               width: 34, height: 30,
               background: props.view === v.key
-                ? (isDark ? 'rgba(59,130,246,0.12)' : 'var(--cp-primary-5)')
+                ? (isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.12))' : 'var(--cp-primary-5)')
                 : (isDark ? 'transparent' : 'var(--bg-app)'),
               color: props.view === v.key
-                ? (isDark ? '#93C5FD' : 'var(--cp-blue)')
+                ? (isDark ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--cp-blue)')
                 : (isDark ? 'var(--cp-t2)' : 'var(--fg-3)'),
               border: 'none', cursor: 'pointer',
               borderRight: `1px solid ${borderColor}`,
@@ -200,7 +200,7 @@ export function ThemeToolbar(props: Props) {
             transition: 'all 200ms ease',
             fontFamily: 'var(--cp-font-body)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)'; }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px var(--ds-background-information, rgba(37,99,235,0.15))'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}
         >
           <Zap size={13} strokeWidth={2.2} />

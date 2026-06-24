@@ -44,7 +44,7 @@ export function CatyMarkFlat({
           {/* ads-scanner:ignore-next-line */}
           <stop stopColor="#F79357" />
           {/* ads-scanner:ignore-next-line */}
-          <stop offset=".5" stopColor="#F53F68" />
+          <stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" />
           {/* ads-scanner:ignore-next-line */}
           <stop offset=".75" stopColor="#B41572" />
           {/* ads-scanner:ignore-next-line */}

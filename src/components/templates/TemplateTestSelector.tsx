@@ -136,9 +136,9 @@ export function TemplateTestSelector({
           <Label className="text-sm font-medium text-slate-700 mb-3 block">Priorities</Label>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { value: 'critical', color: 'var(--ds-text-danger, #ef4444)', bg: '#fee2e2' },
-              { value: 'high', color: 'var(--ds-text-warning, #d97706)', bg: '#fef3c7' },
-              { value: 'medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: '#dbeafe' },
+              { value: 'critical', color: 'var(--ds-text-danger, #ef4444)', bg: 'var(--ds-background-danger, #FFECEB)' },
+              { value: 'high', color: 'var(--ds-text-warning, #d97706)', bg: 'var(--ds-background-warning, #FFF7D6)' },
+              { value: 'medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: 'var(--ds-background-information, #E9F2FF)' },
               { value: 'low', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #f1f5f9)' },
             ].map(priority => (
               <div key={priority.value} className="flex items-center space-x-2">
@@ -225,11 +225,11 @@ export function TemplateTestSelector({
           <>
             {/* Total count */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-[#ccfbf1] flex items-center justify-center">
-                <TestTube className="w-6 h-6 text-[#0d9488]" />
+              <div className="w-12 h-12 rounded-lg bg-[var(--ds-background-success, #DCFFF1)] flex items-center justify-center">
+                <TestTube className="w-6 h-6 text-[var(--ds-chart-teal-bold, #0d9488)]" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-[#0d9488]">{preview.totalTests}</div>
+                <div className="text-2xl font-bold text-[var(--ds-chart-teal-bold, #0d9488)]">{preview.totalTests}</div>
                 <div className="text-sm text-slate-500">tests match criteria</div>
               </div>
             </div>
@@ -239,9 +239,9 @@ export function TemplateTestSelector({
               <h4 className="text-sm font-medium text-slate-700 mb-2">By Priority</h4>
               <div className="space-y-2">
                 {[
-                  { label: 'Critical', count: preview.criticalCount, color: 'var(--ds-text-danger, #ef4444)', bg: '#fee2e2' },
-                  { label: 'High', count: preview.highCount, color: 'var(--ds-text-warning, #d97706)', bg: '#fef3c7' },
-                  { label: 'Medium', count: preview.mediumCount, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: '#dbeafe' },
+                  { label: 'Critical', count: preview.criticalCount, color: 'var(--ds-text-danger, #ef4444)', bg: 'var(--ds-background-danger, #FFECEB)' },
+                  { label: 'High', count: preview.highCount, color: 'var(--ds-text-warning, #d97706)', bg: 'var(--ds-background-warning, #FFF7D6)' },
+                  { label: 'Medium', count: preview.mediumCount, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: 'var(--ds-background-information, #E9F2FF)' },
                   { label: 'Low', count: preview.lowCount, color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #f1f5f9)' },
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-2">

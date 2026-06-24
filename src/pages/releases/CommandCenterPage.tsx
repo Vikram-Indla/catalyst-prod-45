@@ -150,7 +150,7 @@ function KPICard({
             className={cn(
               "flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md cursor-help",
               kpi.trend.isPositive
-                ? "bg-[#f0fdfa] text-[#0d9488]"
+                ? "bg-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-chart-teal-bold, #0d9488)]"
                 : "bg-[var(--ds-background-danger,#fef2f2)] text-[var(--ds-text-danger,#ef4444)]"
             )}
           >
@@ -242,14 +242,14 @@ function ReleaseHealthItem({ release, onClick }: { release: ReleaseHealthData; o
       </div>
       
       <div className="flex items-center gap-2">
-        <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[#f0fdfa] text-[#0d9488]">
+        <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-chart-teal-bold, #0d9488)]">
           {release.passed} Passed
         </span>
         <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[var(--ds-background-danger,#fef2f2)] text-[var(--ds-text-danger,#ef4444)]">
           {release.failed} Failed
         </span>
         {release.blocked > 0 && (
-          <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[#fef3c7] text-[var(--ds-text-warning,#d97706)]">
+          <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[var(--ds-background-warning, #FFF7D6)] text-[var(--ds-text-warning,#d97706)]">
             {release.blocked} Blocked
           </span>
         )}
@@ -261,8 +261,8 @@ function ReleaseHealthItem({ release, onClick }: { release: ReleaseHealthData; o
 // Quality Gate Item - Clickable
 function QualityGateItem({ gate, onClick }: { gate: QualityGate; onClick?: () => void }) {
   const statusConfig = {
-    passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
-    warning: { bg: 'bg-[#fef3c7]', text: 'text-[var(--ds-text-warning,#d97706)]', icon: AlertTriangle },
+    passed: { bg: 'bg-[var(--ds-background-success, #DFFCF0)]', text: 'text-[var(--ds-chart-teal-bold, #0d9488)]', icon: CheckCircle2 },
+    warning: { bg: 'bg-[var(--ds-background-warning, #FFF7D6)]', text: 'text-[var(--ds-text-warning,#d97706)]', icon: AlertTriangle },
     failed: { bg: 'bg-[var(--ds-background-danger,#fef2f2)]', text: 'text-[var(--ds-text-danger,#ef4444)]', icon: AlertTriangle },
   };
   const config = statusConfig[gate.status];
@@ -304,9 +304,9 @@ function QualityGateItem({ gate, onClick }: { gate: QualityGate; onClick?: () =>
 // Activity Item - Clickable
 function ActivityItem({ activity, onSubjectClick }: { activity: ActivityItemType; onSubjectClick?: (activity: ActivityItemType) => void }) {
   const typeConfig = {
-    passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
+    passed: { bg: 'bg-[var(--ds-background-success, #DFFCF0)]', text: 'text-[var(--ds-chart-teal-bold, #0d9488)]', icon: CheckCircle2 },
     failed: { bg: 'bg-[var(--ds-background-danger,#fef2f2)]', text: 'text-[var(--ds-text-danger,#ef4444)]', icon: AlertTriangle },
-    defect: { bg: 'bg-[#fef3c7]', text: 'text-[var(--ds-text-warning,#d97706)]', icon: Bug },
+    defect: { bg: 'bg-[var(--ds-background-warning, #FFF7D6)]', text: 'text-[var(--ds-text-warning,#d97706)]', icon: Bug },
     comment: { bg: 'bg-[var(--ds-background-selected,#eff6ff)]', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', icon: MessageSquare },
   };
   const config = typeConfig[activity.type];
@@ -342,7 +342,7 @@ function TeamMemberItem({ member }: { member: TeamMemberPerformance }) {
   const colorMap = {
     blue: CATALYST_V5.primary,
     teal: CATALYST_V5.teal,
-    purple: '#8b5cf6',
+    purple: 'var(--ds-background-discovery-bold, #8b5cf6)',
     orange: CATALYST_V5.warning,
   };
   
@@ -823,14 +823,14 @@ export default function CommandCenterPage() {
                         type="monotone" 
                         dataKey="opened" 
                         stroke={CATALYST_V5.danger} 
-                        fill="rgba(239, 68, 68, 0.1)" 
+                        fill="var(--ds-background-danger, rgba(239, 68, 68, 0.1))" 
                         strokeWidth={2}
                       />
                       <Area 
                         type="monotone" 
                         dataKey="closed" 
                         stroke={CATALYST_V5.teal} 
-                        fill="rgba(13, 148, 136, 0.1)" 
+                        fill="var(--ds-background-success, rgba(13, 148, 136, 0.1))" 
                         strokeWidth={2}
                       />
                     </AreaChart>

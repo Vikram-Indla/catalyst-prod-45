@@ -66,26 +66,26 @@
 .capacity-gantt-container .analytics-dept-pill.active {
   background: var(--ct-primary) !important;
   border-color: var(--ct-primary) !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.25)) !important;
 }
 
 .capacity-gantt-container .analytics-dept-pill.active:hover {
   background: var(--ct-primary-hover) !important;
   border-color: var(--ct-primary-hover) !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
 }
 
 /* ==================== DESIGN TOKENS ==================== */
 .capacity-gantt-container {
   /* Primary Colors */
   --cpg-primary-50: var(--ds-background-selected, #eff6ff);
-  --cpg-primary-100: #dbeafe;
-  --cpg-primary-200: #bfdbfe;
+  --cpg-primary-100: var(--ds-background-information, #E9F2FF);
+  --cpg-primary-200: var(--ds-background-information, #E9F2FF);
   --cpg-primary-600: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --cpg-primary-700: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --cpg-primary-800: #1e40af;
+  --cpg-primary-800: var(--ds-link-pressed, #1e40af);
   
   /* Neutral Colors */
   --cpg-slate-50: var(--ds-surface-sunken, #f8fafc);
@@ -95,18 +95,18 @@
   --cpg-slate-400: var(--ds-text-subtlest, #94a3b8);
   --cpg-slate-500: var(--ds-text-subtlest, #64748b);
   --cpg-slate-600: var(--ds-text-subtle, #475569);
-  --cpg-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
-  --cpg-slate-800: #1e293b;
+  --cpg-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
+  --cpg-slate-800: var(--ds-text, #172B4D);
   --cpg-slate-900: var(--ds-text, #0f172a);
   
   /* Semantic Colors */
-  --cpg-success: #10b981;
-  --cpg-success-light: #d1fae5;
+  --cpg-success: var(--ds-background-success-bold, #059669);
+  --cpg-success-light: var(--ds-background-success, #DFFCF0);
   --cpg-warning: var(--ds-text-warning, #f59e0b);
-  --cpg-warning-light: #fef3c7;
+  --cpg-warning-light: var(--ds-background-warning, #FFF7D6);
   --cpg-danger: var(--ds-text-danger, #ef4444);
   --cpg-danger-light: var(--ds-background-danger, #fef2f2);
-  --cpg-teal: #0d9488;
+  --cpg-teal: var(--ds-chart-teal-bold, #0d9488);
   
   /* Fonts */
   --cpg-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -119,9 +119,9 @@
   font-size: 14px !important;
   line-height: 1.5 !important;
   color: var(--cpg-slate-900) !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   border-radius: 16px !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 4px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06)) !important;
   border: 1px solid var(--cpg-slate-200) !important;
   overflow: hidden !important;
   -webkit-font-smoothing: antialiased !important;
@@ -135,7 +135,7 @@
   justify-content: space-between !important;
   padding: 16px 24px !important;
   border-bottom: 1px solid var(--cpg-slate-200) !important;
-  background: linear-gradient(to bottom, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))), var(--cpg-slate-50)) !important;
+  background: linear-gradient(to bottom, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))), var(--cpg-slate-50)) !important;
 }
 
 .cpg-toolbar-left {
@@ -174,7 +174,7 @@
   width: 28px !important;
   height: 28px !important;
   border: none !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   border-radius: 6px !important;
   cursor: pointer !important;
   display: flex !important;
@@ -182,12 +182,12 @@
   justify-content: center !important;
   color: var(--cpg-slate-600) !important;
   transition: all 0.15s ease !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05)) !important;
 }
 
 .cpg-nav-btn:hover {
   background: var(--cpg-primary-600) !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
 }
 
 .cpg-nav-btn svg {
@@ -231,9 +231,9 @@
 }
 
 .cpg-view-btn.active {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   color: var(--cpg-slate-900) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1)) !important;
 }
 
 .cpg-today-btn {
@@ -241,7 +241,7 @@
   align-items: center !important;
   gap: 6px !important;
   padding: 8px 14px !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   border: 1px solid var(--cpg-slate-200) !important;
   border-radius: 8px !important;
   font-family: var(--cpg-font-sans) !important;
@@ -277,7 +277,7 @@
   gap: 10px !important;
   padding: 16px 24px !important;
   border-bottom: 1px solid var(--cpg-slate-200) !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   flex-wrap: wrap !important;
 }
 
@@ -290,7 +290,7 @@
   font-size: 14px !important;
   font-weight: 500 !important;
   color: var(--cpg-slate-700) !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   border: 1px solid var(--cpg-slate-300) !important;
   border-radius: 8px !important;
   cursor: pointer !important;
@@ -307,15 +307,15 @@
 .cpg-dept-pill.active {
   background: var(--cpg-primary-600) !important;
   border-color: var(--cpg-primary-600) !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.25)) !important;
 }
 
 .cpg-dept-pill.active:hover {
   background: var(--cpg-primary-700) !important;
   border-color: var(--cpg-primary-700) !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
 }
 
 /* ==================== LEGEND ==================== */
@@ -432,7 +432,7 @@
   position: sticky !important;
   left: 0 !important;
   z-index: 30 !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   padding: 0 16px !important;
   display: flex !important;
   align-items: flex-end !important;
@@ -498,7 +498,7 @@
   align-items: center !important;
   gap: 4px !important;
   background: var(--cpg-danger) !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   font-family: var(--cpg-font-sans) !important;
   font-size: 9px !important;
   font-weight: 700 !important;
@@ -548,7 +548,7 @@
   position: sticky !important;
   left: 0 !important;
   z-index: 20 !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   padding: 12px 16px !important;
   border-right: 1px solid var(--cpg-slate-200) !important;
   border-bottom: 1px solid var(--cpg-slate-200) !important;
@@ -568,12 +568,12 @@
   font-family: var(--cpg-font-sans) !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   flex-shrink: 0 !important;
 }
 
 .cpg-avatar.teal {
-  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
+  background: linear-gradient(135deg, var(--ds-chart-teal-bold, #0d9488) 0%, var(--ds-chart-teal-bolder, #0f766e) 100%) !important;
 }
 
 .cpg-avatar.blue {
@@ -585,7 +585,7 @@
 }
 
 .cpg-avatar.violet {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+  background: linear-gradient(135deg, var(--ds-background-discovery-bold, #8b5cf6) 0%, var(--ds-background-discovery-bold, #7C3AED) 100%) !important;
 }
 
 .cpg-resource-info {
@@ -682,7 +682,7 @@
 
 .cpg-contract-badge.ending-soon {
   background: var(--cpg-warning-light) !important;
-  color: #92400e !important;
+  color: var(--ds-text-warning, #974F0C) !important;
 }
 
 /* ==================== TIMELINE CELL ==================== */
@@ -690,7 +690,7 @@
   position: relative !important;
   border-bottom: 1px solid var(--cpg-slate-200) !important;
   min-height: 72px !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   transition: background 0.15s ease !important;
 }
 
@@ -729,8 +729,8 @@
     -45deg,
     transparent,
     transparent 6px,
-    rgba(148, 163, 184, 0.12) 6px,
-    rgba(148, 163, 184, 0.12) 12px
+    var(--ds-background-neutral, rgba(148, 163, 184, 0.12)) 6px,
+    var(--ds-background-neutral, rgba(148, 163, 184, 0.12)) 12px
   ) !important;
   pointer-events: none !important;
   z-index: 5 !important;
@@ -753,13 +753,13 @@
   font-size: 10px !important;
   font-weight: 500 !important;
   color: var(--cpg-slate-500) !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   padding: 3px 8px !important;
   border-radius: 4px !important;
   border: 1px solid var(--cpg-slate-200) !important;
   white-space: nowrap !important;
   z-index: 7 !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05)) !important;
 }
 
 /* ==================== ASSIGNMENTS CONTAINER ==================== */
@@ -793,13 +793,13 @@
 /* Committed Pill */
 .cpg-pill.committed {
   background: linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%) !important;
-  border-left: 4px solid #1e40af !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
+  border-left: 4px solid var(--ds-link-pressed, #1e40af) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
+  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.25)) !important;
 }
 
 .cpg-pill.committed:hover {
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35) !important;
+  box-shadow: 0 6px 20px var(--ds-background-information, rgba(37, 99, 235, 0.35)) !important;
 }
 
 /* Forecast Pill */
@@ -807,12 +807,12 @@
   background: var(--ds-background-selected, #eff6ff) !important;
   border: 2px dashed var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   color: var(--ds-background-brand-bold-hovered, #1d4ed8) !important;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1) !important;
+  box-shadow: 0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.1)) !important;
 }
 
 .cpg-pill.forecast:hover {
-  background: #dbeafe !important;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2) !important;
+  background: var(--ds-background-information, #E9F2FF) !important;
+  box-shadow: 0 6px 20px var(--ds-background-information, rgba(37, 99, 235, 0.2)) !important;
 }
 
 .cpg-pill-name {
@@ -836,12 +836,12 @@
 }
 
 .cpg-pill.committed .cpg-pill-allocation {
-  background: rgba(255, 255, 255, 0.2) !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--ds-surface, rgba(255, 255, 255, 0.2)) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
 }
 
 .cpg-pill.forecast .cpg-pill-allocation {
-  background: rgba(37, 99, 235, 0.15) !important;
+  background: var(--ds-background-information, rgba(37, 99, 235, 0.15)) !important;
   color: var(--ds-background-brand-bold-hovered, #1d4ed8) !important;
 }
 
@@ -865,7 +865,7 @@
   font-family: var(--cpg-font-sans) !important;
   font-size: 9px !important;
   font-weight: 700 !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   background: var(--cpg-danger) !important;
   padding: 2px 6px !important;
   border-radius: 4px !important;
@@ -920,7 +920,7 @@
   align-items: center !important;
   gap: 6px !important;
   padding: 8px 14px !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   border: 1px solid var(--cpg-slate-200) !important;
   border-radius: 8px !important;
   font-family: var(--cpg-font-sans) !important;
@@ -945,14 +945,14 @@
 .cpg-tooltip {
   position: fixed !important;
   background: var(--cpg-slate-800) !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   padding: 10px 14px !important;
   border-radius: 8px !important;
   font-family: var(--cpg-font-sans) !important;
   font-size: 12px !important;
   pointer-events: none !important;
   z-index: 100 !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2)) !important;
   max-width: 280px !important;
   opacity: 0 !important;
   visibility: hidden !important;
@@ -991,9 +991,9 @@
 html.dark .capacity-gantt-container,
 html.dark .capacity-gantt-container , [data-theme="dark"] .capacity-gantt-container {
   /* Override dark mode design tokens */
-  --cpg-slate-50: #1e293b !important;
-  --cpg-slate-100: #1e293b !important;
-  --cpg-slate-200: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  --cpg-slate-50: var(--ds-text, #172B4D) !important;
+  --cpg-slate-100: var(--ds-text, #172B4D) !important;
+  --cpg-slate-200: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
   --cpg-slate-300: var(--ds-text-subtle, #475569) !important;
   --cpg-slate-400: var(--ds-text-subtlest, #64748b) !important;
   --cpg-slate-500: var(--ds-text-subtlest, #94a3b8) !important;
@@ -1004,14 +1004,14 @@ html.dark .capacity-gantt-container , [data-theme="dark"] .capacity-gantt-contai
   
   color: var(--ds-surface-sunken, #f8fafc) !important;
   background: var(--ds-text, #0f172a) !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 /* Container & main surfaces */
 html.dark .cpg-toolbar,
 html.dark .cpg-toolbar , [data-theme="dark"] .cpg-toolbar {
-  background: linear-gradient(to bottom, #1e293b, var(--ds-text, #0f172a)) !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  background: linear-gradient(to bottom, var(--ds-text, #172B4D), var(--ds-text, #0f172a)) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 html.dark .cpg-toolbar-title,
@@ -1021,19 +1021,19 @@ html.dark .cpg-toolbar-title , [data-theme="dark"] .cpg-toolbar-title {
 
 html.dark .cpg-date-navigator,
 html.dark .cpg-date-navigator , [data-theme="dark"] .cpg-date-navigator {
-  background: #1e293b !important;
+  background: var(--ds-text, #172B4D) !important;
 }
 
 html.dark .cpg-nav-btn,
 html.dark .cpg-nav-btn , [data-theme="dark"] .cpg-nav-btn {
-  background: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  background: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
   color: var(--ds-text-disabled, #cbd5e1) !important;
 }
 
 html.dark .cpg-nav-btn:hover,
 html.dark .cpg-nav-btn:hover , [data-theme="dark"] .cpg-nav-btn:hover {
   background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
 }
 
 html.dark .cpg-date-range,
@@ -1044,8 +1044,8 @@ html.dark .cpg-date-range , [data-theme="dark"] .cpg-date-range {
 /* View Mode Toggle */
 html.dark .cpg-view-mode,
 html.dark .cpg-view-mode , [data-theme="dark"] .cpg-view-mode {
-  background: #1e293b !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  background: var(--ds-text, #172B4D) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 html.dark .cpg-view-btn,
@@ -1060,15 +1060,15 @@ html.dark .cpg-view-btn:hover , [data-theme="dark"] .cpg-view-btn:hover {
 
 html.dark .cpg-view-btn.active,
 html.dark .cpg-view-btn.active , [data-theme="dark"] .cpg-view-btn.active {
-  background: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  background: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
   color: var(--ds-surface-sunken, #f8fafc) !important;
 }
 
 /* Today button */
 html.dark .cpg-today-btn,
 html.dark .cpg-today-btn , [data-theme="dark"] .cpg-today-btn {
-  background: #1e293b !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  background: var(--ds-text, #172B4D) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
   color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 
@@ -1081,8 +1081,8 @@ html.dark .cpg-today-btn:hover , [data-theme="dark"] .cpg-today-btn:hover {
 /* Legend */
 html.dark .cpg-legend,
 html.dark .cpg-legend , [data-theme="dark"] .cpg-legend {
-  background: #1e293b !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  background: var(--ds-text, #172B4D) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 html.dark .cpg-legend-label,
@@ -1094,21 +1094,21 @@ html.dark .cpg-legend-label , [data-theme="dark"] .cpg-legend-label {
 html.dark .cpg-header-cell,
 html.dark .cpg-header-cell , [data-theme="dark"] .cpg-header-cell {
   background: var(--ds-text, #0f172a) !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
   color: var(--ds-text-subtlest, #94a3b8) !important;
 }
 
 html.dark .cpg-resource-header,
 html.dark .cpg-resource-header , [data-theme="dark"] .cpg-resource-header {
   background: var(--ds-text, #0f172a) !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
   color: var(--ds-text-subtlest, #94a3b8) !important;
 }
 
 html.dark .cpg-month-cell,
 html.dark .cpg-month-cell , [data-theme="dark"] .cpg-month-cell {
   background: var(--ds-text, #0f172a) !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 html.dark .cpg-month-name,
@@ -1125,18 +1125,18 @@ html.dark .cpg-month-year , [data-theme="dark"] .cpg-month-year {
 html.dark .cpg-row,
 html.dark .cpg-row , [data-theme="dark"] .cpg-row {
   background: var(--ds-text, #0f172a) !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 html.dark .cpg-row:hover,
 html.dark .cpg-row:hover , [data-theme="dark"] .cpg-row:hover {
-  background: #1e293b !important;
+  background: var(--ds-text, #172B4D) !important;
 }
 
 html.dark .cpg-resource-cell,
 html.dark .cpg-resource-cell , [data-theme="dark"] .cpg-resource-cell {
   background: var(--ds-text, #0f172a) !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 html.dark .cpg-resource-name,
@@ -1157,24 +1157,24 @@ html.dark .cpg-util-date , [data-theme="dark"] .cpg-util-date {
 /* Timeline cells */
 html.dark .cpg-timeline-cell,
 html.dark .cpg-timeline-cell , [data-theme="dark"] .cpg-timeline-cell {
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 html.dark .cpg-timeline-grid,
 html.dark .cpg-timeline-grid , [data-theme="dark"] .cpg-timeline-grid {
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 html.dark .cpg-week-divider,
 html.dark .cpg-week-divider , [data-theme="dark"] .cpg-week-divider {
-  background: #1e293b !important;
+  background: var(--ds-text, #172B4D) !important;
 }
 
 /* Summary footer */
 html.dark .cpg-summary,
 html.dark .cpg-summary , [data-theme="dark"] .cpg-summary {
-  background: linear-gradient(to bottom, #1e293b, var(--ds-text, #0f172a)) !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  background: linear-gradient(to bottom, var(--ds-text, #172B4D), var(--ds-text, #0f172a)) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }
 
 html.dark .cpg-stat-label,
@@ -1184,8 +1184,8 @@ html.dark .cpg-stat-label , [data-theme="dark"] .cpg-stat-label {
 
 html.dark .cpg-export-btn,
 html.dark .cpg-export-btn , [data-theme="dark"] .cpg-export-btn {
-  background: #1e293b !important;
-  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  background: var(--ds-text, #172B4D) !important;
+  border-color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
   color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 

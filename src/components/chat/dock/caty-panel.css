@@ -98,7 +98,7 @@
 .cp-welcome__hero-icon {
   width: 56px;
   height: 56px;
-  filter: drop-shadow(0 2px 8px rgba(9, 30, 66, 0.18));
+  filter: drop-shadow(0 2px 8px var(--ds-shadow-raised, rgba(9, 30, 66, 0.18)));
 }
 
 .cp-welcome__bubble {
@@ -113,7 +113,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(9, 30, 66, 0.14);
+  box-shadow: 0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.14));
 }
 
 /* "How can I help, Vikram?" */
@@ -278,7 +278,7 @@
   width: 24px;
   height: 24px;
   flex: 0 0 auto;
-  filter: drop-shadow(0 1px 3px rgba(9, 30, 66, 0.14));
+  filter: drop-shadow(0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.14)));
   margin-top: 2px;
 }
 
@@ -885,7 +885,7 @@
   background: var(--ds-surface-overlay, #FFFFFF);
   border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 8px;
-  box-shadow: var(--ds-shadow-overlay, 0 8px 16px rgba(9, 30, 66, 0.2), 0 0 1px rgba(9, 30, 66, 0.31));
+  box-shadow: var(--ds-shadow-overlay, 0 8px 16px rgba(9, 30, 66, 0.2), 0 0 1px var(--ds-shadow-raised, rgba(9, 30, 66, 0.31)));
   padding: 8px;
   z-index: 20;
 }

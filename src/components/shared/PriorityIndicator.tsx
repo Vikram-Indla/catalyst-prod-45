@@ -22,9 +22,9 @@ export interface PriorityConfig {
 }
 
 export const PRIORITY_MAP: Record<PriorityLevel, PriorityConfig> = {
-  critical: { label: 'Critical', level: 4, filledColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', textColor: 'var(--ds-text-danger, #991B1B)', textColorDark: '#F87171' },
-  high:     { label: 'High',     level: 3, filledColor: '#F97316', textColor: '#C2410C', textColorDark: '#FB923C' },
-  medium:   { label: 'Medium',   level: 2, filledColor: '#EAB308', textColor: '#A16207', textColorDark: '#FBBF24' },
+  critical: { label: 'Critical', level: 4, filledColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', textColor: 'var(--ds-text-danger, #991B1B)', textColorDark: 'var(--ds-background-danger, #FFECEB)' },
+  high:     { label: 'High',     level: 3, filledColor: 'var(--ds-background-warning-bold, #f97316)', textColor: 'var(--ds-text-danger, #AE2A19)', textColorDark: 'var(--ds-background-warning-bold, #E2B203)' },
+  medium:   { label: 'Medium',   level: 2, filledColor: 'var(--ds-background-warning-bold, #E2B203)', textColor: 'var(--ds-text-warning, #974F0C)', textColorDark: 'var(--ds-background-warning-bold, #E2B203)' },
   low:      { label: 'Low',      level: 1, filledColor: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textColor: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textColorDark: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
 };
 

@@ -31,7 +31,7 @@ import type { AttachmentUploadMeta } from "@/components/shared/rich-text/atlaski
    Atlaskit equivalents. Heading wrapper also dropped in favour of an
    inline H2 styled to Jira's measured "Description" label values
    (testid issue.views.issue-base.common.description.label probed
-   2026-05-03: H2 / 14px / weight 500 / rgb(80,82,88) / lh ~19). */
+   2026-05-03: H2 / 14px / weight 500 / var(--ds-text-subtle, rgb(80,82,88)) / lh ~19). */
 // eslint-disable-next-line no-restricted-imports
 import EditIcon from "@atlaskit/icon/core/edit";
 // eslint-disable-next-line no-restricted-imports
@@ -285,10 +285,10 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
 
     /* jira-compare 2026-05-03 (Council P3.3 — body pixel fix):
        Atlaskit Renderer's bundled CSS paints body text at 16px / lh 24
-       in slate-900 (rgb(15,23,42)) — that's Catalyst's Tailwind base
+       in slate-900 (var(--ds-shadow-overlay, rgb(15,23,42))) — that's Catalyst's Tailwind base
        leaking through, NOT a Jira value. Jira's measured body
        (testid issue.views.field.rich-text.description) is 14px / 400 /
-       rgb(41,42,46) / lh 20. Override by selector specificity with
+       var(--ds-text, rgb(41,42,46)) / lh 20. Override by selector specificity with
        !important since Atlaskit's CSS-in-JS class wins ordinary cascade. */
     .atlaskit-renderer-wrapper,
     .atlaskit-renderer-wrapper p,
@@ -510,8 +510,8 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       top: calc(100% + 6px);
       left: 50%;
       transform: translateX(-50%);
-      background: rgb(23, 43, 77);
-      color: #fff;
+      background: var(--ds-text, rgb(23, 43, 77));
+      color: var(--ds-text-inverse, #FFFFFF);
       padding: 4px 8px;
       border-radius: 3px;
       font-size: 12px;
@@ -520,7 +520,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       white-space: nowrap;
       z-index: 99999;
       pointer-events: none;
-      box-shadow: 0 4px 8px -2px rgba(9,30,66,0.25);
+      box-shadow: 0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25));
     }
 
     /* Perf — pencil-icon hover affordance via pure CSS instead of a
@@ -540,7 +540,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       opacity: 1;
     }
     .cv-desc-edit-btn:hover {
-      color: #292A2E !important;
+      color: var(--ds-text, #172B4D) !important;
       background: var(--ds-surface-sunken, #F4F5F7) !important;
     }
 

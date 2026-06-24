@@ -28,16 +28,16 @@ import { catalystToast } from '@/lib/catalystToast';
 /* ═══ PRIORITY ICON — Jira-parity directional chevrons ═══ */
 
 const PRIORITY_COLORS: Record<string, string> = {
-  highest: '#E5493A',
+  highest: 'var(--ds-background-danger-bold, #C9372C)',
   high:    '#E97F33',
-  medium:  '#FFAB00',
+  medium:  'var(--ds-background-warning-bold, #E2B203)',
   low:     '#2D8738',
   lowest:  '#57A55A',
 };
 
 function PriorityIcon({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
-  const color = PRIORITY_COLORS[p] || '#5E6C84';
+  const color = PRIORITY_COLORS[p] || 'var(--ds-text-subtle, #44546F)';
   /* Jira renders priority as stacked upward (high) or downward (low) chevrons.
      Two chevrons = highest/lowest, one = high/low, dash = medium. */
   if (p === 'highest') {
@@ -346,7 +346,7 @@ export function WorkItemCard({
                   }}
                   aria-label="Save"
                 >
-                  <CheckMarkIcon label="Save" size="small" primaryColor="#36B37E" />
+                  <CheckMarkIcon label="Save" size="small" primaryColor="var(--ds-background-success-bold, #1F845A)" />
                 </button>
                 <button
                   onClick={cancelEditing}
@@ -357,7 +357,7 @@ export function WorkItemCard({
                   }}
                   aria-label="Cancel"
                 >
-                  <CloseIcon label="Cancel" size="small" primaryColor="#FF5630" />
+                  <CloseIcon label="Cancel" size="small" primaryColor="var(--ds-background-danger-bold, #C9372C)" />
                 </button>
               </div>
             </div>
@@ -405,7 +405,7 @@ export function WorkItemCard({
             title text, see above). Hidden during edit mode. */}
         {!isEditing && (
           <div className="flex items-center flex-shrink-0" style={{ gap: 2, marginLeft: 4, marginTop: 1 }}>
-            {issue.isFlagged && <FlagFilledIcon label="Flagged" size="small" primaryColor="#E5493A" />}
+            {issue.isFlagged && <FlagFilledIcon label="Flagged" size="small" primaryColor="var(--ds-background-danger-bold, #C9372C)" />}
             <button
               ref={btnRef}
               onClick={handleMenuBtn}
@@ -591,7 +591,7 @@ export function WorkItemCard({
                 background: tk.surfaceBg,
                 border: `1px solid ${tk.border}`,
                 borderRadius: 6,
-                boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+                boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
                 padding: '4px 0',
                 fontFamily: 'var(--cp-font-body)',
               }}
@@ -645,7 +645,7 @@ export function WorkItemCard({
                       background: tk.surfaceBg,
                       border: `1px solid ${tk.border}`,
                       borderRadius: 6,
-                      boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+                      boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
                       padding: '4px 0',
                       zIndex: 10000,
                     }}

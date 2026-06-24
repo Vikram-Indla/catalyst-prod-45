@@ -36,19 +36,19 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'In Execution':         { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'In Execution' },
   'Fix in Progress':      { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: 'var(--ds-text, #1E3A5F)', label: 'Fixing' },
   // ── Teal: Review / QA ──
-  'In Review':            { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In Review' },
-  'In QA':                { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In QA' },
-  'Ready for QA':         { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Ready QA' },
-  'Retest':               { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Retest' },
-  'Code Review':          { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In Review' },
-  'Technical Validation': { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Validation' },
-  'End to End Testing':   { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'E2E Testing' },
-  'In Testing':           { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Testing' },
-  'QA Pass':              { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'QA Pass' },
-  'QA Fail':              { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'QA Fail' },
+  'In Review':            { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In Review' },
+  'In QA':                { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In QA' },
+  'Ready for QA':         { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Ready QA' },
+  'Retest':               { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Retest' },
+  'Code Review':          { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'In Review' },
+  'Technical Validation': { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Validation' },
+  'End to End Testing':   { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'E2E Testing' },
+  'In Testing':           { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'Testing' },
+  'QA Pass':              { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'QA Pass' },
+  'QA Fail':              { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-surface, #F0FDFA)', tx: 'var(--ds-text, #134E4A)', label: 'QA Fail' },
   // ── Purple: UAT ──
-  'In UAT':               { dot: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-surface, #F5F3FF)', tx: 'var(--ds-text, #4C1D95)', label: 'In UAT' },
-  'UAT Ready':            { dot: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-surface, #F5F3FF)', tx: 'var(--ds-text, #4C1D95)', label: 'UAT Ready' },
+  'In UAT':               { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-surface, #F5F3FF)', tx: 'var(--ds-text, #4C1D95)', label: 'In UAT' },
+  'UAT Ready':            { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-surface, #F5F3FF)', tx: 'var(--ds-text, #4C1D95)', label: 'UAT Ready' },
   // ── Green: Done ──
   'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' },
   'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-surface, #F0FDF4)', tx: 'var(--ds-text, #14532D)', label: 'Done' },
@@ -93,7 +93,7 @@ function resolveStatus(item: any) {
   return CAT_TODO;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
@@ -133,14 +133,14 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,.15)', zIndex: 200 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-overlay, rgba(15,23,42,.15))', zIndex: 200 }} />
 
       {/* Panel */}
       <div ref={panelRef} style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '460px',
         background: 'var(--cp-float)', borderLeft: '1px solid var(--divider)', zIndex: 201,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        boxShadow: '-4px 0 20px rgba(15,23,42,.08)',
+        boxShadow: '-4px 0 20px var(--ds-shadow-overlay, rgba(15,23,42,.08))',
         fontFamily: 'var(--cp-font-body)',
         animation: 'r3SlideIn 250ms cubic-bezier(.32,.72,0,1) forwards',
       }}>
@@ -229,7 +229,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           </div>
 
           {/* Hierarchy */}
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))' }}>
             <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
             {item.parent_key ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>

@@ -108,10 +108,10 @@ export function CheckBoxCheckIcon({ size = 18, ...rest }: IconProps) {
       aria-hidden="true"
       {...rest}
     >
-      <rect x="2.5" y="2.5" width="19" height="19" rx="3" fill="#2BAC76" />
+      <rect x="2.5" y="2.5" width="19" height="19" rx="3" fill="var(--ds-background-success-bold, #1F845A)" />
       <path
         d="M7 12.5l3.2 3.2L17 9"
-        stroke="#FFFFFF"
+        stroke="var(--ds-surface, #FFFFFF)"
         strokeWidth={2.2}
         strokeLinecap="round"
         strokeLinejoin="round"

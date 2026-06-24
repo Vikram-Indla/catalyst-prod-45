@@ -49,9 +49,9 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? (
-            <ChevronsRight size={16} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[#4C9AFF]" />
+            <ChevronsRight size={16} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[var(--ds-background-information-bold, #0C66E4)]" />
           ) : (
-            <ChevronsLeft size={16} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[#4C9AFF]" />
+            <ChevronsLeft size={16} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[var(--ds-background-information-bold, #0C66E4)]" />
           )}
         </button>
       </div>
@@ -63,7 +63,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         {/* Favorites section */}
         {!collapsed && (
           <>
-            <div className="my-2 mx-2" style={{ height: 1, backgroundColor: '#EBECF0' }} />
+            <div className="my-2 mx-2" style={{ height: 1, backgroundColor: 'var(--ds-border, #DFE1E6)' }} />
             <div className="pt-1">
               <div className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
                 Favorites
@@ -72,8 +72,8 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
                 className="flex items-center gap-2 mx-2 my-1 rounded-[6px] border border-dashed border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] dark:border-[var(--ds-border-bold,#454545)]"
                 style={{ padding: '10px 12px' }}
               >
-                <Star size={14} className="text-[#C1C7D0] dark:text-[#7D7D7D] flex-shrink-0" />
-                <span className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[#7D7D7D]" style={{ fontSize: 12 }}>
+                <Star size={14} className="text-[var(--ds-border, #DFE1E6)] dark:text-[var(--ds-text-subtlest, #626F86)] flex-shrink-0" />
+                <span className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 12 }}>
                   Star projects for quick access
                 </span>
               </div>

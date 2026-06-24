@@ -43,12 +43,12 @@ function MetricCard({
 function StatusOverview() {
   // Mock data
   const statusData = [
-    { status: 'In Production', count: 2, color: '#FF991F' },
-    { status: 'Hold', count: 6, color: '#36B37E' },
-    { status: 'Production Ready', count: 1, color: '#6554C0' },
+    { status: 'In Production', count: 2, color: 'var(--ds-background-warning-bold, #E2B203)' },
+    { status: 'Hold', count: 6, color: 'var(--ds-background-success-bold, #1F845A)' },
+    { status: 'Production Ready', count: 1, color: 'var(--ds-background-discovery-bold, #6554C0)' },
     { status: 'On Hold', count: 7, color: '#8777D9' },
     { status: 'Backlog', count: 44, color: '#FF7452' },
-    { status: 'In Development', count: 4, color: '#2684FF' },
+    { status: 'In Development', count: 4, color: 'var(--ds-link, #0C66E4)' },
   ];
   const total = statusData.reduce((sum, s) => sum + s.count, 0);
 
@@ -194,12 +194,12 @@ function RecentActivity() {
 // Priority Breakdown Chart
 function PriorityBreakdown() {
   const priorities = [
-    { label: 'Highest', count: 2, color: '#FF5630' },
+    { label: 'Highest', count: 2, color: 'var(--ds-background-danger-bold, #C9372C)' },
     { label: 'High', count: 5, color: '#FF7452' },
-    { label: 'Medium', count: 42, color: '#FFAB00' },
-    { label: 'Low', count: 8, color: '#36B37E' },
+    { label: 'Medium', count: 42, color: 'var(--ds-background-warning-bold, #E2B203)' },
+    { label: 'Low', count: 8, color: 'var(--ds-background-success-bold, #1F845A)' },
     { label: 'Lowest', count: 3, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' },
-    { label: 'None', count: 55, color: '#97A0AF' },
+    { label: 'None', count: 55, color: 'var(--ds-text-disabled, #8590A2)' },
   ];
   const maxCount = Math.max(...priorities.map(p => p.count));
 
@@ -350,7 +350,7 @@ function EpicProgress() {
       <CardContent>
         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-[#0d9488]" />
+            <div className="w-3 h-3 rounded bg-[var(--ds-chart-teal-bold, #0d9488)]" />
             <span>Done</span>
           </div>
           <div className="flex items-center gap-1">
@@ -358,7 +358,7 @@ function EpicProgress() {
             <span>In progress</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-[#6b7280]" />
+            <div className="w-3 h-3 rounded bg-[var(--ds-text-subtlest, #626F86)]" />
             <span>To do</span>
           </div>
         </div>
@@ -373,7 +373,7 @@ function EpicProgress() {
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-5 bg-muted rounded overflow-hidden flex">
                   {epic.done > 0 && (
-                    <div className="h-full bg-[#0d9488] flex items-center justify-center" style={{ width: `${epic.done}%` }}>
+                    <div className="h-full bg-[var(--ds-chart-teal-bold, #0d9488)] flex items-center justify-center" style={{ width: `${epic.done}%` }}>
                       <span className="text-xs font-medium text-white">{epic.done}%</span>
                     </div>
                   )}
@@ -381,7 +381,7 @@ function EpicProgress() {
                     <div className="h-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" style={{ width: `${epic.inProgress}%` }} />
                   )}
                   {epic.todo > 0 && (
-                    <div className="h-full bg-[#6b7280]" style={{ width: `${epic.todo}%` }} />
+                    <div className="h-full bg-[var(--ds-text-subtlest, #626F86)]" style={{ width: `${epic.todo}%` }} />
                   )}
                 </div>
               </div>
@@ -409,7 +409,7 @@ export function SummaryView() {
       {/* Metric Cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <MetricCard
-          icon={<CheckCircle className="h-5 w-5 text-[#0d9488]" />}
+          icon={<CheckCircle className="h-5 w-5 text-[var(--ds-chart-teal-bold, #0d9488)]" />}
           value={8}
           label="completed"
           subtitle="in the last 7 days"
@@ -421,7 +421,7 @@ export function SummaryView() {
           subtitle="in the last 7 days"
         />
         <MetricCard
-          icon={<Plus className="h-5 w-5 text-[#0d9488]" />}
+          icon={<Plus className="h-5 w-5 text-[var(--ds-chart-teal-bold, #0d9488)]" />}
           value={6}
           label="created"
           subtitle="in the last 7 days"

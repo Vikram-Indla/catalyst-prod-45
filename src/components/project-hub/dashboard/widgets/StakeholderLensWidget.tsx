@@ -163,7 +163,7 @@ export default function StakeholderLensWidget({
                         padding: '2px 6px',
                         borderRadius: 3,
                         background: 'var(--ds-background-accent-red-bolder, #C9372C)',
-                        color: '#FFF',
+                        color: 'var(--ds-text-inverse, #FFFFFF)',
                       }}
                     >
                       {owner.overdue} overdue
@@ -176,7 +176,7 @@ export default function StakeholderLensWidget({
                         padding: '2px 6px',
                         borderRadius: 3,
                         background: 'var(--ds-background-accent-orange-bolder, #C25100)',
-                        color: '#FFF',
+                        color: 'var(--ds-text-inverse, #FFFFFF)',
                       }}
                     >
                       {owner.atRisk} at risk
@@ -189,7 +189,7 @@ export default function StakeholderLensWidget({
                         padding: '2px 6px',
                         borderRadius: 3,
                         background: 'var(--ds-background-accent-green-bolder, #1F845A)',
-                        color: '#FFF',
+                        color: 'var(--ds-text-inverse, #FFFFFF)',
                       }}
                     >
                       {owner.healthy} healthy

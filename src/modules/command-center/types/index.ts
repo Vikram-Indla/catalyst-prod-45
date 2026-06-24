@@ -146,10 +146,10 @@ export interface ChartConfig {
 }
 
 export const DEFAULT_CHART_COLORS = {
-  passed: '#0d9488',  // Teal
+  passed: 'var(--ds-chart-teal-bold, #0d9488)',  // Teal
   failed: 'var(--ds-text-danger, #ef4444)',  // Danger
   blocked: 'var(--ds-text-warning, #d97706)', // Warning
   notRun: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',  // Gray
   opened: 'var(--ds-text-danger, #ef4444)',  // Danger
-  closed: '#0d9488',  // Teal
+  closed: 'var(--ds-chart-teal-bold, #0d9488)',  // Teal
 };

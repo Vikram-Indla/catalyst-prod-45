@@ -192,7 +192,7 @@ if (typeof document !== 'undefined' && !document.getElementById(TOOLBAR_STYLE_ID
       background: var(--ds-surface-overlay, #FFFFFF);
       border: 1px solid var(--ds-border, #DFE1E6);
       border-radius: 4px;
-      box-shadow: 0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31);
+      box-shadow: 0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31));
       padding: 4px 0;
       font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
     }
@@ -821,12 +821,12 @@ function EpicDescriptionEditorImpl({
           // overrides without hardcoding hex.
           // https://atlassian.design/foundations/tokens
           outline: isDragOver
-            ? `2px dashed ${token('color.border.focused', '#388BFF')}`
+            ? `2px dashed ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`
             : '2px dashed transparent',
           outlineOffset: '2px',
           borderRadius: 3,
           backgroundColor: isDragOver
-            ? token('color.background.information.subtle', '#E9F2FF')
+            ? token('color.background.information.subtle', 'var(--ds-background-selected, #E9F2FF)')
             : 'transparent',
           // ADS motion — hover-curve, 150ms.
           // https://atlassian.design/foundations/motion
@@ -872,7 +872,7 @@ function EpicDescriptionEditorImpl({
               style={{
                 padding: 12,
                 fontSize: 13,
-                color: token('color.text.subtlest', '#626F86'),
+                color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
@@ -947,7 +947,7 @@ function EpicDescriptionEditorImpl({
               alignItems: 'center',
               gap: 6,
               fontSize: 11,
-              color: token('color.text.subtlest', '#626F86'),
+              color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               paddingTop: 4,
               paddingLeft: 2,
               userSelect: 'none',
@@ -961,7 +961,7 @@ function EpicDescriptionEditorImpl({
           <div
             style={{
               fontSize: 11,
-              color: token('color.text.subtlest', '#626F86'),
+              color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               paddingTop: 4,
               paddingLeft: 2,
               userSelect: 'none',
@@ -979,8 +979,8 @@ function EpicDescriptionEditorImpl({
                   alignItems: 'center',
                   gap: 6,
                   color: voiceRecording
-                    ? token('color.text.danger', '#AE2A19')
-                    : token('color.text.subtlest', '#626F86'),
+                    ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+                    : token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                   fontWeight: voiceRecording ? 600 : 400,
                 }}
               >
@@ -993,7 +993,7 @@ function EpicDescriptionEditorImpl({
                         width: 8,
                         height: 8,
                         borderRadius: '50%',
-                        background: token('color.background.danger.bold', '#CA3521'),
+                        background: token('color.background.danger.bold', 'var(--ds-background-danger-bold, #C9372C)'),
                         animation: 'cv-voice-pulse 1s ease-in-out infinite',
                       }}
                     />
@@ -1001,7 +1001,7 @@ function EpicDescriptionEditorImpl({
                     {voiceInterim && (
                       <span
                         style={{
-                          color: token('color.text.subtle', '#42526E'),
+                          color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
                           fontStyle: 'italic',
                           fontWeight: 400,
                           maxWidth: 320,

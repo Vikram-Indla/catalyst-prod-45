@@ -30,7 +30,7 @@ export function useCasePriorities(projectId: string | null) {
         id: row.id,
         project_id: row.project_id || projectId,
         name: row.name,
-        color: row.color || '#6b7280',
+        color: row.color || 'var(--ds-text-subtlest, #626F86)',
         sort_order: row.sort_order || 0,
         is_default: row.is_default || false,
       })) as TMCasePriority[];
@@ -49,7 +49,7 @@ export function useCreatePriority() {
         .insert({
           project_id: input.project_id,
           name: input.name,
-          color: input.color || '#6b7280',
+          color: input.color || 'var(--ds-text-subtlest, #626F86)',
           sort_order: input.sort_order || 0,
           is_default: input.is_default || false,
         })
@@ -224,7 +224,7 @@ export function useLabels(projectId: string | null) {
         id: row.id,
         project_id: row.project_id || projectId,
         name: row.name,
-        color: row.color || '#6b7280',
+        color: row.color || 'var(--ds-text-subtlest, #626F86)',
       })) as TMLabel[];
     },
     enabled: !!projectId,
@@ -241,7 +241,7 @@ export function useCreateLabel() {
         .insert({
           project_id: input.project_id,
           name: input.name,
-          color: input.color || '#6b7280',
+          color: input.color || 'var(--ds-text-subtlest, #626F86)',
         })
         .select()
         .single();
@@ -397,10 +397,10 @@ export function useSeedProjectConfig() {
     mutationFn: async (projectId: string) => {
       // Seed default priorities
       const defaultPriorities = [
-        { project_id: projectId, name: 'Critical', color: '#ef4444', sort_order: 1, is_default: false },
-        { project_id: projectId, name: 'High', color: '#f97316', sort_order: 2, is_default: false },
-        { project_id: projectId, name: 'Medium', color: '#eab308', sort_order: 3, is_default: true },
-        { project_id: projectId, name: 'Low', color: '#22c55e', sort_order: 4, is_default: false },
+        { project_id: projectId, name: 'Critical', color: 'var(--ds-background-danger-bold, #ef4444)', sort_order: 1, is_default: false },
+        { project_id: projectId, name: 'High', color: 'var(--ds-background-warning-bold, #f97316)', sort_order: 2, is_default: false },
+        { project_id: projectId, name: 'Medium', color: 'var(--ds-background-warning-bold, #E2B203)', sort_order: 3, is_default: true },
+        { project_id: projectId, name: 'Low', color: 'var(--ds-background-success-bold, #1F845A)', sort_order: 4, is_default: false },
       ];
       
       const { error: priorityError } = await supabase

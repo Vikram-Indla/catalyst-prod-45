@@ -50,9 +50,9 @@ export function CatyWorkloadRisk({ teamMembers }: CatyWorkloadRiskProps) {
   if (teamMembers.length === 0) return null;
 
   const trendArrow = (trend: MemberSignal['closureTrend'], rate: number) => {
-    if (trend === 'up') return <span style={{ color: token('color.text.success', '#216E4E') }}>↑ {rate}%</span>;
-    if (trend === 'down') return <span style={{ color: token('color.text.danger', '#AE2A19') }}>↓ {rate}%</span>;
-    return <span style={{ color: token('color.text.subtlest', '#6B778C') }}>→ {rate}%</span>;
+    if (trend === 'up') return <span style={{ color: token('color.text.success', 'var(--ds-text-success, #216E4E)') }}>↑ {rate}%</span>;
+    if (trend === 'down') return <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>↓ {rate}%</span>;
+    return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>→ {rate}%</span>;
   };
 
   if (!data) {
@@ -62,16 +62,16 @@ export function CatyWorkloadRisk({ teamMembers }: CatyWorkloadRiskProps) {
   return (
     <CatyInsightCard title="Workload signals" onRefresh={analyzeWorkload} onDismiss={() => { setData(null); }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <p style={{ margin: 0, color: token('color.text', '#172B4D') }}>{data.summary}</p>
+        <p style={{ margin: 0, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{data.summary}</p>
         {data.members.map((m) => (
-          <div key={m.name} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 8, borderRadius: 4, background: token('color.background.neutral.subtle', '#F7F8F9') }}>
+          <div key={m.name} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 8, borderRadius: 4, background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
             <CatalystAvatar name={m.name} src={m.avatarUrl ?? undefined} size="small" />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBlockEnd: 4 }}>
                 <span style={{ font: `500 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>{m.name}</span>
-                <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', '#6B778C') }}>{m.openItems} open (avg: {m.roleAvg})</span>
+                <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>{m.openItems} open (avg: {m.roleAvg})</span>
                 {trendArrow(m.closureTrend, m.closureRate)}
-                {m.staleCount > 0 && <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.warning', '#974F0C') }}>{m.staleCount} stale</span>}
+                {m.staleCount > 0 && <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>{m.staleCount} stale</span>}
               </div>
               <ProgressBar value={Math.min(m.openItems / Math.max(m.roleAvg * 2, 1), 1)} />
             </div>

@@ -217,31 +217,31 @@ export const TEST_STATUS_CONFIG: Record<TestCaseStatus, {
 }> = {
   passed: { 
     label: 'Passed', 
-    bgClass: 'bg-[#ccfbf1]', 
-    textClass: 'text-[#0d9488]',
+    bgClass: 'bg-[var(--ds-background-success, #DCFFF1)]', 
+    textClass: 'text-[var(--ds-chart-teal-bold, #0d9488)]',
     icon: 'check'
   },
   failed: { 
     label: 'Failed', 
-    bgClass: 'bg-[#fee2e2]', 
-    textClass: 'text-[#dc2626]',
+    bgClass: 'bg-[var(--ds-background-danger, #FFECEB)]', 
+    textClass: 'text-[var(--ds-background-danger-bold, #dc2626)]',
     icon: 'x'
   },
   blocked: { 
     label: 'Blocked', 
-    bgClass: 'bg-[#fef3c7]', 
-    textClass: 'text-[#b45309]',
+    bgClass: 'bg-[var(--ds-background-warning, #FFF7D6)]', 
+    textClass: 'text-[var(--ds-background-warning-bold, #b45309)]',
     icon: 'ban'
   },
   'not-run': { 
     label: 'Not Run', 
-    bgClass: 'bg-[#f1f5f9]', 
-    textClass: 'text-[#64748b]',
+    bgClass: 'bg-[var(--ds-surface-sunken, #F7F8F9)]', 
+    textClass: 'text-[var(--ds-text-subtlest, #626F86)]',
     icon: 'circle'
   },
   'in-progress': { 
     label: 'In Progress', 
-    bgClass: 'bg-[#dbeafe]', 
+    bgClass: 'bg-[var(--ds-background-information, #E9F2FF)]', 
     textClass: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]',
     icon: 'dot'
   },
@@ -254,23 +254,23 @@ export const PRIORITY_CONFIG: Record<TestCasePriority, {
 }> = {
   critical: { 
     label: 'Critical', 
-    bgClass: 'bg-[#fee2e2]', 
-    textClass: 'text-[#dc2626]'
+    bgClass: 'bg-[var(--ds-background-danger, #FFECEB)]', 
+    textClass: 'text-[var(--ds-background-danger-bold, #dc2626)]'
   },
   high: { 
     label: 'High', 
-    bgClass: 'bg-[#fef3c7]', 
-    textClass: 'text-[#b45309]'
+    bgClass: 'bg-[var(--ds-background-warning, #FFF7D6)]', 
+    textClass: 'text-[var(--ds-background-warning-bold, #b45309)]'
   },
   medium: { 
     label: 'Medium', 
-    bgClass: 'bg-[#dbeafe]', 
+    bgClass: 'bg-[var(--ds-background-information, #E9F2FF)]', 
     textClass: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]'
   },
   low: { 
     label: 'Low', 
-    bgClass: 'bg-[#f1f5f9]', 
-    textClass: 'text-[#64748b]'
+    bgClass: 'bg-[var(--ds-surface-sunken, #F7F8F9)]', 
+    textClass: 'text-[var(--ds-text-subtlest, #626F86)]'
   },
 };
 
@@ -281,17 +281,17 @@ export const SEVERITY_CONFIG: Record<DefectSeverity, {
 }> = {
   critical: { 
     label: 'Critical', 
-    bgClass: 'bg-[#fee2e2]', 
-    textClass: 'text-[#dc2626]'
+    bgClass: 'bg-[var(--ds-background-danger, #FFECEB)]', 
+    textClass: 'text-[var(--ds-background-danger-bold, #dc2626)]'
   },
   major: { 
     label: 'Major', 
-    bgClass: 'bg-[#fef3c7]', 
-    textClass: 'text-[#b45309]'
+    bgClass: 'bg-[var(--ds-background-warning, #FFF7D6)]', 
+    textClass: 'text-[var(--ds-background-warning-bold, #b45309)]'
   },
   minor: { 
     label: 'Minor', 
-    bgClass: 'bg-[#dbeafe]', 
+    bgClass: 'bg-[var(--ds-background-information, #E9F2FF)]', 
     textClass: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]'
   },
 };

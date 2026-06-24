@@ -211,7 +211,7 @@ export function EditResourceForm({
               </>
             ) : lastSaved ? (
               <>
-                <CheckCircle2 className="w-3 h-3 text-[#0d9488]" />
+                <CheckCircle2 className="w-3 h-3 text-[var(--ds-chart-teal-bold, #0d9488)]" />
                 <span>Saved</span>
               </>
             ) : null}

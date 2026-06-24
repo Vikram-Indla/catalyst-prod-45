@@ -167,14 +167,14 @@ export function EvidencePackModal({
 
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
-      text: '#0052CC',
-      attachment: '#974F0C',
-      screenshot: '#216E4E',
+      text: 'var(--ds-link, #0052CC)',
+      attachment: 'var(--ds-text-warning, #974F0C)',
+      screenshot: 'var(--ds-text-success, #216E4E)',
       figma: '#9F8FEF',
       comment: '#E2622D',
-      linked: '#626F86',
+      linked: 'var(--ds-icon-subtle, #626F86)',
     };
-    return colors[type] || '#626F86';
+    return colors[type] || 'var(--ds-icon-subtle, #626F86)';
   };
 
   const includeCount = evidenceItems.filter((e) => e.included).length;
@@ -335,8 +335,8 @@ function EvidenceRow({
         gap: 12,
         padding: '12px',
         borderRadius: '4px',
-        backgroundColor: '#F7F8F9',
-        border: '1px solid #DFE1E6',
+        backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
       }}
     >
       <Checkbox
@@ -359,7 +359,7 @@ function EvidenceRow({
             {item.language === 'ar' ? 'AR' : 'EN'}
           </Badge>
         </div>
-        <div style={{ fontSize: '12px', color: '#626F86' }}>
+        <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>
           <div>{item.source}</div>
           <div>{item.descriptor}</div>
         </div>

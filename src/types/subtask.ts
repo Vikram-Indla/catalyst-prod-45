@@ -37,20 +37,20 @@ export const SUBTASK_TYPE_CONFIG = {
   frontend: {
     label: 'Frontend',
     icon: 'Palette',
-    color: '#3b82f6',
-    bgColor: 'rgba(59, 130, 246, 0.1)',
+    color: 'var(--ds-background-information-bold, #3b82f6)',
+    bgColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))',
   },
   backend: {
     label: 'Backend',
     icon: 'Server',
-    color: '#0d9488',
-    bgColor: 'rgba(13, 148, 136, 0.15)',
+    color: 'var(--ds-chart-teal-bold, #0d9488)',
+    bgColor: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))',
   },
   integration: {
     label: 'Integration',
     icon: 'Plug',
-    color: '#f59e0b',
-    bgColor: 'rgba(245, 158, 11, 0.1)',
+    color: 'var(--ds-background-warning-bold, #f59e0b)',
+    bgColor: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))',
   },
   figma: {
     label: 'Figma',
@@ -63,17 +63,17 @@ export const SUBTASK_TYPE_CONFIG = {
 export const SUBTASK_STATUS_CONFIG = {
   todo: {
     label: 'To Do',
-    color: '#c8ccd0',
+    color: 'var(--ds-border, #DFE1E6)',
     bgColor: 'rgba(200, 204, 208, 0.15)',
   },
   in_progress: {
     label: 'In Progress',
     color: 'var(--cp-workstream-catalyst-primary, #2563eb)',
-    bgColor: 'rgba(37, 99, 235, 0.15)',
+    bgColor: 'var(--ds-background-information, rgba(37, 99, 235, 0.15))',
   },
   done: {
     label: 'Done',
-    color: '#0d9488',
-    bgColor: 'rgba(13, 148, 136, 0.1)',
+    color: 'var(--ds-chart-teal-bold, #0d9488)',
+    bgColor: 'var(--ds-background-success, rgba(13, 148, 136, 0.1))',
   },
 } as const;

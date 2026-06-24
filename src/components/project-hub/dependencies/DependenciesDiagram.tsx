@@ -70,7 +70,7 @@ const LINK = 'var(--ds-link, #0C66E4)';
 // white "blocks" pill centred on the line. Supersedes the earlier grey-1px reading.
 const EDGE_COLOR = 'var(--ds-link, #0C66E4)';
 // ads-scanner:ignore-next-line — SVG marker fill needs a concrete color, not a CSS var()
-const EDGE_HEX = '#0C66E4';
+const EDGE_HEX = 'var(--ds-link, #0C66E4)';
 const EDGE_WIDTH = 2;
 
 type GroupBy = 'none' | 'status' | 'type' | 'assignee';

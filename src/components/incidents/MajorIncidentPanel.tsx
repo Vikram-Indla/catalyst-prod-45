@@ -42,12 +42,12 @@ export function MajorIncidentPanel({
         "border rounded-lg p-4 transition-colors",
         isMajorIncident 
           ? "bg-red-50 border-red-300" 
-          : "bg-white border-[#E8E8E8]"
+          : "bg-white border-[var(--ds-border, #E8E8E8)]"
       )}
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <AlertTriangle className={cn("w-4 h-4", isMajorIncident ? "text-red-600" : "text-[#8C8C8C]")} />
+          <AlertTriangle className={cn("w-4 h-4", isMajorIncident ? "text-red-600" : "text-[var(--ds-text-subtlest, #626F86)]")} />
           <h4 className={cn(
             "text-sm font-semibold",
             isMajorIncident ? "text-red-700" : "text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]"

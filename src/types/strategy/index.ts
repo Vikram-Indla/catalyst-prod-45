@@ -79,18 +79,18 @@ export const STATUS_LABELS: Record<OkrStatus, string> = {
 };
 
 export const THEME_COLORS: Record<string, string> = {
-  'Digital Transformation': '#2563EB',
+  'Digital Transformation': 'var(--ds-link, #2563eb)',
   'Workforce Development': 'var(--cp-teal-60, #0D9488)',
   'Supply Chain Excellence': 'var(--cp-warning, #D97706)',
   'Sustainability & ESG': 'var(--cp-success, #16A34A)',
 };
 
 export const WORKSTREAM_COLORS: Record<string, string> = {
-  senaie: '#06B6D4',
-  catalyst: '#8B5CF6',
-  tahommona: '#6366F1',
-  delivery: '#F97316',
-  mim: '#EC4899',
-  standalone: '#84CC16',
-  dataai: '#14B8A6',
+  senaie: 'var(--ds-icon-information, #1D7AFC)',
+  catalyst: 'var(--ds-background-discovery-bold, #8b5cf6)',
+  tahommona: 'var(--ds-background-discovery-bold, #6366f1)',
+  delivery: 'var(--ds-background-warning-bold, #f97316)',
+  mim: 'var(--ds-background-accent-magenta-bolder, #ec4899)',
+  standalone: 'var(--ds-background-success-bold, #1F845A)',
+  dataai: 'var(--ds-background-accent-teal-bolder, #14b8a6)',
 };

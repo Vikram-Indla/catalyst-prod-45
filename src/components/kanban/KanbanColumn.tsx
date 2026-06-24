@@ -23,12 +23,12 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
   // so column dots match the lozenges rendered on cards/rows elsewhere.
   const c = category?.toLowerCase?.();
   const categoryDot =
-    c === 'done' || c === 'success'           ? '#006644' :  // Atlaskit "success"
-    c === 'in_progress' || c === 'inprogress' ? '#0747A6' :  // Atlaskit "inprogress"
-    c === 'removed'                           ? '#AE2A19' :  // Atlaskit "removed"
-    c === 'new'                               ? '#5E4DB2' :  // Atlaskit "new"
+    c === 'done' || c === 'success'           ? 'var(--ds-text-success, #006644)' :  // Atlaskit "success"
+    c === 'in_progress' || c === 'inprogress' ? 'var(--ds-link-pressed, #0747A6)' :  // Atlaskit "inprogress"
+    c === 'removed'                           ? 'var(--ds-text-danger, #AE2A19)' :  // Atlaskit "removed"
+    c === 'new'                               ? 'var(--ds-background-discovery-bold, #6E5DC6)' :  // Atlaskit "new"
     c === 'moved'                             ? '#A54800' :  // Atlaskit "moved"
-    '#5E6C84';                                                // Atlaskit "default" / todo
+    'var(--ds-text-subtle, #44546F)';                                                // Atlaskit "default" / todo
   return (
     <div className="flex items-center gap-2 sticky top-0 z-10" style={{
       height: 48,                                       /* Jira parity: 48px */

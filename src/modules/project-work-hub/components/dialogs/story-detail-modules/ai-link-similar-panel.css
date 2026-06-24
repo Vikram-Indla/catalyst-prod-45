@@ -56,11 +56,11 @@
   z-index: -2;
   background: conic-gradient(
     from 0deg,
-    #2684ff 0deg,
-    #6554c0 90deg,
-    #ff5630 180deg,
-    #ffab00 270deg,
-    #2684ff 360deg
+    var(--ds-link, #0C66E4) 0deg,
+    var(--ds-background-discovery-bold, #6554C0) 90deg,
+    var(--ds-background-danger-bold, #C9372C) 180deg,
+    var(--ds-background-warning-bold, #E2B203) 270deg,
+    var(--ds-link, #0C66E4) 360deg
   );
   animation: als-rotate 3s linear infinite;
   pointer-events: none;
@@ -98,20 +98,20 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #6554c0;
+  background: var(--ds-background-discovery-bold, #6554C0);
   animation: als-bounce 1.2s infinite ease-in-out;
 }
 
 .als-bouncing-dots span:nth-child(1) {
-  background: #2684ff;
+  background: var(--ds-link, #0C66E4);
   animation-delay: 0s;
 }
 .als-bouncing-dots span:nth-child(2) {
-  background: #6554c0;
+  background: var(--ds-background-discovery-bold, #6554C0);
   animation-delay: 0.15s;
 }
 .als-bouncing-dots span:nth-child(3) {
-  background: #ff5630;
+  background: var(--ds-background-danger-bold, #C9372C);
   animation-delay: 0.3s;
 }
 

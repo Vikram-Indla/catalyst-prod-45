@@ -5,8 +5,8 @@ import { FormSelect } from './FormSelect';
 const EPIC_STATES: EpicState[] = [
   { id: 1, name: 'Funnel', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' },
   { id: 2, name: 'Backlog', color: 'var(--cp-primary-60, #0052CC)' },
-  { id: 3, name: 'In Progress', color: '#0065FF' },
-  { id: 4, name: 'Done', color: '#36B37E' },
+  { id: 3, name: 'In Progress', color: 'var(--ds-link, #0065FF)' },
+  { id: 4, name: 'Done', color: 'var(--ds-background-success-bold, #1F845A)' },
 ];
 
 interface ProgressIndicatorsProps {

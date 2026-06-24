@@ -18,12 +18,12 @@ const surfaces: Array<{ path: string; bannedGlyph: RegExp; label: string }> = [
   },
   {
     path: 'src/components/shared/title-translate/DescriptionTranslateBar.tsx',
-    bannedGlyph: /#1868DB/,
+    bannedGlyph: /var(--ds-link, #1868DB)/,
     label: 'drawer description chip',
   },
   {
     path: 'src/components/shared/title-translate/TitleTranslateWrapper.tsx',
-    bannedGlyph: /#1868DB/,
+    bannedGlyph: /var(--ds-link, #1868DB)/,
     label: 'drawer title chip',
   },
 ];

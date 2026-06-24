@@ -477,10 +477,10 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
       {statusTotal > 0 && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ ...type.meta, color: token('color.text', '#172B4D'), fontWeight: 500 }}>
+            <span style={{ ...type.meta, color: token('color.text', 'var(--ds-text, #172B4D)'), fontWeight: 500 }}>
               {statusTotal} {statusTotal === 1 ? 'issue' : 'issues'}
             </span>
-            <span style={{ ...type.meta, color: token('color.text.subtle', '#44546F') }}>
+            <span style={{ ...type.meta, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
               {Math.round((statusCounts.done / statusTotal) * 100)}% done
             </span>
           </div>
@@ -508,7 +508,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
                 key={b}
                 style={{
                   ...type.meta,
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 5,

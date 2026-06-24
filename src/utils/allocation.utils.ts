@@ -173,10 +173,10 @@ export function formatDateRange(start: Date, end: Date): string {
  */
 export function getAssignmentColor(color: string): string {
   const colorMap: Record<string, string> = {
-    primary: '#2563eb',
-    teal: '#0d9488',
-    orange: '#ea580c',
-    purple: '#7c3aed',
+    primary: 'var(--ds-link, #2563eb)',
+    teal: 'var(--ds-chart-teal-bold, #0d9488)',
+    orange: 'var(--ds-background-warning-bold, #E2B203)',
+    purple: 'var(--ds-background-discovery-bold, #7C3AED)',
   };
   return colorMap[color] || color || ASSIGNMENT_COLORS[0];
 }
@@ -185,7 +185,7 @@ export function getAssignmentColor(color: string): string {
  * Assign colors to assignments based on order
  */
 export function assignColorsToAssignments(assignments: Assignment[]): Assignment[] {
-  const colorOrder = ['#2563eb', '#0d9488', '#ea580c', '#7c3aed'];
+  const colorOrder = ['var(--ds-link, #2563eb)', 'var(--ds-chart-teal-bold, #0d9488)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-discovery-bold, #7C3AED)'];
   
   return assignments.map((assignment, index) => ({
     ...assignment,

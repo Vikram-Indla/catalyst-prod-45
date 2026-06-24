@@ -372,14 +372,14 @@ function CheckboxGlyph({ filled, indeterminate }: { filled: boolean; indetermina
     return (
       <svg width={14} height={14} viewBox="0 0 14 14" aria-hidden="true">
         <rect x="1" y="1" width="12" height="12" rx="2" fill="currentColor" />
-        <rect x="3.5" y="6.2" width="7" height="1.6" rx="0.8" fill="#FFFFFF" />
+        <rect x="3.5" y="6.2" width="7" height="1.6" rx="0.8" fill="var(--ds-surface, #FFFFFF)" />
       </svg>
     );
   }
   return (
     <svg width={14} height={14} viewBox="0 0 14 14" aria-hidden="true">
       <rect x="1" y="1" width="12" height="12" rx="2" fill="currentColor" />
-      <path d="M3.6 7.1l2.4 2.4 4.4-4.6" fill="none" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M3.6 7.1l2.4 2.4 4.4-4.6" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

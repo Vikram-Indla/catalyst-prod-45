@@ -22,9 +22,9 @@ interface ScreenRow {
 }
 
 const OP_BADGE: Record<string, { bg: string; text: string; label: string }> = {
-  create: { bg: '#DCFCE7', text: '#15803D', label: 'Create' },
-  edit:   { bg: '#EFF6FF', text: '#1D4ED8', label: 'Edit'   },
-  view:   { bg: '#F5F3FF', text: '#6D28D9', label: 'View'   },
+  create: { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success-bold, #1F845A)', label: 'Create' },
+  edit:   { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1d4ed8)', label: 'Edit'   },
+  view:   { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #6d28d9)', label: 'View'   },
 };
 
 function OperationCell({ op, screen }: { op: 'create' | 'edit' | 'view'; screen: string | null }) {

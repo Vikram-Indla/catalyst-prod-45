@@ -60,7 +60,7 @@ const transformPlannerTask = (row: any): PlannerTask => ({
   assigneeInitials: row.assignee?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2),
   teamId: row.workstream_id,
   teamName: row.workstream?.name,
-  teamColor: row.workstream?.color || '#6366f1',
+  teamColor: row.workstream?.color || 'var(--ds-background-discovery-bold, #6366f1)',
   startDate: row.start_date,
   dueDate: row.due_date,
   parentTaskId: row.parent_task_id ?? null,

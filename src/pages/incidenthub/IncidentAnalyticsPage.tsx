@@ -43,8 +43,8 @@ export default function IncidentAnalyticsPage() {
   };
 
   const STATUS_BAR_COLORS: Record<string, string> = {
-    open: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', triage: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', in_progress: '#0C66E4', to_committee: '#0C66E4',
-    in_review: '#0C66E4', resolved: 'var(--cp-lozenge-green-bg, #1B7F37)', closed: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', converted: 'var(--cp-lozenge-green-bg, #1B7F37)',
+    open: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', triage: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', in_progress: 'var(--ds-link, #0C66E4)', to_committee: 'var(--ds-link, #0C66E4)',
+    in_review: 'var(--ds-link, #0C66E4)', resolved: 'var(--cp-lozenge-green-bg, #1B7F37)', closed: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', converted: 'var(--cp-lozenge-green-bg, #1B7F37)',
   };
 
   if (isLoading) {
@@ -63,7 +63,7 @@ export default function IncidentAnalyticsPage() {
             { label: 'Total Incidents', value: stats.total, accent: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' },
             { label: 'MTTR', value: '\u2014', accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
           ].map(s => (
-            <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+            <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6 }}>
               <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: s.accent }}>{s.value}</div>
             </div>
@@ -73,7 +73,7 @@ export default function IncidentAnalyticsPage() {
         {/* 2x2 Chart Grid */}
         <div className="grid grid-cols-2 gap-4">
           {/* By Severity */}
-          <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+          <div className="p-4" style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6 }}>
             <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 12 }}>Incidents by Severity</h3>
             <div className="space-y-2">
               {analytics.bySeverity.map(([sev, count]) => (
@@ -89,7 +89,7 @@ export default function IncidentAnalyticsPage() {
           </div>
 
           {/* By Status */}
-          <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+          <div className="p-4" style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6 }}>
             <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 12 }}>Status Distribution</h3>
             <div className="space-y-2">
               {analytics.byStatus.map(([status, count]) => (
@@ -105,7 +105,7 @@ export default function IncidentAnalyticsPage() {
           </div>
 
           {/* By Assignee */}
-          <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+          <div className="p-4" style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6 }}>
             <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 12 }}>Assignee Workload</h3>
             <div className="space-y-2">
               {analytics.byAssignee.slice(0, 8).map(([name, count]) => (
@@ -121,8 +121,8 @@ export default function IncidentAnalyticsPage() {
           </div>
 
           {/* Resolution Trend Placeholder */}
-          <div className="p-4 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, minHeight: 180 }}>
-            <div className="text-center" style={{ backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 6, padding: '24px 32px', border: '1px solid rgba(15,23,42,0.08)' }}>
+          <div className="p-4 flex items-center justify-center" style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6, minHeight: 180 }}>
+            <div className="text-center" style={{ backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 6, padding: '24px 32px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))' }}>
               <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>[Chart] Resolution Trend over time</p>
             </div>
           </div>

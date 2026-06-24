@@ -63,10 +63,10 @@ function LogWorkForm({
   return (
     <div
       style={{
-        border: '1px solid #DFE1E6',
+        border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
         padding: 12,
-        background: '#FFFFFF',
+        background: 'var(--ds-surface, #FFFFFF)',
         display: 'flex',
         flexDirection: 'column',
         gap: 10,
@@ -84,7 +84,7 @@ function LogWorkForm({
             style={inputStyle}
           />
           {state.timeError ? (
-            <div style={{ color: '#AE2A19', fontSize: 12, marginTop: 4 }}>{state.timeError}</div>
+            <div style={{ color: 'var(--ds-text-danger, #AE2A19)', fontSize: 12, marginTop: 4 }}>{state.timeError}</div>
           ) : (
             <div style={hintStyle}>Use w, d, h, m — e.g. <code>1d 4h</code></div>
           )}
@@ -290,13 +290,13 @@ export function WorkLogPanel({ workItemId }: WorkLogPanelProps) {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            divideY: '1px solid #EBECF0',
+            divideY: '1px solid var(--ds-border, #DFE1E6)',
           } as React.CSSProperties}
         >
           {entries.map((entry) => {
             const isAuthor = user?.id === entry.author_id;
             return (
-              <div key={entry.id} style={{ borderTop: '1px solid #EBECF0' }}>
+              <div key={entry.id} style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
                 <WorkLogEntry
                   entry={entry}
                   canEdit={isAuthor || isAdmin}
@@ -326,11 +326,11 @@ const labelStyle: React.CSSProperties = {
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '6px 8px',
-  border: '1px solid #DFE1E6',
+  border: '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: 3,
   fontSize: 13,
   color: 'var(--ds-text, #172B4D)',
-  background: '#FFFFFF',
+  background: 'var(--ds-surface, #FFFFFF)',
   outline: 'none',
 };
 
@@ -345,7 +345,7 @@ const btnPrimary: React.CSSProperties = {
   fontSize: 13,
   fontWeight: 500,
   background: 'var(--ds-link, #0C66E4)',
-  color: '#FFFFFF',
+  color: 'var(--ds-text-inverse, #FFFFFF)',
   border: 'none',
   borderRadius: 3,
   cursor: 'pointer',

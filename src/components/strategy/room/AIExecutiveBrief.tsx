@@ -20,13 +20,13 @@ import { catalystToast } from '@/lib/catalystToast';
 
 const TOKENS = `
 [data-sri] {
-  --sri-ink:#09090B; --sri-ink-2:#18181B; --sri-ink-3:#3F3F46;
-  --sri-ink-m:#71717A;
-  --sri-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --sri-bg-2:#FAFAFA; --sri-bg-3:#F4F4F5;
-  --sri-bdr:#E4E4E7; --sri-bdr-s:#D4D4D8;
-  --sri-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --sri-ai-d:#1E40AF; --sri-ai-bg:var(--ds-background-selected, #EFF6FF);
-  --sri-ai-bg2:#DBEAFE; --sri-ai-bdr:#93C5FD; --sri-ai-m:var(--ds-text-brand, #3B82F6);
-  --sri-green:var(--ds-text-success, var(--cp-success, #16A34A)); --sri-green-t:#11853D; --sri-green-bg:#F0FDF4;
+  --sri-ink:var(--ds-text, #172B4D); --sri-ink-2:var(--ds-text, #172B4D); --sri-ink-3:var(--ds-text-subtle, #44546F);
+  --sri-ink-m:var(--ds-text-subtlest, #626F86);
+  --sri-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --sri-bg-2:var(--ds-surface-sunken, #FAFAFA); --sri-bg-3:var(--ds-surface-sunken, #F7F8F9);
+  --sri-bdr:var(--ds-border, #DFE1E6); --sri-bdr-s:var(--ds-border, #DFE1E6);
+  --sri-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --sri-ai-d:var(--ds-link-pressed, #0747A6); --sri-ai-bg:var(--ds-background-selected, #EFF6FF);
+  --sri-ai-bg2:var(--ds-background-information, #E9F2FF); --sri-ai-bdr:var(--ds-background-information-bold, #0C66E4); --sri-ai-m:var(--ds-text-brand, #3B82F6);
+  --sri-green:var(--ds-text-success, var(--cp-success, #16A34A)); --sri-green-t:#11853D; --sri-green-bg:var(--ds-background-success, #DFFCF0);
   --sri-teal-t:#0A8277;
   --sri-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger, #FEF2F2);
   --sri-r:4px; --sri-r2:6px; --sri-r3:8px; --sri-r4:12px; --sri-pill:9999px;
@@ -36,10 +36,10 @@ const TOKENS = `
 
 /* ── DARK MODE — Dark mode overrides ── */
 .dark [data-sri] , [data-theme="dark"] [data-sri] {
-  --sri-ink: rgba(255,255,255,0.96);
-  --sri-ink-2: rgba(255,255,255,0.82);
-  --sri-ink-3: rgba(255,255,255,0.75);
-  --sri-ink-m: rgba(255,255,255,0.70);
+  --sri-ink: var(--ds-surface, rgba(255,255,255,0.96));
+  --sri-ink-2: var(--ds-surface, rgba(255,255,255,0.82));
+  --sri-ink-3: var(--ds-surface, rgba(255,255,255,0.75));
+  --sri-ink-m: var(--ds-surface, rgba(255,255,255,0.70));
   --sri-bg: var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A));
   --sri-bg-2: var(--ds-surface-overlay, #1F1F1F);
   --sri-bg-3: var(--ds-border, var(--cp-ink-1, #2E2E2E));
@@ -47,17 +47,17 @@ const TOKENS = `
   --sri-bdr-s: var(--ds-border-bold, #454545);
   --sri-ai: var(--ds-text-brand, #3B82F6);
   --sri-ai-d: var(--ds-text-brand, #60A5FA);
-  --sri-ai-bg: rgba(59,130,246,0.08);
-  --sri-ai-bg2: rgba(59,130,246,0.12);
-  --sri-ai-bdr: rgba(59,130,246,0.16);
+  --sri-ai-bg: var(--ds-background-information-bold, rgba(59,130,246,0.08));
+  --sri-ai-bg2: var(--ds-background-information-bold, rgba(59,130,246,0.12));
+  --sri-ai-bdr: var(--ds-background-information-bold, rgba(59,130,246,0.16));
   --sri-ai-m: var(--ds-text-brand, #60A5FA);
-  --sri-green: #4ADE80;
-  --sri-green-t: #4ADE80;
-  --sri-green-bg: rgba(74,222,128,0.08);
-  --sri-teal-t: #5EEAD4;
+  --sri-green: var(--ds-background-success, #DFFCF0);
+  --sri-green-t: var(--ds-background-success, #DFFCF0);
+  --sri-green-bg: var(--ds-background-success-bold, rgba(74,222,128,0.08));
+  --sri-teal-t: var(--ds-background-success, #DCFFF1);
   --sri-red: var(--ds-border-danger, #FCA5A5);
   --sri-red-t: var(--ds-border-danger, #FCA5A5);
-  --sri-red-bg: rgba(239,68,68,0.10);
+  --sri-red-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
 }
 
 [data-sri] .sri-chain-row:hover { background: var(--sri-bg-2); }

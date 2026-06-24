@@ -81,11 +81,11 @@ const STATUS_DISPLAY: Record<string, { dot: string; bg: string; text: string; la
   planned:  { dot: 'var(--ds-text-subtlest, #94a3b8)', bg: 'var(--ds-surface-sunken, #f1f5f9)', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
   planning: { dot: 'var(--ds-text-subtlest, #94a3b8)', bg: 'var(--ds-surface-sunken, #f1f5f9)', text: 'var(--ds-text-subtle, #475569)', label: 'Planning' },
   active:   { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: 'var(--ds-background-information, #dbeafe)', text: 'var(--ds-text-discovery, #1e40af)', label: 'Active' },
-  development: { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', label: 'Development' },
-  staging:  { dot: 'var(--ds-text-discovery, #8b5cf6)', bg: 'rgba(139,92,246,0.1)', text: 'var(--ds-text-discovery, #8b5cf6)', label: 'Staging' },
-  testing:  { dot: 'var(--ds-text-warning, #d97706)', bg: 'rgba(217,119,6,0.1)', text: 'var(--ds-text-warning, #d97706)', label: 'Testing' },
+  development: { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: 'var(--ds-background-information, rgba(37,99,235,0.1))', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', label: 'Development' },
+  staging:  { dot: 'var(--ds-text-discovery, #8b5cf6)', bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.1))', text: 'var(--ds-text-discovery, #8b5cf6)', label: 'Staging' },
+  testing:  { dot: 'var(--ds-text-warning, #d97706)', bg: 'var(--ds-background-warning, rgba(217,119,6,0.1))', text: 'var(--ds-text-warning, #d97706)', label: 'Testing' },
   uat:      { dot: 'var(--ds-text-warning, #f97316)', bg: 'rgba(249,115,22,0.1)', text: 'var(--ds-text-warning, #f97316)', label: 'UAT' },
-  released: { dot: 'var(--ds-text-success, #0d9488)', bg: 'rgba(13,148,136,0.1)', text: 'var(--ds-text-success, #0d9488)', label: 'Released' },
+  released: { dot: 'var(--ds-text-success, #0d9488)', bg: 'var(--ds-background-success, rgba(13,148,136,0.1))', text: 'var(--ds-text-success, #0d9488)', label: 'Released' },
 };
 
 function getStatusConfig(status: string) {
@@ -539,7 +539,7 @@ export default function AllReleasesPage() {
   return (
     <div className="all-releases-page flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 52px)' }}>
       {/* ═══ PAGE HEADER (52px) ═══ */}
-      <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+      <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>
         <div className="flex items-center gap-3">
           <CatalystPageHeader title="All Releases" />
           <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--ds-text-subtlest, #94a3b8)' }}>{releases.length} releases</span>
@@ -550,12 +550,12 @@ export default function AllReleasesPage() {
             <button
               onClick={() => setIsExportDropdownOpen(p => !p)}
               className="flex items-center gap-1.5 transition-colors"
-              style={{ height: '32px', padding: '8px 12px', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', background: 'var(--bg-app, #fff)', fontSize: '13px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}
+              style={{ height: '32px', padding: '8px 12px', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', fontSize: '13px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}
             >
               <Download className="w-3.5 h-3.5" /> Export
             </button>
             {isExportDropdownOpen && (
-              <div className="absolute right-0 mt-1 z-50" style={{ background: 'var(--bg-app, #fff)', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '4px', minWidth: '200px' }}>
+              <div className="absolute right-0 mt-1 z-50" style={{ background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px', boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.1))', padding: '4px', minWidth: '200px' }}>
                 <DropdownItem icon={<FileText className="w-3.5 h-3.5" />} label="Export as CSV" onClick={handleExportCSV} />
                 <DropdownItem icon={<FileSpreadsheet className="w-3.5 h-3.5" />} label="Export as Excel" onClick={() => { catalystToast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
                 <DropdownItem icon={<FileDown className="w-3.5 h-3.5" />} label="Export as PDF" onClick={() => { catalystToast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
@@ -579,7 +579,7 @@ export default function AllReleasesPage() {
 
       {/* ═══ STAT STRIP (48px) ═══ */}
       <div className="flex items-center px-6" style={{ height: '48px', flexShrink: 0 }}>
-        <div className="flex items-center justify-between w-full" style={{ border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px', background: 'var(--bg-app, #fff)', padding: '6px 16px' }}>
+        <div className="flex items-center justify-between w-full" style={{ border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', padding: '6px 16px' }}>
           <div className="flex items-center" style={{ gap: '16px' }}>
             <StatItem number={statCounts.total} label="Total" />
             <StatItem number={statCounts.planning} label="Planning" dotColor="var(--ds-text-subtlest, #94a3b8)" />
@@ -591,8 +591,8 @@ export default function AllReleasesPage() {
           <button
             onClick={() => setIsAIDrawerOpen(true)}
             className="flex items-center gap-1.5 transition-colors"
-            style={{ border: '1px solid rgba(139,92,246,0.3)', borderRadius: '16px', padding: '4px 12px', color: 'var(--ds-text-discovery, #8b5cf6)', fontSize: '12px', fontWeight: 600, background: 'transparent', cursor: 'pointer' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.05)')}
+            style={{ border: '1px solid var(--ds-background-discovery-bold, rgba(139,92,246,0.3))', borderRadius: '16px', padding: '4px 12px', color: 'var(--ds-text-discovery, #8b5cf6)', fontSize: '12px', fontWeight: 600, background: 'transparent', cursor: 'pointer' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-discovery-bold, rgba(139,92,246,0.05))')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <Sparkles className="w-3 h-3" /> AI Insights
@@ -681,7 +681,7 @@ export default function AllReleasesPage() {
         <button
           onClick={() => setSortDirection(d => d === 'asc' ? 'desc' : 'asc')}
           className="flex items-center gap-1 transition-colors"
-          style={{ fontSize: '13px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', background: 'none', border: 'none', cursor: 'pointer' }}
+          style={{ fontSize: '13px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', background: 'none', border: 'none', cursor: 'pointer' }}
         >
           <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />
           {sortFieldLabel} {sortArrow}
@@ -701,7 +701,7 @@ export default function AllReleasesPage() {
               style={{
                 padding: '4px 12px', fontSize: '13px', fontWeight: 500,
                 background: activeView === v.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-surface, #fff)',
-                color: activeView === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, #64748b)',
+                color: activeView === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : 'var(--ds-text-subtlest, #64748b)',
                 border: 'none', cursor: 'pointer',
               }}
             >
@@ -725,9 +725,9 @@ export default function AllReleasesPage() {
                 Change Status <ChevronDown className="w-3 h-3" />
               </button>
               {bulkStatusDropdown && (
-                <div className="absolute top-full mt-1 left-0 z-50" style={{ background: 'var(--bg-app, #fff)', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '140px' }}>
+                <div className="absolute top-full mt-1 left-0 z-50" style={{ background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.1))', minWidth: '140px' }}>
                   {(['planned', 'active', 'testing', 'uat', 'released'] as const).map(s => (
-                    <button key={s} onClick={() => handleBulkStatus(s)} className="block w-full text-left px-3 py-1.5 transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                    <button key={s} onClick={() => handleBulkStatus(s)} className="block w-full text-left px-3 py-1.5 transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'none', background: 'transparent', cursor: 'pointer' }}>
                       {getStatusConfig(s).label}
                     </button>
                   ))}
@@ -737,11 +737,11 @@ export default function AllReleasesPage() {
             <button onClick={handleExportSelected} style={bulkBarBtnStyle}>
               Export Selected
             </button>
-            <button onClick={() => setDeleteConfirm(true)} style={{ ...bulkBarBtnStyle, borderColor: 'rgba(239,68,68,0.5)', color: 'var(--ds-border-danger, #fca5a5)' }}>
+            <button onClick={() => setDeleteConfirm(true)} style={{ ...bulkBarBtnStyle, borderColor: 'var(--ds-background-danger, rgba(239,68,68,0.5))', color: 'var(--ds-border-danger, #fca5a5)' }}>
               Delete
             </button>
             <div className="flex-1" />
-            <button onClick={() => setSelectedIds(new Set())} style={{ color: 'rgba(255,255,255,0.7)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>✕</button>
+            <button onClick={() => setSelectedIds(new Set())} style={{ color: 'var(--ds-surface, rgba(255,255,255,0.7))', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>✕</button>
           </div>
         )}
 
@@ -837,8 +837,8 @@ export default function AllReleasesPage() {
       {/* ═══ DETAIL DRAWER ═══ */}
       {detailRelease && (
         <>
-          <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setDetailRelease(null)} />
-          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '480px', background: 'var(--bg-app, #fff)', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
+          <div className="fixed inset-0 z-[200]" style={{ background: 'var(--ds-shadow-raised, rgba(0,0,0,0.3))' }} onClick={() => setDetailRelease(null)} />
+          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '480px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', boxShadow: '-4px 0 20px var(--ds-shadow-raised, rgba(0,0,0,0.1))', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
               <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{detailRelease.name}</h2>
               <button onClick={() => setDetailRelease(null)} style={closeBtnStyle}>✕</button>
@@ -865,7 +865,7 @@ export default function AllReleasesPage() {
               {detailRelease.description && (
                 <div className="mt-6">
                   <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '6px' }}>DESCRIPTION</div>
-                  <p style={{ fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', lineHeight: '1.6' }}>{detailRelease.description}</p>
+                  <p style={{ fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', lineHeight: '1.6' }}>{detailRelease.description}</p>
                 </div>
               )}
               <div className="mt-6 flex gap-2">
@@ -885,8 +885,8 @@ export default function AllReleasesPage() {
       {/* ═══ AI INSIGHTS DRAWER ═══ */}
       {isAIDrawerOpen && (
         <>
-          <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.2)' }} onClick={() => setIsAIDrawerOpen(false)} />
-          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '400px', background: 'var(--bg-app, #fff)', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
+          <div className="fixed inset-0 z-[200]" style={{ background: 'var(--ds-shadow-raised, rgba(0,0,0,0.2))' }} onClick={() => setIsAIDrawerOpen(false)} />
+          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '400px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', boxShadow: '-4px 0 20px var(--ds-shadow-raised, rgba(0,0,0,0.1))', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4" style={{ color: 'var(--ds-text-discovery, #8b5cf6)' }} />
@@ -932,12 +932,12 @@ export default function AllReleasesPage() {
       {/* ═══ DELETE CONFIRM ═══ */}
       {deleteConfirm && (
         <>
-          <div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.4)' }} onClick={() => setDeleteConfirm(false)} />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '400px', background: 'var(--bg-app, #fff)', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', padding: '24px' }}>
+          <div className="fixed inset-0 z-50" style={{ background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))' }} onClick={() => setDeleteConfirm(false)} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '400px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', borderRadius: '12px', boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.15))', padding: '24px' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)', marginBottom: '8px' }}>Archive {selectedIds.size} releases?</h3>
             <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)', marginBottom: '20px' }}>These releases will be archived and hidden from the list. They can be restored later.</p>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setDeleteConfirm(false)} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => setDeleteConfirm(false)} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
               <button
                 onClick={handleBulkDelete}
                 disabled={bulkDeleteMutation.isPending}
@@ -1034,7 +1034,7 @@ const applyBtnStyle: React.CSSProperties = {
   fontSize: '12px', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer',
 };
 const bulkBarBtnStyle: React.CSSProperties = {
-  padding: '4px 10px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '4px', color: 'var(--ds-surface, #fff)', background: 'transparent', fontSize: '12px', cursor: 'pointer',
+  padding: '4px 10px', border: '1px solid var(--ds-surface, rgba(255,255,255,0.3))', borderRadius: '4px', color: 'var(--ds-surface, #fff)', background: 'transparent', fontSize: '12px', cursor: 'pointer',
 };
 const closeBtnStyle: React.CSSProperties = {
   color: 'var(--ds-text-subtlest, #64748b)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px',
@@ -1071,7 +1071,7 @@ function SortableHeader({ label, field, current, direction, onClick, style }: {
   return (
     <th
       onClick={() => onClick(field)}
-      className="cursor-pointer select-none transition-colors hover:text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]"
+      className="cursor-pointer select-none transition-colors hover:text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))]"
       style={{ ...colHeaderStyle, ...style, color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-subtlest, #64748b)' }}
     >
       {label} {isActive && <span style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>{direction === 'asc' ? '↑' : '↓'}</span>}
@@ -1162,7 +1162,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       </td>
       <td style={{ ...cellStyle, width: '80px' }}>
         {r.status === 'released' ? (
-          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--quality-high, #059669)', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>Released</span>
+          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--quality-high, var(--ds-background-success-bold, #059669))', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>Released</span>
         ) : (
           <span style={{ fontSize: '13px', fontWeight: r.daysRemaining <= 7 ? 600 : 500, color: r.daysRemaining <= 7 ? 'var(--ds-text-danger, #ef4444)' : r.daysRemaining <= 14 ? 'var(--ds-text-warning, #d97706)' : 'var(--ds-text-subtlest, #64748b)', fontFamily: 'var(--cp-font-mono)' }}>
             {r.overdue ? `-${r.daysRemaining}d` : `${r.daysRemaining}d`}
@@ -1178,7 +1178,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
             <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>Assign</span>
           </div>
         ) : (
-          <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{r.owner}</span>
+          <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{r.owner}</span>
         )}
       </td>
     </tr>
@@ -1187,7 +1187,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
 
 function CheckboxRow({ checked, label, onChange }: { checked: boolean; label: string; onChange: () => void }) {
   return (
-    <label className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ padding: '6px 12px', fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
+    <label className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ padding: '6px 12px', fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
       <input type="checkbox" checked={checked} onChange={onChange} style={{ accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />
       {label}
     </label>
@@ -1206,13 +1206,13 @@ function FilterPill({ label, active, count, isOpen, onToggle, children }: {
           height: '32px', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
           border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'}`,
           background: active ? 'var(--ds-background-information, #dbeafe)' : 'var(--ds-surface, #fff)',
-          color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+          color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
         }}
       >
         {label}{active && count > 0 ? ` (${count})` : ''} <ChevronDown className="w-3 h-3" />
       </button>
       {isOpen && (
-        <div className="absolute top-full mt-1 left-0 z-50" style={{ background: 'var(--bg-app, #fff)', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '4px', minWidth: '200px' }}>
+        <div className="absolute top-full mt-1 left-0 z-50" style={{ background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px', boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.1))', padding: '4px', minWidth: '200px' }}>
           {children}
         </div>
       )}
@@ -1225,7 +1225,7 @@ function DropdownItem({ icon, label, onClick }: { icon: React.ReactNode; label: 
     <button
       onClick={onClick}
       className="flex items-center gap-2 w-full text-left transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]"
-      style={{ padding: '8px 12px', fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '4px' }}
+      style={{ padding: '8px 12px', fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '4px' }}
     >
       {icon} {label}
     </button>
@@ -1245,7 +1245,7 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
   return (
     <div className="flex items-center justify-between" style={{ padding: '6px 0', borderBottom: '1px solid var(--ds-background-neutral, #f1f5f9)' }}>
       <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>{label}</span>
-      <span style={{ fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{value}</span>
+      <span style={{ fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{value}</span>
     </div>
   );
 }
@@ -1272,8 +1272,8 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
 
   return (
     <>
-      <div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)' }} onClick={onClose} />
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '500px', background: 'var(--bg-app, #fff)', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', animation: 'scaleIn 200ms ease' }}>
+      <div className="fixed inset-0 z-50" style={{ background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))', backdropFilter: 'blur(4px)' }} onClick={onClose} />
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '500px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', borderRadius: '12px', boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.15))', animation: 'scaleIn 200ms ease' }}>
         <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>Create New Release</h2>
           <button onClick={onClose} style={closeBtnStyle}>✕</button>
@@ -1308,7 +1308,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
           </div>
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
-          <button onClick={onClose} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={handleSubmit}
             disabled={isCreating}
@@ -1325,10 +1325,10 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
 
 // ─── Cards View ────────────────────────────────────────────────
 const HEALTH_BADGE: Record<string, { bg: string; text: string }> = {
-  critical: { bg: 'rgba(239,68,68,0.1)', text: 'var(--ds-text-danger, #ef4444)' },
-  'at-risk': { bg: 'rgba(217,119,6,0.1)', text: 'var(--ds-text-warning, #d97706)' },
-  attention: { bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  healthy: { bg: 'rgba(13,148,136,0.1)', text: 'var(--ds-text-success, #0d9488)' },
+  critical: { bg: 'var(--ds-background-danger, rgba(239,68,68,0.1))', text: 'var(--ds-text-danger, #ef4444)' },
+  'at-risk': { bg: 'var(--ds-background-warning, rgba(217,119,6,0.1))', text: 'var(--ds-text-warning, #d97706)' },
+  attention: { bg: 'var(--ds-background-information, rgba(37,99,235,0.1))', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
+  healthy: { bg: 'var(--ds-background-success, rgba(13,148,136,0.1))', text: 'var(--ds-text-success, #0d9488)' },
 };
 
 function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
@@ -1353,7 +1353,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 animation: `fadeInUp 0.3s ease both`,
                 animationDelay: `${i * 30}ms`,
               }}
-              onMouseEnter={e => { if (!selected) { e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; } }}
+              onMouseEnter={e => { if (!selected) { e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)'; e.currentTarget.style.boxShadow = '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.06))'; } }}
               onMouseLeave={e => { if (!selected) { e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'; e.currentTarget.style.boxShadow = 'none'; } }}
             >
               <input
@@ -1383,7 +1383,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 <StatusPill status={r.status} />
                 <span style={{ color: 'var(--ds-text-subtlest, #64748b)' }}><Calendar className="w-3 h-3 inline-block mr-0.5" style={{ verticalAlign: 'middle' }} /> {r.targetDate}</span>
                 {r.overdue && (
-                  <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--ds-text-danger, #ef4444)', background: 'rgba(239,68,68,0.1)', borderRadius: '8px', padding: '1px 6px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--ds-text-danger, #ef4444)', background: 'var(--ds-background-danger, rgba(239,68,68,0.1))', borderRadius: '8px', padding: '1px 6px' }}>
                     {r.daysRemaining}d overdue
                   </span>
                 )}
@@ -1394,12 +1394,12 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                     </div>
                   </div>
                 ) : (
-                  <span className="ml-auto" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontSize: '12px' }}>{r.owner}</span>
+                  <span className="ml-auto" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: '12px' }}>{r.owner}</span>
                 )}
               </div>
               <div className="flex items-center gap-4" style={{ borderTop: '1px solid var(--ds-border, #e2e8f0)', marginTop: '8px', paddingTop: '8px' }}>
                 <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #64748b)' }}>
-                  <span style={{ fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{r.testsPass}/{r.testsTotal}</span> Tests
+                  <span style={{ fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{r.testsPass}/{r.testsTotal}</span> Tests
                 </span>
                 <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #64748b)' }}>
                   <span style={{ fontWeight: 600, color: r.defects > 0 ? 'var(--ds-text-danger, #ef4444)' : 'var(--ds-text-subtlest, #64748b)' }}>{r.defects}</span> Defects
@@ -1410,7 +1410,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                       <span style={{ display: 'inline-block', width: '32px', height: '3px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden', verticalAlign: 'middle' }}>
                         <span style={{ display: 'block', width: `${r.coverage}%`, height: '100%', background: r.coverage <= 30 ? 'var(--ds-text-danger, #ef4444)' : r.coverage <= 60 ? 'var(--ds-text-warning, #d97706)' : 'var(--ds-text-success, #0d9488)', borderRadius: '4px' }} />
                       </span>
-                      <span style={{ fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{r.coverage}%</span>
+                      <span style={{ fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{r.coverage}%</span>
                     </span>
                   ) : (
                     <span style={{ fontWeight: 600, color: 'var(--ds-text-subtlest, #94a3b8)' }}>—</span>
@@ -1476,7 +1476,7 @@ function TimelineView({ releases, onBarClick }: {
         </div>
       </div>
 
-      <div className="flex flex-1 min-h-0" style={{ border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px', overflow: 'hidden', background: 'var(--bg-app, #fff)' }}>
+      <div className="flex flex-1 min-h-0" style={{ border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px', overflow: 'hidden', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))' }}>
         <div style={{ width: '260px', flexShrink: 0, borderRight: '1px solid var(--ds-border, #e2e8f0)' }}>
           <div style={{ height: '32px', background: 'var(--ds-surface-sunken, #f8fafc)', display: 'flex', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid var(--ds-border, #e2e8f0)' }}>
             <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>RELEASE</span>
@@ -1499,7 +1499,7 @@ function TimelineView({ releases, onBarClick }: {
         <div className="flex-1 overflow-x-auto relative">
           <div className="flex" style={{ height: '32px', background: 'var(--ds-surface-sunken, #f8fafc)', borderBottom: '1px solid var(--ds-border, #e2e8f0)' }}>
             {MONTHS.map(m => (
-              <div key={m} className="flex-1" style={{ minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.05em', borderRight: '1px solid #f1f5f9' }}>
+              <div key={m} className="flex-1" style={{ minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.05em', borderRight: '1px solid var(--ds-surface-sunken, #F7F8F9)' }}>
                 {m}
               </div>
             ))}
@@ -1537,9 +1537,9 @@ function TimelineView({ releases, onBarClick }: {
                 >
                   {/* Progress fill inside bar */}
                   {r.progress > 0 && !isPlanned && (
-                    <div style={{ width: `${r.progress}%`, height: '100%', background: 'rgba(255,255,255,0.35)', position: 'absolute', left: 0, top: 0 }} />
+                    <div style={{ width: `${r.progress}%`, height: '100%', background: 'var(--ds-surface, rgba(255,255,255,0.35))', position: 'absolute', left: 0, top: 0 }} />
                   )}
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: isPlanned ? 'var(--ds-text-subtlest, #94a3b8)' : 'var(--ds-surface, #fff)', padding: '0 6px', lineHeight: '24px', position: 'relative', zIndex: 1, textShadow: isPlanned ? 'none' : '0 1px 2px rgba(0,0,0,0.3)' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: isPlanned ? 'var(--ds-text-subtlest, #94a3b8)' : 'var(--ds-surface, #fff)', padding: '0 6px', lineHeight: '24px', position: 'relative', zIndex: 1, textShadow: isPlanned ? 'none' : '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))' }}>
                     {r.progress}%
                   </span>
                 </div>
@@ -1554,8 +1554,8 @@ function TimelineView({ releases, onBarClick }: {
           className="fixed z-50 pointer-events-none"
           style={{
             left: tooltipPos.x + 8, top: tooltipPos.y + 8,
-            background: 'var(--bg-app, #fff)', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '12px',
+            background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.1))', padding: '12px',
             animation: 'fadeInUp 150ms ease both', minWidth: '200px',
           }}
         >

@@ -146,11 +146,11 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
         zIndex: 9999,
         width: 260,
         borderRadius: 8,
-        background: isDark ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : '#fff',
+        background: isDark ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface, #FFFFFF)',
         border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
         boxShadow: isDark
-          ? '0 8px 24px rgba(0,0,0,0.60)'
-          : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
+          ? '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.60))'
+          : '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07)), 0 2px 4px -2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
         fontFamily: 'var(--cp-font-body)',
         overflow: 'hidden',
       }}
@@ -203,7 +203,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                   border: 'none',
                   cursor: 'pointer',
                   background: isCurrent
-                    ? isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF'
+                    ? isDark ? 'var(--ds-background-selected, #1C2B41)' : 'var(--ds-background-selected, #E9F2FF)'
                     : 'transparent',
                   fontFamily: 'var(--cp-font-body)',
                   fontSize: 13,
@@ -215,7 +215,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                 }}
                 onMouseEnter={(e) => {
                   if (!isCurrent) (e.currentTarget as HTMLElement).style.background =
-                    isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : '#F4F5F7';
+                    isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-background-neutral-subtle, #F4F5F7)';
                 }}
                 onMouseLeave={(e) => {
                   if (!isCurrent) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -227,7 +227,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                     height: 24,
                     borderRadius: 4,
                     background: p.color || 'var(--cp-blue, var(--cp-primary-60, #0052CC))',
-                    color: '#fff',
+                    color: 'var(--ds-text-inverse, #FFFFFF)',
                     fontSize: 10,
                     fontWeight: 700,
                     display: 'inline-flex',
@@ -275,7 +275,7 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
 
   return (
     <>
-      <div style={{ borderTop: `1px solid ${isDark ? 'var(--ds-border,var(--cp-ink-1, #2E2E2E))' : '#EBECF0'}`, margin: '8px 12px 4px' }} />
+      <div style={{ borderTop: `1px solid ${isDark ? 'var(--ds-border,var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, #DFE1E6)'}`, margin: '8px 12px 4px' }} />
 
       <button
         onClick={() => setOpen((p) => !p)}
@@ -330,7 +330,7 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.background =
-                  isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : '#F4F5F7';
+                  isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-background-neutral-subtle, #F4F5F7)';
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLElement).style.background = 'transparent';

@@ -57,7 +57,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     cardBorder: 'transparent',
     cardHoverBg: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
     /* jira-compare 2026-05-08 — Jira card shadow: very subtle elevation 1
-       (0 1px 2px rgba(9,30,66,0.25) rest, 0 2px 4px on hover). The prior
+       (0 1px 2px var(--ds-shadow-raised, rgba(9,30,66,0.25)) rest, 0 2px 4px on hover). The prior
        8px/12px value was 4× too heavy and made cards look like floating modals.
        F2: wrapped in ADS shadow tokens as canonical fallback. */
     cardShadowRest: 'var(--ds-shadow-raised, rgba(9,30,66,0.25) 0 1px 2px 0, rgba(9,30,66,0.31) 0 0 1px 0)',

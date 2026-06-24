@@ -49,8 +49,8 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
       ref={ref}
       style={{
         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 180,
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6,
-        boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(0,0,0,0.10)', zIndex: 9999, overflow: 'hidden',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6,
+        boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.10))', zIndex: 9999, overflow: 'hidden',
       }}
     >
       {PRIORITIES.map((p) => {

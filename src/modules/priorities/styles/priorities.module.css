@@ -8,10 +8,10 @@
    
    Catalyst V5 Compliant:
    ✅ Primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))
-   ✅ Teal: #0d9488
+   ✅ Teal: var(--ds-chart-teal-bold, #0d9488)
    ✅ Warning: var(--ds-text-warning, #d97706) / var(--ds-text-warning, #f59e0b)
    ✅ Danger: var(--ds-text-danger, #ef4444)
-   ❌ BANNED: Golden Hour (#C69C6D, #5C7C5C, #8B7355, #D4B896)
+   ❌ BANNED: Golden Hour (var(--ds-text-subtle, #C69C6D), var(--ds-text-subtle, #5C7C5C), var(--ds-text-subtle, #8B7355), #D4B896)
    ============================================================ */
 
 /* ======================== TOKENS ======================== */
@@ -21,64 +21,64 @@
   --pri-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --pri-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --pri-primary-light: var(--ds-background-selected, #eff6ff);
-  --pri-primary-100: #dbeafe;
-  --pri-primary-200: #bfdbfe;
+  --pri-primary-100: var(--ds-background-information, #E9F2FF);
+  --pri-primary-200: var(--ds-background-information, #E9F2FF);
 
-  --pri-success: #10b981;
+  --pri-success: var(--ds-background-success-bold, #059669);
   --pri-success-light: var(--ds-background-success, #dcfce7);
   --pri-success-dark: var(--ds-text-success, #16a34a);
 
   --pri-warning: var(--ds-text-warning, #f59e0b);
-  --pri-warning-light: #fef3c7;
+  --pri-warning-light: var(--ds-background-warning, #FFF7D6);
   --pri-warning-dark: var(--ds-text-warning, #d97706);
 
   --pri-danger: var(--ds-text-danger, #ef4444);
   --pri-danger-light: var(--ds-background-danger, #fef2f2);
   --pri-danger-dark: var(--ds-text-danger, #dc2626);
 
-  --pri-teal: #0d9488;
+  --pri-teal: var(--ds-chart-teal-bold, #0d9488);
 
   /* Gray Scale */
-  --pri-gray-50:  #f9fafb;
-  --pri-gray-100: #f3f4f6;
+  --pri-gray-50:  var(--ds-surface-sunken, #F7F8F9);
+  --pri-gray-100: var(--ds-background-neutral-subtle, #F7F8F9);
   --pri-gray-200: var(--ds-border, #e5e7eb);
-  --pri-gray-300: #d1d5db;
-  --pri-gray-400: #9ca3af;
-  --pri-gray-500: #6b7280;
-  --pri-gray-600: #4b5563;
-  --pri-gray-700: #374151;
-  --pri-gray-800: #1f2937;
-  --pri-gray-900: #111827;
+  --pri-gray-300: var(--ds-border, #DFE1E6);
+  --pri-gray-400: var(--ds-text-disabled, #8590A2);
+  --pri-gray-500: var(--ds-text-subtlest, #626F86);
+  --pri-gray-600: var(--ds-text-subtlest, #626F86);
+  --pri-gray-700: var(--ds-text-subtle, #44546F);
+  --pri-gray-800: var(--ds-text, #172B4D);
+  --pri-gray-900: var(--ds-text, #172B4D);
 
   /* Workstream Colors */
-  --pri-ws-senaie: #06b6d4;
-  --pri-ws-catalyst: #8b5cf6;
-  --pri-ws-tahommona: #6366f1;
-  --pri-ws-delivery: #f97316;
-  --pri-ws-mim: #ec4899;
-  --pri-ws-standalone: #84cc16;
-  --pri-ws-dataai: #14b8a6;
+  --pri-ws-senaie: var(--ds-icon-information, #1D7AFC);
+  --pri-ws-catalyst: var(--ds-background-discovery-bold, #8b5cf6);
+  --pri-ws-tahommona: var(--ds-background-discovery-bold, #6366f1);
+  --pri-ws-delivery: var(--ds-background-warning-bold, #f97316);
+  --pri-ws-mim: var(--ds-background-accent-magenta-bolder, #ec4899);
+  --pri-ws-standalone: var(--ds-background-success-bold, #1F845A);
+  --pri-ws-dataai: var(--ds-background-accent-teal-bolder, #14b8a6);
 
   /* Label Colors (Outline Style) */
   --pri-label-finance: var(--ds-text-brand, #3b82f6);
   --pri-label-urgent: var(--ds-text-danger, #ef4444);
-  --pri-label-tech: #8b5cf6;
-  --pri-label-sales: #f97316;
-  --pri-label-hr: #ec4899;
+  --pri-label-tech: var(--ds-background-discovery-bold, #8b5cf6);
+  --pri-label-sales: var(--ds-background-warning-bold, #f97316);
+  --pri-label-hr: var(--ds-background-accent-magenta-bolder, #ec4899);
   --pri-label-q1: var(--ds-text-success, #22c55e);
 
   /* Surfaces */
-  --pri-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --pri-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --pri-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --pri-bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --pri-bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --pri-border: var(--ds-border, #e5e7eb);
-  --pri-border-light: #f3f4f6;
+  --pri-border-light: var(--ds-background-neutral-subtle, #F7F8F9);
 
   /* Shadows */
-  --pri-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --pri-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --pri-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --pri-shadow-lift: 0 8px 20px rgba(0, 0, 0, 0.10);
+  --pri-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
+  --pri-shadow-md: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  --pri-shadow-lg: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
+  --pri-shadow-lift: 0 8px 20px var(--ds-shadow-raised, rgba(0, 0, 0, 0.10));
 
   /* Radius */
   --pri-radius-sm: 6px;
@@ -319,7 +319,7 @@
 
 .pri-search-input:focus {
   border-color: var(--pri-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
 
 .pri-filters {
@@ -709,7 +709,7 @@
   border-radius: 4px;
   padding: 2px 6px;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
 
 .pri-card-meta {
@@ -1069,7 +1069,7 @@
   gap: 12px;
   padding: 12px 16px;
   background: var(--pri-warning-light);
-  border: 1px solid #fde68a;
+  border: 1px solid var(--ds-background-warning, #FFF7D6);
   border-radius: var(--pri-radius-md);
   margin-bottom: 16px;
 }
@@ -1098,7 +1098,7 @@
 .pri-panel-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
   z-index: 90;
   opacity: 0;
   pointer-events: none;
@@ -1188,7 +1188,7 @@
 
 .pri-field-input:focus {
   border-color: var(--pri-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
 
 .pri-field-textarea {
@@ -1209,7 +1209,7 @@
 .pri-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
   z-index: 200;
   display: flex;
   align-items: center;
@@ -1534,5 +1534,5 @@
 }
 
 /* DARK MODE OVERRIDES — added 2026-04-30 sweep */
-:global(.dark) .priorityRow { background: var(--cp-bg-elevated, #22272B); color: var(--cp-text-primary, var(--cp-bg-neutral, #EDEDED)); }
-:global(.dark) .priorityRow:hover { background: var(--cp-interact-hover, var(--cp-ink-1, #2E2E2E)); }
+:global(.dark) .priorityRow { background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)); color: var(--cp-text-primary, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4))); }
+:global(.dark) .priorityRow:hover { background: var(--cp-interact-hover, var(--cp-ink-1, var(--ds-background-neutral, #F1F2F4))); }

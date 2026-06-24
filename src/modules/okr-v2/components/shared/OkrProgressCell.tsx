@@ -16,7 +16,7 @@ interface OkrProgressCellProps {
 
 // Catalyst Design System — Progress bar color based on percentage threshold
 function getProgressBarColor(actual?: number | null): string {
-  if (actual == null) return 'bg-[#e5e5e5]';
+  if (actual == null) return 'bg-[var(--ds-border, #DFE1E6)]';
   if (actual >= 80) return 'bg-[var(--ds-text-success,#22c55e)]';  // Success - On Track
   if (actual >= 50) return 'bg-[var(--ds-text-warning,#f59e0b)]';  // Warning - At Risk
   return 'bg-[var(--ds-text-danger,#ef4444)]';                     // Danger - Off Track
@@ -68,7 +68,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
       {/* Progress bar - fixed width, left-aligned with visible track */}
       <div className={cn(
         "h-2 rounded-full overflow-hidden flex-shrink-0",
-        isDark ? 'bg-[var(--ds-border,var(--cp-ink-1, #292929))]' : 'bg-[#e5e5e5]',
+        isDark ? 'bg-[var(--ds-border,var(--cp-ink-1, #292929))]' : 'bg-[var(--ds-border, #DFE1E6)]',
         compact ? 'w-20' : 'w-28'
       )}>
         <div
@@ -78,7 +78,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
       </div>
 
       {/* Percentage */}
-      <span className={cn("text-[14px] font-semibold flex-shrink-0 min-w-[36px] text-left tabular-nums", isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[#171717]')}>
+      <span className={cn("text-[14px] font-semibold flex-shrink-0 min-w-[36px] text-left tabular-nums", isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text, #172B4D)]')}>
         {Math.round(actual)}%
       </span>
       

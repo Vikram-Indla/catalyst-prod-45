@@ -35,7 +35,7 @@ export function BulkActionBar({
 
   return (
     <div style={{
-      height: 48, background: '#1E293B', display: 'flex', alignItems: 'center', gap: 8,
+      height: 48, background: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: 8,
       padding: '0 16px', fontFamily: 'var(--cp-font-body)', position: 'sticky', top: 0, zIndex: 50,
       borderRadius: '8px 8px 0 0',
     }}>
@@ -105,7 +105,7 @@ export function BulkActionBar({
           }}>Yes, delete</button>
           <button onClick={() => setConfirmDelete(false)} style={{
             fontSize: 11, padding: '4px 10px', borderRadius: 4,
-            background: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', border: '1px solid #475569', cursor: 'pointer',
+            background: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', border: '1px solid var(--ds-text-subtle, #44546F)', cursor: 'pointer',
           }}>Cancel</button>
         </div>
       ) : (
@@ -124,7 +124,7 @@ function BulkBtn({ icon: Icon, label, onClick, danger }: {
       height: 30, padding: '0 10px', fontSize: 12, fontWeight: 500,
       fontFamily: 'var(--cp-font-body)',
       color: danger ? 'var(--ds-border-danger, #FCA5A5)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-      background: 'transparent', border: '1px solid #475569', borderRadius: 4,
+      background: 'transparent', border: '1px solid var(--ds-text-subtle, #44546F)', borderRadius: 4,
       cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
     }}
       onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))')}

@@ -346,7 +346,7 @@ export default function ProjectListPage() {
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <Star size={16} style={{ color: T.t3 }} fill={starredIds.has(ctxMenu.project.id) ? '#EAB308' : 'none'} />
+              <Star size={16} style={{ color: T.t3 }} fill={starredIds.has(ctxMenu.project.id) ? 'var(--ds-background-warning-bold, #E2B203)' : 'none'} />
               {starredIds.has(ctxMenu.project.id) ? 'Unstar' : 'Star'}
             </button>
             <div style={{ height: 1, background: T.border, margin: '4px 0' }} />

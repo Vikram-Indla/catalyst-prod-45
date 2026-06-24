@@ -190,7 +190,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
       <span style={{ display: 'flex', flexDirection: 'column', gap: '1px', minWidth: 0, flex: 1 }}>
         <span
           style={{
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
             fontWeight: 400,
             fontSize: '13px',
             lineHeight: '18px',
@@ -203,7 +203,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         </span>
         <span
           style={{
-            color: token('color.text.subtlest', '#626F86'),
+            color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
             fontWeight: 400,
             fontSize: token('font.size.050', '11px'),
             lineHeight: '14px',
@@ -307,7 +307,7 @@ function SpaceGroupHeader({
       >
         <span
           style={{
-            color: token('color.text', '#292A2E'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
             fontWeight: 500,
             fontSize: token('font.size.100', '14px'),
             lineHeight: '20px',
@@ -321,7 +321,7 @@ function SpaceGroupHeader({
           <span
             style={{
               flexShrink: 0,
-              color: token('color.text.subtlest', '#626F86'),
+              color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               fontWeight: 400,
               fontSize: token('font.size.075', '12px'),
               lineHeight: '20px',
@@ -479,16 +479,16 @@ export default function HomeSidebar({
       // Border color per hub — matches the colored square icons in the hub switcher (Variant A: stroke only).
       const HUB_BORDER_COLORS: Record<string, string> = {
         home:     '#4A7FE0',
-        strategy: '#8B5CF6',
-        ideation: '#F59E0B',
+        strategy: 'var(--ds-background-discovery-bold, #8b5cf6)',
+        ideation: 'var(--ds-background-warning-bold, #f59e0b)',
         product:  '#38BDF8',
-        project:  '#14B8A6',
-        release:  '#EC4899',
-        test:     '#22C55E',
-        incident: '#EF4444',
-        task:     '#D97706',
-        plan:     '#6366F1',
-        wiki:     '#374151',
+        project:  'var(--ds-background-accent-teal-bolder, #14b8a6)',
+        release:  'var(--ds-background-accent-magenta-bolder, #ec4899)',
+        test:     'var(--ds-background-success-bold, #1F845A)',
+        incident: 'var(--ds-background-danger-bold, #ef4444)',
+        task:     'var(--ds-background-warning-bold, #d97706)',
+        plan:     'var(--ds-background-discovery-bold, #6366f1)',
+        wiki:     'var(--ds-text-subtle, #44546F)',
       };
 
       const hubItems: SidebarMenuItem[] = HUB_NAV_ITEMS.map((hub) => ({

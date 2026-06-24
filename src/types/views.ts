@@ -54,7 +54,7 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
     // neutral — StatusLozenge grey (§5)
     label: 'Backlog',
     color: 'var(--ds-text-subtle, #42526E)',
-    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
     textColor: 'var(--ds-text-subtle, #42526E)'
   },
   design: {
@@ -68,7 +68,7 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
   ready_for_dev: {
     // information / StatusLozenge blue (§5)
     label: 'Ready for Dev',
-    color: 'var(--cp-primary-60, #0052CC)',
+    color: 'var(--cp-primary-60, var(--ds-link, #0052CC))',
     bgColor: 'var(--ds-background-information, #DEEBFF)',
     textColor: 'var(--ds-background-information-bold, #0747A6)',
     wipLimit: 5
@@ -122,7 +122,7 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
     // neutral
     label: 'On Hold',
     color: 'var(--ds-text-subtle, #42526E)',
-    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
     textColor: 'var(--ds-text-subtle, #42526E)'
   }
 };
@@ -159,7 +159,7 @@ export const PRIORITY_CONFIG: Record<Priority, {
     // neutral
     label: 'Low',
     color: 'var(--ds-text-subtle, #42526E)',
-    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'
+    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))'
   }
 };
 
@@ -189,7 +189,7 @@ export const WORK_ITEM_CONFIG: Record<WorkItemType, {
   feature: {
     // information
     label: 'Feature',
-    color: 'var(--cp-primary-60, #0052CC)',
+    color: 'var(--cp-primary-60, var(--ds-link, #0052CC))',
     bgColor: 'var(--ds-background-information, #DEEBFF)',
     icon: 'Package'
   },
@@ -243,7 +243,7 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     // information
     label: 'Relates To',
     description: 'Related work item',
-    color: 'var(--cp-primary-60, #0052CC)',
+    color: 'var(--cp-primary-60, var(--ds-link, #0052CC))',
     bgColor: 'var(--ds-background-information, #DEEBFF)',
     icon: 'Link2',
     inverse: 'relates_to'
@@ -271,7 +271,7 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     label: 'Duplicates',
     description: 'Duplicate of another',
     color: 'var(--ds-text-subtle, #42526E)',
-    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
     icon: 'Copy',
     inverse: 'duplicates'
   }
@@ -458,11 +458,11 @@ export const WORK_ITEM_PRIORITY_CONFIG: Record<WorkItemPriority, {
   icon: string;
   sortWeight: number;
 }> = {
-  critical: { label: 'Critical', color: 'var(--cp-danger, #DC2626)', bgColor: 'var(--ds-background-danger, #FEF2F2)', borderColor: 'var(--ds-border, #FECACA)', icon: 'AlertTriangle', sortWeight: 1 },
-  high:     { label: 'High',     color: 'var(--cp-warning, #D97706)', bgColor: 'var(--ds-background-warning, #FFFBEB)', borderColor: 'var(--ds-border, #FDE68A)', icon: 'ArrowUp',       sortWeight: 2 },
-  medium:   { label: 'Medium',   color: 'var(--cp-workstream-catalyst-primary, #2563EB)', bgColor: 'var(--ds-background-information, #EFF6FF)', borderColor: 'var(--ds-border, #BFDBFE)', icon: 'Minus',         sortWeight: 3 },
-  low:      { label: 'Low',      color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', bgColor: 'var(--bg-1, #F8FAFC)', borderColor: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', icon: 'ArrowDown',     sortWeight: 4 },
-  none:     { label: 'None',     color: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))', bgColor: 'var(--bg-1, #F8FAFC)', borderColor: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', icon: 'Minus',         sortWeight: 5 },
+  critical: { label: 'Critical', color: 'var(--cp-danger, var(--ds-background-danger-bold, #dc2626))', bgColor: 'var(--ds-background-danger, #FEF2F2)', borderColor: 'var(--ds-border, #FECACA)', icon: 'AlertTriangle', sortWeight: 1 },
+  high:     { label: 'High',     color: 'var(--cp-warning, var(--ds-background-warning-bold, #d97706))', bgColor: 'var(--ds-background-warning, #FFFBEB)', borderColor: 'var(--ds-border, #FDE68A)', icon: 'ArrowUp',       sortWeight: 2 },
+  medium:   { label: 'Medium',   color: 'var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb))', bgColor: 'var(--ds-background-information, #EFF6FF)', borderColor: 'var(--ds-border, #BFDBFE)', icon: 'Minus',         sortWeight: 3 },
+  low:      { label: 'Low',      color: 'var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))', bgColor: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', borderColor: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', icon: 'ArrowDown',     sortWeight: 4 },
+  none:     { label: 'None',     color: 'var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2)))', bgColor: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', borderColor: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', icon: 'Minus',         sortWeight: 5 },
 };
 
 export interface WorkItemFull {

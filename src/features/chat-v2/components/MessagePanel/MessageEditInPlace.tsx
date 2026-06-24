@@ -109,7 +109,7 @@ export function MessageEditInPlace({ initialMarkdown, onCancel, onSave }: Messag
               height: 32,
               padding: '0 14px',
               background: value.trim() ? 'var(--cv2-success)' : 'transparent',
-              color: value.trim() ? '#FFFFFF' : 'var(--cv2-text-muted)',
+              color: value.trim() ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
               border: '1px solid ' + (value.trim() ? 'var(--cv2-success)' : 'var(--cv2-border-strong)'),
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',

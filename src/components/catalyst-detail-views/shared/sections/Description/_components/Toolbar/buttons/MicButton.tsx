@@ -40,7 +40,7 @@ export function MicButton({
           border: 1px solid var(--ds-border, #DFE1E6);
           border-radius: 999px;
           padding: 3px 6px;
-          box-shadow: 0 2px 8px rgba(9,30,66,0.14);
+          box-shadow: 0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14));
           white-space: nowrap;
           pointer-events: all;
           z-index: 10;

@@ -378,8 +378,8 @@ export function HierarchyMapping() {
 
       {/* Delete modal */}
       {deletingLevel !== null && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.54)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: 'var(--ds-surface-overlay, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, padding: 24, maxWidth: 400, width: '90%', boxShadow: '0 8px 28px rgba(9,30,66,0.25)' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'var(--ds-surface-overlay, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, padding: 24, maxWidth: 400, width: '90%', boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))' }}>
             <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
               Delete "{levels.find(l => l.level === deletingLevel)?.name}"?
             </h3>
@@ -399,7 +399,7 @@ export function HierarchyMapping() {
                 Cancel
               </button>
               <button onClick={() => doDelete(deletingLevel, reassignTarget)}
-                style={{ padding: '6px 16px', borderRadius: 4, fontSize: 13, border: 'none', background: 'var(--ds-background-danger-bold, #DE350B)', color: '#fff', cursor: 'pointer', fontWeight: 600 }}>
+                style={{ padding: '6px 16px', borderRadius: 4, fontSize: 13, border: 'none', background: 'var(--ds-background-danger-bold, #DE350B)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', fontWeight: 600 }}>
                 Delete level
               </button>
             </div>
@@ -416,7 +416,7 @@ export function HierarchyMapping() {
             Hierarchy levels — drag to reorder · click row to configure
           </span>
           <button onClick={() => { setAddingNew(true); setExpandedLevel(null) }}
-            style={{ fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 4, background: 'var(--ds-background-brand-bold, #0052CC)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+            style={{ fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 4, background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer' }}>
             + Add level
           </button>
         </div>
@@ -448,7 +448,7 @@ export function HierarchyMapping() {
 
                 <span style={{
                   width: 20, height: 20, borderRadius: '50%',
-                  background: badgeColor(l.level), color: '#fff',
+                  background: badgeColor(l.level), color: 'var(--ds-surface, #FFFFFF)',
                   fontSize: 10, fontWeight: 700,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>{l.level}</span>
@@ -510,7 +510,7 @@ export function HierarchyMapping() {
               placeholder="Level name (e.g. Initiative)"
               style={{ flex: 1, fontSize: 13, fontWeight: 600, padding: '4px 8px', borderRadius: 4, border: '1px solid var(--ds-border-focused, #0052CC)', background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text, #172B4D)' }} />
             <button onClick={commitAdd}
-              style={{ fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 4, background: 'var(--ds-background-brand-bold, #0052CC)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+              style={{ fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 4, background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer' }}>
               Add
             </button>
             <button onClick={() => { setAddingNew(false); setNewName('') }}
@@ -522,7 +522,7 @@ export function HierarchyMapping() {
       {/* Actions + stats */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <button onClick={handleSave} disabled={batchUpdate.isPending || !isDirty}
-          style={{ padding: '8px 20px', borderRadius: 4, fontSize: 13, fontWeight: 600, background: isDirty ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-background-disabled, #97A0AF)', color: '#fff', border: 'none', cursor: isDirty ? 'pointer' : 'not-allowed', opacity: batchUpdate.isPending ? 0.6 : 1 }}>
+          style={{ padding: '8px 20px', borderRadius: 4, fontSize: 13, fontWeight: 600, background: isDirty ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-background-disabled, #97A0AF)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: isDirty ? 'pointer' : 'not-allowed', opacity: batchUpdate.isPending ? 0.6 : 1 }}>
           {batchUpdate.isPending ? 'Saving…' : 'Apply & propagate'}
         </button>
         <button onClick={handleReset}

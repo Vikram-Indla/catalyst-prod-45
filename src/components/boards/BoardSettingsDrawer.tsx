@@ -34,7 +34,7 @@ const QUERY_PRESETS = [
 ];
 
 // ads-scanner:ignore-next-line — data value for <input type="color">, not a CSS style
-const DEFAULT_CARD_COLOR = '#0052CC';
+const DEFAULT_CARD_COLOR = 'var(--ds-link, #0052CC)';
 
 const COLOR_SWATCHES = [
   'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-icon, #525252)', 'var(--ds-background-information-bold, #0284C7)',

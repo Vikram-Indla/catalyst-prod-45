@@ -117,7 +117,7 @@ function DownloadIcon() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
         d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"
-        stroke="#42526E"
+        stroke="var(--ds-text-subtle, #42526E)"
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -143,7 +143,7 @@ export function UWVExport({ items, columns, title }: Props) {
             background: 'var(--bg-app)',
             border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
             borderRadius: 6,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16)',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
             display: 'flex',
             flexDirection: 'column',
             gap: 4,

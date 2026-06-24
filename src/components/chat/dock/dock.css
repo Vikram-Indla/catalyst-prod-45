@@ -15,7 +15,7 @@
   background: var(--ds-surface, #FFFFFF);
   border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 12px;
-  box-shadow: var(--ds-shadow-overlay, 0 16px 40px rgba(9, 30, 66, 0.22), 0 4px 12px rgba(9, 30, 66, 0.12));
+  box-shadow: var(--ds-shadow-overlay, 0 16px 40px rgba(9, 30, 66, 0.22), 0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.12)));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -51,7 +51,7 @@
   height: 2px;
   flex: 0 0 auto;
   /* ads-scanner:ignore-next-line — Caty brand AI gradient (static, no ADS token equivalent) */
-  background: linear-gradient(90deg, #F79357 0%, #F53F68 45%, #B41572 75%, #CC1E9A 100%);
+  background: linear-gradient(90deg, #F79357 0%, var(--ds-background-danger-bold, #C9372C) 45%, #B41572 75%, #CC1E9A 100%);
 }
 
 .cc-dock__titlebar {
@@ -389,7 +389,7 @@
   padding: 0;
   cursor: pointer;
   z-index: 600;
-  filter: drop-shadow(0 2px 6px rgba(9, 30, 66, 0.28)) drop-shadow(0 1px 3px rgba(9, 30, 66, 0.14));
+  filter: drop-shadow(0 2px 6px var(--ds-shadow-raised, rgba(9, 30, 66, 0.28))) drop-shadow(0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.14)));
   transition: filter 0.15s ease;
   touch-action: none;
   user-select: none;
@@ -411,7 +411,7 @@
 }
 
 .cc-fab:hover:not(.cc-fab--dragging) {
-  filter: drop-shadow(0 6px 18px rgba(9, 30, 66, 0.38)) drop-shadow(0 2px 8px rgba(9, 30, 66, 0.22));
+  filter: drop-shadow(0 6px 18px var(--ds-shadow-raised, rgba(9, 30, 66, 0.38))) drop-shadow(0 2px 8px var(--ds-shadow-raised, rgba(9, 30, 66, 0.22)));
 }
 
 .cc-fab:active:not(.cc-fab--dragging) {
@@ -1068,7 +1068,7 @@
   /* ads-scanner:ignore-next-line */
   border: 1px solid var(--ds-border, #DFE1E6);
   /* ads-scanner:ignore-next-line — Caty brand accent (pink), no ADS token equivalent */
-  border-left: 2px solid #F53F68;
+  border-left: 2px solid var(--ds-background-danger-bold, #C9372C);
   cursor: pointer;
   transition: background 0.1s;
 }
@@ -1326,7 +1326,7 @@
 
 .cc-conv-pane__ticket-summary-cta {
   background: var(--ds-background-brand-bold, #0C66E4);
-  color: #FFFFFF;
+  color: var(--ds-text-inverse, #FFFFFF);
   border: none;
   border-radius: 4px;
   padding: 3px 10px;

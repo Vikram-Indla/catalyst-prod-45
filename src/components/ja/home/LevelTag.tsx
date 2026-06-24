@@ -16,24 +16,24 @@ const LEVEL_STYLES: Record<string, { base: string; dark: string }> = {
     dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/20 dark:text-[var(--ds-text-brand,#60a5fa)]',
   },
   Portfolio: {
-    base: 'bg-[#0d9488]/12 text-[#0f766e]',
-    dark: 'dark:bg-[#0d9488]/20 dark:text-[#5eead4]',
+    base: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/12 text-[var(--ds-chart-teal-bolder, #0f766e)]',
+    dark: 'dark:bg-[var(--ds-chart-teal-bold, #0d9488)]/20 dark:text-[var(--ds-background-success, #DCFFF1)]',
   },
   Product: {
     base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/12 text-[var(--ds-background-brand-bold-hovered,#1d4ed8)]',
     dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/20 dark:text-[var(--ds-text-brand,#60a5fa)]',
   },
   Release: {
-    base: 'bg-[#0d9488]/12 text-[#0f766e]',
-    dark: 'dark:bg-[#0d9488]/20 dark:text-[#5eead4]',
+    base: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/12 text-[var(--ds-chart-teal-bolder, #0f766e)]',
+    dark: 'dark:bg-[var(--ds-chart-teal-bold, #0d9488)]/20 dark:text-[var(--ds-background-success, #DCFFF1)]',
   },
   Program: {
     base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/12 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',
     dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/20 dark:text-[var(--ds-text-brand,#60a5fa)]',
   },
   Project: {
-    base: 'bg-[#0d9488]/12 text-[#0f766e]',
-    dark: 'dark:bg-[#0d9488]/20 dark:text-[#5eead4]',
+    base: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/12 text-[var(--ds-chart-teal-bolder, #0f766e)]',
+    dark: 'dark:bg-[var(--ds-chart-teal-bold, #0d9488)]/20 dark:text-[var(--ds-background-success, #DCFFF1)]',
   },
   Planner: {
     base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/12 text-[var(--ds-background-brand-bold-hovered,#1d4ed8)]',

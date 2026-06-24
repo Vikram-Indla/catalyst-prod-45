@@ -50,7 +50,7 @@ export function T10HeaderV3({
         type="button"
         onClick={onNewList}
         className="t10-btn-new"
-        style={{ boxShadow: '0 1px 3px rgba(37, 99, 235, 0.35)' }}
+        style={{ boxShadow: '0 1px 3px var(--ds-background-information, rgba(37, 99, 235, 0.35))' }}
       >
         <Plus size={16} />
         New List

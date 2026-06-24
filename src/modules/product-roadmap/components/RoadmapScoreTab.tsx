@@ -83,7 +83,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
         else ctx.lineTo(x, y);
       }
       ctx.closePath();
-      ctx.strokeStyle = '#e4e4e7';
+      ctx.strokeStyle = 'var(--ds-border, #DFE1E6)';
       ctx.lineWidth = 1;
       ctx.stroke();
     }
@@ -94,14 +94,14 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + maxR * Math.cos(angle), cy + maxR * Math.sin(angle));
-      ctx.strokeStyle = '#d4d4d8';
+      ctx.strokeStyle = 'var(--ds-border, #DFE1E6)';
       ctx.lineWidth = 1;
       ctx.stroke();
     }
 
     // Axis labels
     ctx.font = '10px system-ui, sans-serif';
-    ctx.fillStyle = '#71717a';
+    ctx.fillStyle = 'var(--ds-text-subtlest, #626F86)';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const labelR = maxR + 16;
@@ -124,7 +124,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
       else ctx.lineTo(x, y);
     });
     ctx.closePath();
-    ctx.fillStyle = 'rgba(37, 99, 235, 0.15)';
+    ctx.fillStyle = 'var(--ds-background-information, rgba(37, 99, 235, 0.15))';
     ctx.fill();
     ctx.strokeStyle = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
     ctx.lineWidth = 2;
@@ -179,7 +179,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
         <div style={{ fontSize: '40px', fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', fontVariantNumeric: 'tabular-nums' }}>
           {computedScore.toFixed(1)}
         </div>
-        <div style={{ fontSize: '12px', color: '#71717a' }}>
+        <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #626F86)' }}>
           {computedScore >= 4.0 ? 'High Priority' : computedScore >= 3.0 ? 'Medium Priority' : computedScore >= 2.0 ? 'Low Priority' : 'Unscored'}
         </div>
       </div>
@@ -191,7 +191,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
           return (
             <div key={dim.key}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#52525b' }}>{dim.label}</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)' }}>{dim.label}</span>
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', fontVariantNumeric: 'tabular-nums' }}>
                   {Number(val).toFixed(1)}
                 </span>
@@ -209,7 +209,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
                   appearance: 'none',
                   WebkitAppearance: 'none',
                   borderRadius: '9999px',
-                  background: `linear-gradient(to right, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) ${(val / 5) * 100}%, #e4e4e7 ${(val / 5) * 100}%, #e4e4e7 100%)`,
+                  background: `linear-gradient(to right, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) ${(val / 5) * 100}%, var(--ds-border, #DFE1E6) ${(val / 5) * 100}%, var(--ds-border, #DFE1E6) 100%)`,
                   outline: 'none',
                   cursor: 'pointer',
                 }}
@@ -231,7 +231,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
         style={{
           width: '100%',
           height: '50px',
-          backgroundColor: saveMutation.isPending ? '#93c5fd' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+          backgroundColor: saveMutation.isPending ? 'var(--ds-background-information, #E9F2FF)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           fontSize: '14px',
           fontWeight: 600,

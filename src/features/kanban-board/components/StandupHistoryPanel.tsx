@@ -132,30 +132,30 @@ const SessionCard: React.FC<{ s: StandupSession; onOpenTicket: (key: string) => 
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   };
   return (
-    <div style={{ border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 8, padding: 12, marginBottom: 10, background: token('elevation.surface', '#FFFFFF') }}>
+    <div style={{ border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: 8, padding: 12, marginBottom: 10, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)') }}>
       {/* Driver + timing */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <Avatar size="small" src={s.driver_avatar_url ?? undefined} name={s.driver_name ?? 'Unknown'} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: token('color.text', '#172B4D') }}>{s.driver_name ?? 'Unknown'} drove this standup</div>
-          <div style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{s.driver_name ?? 'Unknown'} drove this standup</div>
+          <div style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
             {fmtTime(s.started_at)}–{fmtTime(s.ended_at)}{s.duration_sec ? ` · ${fmtDur(s.duration_sec)}` : ''}
           </div>
         </div>
         {s.is_valid && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {copied && <span style={{ fontSize: 11, fontWeight: 600, color: token('color.text.success', '#216E4E') }}>Copied</span>}
+            {copied && <span style={{ fontSize: 11, fontWeight: 600, color: token('color.text.success', 'var(--ds-text-success, #216E4E)') }}>Copied</span>}
             <button type="button" aria-label="Copy summary" title="Copy summary" onClick={onCopy}
               style={{ width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer' }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}>
-              <CopyIcon label="" size="small" primaryColor={token('color.icon.subtle', '#44546F')} />
+              <CopyIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} />
             </button>
             <button type="button" aria-label="Share to WhatsApp" title="Share to WhatsApp" onClick={onWhatsApp}
               style={{ width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer' }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}>
-              <WhatsAppGlyph color={token('color.icon.success', '#22A06B')} />
+              <WhatsAppGlyph color={token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)')} />
             </button>
           </div>
         )}
@@ -163,32 +163,32 @@ const SessionCard: React.FC<{ s: StandupSession; onOpenTicket: (key: string) => 
 
       {/* Invalid (< 5 min) */}
       {!s.is_valid ? (
-        <div style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), fontStyle: 'italic' }}>
+        <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), fontStyle: 'italic' }}>
           Ran under 5 minutes — no summary captured.
         </div>
       ) : (
         <>
           {genLoading && !summary && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: token('color.text.subtlest', '#626F86'), marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 10 }}>
               <Spinner size="small" /> Generating summary…
             </div>
           )}
           {summary && (
-            <div style={{ fontSize: 13, color: token('color.text', '#172B4D'), lineHeight: '18px', marginBottom: tickets.length ? 10 : 0, whiteSpace: 'pre-wrap' }}>{summary}</div>
+            <div style={{ fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '18px', marginBottom: tickets.length ? 10 : 0, whiteSpace: 'pre-wrap' }}>{summary}</div>
           )}
           {tickets.length === 0 && !summary && !genLoading && (
-            <div style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86') }}>No tracked changes by the driver.</div>
+            <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>No tracked changes by the driver.</div>
           )}
           {tickets.map((t) => (
             <div key={t.key} style={{ marginBottom: 8 }}>
               <button type="button" onClick={() => onOpenTicket(t.key)}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', padding: 0, cursor: 'pointer', fontFamily: 'inherit' }}>
                 {t.type ? <JiraIssueTypeIcon type={t.type} size={16} /> : null}
-                <span style={{ fontSize: 13, fontWeight: 600, color: token('color.link', '#0C66E4') }}>{t.key}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: token('color.link', 'var(--ds-link, #0C66E4)') }}>{t.key}</span>
               </button>
               <div style={{ paddingLeft: 22 }}>
                 {t.items.map((c, i) => (
-                  <div key={i} style={{ fontSize: 12, color: token('color.text.subtle', '#44546F'), lineHeight: '18px' }}>{changeDesc(c)}</div>
+                  <div key={i} style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), lineHeight: '18px' }}>{changeDesc(c)}</div>
                 ))}
               </div>
             </div>
@@ -221,13 +221,13 @@ export const StandupHistoryPanel: React.FC<Props> = ({ projectKey, open, onClose
 
   return createPortal(
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: token('color.blanket', 'rgba(9,30,66,0.36)'), zIndex: 9998 }} />
-      <aside style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 440, maxWidth: '92vw', background: token('elevation.surface', '#FFFFFF'), borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`, boxShadow: token('elevation.shadow.overlay', '-8px 0 24px rgba(9,30,66,0.16)'), zIndex: 9999, display: 'flex', flexDirection: 'column' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: token('color.blanket', 'var(--ds-shadow-raised, rgba(9,30,66,0.36))'), zIndex: 9998 }} />
+      <aside style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 440, maxWidth: '92vw', background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), borderLeft: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, boxShadow: token('elevation.shadow.overlay', '-8px 0 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))'), zIndex: 9999, display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 16px 12px', borderBottom: `1px solid ${token('color.border', '#091E4224')}` }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', '#172B4D') }}>Standup history</span>
+          <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>Standup history</span>
           <button type="button" aria-label="Close" onClick={onClose}
             style={{ width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer' }}>
-            <CrossIcon label="" size="medium" primaryColor={token('color.icon.subtle', '#44546F')} />
+            <CrossIcon label="" size="medium" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} />
           </button>
         </div>
 
@@ -235,14 +235,14 @@ export const StandupHistoryPanel: React.FC<Props> = ({ projectKey, open, onClose
           {isLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Spinner size="medium" /></div>
           ) : groups.length === 0 ? (
-            <div style={{ fontSize: 13, color: token('color.text.subtlest', '#626F86'), textAlign: 'center', padding: 32 }}>No standups in the last 14 days.</div>
+            <div style={{ fontSize: 13, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), textAlign: 'center', padding: 32 }}>No standups in the last 14 days.</div>
           ) : (
             groups.map(([label, daySessions]) => (
               <div key={label} style={{ marginBottom: 16 }}>
                 <button type="button" onClick={() => toggleDay(label)}
                   style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%', border: 'none', background: 'transparent', padding: '4px 0 8px', cursor: label === 'Today' ? 'default' : 'pointer', fontFamily: 'inherit' }}>
-                  {label !== 'Today' && (isCollapsed(label) ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon.subtle', '#44546F')} /> : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', '#44546F')} />)}
-                  <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: token('color.text.subtlest', '#626F86') }}>{label}</span>
+                  {label !== 'Today' && (isCollapsed(label) ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} /> : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} />)}
+                  <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>{label}</span>
                   <span style={{ flex: 1, height: 1, background: token('color.border', '#091E4224'), marginLeft: 8 }} />
                 </button>
                 {!isCollapsed(label) && daySessions.map((s) => <SessionCard key={s.id} s={s} onOpenTicket={openDetail} />)}

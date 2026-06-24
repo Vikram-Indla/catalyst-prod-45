@@ -170,7 +170,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         {idea.theme && (
           <span style={{
             background: 'var(--cp-primary-light, #EFF6FF)',
-            color: isDark ? '#93C5FD' : '#1E40AF',
+            color: isDark ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--ds-link-pressed, #1e40af)',
             padding: '2px 6px', borderRadius: '4px',
             fontSize: '10px', fontWeight: 600, maxWidth: '160px',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -208,7 +208,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {isConverted && initLink && (
         <div style={{
           marginTop: '8px', background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))',
-          border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
+          border: `1px solid ${isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : '#B7EBD1'}`,
           borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600,
         }}>
           {initLink}

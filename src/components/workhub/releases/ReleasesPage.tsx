@@ -71,7 +71,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
         <div style={{
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
           background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 12,
-          boxShadow: '0 8px 24px rgba(0,0,0,.12)', zIndex: 9999,
+          boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,.12))', zIndex: 9999,
           minWidth: 240, maxHeight: 320, overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
         }}>
@@ -272,9 +272,9 @@ export function ReleasesPage() {
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '3px 10px', borderRadius: 9999,
               fontSize: 11, fontWeight: 600,
-              background: chip.type === 'project' ? '#f0fdf4' : 'var(--cp-primary-5)',
-              color: chip.type === 'project' ? '#15803d' : 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-              border: `1px solid ${chip.type === 'project' ? '#bbf7d0' : 'var(--cp-primary-20)'}`,
+              background: chip.type === 'project' ? 'var(--ds-background-success, #DFFCF0)' : 'var(--cp-primary-5)',
+              color: chip.type === 'project' ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
+              border: `1px solid ${chip.type === 'project' ? 'var(--ds-background-success, #DFFCF0)' : 'var(--cp-primary-20)'}`,
             }}>
               {chip.type === 'project' ? <FolderGit2 size={11} /> : <Milestone size={11} />}
               {chip.label}

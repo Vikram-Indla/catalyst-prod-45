@@ -642,14 +642,14 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
                 // Replaces the previous hand-rolled green "✓" circle which was
                 // an ADS violation (raw bg color, custom shape, custom font).
                 // Design-critique 2026-05-17 H4 P0.
-                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.brand', '#0C66E4'), flexShrink: 0 }}>
+                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.brand', 'var(--ds-link, #0C66E4)'), flexShrink: 0 }}>
                   <CheckCircleIcon label="" size="medium" primaryColor="currentColor" />
                 </span>
               ) : (
                 // ADS canonical "add" affordance — outlined neutral, becomes
                 // visible on row hover (the row itself is the click target;
                 // the icon is decorative).
-                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.subtle', '#626F86'), flexShrink: 0 }}>
+                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), flexShrink: 0 }}>
                   <AddCircleIcon label="" size="medium" primaryColor="currentColor" />
                 </span>
               )}
@@ -1134,18 +1134,18 @@ export function AllProjectsTable({
       <div
         style={{
           borderRadius: 8,
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           padding: token('space.500', '40px'),
-          backgroundColor: token('elevation.surface', '#FFFFFF'),
+          backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.150', '12px') }}>
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="animate-pulse" style={{ display: 'flex', alignItems: 'center', gap: token('space.200', '16px') }}>
-              <div style={{ height: 28, width: 28, borderRadius: '50%', backgroundColor: token('color.background.neutral.subtle', '#F4F5F7') }} />
+              <div style={{ height: 28, width: 28, borderRadius: '50%', backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)') }} />
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: token('space.075', '6px') }}>
-                <div style={{ height: 12, width: '30%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', '#F4F5F7') }} />
-                <div style={{ height: 10, width: '20%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', '#F4F5F7') }} />
+                <div style={{ height: 12, width: '30%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)') }} />
+                <div style={{ height: 10, width: '20%', borderRadius: 4, backgroundColor: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)') }} />
               </div>
             </div>
           ))}

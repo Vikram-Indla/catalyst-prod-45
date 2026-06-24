@@ -29,8 +29,8 @@ interface TicketRow {
 }
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  Done: { bg: 'var(--ds-background-success, #dcfce7)', text: '#166534' },
-  'In Progress': { bg: '#dbeafe', text: '#1e40af' },
+  Done: { bg: 'var(--ds-background-success, #dcfce7)', text: 'var(--ds-text-success, #216E4E)' },
+  'In Progress': { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' },
   'To Do': { bg: 'var(--ds-surface-sunken, #f1f5f9)', text: 'var(--ds-text-subtle, #475569)' },
 };
 
@@ -152,7 +152,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0, top: 48,
-          background: 'rgba(0,0,0,0.12)',
+          background: 'var(--ds-shadow-raised, rgba(0,0,0,0.12))',
           zIndex: 600,
         }}
       />
@@ -162,7 +162,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         position: 'fixed', right: 0, top: 48,
         width: 520, height: 'calc(100vh - 48px)',
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        boxShadow: '-8px 0 24px rgba(0,0,0,0.08)',
+        boxShadow: '-8px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
         zIndex: 601,
         display: 'flex', flexDirection: 'column',
         fontFamily: 'var(--cp-font-body)',
@@ -171,7 +171,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         {/* Header */}
         <div style={{
           padding: '16px 20px',
-          borderBottom: '1px solid #e2e8f0',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           flexShrink: 0,
         }}>
@@ -227,7 +227,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
                   <div key={t.issue_key} style={{
                     padding: '12px 14px',
                     borderRadius: 8,
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--ds-border, #DFE1E6)',
                     marginBottom: 8,
                     background: 'var(--ds-surface-sunken, #fafbfc)',
                     cursor: 'default',
@@ -277,7 +277,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         {/* Footer */}
         <div style={{
           padding: '10px 20px',
-          borderTop: '1px solid #e2e8f0',
+          borderTop: '1px solid var(--ds-border, #DFE1E6)',
           fontSize: 11, color: 'var(--ds-text-subtlest, #94a3b8)',
           flexShrink: 0,
         }}>

@@ -82,7 +82,7 @@ export function AddPeopleModal() {
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(9, 30, 66, 0.54)',
+        background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
         zIndex: 9999,
         display: 'flex',
         alignItems: 'flex-start',
@@ -97,9 +97,9 @@ export function AddPeopleModal() {
         style={{
           width: 480,
           maxWidth: 'calc(100vw - 48px)',
-          background: token('elevation.surface', '#FFFFFF'),
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
           borderRadius: 8,
-          boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+          boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9, 30, 66, 0.25))',
           display: 'flex',
           flexDirection: 'column',
           maxHeight: 'calc(100vh - 120px)',
@@ -114,7 +114,7 @@ export function AddPeopleModal() {
               fontSize: 20,
               fontWeight: 653,
               letterSpacing: '-0.003em',
-              color: token('color.text', '#292A2E'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
             }}
           >
             Add people to {projectName}
@@ -128,7 +128,7 @@ export function AddPeopleModal() {
               height: 32,
               border: 'none',
               background: 'transparent',
-              color: token('color.text.subtle', '#6B6E76'),
+              color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
               cursor: 'pointer',
               borderRadius: 3,
               display: 'inline-flex',
@@ -148,11 +148,11 @@ export function AddPeopleModal() {
                 display: 'block',
                 fontSize: 12,
                 fontWeight: 600,
-                color: token('color.text.subtle', '#6B6E76'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 marginBottom: 4,
               }}
             >
-              Names or emails <span style={{ color: token('color.text.danger', '#AE2A19') }}>*</span>
+              Names or emails <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span>
             </label>
             <Textfield
               id="add-people-emails"
@@ -167,11 +167,11 @@ export function AddPeopleModal() {
                 display: 'block',
                 fontSize: 12,
                 fontWeight: 600,
-                color: token('color.text.subtle', '#6B6E76'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 marginBottom: 4,
               }}
             >
-              Role <span style={{ color: token('color.text.danger', '#AE2A19') }}>*</span>
+              Role <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span>
             </label>
             <button
               type="button"
@@ -186,8 +186,8 @@ export function AddPeopleModal() {
                 padding: '0 12px',
                 border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 borderRadius: 3,
-                background: token('elevation.surface', '#FFFFFF'),
-                color: token('color.text', '#292A2E'),
+                background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
                 fontSize: 14,
                 fontWeight: 400,
                 fontFamily: 'inherit',
@@ -198,7 +198,7 @@ export function AddPeopleModal() {
               <ChevronDown size={14} />
             </button>
           </div>
-          <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+          <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
             Each person you add will get access to this project.
           </p>
         </div>

@@ -8,9 +8,9 @@ import { STATUS_CATEGORY_BG } from '@/components/catalyst-detail-views/shared/se
  * #64748B/#2563EB/#16A34A which drifted from canonical — locked 2026-06-17.
  */
 export const STATUS_CATEGORY_COLORS: Record<'todo' | 'in_progress' | 'done', string> = {
-  todo:        STATUS_CATEGORY_BG.todo,        // #DDDEE1 gray
-  in_progress: STATUS_CATEGORY_BG.in_progress, // #8FB8F6 blue
-  done:        STATUS_CATEGORY_BG.done,         // #94C748 green
+  todo:        STATUS_CATEGORY_BG.todo,        // var(--ds-border, #DFE1E6) gray
+  in_progress: STATUS_CATEGORY_BG.in_progress, // var(--ds-background-information, #E9F2FF) blue
+  done:        STATUS_CATEGORY_BG.done,         // var(--ds-background-success-bold, #6A9A23) green
 };
 
 export type StatusCategory = keyof typeof STATUS_CATEGORY_COLORS;

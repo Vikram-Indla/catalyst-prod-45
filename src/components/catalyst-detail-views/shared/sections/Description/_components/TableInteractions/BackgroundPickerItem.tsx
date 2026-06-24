@@ -28,28 +28,28 @@ interface ColorSwatch {
 const PALETTE: ColorSwatch[] = [
   // Row 1 — subtle
   { name: 'No fill', value: null },
-  { name: 'Subtle gray', value: '#F1F2F4' },
-  { name: 'Subtle red', value: '#FFEBE6' },
+  { name: 'Subtle gray', value: 'var(--ds-background-neutral, #F1F2F4)' },
+  { name: 'Subtle red', value: 'var(--ds-background-danger, #FFECEB)' },
   { name: 'Subtle orange', value: '#FFEFD6' },
-  { name: 'Subtle yellow', value: '#FFFAE6' },
+  { name: 'Subtle yellow', value: 'var(--ds-background-warning, #FFF7D6)' },
   // Row 2 — light
-  { name: 'Light green', value: '#E3FCEF' },
+  { name: 'Light green', value: 'var(--ds-background-success, #DFFCF0)' },
   { name: 'Light teal', value: '#E6FCFF' },
-  { name: 'Light blue', value: '#DEEBFF' },
-  { name: 'Light purple', value: '#EAE6FF' },
+  { name: 'Light blue', value: 'var(--ds-background-information, #E9F2FF)' },
+  { name: 'Light purple', value: 'var(--ds-background-discovery, #F3F0FF)' },
   { name: 'Light pink', value: '#FFE5F2' },
   // Row 3 — medium
-  { name: 'Medium gray', value: '#B3B9C4' },
+  { name: 'Medium gray', value: 'var(--ds-text-disabled, #8590A2)' },
   { name: 'Medium blue', value: '#B8DAFF' },
   { name: 'Medium violet', value: '#C0B6F2' },
   { name: 'Medium magenta', value: '#FFB8E6' },
   { name: 'Medium mint', value: '#B8E8C9' },
   // Row 4 — bold / dark
-  { name: 'Bold gray', value: '#7A869A' },
-  { name: 'Bold red', value: '#FF5630' },
-  { name: 'Bold orange', value: '#FF991F' },
-  { name: 'Bold yellow', value: '#F5CD47' },
-  { name: 'Bold green', value: '#36B37E' },
+  { name: 'Bold gray', value: 'var(--ds-text-subtlest, #626F86)' },
+  { name: 'Bold red', value: 'var(--ds-background-danger-bold, #C9372C)' },
+  { name: 'Bold orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
+  { name: 'Bold yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
+  { name: 'Bold green', value: 'var(--ds-background-success-bold, #1F845A)' },
 ];
 
 interface Props {
@@ -215,7 +215,7 @@ function PalettePopover({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 6,
-        boxShadow: '0 6px 20px rgba(9,30,66,0.18)',
+        boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
         padding: 8,
         zIndex: 2147483647,
       }}

@@ -31,6 +31,10 @@ import Tooltip from '@atlaskit/tooltip';
 import Avatar from '@atlaskit/avatar';
 import AvatarGroup from '@atlaskit/avatar-group';
 import Checkbox from '@atlaskit/checkbox';
+import Modal, { ModalTransition, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import TextField from '@atlaskit/textfield';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import {
   CanonicalFilter,
@@ -277,7 +281,7 @@ export default function TimelineView(props: TimelineViewProps) {
   const [openDropdown, setOpenDropdown] = useState<OpenDropdown>(null);
   const [sidebarHidden, setSidebarHidden] = useState(false);
 
-  /* create epic */
+  /* create epic (inline bottom row) */
   const [creatingEpic, setCreatingEpic] = useState(false);
   const [epicSummary, setEpicSummary] = useState('');
   const epicInputRef = useRef<HTMLInputElement>(null);
@@ -285,6 +289,38 @@ export default function TimelineView(props: TimelineViewProps) {
   useEffect(() => {
     if (creatingEpic && epicInputRef.current) epicInputRef.current.focus();
   }, [creatingEpic]);
+
+  /* create work modal */
+  const [createWorkOpen, setCreateWorkOpen] = useState(false);
+  const [createWorkSummary, setCreateWorkSummary] = useState('');
+  const [createWorkType, setCreateWorkType] = useState(createTopLevelConfig.iconType);
+  const [createAnother, setCreateAnother] = useState(false);
+  const [isCreatingWork, setIsCreatingWork] = useState(false);
+  const workItemBtnRef = useRef<HTMLButtonElement>(null);
+
+  const openCreateWork = useCallback(() => {
+    setCreateWorkType(createTopLevelConfig.iconType);
+    setCreateWorkSummary('');
+    setCreateAnother(false);
+    setCreateWorkOpen(true);
+  }, [createTopLevelConfig.iconType]);
+
+  const handleCreateWork = useCallback(async () => {
+    if (!createWorkSummary.trim() || !mutations?.onCreateEpic) return;
+    setIsCreatingWork(true);
+    try {
+      await mutations.onCreateEpic(createWorkSummary.trim());
+      if (createAnother) {
+        setCreateWorkSummary('');
+      } else {
+        setCreateWorkOpen(false);
+        setCreateWorkSummary('');
+        setCreateAnother(false);
+      }
+    } finally {
+      setIsCreatingWork(false);
+    }
+  }, [createWorkSummary, createAnother, mutations]);
 
   /* drag-to-resize / drag-to-move bars */
   const [dragging, setDragging] = useState<{
@@ -902,44 +938,28 @@ export default function TimelineView(props: TimelineViewProps) {
             );
           })()}
 
-          {/* Hierarchy vs Dependencies — mutually-exclusive view toggle, sat
-              next to the Filter button. "Show hierarchy" = full tree (all
-              items). "Show dependencies" = only items that have a dependency
-              edge (ancestors kept for context); also expands the tree so the
-              dependency items are visible. */}
-          <div role="group" aria-label="Timeline view mode" style={{
-            display: 'flex', alignItems: 'center', height: 32, flexShrink: 0,
-            border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, overflow: 'hidden',
-          }}>
-            {([
-              { id: 'hierarchy', label: 'Show hierarchy', active: !depMode },
-              { id: 'dependencies', label: 'Show dependencies', active: depMode },
-            ] as const).map((opt, i) => (
-              <button
-                key={opt.id}
-                type="button"
-                aria-pressed={opt.active}
-                onClick={() => {
-                  if (opt.id === 'dependencies') { setDepMode(true); setDepFilterKey(null); expandAll(); }
-                  else { setDepMode(false); setDepFilterKey(null); }
-                }}
-                style={{
-                  display: 'flex', alignItems: 'center', height: '100%', padding: '0 12px',
-                  border: 'none',
-                  borderLeft: i === 0 ? 'none' : '1px solid var(--ds-border, #DFE1E6)',
-                  background: opt.active ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface, #FFFFFF)',
-                  color: opt.active ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)',
-                  fontWeight: opt.active ? 600 : 400,
-                  fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap',
-                  fontFamily: 'var(--ds-font-family-body)',
-                }}
-                onMouseEnter={e => { if (!opt.active) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-                onMouseLeave={e => { if (!opt.active) e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
+          {/* Show dependencies toggle — when off, full hierarchy shows automatically */}
+          <button
+            type="button"
+            aria-pressed={depMode}
+            onClick={() => {
+              if (depMode) { setDepMode(false); setDepFilterKey(null); }
+              else { setDepMode(true); setDepFilterKey(null); expandAll(); }
+            }}
+            style={{
+              display: 'flex', alignItems: 'center', height: 32, padding: '0 12px',
+              border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+              background: depMode ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface, #FFFFFF)',
+              color: depMode ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)',
+              fontWeight: depMode ? 600 : 400,
+              fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap',
+              fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+            }}
+            onMouseEnter={e => { if (!depMode) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+            onMouseLeave={e => { if (!depMode) e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+          >
+            Show dependencies
+          </button>
 
           {/* type filter — LEGACY (now hidden, replaced above) */}
           {false && (<>
@@ -1228,6 +1248,25 @@ export default function TimelineView(props: TimelineViewProps) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+          {/* Create work — toolbar CTA matching Jira Plans */}
+          {enableCreateEpicRow && mutations?.onCreateEpic && (
+            <button
+              onClick={openCreateWork}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px',
+                border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+                background: 'var(--ds-surface, #FFFFFF)',
+                cursor: 'pointer', fontSize: 14, fontWeight: 500,
+                color: 'var(--ds-text, #172B4D)',
+                fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+            >
+              <EditorAddIcon label="" size="small" />
+              Create work
+            </button>
+          )}
           {/* view-mode selector (Jira saved-views parity) — actually drives the timeline */}
           <div style={{ position: 'relative' }}>
             <button
@@ -1313,66 +1352,26 @@ export default function TimelineView(props: TimelineViewProps) {
                 justifyContent: 'space-between',
               }}
             >
-              <span style={{
-                fontSize: 13, fontWeight: 653,
-                color: 'var(--ds-text, #172B4D)',
-                letterSpacing: '0.01em',
-                userSelect: 'none',
-              }}>
-                Work
-              </span>
-              {parentKeys.length > 0 && (
-                <div style={{
-                  display: 'flex', alignItems: 'center',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 4,
-                  overflow: 'hidden',
-                  background: 'var(--ds-surface, #FFFFFF)',
-                  boxShadow: '0 1px 2px rgba(9,30,66,0.08)',
-                }}>
-                  <Tooltip content="Expand all" position="top">
-                    <button
-                      onClick={expandAll}
-                      aria-label="Expand all rows"
-                      title="Expand all"
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        gap: 2,
-                        height: 26, padding: '0 7px',
-                        border: 'none',
-                        borderRight: '1px solid var(--ds-border, #DFE1E6)',
-                        background: collapsed.size === 0 ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
-                        cursor: 'pointer',
-                        color: collapsed.size === 0 ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
-                        transition: 'background 0.1s, color 0.1s',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <ChevronDownIcon label="" size="small" />
-                    </button>
-                  </Tooltip>
-                  <Tooltip content="Collapse all" position="top">
-                    <button
-                      onClick={collapseAll}
-                      aria-label="Collapse all rows"
-                      title="Collapse all"
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        gap: 2,
-                        height: 26, padding: '0 7px',
-                        border: 'none',
-                        background: collapsed.size === parentKeys.length ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
-                        cursor: 'pointer',
-                        color: collapsed.size === parentKeys.length ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
-                        transition: 'background 0.1s, color 0.1s',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <ChevronUpIcon label="" size="small" />
-                    </button>
-                  </Tooltip>
-                </div>
-              )}
+              <button
+                ref={workItemBtnRef}
+                onClick={() => toggleDropdown('workitem')}
+                aria-haspopup="menu"
+                aria-expanded={openDropdown === 'workitem'}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  background: 'none', border: 'none', padding: '0 2px', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 653, color: 'var(--ds-text, #172B4D)',
+                  fontFamily: 'var(--ds-font-family-body)', letterSpacing: '0.01em',
+                  userSelect: 'none',
+                }}
+              >
+                Work item
+                <ChevronDownIcon label="" size="small" />
+              </button>
+              <PortalMenu isOpen={openDropdown === 'workitem'} onClose={closeDropdown} triggerRef={workItemBtnRef} minWidth={160}>
+                <MenuItemRow label="Expand all" onClick={() => { expandAll(); closeDropdown(); }} />
+                <MenuItemRow label="Collapse all" onClick={() => { collapseAll(); closeDropdown(); }} />
+              </PortalMenu>
             </div>
 
             <div ref={sidebarBodyRef} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
@@ -1381,7 +1380,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   role="row"
                   style={{
                     height: 36, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 4,
-                    borderBottom: '1px solid rgba(9,30,66,0.06)',
+                    borderBottom: '1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
                     background: 'var(--ds-background-neutral-subtle, #F7F8F9)', cursor: 'pointer',
                   }}
                   onClick={() => setReleasesCollapsed(v => !v)}
@@ -1465,7 +1464,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   paddingLeft: 8,
                   paddingRight: 4,
                   gap: 6,
-                  borderBottom: '1px solid rgba(9,30,66,0.06)',
+                  borderBottom: '1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
                 }}>
                   {creatingEpic ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
@@ -1698,7 +1697,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   style={{
                     position: 'absolute', top: 0, left: 0, right: 0, height: ROW_H,
                     background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-                    borderBottom: '1px solid rgba(9,30,66,0.06)',
+                    borderBottom: '1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
                     display: 'flex', alignItems: 'center',
                   }}
                 />
@@ -1710,7 +1709,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   <div key={issue.issueKey + '_bg'} role="row" style={{
                     position: 'absolute', top: rowTop, left: 0, right: 0, height: ROW_H,
                     background: 'transparent',
-                    borderBottom: '1px solid rgba(9,30,66,0.06)',
+                    borderBottom: '1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
                   }} />
                 );
               })}
@@ -1753,7 +1752,7 @@ export default function TimelineView(props: TimelineViewProps) {
                             borderRadius: 2,
                             cursor: 'pointer',
                             zIndex: 2,
-                            boxShadow: '0 1px 2px rgba(9,30,66,0.18)',
+                            boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
                           }}
                         />
                       </TimelineBarPopover>

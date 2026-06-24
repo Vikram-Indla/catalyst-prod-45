@@ -128,12 +128,12 @@ function statusCategoryToAppearance(cat: string | null | undefined): LozengeAppe
 
 function priorityColor(p: string | null | undefined): string {
   const v = (p || '').toLowerCase();
-  if (v.includes('highest') || v.includes('blocker')) return '#CA3521';
-  if (v.includes('high')) return '#CA3521';
+  if (v.includes('highest') || v.includes('blocker')) return 'var(--ds-background-danger-bold, #C9372C)';
+  if (v.includes('high')) return 'var(--ds-background-danger-bold, #C9372C)';
   if (v.includes('medium')) return '#D04A02';
   if (v.includes('low')) return '#2C8540';
   if (v.includes('lowest')) return '#1F7344';
-  return '#6B6E76';
+  return 'var(--ds-text-subtlest, #6B6E76)';
 }
 
 function PriorityGlyph({ priority }: { priority: string | null | undefined }) {
@@ -291,10 +291,10 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
         maxHeight: 'min(560px, calc(100vh - 32px))',
         overflowY: 'auto',
         zIndex: 100000,
-        background: token('elevation.surface.overlay', '#FFFFFF'),
+        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
         borderRadius: 8,
-        boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16)), 0 2px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         padding: 16,
         fontFamily: token('font.family.body', '-apple-system, BlinkMacSystemFont, "Atlassian Sans", "Segoe UI", Roboto, sans-serif'),
         animation: 'jcHoverFade 150ms ease-out',
@@ -316,8 +316,8 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                   style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     width: 28, height: 28, borderRadius: 4, flexShrink: 0,
-                    background: token('color.background.neutral', '#F1F2F4'),
-                    color: token('color.text.subtle', '#626F86'),
+                    background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+                    color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                     fontSize: 14, fontWeight: 700,
                   }}
                 >
@@ -326,20 +326,20 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                 <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   <span style={{
                     fontSize: 14, fontWeight: 600,
-                    color: token('color.text', '#292A2E'),
+                    color: token('color.text', 'var(--ds-text, #172B4D)'),
                   }}>
                     {issueKey}
                   </span>
                   <span style={{
                     fontSize: 12,
-                    color: token('color.text.subtle', '#626F86'),
+                    color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                   }}>
                     Not synced to Catalyst{projectPrefix ? ` · ${projectPrefix} project` : ''}
                   </span>
                 </div>
               </div>
               <div style={{
-                borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+                borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 paddingTop: 8,
               }}>
                 <a
@@ -349,7 +349,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                     fontSize: 14,
-                    color: token('color.link', '#0C66E4'),
+                    color: token('color.link', 'var(--ds-link, #0C66E4)'),
                     textDecoration: 'none',
                   }}
                 >
@@ -379,7 +379,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                 fontWeight: parseInt(token('font.weight.semibold', '600'), 10) || 600,
                 lineHeight: token('font.lineHeight.100', '20px'),
                 fontFamily: token('font.family.body', 'inherit'),
-                color: token('color.link', '#0C66E4'),
+                color: token('color.link', 'var(--ds-link, #0C66E4)'),
                 textDecoration: 'none',
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
@@ -402,7 +402,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                 <Lozenge appearance={statusAppearance} isBold={lozengeBold}>
                   {data.status}
                 </Lozenge>
-                <span style={{ display: 'inline-flex', color: token('color.text.subtlest', '#626F86'), pointerEvents: 'none' }}>
+                <span style={{ display: 'inline-flex', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), pointerEvents: 'none' }}>
                   <ChevronDownIcon label="" size="small" />
                 </span>
               </span>
@@ -413,7 +413,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                 <span style={{
                   fontSize: token('font.size.100', '14px'),
                   fontWeight: parseInt(token('font.weight.regular', '400'), 10) || 400,
-                  color: token('color.text.subtlest', '#626F86'),
+                  color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                 }}>
                   {data.priority}
                 </span>
@@ -428,7 +428,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
               fontSize: token('font.size.100', '14px'),
-              color: token('color.text.subtle', '#626F86'),
+              color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
             }}>
               <Spinner size="small" />
               <span>CATY is summarizing…</span>
@@ -441,7 +441,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                 fontWeight: parseInt(token('font.weight.regular', '400'), 10) || 400,
                 lineHeight: token('font.lineHeight.100', '20px'),
                 fontFamily: token('font.family.body', 'inherit'),
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
                 display: '-webkit-box',
                 WebkitLineClamp: 6,
                 WebkitBoxOrient: 'vertical',
@@ -456,7 +456,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
             <p style={{
               margin: 0,
               fontSize: token('font.size.100', '14px'),
-              color: token('color.text.subtle', '#626F86'),
+              color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
               fontStyle: 'italic',
             }}>
               No description content to summarize.
@@ -469,7 +469,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                 fontWeight: parseInt(token('font.weight.regular', '400'), 10) || 400,
                 lineHeight: token('font.lineHeight.100', '20px'),
                 fontFamily: token('font.family.body', 'inherit'),
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
                 display: '-webkit-box',
                 WebkitLineClamp: 3,
                 WebkitBoxOrient: 'vertical',
@@ -502,17 +502,17 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
 
           {/* Source footer — divider above */}
           <div style={{
-            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             marginTop: 4,
             paddingTop: 12,
             display: 'flex',
             alignItems: 'center',
             gap: 8,
             fontSize: 12,
-            color: token('color.text.subtle', '#626F86'),
+            color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
           }}>
             <svg width="16" height="16" viewBox="0 0 512 512" aria-hidden style={{ flexShrink: 0 }}>
-              <rect width="512" height="512" rx="129.62" fill="#1868DB" />
+              <rect width="512" height="512" rx="129.62" fill="var(--ds-link, #1868DB)" />
               <path
                 d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z"
                 fill="white"
@@ -715,23 +715,23 @@ export function IssueHoverCard({ issueKey, children, disabled }: IssueHoverCardP
               }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: '50%',
-                  background: token('color.background.neutral', '#F1F2F4'),
+                  background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: token('color.text.subtlest', '#8590A2'),
+                  color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                 }}>
                   <QuestionIcon label="" size="xlarge" />
                 </div>
                 <div>
                   <div style={{
                     fontSize: 16, fontWeight: 600,
-                    color: token('color.text', '#292A2E'),
+                    color: token('color.text', 'var(--ds-text, #172B4D)'),
                     marginBottom: 8,
                   }}>
                     We couldn't find any related links
                   </div>
                   <div style={{
                     fontSize: 14,
-                    color: token('color.text.subtle', '#626F86'),
+                    color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                     maxWidth: 360,
                   }}>
                     We continuously review and add related links for updated pages or other content types

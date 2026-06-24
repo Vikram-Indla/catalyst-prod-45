@@ -71,7 +71,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
       {/* Scenario Panel */}
       <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[#0d9488]/10 text-[#0d9488] uppercase">Active</span>
+          <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[var(--ds-chart-teal-bold, #0d9488)]/10 text-[var(--ds-chart-teal-bold, #0d9488)] uppercase">Active</span>
           <span className="text-sm font-semibold text-foreground">Current Plan - Q1 2025</span>
         </div>
         <div className="flex gap-2">
@@ -161,7 +161,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
                     <span className={cn(
                       'text-[10px] font-semibold mt-1 inline-block',
                       resource.allocation > 100 ? 'text-[var(--ds-text-danger,#dc2626)]' :
-                      resource.allocation > 80 ? 'text-[var(--ds-text-warning,#d97706)]' : 'text-[#0d9488]'
+                      resource.allocation > 80 ? 'text-[var(--ds-text-warning,#d97706)]' : 'text-[var(--ds-icon-information, #1D7AFC)]'
                     )}>
                       {resource.allocation}%
                     </span>
@@ -191,7 +191,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
                       className={cn(
                         'h-full',
                         resource.allocation > 100 ? 'bg-[var(--ds-text-danger,#dc2626)]' :
-                        resource.allocation > 80 ? 'bg-[var(--ds-text-warning,#d97706)]' : 'bg-[#0d9488]'
+                        resource.allocation > 80 ? 'bg-[var(--ds-text-warning,#d97706)]' : 'bg-[var(--ds-icon-information, #1D7AFC)]'
                       )}
                       style={{ width: `${Math.min(resource.allocation, 100)}%` }}
                     />

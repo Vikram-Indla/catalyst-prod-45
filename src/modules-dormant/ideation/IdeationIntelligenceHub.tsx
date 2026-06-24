@@ -15,11 +15,11 @@ interface Props {
 }
 
 const C = {
-  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', success: '#0d9488', warning: 'var(--ds-text-warning, #d97706)', danger: 'var(--ds-text-danger, #ef4444)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', success: 'var(--ds-icon-information, #1D7AFC)', warning: 'var(--ds-text-warning, #d97706)', danger: 'var(--ds-text-danger, #ef4444)',
   textPrimary: 'var(--ds-text, #0f172a)', textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', textTertiary: 'var(--ds-text-subtle, #475569)',
   surface: 'var(--ds-surface-sunken, #f8fafc)', surfaceAlt: 'var(--ds-surface-sunken, #f1f5f9)', border: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', bg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  insightBg: 'var(--ds-background-selected, #eff6ff)', insightText: '#1e40af', insightBorder: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  gapBg: 'var(--ds-background-danger, #fef2f2)', gapText: 'var(--ds-text-danger, #991b1b)', gapBody: '#7f1d1d', gapBorder: 'var(--ds-text-danger, #ef4444)',
+  insightBg: 'var(--ds-background-selected, #eff6ff)', insightText: 'var(--ds-link-pressed, #0747A6)', insightBorder: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+  gapBg: 'var(--ds-background-danger, #fef2f2)', gapText: 'var(--ds-text-danger, #991b1b)', gapBody: 'var(--ds-text-danger, #AE2A19)', gapBorder: 'var(--ds-text-danger, #ef4444)',
 } as const;
 
 const MONO = "'JetBrains Mono', monospace";
@@ -32,7 +32,7 @@ function computeThemes(ideas: Idea[]) {
   });
   const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
   const max = sorted[0]?.[1] || 1;
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #EF4444)', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
   return sorted.slice(0, 8).map(([name, count], i) => ({
     name, count, pct: Math.round((count / max) * 100),
     trend: i < 2 ? '↑ trending' : i < 4 ? '→ stable' : '↑ new',
@@ -124,7 +124,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
           background: C.bg, border: `1px solid ${C.border}`, cursor: 'pointer', padding: '8px 16px',
           fontSize: '13px', fontWeight: 600, color: C.textTertiary, borderRadius: '8px',
         }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#F4F4F5'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F7F8F9)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = C.bg; }}
         >Close</button>
       </div>
@@ -189,7 +189,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
               background: C.insightBg, borderRadius: '0 8px 8px 0', padding: '12px 16px',
             }}>
               <div style={{ fontSize: '13px', fontWeight: 600, color: C.insightText, marginBottom: '2px' }}>✦ Emerging Insight</div>
-              <div style={{ fontSize: '13px', color: '#1e3a5f', lineHeight: 1.5 }}>
+              <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)', lineHeight: 1.5 }}>
                 The top theme "{themes[0].name}" accounts for {themes[0].count} ideas ({Math.round((themes[0].count / total) * 100)}% of backlog).
                 {themes.length > 1 && ` "${themes[1].name}" follows with ${themes[1].count} ideas.`}
               </div>
@@ -208,7 +208,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
                   <span style={{ fontSize: '14px', color: C.textSecondary, fontWeight: 500 }}>{team}</span>
                   <span style={{ fontFamily: MONO, fontSize: '13px', fontWeight: 600, color: C.textSecondary }}>{count} ideas · {pct}%</span>
                 </div>
-                <div style={{ marginTop: '4px', height: '4px', background: '#E4E4E7', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ marginTop: '4px', height: '4px', background: 'var(--ds-border, #DFE1E6)', borderRadius: '4px', overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: '4px' }} />
                 </div>
               </div>
@@ -260,7 +260,7 @@ function ContentCard({ title, badge, badgeColor, children }: { title: string; ba
   return (
     <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: '12px', overflow: 'hidden' }}>
       <div style={{
-        padding: '16px 20px', borderBottom: `1px solid #F4F4F5`,
+        padding: '16px 20px', borderBottom: `1px solid var(--ds-surface-sunken, #F7F8F9)`,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <span style={{ fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>{title}</span>

@@ -437,7 +437,7 @@ export function IssueContentView({
                   href={`/project-hub/${projectKey}/allwork`}
                   onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/project-hub/${projectKey}/allwork`; }}
                   style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textDecoration: 'none', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--cp-primary-60, #0052CC)'; e.currentTarget.style.textDecoration = 'underline'; }}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--cp-primary-60, var(--ds-link, #0052CC))'; e.currentTarget.style.textDecoration = 'underline'; }}
                   onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; e.currentTarget.style.textDecoration = 'none'; }}
                 >
                   {projectKey}
@@ -455,7 +455,7 @@ export function IssueContentView({
             />
             <span style={{ color: 'var(--aw-text-subtle)' }}>/</span>
             {item && <JiraIssueTypeIcon type={item.issue_type} size={14} />}
-            <IssueKeyLink issueKey={issueKey ?? ''} style={{ color: 'var(--cp-primary-60, #0052CC)', textDecoration: 'none', fontSize: 13 }} />
+            <IssueKeyLink issueKey={issueKey ?? ''} style={{ color: 'var(--cp-primary-60, var(--ds-link, #0052CC))', textDecoration: 'none', fontSize: 13 }} />
             {/* #12: Prev/Next navigation arrows — canonical IssueNavChevrons
                 (shared component, Jira-parity 28×28 / 1px var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) / 4px). */}
             <span style={{ marginLeft: 'auto', display: 'inline-flex' }}>
@@ -763,7 +763,7 @@ export function IssueContentView({
               onClick={() => setShowFlagPopover(o => !o)}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: 32, height: 32, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4,
+                width: 32, height: 32, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', borderRadius: 4,
                 background: checkFlagged(item) ? 'var(--ds-background-danger, #FFEBE6)' : 'var(--ds-surface, #fff)', cursor: 'pointer',
                 padding: 0,
               }}
@@ -785,7 +785,7 @@ export function IssueContentView({
           <button
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: 32, height: 32, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4,
+              width: 32, height: 32, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', borderRadius: 4,
               background: 'var(--ds-surface, #fff)', cursor: 'pointer', padding: 0,
             }}
             title="Automation"
@@ -879,7 +879,7 @@ export function IssueContentView({
                     padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                     minHeight: 32, transition: 'background 0.12s',
                     border: showSprintReleaseDropdown ? '2px solid var(--ds-border-focused, #4C9AFF)' : '2px solid transparent',
-                    background: showSprintReleaseDropdown ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'transparent',
+                    background: showSprintReleaseDropdown ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' : 'transparent',
                   }}
                   onMouseEnter={e => { if (!showSprintReleaseDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                   onMouseLeave={e => { if (!showSprintReleaseDropdown) e.currentTarget.style.background = 'transparent'; }}

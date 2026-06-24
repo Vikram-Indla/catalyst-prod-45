@@ -26,14 +26,14 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   font-family: var(--cp-font-body);
   transition: background-color 0.1s, border-color 0.1s;
 }
-.jf-trigger-btn:hover { background-color: rgba(9, 30, 66, 0.08); }
+.jf-trigger-btn:hover { background-color: var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08)); }
 .jf-trigger-btn--active {
   background-color: rgb(233, 242, 254);
-  color: rgb(24, 104, 219);
+  color: var(--ds-link, rgb(24, 104, 219));
 }
 .jf-trigger-icon { flex-shrink: 0; }
 .jf-trigger-text {
@@ -48,8 +48,8 @@
   min-width: 24px;
   height: 16px;
   padding: 0 4px;
-  background-color: rgb(143, 184, 246);
-  color: rgb(23, 43, 77);
+  background-color: var(--ds-background-information, rgb(143, 184, 246));
+  color: var(--ds-text, rgb(23, 43, 77));
   border-radius: 2px;
   font-size: 14px;
   font-weight: 500;
@@ -63,14 +63,14 @@
   left: 0;
   margin-top: 4px;
   width: 480px;
-  background: rgb(255, 255, 255);
+  background: var(--ds-surface, rgb(255, 255, 255));
   border-radius: 4px;
   box-shadow:
-    rgba(30, 31, 33, 0.15) 0px 8px 12px 0px,
-    rgba(30, 31, 33, 0.31) 0px 0px 1px 0px;
+    var(--ds-text, rgba(30, 31, 33, 0.15)) 0px 8px 12px 0px,
+    var(--ds-text, rgba(30, 31, 33, 0.31)) 0px 0px 1px 0px;
   overflow: hidden;
   z-index: 500;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   font-size: 14px;
   line-height: 20px;
 }
@@ -105,7 +105,7 @@
   align-items: center;
   gap: 2px;
   padding: 4px;
-  border: 0.556px solid rgba(11, 18, 14, 0.14);
+  border: 0.556px solid var(--ds-text, rgba(11, 18, 14, 0.14));
   border-radius: 6px;
   background: transparent;
   width: fit-content;
@@ -123,16 +123,16 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   background: transparent;
   white-space: nowrap;
   font-family: inherit;
   transition: background-color 0.1s, color 0.1s;
 }
-.jf-tab:hover:not(.jf-tab--active):not(:disabled) { background-color: rgba(9, 30, 66, 0.06); }
+.jf-tab:hover:not(.jf-tab--active):not(:disabled) { background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06)); }
 .jf-tab--active {
   background-color: rgb(233, 242, 254);
-  color: rgb(24, 104, 219);
+  color: var(--ds-link, rgb(24, 104, 219));
 }
 .jf-tab:disabled { opacity: 0.4; cursor: default; }
 
@@ -171,7 +171,7 @@
   top: 0;
   bottom: 16px;
   width: 1px;
-  background-color: rgba(11, 18, 14, 0.14);
+  background-color: var(--ds-text, rgba(11, 18, 14, 0.14));
 }
 .jf-left-scroll {
   display: flex;
@@ -198,16 +198,16 @@
   font-size: 13.3333px;
   font-weight: 400;
   line-height: normal;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   text-align: left;
   overflow: hidden;
   font-family: inherit;
   transition: background-color 0.1s;
 }
-.jf-category-item:hover:not(.jf-category-item--active) { background-color: rgba(9, 30, 66, 0.04); }
+.jf-category-item:hover:not(.jf-category-item--active) { background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)); }
 .jf-category-item--active {
   background-color: rgb(233, 242, 254);
-  color: rgb(24, 104, 219);
+  color: var(--ds-link, rgb(24, 104, 219));
 }
 .jf-category-item--active::before {
   content: "";
@@ -217,7 +217,7 @@
   top: 0;
   width: 2px;
   height: 100%;
-  background-color: rgb(24, 104, 219);
+  background-color: var(--ds-link, rgb(24, 104, 219));
 }
 .jf-category-label { display: flex; flex: 1 1 auto; color: inherit; font-size: inherit; }
 .jf-category-text {
@@ -233,7 +233,7 @@
   align-items: center;
   margin-left: 4px;
   flex-shrink: 0;
-  color: rgb(24, 104, 219);
+  color: var(--ds-link, rgb(24, 104, 219));
 }
 .jf-category-badge {
   display: flex;
@@ -242,8 +242,8 @@
   min-width: 24px;
   height: 16px;
   padding: 0 4px;
-  background-color: rgb(143, 184, 246);
-  color: rgb(23, 43, 77);
+  background-color: var(--ds-background-information, rgb(143, 184, 246));
+  color: var(--ds-text, rgb(23, 43, 77));
   border-radius: 2px;
   font-size: 13.3333px;
   line-height: 1;
@@ -262,11 +262,11 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   font-family: inherit;
   transition: color 0.1s;
 }
-.jf-clear-btn:hover:not(:disabled) { color: rgb(41, 42, 46); }
+.jf-clear-btn:hover:not(:disabled) { color: var(--ds-text, rgb(41, 42, 46)); }
 .jf-clear-btn:disabled { opacity: 0.5; cursor: default; }
 
 /* ─── RIGHT PANE ─── */
@@ -303,7 +303,7 @@
   width: 100%;
   height: 32px;
   flex-shrink: 0;
-  background: rgb(255, 255, 255);
+  background: var(--ds-surface, rgb(255, 255, 255));
   border: 0.556px solid rgb(140, 143, 151);
   border-radius: 3px;
 }
@@ -312,7 +312,7 @@
   padding: 0 2px 0 8px;
   flex-shrink: 0;
   width: 26px;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
 }
 .jf-search-input-area {
   display: grid;
@@ -346,7 +346,7 @@
   padding: 0;
   font-size: 14px;
   line-height: 20px;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   font-family: inherit;
   width: 100%;
 }
@@ -374,10 +374,10 @@
   transition: background-color 0.08s;
 }
 .jf-option-item:hover .jf-option-inner {
-  background-color: rgba(5, 21, 36, 0.06);
+  background-color: var(--ds-shadow-overlay, rgba(5, 21, 36, 0.06));
 }
 .jf-option-item--checked .jf-option-inner {
-  background-color: rgba(24, 104, 219, 0.06);
+  background-color: var(--ds-link, rgba(24, 104, 219, 0.06));
 }
 .jf-checkbox-wrap {
   display: flex;
@@ -396,7 +396,7 @@
   align-items: center;
   gap: 8px;
   height: 24px;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   font-size: 14px;
   font-weight: 400;
 }
@@ -415,7 +415,7 @@
   height: 24px;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: rgb(255, 255, 255) 0px 0px 0px 2px;
+  box-shadow: var(--ds-surface, rgb(255, 255, 255)) 0px 0px 0px 2px;
 }
 .jf-avatar-img { width: 24px; height: 24px; border-radius: 9999px; object-fit: cover; }
 .jf-avatar-initials-text {
@@ -429,7 +429,7 @@
 .jf-option-label {
   font-size: 14px;
   font-weight: 400;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -466,15 +466,15 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   padding: 0;
   font-family: inherit;
 }
-.jf-feedback-btn:hover { color: rgb(41, 42, 46); }
+.jf-feedback-btn:hover { color: var(--ds-text, rgb(41, 42, 46)); }
 .jf-shortcut {
   font-size: 14px;
   font-weight: 400;
-  color: rgb(23, 43, 77);
+  color: var(--ds-text, rgb(23, 43, 77));
   display: flex;
   align-items: center;
   gap: 4px;
@@ -484,8 +484,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(5, 21, 36, 0.06);
-  color: rgb(23, 43, 77);
+  background-color: var(--ds-shadow-overlay, rgba(5, 21, 36, 0.06));
+  color: var(--ds-text, rgb(23, 43, 77));
   border-radius: 3px;
   padding: 2px 8px;
   font-family: inherit;
@@ -497,6 +497,6 @@
 
 /* DARK MODE OVERRIDES — added 2026-04-30 sweep */
 .dark .jira-basic-filter,
-.dark .jbf-input { background: var(--cp-bg-sunken, #161A1D); color: var(--cp-text-primary, var(--cp-bg-neutral, #EDEDED)); border-color: var(--cp-border-default, var(--cp-ink-1, #2E2E2E)); }
-.dark .jbf-chip { background: var(--cp-bg-elevated, #22272B); color: var(--cp-text-secondary, #C9CCD0); }
-.dark .jbf-chip:hover { background: var(--cp-interact-hover, var(--cp-ink-1, #2E2E2E)); }
+.dark .jbf-input { background: var(--cp-bg-sunken, var(--ds-surface, #FFFFFF)); color: var(--cp-text-primary, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4))); border-color: var(--cp-border-default, var(--cp-ink-1, var(--ds-background-neutral, #F1F2F4))); }
+.dark .jbf-chip { background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)); color: var(--cp-text-secondary, var(--ds-border, #DFE1E6)); }
+.dark .jbf-chip:hover { background: var(--cp-interact-hover, var(--cp-ink-1, var(--ds-background-neutral, #F1F2F4))); }

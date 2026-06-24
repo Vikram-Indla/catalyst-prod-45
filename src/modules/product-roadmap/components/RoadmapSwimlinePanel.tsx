@@ -13,7 +13,7 @@ import type { RoadmapDemand, TimelineConfig } from '../types/roadmap';
 import { addMonths } from 'date-fns';
 import { User } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', '#6366F1', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0891B2', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-link, #0C66E4)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'];
 
 function hashColor(name: string): string {
   let hash = 0;
@@ -75,7 +75,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
   }, [items]);
 
   const hc = highContrast;
-  const borderColor = hc ? '#09090B' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
+  const borderColor = hc ? 'var(--ds-text, #172B4D)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
 
   const renderGridlines = () => (
     <div className="absolute inset-0 pointer-events-none flex">
@@ -89,7 +89,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
               borderRight: `1px solid ${isQuarterBoundary ? borderColor : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`,
-              background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
+              background: period.isCurrent ? 'var(--ds-background-information, rgba(37,99,235,0.03))' : 'transparent',
             }}
           />
         );
@@ -118,7 +118,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                     className="flex items-center gap-3 px-4"
                     style={{
                       height: 40,
-                      background: hc ? '#F0F0F0' : 'var(--ds-surface-sunken, #FAFBFC)',
+                      background: hc ? 'var(--ds-background-neutral, #F0F0F0)' : 'var(--ds-surface-sunken, #FAFBFC)',
                       borderBottom: `1px solid ${borderColor}`,
                       borderTop: `1px solid ${borderColor}`,
                     }}
@@ -167,7 +167,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         className="relative flex items-center cursor-pointer transition-colors"
                         style={{
                           height: 40,
-                          backgroundColor: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
+                          backgroundColor: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'transparent',
                           borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
                         }}
                         onClick={() => onItemClick(item.id)}

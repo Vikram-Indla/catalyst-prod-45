@@ -7,11 +7,11 @@ interface Props {
 }
 
 const COLORS: string[] = [
-  '#172B4D', '#0747A6', '#006644', '#FF8B00', '#BF2600', '#000000',
-  '#42526E', '#0052CC', '#36B37E', '#FFAB00', '#DE350B', '#5E6C84',
-  '#7A869A', '#2684FF', '#57D9A3', '#FFC400', '#FF5630', '#B3D4FF',
-  '#97A0AF', '#4C9AFF', '#79F2C0', '#FFE380', '#FF8F73', '#DEEBFF',
-  '#DFE1E6', '#B3D4FF', '#ABF5D1', '#FFF0B3', '#FFBDAD', '#FFFFFF',
+  'var(--ds-text, #172B4D)', 'var(--ds-link-pressed, #0747A6)', 'var(--ds-text-success, #006644)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-text-danger, #AE2A19)', 'var(--ds-text, #172B4D)',
+  'var(--ds-text-subtle, #42526E)', 'var(--ds-link, #0052CC)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-text-subtle, #44546F)',
+  'var(--ds-text-subtlest, #626F86)', 'var(--ds-link, #0C66E4)', '#57D9A3', '#FFC400', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-information, #E9F2FF)',
+  'var(--ds-text-disabled, #8590A2)', 'var(--ds-background-information-bold, #0C66E4)', '#79F2C0', '#FFE380', 'var(--ds-background-danger, #FFECEB)', 'var(--ds-background-information, #E9F2FF)',
+  'var(--ds-border, #DFE1E6)', 'var(--ds-background-information, #E9F2FF)', '#ABF5D1', 'var(--ds-background-warning, #FFF7D6)', '#FFBDAD', 'var(--ds-surface, #FFFFFF)',
 ];
 
 function isRemoveDisabled(editor: Editor): boolean {
@@ -19,7 +19,7 @@ function isRemoveDisabled(editor: Editor): boolean {
   const color = (attrs?.color as string | undefined) ?? null;
   if (!color) return true;
   const c = color.toLowerCase().trim();
-  return c === '#000000' || c === '#ffffff' || c === 'black' || c === 'white';
+  return c === 'var(--ds-text, #172B4D)' || c === 'var(--ds-surface, #FFFFFF)' || c === 'black' || c === 'white';
 }
 
 export function TextColorPicker({ editor }: Props) {
@@ -74,7 +74,7 @@ export function TextColorPicker({ editor }: Props) {
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
             boxShadow:
-              '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+              '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
             padding: 8,
             width: 224,
           }}

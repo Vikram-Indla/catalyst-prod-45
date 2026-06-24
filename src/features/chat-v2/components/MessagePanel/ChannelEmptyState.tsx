@@ -182,7 +182,7 @@ function ActionCard({
         height: 250,
         padding: 18,
         background,
-        color: '#FFFFFF',
+        color: 'var(--ds-text-inverse, #FFFFFF)',
         border: 'none',
         borderRadius: 10,
         textAlign: 'left',
@@ -218,9 +218,9 @@ function PeopleArt() {
       </g>
       <g transform="translate(48 8)">
         <circle cx="22" cy="22" r="20" fill="#E0AC8B" />
-        <ellipse cx="14" cy="22" rx="5" ry="5" fill="none" stroke="#000" strokeWidth="1.4" />
-        <ellipse cx="30" cy="22" rx="5" ry="5" fill="none" stroke="#000" strokeWidth="1.4" />
-        <path d="M19 22h6" stroke="#000" strokeWidth="1.4" />
+        <ellipse cx="14" cy="22" rx="5" ry="5" fill="none" stroke="var(--ds-text, #172B4D)" strokeWidth="1.4" />
+        <ellipse cx="30" cy="22" rx="5" ry="5" fill="none" stroke="var(--ds-text, #172B4D)" strokeWidth="1.4" />
+        <path d="M19 22h6" stroke="var(--ds-text, #172B4D)" strokeWidth="1.4" />
         <path d="M2 50C2 38 12 30 22 30c10 0 20 8 20 20v18H2z" fill="#2D5BAB" />
       </g>
       <g transform="translate(10 30)">

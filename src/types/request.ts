@@ -115,29 +115,29 @@ export interface SavedView {
 export type LozengeColor = 'grey' | 'blue' | 'green';
 
 export const STATUS_DISPLAY: Record<RequestStatus, { label: string; lozenge: LozengeColor; dot: string; bg: string; border: string; text: string }> = {
-  new:                     { label: 'New',                    lozenge: 'grey',  dot: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', border: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: '#42526E' },
-  portfolio_review:        { label: 'Portfolio Review',       lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  technical_validation:    { label: 'Technical Validation',   lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  estimate:                { label: 'Estimate',               lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  demand_approved:         { label: 'Demand Approved',        lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  analysis:                { label: 'Analysis',               lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  ready_for_development:   { label: 'Ready for Development',  lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  under_implementation:    { label: 'Under Implementation',   lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  on_hold:                 { label: 'On Hold',                lozenge: 'grey',  dot: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', border: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: '#42526E' },
-  implementation_review:   { label: 'Implementation Review',  lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  in_support:              { label: 'In Support',             lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  done:                    { label: 'Done',                   lozenge: 'green', dot: 'var(--cp-lozenge-green-bg, #1B7F37)', bg: 'var(--cp-lozenge-green-bg, #1B7F37)', border: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
-  cancelled:               { label: 'Cancelled',              lozenge: 'grey',  dot: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', border: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: '#42526E' },
+  new:                     { label: 'New',                    lozenge: 'grey',  dot: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', border: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
+  portfolio_review:        { label: 'Portfolio Review',       lozenge: 'blue',  dot: 'var(--ds-link, #0C66E4)', bg: 'var(--ds-link, #0C66E4)', border: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  technical_validation:    { label: 'Technical Validation',   lozenge: 'blue',  dot: 'var(--ds-link, #0C66E4)', bg: 'var(--ds-link, #0C66E4)', border: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  estimate:                { label: 'Estimate',               lozenge: 'blue',  dot: 'var(--ds-link, #0C66E4)', bg: 'var(--ds-link, #0C66E4)', border: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  demand_approved:         { label: 'Demand Approved',        lozenge: 'blue',  dot: 'var(--ds-link, #0C66E4)', bg: 'var(--ds-link, #0C66E4)', border: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  analysis:                { label: 'Analysis',               lozenge: 'blue',  dot: 'var(--ds-link, #0C66E4)', bg: 'var(--ds-link, #0C66E4)', border: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  ready_for_development:   { label: 'Ready for Development',  lozenge: 'blue',  dot: 'var(--ds-link, #0C66E4)', bg: 'var(--ds-link, #0C66E4)', border: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  under_implementation:    { label: 'Under Implementation',   lozenge: 'blue',  dot: 'var(--ds-link, #0C66E4)', bg: 'var(--ds-link, #0C66E4)', border: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  on_hold:                 { label: 'On Hold',                lozenge: 'grey',  dot: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', border: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
+  implementation_review:   { label: 'Implementation Review',  lozenge: 'blue',  dot: 'var(--ds-link, #0C66E4)', bg: 'var(--ds-link, #0C66E4)', border: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  in_support:              { label: 'In Support',             lozenge: 'blue',  dot: 'var(--ds-link, #0C66E4)', bg: 'var(--ds-link, #0C66E4)', border: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  done:                    { label: 'Done',                   lozenge: 'green', dot: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))', bg: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))', border: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))' },
+  cancelled:               { label: 'Cancelled',              lozenge: 'grey',  dot: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', border: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
 };
 
 export const PRIORITY_THRESHOLDS: { min: number; max: number; level: PriorityLevel; bg: string; border: string; text: string }[] = [
-  { min: 4.0, max: 5.0, level: 'High',     bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46' },
-  { min: 3.0, max: 3.99, level: 'Medium',  bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF' },
-  { min: 2.0, max: 2.99, level: 'Low',     bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
-  { min: 1.0, max: 1.99, level: 'Rejected', bg: '#FEF2F2', border: '#FECACA', text: '#991B1B' },
+  { min: 4.0, max: 5.0, level: 'High',     bg: 'var(--ds-background-success, #DFFCF0)', border: '#A7F3D0', text: 'var(--ds-text-success, #216E4E)' },
+  { min: 3.0, max: 3.99, level: 'Medium',  bg: 'var(--ds-background-information, #E9F2FF)', border: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' },
+  { min: 2.0, max: 2.99, level: 'Low',     bg: 'var(--ds-background-warning, #FFF7D6)', border: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
+  { min: 1.0, max: 1.99, level: 'Rejected', bg: 'var(--ds-background-danger, #FFECEB)', border: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)' },
 ];
 
-export const UNSCORED_STYLE = { bg: '#F9FAFB', border: '#E5E7EB', text: '#6B7280' };
+export const UNSCORED_STYLE = { bg: 'var(--ds-surface-sunken, #F7F8F9)', border: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text-subtlest, #626F86)' };
 
 export function getPriorityLevel(score: number | null): { level: PriorityLevel; bg: string; border: string; text: string } {
   if (score === null) return { level: 'Unscored', ...UNSCORED_STYLE };
@@ -146,7 +146,7 @@ export function getPriorityLevel(score: number | null): { level: PriorityLevel; 
 }
 
 /** Deterministic avatar colors — Catalyst-approved only (no purple/pink/magenta/golden-hour) */
-const AVATAR_PALETTE = ['var(--cp-teal-60, #0D9488)', '#2563EB', 'var(--cp-warning, #D97706)', 'var(--cp-success, #16A34A)', 'var(--cp-danger, #DC2626)', '#71717A', '#0284C7'];
+const AVATAR_PALETTE = ['var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', 'var(--ds-link, #2563eb)', 'var(--cp-warning, var(--ds-background-warning-bold, #d97706))', 'var(--cp-success, var(--ds-background-success-bold, #1F845A))', 'var(--cp-danger, var(--ds-background-danger-bold, #dc2626))', 'var(--ds-text-subtlest, #626F86)', 'var(--ds-link, #0284c7)'];
 
 export function getAvatarColor(name: string): string {
   let hash = 0;

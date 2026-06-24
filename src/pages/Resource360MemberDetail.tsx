@@ -166,12 +166,12 @@ const Resource360MemberDetail: React.FC = () => {
 
         {/* Error state — inline, not full-page */}
         {hasError && (
-          <div style={{ textAlign: 'center', padding: 40, background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid #FECACA', borderRadius: 12, marginBottom: 12 }} role="alert">
+          <div style={{ textAlign: 'center', padding: 40, background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid var(--ds-background-danger, #FFECEB)', borderRadius: 12, marginBottom: 12 }} role="alert">
             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, #991B1B)', marginBottom: 4 }}>Failed to load data</div>
-            <div style={{ fontSize: 12, color: '#B91C1C', marginBottom: 10 }}>{(memberError || chronoError)?.message}</div>
+            <div style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 10 }}>{(memberError || chronoError)?.message}</div>
             <button
               onClick={() => window.location.reload()}
-              style={{ fontSize: 12, padding: '6px 16px', borderRadius: 6, border: '1px solid #FECACA', background: 'var(--ds-surface, #FFF)', color: 'var(--ds-text-danger, #991B1B)', cursor: 'pointer' }}
+              style={{ fontSize: 12, padding: '6px 16px', borderRadius: 6, border: '1px solid var(--ds-background-danger, #FFECEB)', background: 'var(--ds-surface, #FFF)', color: 'var(--ds-text-danger, #991B1B)', cursor: 'pointer' }}
             >
               Retry
             </button>

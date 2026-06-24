@@ -92,7 +92,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
   const modalContent = (
     <div 
       className="fixed inset-0 z-[1000] flex justify-center items-start pt-8 overflow-y-auto"
-      style={{ background: 'rgba(9, 30, 66, 0.54)' }}
+      style={{ background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))' }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -104,21 +104,21 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
           isExpanded ? "max-w-[calc(100vw-64px)]" : "max-w-[1000px]"
         )}
         style={{ 
-          boxShadow: '0 0 0 1px rgba(9, 30, 66, 0.08), 0 2px 1px rgba(9, 30, 66, 0.08), 0 0 20px -6px rgba(9, 30, 66, 0.31)'
+          boxShadow: '0 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08)), 0 2px 1px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08)), 0 0 20px -6px var(--ds-shadow-raised, rgba(9, 30, 66, 0.31))'
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] shrink-0">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5 text-[11px] text-[#42526E]">
+          <div className="flex items-center gap-1.5 text-[11px] text-[var(--ds-text-subtle, #42526E)]">
             {parentIncidentId && (
               <>
                 <a href="#" className="flex items-center gap-1 hover:text-[var(--cp-primary-60, #0052CC)] hover:underline">
                   <span className="text-sm">◇</span>
                   <span>{parentIncidentId}</span>
                 </a>
-                <span className="text-[#A5ADBA]">/</span>
+                <span className="text-[var(--ds-text-subtlest, #626F86)]">/</span>
               </>
             )}
             <a href="#" className="flex items-center gap-1 hover:text-[var(--cp-primary-60, #0052CC)] hover:underline">
@@ -139,13 +139,13 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
               />
             )}
             <button 
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtle, #42526E)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]"
               title="Watch"
             >
               <Eye className="w-5 h-5" />
             </button>
             <button 
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtle, #42526E)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]"
               title="Share"
             >
               <Share2 className="w-5 h-5" />
@@ -155,7 +155,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
-                  className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]"
+                  className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtle, #42526E)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]"
                   title="More actions"
                 >
                   <MoreHorizontal className="w-5 h-5" />
@@ -163,19 +163,19 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 bg-white border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]">
                 <DropdownMenuItem onClick={() => handleMenuAction('flag')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
-                  <Flag className="w-4 h-4 mr-2 text-[#42526E]" />
+                  <Flag className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Add flag
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleMenuAction('clone')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
-                  <Copy className="w-4 h-4 mr-2 text-[#42526E]" />
+                  <Copy className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Clone
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleMenuAction('move')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
-                  <Move className="w-4 h-4 mr-2 text-[#42526E]" />
+                  <Move className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Move
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleMenuAction('archive')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
-                  <Archive className="w-4 h-4 mr-2 text-[#42526E]" />
+                  <Archive className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Archive
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleMenuAction('delete')} className="text-red-600 hover:bg-red-50">
@@ -184,22 +184,22 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]" />
                 <DropdownMenuItem onClick={() => handleMenuAction('print')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
-                  <Printer className="w-4 h-4 mr-2 text-[#42526E]" />
+                  <Printer className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Print
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleMenuAction('excel')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
-                  <FileSpreadsheet className="w-4 h-4 mr-2 text-[#42526E]" />
+                  <FileSpreadsheet className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Export Excel
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleMenuAction('word')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
-                  <FileText className="w-4 h-4 mr-2 text-[#42526E]" />
+                  <FileText className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Export Word
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             <button 
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtle, #42526E)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]"
               title={isExpanded ? "Collapse" : "Expand"}
               onClick={() => setIsExpanded(!isExpanded)}
             >
@@ -207,7 +207,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
             </button>
             <button 
               ref={closeButtonRef}
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-offset-2"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtle, #42526E)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-offset-2"
               title="Close"
               onClick={onClose}
             >

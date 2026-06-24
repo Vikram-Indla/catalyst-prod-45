@@ -30,10 +30,10 @@ const indicatorVariants = cva(
     variants: {
       variant: {
         primary: "bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]",
-        success: "bg-[#0d9488]",
+        success: "bg-[var(--ds-chart-teal-bold, #0d9488)]",
         warning: "bg-[var(--ds-text-warning,#d97706)]",
         danger: "bg-[var(--ds-text-danger,#dc2626)]",
-        teal: "bg-[#0d9488]",
+        teal: "bg-[var(--ds-chart-teal-bold, #0d9488)]",
       },
     },
     defaultVariants: {

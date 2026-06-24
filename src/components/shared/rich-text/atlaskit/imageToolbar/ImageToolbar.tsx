@@ -62,9 +62,9 @@ const LAYOUT_WRAP_RIGHT = 'wrap-right' as const;
 type BorderColor = 'light' | 'medium' | 'dark';
 type BorderSize = 'small' | 'medium' | 'large';
 const BORDER_COLOR_HEX: Record<BorderColor, string> = {
-  light: '#DCDFE4',
-  medium: '#8590A2',
-  dark: '#22272B',
+  light: 'var(--ds-border-disabled, #DCDFE4)',
+  medium: 'var(--ds-text-disabled, #8590A2)',
+  dark: 'var(--ds-surface, #FFFFFF)',
 };
 const BORDER_SIZE_PX: Record<BorderSize, number> = {
   small: 1,
@@ -82,7 +82,7 @@ const T = {
   activeText: 'var(--ds-text-selected, #0C66E4)',
   dangerText: 'var(--ds-text-danger, #AE2A19)',
   dangerBg: 'var(--ds-background-danger, #FFEDEB)',
-  shadow: '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+  shadow: '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
 };
 
 export function ImageToolbar({ selection, getEditorView, onDismiss }: ImageToolbarProps) {
@@ -612,7 +612,7 @@ function ColorSwatches({
             height: 24,
             borderRadius: 3,
             background: BORDER_COLOR_HEX[c],
-            border: current === c ? `2px solid ${T.activeText}` : '1px solid rgba(0,0,0,0.1)',
+            border: current === c ? `2px solid ${T.activeText}` : '1px solid var(--ds-shadow-raised, rgba(0,0,0,0.1))',
             boxSizing: 'border-box',
           }}
         />
@@ -1060,7 +1060,7 @@ function AddAltPanel({
             cursor: 'pointer',
             padding: '6px 10px',
             fontSize: 13,
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             background: T.activeText,
             borderRadius: 3,
             fontWeight: 500,

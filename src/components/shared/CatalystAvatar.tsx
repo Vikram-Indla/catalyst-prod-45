@@ -43,15 +43,15 @@ const SIZE_PX: Record<CatalystAvatarSize, number> = {
 
 // ADS-palette deterministic colour pick. Same name → same colour across the app.
 const PALETTE = [
-  '#0C66E4', // blue.bold
-  '#216E4E', // green.bold
-  '#5E4DB2', // purple.bold
-  '#974F0C', // orange.bold
-  '#AE2A19', // red.bold
-  '#1D7AFC', // blue.bold (lighter)
-  '#22A06B', // green
-  '#6E5DC6', // purple
-  '#0055CC', // blue
+  'var(--ds-link, #0C66E4)', // blue.bold
+  'var(--ds-text-success, #216E4E)', // green.bold
+  'var(--ds-background-discovery-bold, #6E5DC6)', // purple.bold
+  'var(--ds-text-warning, #974F0C)', // orange.bold
+  'var(--ds-text-danger, #AE2A19)', // red.bold
+  'var(--ds-background-information-bold, #1D7AFC)', // blue.bold (lighter)
+  'var(--ds-background-success-bold, #1F845A)', // green
+  'var(--ds-background-discovery-bold, #6E5DC6)', // purple
+  'var(--ds-link, #0C66E4)', // blue
   '#206A83', // teal.bold
 ];
 
@@ -127,7 +127,7 @@ export default function CatalystAvatar({
           height: px,
           borderRadius: appearance === 'square' ? Math.max(2, Math.floor(px * 0.15)) : '50%',
           backgroundColor: bg,
-          color: '#FFFFFF',
+          color: 'var(--ds-text-inverse, #FFFFFF)',
           fontWeight: 600,
           fontSize,
           lineHeight: 1,

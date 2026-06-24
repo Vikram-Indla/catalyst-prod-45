@@ -76,7 +76,7 @@ export function CalendarDayCell({
         ))}
         {overflowCount > 0 && (
           <button
-            className="w-full text-left px-2 py-1 text-xs font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[#dbeafe] rounded"
+            className="w-full text-left px-2 py-1 text-xs font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-information, #E9F2FF)] rounded"
             onClick={(e) => {
               e.stopPropagation();
               onClick();

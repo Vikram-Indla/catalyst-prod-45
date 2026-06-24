@@ -34,7 +34,7 @@ import { containsArabic } from '@/lib/detectArabic';
    flipping the page hierarchy — no peer issue tracker does this.
 
    Jira-measured title typography (HANDOVER spec, Drawer Phase 3,
-   2026-04-19): 20px / font-weight 653 / line-height 1.4 / #292A2E /
+   2026-04-19): 20px / font-weight 653 / line-height 1.4 / var(--ds-text, #172B4D) /
    Atlassian Sans. Atlaskit Heading size="medium" renders at 20px
    natively; the scoped overrides below lock the weight/color/family
    to the measured values. We target the wrapper class so other
@@ -57,7 +57,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
     /* Jira-measured title typography — re-measured from BAU-5538 on
        2026-04-20 directly off Atlaskit's h1
        (data-testid="issue.views.issue-base.foundation.summary.heading").
-       Live Jira emits 24px / 653 weight / 28px line-height / #292A2E /
+       Live Jira emits 24px / 653 weight / 28px line-height / var(--ds-text, #172B4D) /
        Atlassian Sans. Previous spec (20/1.4) came from a smaller
        surface in the earlier screenshot batch — superseded. */
     .cv-title-edit-hide-label h1 {

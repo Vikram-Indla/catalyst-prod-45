@@ -18,7 +18,7 @@
   /* Card Title — PRIMARY (hero of the card) */
   --boards-card-title-size: 14px;
   --boards-card-title-weight: 500;  /* NOT 400 — medium weight per Linear */
-  --boards-card-title-color: #1e293b;
+  --boards-card-title-color: var(--ds-text, #172B4D);
   --boards-card-title-color-done: var(--ds-text-subtlest, #64748b);
   
   /* Task ID — SECONDARY (visible but subtle) */
@@ -31,13 +31,13 @@
   --boards-date-size: 12px;
   --boards-date-weight: 400;
   --boards-date-color-overdue: var(--ds-text-danger, #dc2626);
-  --boards-date-color-today: #4f46e5;  /* Indigo — NOT green */
+  --boards-date-color-today: var(--ds-background-discovery-bold, #6E5DC6);  /* Indigo — NOT green */
   --boards-date-color-upcoming: var(--ds-text-subtlest, #64748b);
   
   /* Column Header */
   --boards-column-title-size: 14px;
   --boards-column-title-weight: 600;
-  --boards-column-title-color: #1e293b;
+  --boards-column-title-color: var(--ds-text, #172B4D);
   --boards-column-count-size: 12px;
   --boards-column-count-color: var(--ds-text-subtlest, #64748b);
   
@@ -47,8 +47,8 @@
   
   --boards-bg-page: var(--ds-surface-sunken, #f8fafc);
   --boards-bg-column: transparent;
-  --boards-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  --boards-bg-card-hover: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --boards-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  --boards-bg-card-hover: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --boards-bg-empty: var(--ds-surface-sunken, #f8fafc);
   
   /* ========================================
@@ -74,7 +74,7 @@
   --boards-status-planned: var(--ds-text-brand, #3b82f6);
   --boards-status-in-progress: var(--ds-text-warning, #f59e0b);
   --boards-status-progress: var(--ds-text-warning, #f59e0b);
-  --boards-status-review: #8b5cf6;
+  --boards-status-review: var(--ds-background-discovery-bold, #8b5cf6);
   --boards-status-done: var(--ds-text-success, #22c55e);
   
   /* ========================================
@@ -82,10 +82,10 @@
      ======================================== */
   
   --boards-avatar-blue: var(--ds-text-brand, #3b82f6);
-  --boards-avatar-teal: #14b8a6;
-  --boards-avatar-purple: #8b5cf6;
-  --boards-avatar-orange: #f97316;
-  --boards-avatar-pink: #ec4899;
+  --boards-avatar-teal: var(--ds-background-accent-teal-bolder, #14b8a6);
+  --boards-avatar-purple: var(--ds-background-discovery-bold, #8b5cf6);
+  --boards-avatar-orange: var(--ds-background-warning-bold, #f97316);
+  --boards-avatar-pink: var(--ds-background-accent-magenta-bolder, #ec4899);
   --boards-avatar-green: var(--ds-text-success, #22c55e);
   --boards-avatar-slate: var(--ds-text-subtlest, #64748b);
   
@@ -93,9 +93,9 @@
      SHADOWS — CRITICAL FOR DRAGGABILITY
      ======================================== */
   
-  --boards-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --boards-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --boards-shadow-card-dragging: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --boards-shadow-card: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  --boards-shadow-card-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  --boards-shadow-card-dragging: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
   
   /* ========================================
      SPACING
@@ -133,18 +133,18 @@
   --boards-column-title-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --boards-column-count-color: var(--ds-text-subtlest, #A1A1A1);
 
-  --boards-bg-page: var(--cp-bg-page, #1F1F21);
-  --boards-bg-card: var(--cp-bg-surface, var(--cp-ink-1, #242528));
-  --boards-bg-card-hover: var(--cp-bg-surface, var(--cp-ink-1, #242528));
-  --boards-bg-empty: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  --boards-bg-page: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
+  --boards-bg-card: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
+  --boards-bg-card-hover: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
+  --boards-bg-empty: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
 
   --boards-border-card: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --boards-border-card-hover: var(--ds-border-bold, #454545);
   --boards-border-empty: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
-  --boards-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --boards-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --boards-shadow-card-dragging: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --boards-shadow-card: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2));
+  --boards-shadow-card-hover: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
+  --boards-shadow-card-dragging: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
 
   --boards-date-color-upcoming: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
@@ -152,21 +152,21 @@
 /* DARK MODE — Direct property overrides to guarantee dark card backgrounds */
 .dark .boards-card,
 .dark .boards-card , [data-theme="dark"] .boards-card {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2)) !important;
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 .dark .boards-card:hover,
 .dark .boards-card:hover , [data-theme="dark"] .boards-card:hover {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))) !important;
   border-color: var(--ds-border-bold, #454545) !important;
 }
 
 .dark .boards-column__empty,
 .dark .boards-column__empty , [data-theme="dark"] .boards-column__empty {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
@@ -178,7 +178,7 @@
 
 .dark .boards-container,
 .dark .boards-container , [data-theme="dark"] .boards-container {
-  background-color: var(--cp-bg-page, #1F1F21) !important;
+  background-color: var(--cp-bg-page, var(--ds-surface, #FFFFFF)) !important;
 }
 
 .dark .boards-card__id,
@@ -268,7 +268,7 @@
 }
 
 .dark .boards-column__count {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   color: var(--ds-text-subtlest, #A1A1A1);
 }
 
@@ -292,7 +292,7 @@
 }
 
 .dark .boards-column__add-btn:hover {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   color: var(--ds-text-subtlest, #A1A1A1);
 }
 
@@ -329,7 +329,7 @@
   gap: 6px;
   padding: 10px;
   background-color: transparent;
-  border: 1px dashed #d1d5db;
+  border: 1px dashed var(--ds-border, #DFE1E6);
   border-radius: var(--boards-card-radius);
   color: var(--ds-text-subtlest, #64748b);
   font-size: 13px;
@@ -342,7 +342,7 @@
 .boards-add-task:hover {
   background-color: var(--ds-surface-sunken, #f8fafc);
   border-color: var(--ds-text-subtlest, #94a3b8);
-  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
 }
 
 .dark .boards-add-task {
@@ -351,7 +351,7 @@
 }
 
 .dark .boards-add-task:hover {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   border-color: var(--ds-border-bold, #454545);
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
@@ -369,7 +369,7 @@
    ┌─────────────────────────────────────────┐
    │ PLN-51-4                                │  ← ID (monospace, var(--ds-text-subtlest, #64748b))
    │                                         │
-   │ Model reg                               │  ← Title (weight 500, #1e293b)
+   │ Model reg                               │  ← Title (weight 500, var(--ds-text, #172B4D))
    │                                         │
    │ 📅 Overdue                       [VI]   │  ← Date + Avatar
    └─────────────────────────────────────────┘
@@ -448,7 +448,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(239, 68, 68, 0.03);
+  background: var(--ds-background-danger, rgba(239, 68, 68, 0.03));
   border-radius: var(--boards-card-radius);
   pointer-events: none;
 }
@@ -484,7 +484,7 @@
 .boards-card__title {
   font-size: var(--boards-card-title-size);
   font-weight: var(--boards-card-title-weight);  /* 500 — medium, NOT 400 */
-  color: var(--boards-card-title-color);  /* #1e293b — dark */
+  color: var(--boards-card-title-color);  /* var(--ds-text, #172B4D) — dark */
   margin: 0 0 10px 0;
   line-height: 1.4;
   /* Truncate long titles */
@@ -554,7 +554,7 @@
 }
 
 .boards-card__date--today {
-  color: var(--boards-date-color-today);  /* Indigo #4f46e5 — NOT green */
+  color: var(--boards-date-color-today);  /* Indigo var(--ds-background-discovery-bold, #6E5DC6) — NOT green */
   font-weight: 500;
 }
 
@@ -584,7 +584,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 600;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   flex-shrink: 0;
 }
 
@@ -605,7 +605,7 @@
 }
 
 .dark .boards-card__avatar--empty {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
@@ -645,7 +645,7 @@
 }
 
 .dark .boards-card__avatar-overflow {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   color: var(--ds-text-subtlest, #A1A1A1);
 }
 
@@ -669,54 +669,54 @@
 }
 
 .boards-card__label--blue {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: var(--ds-background-information, #E9F2FF);
+  color: var(--ds-link-pressed, #1e40af);
 }
 
 .boards-card__label--green {
   background-color: var(--ds-background-success, #dcfce7);
-  color: #166534;
+  color: var(--ds-text-success, #216E4E);
 }
 
 .boards-card__label--yellow {
-  background-color: #fef9c3;
-  color: #854d0e;
+  background-color: var(--ds-background-warning, #FFF7D6);
+  color: var(--ds-text-warning, #974F0C);
 }
 
 .boards-card__label--red {
-  background-color: #fee2e2;
+  background-color: var(--ds-background-danger, #FFECEB);
   color: var(--ds-text-danger, #991b1b);
 }
 
 .boards-card__label--purple {
-  background-color: #f3e8ff;
-  color: #6b21a8;
+  background-color: var(--ds-background-discovery, #F3F0FF);
+  color: var(--ds-background-discovery-bold, #6E5DC6);
 }
 
 /* Dark mode label overrides — DARK MODE */
 .dark .boards-card__label--blue {
-  background-color: rgba(59, 130, 246, 0.15);
-  color: #93c5fd;
+  background-color: var(--ds-background-information-bold, rgba(59, 130, 246, 0.15));
+  color: var(--ds-background-information-bold, #0C66E4);
 }
 
 .dark .boards-card__label--green {
-  background-color: rgba(34, 197, 94, 0.15);
-  color: #86efac;
+  background-color: var(--ds-background-success-bold, rgba(34, 197, 94, 0.15));
+  color: var(--ds-background-success, #DFFCF0);
 }
 
 .dark .boards-card__label--yellow {
   background-color: rgba(234, 179, 8, 0.15);
-  color: #fde047;
+  color: var(--ds-background-warning, #FFF7D6);
 }
 
 .dark .boards-card__label--red {
-  background-color: rgba(239, 68, 68, 0.15);
+  background-color: var(--ds-background-danger, rgba(239, 68, 68, 0.15));
   color: var(--ds-border-danger, #fca5a5);
 }
 
 .dark .boards-card__label--purple {
-  background-color: rgba(139, 92, 246, 0.15);
-  color: #c4b5fd;
+  background-color: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.15));
+  color: var(--ds-background-discovery, #F3F0FF);
 }
 
 
@@ -738,7 +738,7 @@
 }
 
 .dark .boards-card--placeholder {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 
@@ -806,7 +806,7 @@
 .boards-column__drag-handle:active {
   cursor: grabbing;
   color: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  background-color: #dbeafe;
+  background-color: var(--ds-background-information, #E9F2FF);
 }
 
 .dark .boards-column__drag-handle {
@@ -815,7 +815,7 @@
 
 .dark .boards-column__drag-handle:hover {
   color: var(--ds-text-brand, #60a5fa);
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
 }
 
 /* Delete button for custom columns */
@@ -844,8 +844,8 @@
 }
 
 .dark .boards-column__delete-btn:hover {
-  background-color: #3a1a1a;
-  color: #f87171;
+  background-color: var(--ds-text, #172B4D);
+  color: var(--ds-background-danger, #FFECEB);
 }
 
 /* Column being dragged */
@@ -879,7 +879,7 @@
   min-width: 200px;
   height: 120px;
   background-color: transparent;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--ds-border, #DFE1E6);
   border-radius: 12px;
   color: var(--ds-text-subtlest, #64748b);
   font-size: 14px;
@@ -893,7 +893,7 @@
 .boards-add-column:hover {
   background-color: var(--ds-surface-sunken, #f8fafc);
   border-color: var(--ds-text-subtlest, #94a3b8);
-  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
   transform: scale(1.02);
 }
 
@@ -903,7 +903,7 @@
 }
 
 .dark .boards-add-column:hover {
-  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   border-color: var(--ds-border-bold, #454545);
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }

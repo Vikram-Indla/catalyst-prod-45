@@ -72,7 +72,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
       {/* Drawer */}
       <div 
         className="fixed top-0 right-0 bottom-0 w-[480px] max-w-[100vw] bg-card z-[1001] flex flex-col animate-in slide-in-from-right duration-300"
-        style={{ boxShadow: '-8px 0 32px rgba(0,0,0,0.15)' }}
+        style={{ boxShadow: '-8px 0 32px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }}
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
@@ -84,7 +84,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
             className="w-11 h-11 rounded-[12px] flex items-center justify-center text-[14px] font-extrabold text-white flex-shrink-0"
             style={{ 
               background: departmentGradient,
-              boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)'
+              boxShadow: '0 2px 8px var(--ds-background-information, rgba(37, 99, 235, 0.3))'
             }}
           >
             {initials}
@@ -102,7 +102,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
               {showContractWarning && (
                 <>
                   <span className="w-[3px] h-[3px] rounded-full bg-muted-foreground flex-shrink-0" />
-                  <span className="px-1.5 py-0.5 rounded bg-[var(--ds-background-danger,#fef2f2)] border border-[#fecaca] text-[var(--ds-text-danger,#dc2626)] text-[10px] font-semibold">
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--ds-background-danger,#fef2f2)] border border-[var(--ds-background-danger, #FFECEB)] text-[var(--ds-text-danger,#dc2626)] text-[10px] font-semibold">
                     Ends {format(contractEnd, 'MMM d')}
                   </span>
                 </>
@@ -151,7 +151,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
           
           <button 
             onClick={goToToday}
-            className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded bg-[var(--ds-background-danger,#fef2f2)] border border-[#fecaca] text-[10px] font-semibold text-[var(--ds-text-danger,#dc2626)]"
+            className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded bg-[var(--ds-background-danger,#fef2f2)] border border-[var(--ds-background-danger, #FFECEB)] text-[10px] font-semibold text-[var(--ds-text-danger,#dc2626)]"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--ds-text-danger,#dc2626)] animate-pulse" />
             Today: {format(today, 'MMM d')} (W{getISOWeek(today)})
@@ -210,7 +210,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
               ))}
 
               {/* Available Row */}
-              <div className="flex bg-[#f0fdf4] dark:bg-emerald-950/20 border-t border-border" role="row">
+              <div className="flex bg-[var(--ds-background-success, #DFFCF0)] dark:bg-emerald-950/20 border-t border-border" role="row">
                 <div className="w-[140px] flex-shrink-0 p-2 flex items-center gap-2" role="rowheader">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                   <span className="text-[12px] font-semibold text-emerald-700 dark:text-emerald-400">Available</span>
@@ -223,7 +223,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
                       <div className={cn(
                         "h-8 rounded-[6px] flex items-center justify-center text-[11px] font-bold",
                         available > 0 
-                          ? "bg-[repeating-linear-gradient(45deg,#f0fdf4,#f0fdf4_3px,#bbf7d0_3px,#bbf7d0_6px)] border border-[#86efac] text-[#15803d]"
+                          ? "bg-[repeating-linear-gradient(45deg,var(--ds-background-success, #DFFCF0),var(--ds-background-success, #DFFCF0)_3px,var(--ds-background-success, #DFFCF0)_3px,var(--ds-background-success, #DFFCF0)_6px)] border border-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-background-success-bold, #1F845A)]"
                           : "bg-muted/50 border border-border text-muted-foreground"
                       )}>
                         {available}%
@@ -306,9 +306,9 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
 function LegendItem({ label, type }: { label: string; type: 'actual' | 'committed' | 'forecast' | 'available' }) {
   const styles: Record<string, string> = {
     actual: 'bg-primary/50',
-    committed: 'bg-primary shadow-[inset_0_0_0_2px_rgba(255,255,255,0.25)]',
-    forecast: 'bg-[repeating-linear-gradient(-45deg,rgba(37,99,235,0.2),rgba(37,99,235,0.2)_2px,rgba(37,99,235,0.35)_2px,rgba(37,99,235,0.35)_4px)] border-2 border-dashed border-primary',
-    available: 'bg-[repeating-linear-gradient(45deg,#f0fdf4,#f0fdf4_2px,#bbf7d0_2px,#bbf7d0_4px)] border border-[#86efac]',
+    committed: 'bg-primary shadow-[inset_0_0_0_2px_var(--ds-surface, rgba(255,255,255,0.25))]',
+    forecast: 'bg-[repeating-linear-gradient(-45deg,var(--ds-background-information, rgba(37,99,235,0.2)),var(--ds-background-information, rgba(37,99,235,0.2))_2px,var(--ds-background-information, rgba(37,99,235,0.35))_2px,var(--ds-background-information, rgba(37,99,235,0.35))_4px)] border-2 border-dashed border-primary',
+    available: 'bg-[repeating-linear-gradient(45deg,var(--ds-background-success, #DFFCF0),var(--ds-background-success, #DFFCF0)_2px,var(--ds-background-success, #DFFCF0)_2px,var(--ds-background-success, #DFFCF0)_4px)] border border-[var(--ds-background-success, #DFFCF0)]',
   };
 
   return (
@@ -335,7 +335,7 @@ function AllocationRow({
   colorIndex: number;
   onCellClick: (weekStart: string) => void;
 }) {
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#0d9488', '#ea580c', '#7c3aed'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-discovery-bold, #7C3AED)'];
   const color = assignment.color || colors[colorIndex % colors.length];
 
   return (
@@ -402,7 +402,7 @@ function AllocationBlock({
     },
     committed: {
       backgroundColor: color,
-      boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.25)',
+      boxShadow: 'inset 0 0 0 2px var(--ds-surface, rgba(255,255,255,0.25))',
     },
     forecast: {
       background: `repeating-linear-gradient(-45deg, color-mix(in srgb, ${color} 20%, transparent), color-mix(in srgb, ${color} 20%, transparent) 3px, color-mix(in srgb, ${color} 35%, transparent) 3px, color-mix(in srgb, ${color} 35%, transparent) 6px)`,

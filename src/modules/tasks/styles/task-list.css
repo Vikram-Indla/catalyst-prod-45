@@ -7,15 +7,15 @@
 .planner-task-list-content {
   /* === Surfaces (N4, N5) === */
   --tl-surface-page: var(--ds-surface-sunken, #f8fafc);       /* gray-50 */
-  --tl-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --tl-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --tl-surface-header: var(--ds-surface-sunken, #f8fafc);
   --tl-surface-hover: var(--ds-surface-sunken, #f1f5f9);      /* I1: row hover */
   --tl-surface-selected: var(--ds-background-selected, #eff6ff);   /* I3: selected row */
-  --tl-surface-editing: #fffbeb;
+  --tl-surface-editing: var(--ds-background-warning, #FFF7D6);
   
   /* === Text Colors (E, K) === */
   --tl-text-primary: var(--ds-text, #0f172a);       /* E1.3: page title */
-  --tl-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));     /* gray-700 */
+  --tl-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));     /* gray-700 */
   --tl-text-tertiary: var(--ds-text-subtlest, #64748b);      /* E1.5, E2.4: subtitle, headers */
   --tl-text-muted: var(--ds-text-subtlest, #94a3b8);         /* gray-400 */
   
@@ -31,8 +31,8 @@
   
   /* === Priority Dot Colors (A2) === */
   --tl-priority-critical: var(--ds-text-danger, #dc2626);  /* A2.1 */
-  --tl-priority-high: #f97316;      /* A2.2 */
-  --tl-priority-medium: #eab308;    /* A2.3: yellow, NOT green */
+  --tl-priority-high: var(--ds-background-warning-bold, #f97316);      /* A2.2 */
+  --tl-priority-medium: var(--ds-background-warning-bold, #E2B203);    /* A2.3: yellow, NOT green */
   --tl-priority-low: var(--ds-text-subtlest, #94a3b8);       /* A2.4 */
   
   /* === Status Dot Colors === */
@@ -55,21 +55,21 @@
 
 /* Dark mode */
 .dark .planner-task-list-content {
-  --tl-surface-page: var(--cp-bg-page, #1F1F21);
-  --tl-surface-card: #171717;
-  --tl-surface-header: #171717;
-  --tl-surface-hover: #262626;
-  --tl-surface-selected: #1e3a5f;
+  --tl-surface-page: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
+  --tl-surface-card: var(--ds-text, #172B4D);
+  --tl-surface-header: var(--ds-text, #172B4D);
+  --tl-surface-hover: var(--ds-text, #172B4D);
+  --tl-surface-selected: var(--ds-text, #172B4D);
   --tl-surface-editing: #422006;
   
-  --tl-text-primary: #fafafa;
-  --tl-text-secondary: #e5e5e5;
-  --tl-text-tertiary: #a3a3a3;
-  --tl-text-muted: #737373;
+  --tl-text-primary: var(--ds-surface-sunken, #FAFAFA);
+  --tl-text-secondary: var(--ds-border, #DFE1E6);
+  --tl-text-tertiary: var(--ds-text-disabled, #8590A2);
+  --tl-text-muted: var(--ds-text-subtlest, #626F86);
   
-  --tl-border: #262626;
-  --tl-border-light: #1f2937;
-  --tl-border-strong: #404040;
+  --tl-border: var(--ds-text, #172B4D);
+  --tl-border-light: var(--ds-text, #172B4D);
+  --tl-border-strong: var(--ds-text-subtle, #44546F);
 }
 
 /* ============================================================================
@@ -191,7 +191,7 @@
 .planner-task-list-content .tl-search-input:focus {
   outline: none;
   border-color: var(--tl-border-focus);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.1));
 }
 
 .planner-task-list-content .tl-search-input::placeholder {
@@ -319,7 +319,7 @@
 }
 
 .planner-task-list-content .tl-row.blocked {
-  background: rgba(220, 38, 38, 0.05);
+  background: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.05));
 }
 
 .planner-task-list-content .tl-row td {
@@ -343,7 +343,7 @@
 }
 
 .planner-task-list-content .tl-task-id:hover {
-  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;          /* B4: gray-700 */
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;          /* B4: gray-700 */
   text-decoration: underline;  /* B5 */
 }
 
@@ -368,8 +368,8 @@
 }
 
 .dark .planner-task-list-content .tl-title-cell:hover {
-  background: rgba(59, 130, 246, 0.1);
-  outline: 1px dashed #404040;
+  background: var(--ds-background-information-bold, rgba(59, 130, 246, 0.1));
+  outline: 1px dashed var(--ds-text-subtle, #44546F);
 }
 
 .planner-task-list-content .tl-title-text {
@@ -416,14 +416,14 @@
 .planner-task-list-content .tl-status-badge[data-status="in-progress"],
 .planner-task-list-content .tl-status-badge[data-status="in progress"],
 .planner-task-list-content .tl-status-badge.status-in-progress {
-  background: #fffbeb !important;  /* A3.1: subtle yellow tint */
-  border-color: #fde68a !important; /* A3.2 */
+  background: var(--ds-background-warning, #FFF7D6) !important;  /* A3.1: subtle yellow tint */
+  border-color: var(--ds-background-warning, #FFF7D6) !important; /* A3.2 */
 }
 
 .planner-task-list-content .tl-status-badge[data-status="done"],
 .planner-task-list-content .tl-status-badge.status-done {
-  background: #f0fdf4 !important;  /* A3.6: subtle green tint */
-  border-color: #bbf7d0 !important;
+  background: var(--ds-background-success, #DFFCF0) !important;  /* A3.6: subtle green tint */
+  border-color: var(--ds-background-success, #DFFCF0) !important;
 }
 
 /* G2: Status dot 6px */
@@ -541,7 +541,7 @@
 /* K4: Assignee name var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) */
 .planner-task-list-content .tl-assignee-name {
   font-size: 0.8125rem;
-  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -579,7 +579,7 @@
 .planner-task-list-content .tl-date-value {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
 }
 
 /* J2, J3: Overdue var(--ds-text-danger, #dc2626), font-weight 500 */
@@ -819,7 +819,7 @@
   width: 1rem;             /* G4: 16px */
   height: 1rem;
   border-radius: 0.25rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--ds-border, #DFE1E6);
   cursor: pointer;
 }
 
@@ -890,14 +890,14 @@
 /* Only "in-progress" gets subtle amber tint */
 .planner-task-list-content .tl-status-badge[data-status="in-progress"],
 .planner-task-list-content .tl-status-badge[data-status="in progress"] {
-  background-color: #fffbeb !important;
-  border-color: #fde68a !important;
+  background-color: var(--ds-background-warning, #FFF7D6) !important;
+  border-color: var(--ds-background-warning, #FFF7D6) !important;
 }
 
 /* Only "done" gets subtle green tint */
 .planner-task-list-content .tl-status-badge[data-status="done"] {
-  background-color: #f0fdf4 !important;
-  border-color: #bbf7d0 !important;
+  background-color: var(--ds-background-success, #DFFCF0) !important;
+  border-color: var(--ds-background-success, #DFFCF0) !important;
 }
 
 /* Task ID - ensure no wrapping and gray color */
@@ -907,5 +907,5 @@
 }
 
 .planner-task-list-content td .tl-task-id:hover {
-  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F)))) !important;
 }

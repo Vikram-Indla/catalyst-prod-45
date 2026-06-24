@@ -161,12 +161,12 @@ function cardToCanonicalIssue({ card, columnName }: CardContext): CanonicalBoard
 
 const CARD_TYPE_ICON: Record<CardType, { Icon: typeof Bookmark; color: string }> = {
   Epic:       { Icon: Zap,         color: '#904EE2' },
-  Feature:    { Icon: Layers,      color: '#63BA3C' },
-  Story:      { Icon: Bookmark,    color: '#63BA3C' },
-  Task:       { Icon: CheckSquare, color: '#4BADE8' },
-  Defect:     { Icon: Bug,         color: '#E5493A' },
-  Dependency: { Icon: Link2,       color: '#4BADE8' },
-  Risk:       { Icon: ShieldAlert, color: '#E5493A' },
+  Feature:    { Icon: Layers,      color: 'var(--ds-background-success-bold, #1F845A)' },
+  Story:      { Icon: Bookmark,    color: 'var(--ds-background-success-bold, #1F845A)' },
+  Task:       { Icon: CheckSquare, color: 'var(--ds-background-information-bold, #1D7AFC)' },
+  Defect:     { Icon: Bug,         color: 'var(--ds-background-danger-bold, #C9372C)' },
+  Dependency: { Icon: Link2,       color: 'var(--ds-background-information-bold, #1D7AFC)' },
+  Risk:       { Icon: ShieldAlert, color: 'var(--ds-background-danger-bold, #C9372C)' },
 };
 
 export function resolveTeamProgramIcon(card: BoardIssue): ReactNode | null {

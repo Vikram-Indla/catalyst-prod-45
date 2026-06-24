@@ -55,8 +55,8 @@ export interface WeekNarrative {
 }
 
 const PROJECT_COLORS: Record<string, string> = {
-  BAU: '#4C6EF5', SIMP: '#FA8C16', MDT: '#52C41A', MWR: '#13C2C2',
-  IRP: '#EB2F96', ICP: '#722ED1', IP: '#36CFC9', TAH: '#2F54EB',
+  BAU: 'var(--ds-background-discovery-bold, #6E5DC6)', SIMP: '#FA8C16', MDT: '#52C41A', MWR: '#13C2C2',
+  IRP: '#EB2F96', ICP: 'var(--ds-background-discovery-bold, #6E5DC6)', IP: '#36CFC9', TAH: '#2F54EB',
 };
 
 function getSaudiWeekStart(): string {

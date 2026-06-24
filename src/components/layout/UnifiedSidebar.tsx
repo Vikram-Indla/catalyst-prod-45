@@ -293,7 +293,7 @@ export function UnifiedSidebar({
                   marginBottom: '2px',
                   position: 'relative',
                   justifyContent: expanded ? 'flex-start' : 'center',
-                  background: active ? 'rgba(37, 99, 235, 0.12)' : 'transparent',
+                  background: active ? 'var(--ds-background-information, rgba(37, 99, 235, 0.12))' : 'transparent',
                   color: active ? 'var(--cp-blue)' : 'var(--text-2)',
                   fontWeight: active ? 600 : 500,
                   fontSize: '0.84rem',
@@ -303,12 +303,12 @@ export function UnifiedSidebar({
                 }}
                 onMouseEnter={(e) => { 
                   if (!active) {
-                    e.currentTarget.style.background = 'rgba(37, 99, 235, 0.06)';
+                    e.currentTarget.style.background = 'var(--ds-background-information, rgba(37, 99, 235, 0.06))';
                     e.currentTarget.style.color = 'var(--text-1)';
                   }
                 }}
                 onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.12)' : 'transparent';
+                  e.currentTarget.style.background = active ? 'var(--ds-background-information, rgba(37, 99, 235, 0.12))' : 'transparent';
                   e.currentTarget.style.color = active ? 'var(--cp-blue)' : 'var(--text-2)';
                 }}
               >
@@ -354,7 +354,7 @@ export function UnifiedSidebar({
                       onMouseEnter={(e) => {
                         if (!starred) {
                           e.currentTarget.style.color = 'var(--ds-text-warning, #f59e0b)';
-                          e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
+                          e.currentTarget.style.background = 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))';
                         }
                       }}
                       onMouseLeave={(e) => {

@@ -50,10 +50,10 @@ function WorkItemIcon({ type }: { type: string }) {
   const t = (type || '').toLowerCase().trim();
   // Bug / Defect — red asterisk
   if (t === 'bug' || t === 'defect' || t === 'qa bug')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><path fill="#FF5630" fillRule="evenodd" d="M2,0 L14,0 C15.1045695,0 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 0,15.1045695 0,14 L0,2 C0,0.8954305 0.8954305,0 2,0 Z M8,12 C10.209139,12 12,10.209139 12,8 C12,5.790861 10.209139,4 8,4 C5.790861,4 4,5.790861 4,8 C4,10.209139 5.790861,12 8,12 Z"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><path fill="var(--ds-background-danger-bold, #C9372C)" fillRule="evenodd" d="M2,0 L14,0 C15.1045695,0 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 0,15.1045695 0,14 L0,2 C0,0.8954305 0.8954305,0 2,0 Z M8,12 C10.209139,12 12,10.209139 12,8 C12,5.790861 10.209139,4 8,4 C5.790861,4 4,5.790861 4,8 C4,10.209139 5.790861,12 8,12 Z"/></svg>;
   // Story — green bookmark
   if (t === 'story')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
   // Task variants — blue checkbox
   if (t === 'task' || t === 'catalyst_issue' || t === 'subtask' || t === 'sub-task'
       || t === 'frontend' || t === 'backend' || t === 'integration'
@@ -65,7 +65,7 @@ function WorkItemIcon({ type }: { type: string }) {
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--cp-purple-60, #7C3AED)"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
   // Business request / gap — green bookmark (story-like)
   if (t === 'business request' || t === 'business gap')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
   // Test case
   if (t === 'test_case' || t === 'tm_test_case')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--cp-teal-60, #0D9488)"/><path d="M4 5h8M4 8h5M4 11h3" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>;
@@ -144,7 +144,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     text3: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
     press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
-    borderStrong: isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(15,23,42,0.2)',
+    borderStrong: isDark ? 'var(--ds-border-bold, #454545)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.2))',
     checkStroke: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   };
 
@@ -330,7 +330,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           {isDueDate && daysUntilDue !== null && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, marginTop: 8,
-              background: 'rgba(217,119,6,.08)', borderRadius: 4, padding: '6px 10px',
+              background: 'var(--ds-background-warning, rgba(217,119,6,.08))', borderRadius: 4, padding: '6px 10px',
             }}>
               <Clock size={14} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />
               <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-warning-text, #92400E)' }}>

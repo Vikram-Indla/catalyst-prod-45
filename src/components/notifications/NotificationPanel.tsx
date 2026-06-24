@@ -116,8 +116,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
     press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     shadow: isDark
-      ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
-      : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
+      ? '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.4)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.5))'
+      : '0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.12)), 0 0 1px var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
     menuBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     divider: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
   };
@@ -502,7 +502,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '8px 14px', height: 'auto',
-                  background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
+                  background: 'none', border: 'none', borderBottom: isActive ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
                   cursor: 'pointer',
                   fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: isActive ? 600 : 500,
                   color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.text2,

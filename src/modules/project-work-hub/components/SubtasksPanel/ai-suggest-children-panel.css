@@ -19,11 +19,11 @@
   z-index: -2;
   background: conic-gradient(
     from 0deg,
-    #2684ff 0deg,
-    #6554c0 90deg,
-    #ff5630 180deg,
-    #ffab00 270deg,
-    #2684ff 360deg
+    var(--ds-link, #0C66E4) 0deg,
+    var(--ds-background-discovery-bold, #6554C0) 90deg,
+    var(--ds-background-danger-bold, #C9372C) 180deg,
+    var(--ds-background-warning-bold, #E2B203) 270deg,
+    var(--ds-link, #0C66E4) 360deg
   );
   animation: ascp-rotate 3s linear infinite;
   pointer-events: none;
@@ -302,7 +302,7 @@
   border-radius: 3px;
   font-weight: 500;
   font-size: 13px;
-  color: #fff;
+  color: var(--ds-text-inverse, #FFFFFF);
   background: var(--ds-background-brand-bold, #0c66e4);
   transition: background 100ms ease;
 }

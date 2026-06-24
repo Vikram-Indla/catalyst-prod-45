@@ -156,7 +156,7 @@ export default function IdeasBoardPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
         <div style={{
           width: 32, height: 32,
-          border: '2px solid #2563EB', borderTopColor: 'transparent',
+          border: '2px solid var(--ds-link, #2563eb)', borderTopColor: 'transparent',
           borderRadius: '50%', animation: 'spin 1s linear infinite',
         }} />
       </div>

@@ -458,7 +458,7 @@ function AllCaughtUpEmptyState() {
           height: 56,
           borderRadius: 8,
           background: 'var(--cv2-success, #2BAC76)',
-          color: '#FFFFFF',
+          color: 'var(--ds-text-inverse, #FFFFFF)',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',

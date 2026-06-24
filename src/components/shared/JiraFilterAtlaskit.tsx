@@ -147,9 +147,9 @@ export function countActiveFilters(v: JiraFilterValue): number {
 const PRIORITY_LEVELS: Array<{ level: PriorityLevel; label: string; icon: React.ReactNode; color: string }> = [
   { level: 'highest', label: 'Highest', icon: <HighestPriIcon label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
   { level: 'high',    label: 'High',    icon: <HighPriIcon    label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
-  { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  label="" size="small" />, color: token('color.icon.warning', '#F59E0B') },
-  { level: 'low',     label: 'Low',     icon: <LowPriIcon     label="" size="small" />, color: token('color.icon.information', '#0065FF') },
-  { level: 'lowest',  label: 'Lowest',  icon: <LowestPriIcon  label="" size="small" />, color: token('color.icon.information', '#0065FF') },
+  { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  label="" size="small" />, color: token('color.icon.warning', 'var(--ds-background-warning-bold, #f59e0b)') },
+  { level: 'low',     label: 'Low',     icon: <LowPriIcon     label="" size="small" />, color: token('color.icon.information', 'var(--ds-link, #0065FF)') },
+  { level: 'lowest',  label: 'Lowest',  icon: <LowestPriIcon  label="" size="small" />, color: token('color.icon.information', 'var(--ds-link, #0065FF)') },
 ];
 
 // ─── Props ────────────────────────────────────────────────────────────────
@@ -232,9 +232,9 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           height: 32,
           padding: '0 12px',
           borderRadius: 3,
-          border: `1px solid ${isOpen ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
-          background: isOpen ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
-          color: isOpen ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
+          border: `1px solid ${isOpen ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          background: isOpen ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          color: isOpen ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
           fontSize: 13,
           fontWeight: 500,
           fontFamily: 'inherit',
@@ -252,8 +252,8 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
               minWidth: 18,
               height: 18,
               borderRadius: 10,
-              background: token('color.background.accent.blue.bolder', '#0C66E4'),
-              color: token('color.text.inverse', '#FFFFFF'),
+              background: token('color.background.accent.blue.bolder', 'var(--ds-link, #0C66E4)'),
+              color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
               fontSize: 11,
               fontWeight: 700,
               display: 'inline-flex',
@@ -280,11 +280,11 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
             width: 360,
             maxHeight: 'calc(100vh - 160px)',
             overflowY: 'auto',
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px rgba(9,30,66,0.18)'),
-            color: token('color.text', '#292A2E'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
             fontSize: 14,
           }}
@@ -293,7 +293,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           <div
             style={{
               padding: '12px 16px',
-              borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -303,7 +303,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
               style={{
                 fontSize: 12,
                 fontWeight: 653,
-                color: token('color.text.subtlest', '#6B778C'),
+                color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               }}
             >
               Filters
@@ -315,7 +315,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: token('color.link', '#0C66E4'),
+                  color: token('color.link', 'var(--ds-link, #0C66E4)'),
                   fontSize: 12,
                   fontWeight: 500,
                   cursor: 'pointer',
@@ -348,14 +348,14 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      border: `1px solid ${selected ? token('color.border.selected', '#0C66E4') : 'transparent'}`,
+                      border: `1px solid ${selected ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : 'transparent'}`,
                       borderRadius: 3,
-                      background: selected ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                      background: selected ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
                       color: p.color,
                       cursor: 'pointer',
                     }}
                     onMouseEnter={(e) => {
-                      if (!selected) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                      if (!selected) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
                     }}
                     onMouseLeave={(e) => {
                       if (!selected) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -489,14 +489,14 @@ function Section({
     <div
       style={{
         padding: '16px 16px 18px',
-        borderBottom: noBorder ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: noBorder ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
       }}
     >
       <div
         style={{
           fontSize: 13,
           fontWeight: 500,
-          color: token('color.text', '#292A2E'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'),
           marginBottom: 10,
         }}
       >
@@ -523,7 +523,7 @@ function AvatarGrid({
   const [showAll, setShowAll] = useState(false);
   if (options.length === 0) {
     return (
-      <div style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic' }}>
+      <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
         {emptyHint}
       </div>
     );
@@ -556,7 +556,7 @@ function AvatarGrid({
               height: 32,
               padding: 0,
               borderRadius: '50%',
-              border: `2px solid ${isSel ? token('color.border.selected', '#0C66E4') : 'transparent'}`,
+              border: `2px solid ${isSel ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : 'transparent'}`,
               background: 'transparent',
               cursor: 'pointer',
               display: 'inline-flex',
@@ -577,9 +577,9 @@ function AvatarGrid({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            background: token('elevation.surface', '#FFFFFF'),
-            color: token('color.text.subtle', '#42526E'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
@@ -608,7 +608,7 @@ function StatusChipGrid({
   const [showAll, setShowAll] = useState(false);
   if (options.length === 0) {
     return (
-      <div style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic' }}>
+      <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
         No statuses available.
       </div>
     );
@@ -630,8 +630,8 @@ function StatusChipGrid({
               gap: 8,
               padding: '6px 12px',
               borderRadius: 16,
-              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
-              background: isSel ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
+              border: `1px solid ${isSel ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
               cursor: 'pointer',
             }}
           >
@@ -650,9 +650,9 @@ function StatusChipGrid({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            background: token('elevation.surface', '#FFFFFF'),
-            color: token('color.text.subtle', '#42526E'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
@@ -681,7 +681,7 @@ function WorkTypeChipGrid({
   const [showAll, setShowAll] = useState(false);
   if (options.length === 0) {
     return (
-      <div style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic' }}>
+      <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
         No work types available.
       </div>
     );
@@ -706,9 +706,9 @@ function WorkTypeChipGrid({
               gap: 8,
               padding: '6px 12px',
               borderRadius: 16,
-              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
-              background: isSel ? token('color.background.selected', '#E9F2FF') : token('color.background.neutral.subtle', '#FAFBFC'),
-              color: isSel ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
+              border: `1px solid ${isSel ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
               fontSize: 13,
               cursor: 'pointer',
               fontFamily: 'inherit',
@@ -733,9 +733,9 @@ function WorkTypeChipGrid({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            background: token('elevation.surface', '#FFFFFF'),
-            color: token('color.text.subtle', '#42526E'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
@@ -768,7 +768,7 @@ function PillChipGrid({
   const [showAll, setShowAll] = useState(false);
   if (options.length === 0) {
     return (
-      <div style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic' }}>
+      <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
         {emptyHint}
       </div>
     );
@@ -792,9 +792,9 @@ function PillChipGrid({
             style={{
               padding: compact ? '4px 10px' : '6px 12px',
               borderRadius: 16,
-              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : 'transparent'}`,
-              background: isSel ? token('color.background.selected', '#E9F2FF') : token('color.background.neutral.subtle', '#FAFBFC'),
-              color: isSel ? token('color.text.selected', '#0055CC') : token('color.text.subtle', '#42526E'),
+              border: `1px solid ${isSel ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : 'transparent'}`,
+              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
               fontSize: compact ? 12 : 13,
               cursor: 'pointer',
               fontFamily: 'inherit',
@@ -817,9 +817,9 @@ function PillChipGrid({
             width: 28,
             height: 28,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            background: token('elevation.surface', '#FFFFFF'),
-            color: token('color.text.subtle', '#42526E'),
+            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
@@ -859,7 +859,7 @@ function DateRange({
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 8, alignItems: 'end' }}>
       <div>
-        <div style={{ fontSize: 12, color: token('color.text.subtle', '#42526E'), marginBottom: 4 }}>{fromLabel}</div>
+        <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>{fromLabel}</div>
         <DatePicker
           value={from || ''}
           onChange={(v: string) => onChange(v || null, to)}
@@ -869,9 +869,9 @@ function DateRange({
           weekStartDay={0}
         />
       </div>
-      <div style={{ paddingBottom: 8, color: token('color.text.subtlest', '#6B778C') }}>→</div>
+      <div style={{ paddingBottom: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>→</div>
       <div>
-        <div style={{ fontSize: 12, color: token('color.text.subtle', '#42526E'), marginBottom: 4 }}>{toLabel}</div>
+        <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>{toLabel}</div>
         <DatePicker
           value={to || ''}
           onChange={(v: string) => onChange(from, v || null)}

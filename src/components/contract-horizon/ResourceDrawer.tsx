@@ -20,14 +20,14 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
   const initials = resource.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   
   const statusGradient = 
-    resource.status === 'critical' ? 'linear-gradient(90deg, #f87171, var(--ds-text-danger, #dc2626))' :
-    resource.status === 'warning' ? 'linear-gradient(90deg, #fbbf24, var(--ds-text-warning, #d97706))' :
-    'linear-gradient(90deg, #2dd4bf, #0d9488)';
+    resource.status === 'critical' ? 'linear-gradient(90deg, var(--ds-background-danger, #FFECEB), var(--ds-text-danger, #dc2626))' :
+    resource.status === 'warning' ? 'linear-gradient(90deg, var(--ds-background-warning-bold, #E2B203), var(--ds-text-warning, #d97706))' :
+    'linear-gradient(90deg, var(--ds-background-success, #DCFFF1), var(--ds-chart-teal-bold, #0d9488))';
 
   const statusColor = 
     resource.status === 'critical' ? 'var(--ds-text-danger, #ef4444)' :
     resource.status === 'warning' ? 'var(--ds-text-warning, #d97706)' :
-    '#0d9488';
+    'var(--ds-chart-teal-bold, #0d9488)';
 
   return (
     <>
@@ -145,11 +145,11 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
               />
               <AttributePill 
                 label={resource.vendor} 
-                color="#c2410c"
+                color="var(--ds-text-danger, #AE2A19)"
               />
               <AttributePill 
                 label={resource.location || 'On-site'} 
-                color="#0f766e"
+                color="var(--ds-chart-teal-bolder, #0f766e)"
               />
               <AttributePill 
                 label={resource.country || 'Unknown'} 

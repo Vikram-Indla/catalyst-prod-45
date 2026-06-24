@@ -161,7 +161,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
           fontWeight: 600,
           color: isDark
             ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))'
-            : token('color.text.subtlest', '#8590A2'),
+            : token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
         }}
       >
         {label}

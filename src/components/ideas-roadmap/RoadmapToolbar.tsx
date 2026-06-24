@@ -39,7 +39,7 @@ export function RoadmapToolbar({
       {/* Stat pills — EC-04: grey when 0 committed */}
       <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
         <span style={{
-          background: hasCommitted ? '#F0FDFA' : 'var(--bg-1)',
+          background: hasCommitted ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-1)',
           color: hasCommitted ? 'var(--sem-success)' : 'var(--fg-4)',
           padding: '4px 10px', borderRadius: 100,
         }}>
@@ -62,8 +62,8 @@ export function RoadmapToolbar({
               padding: '4px 14px', fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)', outline: 'none', transition: 'all 150ms',
               background: view === v ? 'var(--bg-app)' : 'transparent',
-              color: view === v ? '#1E293B' : 'var(--fg-3)',
-              boxShadow: view === v ? '0 1px 2px rgba(0,0,0,.06)' : 'none',
+              color: view === v ? 'var(--ds-text, #172B4D)' : 'var(--fg-3)',
+              boxShadow: view === v ? '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.06))' : 'none',
             }}
           >
             {v === 'roadmap' ? 'Roadmap' : 'Dates'}
@@ -77,7 +77,7 @@ export function RoadmapToolbar({
         style={{
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '4px 10px', borderRadius: 100, border: '1px solid var(--divider)',
-          background: committedOnly ? '#F0FDFA' : 'var(--bg-app)', cursor: 'pointer',
+          background: committedOnly ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-app)', cursor: 'pointer',
           fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
           color: committedOnly ? 'var(--sem-success)' : 'var(--fg-3)', transition: 'all 150ms',
         }}
@@ -115,7 +115,7 @@ export function RoadmapToolbar({
       </button>
       <button onClick={onExport} style={{
         height: 32, padding: '8px 12px', borderRadius: 6, border: 'none',
-        background: '#1E293B', color: 'var(--bg-app)', fontSize: 12, fontWeight: 600,
+        background: 'var(--ds-text, #172B4D)', color: 'var(--bg-app)', fontSize: 12, fontWeight: 600,
         fontFamily: 'var(--cp-font-body)', cursor: 'pointer', transition: 'all 150ms',
       }}>
         Export PPTX

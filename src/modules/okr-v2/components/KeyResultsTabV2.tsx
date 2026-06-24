@@ -177,21 +177,21 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
                   <div className="flex gap-2 pt-2 border-t border-[var(--ds-border,#EAECEF)] dark:border-[var(--ds-border,#21262D)] flex-wrap">
                     <button
                       onClick={(e) => handleAlignWork(kr, e)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface,#161B22)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] hover:border-[rgba(37,99,235,0.3)] transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface,#161B22)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] transition-colors"
                     >
                       <Link2 className="h-4 w-4" />
                       Align Work
                     </button>
                     <button
                       onClick={(e) => handleEdit(kr, e)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface,#161B22)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] hover:border-[rgba(37,99,235,0.3)] transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface,#161B22)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] transition-colors"
                     >
                       <Edit className="h-4 w-4" />
                       Update Value
                     </button>
                     <button
                       onClick={(e) => handleDelete(kr, e)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface,#161B22)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] hover:border-[rgba(37,99,235,0.3)] transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-white dark:bg-[var(--ds-surface,#161B22)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-border,#30363D)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text,#E6EDF3)] hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))] transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
                       Delete

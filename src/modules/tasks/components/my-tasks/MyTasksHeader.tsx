@@ -22,7 +22,7 @@ const STATUS_OPTIONS = [
   { value: 'backlog', label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
   { value: 'planned', label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
   { value: 'progress', label: 'In Progress', color: 'var(--ds-text-warning, #f59e0b)' },
-  { value: 'review', label: 'Review', color: '#8b5cf6' },
+  { value: 'review', label: 'Review', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
   { value: 'done', label: 'Done', color: 'var(--ds-text-success, #16a34a)' },
 ];
 
@@ -207,7 +207,7 @@ function WorkstreamDropdown({
           borderRadius: '8px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none',
           minWidth: '140px',
         }}
       >
@@ -240,7 +240,7 @@ function WorkstreamDropdown({
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
             zIndex: 100001,
             padding: '6px',
             minWidth: '180px',
@@ -313,7 +313,7 @@ function StatusDropdown({
           borderRadius: '8px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none',
           minWidth: '120px',
         }}
       >
@@ -356,7 +356,7 @@ function StatusDropdown({
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
             zIndex: 100001,
             padding: '6px',
             minWidth: '160px',

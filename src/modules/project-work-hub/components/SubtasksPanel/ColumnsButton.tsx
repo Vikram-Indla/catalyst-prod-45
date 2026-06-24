@@ -79,7 +79,7 @@ export function ColumnsButton({ columns, onChange }: ColumnsButtonProps) {
           background: 'var(--ds-surface-overlay, #FFFFFF)',
           border: '1px solid var(--ds-border, #DFE1E6)',
           borderRadius: 6,
-          boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+          boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
           padding: '4px 0',
           minWidth: 220,
           zIndex: 9999,
@@ -134,7 +134,7 @@ export function ColumnsButton({ columns, onChange }: ColumnsButtonProps) {
                   background: checked
                     ? 'var(--cp-primary-60, #0052CC)'
                     : 'transparent',
-                  color: '#FFFFFF',
+                  color: 'var(--ds-text-inverse, #FFFFFF)',
                   flexShrink: 0,
                 }}
               >

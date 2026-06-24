@@ -84,7 +84,7 @@ export function MentionPicker({ query, coords, onSelect, onDismiss }: Props) {
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
-        boxShadow: '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+        boxShadow: '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         padding: 4,
       }}
     >

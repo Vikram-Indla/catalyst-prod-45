@@ -15,7 +15,7 @@ export function BudgetInfoBox() {
         </span>
         <span className="text-slate-300">•</span>
         <span>
-          <strong className="text-[#0d9488]">Cosourced</strong> = Fixed vendor budget
+          <strong className="text-[var(--ds-chart-teal-bold, #0d9488)]">Cosourced</strong> = Fixed vendor budget
         </span>
         <span className="text-slate-300">•</span>
         <span>

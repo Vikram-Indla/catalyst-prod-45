@@ -450,7 +450,7 @@ export default function EpicsPage() {
               body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
               .card { 
                 page-break-inside: avoid; 
-                border: 2px solid #333; 
+                border: 2px solid var(--ds-text, #172B4D); 
                 padding: 20px; 
                 margin-bottom: 20px;
                 border-radius: 8px;
@@ -458,7 +458,7 @@ export default function EpicsPage() {
               .card-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
               .card-key { color: #666; font-size: 14px; }
               .card-body { margin-top: 15px; }
-              .card-footer { margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
+              .card-footer { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--ds-border, #DFE1E6); }
               .badge { 
                 display: inline-block; 
                 padding: 4px 8px; 

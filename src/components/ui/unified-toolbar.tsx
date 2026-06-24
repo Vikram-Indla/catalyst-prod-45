@@ -74,10 +74,10 @@ export function UnifiedToolbar({
           // Light mode: white bg distinct from cream page
           "bg-white dark:bg-[var(--ds-surface-overlay,#1f1f1f)]",
           // Subtle border for definition
-          "border border-[#e5e5e5] dark:border-[#404040]"
+          "border border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-text-subtle, #44546F)]"
         )}>
           {/* Search Icon - INCREASED VISIBILITY */}
-          <Search className="h-3.5 w-3.5 shrink-0 text-[#737373] dark:text-[#a3a3a3]" />
+          <Search className="h-3.5 w-3.5 shrink-0 text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]" />
           <input
             ref={inputRef}
             type="text"
@@ -88,9 +88,9 @@ export function UnifiedToolbar({
             className={cn(
               "flex-1 min-w-0 !bg-transparent bg-transparent text-sm pl-1",
               // Text color
-              "text-[var(--ds-surface,#0a0a0a)] dark:text-[#fafafa]",
+              "text-[var(--ds-surface,#0a0a0a)] dark:text-[var(--ds-surface-sunken, #FAFAFA)]",
               // Placeholder - CRITICAL FIX: brighter in dark mode
-              "placeholder:text-[#737373] dark:placeholder:text-[#8a8a8a]",
+              "placeholder:text-[var(--ds-text-subtlest, #626F86)] dark:placeholder:text-[#8a8a8a]",
               "!outline-none !border-none !ring-0 !shadow-none",
               "focus:!outline-none focus:!border-none focus:!ring-0 focus:!shadow-none"
             )}
@@ -98,17 +98,17 @@ export function UnifiedToolbar({
           {searchValue ? (
             <button
               onClick={() => onSearchChange("")}
-              className={cn("p-0.5 rounded hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a]", focusRingClass)}
+              className={cn("p-0.5 rounded hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[#2a2a2a]", focusRingClass)}
             >
-              <X className="h-3 w-3 text-[#737373] dark:text-[#a3a3a3]" />
+              <X className="h-3 w-3 text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]" />
             </button>
           ) : (
             <kbd className={cn(
               "hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium",
               // Light mode: visible badge
-              "bg-[#f5f5f5] text-[#525252] border border-[#e5e5e5]",
+              "bg-[var(--ds-surface-sunken, #F7F8F9)] text-[var(--ds-text-subtle, #44546F)] border border-[var(--ds-border, #DFE1E6)]",
               // Dark mode: MORE VISIBLE badge
-              "dark:bg-[#2a2a2a] dark:text-[#a3a3a3] dark:border-[#404040]"
+              "dark:bg-[#2a2a2a] dark:text-[var(--ds-text-disabled, #8590A2)] dark:border-[var(--ds-text-subtle, #44546F)]"
             )}>
               {navigator.platform.includes("Mac") ? "⌘" : "⌃"}K
             </kbd>

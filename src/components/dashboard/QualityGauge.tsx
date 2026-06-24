@@ -80,7 +80,7 @@ export function QualityGauge({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#e5e5e5"
+          stroke="var(--ds-border, #DFE1E6)"
           strokeWidth={strokeWidth}
           className="dark:stroke-neutral-700"
         />

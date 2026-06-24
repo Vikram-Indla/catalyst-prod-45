@@ -17,7 +17,7 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
         alignItems: 'center',
         justifyContent: 'center',
         gap: 18,
-        background: 'rgba(0,0,0,0.6)',
+        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.6))',
         backdropFilter: 'blur(2px)',
         WebkitBackdropFilter: 'blur(2px)',
         zIndex: 50,
@@ -28,24 +28,24 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
     >
       <DropzoneArt />
       <div style={{ textAlign: 'center', padding: '0 24px' }}>
-        <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, color: '#FFFFFF' }}>
+        <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, color: 'var(--ds-surface, #FFFFFF)' }}>
           Upload to {workspaceTitle}
         </div>
         {recipientName && (
-          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
+          <div style={{ fontSize: 14, color: 'var(--ds-surface, rgba(255,255,255,0.7))' }}>
             Hold{' '}
             <kbd
               style={{
                 display: 'inline-block',
                 padding: '1px 6px',
                 margin: '0 2px',
-                background: 'rgba(255,255,255,0.12)',
-                border: '1px solid rgba(255,255,255,0.2)',
+                background: 'var(--ds-surface, rgba(255,255,255,0.12))',
+                border: '1px solid var(--ds-surface, rgba(255,255,255,0.2))',
                 borderRadius: 3,
                 fontFamily: 'var(--cv2-font)',
                 fontSize: 12,
                 fontWeight: 600,
-                color: '#FFFFFF',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
               }}
             >
               Shift
@@ -72,11 +72,11 @@ function DropzoneArt() {
           background: '#7E57C2',
           borderRadius: 10,
           transform: 'rotate(-10deg)',
-          boxShadow: '0 6px 20px rgba(0,0,0,0.35)',
+          boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(0,0,0,0.35))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#FFFFFF',
+          color: 'var(--ds-text-inverse, #FFFFFF)',
         }}
       >
         <svg width={28} height={28} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -94,7 +94,7 @@ function DropzoneArt() {
           background: '#4FC3F7',
           borderRadius: 10,
           transform: 'rotate(8deg)',
-          boxShadow: '0 6px 20px rgba(0,0,0,0.35)',
+          boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(0,0,0,0.35))',
         }}
       />
       {/* Front green image card */}
@@ -106,9 +106,9 @@ function DropzoneArt() {
           transform: 'translateX(-50%) rotate(-2deg)',
           width: 110,
           height: 84,
-          background: '#FFFFFF',
+          background: 'var(--ds-surface, #FFFFFF)',
           borderRadius: 10,
-          boxShadow: '0 10px 28px rgba(0,0,0,0.45)',
+          boxShadow: '0 10px 28px var(--ds-shadow-raised, rgba(0,0,0,0.45))',
           overflow: 'hidden',
           display: 'flex',
           alignItems: 'flex-end',
@@ -132,7 +132,7 @@ function DropzoneArt() {
               height: 14,
               borderRadius: '50%',
               background: '#FFD54F',
-              boxShadow: '0 0 0 1px rgba(0,0,0,0.05)',
+              boxShadow: '0 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.05))',
             }}
           />
         </div>

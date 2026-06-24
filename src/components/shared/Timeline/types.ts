@@ -51,7 +51,7 @@ export interface TimelineIssue {
 /* ─────────────────────────────── ui state types ───────────────────────── */
 
 export type ZoomLevel = 'week' | 'month' | 'quarter';
-export type OpenDropdown = 'type' | 'status' | 'assignee' | 'quick' | 'more' | null;
+export type OpenDropdown = 'type' | 'status' | 'assignee' | 'quick' | 'more' | 'workitem' | null;
 
 export interface FlatRow {
   issue: TimelineIssue;

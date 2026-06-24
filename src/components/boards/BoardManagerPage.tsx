@@ -261,7 +261,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
     >
       {error && (
         <div style={{ padding: '8px 0' }}>
-          <span style={{ fontSize: 12, color: token('color.text.danger', '#AE2A19') }}>
+          <span style={{ fontSize: 12, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
             Board query error: {(error as Error).message}
           </span>
         </div>
@@ -384,11 +384,11 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
         style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           width: 32, height: 32, padding: 0, border: 'none', borderRadius: 3,
-          background: 'transparent', color: token('color.text.subtle', '#42526E'),
+          background: 'transparent', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
           cursor: 'pointer', opacity: 0, transition: 'opacity 120ms ease, background 100ms ease',
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
           (e.currentTarget as HTMLElement).style.opacity = '1';
         }}
         onMouseLeave={(e) => {
@@ -408,9 +408,9 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
             top: pos.top,
             left: pos.left,
             zIndex: 9999,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)'),
+            boxShadow: token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,.25)), 0 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.08))'),
             minWidth: 180,
             padding: '4px 0',
           }}
@@ -431,16 +431,16 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
                 display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
                 border: 'none', background: 'transparent', cursor: 'pointer',
                 textAlign: 'left', fontSize: 14,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               {label}
             </button>
           ))}
           {/* Divider */}
-          <div style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '4px 0' }} />
+          <div style={{ height: 1, background: token('color.border', 'var(--ds-border, #DFE1E6)'), margin: '4px 0' }} />
           {/* Danger action */}
           <button
             type="button"
@@ -450,9 +450,9 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
               display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
               border: 'none', background: 'transparent', cursor: 'pointer',
               textAlign: 'left', fontSize: 14,
-              color: token('color.text.danger', '#AE2A19'),
+              color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
             Delete
@@ -484,7 +484,7 @@ function MoveBoardDialog({ board, projects, currentProjectId, onConfirm, onClose
         <ModalTitle>Move board</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ fontSize: 14, color: token('color.text.subtle', '#42526E'), marginBottom: 12 }}>
+        <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 12 }}>
           Move <strong>{board.name}</strong> to a different project.
         </p>
         <Select<ProjectOption>
@@ -530,16 +530,16 @@ function CopyBoardDialog({ board, projects, currentProjectId, onConfirm, onClose
         <ModalTitle>Copy board</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ fontSize: 14, color: token('color.text.subtle', '#42526E'), marginBottom: 16 }}>
+        <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 16 }}>
           Creates a new board with the same configuration. Issues are not copied.
         </p>
-        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 4 }}>
+        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
           Board name
         </label>
         <div style={{ marginBottom: 16 }}>
           <Textfield value={name} onChange={e => setName((e.target as HTMLInputElement).value)} />
         </div>
-        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 4 }}>
+        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
           Destination project
         </label>
         <Select<ProjectOption>

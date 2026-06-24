@@ -55,9 +55,9 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
 
   const getBgColor = (type: 'critical' | 'warning' | 'info') => {
     switch (type) {
-      case 'critical': return 'bg-[#fee2e2] border-[#fecaca]';
-      case 'warning': return 'bg-[#fef3c7] border-[#fde68a]';
-      case 'info': return 'bg-[var(--ds-background-selected,#eff6ff)] border-[#bfdbfe]';
+      case 'critical': return 'bg-[var(--ds-background-danger, #FFECEB)] border-[var(--ds-background-danger, #FFECEB)]';
+      case 'warning': return 'bg-[var(--ds-background-warning, #FFF7D6)] border-[var(--ds-background-warning, #FFF7D6)]';
+      case 'info': return 'bg-[var(--ds-background-selected,#eff6ff)] border-[var(--ds-background-information, #E9F2FF)]';
     }
   };
 
@@ -65,8 +65,8 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
     <div 
       className="border rounded-xl p-4 mb-4"
       style={{
-        background: `linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%)`,
-        borderColor: 'rgba(139, 92, 246, 0.2)',
+        background: `linear-gradient(135deg, var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.08)) 0%, rgba(99, 102, 241, 0.08) 100%)`,
+        borderColor: 'var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.2))',
       }}
     >
       {/* Header */}
@@ -76,16 +76,16 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
             className="p-1.5 rounded-lg"
             style={{ background: `linear-gradient(135deg, ${CATALYST_COLORS.aiPurpleStart}, ${CATALYST_COLORS.aiPurpleEnd})` }}
           >
-            <SparklesIcon label="" size="small" primaryColor="#ffffff" />
+            <SparklesIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
           </div>
           <span className="font-semibold text-slate-800">AI Insights</span>
           {criticalCount > 0 && (
-            <span className="px-2 py-0.5 bg-[#fee2e2] text-[#b91c1c] text-xs font-medium rounded-full">
+            <span className="px-2 py-0.5 bg-[var(--ds-background-danger, #FFECEB)] text-[var(--ds-text-danger, #AE2A19)] text-xs font-medium rounded-full">
               {criticalCount} critical
             </span>
           )}
           {warningCount > 0 && (
-            <span className="px-2 py-0.5 bg-[#fef3c7] text-[#92400e] text-xs font-medium rounded-full">
+            <span className="px-2 py-0.5 bg-[var(--ds-background-warning, #FFF7D6)] text-[var(--ds-text-warning, #974F0C)] text-xs font-medium rounded-full">
               {warningCount} warnings
             </span>
           )}

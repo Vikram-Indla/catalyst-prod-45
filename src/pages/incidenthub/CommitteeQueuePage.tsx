@@ -32,13 +32,13 @@ export default function CommitteeQueuePage() {
         </div>
 
         {/* Table */}
-        <div style={{ border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{ border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', borderRadius: 6, overflow: 'hidden' }}>
           {/* Header */}
           <div className="grid items-center" style={{
             gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
             backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             height: 50,
-            borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
+            borderBottom: isDark ? '0.75px solid var(--ds-text, #172B4D)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
           }}>
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
               <div key={h} className="px-3" style={{
@@ -69,10 +69,10 @@ export default function CommitteeQueuePage() {
                 style={{
                   gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
                   height: 50,
-                  borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
+                  borderBottom: isDark ? '0.75px solid var(--ds-text, #172B4D)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
                   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'rgba(15,23,42,0.04)')}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}
                 onClick={() => navigate(`/incident-hub/view/${item.incident_id}`)}
               >

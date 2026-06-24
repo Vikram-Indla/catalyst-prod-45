@@ -177,7 +177,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
         width: 640,
         height: '100vh',
         background: 'var(--ds-surface-overlay, #FFFFFF)',
-        boxShadow: '-4px 0 20px rgba(9,30,66,0.25)',
+        boxShadow: '-4px 0 20px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         zIndex: 400,
         display: 'flex',
         flexDirection: 'column',
@@ -356,13 +356,13 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
       {versionModalOpen && isEdit && existingCase && createPortal(
         <div style={{
           position: 'fixed', inset: 0, zIndex: 9999,
-          background: 'rgba(9,30,66,0.54)',
+          background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <div style={{
             background: 'var(--ds-surface-overlay, #FFFFFF)',
             borderRadius: 8, width: 420, padding: 24,
-            boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
+            boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
             fontFamily: 'var(--ds-font-family-body)',
           }}>
             <h2 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
@@ -407,7 +407,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
                   padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
                   border: 'none',
                   background: createVersion.isPending ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-background-brand-bold, #0052CC)',
-                  color: createVersion.isPending ? 'var(--ds-text-disabled, #A5ADBA)' : '#FFFFFF',
+                  color: createVersion.isPending ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text-inverse, #FFFFFF)',
                   cursor: createVersion.isPending ? 'not-allowed' : 'pointer',
                 }}
               >

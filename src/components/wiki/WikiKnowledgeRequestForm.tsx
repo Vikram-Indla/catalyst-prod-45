@@ -71,7 +71,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', fontSize: 12, padding: '8px 12px', borderRadius: 6,
-    border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)',
+    border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.10))',
     outline: 'none', fontFamily: 'var(--cp-font-body)',
     transition: 'border-color 150ms',
     background: 'transparent',
@@ -85,15 +85,15 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(0,0,0,0.6)' : 'rgba(15,23,42,0.3)', zIndex: 60 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: isDark ? 'var(--ds-shadow-raised, rgba(0,0,0,0.6))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.3))', zIndex: 60 }} />
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 440, maxWidth: '92vw', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', borderRadius: 12,
-        boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 16px 48px rgba(0,0,0,0.12)', zIndex: 61,
+        boxShadow: isDark ? '0 16px 48px var(--ds-shadow-raised, rgba(0,0,0,0.4))' : '0 16px 48px var(--ds-shadow-raised, rgba(0,0,0,0.12))', zIndex: 61,
         animation: 'fadeScaleIn 180ms ease-out',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px 16px', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px 16px', borderBottom: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', display: 'flex', alignItems: 'center' }}>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, margin: 0, flex: 1, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>New Knowledge Request</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
             <X size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)' }} />
@@ -154,10 +154,10 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px 20px', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <div style={{ padding: '16px 24px 20px', borderTop: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onClose} style={{
             fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, cursor: 'pointer',
-            border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)',
+            border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.10))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={!canSubmit || submitting} style={{
             fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6, cursor: canSubmit ? 'pointer' : 'not-allowed',

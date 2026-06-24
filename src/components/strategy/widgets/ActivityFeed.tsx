@@ -14,8 +14,8 @@ interface FeedItem {
 /* All human avatars: exec-blue-700. AI avatar: exec-ai-purple. */
 const TEMP_MOCK_FEED: FeedItem[] = [
   {
-    initials: 'AH', color: '#1E40AF',
-    text: <><strong>Ahmed Hassan</strong> updated KR "Digitize 80% of permits" progress to <strong style={{ color: '#1E40AF' }}>82%</strong></>,
+    initials: 'AH', color: 'var(--ds-link-pressed, #1e40af)',
+    text: <><strong>Ahmed Hassan</strong> updated KR "Digitize 80% of permits" progress to <strong style={{ color: 'var(--ds-link-pressed, #1e40af)' }}>82%</strong></>,
     time: '2 hours ago',
   },
   {
@@ -24,22 +24,22 @@ const TEMP_MOCK_FEED: FeedItem[] = [
     time: '3 hours ago',
   },
   {
-    initials: 'SR', color: '#1E40AF',
+    initials: 'SR', color: 'var(--ds-link-pressed, #1e40af)',
     text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: 'var(--ds-text-success, var(--cp-success, #16A34A))' }}>on track</strong></>,
     time: '5 hours ago',
   },
   {
-    initials: 'MK', color: '#1E40AF',
+    initials: 'MK', color: 'var(--ds-link-pressed, #1e40af)',
     text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>pending</strong></>,
     time: 'Yesterday',
   },
   {
-    initials: 'FN', color: '#1E40AF',
+    initials: 'FN', color: 'var(--ds-link-pressed, #1e40af)',
     text: <><strong>Fatima Noor</strong> submitted ESG compliance framework draft for review</>,
     time: 'Yesterday',
   },
   {
-    initials: 'KA', color: '#1E40AF',
+    initials: 'KA', color: 'var(--ds-link-pressed, #1e40af)',
     text: <><strong>Khalid Al-Otaibi</strong> closed Epic "Ministry Integration Phase 2" — all features delivered</>,
     time: '2 days ago',
   },

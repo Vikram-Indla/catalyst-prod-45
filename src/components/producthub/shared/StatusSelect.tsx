@@ -23,7 +23,7 @@ const STATUS_GROUPS = [
     group: 'Execution',
     items: [
       { value: 'under_implementation', label: 'Under Implementation', color: 'var(--cp-teal-60, #0D9488)' },
-      { value: 'on_hold', label: 'On Hold', color: '#71717A' },
+      { value: 'on_hold', label: 'On Hold', color: 'var(--ds-text-subtlest, #626F86)' },
       { value: 'implementation_review', label: 'Implementation Review', color: 'var(--cp-teal-60, #0D9488)' },
     ],
   },
@@ -68,8 +68,8 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
         className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           borderColor: open ? 'var(--cp-blue)' : 'var(--divider)',
-          boxShadow: open ? '0 0 0 3px rgba(37,99,235,0.1)' : 'none',
-          color: selected ? '#09090B' : '#71717A',
+          boxShadow: open ? '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))' : 'none',
+          color: selected ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #626F86)',
           fontWeight: 500,
           fontFamily: 'var(--cp-font-body)',
         }}
@@ -77,11 +77,11 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
         <span className="flex items-center gap-2">
           <span
             className="w-2 h-2 rounded-full shrink-0"
-            style={{ backgroundColor: selected?.color || '#71717A' }}
+            style={{ backgroundColor: selected?.color || 'var(--ds-text-subtlest, #626F86)' }}
           />
           {selected?.label || 'Select status'}
         </span>
-        <ChevronDown className="w-4 h-4 shrink-0" style={{ color: '#71717A' }} />
+        <ChevronDown className="w-4 h-4 shrink-0" style={{ color: 'var(--ds-text-subtlest, #626F86)' }} />
       </button>
 
       {open && (
@@ -89,7 +89,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
           className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg overflow-hidden max-h-72 overflow-y-auto"
           style={{
             borderColor: 'var(--divider)',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.14)',
+            boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.14))',
             borderRadius: 8,
           }}
         >
@@ -118,7 +118,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
                     padding: '7px 12px',
                     fontSize: 13,
                     fontWeight: value === option.value ? 600 : 500,
-                    color: value === option.value ? 'var(--cp-blue)' : '#09090B',
+                    color: value === option.value ? 'var(--cp-blue)' : 'var(--ds-text, #172B4D)',
                     background: value === option.value ? 'var(--cp-blue-wash)' : 'transparent',
                     border: 'none',
                     cursor: 'pointer',

@@ -23,9 +23,9 @@ interface Props {
 }
 
 const CATEGORY_BG: Record<StatusCategory, string> = {
-  default:    '#DDDEE1',
-  inprogress: '#8FB8F6',
-  success:    '#B3DF72',
+  default:    'var(--ds-border, #DFE1E6)',
+  inprogress: 'var(--ds-background-information, #E9F2FF)',
+  success:    'var(--ds-background-success-bold, #6A9A23)',
   removed:    '#FD9891',
   new:        '#D8A0F7',
   moved:      '#F9C84E',
@@ -95,7 +95,7 @@ function WorkflowSvg({ workflow, currentStateId }: { workflow: Workflow; current
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8590A2" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ds-text-disabled, #8590A2)" />
           </marker>
         </defs>
 
@@ -111,7 +111,7 @@ function WorkflowSvg({ workflow, currentStateId }: { workflow: Workflow; current
           return (
             <line key={`${t.from}-${t.to}-${i}`}
               x1={x1} y1={y1} x2={x2} y2={y2}
-              stroke="#8590A2" strokeWidth={1}
+              stroke="var(--ds-text-disabled, #8590A2)" strokeWidth={1}
               markerEnd="url(#wf-arrow)"
               opacity={0.5}
             />
@@ -144,7 +144,7 @@ function WorkflowSvg({ workflow, currentStateId }: { workflow: Workflow; current
                 height={cellH}
                 rx={8}
                 fill={CATEGORY_BG[state.category]}
-                stroke={isCurrent ? '#0C66E4' : 'transparent'}
+                stroke={isCurrent ? 'var(--ds-link, #0C66E4)' : 'transparent'}
                 strokeWidth={isCurrent ? 2 : 0}
               />
               <text
@@ -154,7 +154,7 @@ function WorkflowSvg({ workflow, currentStateId }: { workflow: Workflow; current
                 fontSize={14}
                 fontWeight={600}
                 textAnchor="middle"
-                fill="#292A2E"
+                fill="var(--ds-text, #172B4D)"
               >
                 {state.name}
               </text>
@@ -164,7 +164,7 @@ function WorkflowSvg({ workflow, currentStateId }: { workflow: Workflow; current
                   fontSize={10}
                   fontWeight={700}
                   textAnchor="middle"
-                  fill="#0C66E4"
+                  fill="var(--ds-link, #0C66E4)"
                 >
                   CURRENT
                 </text>
@@ -202,7 +202,7 @@ function TransitionTable({ workflow }: { workflow: Workflow }) {
             const to = byId.get(t.to);
             if (!from || !to) return null;
             return (
-              <tr key={`${t.from}-${t.to}-${i}`} style={{ borderTop: '1px solid #EBECF0' }}>
+              <tr key={`${t.from}-${t.to}-${i}`} style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
                 <td style={{ padding: '8px 12px' }}>
                   <JiraStatusLozengeForState state={from} variant="subtle" />
                 </td>

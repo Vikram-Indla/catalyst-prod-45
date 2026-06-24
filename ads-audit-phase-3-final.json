@@ -1,0 +1,326 @@
+{
+  "phase": "Phase 3 \u2014 Component-level ADS token migration",
+  "audit_date": "2026-06-24",
+  "before": {
+    "RAW_HEX": 3250,
+    "RAW_RGB_HSL": 1506,
+    "TAILWIND_CLASS": 24882,
+    "HARDCODED_PX": 3409,
+    "total_hex": 4756
+  },
+  "after": {
+    "TAILWIND_CLASS": 24888,
+    "HARDCODED_PX": 3406,
+    "RAW_HEX": 466,
+    "CSS_FILE_IMPORT": 86,
+    "ATLASKIT_LEGACY": 23,
+    "RAW_RGB_HSL": 134,
+    "BANNED_FIELD": 2,
+    "HARDCODED_FONTSIZE": 10,
+    "INVALID_SPACING": 10
+  },
+  "after_total_hex": 600,
+  "reduction_pct": 87.4,
+  "top_remaining": {
+    "TAILWIND_CLASS": [
+      {
+        "file": "src/components/strategy/intelligence/AIStrategyIntelligencePanel.tsx",
+        "count": 190
+      },
+      {
+        "file": "src/components/budget/BudgetSummaryTab.tsx",
+        "count": 187
+      },
+      {
+        "file": "src/pages/enterprise/DemandSummaryPage.tsx",
+        "count": 161
+      },
+      {
+        "file": "src/pages/releases/DefectDetailPage.tsx",
+        "count": 156
+      },
+      {
+        "file": "src/modules/incidents/analytics/pages/IncidentInsightsPage.tsx",
+        "count": 138
+      },
+      {
+        "file": "src/components/capacity/AllocationBookingModal.tsx",
+        "count": 113
+      },
+      {
+        "file": "src/components/dependencies/DependencyDetailsDrawer.tsx",
+        "count": 113
+      },
+      {
+        "file": "src/components/releases/defects/ReportDefectModal.tsx",
+        "count": 106
+      },
+      {
+        "file": "src/components/strategy/themes/ThemeAlignmentView.tsx",
+        "count": 102
+      },
+      {
+        "file": "src/pages/release/IncidentViewPage.tsx",
+        "count": 100
+      }
+    ],
+    "HARDCODED_PX": [
+      {
+        "file": "src/pages/admin/connections/VercelConnectionPage.tsx",
+        "count": 48
+      },
+      {
+        "file": "src/components/strategy/room/AIExecutiveBrief.tsx",
+        "count": 45
+      },
+      {
+        "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
+        "count": 41
+      },
+      {
+        "file": "src/pages/admin/AdminAccessPage.tsx",
+        "count": 34
+      },
+      {
+        "file": "src/components/goals/GoalDetailDrawer.tsx",
+        "count": 31
+      },
+      {
+        "file": "src/components/resource360/RingViewV16.tsx",
+        "count": 30
+      },
+      {
+        "file": "src/components/strategy/room/StrategyRoomDashboard.tsx",
+        "count": 30
+      },
+      {
+        "file": "src/pages/admin/connections/JiraSyncPage.tsx",
+        "count": 30
+      },
+      {
+        "file": "src/components/project-hub/dashboard/GadgetSettingsPanel.tsx",
+        "count": 29
+      },
+      {
+        "file": "src/components/shared/JiraTable/editors.tsx",
+        "count": 28
+      }
+    ],
+    "RAW_HEX": [
+      {
+        "file": "src/stories/enterprise/CatySVGAssets.stories.tsx",
+        "count": 13
+      },
+      {
+        "file": "src/features/chat-v2/components/MessagePanel/ChannelEmptyState.tsx",
+        "count": 12
+      },
+      {
+        "file": "src/pages/admin/workflows/CatalystWorkflowBuilder.tsx",
+        "count": 10
+      },
+      {
+        "file": "src/components/industry/CatalystEnterpriseTable.tsx",
+        "count": 7
+      },
+      {
+        "file": "src/modules/project-work-hub/utils/backlog.utils.ts",
+        "count": 7
+      },
+      {
+        "file": "src/components/catalyst-ds/status/Lozenge.tsx",
+        "count": 6
+      },
+      {
+        "file": "src/components/home/workItemHierarchy.ts",
+        "count": 6
+      },
+      {
+        "file": "src/components/shared/MentionTextarea.tsx",
+        "count": 6
+      },
+      {
+        "file": "src/components/skills-inventory/SkillGapAnalysis.tsx",
+        "count": 6
+      },
+      {
+        "file": "src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx",
+        "count": 6
+      }
+    ],
+    "CSS_FILE_IMPORT": [
+      {
+        "file": "src/components/capacity/CapacityAnalyticsView/CapacityAnalyticsView.tsx",
+        "count": 4
+      },
+      {
+        "file": "src/main.tsx",
+        "count": 4
+      },
+      {
+        "file": "src/components/capacity-planner/CapacityPlannerGantt.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/components/product-hub/roadmap/ProductRoadmapPage.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/pages/R360MemberDetail.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/components/WorkListPanel/WorkListPanel.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/catalyst-detail-views/improve/CatyImproveStrap.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/catalyst-detail-views/improve/CatyStreamingOverlay.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/catalyst-detail-views/improve/CommentsSummaryCard.tsx",
+        "count": 1
+      }
+    ],
+    "ATLASKIT_LEGACY": [
+      {
+        "file": "src/components/auth/ForcePasswordReset.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/chat/caty-mood/CatyWhyCard.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/releasehub/detail/ReleaseDetailTabs.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/shared/CanonicalDescriptionField/CanonicalDescriptionField.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/shared/CanonicalDescriptionField/DescriptionEditMode.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/shared/CanonicalDescriptionField/DescriptionViewMode.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/shared/Timeline/EditDatesModal.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/shared/Timeline/SidebarRow.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/components/workflow/WorkflowDiagramModal.tsx",
+        "count": 1
+      },
+      {
+        "file": "src/modules/project-work-hub/components/AddPeopleModal.tsx",
+        "count": 1
+      }
+    ],
+    "RAW_RGB_HSL": [
+      {
+        "file": "src/components/goals/GoalsTreeView.tsx",
+        "count": 8
+      },
+      {
+        "file": "src/types/producthub/request.ts",
+        "count": 7
+      },
+      {
+        "file": "src/components/catalyst-detail-views/shared/sections/Description/_components/EditorView/editorStyles.ts",
+        "count": 5
+      },
+      {
+        "file": "src/components/roadmap/RoadmapEngine.tsx",
+        "count": 5
+      },
+      {
+        "file": "src/features/voice-flow/VoiceFloatingCapsule.tsx",
+        "count": 5
+      },
+      {
+        "file": "src/lib/capacity/work-item-tokens.ts",
+        "count": 5
+      },
+      {
+        "file": "src/modules/okr-v2/components/ObjectiveDrawerV2.tsx",
+        "count": 5
+      },
+      {
+        "file": "src/components/workhub/allwork/AllWorkTable.tsx",
+        "count": 4
+      },
+      {
+        "file": "src/pages/admin/AdminStorybookPage.tsx",
+        "count": 4
+      },
+      {
+        "file": "src/theme/tokens.ts",
+        "count": 4
+      }
+    ],
+    "BANNED_FIELD": [
+      {
+        "file": "src/registry/__tests__/banned-orphans.test.ts",
+        "count": 1
+      },
+      {
+        "file": "src/stories/enterprise/CatalystViewBase.stories.tsx",
+        "count": 1
+      }
+    ],
+    "HARDCODED_FONTSIZE": [
+      {
+        "file": "CreateModal.tsx",
+        "count": 4
+      },
+      {
+        "file": "CreateForm.tsx",
+        "count": 3
+      },
+      {
+        "file": "BacklogBreadcrumb.tsx",
+        "count": 1
+      },
+      {
+        "file": "CreateButton.tsx",
+        "count": 1
+      },
+      {
+        "file": "GroupHeader.tsx",
+        "count": 1
+      }
+    ],
+    "INVALID_SPACING": [
+      {
+        "file": "Timeline.module.css",
+        "count": 8
+      },
+      {
+        "file": "login-styles.css",
+        "count": 2
+      }
+    ]
+  },
+  "remaining_exceptions": {
+    "tailwind_arbitrary_hex": "Tailwind bg-[#hex] / dark:text-[#hex] classes \u2014 cannot auto-fix without JSX refactor (bg-[var(--ds-x)] is valid Tailwind 3+ but needs manual review per case)",
+    "hardcoded_px": "Off-grid spacing values \u2014 separate concern from color tokens, require per-file review",
+    "tailwind_utilities": "text-sm, bg-gray-100 etc. \u2014 Tailwind utility class replacements require manual className surgery per ADS component patterns",
+    "stories_hex": "Storybook color demo files intentionally show hex samples \u2014 consider ads-scanner:ignore suppression"
+  }
+}

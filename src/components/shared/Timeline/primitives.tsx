@@ -386,7 +386,7 @@ export function TimelineBarPopover({ issue, disabled, children }: {
             background: 'var(--ds-surface-overlay, #FFFFFF)',
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 6,
-            boxShadow: '0 8px 28px rgba(9,30,66,0.2)',
+            boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
             padding: '12px 14px',
             zIndex: 9999,
             fontFamily: 'var(--ds-font-family-body)',

@@ -73,7 +73,7 @@ const IcSpeaker = ({ size = 15, color = 'currentColor', muted = false }) => (
     )}
   </svg>
 );
-const IcCheck = ({ size = 13, color = '#36B37E', strokeWidth = 2 }: { size?: number; color?: string; strokeWidth?: number }) => (
+const IcCheck = ({ size = 13, color = 'var(--ds-background-success-bold, #1F845A)', strokeWidth = 2 }: { size?: number; color?: string; strokeWidth?: number }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <path d="M2 8l5 5 7-7" />
   </svg>
@@ -431,7 +431,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
   const ss = String(seconds % 60).padStart(2, '0');
   const timerPct = 1 - seconds / timerDuration;
-  const timerColor = seconds <= 15 ? '#E5493A' : seconds <= 30 ? '#FF8B00' : 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))';
+  const timerColor = seconds <= 15 ? 'var(--ds-background-danger-bold, #C9372C)' : seconds <= 30 ? 'var(--ds-background-warning-bold, #E2B203)' : 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))';
   const total = order.length;
   const isLast = step === total - 1;
 
@@ -656,7 +656,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                         not stroke), which renders as a proper bold checkmark
                         at any size — unlike stroke-based glyphs that look
                         chevron-y when shrunk down. */}
-                    <EditorDoneIcon label="" size="small" primaryColor="#FFFFFF" />
+                    <EditorDoneIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
                   </span>
                 )}
               </div>
@@ -855,7 +855,7 @@ function panelWrapStyle(tk: KanbanThemeTokens, docked?: boolean): React.CSSPrope
     width: 280,
     background: tk.surfaceBg,
     borderRight: `1px solid ${tk.border}`,
-    boxShadow: '4px 0 16px rgba(9,30,66,0.18)',
+    boxShadow: '4px 0 16px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
     display: 'flex', flexDirection: 'column',
     zIndex: 300,
     fontFamily: 'var(--cp-font-body)',
@@ -869,7 +869,7 @@ function navBtnStyle(tk: KanbanThemeTokens, primary: boolean, disabled: boolean)
     height: 30, padding: '0 12px', borderRadius: 3, border: 'none',
     cursor: disabled ? 'default' : 'pointer',
     fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-    color: disabled ? tk.textDisabled : primary ? '#FFFFFF' : tk.textPrimary,
+    color: disabled ? tk.textDisabled : primary ? 'var(--ds-text-inverse, #FFFFFF)' : tk.textPrimary,
     background: disabled ? tk.chipBg : primary ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : tk.surfaceHover,
     opacity: disabled ? 0.4 : 1,
     whiteSpace: 'nowrap',
@@ -975,7 +975,7 @@ function SettingsDropdown({
         borderRadius: 6,
         padding: '10px 0',
         zIndex: 10000,
-        boxShadow: '0 8px 24px rgba(9,30,66,0.16)',
+        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
         fontFamily: 'var(--cp-font-body)',
       }}
       onMouseDown={(e) => e.stopPropagation()}
@@ -1160,7 +1160,7 @@ function PillToggle({ value, onChange }: { value: boolean; onChange: (next: bool
       style={{
         width: 44, height: 24, borderRadius: 12,
         border: 'none', padding: 2,
-        background: value ? '#4F7B26' : '#292A2E',
+        background: value ? '#4F7B26' : 'var(--ds-text, #172B4D)',
         display: 'inline-flex', alignItems: 'center',
         justifyContent: 'space-between',
         cursor: 'pointer', flexShrink: 0,
@@ -1172,24 +1172,24 @@ function PillToggle({ value, onChange }: { value: boolean; onChange: (next: bool
         <>
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 16, height: 16, color: '#FFFFFF', marginLeft: 2,
+            width: 16, height: 16, color: 'var(--ds-surface, #FFFFFF)', marginLeft: 2,
           }}>
-            <CheckIcon label="" size="small" primaryColor="#FFFFFF" />
+            <CheckIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
           </span>
           <span style={{
-            width: 18, height: 18, borderRadius: '50%', background: '#FFFFFF',
+            width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface, #FFFFFF)',
           }} />
         </>
       ) : (
         <>
           <span style={{
-            width: 18, height: 18, borderRadius: '50%', background: '#FFFFFF',
+            width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface, #FFFFFF)',
           }} />
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 16, height: 16, color: '#FFFFFF', marginRight: 2,
+            width: 16, height: 16, color: 'var(--ds-surface, #FFFFFF)', marginRight: 2,
           }}>
-            <CrossIcon label="" size="small" primaryColor="#FFFFFF" />
+            <CrossIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
           </span>
         </>
       )}
@@ -1238,7 +1238,7 @@ function NavStepBtn({
 function CircleCtrlBtn({
   onClick, title, kind,
 }: { onClick: () => void; title: string; kind: 'play' | 'pause' | 'stop' }) {
-  const glyphColor = '#44546F';
+  const glyphColor = 'var(--ds-icon, #44546F)';
   return (
     <button
       type="button"

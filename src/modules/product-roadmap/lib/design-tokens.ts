@@ -14,23 +14,23 @@ export const catalystTokens = {
   // Semantic Status
   status: {
     success: {
-      base: '#0d9488',
-      bg: 'rgba(13, 148, 136, 0.1)',
-      text: '#115e59',
+      base: 'var(--ds-chart-teal-bold, #0d9488)',
+      bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.1))',
+      text: 'var(--ds-text-success, #216E4E)',
     },
     warning: {
       base: 'var(--ds-text-warning, #f59e0b)',
-      bg: 'rgba(245, 158, 11, 0.1)',
-      text: '#b45309',
+      bg: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))',
+      text: 'var(--ds-background-warning-bold, #b45309)',
     },
     danger: {
       base: 'var(--ds-text-danger, #ef4444)',
-      bg: 'rgba(239, 68, 68, 0.1)',
-      text: '#b91c1c',
+      bg: 'var(--ds-background-danger, rgba(239, 68, 68, 0.1))',
+      text: 'var(--ds-text-danger, #AE2A19)',
     },
     info: {
       base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-      bg: 'rgba(37, 99, 235, 0.1)',
+      bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.1))',
       text: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
     },
   },
@@ -39,26 +39,26 @@ export const catalystTokens = {
   secondary: {
     blue: {
       base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-      bg: 'rgba(37, 99, 235, 0.15)',
+      bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.15))',
     },
     teal: {
-      base: '#0d9488',
-      bg: 'rgba(13, 148, 136, 0.15)',
+      base: 'var(--ds-chart-teal-bold, #0d9488)',
+      bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))',
     },
     olive: {
-      base: '#0d9488',
-      bg: 'rgba(13, 148, 136, 0.15)',
+      base: 'var(--ds-chart-teal-bold, #0d9488)',
+      bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))',
     },
     bronze: {
-      base: '#6b7280',
+      base: 'var(--ds-text-subtlest, #626F86)',
       bg: 'rgba(107, 114, 128, 0.15)',
     },
     champagne: {
-      base: '#9ca3af',
-      bg: 'rgba(156, 163, 175, 0.2)',
+      base: 'var(--ds-text-disabled, #8590A2)',
+      bg: 'var(--ds-text-disabled, rgba(156, 163, 175, 0.2))',
     },
     grey: {
-      base: '#c8ccd0',
+      base: 'var(--ds-border, #DFE1E6)',
       bg: 'rgba(200, 204, 208, 0.15)',
     },
   },
@@ -67,19 +67,19 @@ export const catalystTokens = {
   light: {
     text: {
       primary: 'var(--ds-surface, #0a0a0a)',
-      secondary: '#525252',
-      muted: '#737373',
+      secondary: 'var(--ds-text-subtle, #44546F)',
+      muted: 'var(--ds-text-subtlest, #626F86)',
     },
     surface: {
-      bg: '#fafafa',
+      bg: 'var(--ds-surface-sunken, #FAFAFA)',
       card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-      hover: '#f0f0f0',
-      active: 'rgba(37, 99, 235, 0.12)',
+      hover: 'var(--ds-background-neutral, #F0F0F0)',
+      active: 'var(--ds-background-information, rgba(37, 99, 235, 0.12))',
     },
     border: {
-      default: '#e5e5e5',
-      subtle: '#f0f0f0',
-      strong: '#d4d4d4',
+      default: 'var(--ds-border, #DFE1E6)',
+      subtle: 'var(--ds-background-neutral, #F0F0F0)',
+      strong: 'var(--ds-background-neutral-hovered, #D4D4D4)',
     },
   },
 
@@ -94,12 +94,12 @@ export const catalystTokens = {
       bg: 'var(--ds-surface, #0A0A0A)',
       card: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
       hover: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
-      active: 'rgba(59, 130, 246, 0.2)',
+      active: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.2))',
     },
     border: {
-      default: 'rgba(255, 255, 255, 0.08)',
-      subtle: 'rgba(255, 255, 255, 0.05)',
-      strong: 'rgba(255, 255, 255, 0.12)',
+      default: 'var(--ds-surface, rgba(255, 255, 255, 0.08))',
+      subtle: 'var(--ds-surface, rgba(255, 255, 255, 0.05))',
+      strong: 'var(--ds-surface, rgba(255, 255, 255, 0.12))',
     },
   },
 } as const;
@@ -107,9 +107,9 @@ export const catalystTokens = {
 // Timeline bar colors by product - Catalyst V5 palette
 export const PRODUCT_COLORS: Record<string, string> = {
   MINI: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',  // Primary blue
-  SEN: '#0d9488',   // Teal/Success
-  ENT: '#71717a',   // Neutral gray
-  UNA: '#52525b',   // Muted gray
+  SEN: 'var(--ds-chart-teal-bold, #0d9488)',   // Teal/Success
+  ENT: 'var(--ds-text-subtlest, #626F86)',   // Neutral gray
+  UNA: 'var(--ds-text-subtle, #44546F)',   // Muted gray
 };
 
 // Get color for a product, with fallback
@@ -120,8 +120,8 @@ export function getProductColor(productCode: string | null): string {
 
 // Timeline grid colors — DARK MODE
 export const TIMELINE_COLORS = {
-  gridLine: 'rgba(255, 255, 255, 0.05)',
-  gridLineDark: 'rgba(255, 255, 255, 0.05)',
+  gridLine: 'var(--ds-surface, rgba(255, 255, 255, 0.05))',
+  gridLineDark: 'var(--ds-surface, rgba(255, 255, 255, 0.05))',
   todayLine: 'var(--ds-text-danger, #ef4444)',      // Danger red
   milestoneMarker: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Primary blue
   barDefault: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',      // Primary blue

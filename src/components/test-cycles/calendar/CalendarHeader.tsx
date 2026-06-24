@@ -62,7 +62,7 @@ export function CalendarHeader({
         <Button
           variant="ghost"
           onClick={() => onNavigate('today')}
-          className="h-8 px-3 bg-[#dbeafe] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:text-white"
+          className="h-8 px-3 bg-[var(--ds-background-information, #E9F2FF)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:text-white"
         >
           Today
         </Button>

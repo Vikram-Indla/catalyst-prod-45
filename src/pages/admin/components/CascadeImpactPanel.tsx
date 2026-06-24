@@ -97,7 +97,7 @@ function VscodeLink({ path }: { path: string }) {
     <a
       href={href}
       style={{
-        color: token('color.link', '#0C66E4'),
+        color: token('color.link', 'var(--ds-link, #0C66E4)'),
         textDecoration: 'none',
         fontFamily: 'var(--ds-font-family-code)',
         fontSize: 12,
@@ -278,9 +278,9 @@ export default function CascadeImpactPanel() {
         <div
           style={{
             padding: token('space.200', '16px'),
-            border: `1px solid ${token('color.border', '#DCDFE4')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
             borderRadius: 6,
-            background: token('color.background.neutral.subtle', '#F7F8F9'),
+            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -323,9 +323,9 @@ export default function CascadeImpactPanel() {
         <div
           style={{
             padding: token('space.300', '24px'),
-            border: `1px solid ${token('color.border', '#DCDFE4')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
             borderRadius: 6,
-            background: token('color.background.neutral.subtle', '#F7F8F9'),
+            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
             color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontSize: 13,
           }}
@@ -337,7 +337,7 @@ export default function CascadeImpactPanel() {
       ) : (
         <div
           style={{
-            border: `1px solid ${token('color.border', '#DCDFE4')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
             borderRadius: 6,
             overflow: 'hidden',
             display: 'flex',
@@ -352,8 +352,8 @@ export default function CascadeImpactPanel() {
                 <div
                   style={{
                     padding: '8px 12px',
-                    background: token('color.background.neutral.subtle', '#F7F8F9'),
-                    borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+                    borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
                     fontSize: 12,
                     fontWeight: 600,
                     color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
@@ -372,7 +372,7 @@ export default function CascadeImpactPanel() {
                     key={path}
                     style={{
                       padding: '6px 12px',
-                      borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                      borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
                       display: 'flex',
                       alignItems: 'center',
                       gap: token('space.100', '8px'),

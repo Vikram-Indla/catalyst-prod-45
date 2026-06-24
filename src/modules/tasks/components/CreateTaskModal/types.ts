@@ -20,7 +20,7 @@ export interface Priority {
 
 export const PRIORITIES: Priority[] = [
   { value: 'critical', label: 'Critical', color: 'var(--ds-text-danger, #ef4444)' },
-  { value: 'high', label: 'High', color: '#f97316' },
-  { value: 'medium', label: 'Medium', color: '#eab308' },
-  { value: 'low', label: 'Low', color: '#6b7280' },
+  { value: 'high', label: 'High', color: 'var(--ds-background-warning-bold, #E2B203)' },
+  { value: 'medium', label: 'Medium', color: 'var(--ds-background-warning-bold, #E2B203)' },
+  { value: 'low', label: 'Low', color: 'var(--ds-text-subtlest, #626F86)' },
 ];

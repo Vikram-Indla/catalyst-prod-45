@@ -36,7 +36,7 @@ function ToggleGroup({
       onClick={e => e.stopPropagation()}
       style={{
         display: 'inline-flex',
-        background: token('color.background.neutral.subtle', '#F4F5F7'),
+        background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
         borderRadius: 4,
         padding: 2,
       }}
@@ -50,14 +50,14 @@ function ToggleGroup({
           onClick={() => onChange(o.value)}
           style={{
             border: 'none',
-            background: o.value === active ? (isDark ? token('color.background.selected', '#1C2B41') : token('elevation.surface', '#FFFFFF')) : 'transparent',
+            background: o.value === active ? (isDark ? token('color.background.selected', 'var(--ds-text, #172B4D)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)')) : 'transparent',
             padding: '4px 10px',
             fontSize: 11,
             fontWeight: 500,
             color: o.value === active ? token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             cursor: 'pointer',
             borderRadius: 3,
-            boxShadow: o.value === active && !isDark ? '0 1px 1px rgba(9,30,66,0.15)' : 'none',
+            boxShadow: o.value === active && !isDark ? '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.15))' : 'none',
             fontFamily: 'inherit',
           }}
         >
@@ -89,11 +89,11 @@ function SectionHeading({ label, count, danger }: { label: string; count: number
       <span
         style={{
           background: danger
-            ? token('color.background.danger', '#FFECEB')
-            : token('color.background.warning', '#FFF7D6'),
+            ? token('color.background.danger', 'var(--ds-background-danger, #FFECEB)')
+            : token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
           color: danger
-            ? token('color.text.danger', '#AE2A19')
-            : token('color.text.warning', '#7F5F01'),
+            ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+            : token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
           padding: '1px 8px',
           borderRadius: 10,
           fontSize: 11,
@@ -137,7 +137,7 @@ function AttentionRow({
         borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         cursor: 'pointer',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', '#F1F2F4'); }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
     >
       <span
@@ -145,7 +145,7 @@ function AttentionRow({
           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
           fontSize: 12,
           fontWeight: 600,
-          color: token('color.link', '#0C66E4'),
+          color: token('color.link', 'var(--ds-link, #0C66E4)'),
         }}
       >
         {brKey(id)}
@@ -167,7 +167,7 @@ function AttentionRow({
           borderRadius: 3,
           fontSize: 11,
           fontWeight: 600,
-          background: token('color.background.neutral.subtle', '#F4F5F7'),
+          background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
           color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           whiteSpace: 'nowrap',
         }}
@@ -179,8 +179,8 @@ function AttentionRow({
           fontSize: 14,
           fontWeight: 600,
           color: overdue
-            ? token('color.text.danger', '#AE2A19')
-            : token('color.text.warning', '#7F5F01'),
+            ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+            : token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
           fontVariantNumeric: 'tabular-nums',
           whiteSpace: 'nowrap',
         }}
@@ -225,8 +225,8 @@ export function NeedsAttentionWidget() {
         style={{
           height: 180,
           borderRadius: 8,
-          background: token('color.background.neutral', '#F4F5F7'),
-          boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
     );
@@ -280,7 +280,7 @@ export function NeedsAttentionWidget() {
             style={{
               padding: '24px',
               fontSize: 13,
-              color: token('color.text.subtlest', '#8993A4'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
               textAlign: 'center',
             }}
           >

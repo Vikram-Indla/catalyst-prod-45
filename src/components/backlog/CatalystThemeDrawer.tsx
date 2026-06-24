@@ -121,9 +121,9 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
   },
   active: {
     label: 'Active',
-    bg: 'rgba(59,130,246,0.12)',
+    bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))',
     text: 'var(--cp-blue)',
-    border: 'rgba(59,130,246,0.3)',
+    border: 'var(--ds-background-information-bold, rgba(59,130,246,0.3))',
     icon: Sparkles,
   },
   approved: {
@@ -135,9 +135,9 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
   },
   on_hold: {
     label: 'On Hold',
-    bg: 'rgba(245,158,11,0.12)',
+    bg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.12))',
     text: 'var(--sem-warning)',
-    border: 'rgba(245,158,11,0.3)',
+    border: 'var(--ds-background-warning-bold, rgba(245,158,11,0.3))',
     icon: Clock,
   },
   done: {
@@ -149,9 +149,9 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
   },
   cancelled: {
     label: 'Cancelled',
-    bg: 'rgba(239,68,68,0.12)',
+    bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))',
     text: 'var(--sem-danger)',
-    border: 'rgba(239,68,68,0.3)',
+    border: 'var(--ds-background-danger, rgba(239,68,68,0.3))',
     icon: AlertTriangle,
   },
 };
@@ -238,7 +238,7 @@ function PremiumProgressBar({ progress }: { progress: number }) {
         className="relative h-3 w-full rounded-full overflow-hidden"
         style={{ 
           background: 'var(--bg-2)',
-          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
+          boxShadow: 'inset 0 2px 4px var(--ds-shadow-raised, rgba(0,0,0,0.1))'
         }}
       >
         {/* Animated Background Pattern */}
@@ -262,7 +262,7 @@ function PremiumProgressBar({ progress }: { progress: number }) {
           <div 
             className="absolute inset-0 rounded-full"
             style={{
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)'
+              background: 'linear-gradient(180deg, var(--ds-surface, rgba(255,255,255,0.25)) 0%, transparent 50%, var(--ds-shadow-raised, rgba(0,0,0,0.1)) 100%)'
             }}
           />
         </div>
@@ -319,7 +319,7 @@ function KPICard({
       valueColor: 'var(--fg-1)',
     },
     warning: {
-      iconBg: 'rgba(245,158,11,0.15)',
+      iconBg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.15))',
       iconColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
       valueColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
     },
@@ -329,7 +329,7 @@ function KPICard({
       valueColor: '#26A69A',
     },
     info: {
-      iconBg: 'rgba(59,130,246,0.15)',
+      iconBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',
       iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
       valueColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     },
@@ -351,7 +351,7 @@ function KPICard({
       style={{ 
         background: 'var(--bg-app)',
         borderColor: 'var(--divider)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)'
+        boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06))'
       }}
     >
       {/* Gradient overlay on hover */}
@@ -439,7 +439,7 @@ function SectionCard({
       style={{ 
         background: 'var(--bg-app)',
         borderColor: 'var(--divider)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)'
+        boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.06))'
       }}
     >
       <button
@@ -522,7 +522,7 @@ function EmptyState({
           className="relative w-16 h-16 rounded-full flex items-center justify-center"
           style={{ 
             background: 'linear-gradient(135deg, var(--bg-2) 0%, color-mix(in srgb, var(--bg-2) 50%, transparent) 100%)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+            boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.1))'
           }}
         >
           <Icon className="h-7 w-7" style={{ color: 'var(--fg-3)' }} />

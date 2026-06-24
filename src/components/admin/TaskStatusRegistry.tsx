@@ -44,7 +44,7 @@ const TH: React.CSSProperties = {
   color: 'var(--ds-text-subtle, #505258)',
   textAlign: 'left',
   padding: '4px 12px 4px 0',
-  borderBottom: '1.67px solid rgba(11,18,14,0.14)',
+  borderBottom: '1.67px solid var(--ds-text, rgba(11,18,14,0.14))',
   whiteSpace: 'nowrap',
 };
 const TD: React.CSSProperties = {
@@ -67,14 +67,14 @@ export function TaskStatusRegistry() {
   const [modalOpen, setModalOpen] = useState(false);
   const [target, setTarget] = useState<EditTarget>(null);
   const [name, setName] = useState('');
-  const [color, setColor] = useState('#6B778C');
+  const [color, setColor] = useState('var(--ds-text-subtlest, #6B778C)');
   const [isDefault, setIsDefault] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
   function openCreate() {
     setTarget(null);
     setName('');
-    setColor('#6B778C');
+    setColor('var(--ds-text-subtlest, #6B778C)');
     setIsDefault(false);
     setIsCompleted(false);
     setModalOpen(true);
@@ -83,7 +83,7 @@ export function TaskStatusRegistry() {
   function openEdit(s: PlannerStatus) {
     setTarget(s);
     setName(s.name);
-    setColor(s.color || '#6B778C');
+    setColor(s.color || 'var(--ds-text-subtlest, #6B778C)');
     setIsDefault(s.is_default);
     setIsCompleted(s.is_completed_status);
     setModalOpen(true);

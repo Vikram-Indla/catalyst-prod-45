@@ -59,17 +59,17 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   }, [target.key, target.iconType, isStarred, toggleStar]);
   const STAR_GOLD = 'var(--ds-icon-accent-yellow, #FFAB00)';
 
-  const hoverBg  = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)');
+  const hoverBg  = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))');
   const pressBg  = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
   const rowBg    = pressed ? pressBg : hovered ? hoverBg : 'transparent';
 
   const text1    = isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : token('color.text', '#292A2E');
   const text2    = isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : token('color.text.subtle',    '#626F86');
   const text3    = isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : token('color.text.subtlest',  '#8590A2');
-  const linkClr  = isDark ? '#6698FF' : token('color.link',           '#0C66E4');
+  const linkClr  = isDark ? '#6698FF' : token('color.link',           'var(--ds-link, #0C66E4)');
   const dotColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 
-  const threadBorderColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(11,18,14,0.14)';
+  const threadBorderColor = isDark ? 'var(--ds-surface, rgba(255,255,255,0.10))' : 'var(--ds-text, rgba(11,18,14,0.14))';
   const threadBg          = 'transparent';
 
   const handleClick = useCallback(() => {

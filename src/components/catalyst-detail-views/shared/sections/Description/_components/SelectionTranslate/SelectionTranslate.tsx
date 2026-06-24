@@ -304,7 +304,7 @@ export function SelectionTranslate({
             cursor: 'pointer',
             padding: '4px 10px',
             borderRadius: 4,
-            boxShadow: '0 1px 3px rgba(9,30,66,0.12)',
+            boxShadow: '0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
           }}
           aria-label={
             anchor.target === 'ar'
@@ -338,7 +338,7 @@ export function SelectionTranslate({
             borderRadius: 6,
             fontSize: 13,
             fontWeight: 500,
-            boxShadow: '0 4px 12px rgba(9, 30, 66, 0.18)',
+            boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(9, 30, 66, 0.18))',
             maxWidth: 320,
           }}
         >

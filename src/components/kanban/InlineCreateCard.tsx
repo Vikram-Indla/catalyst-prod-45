@@ -115,7 +115,7 @@ function SmartPopover({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 6,
-        boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+        boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
       }}
     >
       {children}
@@ -610,7 +610,7 @@ function InlineCreateCardComponent({
     background: 'var(--ds-surface-overlay, #FFFFFF)',
     border: '1px solid var(--ds-border, #DFE1E6)',
     borderRadius: 6,
-    boxShadow: '0 4px 16px rgba(9,30,66,0.16)',
+    boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
   };
 
   return (
@@ -626,7 +626,7 @@ function InlineCreateCardComponent({
         borderRadius: 6,
         /* Jira-parity: full clean blue outline around the whole card. */
         border: '2px solid var(--ds-border-selected, #0C66E4)',
-        boxShadow: '0 2px 8px rgba(9,30,66,0.06)',
+        boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
       }}
       onMouseDown={e => e.stopPropagation()}
       onClick={e => e.stopPropagation()}

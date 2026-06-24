@@ -11,7 +11,7 @@ interface Props {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: '#FF5630',
+  critical: 'var(--ds-background-danger-bold, #C9372C)',
   high: '#FF7452',
   medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   low: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
@@ -36,15 +36,15 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
     transition: transition ?? undefined,
     opacity: isDragging ? 0.6 : (card.statusId === 'done' ? 0.85 : 1),
     background: 'var(--bg-app)',
-    border: '0.75px solid rgba(15,23,42,0.12)',
+    border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
     borderLeftWidth: card.isBlocked ? 3 : 0.75,
-    borderLeftColor: card.isBlocked ? 'var(--sem-danger)' : 'rgba(15,23,42,0.12)',
+    borderLeftColor: card.isBlocked ? 'var(--sem-danger)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
     borderRadius: 6,
     padding: '10px 11px 9px',
     cursor: isDragging ? 'grabbing' : 'grab',
     boxShadow: isDragging
-      ? '0 8px 24px rgba(15,23,42,0.18)'
-      : hover ? '0 2px 8px rgba(15,23,42,0.10)' : 'none',
+      ? '0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.18))'
+      : hover ? '0 2px 8px var(--ds-shadow-overlay, rgba(15,23,42,0.10))' : 'none',
     position: 'relative' as const,
   };
 
@@ -120,7 +120,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 18, padding: '0 7px', borderRadius: 4,
-          background: 'var(--ds-background-selected, #EFF6FF)', border: '0.75px solid #DBEAFE',
+          background: 'var(--ds-background-selected, #EFF6FF)', border: '0.75px solid var(--ds-background-information, #E9F2FF)',
           maxWidth: '100%', overflow: 'hidden',
         }}>
           <span style={{
@@ -154,7 +154,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
             <span style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               height: 18, minWidth: 22, padding: '0 5px', borderRadius: 4,
-              background: '#F0FDF4', border: '0.75px solid #DCFCE7',
+              background: 'var(--ds-background-success, #DFFCF0)', border: '0.75px solid var(--ds-background-success, #DFFCF0)',
               fontSize: 10.5, fontWeight: 650, color: 'var(--sem-success)',
               fontFamily: 'var(--cp-font-mono)',
             }}>{card.storyPoints}</span>
@@ -191,7 +191,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
 }
 
 function hashColor(id: string): string {
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', '#0284C7', '#525252'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-link, #0C66E4)', 'var(--ds-text-subtle, #44546F)'];
   let hash = 0;
   for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

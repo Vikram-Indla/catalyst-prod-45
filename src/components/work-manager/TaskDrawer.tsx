@@ -82,8 +82,8 @@ const priorityColors: Record<Priority, { dot: string; text: string }> = {
 
 // Team colors
 const teamColors: Record<string, string> = {
-  'olive': 'bg-[#0d9488]',
-  'bronze': 'bg-[#6b7280]',
+  'olive': 'bg-[var(--ds-chart-teal-bold, #0d9488)]',
+  'bronze': 'bg-[var(--ds-text-subtlest, #626F86)]',
   'gold': 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',
 };
 
@@ -342,7 +342,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     </SelectTrigger>
                     <SelectContent className="min-w-[260px]">
                       {teamMembers.map((u, idx) => {
-                        const avatarColors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#0d9488', '#6b7280', '#0f766e', 'var(--ds-background-brand-bold-hovered, #1d4ed8)'];
+                        const avatarColors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-subtlest, #626F86)', 'var(--ds-chart-teal-bolder, #0f766e)', 'var(--ds-background-brand-bold-hovered, #1d4ed8)'];
                         const avatarColor = u.avatarColor || avatarColors[idx % avatarColors.length];
                         return (
                           <SelectItem key={u.id} value={u.id} className="py-2">
@@ -632,7 +632,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
 
           {/* FOOTER */}
           {activeTab === 'overview' && (
-            <SheetFooter className="shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.2)]">
+            <SheetFooter className="shadow-[0_-4px_6px_-1px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.05)))] dark:shadow-[0_-4px_6px_-1px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.2)))]">
               <Button 
                 variant="ghost" 
                 onClick={onClose}

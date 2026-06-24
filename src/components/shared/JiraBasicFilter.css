@@ -25,7 +25,7 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  color: rgb(41, 42, 46);
+  color: var(--ds-text, rgb(41, 42, 46));
   font-family: var(--cp-font-body);
   outline: none;
 }
@@ -57,7 +57,7 @@
   height: 18px;
   padding: 0 4px;
   background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   border-radius: 9px;
   font-size: 10px;
   font-weight: 700;
@@ -71,12 +71,12 @@
   left: 0;
   margin-top: 6px;
   width: 520px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border-radius: 10px;
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.06);
+    0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08)),
+    0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
   overflow: hidden;
   z-index: 500;
   color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
@@ -267,7 +267,7 @@
   height: 18px;
   padding: 0 5px;
   background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   border-radius: 9px;
   font-size: 10px;
   font-weight: 700;
@@ -333,7 +333,7 @@
   transition: border-color 100ms, background-color 100ms;
 }
 .jf-search-box:focus-within {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border-color: var(--ds-border-focused, #4C9AFF);
 }
 .jf-search-icon-wrap {
@@ -541,16 +541,16 @@
   border-color: var(--ds-border-bold, #454545);
 }
 .dark .jf-trigger-btn--active {
-  background-color: #0D1526;
+  background-color: var(--ds-text, #172B4D);
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 
 .dark .jf-panel {
-  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.5));
 }
 
 .dark .jf-tabs-container {
@@ -565,7 +565,7 @@
 }
 .dark .jf-tab--active {
   background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
 }
 
 .dark .jf-left-pane::after {
@@ -579,7 +579,7 @@
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark .jf-category-item--active {
-  background-color: #0D1526;
+  background-color: var(--ds-text, #172B4D);
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 
@@ -591,7 +591,7 @@
 }
 
 .dark .jf-search-box {
-  background: #111111;
+  background: var(--ds-text, #172B4D);
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .jf-search-box:focus-within {
@@ -611,7 +611,7 @@
   background-color: var(--ds-surface-overlay, #1F1F1F);
 }
 .dark .jf-option-item--checked .jf-option-inner {
-  background-color: #0D1526;
+  background-color: var(--ds-text, #172B4D);
 }
 .dark .jf-option-row {
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
@@ -627,7 +627,7 @@
 }
 
 .dark .jf-footer {
-  background-color: #111111;
+  background-color: var(--ds-text, #172B4D);
   border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .jf-shortcut {

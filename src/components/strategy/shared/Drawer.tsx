@@ -44,7 +44,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0,0,0,0.4)',
+          background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
           zIndex: 399,
           animation: 'drawerOverlayIn 200ms ease',
         }}
@@ -66,7 +66,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
           height: '100vh',
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderLeft: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))',
-          boxShadow: '-8px 0 30px rgba(0,0,0,0.12)',
+          boxShadow: '-8px 0 30px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
           zIndex: 400,
           display: 'flex',
           flexDirection: 'column',

@@ -35,7 +35,7 @@ import {
    muted text placeholder (not a dashed button). Clicking anywhere on the
    field row opens the picker. Removed dashed border + AddIcon — replaced
    with an inline plain-text trigger matching Jira's DOM-probed style:
-   fontSize 14px, color #5E6C84, no border, subtle hover background.
+   fontSize 14px, color var(--ds-text-subtle, #44546F), no border, subtle hover background.
    ═══════════════════════════════════════════════ */
 function SidebarAddTrigger({
   label,
@@ -483,11 +483,11 @@ function BusinessRequestParentPicker({
               left: pickerPos.left,
               width: pickerPos.width,
               background:
-                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
               border:
-                "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))",
+                "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))",
               borderRadius: 6,
-              boxShadow: "0 8px 16px rgba(9,30,66,0.15)",
+              boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
               zIndex: 1000,
               maxHeight: 400,
               display: "flex",
@@ -939,11 +939,11 @@ function SingleParentPicker({
               left: pickerPos.left,
               width: pickerPos.width,
               background:
-                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
               border:
-                "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))",
+                "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))",
               borderRadius: 6,
-              boxShadow: "0 8px 16px rgba(9,30,66,0.15)",
+              boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
               zIndex: 1000,
               maxHeight: 400,
               display: "flex",
@@ -1217,11 +1217,11 @@ function MultiLinkPicker({
                 left: pickerPos.left,
                 width: pickerPos.width,
                 background:
-                  "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+                  "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
                 border:
-                  "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))",
+                  "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))",
                 borderRadius: 6,
-                boxShadow: "0 8px 16px rgba(9,30,66,0.15)",
+                boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
                 zIndex: 1000,
                 maxHeight: 400,
                 display: "flex",

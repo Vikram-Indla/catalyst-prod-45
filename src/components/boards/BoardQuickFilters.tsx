@@ -35,7 +35,7 @@ export default function BoardQuickFilters() {
         );
       })}
       {/* Separator */}
-      <span style={{ width: 0.75, height: 18, background: 'rgba(15,23,42,0.12)' }} />
+      <span style={{ width: 0.75, height: 18, background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))' }} />
       {/* Filters dropdown trigger */}
       <button style={{
         display: 'inline-flex', alignItems: 'center', gap: 4,

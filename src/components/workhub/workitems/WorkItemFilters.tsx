@@ -100,7 +100,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
           className="absolute top-full left-0 mt-1 w-[300px] rounded-lg border bg-white flex flex-col"
           style={{
             zIndex: 9999,
-            boxShadow: '0 10px 40px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
             borderColor: 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))',
             maxHeight: '380px',
           }}
@@ -344,7 +344,7 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
           <button
             onClick={() => { onChange({}); setSearchInput(''); }}
             className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-md border transition-colors"
-            style={{ borderColor: '#fecaca', color: 'var(--ds-text-danger, #dc2626)', backgroundColor: 'var(--ds-background-danger, #fef2f2)' }}
+            style={{ borderColor: 'var(--ds-background-danger, #FFECEB)', color: 'var(--ds-text-danger, #dc2626)', backgroundColor: 'var(--ds-background-danger, #fef2f2)' }}
           >
             <X className="w-3 h-3" /> Clear all
           </button>
@@ -355,16 +355,16 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
       {totalActive > 0 && (
         <div className="flex items-center gap-1.5 flex-wrap pl-7">
           {selectedProjects.map(pk => (
-            <FilterChip key={`p-${pk}`} label={pk} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" bgColor="var(--ds-background-selected, #eff6ff)" borderColor="#bfdbfe" onRemove={() => removeChip('project_keys', pk)} />
+            <FilterChip key={`p-${pk}`} label={pk} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" bgColor="var(--ds-background-selected, #eff6ff)" borderColor="var(--ds-background-information, #E9F2FF)" onRemove={() => removeChip('project_keys', pk)} />
           ))}
           {selectedTypes.map(t => (
-            <FilterChip key={`t-${t}`} label={t} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" bgColor="var(--ds-background-selected, #EFF6FF)" borderColor="#BFDBFE" onRemove={() => removeChip('types', t)} />
+            <FilterChip key={`t-${t}`} label={t} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" bgColor="var(--ds-background-selected, #EFF6FF)" borderColor="var(--ds-background-information, #E9F2FF)" onRemove={() => removeChip('types', t)} />
           ))}
           {selectedStatuses.map(s => (
-            <FilterChip key={`s-${s}`} label={s} color="#0891b2" bgColor="#ecfeff" borderColor="#a5f3fc" onRemove={() => removeChip('statuses', s)} />
+            <FilterChip key={`s-${s}`} label={s} color="var(--ds-link, #0C66E4)" bgColor="#ecfeff" borderColor="#a5f3fc" onRemove={() => removeChip('statuses', s)} />
           ))}
           {selectedReleases.map(r => (
-            <FilterChip key={`r-${r}`} label={r} color="var(--quality-high, #059669)" bgColor="#ecfdf5" borderColor="#a7f3d0" onRemove={() => removeChip('fix_version_names', r)} />
+            <FilterChip key={`r-${r}`} label={r} color="var(--quality-high, #059669)" bgColor="var(--ds-background-success, #DFFCF0)" borderColor="#a7f3d0" onRemove={() => removeChip('fix_version_names', r)} />
           ))}
         </div>
       )}

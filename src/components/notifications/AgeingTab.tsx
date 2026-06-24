@@ -137,31 +137,31 @@ function TypeIcon({ type }: { type: ItemType }) {
     Story: (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>Story</title>
-        <path fill="#63BA3C" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M15.647,19.515 L16.937,17.987 L12,13.82 L7.061,17.987 L7,18.153 L7,6.688 C7,6.348 7.412,6 8,6 L16,6 C16.587,6 17,6.349 17,6.688 L17,18.153 Z" />
+        <path fill="var(--ds-background-success-bold, #1F845A)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M15.647,19.515 L16.937,17.987 L12,13.82 L7.061,17.987 L7,18.153 L7,6.688 C7,6.348 7.412,6 8,6 L16,6 C16.587,6 17,6.349 17,6.688 L17,18.153 Z" />
       </svg>
     ),
     Feature: (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>Feature</title>
-        <path fill="#63BA3C" fillRule="evenodd" d="M13,11 L13,5 C13,4.448 12.552,4 12,4 C11.448,4 11,4.448 11,5 L11,11 L5,11 C4.448,11 4,11.448 4,12 C4,12.552 4.448,13 5,13 L11,13 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 L13,13 L19,13 C19.552,13 20,12.552 20,12 C20,11.448 19.552,11 19,11 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z" />
+        <path fill="var(--ds-background-success-bold, #1F845A)" fillRule="evenodd" d="M13,11 L13,5 C13,4.448 12.552,4 12,4 C11.448,4 11,4.448 11,5 L11,11 L5,11 C4.448,11 4,11.448 4,12 C4,12.552 4.448,13 5,13 L11,13 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 L13,13 L19,13 C19.552,13 20,12.552 20,12 C20,11.448 19.552,11 19,11 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z" />
       </svg>
     ),
     'Sub-task': (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>Sub-task</title>
-        <path fill="#4BADE8" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z" />
+        <path fill="var(--ds-background-information-bold, #1D7AFC)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z" />
       </svg>
     ),
     'QA Bug': (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>QA Bug</title>
-        <path fill="#E5493A" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,17 C14.761,17 17,14.761 17,12 C17,9.239 14.761,7 12,7 C9.239,7 7,9.239 7,12 C7,14.761 9.239,17 12,17 Z" />
+        <path fill="var(--ds-background-danger-bold, #C9372C)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,17 C14.761,17 17,14.761 17,12 C17,9.239 14.761,7 12,7 C9.239,7 7,9.239 7,12 C7,14.761 9.239,17 12,17 Z" />
       </svg>
     ),
     'Production Incident': (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>Production Incident</title>
-        <path fill="#E5493A" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,4 C11.448,4 11,4.448 11,5 L11,14 C11,14.552 11.448,15 12,15 C12.552,15 13,14.552 13,14 L13,5 C13,4.448 12.552,4 12,4 Z M12,17 C11.448,17 11,17.448 11,18 C11,18.552 11.448,19 12,19 C12.552,19 13,18.552 13,18 C13,17.448 12.552,17 12,17 Z" />
+        <path fill="var(--ds-background-danger-bold, #C9372C)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,4 C11.448,4 11,4.448 11,5 L11,14 C11,14.552 11.448,15 12,15 C12.552,15 13,14.552 13,14 L13,5 C13,4.448 12.552,4 12,4 Z M12,17 C11.448,17 11,17.448 11,18 C11,18.552 11.448,19 12,19 C12.552,19 13,18.552 13,18 C13,17.448 12.552,17 12,17 Z" />
       </svg>
     ),
   };
@@ -240,7 +240,7 @@ function FilterPill({ label, isActive, count, onClick }: {
       {label}
       <span style={{
         fontSize: 11, fontWeight: 700,
-        background: isActive ? 'rgba(12,102,228,0.14)' : ADS.neutralSubtle,
+        background: isActive ? 'var(--ds-link, rgba(12,102,228,0.14))' : ADS.neutralSubtle,
         color: isActive ? ADS.textSelected : ADS.textSubtle,
         borderRadius: 8, padding: '1px 6px',
         minWidth: 18, textAlign: 'center',
@@ -301,7 +301,7 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
    /design-critique callouts ⑧⑨:
      - Row height 36 → 40 for body-scale rhythm.
      - Days pill goes INLINE with the number on a single baseline.
-     - Non-Atlaskit hexes (var(--ds-text-danger, #EF4444), var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--ds-text-success, #22C55E), #991B1B…) are replaced
+     - Non-Atlaskit hexes (var(--ds-text-danger, #EF4444), var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--ds-text-success, #22C55E), var(--ds-text-danger, #AE2A19)…) are replaced
        with the danger / warning / success ADS tokens.
 */
 function AgeingRow({ item }: { item: AgeingItem }) {
@@ -440,7 +440,7 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
 }
 
 /* ── AI Cleanup Button ──
-   /design-critique callout ④: bespoke `#1E293B` navy is off-palette. The
+   /design-critique callout ④: bespoke `var(--ds-text, #172B4D)` navy is off-palette. The
    Atlaskit-correct equivalent for a neutral dark CTA is
    `color.background.neutral.bold` (var(--cp-text-secondary, var(--cp-text-secondary, #44546F))). The sparkle uses the same
    brand blue as the AI Recap tab (see ForYouTabs callout ⓪) so every AI

@@ -40,8 +40,8 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       icon: progressDelta >= 0 ? TrendingUp : TrendingDown,
       iconColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
       iconBg: isDark
-        ? (progressDelta >= 0 ? 'rgba(13,148,136,0.12)' : 'rgba(220,38,38,0.12)')
-        : (progressDelta >= 0 ? '#F0FDFA' : 'var(--ds-background-danger, #FEF2F2)'),
+        ? (progressDelta >= 0 ? 'var(--ds-background-success, rgba(13,148,136,0.12))' : 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))')
+        : (progressDelta >= 0 ? 'var(--ds-background-success, #DFFCF0)' : 'var(--ds-background-danger, #FEF2F2)'),
       subColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
       cardBg: undefined,
     },
@@ -70,8 +70,8 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       icon: AlertTriangle,
       iconColor: atRiskCount > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--quality-high, #059669)',
       iconBg: isDark
-        ? (atRiskCount > 0 ? 'rgba(220,38,38,0.12)' : 'rgba(5,150,105,0.12)')
-        : (atRiskCount > 0 ? 'var(--ds-background-danger, #FEF2F2)' : '#ECFDF5'),
+        ? (atRiskCount > 0 ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))' : 'rgba(5,150,105,0.12)')
+        : (atRiskCount > 0 ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-background-success, #DFFCF0)'),
       valueColor: atRiskCount > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : undefined,
       cardBg: undefined,
     },
@@ -83,7 +83,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
         <div
           key={c.label}
           className="rounded-xl border border-border bg-white px-[18px] py-4 transition-shadow dark:border-gray-700/50 dark:bg-transparent dark:shadow-none"
-          onMouseEnter={e => { if (!isDark) e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.1)'; }}
+          onMouseEnter={e => { if (!isDark) e.currentTarget.style.boxShadow = '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,0.1))'; }}
           onMouseLeave={e => { e.currentTarget.style.boxShadow = isDark ? 'none' : ''; }}
         >
           <div className="flex items-start justify-between mb-2">

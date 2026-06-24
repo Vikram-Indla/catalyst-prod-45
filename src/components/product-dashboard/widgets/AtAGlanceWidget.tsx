@@ -38,9 +38,9 @@ type TrendDir = 'better' | 'worse' | 'flat';
 function TrendBadge({ text, dir }: { text: string; dir: TrendDir }) {
   const color =
     dir === 'better'
-      ? token('color.text.success', '#216E4E')
+      ? token('color.text.success', 'var(--ds-text-success, #216E4E)')
       : dir === 'worse'
-      ? token('color.text.danger', '#AE2A19')
+      ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
       : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))');
   return (
     <span
@@ -170,7 +170,7 @@ function SettingsPanel() {
       style={{
         padding: '12px 18px',
         borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-        background: token('color.background.neutral.subtle', '#FAFBFC'),
+        background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
         fontSize: 13,
         color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
       }}
@@ -225,8 +225,8 @@ export function AtAGlanceWidget() {
         style={{
           height: 180,
           borderRadius: 8,
-          background: token('color.background.neutral', '#F4F5F7'),
-          boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
     );
@@ -263,7 +263,7 @@ export function AtAGlanceWidget() {
           trend={activeCount != null ? `${activeCount} active in pipeline` : undefined}
           trendDir="flat"
           sparkPoints="0,18 12,16 24,20 36,15 48,12 60,14 72,10 84,9 100,6"
-          sparkColor="#0C66E4"
+          sparkColor="var(--ds-link, #0C66E4)"
           sparkTestId="sparkline-active"
           borderRight
         />
@@ -275,7 +275,7 @@ export function AtAGlanceWidget() {
           trend={businessCycle.median == null ? 'Tracking — apply audit log wiring' : undefined}
           trendDir="flat"
           sparkPoints="0,16 12,15 24,14 36,12 48,11 60,9 72,8 84,7 100,5"
-          sparkColor="#AE2A19"
+          sparkColor="var(--ds-text-danger, #AE2A19)"
           sparkTestId="sparkline-business-cycle"
           borderRight
         />
@@ -287,7 +287,7 @@ export function AtAGlanceWidget() {
           trend={itCycle.median == null ? 'Tracking — apply audit log wiring' : undefined}
           trendDir="flat"
           sparkPoints="0,20 9,19 18,17 27,16 36,18 45,15 54,13 63,11 72,9 81,7 90,6 100,5"
-          sparkColor="#AE2A19"
+          sparkColor="var(--ds-text-danger, #AE2A19)"
           sparkTestId="sparkline-it-cycle"
           borderRight
         />
@@ -299,7 +299,7 @@ export function AtAGlanceWidget() {
           trend={totalCycle.median == null ? 'Tracking — apply audit log wiring' : undefined}
           trendDir="flat"
           sparkPoints="0,22 12,20 24,18 36,21 48,17 60,16 72,14 84,12 100,10"
-          sparkColor="#36B37E"
+          sparkColor="var(--ds-background-success-bold, #1F845A)"
           sparkTestId="sparkline-total-cycle"
         />
       </div>
