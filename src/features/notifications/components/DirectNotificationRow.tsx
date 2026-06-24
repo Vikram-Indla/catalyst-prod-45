@@ -59,9 +59,10 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   }, [target.key, target.iconType, isStarred, toggleStar]);
   const STAR_GOLD = 'var(--ds-icon-accent-yellow, #FFAB00)';
 
+  const idleBg   = isDark ? 'var(--ds-surface, #1A1A1A)' : 'var(--ds-surface-overlay, #FFFFFF)';
   const hoverBg  = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))');
   const pressBg  = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
-  const rowBg    = pressed ? pressBg : hovered ? hoverBg : 'transparent';
+  const rowBg    = pressed ? pressBg : hovered ? hoverBg : idleBg;
 
   const text1    = isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : token('color.text', '#292A2E');
   const text2    = isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : token('color.text.subtle',    '#626F86');
@@ -104,7 +105,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
         background: rowBg,
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
-        boxShadow: hovered ? '0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.16))' : '0 1px 3px rgba(9, 30, 66, 0.08)',
+        boxShadow: hovered ? '0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.16))' : '0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
         cursor: 'pointer',
         textAlign: 'left',
         transition: 'all 150ms ease',
