@@ -301,12 +301,6 @@ export function HubSwitcher() {
                           padding: '12px 12px',
                           cursor: 'not-allowed',
                           userSelect: 'none',
-                          borderRadius: 4,
-                          background: 'var(--ds-surface, #FFFFFF)',
-                          border: '1px solid var(--ds-border, #DFE1E6)',
-                          boxShadow: '0 1px 3px rgba(9, 30, 66, 0.08)',
-                          marginBottom: 4,
-                          outline: 'none',
                         }}
                       >
                         <img
