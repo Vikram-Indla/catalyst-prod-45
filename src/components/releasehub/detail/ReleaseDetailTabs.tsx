@@ -7,6 +7,7 @@ import React, { useMemo, useState } from 'react';
 import Select from '@atlaskit/select';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { format, formatDistanceToNowStrict } from 'date-fns';
 import {
   useReleaseScope,
@@ -366,19 +367,12 @@ export function NotifyList({ itemType, itemId }: { itemType: 'release' | 'change
   const remove = useRemoveNotifySubscriber();
   const [adding, setAdding] = useState(false);
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['release-hub', 'notify', 'users'],
-    enabled: adding,
-    queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name').not('full_name', 'is', null).order('full_name');
-      return (data ?? []) as { id: string; full_name: string | null }[];
-    },
-  });
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
 
   const subscribedIds = useMemo(() => new Set(subscribers.map((s) => s.userId)), [subscribers]);
   const options = useMemo(
-    () => users.filter((u) => !subscribedIds.has(u.id)).map((u) => ({ label: u.full_name ?? 'Unknown', value: u.id })),
-    [users, subscribedIds],
+    () => approvedProfiles.filter((p) => !subscribedIds.has(p.id)).map((p) => ({ label: p.name, value: p.id })),
+    [approvedProfiles, subscribedIds],
   );
 
   return (

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { createWorkItem } from '@/services/workItemService';
 import { X, ArrowUp, ArrowRight, ArrowDown, ChevronsUp, Calendar, Search, ChevronDown } from '@/lib/atlaskit-icons';
 import { catalystToast } from '@/lib/catalystToast';
@@ -89,14 +90,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
     enabled: !!projectId,
   });
 
-  const { data: profiles = [] } = useQuery<ProfileOption[]>({
-    queryKey: ['ph-profiles-all'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('profiles').select('id, full_name, avatar_url').order('full_name');
-      if (error) throw error;
-      return (data || []) as ProfileOption[];
-    },
-  });
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = approvedProfiles.map(p => ({ id: p.id, full_name: p.name, avatar_url: p.avatarUrl ?? null }));
 
   const { data: parentItems = [] } = useQuery<ParentOption[]>({
     queryKey: ['ph-parent-items', projectId],

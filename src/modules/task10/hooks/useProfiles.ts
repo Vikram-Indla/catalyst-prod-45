@@ -25,7 +25,7 @@ export function useProfiles(search?: string) {
       let query = supabase
         .from('profiles')
         .select('id, full_name, email, avatar_url')
-        .eq('status', 'active')
+        .eq('approval_status', 'APPROVED')
         .order('full_name', { ascending: true })
         .limit(50);
 

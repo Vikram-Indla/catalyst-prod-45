@@ -74,6 +74,7 @@ import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { TitleTranslateWrapper } from '@/components/shared/title-translate/TitleTranslateWrapper';
@@ -227,21 +228,14 @@ const INITIAL: FormState = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function useProfiles() {
-  return useQuery({
-    queryKey: ['br-modal-profiles'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, avatar_url')
-        .order('full_name');
-      return (data ?? []).map(p => ({
-        value: p.id,
-        label: p.full_name || p.email || p.id,
-        icon: <MiniAvatar name={p.full_name ?? p.email ?? '?'} avatarUrl={p.avatar_url} />,
-      } as IconOption));
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  const { data = [] } = useApprovedProfiles();
+  return {
+    data: data.map(p => ({
+      value: p.id,
+      label: p.name,
+      icon: <MiniAvatar name={p.name} avatarUrl={p.avatarUrl} />,
+    } as IconOption)),
+  };
 }
 
 function useReleases() {
