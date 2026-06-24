@@ -76,8 +76,9 @@ const ROLE_OPTIONS = ROLE_GROUPS.flatMap(g => g.options);
 const FILTER_ROLE_OPTIONS = [{ label: 'All roles', value: '' }, ...ROLE_OPTIONS];
 
 const STATUS_FILTER_OPTIONS = [
+  { label: 'All approved', value: 'all_approved' },
   { label: 'Active', value: 'active' },
-  { label: 'Pending', value: 'pending' },
+  { label: 'Pending setup', value: 'pending' },
   { label: 'Suspended', value: 'suspended' },
   { label: 'All users', value: '' },
 ];
@@ -1376,7 +1377,9 @@ function PeopleTab() {
 
   const filtered = useMemo(() => {
     let result = users;
-    if (statusFilter.value === 'active') {
+    if (statusFilter.value === 'all_approved') {
+      result = result.filter(u => { const s = userState(u); return s === 'active' || s === 'pending' || s === 'locked'; });
+    } else if (statusFilter.value === 'active') {
       result = result.filter(u => { const s = userState(u); return s === 'active' || s === 'locked'; });
     } else if (statusFilter.value === 'pending') {
       result = result.filter(u => userState(u) === 'pending');
@@ -1584,7 +1587,7 @@ function PeopleTab() {
           {filtered.length === users.length
             ? `${users.length} user${users.length !== 1 ? 's' : ''}`
             : `${filtered.length} of ${users.length} users`}
-          {(statusFilter.value === 'active' || statusFilter.value === 'pending') && (() => {
+          {(statusFilter.value === 'all_approved' || statusFilter.value === 'active' || statusFilter.value === 'pending') && (() => {
             const suspendedCount = users.filter(u => userState(u) === 'suspended').length;
             return suspendedCount > 0 ? ` · ${suspendedCount} suspended hidden` : null;
           })()}
