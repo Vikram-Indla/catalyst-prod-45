@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type React from 'react';
+import { useNavigate } from 'react-router-dom';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { Box, xcss } from '@atlaskit/primitives';
@@ -10,7 +11,6 @@ import { formatRelativeTime, getVerbText } from '../utils/date';
 import { Star } from '@/lib/atlaskit-icons';
 import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
 import { workItemStarType } from '@/lib/starType';
-import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 interface Props {
   notification: DirectNotification;
@@ -39,6 +39,7 @@ const metaRowXcss = xcss({
 const REACTION_EMOJIS = ['👍', '👏', '🔥', '❤️', '😊'];
 
 export default function DirectNotificationRow({ notification, isRead, onMarkRead, isDark }: Props) {
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
@@ -76,8 +77,13 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
 
   const handleClick = useCallback(() => {
     if (!isRead) onMarkRead(notification.id);
-    useGlobalSearchStore.getState().openDetail({ id: notification.target.key });
-  }, [isRead, notification.id, onMarkRead, notification.target.key]);
+    const projectKey = notification.target.key.split('-')[0];
+    if (notification.target.iconType === 'incident') {
+      navigate(`/incident-hub/view/${notification.target.key}`);
+    } else {
+      navigate(`/project-hub/${projectKey}/allwork/${notification.target.key}`);
+    }
+  }, [isRead, notification.id, onMarkRead, notification.target.key, notification.target.iconType, navigate]);
 
   const handleMarkReadBtn = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
