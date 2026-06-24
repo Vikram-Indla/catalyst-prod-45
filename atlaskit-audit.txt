@@ -1,0 +1,180 @@
+
+── @atlaskit Version Audit (─────────────────────────────────────────────)
+
+  [91mBUGGY   [0m  @atlaskit/lozenge@^11.14.0
+           bug       : Inner <span> carries text-transform:uppercase, font-weight:653, letter-spacing>0 with no prop to disable.
+           bug       : Modern Jira renders sentence case, not uppercase..
+           workaround: Wrap each lozenge in <span data-cp-lozenge-jira-parity> and add global CSS rule targeting the inner span.
+           workaround: See cells.tsx override.
+           workaround: Do NOT try to fix via props — they don't exist for typography..
+           fix       : No upstream fix available. Maintain the CSS override permanently.
+
+  [91mBUGGY   [0m  @atlaskit/popup@^4.16.5
+           bug       : Empty-portal bug — popover renders into a detached DOM node, making it invisible or mispositioned..
+           workaround: Self-rolled popup using useRef+mousedown click-outside listener.
+           workaround: Pattern documented in AllProjectsTable.tsx:19-22 and WatchersChip.
+           workaround: Do NOT introduce @atlaskit/popup in new components until fixed..
+           fix       : Upgrade to ≥4.17 when available. Until then, maintain self-rolled pattern.
+
+  [93mWARN    [0m  @atlaskit/renderer@^128.9.5
+           bug       : Default font size/line-height does not match Jira's description renderer.
+           bug       : Line height may differ from Jira's 1.714 (24px at 14px base)..
+           workaround: Apply CSS override matching Jira's computed description font values after DOM-probing the live renderer.
+           workaround: Do not assume ADS defaults match..
+           fix       : Re-probe after each @atlaskit/renderer upgrade to verify values.
+
+  [93mWARN    [0m  @atlaskit/select@^18.2.0
+           bug       : Right-rail idle state shows visible borders and dropdown indicators in default render, looking like a form rather than Jira's plain-text style..
+           workaround: Scope CSS to .cv-drawer-sidebar [class*='-select__control'] to set border-color:transparent; background:transparent; box-shadow:none in idle.
+           workaround: Show __dropdown-indicator only on :hover and --is-focused..
+           fix       : CSS override is the correct fix. No @atlaskit/select prop covers this.
+
+  [96mMISSING [0m  @atlaskit/tag@NOT INSTALLED
+           Expected in Catalyst but not found in package.json.
+
+  [92mOK      [0m  @atlaskit/adf-schema@52.11.4
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/atlassian-navigation@^5.7.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/avatar@^25.11.7
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/avatar-group@^12.6.1
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/badge@^18.6.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/breadcrumbs@^16.1.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/button@^20.5.3
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/calendar@^17.2.20
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/checkbox@^17.3.12
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/css-reset@^7.4.5
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/datetime-picker@^17.7.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/drawer@^12.0.7
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/dropdown-menu@^13.1.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/dynamic-table@^18.4.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/editor-common@^112.22.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/editor-core@^217.12.4
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/editor-plugins@13.0.120
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/editor-toolbar@^1.0.8
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/empty-state@^10.2.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/flag@^17.9.8
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/form@^10
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/heading@^5.4.2
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/icon@^24.1.1
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/inline-edit@^15.6.15
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/layering@^3.6.2
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/link@^3.4.2
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/menu@^8.5.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/modal-dialog@^14.15.1
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/navigation-system@^8.0.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/page-layout@^4.3.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/pragmatic-drag-and-drop@^1.7.5
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/pragmatic-drag-and-drop-auto-scroll@^2.1.2
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/pragmatic-drag-and-drop-hitbox@^1.1.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/pragmatic-drag-and-drop-react-drop-indicator@^3.1.2
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/primitives@^13.6.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/profilecard@25.1.9
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/progress-bar@^4.2.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/radio@^8.5.4
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/section-message@^8.12.14
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/side-navigation@^11.2.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/spinner@^19.1.2
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/tabs@^19.1.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/textarea@^7.1.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/textfield@^6.7.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/toggle@^15.6.0
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/tokens@^13.0.1
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/tooltip@^21.1.6
+           No known bugs in database for this package.
+
+  [92mOK      [0m  @atlaskit/user-picker@^11
+           No known bugs in database for this package.
+
+❌ FAIL  2 buggy  2 warn  48 ok  1 missing
+

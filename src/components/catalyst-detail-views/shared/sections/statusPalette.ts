@@ -29,8 +29,8 @@ export const STATUS_TEXT = 'var(--ds-text, #172B4D)';
 
 /** Canonical Jira-probed medium-pastel backgrounds per status category. */
 export const STATUS_BG: Record<StatusAppearance, string> = {
-  success:    'var(--ds-background-success-bold, #6A9A23)', // done — medium lime green (THE canonical green)
-  inprogress: 'var(--ds-background-information, #E9F2FF)', // in progress — medium periwinkle blue
+  success:    '#94C748', // done — Jira DOM-probed lime green (NEVER replace with var(--ds-background-success-bold) = #1F845A — too dark, documented WRONG in CLAUDE.md)
+  inprogress: '#8FB8F6', // in progress — Jira DOM-probed periwinkle blue (not var(--ds-background-information) = #E9F2FF — too washed out)
   moved:      '#F3D664', // moved/warning — medium warm yellow
   new:        '#B8ACF6', // new/discovery — medium lavender
   removed:    '#FD9891', // cancelled/rejected — medium coral red
@@ -50,8 +50,8 @@ export function statusBg(appearance: string): string {
  */
 export const STATUS_CATEGORY_BG: Record<'todo' | 'in_progress' | 'done', string> = {
   todo:        STATUS_BG.default,    // var(--ds-border, #DFE1E6) gray
-  in_progress: STATUS_BG.inprogress, // var(--ds-background-information, #E9F2FF) blue
-  done:        STATUS_BG.success,    // var(--ds-background-success-bold, #6A9A23) green
+  in_progress: STATUS_BG.inprogress, // #8FB8F6 periwinkle blue
+  done:        STATUS_BG.success,    // #94C748 lime green
 };
 
 /** Resolve a status-pill background from a status_category (canonical). */
