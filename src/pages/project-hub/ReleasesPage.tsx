@@ -5,9 +5,9 @@ import TextField from '@atlaskit/textfield';
 import { useQuery } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
-import { useWHReleases } from '@/hooks/workhub/useReleases';
+import { useWHReleases, useReleaseProgress } from '@/hooks/workhub/useReleases';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
-import { JiraTable } from '@/components/shared/JiraTable';
+import { ReleasesTable } from '@/components/releases/ReleasesTable';
 import { ReleaseCreateModal } from '@/components/releases/ReleaseCreateModal';
 import { ShareFeedbackModal } from '@/components/releases/ShareFeedbackModal';
 import FeedbackIcon from '@atlaskit/icon/core/feedback';
@@ -15,15 +15,6 @@ import { ReleaseEditModal } from '@/components/releases/ReleaseEditModal';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
 import { ReleaseDeleteDialog } from '@/components/releases/ReleaseDeleteDialog';
-import {
-  makeReleaseNameCell,
-  makeStatusCell,
-  makeProgressCell,
-  makeStartDateCell,
-  makeReleaseDateCell,
-  makeDescriptionCell,
-  makeActionsCell,
-} from '@/components/releases/cells';
 import {
   StatusFilter,
   ProductFilter,
@@ -57,6 +48,7 @@ export function ReleasesPage() {
   const projectKey = key || 'BAU'; // release-hub context defaults to BAU
 
   const { data: rawReleases, isLoading, error } = useWHReleases();
+  const { data: releaseProgressRows } = useReleaseProgress();
 
   // Live progress per Jira version (computed from ph_issues.sprint_release JSONB)
   const { data: progressRows } = useQuery({
@@ -129,6 +121,17 @@ export function ReleasesPage() {
     return m;
   }, [progressRows]);
 
+  // Build a lookup of sprint_names per release id (from the progress view)
+  const sprintNamesById = useMemo(() => {
+    const m = new Map<string, string[]>();
+    (releaseProgressRows ?? []).forEach((p: any) => {
+      if (Array.isArray(p.sprint_names) && p.sprint_names.length > 0) {
+        m.set(p.id, p.sprint_names);
+      }
+    });
+    return m;
+  }, [releaseProgressRows]);
+
   // Adapt DB rows -> the shape the cells/modals expect, newest release first
   const releases = useMemo<CellRelease[]>(() => {
     return (rawReleases ?? [])
@@ -144,13 +147,14 @@ export function ReleasesPage() {
         created_at: r.created_at,
         updated_at: r.updated_at,
         jira_version_id: r.jira_version_id ?? undefined,
+        sprint_names: sprintNamesById.get(r.id) ?? [],
       }))
-      .sort((a, b) => {
+      .sort((a: any, b: any) => {
         const da = a.release_date ? new Date(a.release_date).getTime() : 0;
         const db = b.release_date ? new Date(b.release_date).getTime() : 0;
         return db - da;
       });
-  }, [rawReleases]);
+  }, [rawReleases, sprintNamesById]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -192,38 +196,63 @@ export function ReleasesPage() {
     }));
   }, [filtered, groupBy, productOptions]);
 
+  // Primary source: vw_ph_release_progress (keyed by release.id).
+  // Fallback: vw_release_jira_progress (keyed by jira_version_id) for legacy rows.
+  const progressByReleaseId = useMemo(() => {
+    const m = new Map<string, any>();
+    (releaseProgressRows ?? []).forEach((p: any) => m.set(p.id, p));
+    return m;
+  }, [releaseProgressRows]);
+
+
+
+  // Robust pick — view field names vary (done_items vs done vs done_count etc.)
+  const pickNum = (obj: any, ...keys: string[]): number => {
+    for (const k of keys) {
+      const v = obj?.[k];
+      if (typeof v === 'number' && !Number.isNaN(v)) return v;
+    }
+    return 0;
+  };
+
   const calculateProgress = (release: CellRelease): ReleaseProgress | null => {
-    const p = release.jira_version_id ? progressByVersion.get(release.jira_version_id) : undefined;
-    if (!p || !p.total) return null;
-    return {
-      done: p.done,
-      inProgress: p.in_progress,
-      toDo: p.todo,
-      total: p.total,
-      donePercent: p.done_percent,
-      inProgressPercent: p.in_progress_percent,
-    };
+    const byRel = progressByReleaseId.get(release.id);
+    const byVer = release.jira_version_id ? progressByVersion.get(release.jira_version_id) : undefined;
+    // Prefer whichever source has non-zero total. vw_ph_release_progress
+    // returns zero-count rows for releases not yet linked to ph_issues —
+    // fall through to the legacy jira_version_id view in that case.
+    const relTotal = (byRel?.total_items ?? 0);
+    const verTotal = (byVer?.total ?? 0);
+    const src = relTotal > 0 ? byRel : verTotal > 0 ? byVer : (byRel ?? byVer);
+
+    if (src) {
+      const done = pickNum(src, 'done_items', 'done', 'done_count');
+      const inProgress =
+        pickNum(src, 'in_progress_items', 'in_progress', 'in_progress_count') +
+        pickNum(src, 'in_review_items', 'in_review') +
+        pickNum(src, 'blocked_items', 'blocked');
+      const total = pickNum(src, 'total_items', 'total', 'total_count') || (done + inProgress);
+      const toDo = pickNum(src, 'todo_items', 'todo', 'to_do_items', 'todo_count')
+        || Math.max(0, total - done - inProgress);
+
+      if (total > 0) {
+        return {
+          done,
+          inProgress,
+          toDo,
+          total,
+          donePercent: (done / total) * 100,
+          inProgressPercent: (inProgress / total) * 100,
+        };
+      }
+    }
+    return null;
   };
 
   const handleOpenDetail = (releaseId: string) => {
     // Detail route TBD — no-op until /release-hub/releases/:id lands
     console.log('Open release detail:', releaseId);
   };
-
-  const columns = [
-    makeReleaseNameCell((r) => r.name, handleOpenDetail),
-    makeStatusCell(),
-    makeProgressCell(calculateProgress),
-    makeStartDateCell(),
-    makeReleaseDateCell(),
-    makeDescriptionCell(),
-    makeActionsCell(
-      (r) => { setEditingRelease(r); setIsEditModalOpen(true); },
-      (r) => { setArchivingRelease(r); setIsArchiveDialogOpen(true); },
-      (r) => { setConfirmingRelease(r); setIsConfirmModalOpen(true); },
-      (r) => { setDeletingRelease(r); setIsDeleteDialogOpen(true); },
-    ),
-  ];
 
   const projectId = projectRow?.id || releases[0]?.project_id || '';
 
@@ -296,11 +325,17 @@ export function ReleasesPage() {
 
       {/* Flat releases table (matches Jira; no collapsible sections) */}
       {filtered.length > 0 ? (
-        grouped ? (
-          <JiraTable groups={grouped} columns={columns} getRowId={(r) => r.id} />
-        ) : (
-          <JiraTable data={filtered} columns={columns} getRowId={(r) => r.id} />
-        )
+        <ReleasesTable
+          rows={grouped ? undefined : filtered}
+          groups={grouped ?? undefined}
+          calculateProgress={calculateProgress}
+          onOpenDetail={handleOpenDetail}
+          onRelease={(r) => { setConfirmingRelease(r); setIsConfirmModalOpen(true); }}
+          onArchive={(r) => { setArchivingRelease(r); setIsArchiveDialogOpen(true); }}
+          onMerge={(r) => { console.log('Merge release (TBD):', r.id); }}
+          onEdit={(r) => { setEditingRelease(r); setIsEditModalOpen(true); }}
+          onDelete={(r) => { setDeletingRelease(r); setIsDeleteDialogOpen(true); }}
+        />
       ) : (
         <div
           style={{
