@@ -11,6 +11,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { TimelineIssue } from '@/components/shared/Timeline';
 
 export const RELEASES_TIMELINE_QUERY_KEY = ['releases-timeline'] as const;
@@ -95,7 +96,7 @@ export function useReleasesTimeline() {
           .in('id', managerIds);
         (profs ?? []).forEach((p: any) => {
           if (p.full_name) names.set(p.id, p.full_name);
-          avatars.set(p.id, p.avatar_url ?? null);
+          avatars.set(p.id, resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null);
         });
       }
       return list.map((r) => releaseToTimelineIssue(r, names, avatars));

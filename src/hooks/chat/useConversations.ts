@@ -10,6 +10,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { ChatConversation, ChatConversationKind } from '@/types/chat';
 
 // chat_* tables are created in parallel and are not in the generated Database
@@ -117,7 +118,8 @@ async function fetchDmTitles(
       fnList.push(name);
       fullNames.set(m.conversation_id, fnList);
       const aList = avatars.get(m.conversation_id) ?? [];
-      if (avatar) aList.push(avatar);
+      const resolvedAvatar = resolveAvatarUrl(name) ?? avatar;
+      if (resolvedAvatar) aList.push(resolvedAvatar);
       avatars.set(m.conversation_id, aList);
     }
     for (const [id, names] of groupNames.entries()) {
