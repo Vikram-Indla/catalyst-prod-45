@@ -1,6 +1,6 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 export interface ApprovedProfile {
   id: string;
@@ -25,26 +25,6 @@ export interface ApprovedProfile {
  *   - Avatar shown in any picker = the override set at /admin/avatars if present.
  */
 export function useApprovedProfiles() {
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    let debounceTimer: ReturnType<typeof setTimeout>;
-    const channel = supabase
-      .channel(`approved-profiles-sync`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ['approved-profiles'] });
-        }, 1000);
-      })
-      .subscribe();
-
-    return () => {
-      clearTimeout(debounceTimer);
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
   return useQuery({
     queryKey: ['approved-profiles'],
     queryFn: async () => {
