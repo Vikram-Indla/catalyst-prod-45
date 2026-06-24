@@ -35,6 +35,7 @@ import Checkbox from '@atlaskit/checkbox';
 import Modal, { ModalTransition, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button';
 import TextField from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import {
@@ -1254,10 +1255,6 @@ export default function TimelineView(props: TimelineViewProps) {
       {createWorkOpen && createPortal(
         <>
           <div
-            onClick={() => { setCreateWorkOpen(false); setCreateWorkSummary(''); setCreateAnother(false); }}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.54)', zIndex: 9998 }}
-          />
-          <div
             role="dialog"
             aria-modal="true"
             aria-label="Create work item"
@@ -1293,51 +1290,45 @@ export default function TimelineView(props: TimelineViewProps) {
             <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
               {/* Space */}
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)' }}>
-                  SPACE
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, fontFamily: 'var(--ds-font-family-body)' }}>
+                  Space <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3, border: '1px solid var(--ds-border, #DFE1E6)' }}>
-                  <ProjectIcon projectKey={hubKey.replace(/^(project|product)-/, '')} size="small" name={hubLabel} />
-                  <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{hubLabel}</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 3, border: '1px solid var(--ds-border, #DFE1E6)', cursor: 'default' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ProjectIcon projectKey={hubKey.replace(/^(project|product)-/, '')} size="small" name={hubLabel} />
+                    <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{hubLabel}</span>
+                  </div>
+                  <ChevronDownIcon label="" size="small" />
                 </div>
               </div>
               {/* Work item type */}
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 8, letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)' }}>
-                  WORK ITEM TYPE <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 8, fontFamily: 'var(--ds-font-family-body)' }}>
+                  Work type <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {workItemTypes.map(type => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setCreateWorkType(type)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 6,
-                        padding: '6px 12px',
-                        border: `1.5px solid ${createWorkType === type ? 'var(--ds-border-selected, #388BFF)' : 'var(--ds-border, #DFE1E6)'}`,
-                        borderRadius: 3, cursor: 'pointer',
-                        background: createWorkType === type ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)',
-                        fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                        fontFamily: 'var(--ds-font-family-body)',
-                        fontWeight: createWorkType === type ? 600 : 400,
-                      }}
-                    >
-                      <JiraIssueTypeIcon type={type} size={16} />
-                      {type}
-                    </button>
-                  ))}
-                </div>
+                <Select
+                  inputId="create-work-type"
+                  placeholder="Choose work type"
+                  value={createWorkType ? { value: createWorkType, label: createWorkType } : null}
+                  onChange={(opt: any) => opt && setCreateWorkType(opt.value)}
+                  options={workItemTypes.map(t => ({ value: t, label: t }))}
+                  formatOptionLabel={(opt: any) => (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <JiraIssueTypeIcon type={opt.value} size={16} />
+                      <span>{opt.label}</span>
+                    </div>
+                  )}
+                />
               </div>
               {/* Summary */}
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)' }}>
-                  SUMMARY <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 6, fontFamily: 'var(--ds-font-family-body)' }}>
+                  Summary <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                 </div>
                 <TextField
                   value={createWorkSummary}
                   onChange={e => setCreateWorkSummary((e.target as HTMLInputElement).value)}
-                  placeholder="What needs to be done?"
+                  placeholder="Enter summary"
                   autoFocus
                   onKeyDown={e => { if (e.key === 'Enter' && createWorkSummary.trim()) handleCreateWork(); }}
                 />
