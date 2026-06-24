@@ -52,14 +52,19 @@ function fmtDate(d: string | null | undefined): string {
   return t.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
-const CARD_W = 280;
-const COL_W = 400;
+const CARD_W = 300;
+const COL_W = 420;
 const ROW_H = 190;
 const HEADER_H = 48;
 const PAD_X = 32;
 const PAD_Y = 32;
 const LANE_GAP = 24;
 const LINK = 'var(--ds-link, #0C66E4)';
+// Probed from live Jira Plans dependency report (2026-06-24): edges are
+// gray rgb(80,82,88) 1px, frame fill rgba(5,21,36,0.06).
+const EDGE_COLOR = 'var(--ds-text-subtle, #505258)';
+// ads-scanner:ignore-next-line — SVG marker fill needs a concrete color, not a CSS var()
+const EDGE_HEX = '#505258';
 
 type GroupBy = 'none' | 'status' | 'type' | 'assignee';
 type LinkType = 'all' | 'blocks' | 'is_blocked_by';
@@ -115,7 +120,7 @@ function FrameNode({ data }: { data: any }) {
         width: '100%',
         height: '100%',
         borderRadius: 8,
-        background: 'var(--ds-surface-sunken, #F7F8F9)',
+        background: 'var(--ds-background-neutral, rgba(5,21,36,0.06))',
         border: '1px solid var(--ds-border, #DFE1E6)',
       }}
     >
@@ -326,7 +331,7 @@ function DependencyEdge({
   const d = data as any;
   return (
     <>
-      <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={{ stroke: LINK, strokeWidth: 1.5 }} />
+      <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={{ stroke: EDGE_COLOR, strokeWidth: 1 }} />
       <EdgeLabelRenderer>
         <button
           type="button"
@@ -590,9 +595,9 @@ function ChipSelect<T extends string>({
           gap: 4,
           height: 32,
           padding: '0 8px',
-          borderRadius: 4,
-          border: `1px solid ${active ? 'var(--ds-border-selected, #1868DB)' : 'var(--ds-border, #DFE1E6)'}`,
-          background: 'var(--ds-surface, #FFFFFF)',
+          borderRadius: 3,
+          border: `1px solid ${active ? 'transparent' : 'var(--ds-border, #DFE1E6)'}`,
+          background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)',
           color: disabled ? 'var(--ds-text-disabled, #B3B9C4)' : active ? 'var(--ds-text-selected, #1868DB)' : 'var(--ds-text, #292A2E)',
           fontSize: 14,
           cursor: disabled ? 'not-allowed' : 'pointer',
@@ -797,7 +802,7 @@ function DiagramInner({ projectKey, dependencies, issueMeta = {}, onAddClick, on
         type: 'dependency',
         zIndex: 1,
         // ads-scanner:ignore-next-line — SVG marker requires a concrete color, not a CSS var()
-        markerEnd: { type: MarkerType.ArrowClosed, color: '#0C66E4' },
+        markerEnd: { type: MarkerType.ArrowClosed, color: EDGE_HEX },
         data: {
           label: dep.dependency_type === 'blocks' ? 'blocks' : 'is blocked by',
           depId: dep.id,
