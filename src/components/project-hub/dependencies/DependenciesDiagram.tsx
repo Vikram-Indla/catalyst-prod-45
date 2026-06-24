@@ -38,6 +38,41 @@ function fmtDate(d: string | null | undefined): string {
   return t.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
+const COL_W = 320;
+const ROW_H = 160;
+
+/**
+ * Layered left→right layout for a dependency DAG. Each node's column = longest
+ * path from a root (a node with no incoming edge); nodes sharing a column stack
+ * vertically. Relaxation is capped at N iterations so a cyclic graph terminates.
+ */
+function layeredLayout(
+  keys: string[],
+  edges: Array<{ source: string; target: string }>,
+): Record<string, { x: number; y: number }> {
+  const depth: Record<string, number> = Object.fromEntries(keys.map((k) => [k, 0]));
+  for (let i = 0; i < keys.length; i++) {
+    let changed = false;
+    for (const e of edges) {
+      if (depth[e.source] === undefined || depth[e.target] === undefined) continue;
+      if (depth[e.target] < depth[e.source] + 1) {
+        depth[e.target] = depth[e.source] + 1;
+        changed = true;
+      }
+    }
+    if (!changed) break;
+  }
+  const byCol: Record<number, string[]> = {};
+  for (const k of keys) (byCol[depth[k]] ||= []).push(k);
+  const pos: Record<string, { x: number; y: number }> = {};
+  for (const col of Object.keys(byCol)) {
+    byCol[+col].forEach((k, row) => {
+      pos[k] = { x: +col * COL_W, y: row * ROW_H + 40 };
+    });
+  }
+  return pos;
+}
+
 type Dependency = {
   id: number;
   project_key: string;
@@ -138,17 +173,19 @@ export default function DependenciesDiagram({
     return Array.from(keys).sort();
   }, [dependencies]);
 
-  // Create node layout (simple horizontal arrangement)
-  const nodes: Node[] = useMemo(
-    () =>
-      uniqueIssues.map((key, idx) => ({
-        id: key,
-        type: 'workItem',
-        data: { label: key, meta: issueMeta[key] ?? null },
-        position: { x: idx * 320, y: 80 },
-      })),
-    [uniqueIssues, issueMeta]
-  );
+  // Layered left→right layout driven by the dependency edges (source → target).
+  const nodes: Node[] = useMemo(() => {
+    const layout = layeredLayout(
+      uniqueIssues,
+      dependencies.map((d) => ({ source: d.source_issue_key, target: d.target_issue_key })),
+    );
+    return uniqueIssues.map((key) => ({
+      id: key,
+      type: 'workItem',
+      data: { label: key, meta: issueMeta[key] ?? null },
+      position: layout[key] ?? { x: 0, y: 0 },
+    }));
+  }, [uniqueIssues, dependencies, issueMeta]);
 
   // Create edges from dependencies
   const edges: Edge[] = useMemo(
