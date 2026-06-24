@@ -2032,8 +2032,8 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         unlinkedEpics.length > 0 ? (
           <div style={{ padding: 16 }}>
             <EmptyState
-              header="No epics linked to demand tickets yet"
-              description="MDTs exist for this quarter but no epics have been linked to them. Open ProductHub to link epics to MDTs so progress can be rolled up here."
+              header="No epics linked to a delivery initiative yet"
+              description="This project's epics aren't linked to any delivery initiative. Link them in ProductHub so completion rolls up here."
               primaryAction={
                 <AkButton appearance="primary" onClick={() => navigate('/producthub/backlog')}>
                   Open ProductHub
@@ -2044,11 +2044,11 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         ) : (
           <div style={{ padding: 16 }}>
             <EmptyState
-              header="No demand tickets for this period"
-              description="There are no MDTs matching the selected scope. Create MDTs in ProductHub, set their target quarter, then link epics to track delivery here."
+              header="No epic delivery to track yet"
+              description="No delivery initiatives match this scope. Once epics are linked to an initiative in ProductHub, completion shows here."
               primaryAction={
                 <AkButton appearance="primary" onClick={() => navigate('/producthub/backlog')}>
-                  Create MDT in ProductHub
+                  Open ProductHub
                 </AkButton>
               }
             />
