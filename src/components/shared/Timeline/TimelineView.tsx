@@ -1343,7 +1343,7 @@ export default function TimelineView(props: TimelineViewProps) {
             <ModalBody>
               {/* Project row */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-                <ProjectIcon projectKey={hubKey} size="small" name={hubLabel} />
+                <ProjectIcon projectKey={hubKey.replace(/^(project|product)-/, '')} size="small" name={hubLabel} />
                 <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)' }}>
                   {hubLabel}
                 </span>

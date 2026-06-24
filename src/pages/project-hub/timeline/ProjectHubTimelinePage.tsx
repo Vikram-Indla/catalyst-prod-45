@@ -395,6 +395,7 @@ export default function ProjectHubTimelinePage() {
       resolveItemType={resolveItemType}
       detailRouteOwnerKey={projectKey ?? ''}
       mutations={mutations}
+      enableCreateEpicRow
       menuVariant="jira"
       locatedKey={locateKey ?? undefined}
     />
