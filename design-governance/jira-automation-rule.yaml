@@ -1,0 +1,171 @@
+# Jira Automation Rule: Block story → In Progress without Figma handoff spec
+#
+# PURPOSE: Prevent engineers from starting implementation before a Figma handoff
+#          spec and link exist in the Jira ticket.
+#
+# HOW TO IMPORT:
+#   Method A (recommended — Jira Automation UI):
+#     1. Jira project → Project settings → Automation
+#     2. Click "Create rule" → "Import rule"
+#     3. Paste the JSON block from the bottom of this file
+#
+#   Method B (manual copy-paste):
+#     Follow the manual setup instructions below, then paste the comment text.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+metadata:
+  name: "Block In Progress without Figma Handoff Spec"
+  description: >
+    Prevents transition to 'In Progress' unless the ticket has a comment
+    containing 'Figma:' AND a comment containing 'Handoff Spec'.
+    Posts a blocking comment with instructions when the check fails.
+  projects:
+    - BAU
+    - MWR
+    - ICP
+    - IRP
+  trigger: "Issue transitioned"
+  target_status: "In Progress"
+
+# ─── MANUAL SETUP INSTRUCTIONS ───────────────────────────────────────────────
+manual_setup:
+  step_1: "Open Jira → Project Settings → Automation → Create rule"
+  step_2: "Trigger: Issue transitioned → To status: In Progress"
+  step_3: "Condition: Advanced compare (JQL)"
+  jql_condition: |
+    project in (BAU, MWR, ICP, IRP)
+    AND issuetype in (Story, Task, "QA Bug", "Change Request", "Production Incident", "Business Gap")
+    AND NOT (
+      comment ~ "Figma:"
+      AND comment ~ "Handoff Spec"
+    )
+  step_4: "Action: Transition issue → To status: To Do (revert the transition)"
+  step_5: "Action: Add comment (use the blocking_comment text below)"
+  step_6: "Action: Send email to assignee (optional)"
+
+blocking_comment: |
+  🚫 **Design Handoff Spec Required**
+
+  This ticket cannot move to **In Progress** until a Figma design handoff spec has been posted.
+
+  **To unblock:**
+  1. Open the [Catalyst Design System Figma file](https://www.figma.com/design/mtpXVYTB4dSPPMmyWSPfoY)
+  2. Duplicate the **📋 Handoff Template** frame
+  3. Fill in all 6 sections: Components, Tokens, States, A11y, Parity Notes, Data
+  4. Run `/design-critique` in Claude Code — fix all P0 findings
+  5. Post a comment on this ticket in this format:
+
+  ```
+  Figma: https://www.figma.com/design/...
+  Handoff Spec: [link to spec frame or section]
+
+  Components used: @atlaskit/button/new, @atlaskit/modal-dialog, ...
+  Tokens used: var(--ds-text), var(--ds-background-information), ...
+  States documented: Default, Hover, Disabled, Loading, Error
+  A11y: WCAG 2.1 AA — keyboard nav, ARIA labels, focus management
+  Jira parity: jira-compare run ✅ Passed
+  ```
+
+  Then re-transition to **In Progress**.
+
+  See: `design-governance/CATALYST_DESIGN_SYSTEM_GUIDE.md` for full process.
+
+# ─── JIRA AUTOMATION JSON (paste this into "Import rule") ────────────────────
+#
+# NOTE: Jira Automation JSON format varies by Jira version. This is for
+# Jira Cloud (Atlassian Cloud). For Server/DC, use ScriptRunner Groovy instead.
+#
+jira_cloud_json: |
+  {
+    "name": "Block In Progress without Figma Handoff Spec",
+    "state": "ENABLED",
+    "projects": ["BAU", "MWR", "ICP", "IRP"],
+    "trigger": {
+      "component": "TRIGGER",
+      "type": "jira.issue.transitioned",
+      "value": {
+        "toStatus": {
+          "name": "In Progress"
+        }
+      }
+    },
+    "components": [
+      {
+        "component": "CONDITION",
+        "type": "jira.condition.advanced",
+        "value": {
+          "expression": "{{issue.type.name}} in [\"Story\", \"Task\", \"QA Bug\", \"Change Request\", \"Production Incident\", \"Business Gap\"]"
+        }
+      },
+      {
+        "component": "CONDITION",
+        "type": "jira.condition.advanced",
+        "value": {
+          "expression": "NOT ({{issue.comments}} contains \"Figma:\" AND {{issue.comments}} contains \"Handoff Spec\")"
+        }
+      },
+      {
+        "component": "ACTION",
+        "type": "jira.issue.transition",
+        "value": {
+          "transitionId": "TO_DO_TRANSITION_ID",
+          "comment": "🚫 Design Handoff Spec Required — see comment below."
+        }
+      },
+      {
+        "component": "ACTION",
+        "type": "jira.issue.comment",
+        "value": {
+          "comment": {
+            "version": 1,
+            "type": "doc",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "🚫 Design Handoff Spec Required. This ticket cannot move to In Progress until a Figma handoff spec exists. See CATALYST_DESIGN_SYSTEM_GUIDE.md for instructions. Post a comment with 'Figma: <url>' AND 'Handoff Spec: <link>', then re-transition."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+
+# ─── SCRIPTRUNNER GROOVY (Jira Server / Data Center alternative) ─────────────
+scriptrunner_groovy: |
+  import com.atlassian.jira.component.ComponentAccessor
+  import com.atlassian.jira.issue.Issue
+
+  def commentManager = ComponentAccessor.getCommentManager()
+  def issue = event.issue
+  def toStatus = event.changeLog?.getRelated("ChildChangeItem")?.find { it.field == "status" }?.newstring
+
+  if (toStatus != "In Progress") return
+
+  def comments = commentManager.getComments(issue).collect { it.body }
+  def hasFigma    = comments.any { it?.contains("Figma:") }
+  def hasHandoff  = comments.any { it?.contains("Handoff Spec") }
+
+  if (!hasFigma || !hasHandoff) {
+    def issueService = ComponentAccessor.getIssueService()
+    def user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+
+    // Revert to To Do
+    def transitionOptions = new IssueService.TransitionValidationResult(issue, 11, [:], user, false)
+    issueService.transition(user, transitionOptions)
+
+    // Add blocking comment
+    def blockingMsg = """🚫 *Design Handoff Spec Required*
+  Post a comment with both:
+  - `Figma: https://...`
+  - `Handoff Spec: https://...`
+  Then re-transition to In Progress.
+  See design-governance/CATALYST_DESIGN_SYSTEM_GUIDE.md"""
+    commentManager.create(issue, user, blockingMsg, false)
+  }
