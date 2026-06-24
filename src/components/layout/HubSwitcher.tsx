@@ -286,7 +286,7 @@ export function HubSwitcher() {
             return (
               <Section key={key} title={title}>
                 {rows.map((hub) => {
-                  // Deprecated hub: shown but grayed-out, non-navigable.
+                  // Deprecated hub: visually enabled but non-navigable (dead).
                   if (hub.deprecated) {
                     return (
                       <div
@@ -300,14 +300,13 @@ export function HubSwitcher() {
                           gap: 8,
                           padding: '8px 12px',
                           cursor: 'not-allowed',
-                          opacity: 0.55,
                           userSelect: 'none',
                         }}
                       >
                         <img
                           src={HUB_ICON_REGISTRY[hub.key]}
                           alt={hub.label}
-                          style={{ width: 32, height: 32, display: 'block', filter: 'grayscale(1)' }}
+                          style={{ width: 32, height: 32, display: 'block' }}
                         />
                         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
                           <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{hub.label}</span>
