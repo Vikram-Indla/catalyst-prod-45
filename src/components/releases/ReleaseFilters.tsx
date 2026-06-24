@@ -18,6 +18,7 @@ import {
 import { createPortal } from 'react-dom';
 import { Checkbox } from '@atlaskit/checkbox';
 import SearchIcon from '@atlaskit/icon/glyph/search';
+import Tooltip from '@atlaskit/tooltip';
 
 // ───────────────────────── shared pill + portal ─────────────────────────
 
@@ -210,6 +211,8 @@ function CheckboxRow({
   label: React.ReactNode;
   onToggle: () => void;
 }) {
+  const [hover, setHover] = useState(false);
+  const showBar = checked || hover;
   return (
     <label
       role="option"
@@ -218,22 +221,31 @@ function CheckboxRow({
         e.preventDefault();
         onToggle();
       }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       style={{
+        position: 'relative',
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        padding: '6px 12px',
+        padding: '6px 12px 6px 16px',
         cursor: 'pointer',
-        background: checked ? PILL_BG_ACTIVE : 'transparent',
+        background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
         userSelect: 'none',
       }}
-      onMouseEnter={(e) => {
-        if (!checked) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.background = checked ? PILL_BG_ACTIVE : 'transparent';
-      }}
     >
+      <span
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 3,
+          background: showBar ? PILL_BLUE : 'transparent',
+          borderRadius: '0 2px 2px 0',
+        }}
+      />
       <Checkbox isChecked={checked} onChange={() => { /* handled by label click */ }} />
       <span
         style={{
@@ -257,31 +269,42 @@ function RadioRow({
   label: string;
   onSelect: () => void;
 }) {
+  const [hover, setHover] = useState(false);
+  const showBar = checked || hover;
   return (
     <button
       type="button"
       role="option"
       aria-selected={checked}
       onClick={onSelect}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       style={{
         all: 'unset',
+        position: 'relative',
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        padding: '8px 12px',
+        padding: '8px 12px 8px 16px',
         cursor: 'pointer',
-        background: checked ? PILL_BG_ACTIVE : 'transparent',
+        background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
         fontSize: 14,
         color: checked ? PILL_TEXT_ACTIVE : 'var(--ds-text, #292A2E)',
         fontWeight: checked ? 500 : 400,
       }}
-      onMouseEnter={(e) => {
-        if (!checked) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.background = checked ? PILL_BG_ACTIVE : 'transparent';
-      }}
     >
+      <span
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 3,
+          background: showBar ? PILL_BLUE : 'transparent',
+          borderRadius: '0 2px 2px 0',
+        }}
+      />
       {label}
     </button>
   );
@@ -319,33 +342,34 @@ export function StatusFilter({
   };
 
   const triggerLabel = useMemo(() => {
-    if (allSelected || value.length === 0) return 'All';
-    if (value.length === 1) {
-      return STATUS_ORDER.find((s) => s.value === value[0])?.label ?? 'All';
-    }
-    return `${value.length} statuses`;
-  }, [value, allSelected]);
+    if (value.length === 0) return 'All';
+    return STATUS_ORDER
+      .filter((s) => value.includes(s.value))
+      .map((s) => s.label)
+      .join(', ');
+  }, [value]);
+
+  const tooltipContent = useMemo(() => {
+    if (value.length === 0) return 'Status: all';
+    return `Status: ${triggerLabel}`;
+  }, [value.length, triggerLabel]);
 
   return (
     <>
-      <button
-        ref={triggerRef}
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        style={pillStyle(active, true)}
-      >
-        <span>{triggerLabel}</span>
-      </button>
+      <Tooltip content={tooltipContent} position="bottom">
+        <button
+          ref={triggerRef}
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          style={pillStyle(active, true)}
+        >
+          <span>{triggerLabel}</span>
+        </button>
+      </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={200}>
         <div style={{ padding: '6px 0' }}>
-          <CheckboxRow
-            checked={allSelected}
-            label="All"
-            onToggle={() => onChange(allSelected ? [] : STATUS_ORDER.map((s) => s.value))}
-          />
-          <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
           {STATUS_ORDER.map((opt) => (
             <CheckboxRow
               key={opt.value}
@@ -401,26 +425,34 @@ export function ProductFilter({
     else onChange([...value, id]);
   };
 
+  const selectedNames = useMemo(
+    () => value.map((id) => options.find((o) => o.id === id)?.name).filter(Boolean) as string[],
+    [value, options],
+  );
+
   const triggerLabel = useMemo(() => {
     if (value.length === 0) return 'Product';
-    if (value.length === 1) {
-      return options.find((o) => o.id === value[0])?.name ?? 'Product';
-    }
-    return `${value.length} products`;
-  }, [value, options]);
+    return selectedNames.join(', ');
+  }, [value.length, selectedNames]);
+
+  const tooltipContent = value.length === 0
+    ? 'Filter by product'
+    : `Product: ${selectedNames.join(', ')}`;
 
   return (
     <>
-      <button
-        ref={triggerRef}
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        style={pillStyle(active, true)}
-      >
-        <span>{triggerLabel}</span>
-      </button>
+      <Tooltip content={tooltipContent} position="bottom">
+        <button
+          ref={triggerRef}
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          style={pillStyle(active, true)}
+        >
+          <span>{triggerLabel}</span>
+        </button>
+      </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={280}>
         <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
           <SearchInput value={query} onChange={setQuery} placeholder={placeholder} />
@@ -499,19 +531,24 @@ export function GroupFilter({
   const active = open;
   const current = GROUP_OPTIONS.find((o) => o.value === value);
   const triggerLabel = value === 'none' ? 'Group' : `Group: ${current?.label ?? ''}`;
+  const tooltipContent = value === 'none'
+    ? 'Group releases'
+    : `Grouped by ${current?.label ?? ''}`;
 
   return (
     <>
-      <button
-        ref={triggerRef}
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        style={pillStyle(active, true)}
-      >
-        <span>{triggerLabel}</span>
-      </button>
+      <Tooltip content={tooltipContent} position="bottom">
+        <button
+          ref={triggerRef}
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          style={pillStyle(active, true)}
+        >
+          <span>{triggerLabel}</span>
+        </button>
+      </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={200}>
         <div style={{ padding: '6px 0', display: 'flex', flexDirection: 'column' }}>
           {GROUP_OPTIONS.map((opt) => (
