@@ -1,15 +1,19 @@
 /**
- * ReleaseCreateModal — Create release dialog.
+ * ReleaseCreateModal — Create or Edit release dialog.
  *
- * Jira parity layout:
+ * Modes:
+ *   - Create: no `editingRelease` prop → blank form, useCreateRelease mutation
+ *   - Edit:   `editingRelease` provided → prefilled form, useUpdateRelease mutation
+ *
+ * Layout (Jira parity):
  *   - Header subtitle: "Required fields are marked with an asterisk *"
  *   - Release name * (required, validated)
  *   - Start date / Release date  (side-by-side row)
  *   - Product * (single-select autofill)
  *   - Description (optional textarea)
- *   - Footer: Cancel + Save
+ *   - Footer: Cancel + Save / Save changes
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -17,8 +21,9 @@ import TextArea from '@atlaskit/textarea';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCreateRelease } from '@/hooks/releases/useCreateRelease';
+import { useUpdateRelease } from '@/hooks/releases/useUpdateRelease';
 import { Release, CreateReleasePayload } from '@/types/phase3-releases';
-import { catalystToast } from '@/lib/catalystToast';
+import { catalystFlag } from '@/lib/catalystFlag';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { ProductSelect, type ProductOption } from './ReleaseFilters';
 
@@ -28,6 +33,8 @@ interface ReleaseCreateModalProps {
   projectId: string;
   onClose: () => void;
   onSuccess?: (release: Release) => void;
+  /** When provided, the modal switches to edit mode and pre-fills from this release. */
+  editingRelease?: Release | null;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -50,24 +57,53 @@ const asterisk = (
 
 const todayIso = () => new Date().toISOString().split('T')[0];
 
+function emptyForm() {
+  return {
+    name: '',
+    description: '',
+    start_date: todayIso(),
+    release_date: todayIso(),
+    product_id: '',
+  };
+}
+
+function formFromRelease(r: Release) {
+  return {
+    name: r.name ?? '',
+    description: r.description ?? '',
+    start_date: r.start_date ?? '',
+    release_date: r.release_date ?? '',
+    product_id: r.project_id ?? '',
+  };
+}
+
 export function ReleaseCreateModal({
   isOpen,
   projectKey,
   projectId,
   onClose,
   onSuccess,
+  editingRelease = null,
 }: ReleaseCreateModalProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    start_date: todayIso(),
-    release_date: todayIso(),
-    product_id: '',
-  });
+  const isEdit = !!editingRelease;
+
+  const [formData, setFormData] = useState(() =>
+    editingRelease ? formFromRelease(editingRelease) : emptyForm(),
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
+  // Re-seed form whenever the modal re-opens or the target release changes
+  useEffect(() => {
+    if (!isOpen) return;
+    setFormData(editingRelease ? formFromRelease(editingRelease) : emptyForm());
+    setErrors({});
+    setSubmitted(false);
+  }, [isOpen, editingRelease]);
+
   const createMutation = useCreateRelease();
+  const updateMutation = useUpdateRelease(editingRelease?.id ?? '');
+  const pending = isEdit ? updateMutation.isPending : createMutation.isPending;
 
   // Products = ph_projects
   const { data: productsRaw } = useQuery({
@@ -112,6 +148,28 @@ export function ReleaseCreateModal({
     setSubmitted(true);
     if (!validate()) return;
 
+    if (isEdit && editingRelease) {
+      updateMutation.mutate(
+        {
+          name: formData.name.trim(),
+          description: formData.description.trim() || undefined,
+          start_date: formData.start_date || undefined,
+          release_date: formData.release_date || undefined,
+          product_id: formData.product_id,
+        } as any,
+        {
+          onSuccess: (result) => {
+            onSuccess?.(result);
+            handleClose();
+          },
+          onError: (error: any) => {
+            catalystFlag.error(error?.message || 'Failed to update release');
+          },
+        },
+      );
+      return;
+    }
+
     const payload: CreateReleasePayload = {
       project_id: formData.product_id,
       name: formData.name.trim(),
@@ -119,37 +177,33 @@ export function ReleaseCreateModal({
       ...(formData.start_date && { start_date: formData.start_date }),
       ...(formData.release_date && { release_date: formData.release_date }),
     };
-
     createMutation.mutate(payload, {
       onSuccess: (result) => {
         onSuccess?.(result);
         handleClose();
       },
       onError: (error: any) => {
-        catalystToast.error(error?.message || 'Failed to create release');
+        catalystFlag.error(error?.message || 'Failed to create release');
       },
     });
   };
 
   const handleClose = () => {
-    setFormData({
-      name: '',
-      description: '',
-      start_date: todayIso(),
-      release_date: todayIso(),
-      product_id: '',
-    });
+    setFormData(emptyForm());
     setErrors({});
     setSubmitted(false);
     onClose();
   };
+
+  const title = isEdit ? 'Edit release' : 'Create release';
+  const ctaLabel = isEdit ? 'Save changes' : 'Save';
 
   return (
     <ModalTransition>
       {isOpen && (
         <Modal onClose={handleClose} width="small">
           <ModalHeader hasCloseButton>
-            <ModalTitle>Create release</ModalTitle>
+            <ModalTitle>{title}</ModalTitle>
           </ModalHeader>
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -185,7 +239,7 @@ export function ReleaseCreateModal({
                 )}
               </div>
 
-              {/* Start date / Release date (side by side) */}
+              {/* Start date / Release date */}
               <div style={{ display: 'flex', gap: 12 }}>
                 <div style={{ flex: 1 }}>
                   <label style={labelStyle}>Start date</label>
@@ -219,7 +273,7 @@ export function ReleaseCreateModal({
                 </div>
               </div>
 
-              {/* Product (single-select autofill) */}
+              {/* Product */}
               <div>
                 <label style={labelStyle}>
                   Product{asterisk}
@@ -251,7 +305,10 @@ export function ReleaseCreateModal({
                   id="release-description"
                   placeholder="Optional release notes"
                   value={formData.description}
-                  onChange={(e) => setFormData((p) => ({ ...p, description: e.currentTarget.value }))}
+                  onChange={(e) => {
+                    const v = (e.target as HTMLTextAreaElement).value;
+                    setFormData((p) => ({ ...p, description: v }));
+                  }}
                   minimumRows={3}
                 />
               </div>
@@ -263,11 +320,11 @@ export function ReleaseCreateModal({
             </Button>
             <Button
               appearance="primary"
-              isLoading={createMutation.isPending}
-              isDisabled={createMutation.isPending}
+              isLoading={pending}
+              isDisabled={pending}
               onClick={handleSubmit}
             >
-              Save
+              {ctaLabel}
             </Button>
           </ModalFooter>
         </Modal>

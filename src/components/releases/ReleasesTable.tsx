@@ -230,7 +230,7 @@ function ActionsMenu({ release, onRelease, onArchive, onMerge, onEdit, onDelete 
           <MenuItem label="Archive" onClick={() => { onArchive(release); setOpen(false); }} />
           <MenuItem label="Merge" onClick={() => { onMerge(release); setOpen(false); }} />
           <MenuItem label="Edit" onClick={() => { onEdit(release); setOpen(false); }} />
-          <MenuItem label="Delete" onClick={() => { onDelete(release); setOpen(false); }} danger />
+          <MenuItem label="Delete" onClick={() => { onDelete(release); setOpen(false); }} />
         </div>,
         document.body,
       )}

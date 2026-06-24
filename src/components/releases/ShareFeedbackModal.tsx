@@ -20,7 +20,7 @@ import { Checkbox } from '@atlaskit/checkbox';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { catalystToast } from '@/lib/catalystToast';
+import { catalystFlag } from '@/lib/catalystFlag';
 
 type Category = 'ask_question' | 'leave_comment' | 'report_bug' | 'suggest_improvement';
 
@@ -271,11 +271,11 @@ export function ShareFeedbackModal({ isOpen, onClose }: ShareFeedbackModalProps)
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      catalystToast.success('Thanks for your feedback!');
+      catalystFlag.success('Thanks for your feedback!');
       handleClose();
     },
     onError: (err: any) => {
-      catalystToast.error(err?.message || 'Could not send feedback');
+      catalystFlag.error(err?.message || 'Could not send feedback');
     },
   });
 

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
 import { useQuery } from '@tanstack/react-query';
-import { catalystToast } from '@/lib/catalystToast';
+import { catalystFlag } from '@/lib/catalystFlag';
 import { supabase } from '@/integrations/supabase/client';
 import { useWHReleases, useReleaseProgress } from '@/hooks/workhub/useReleases';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
@@ -11,7 +11,6 @@ import { ReleasesTable } from '@/components/releases/ReleasesTable';
 import { ReleaseCreateModal } from '@/components/releases/ReleaseCreateModal';
 import { ShareFeedbackModal } from '@/components/releases/ShareFeedbackModal';
 import FeedbackIcon from '@atlaskit/icon/core/feedback';
-import { ReleaseEditModal } from '@/components/releases/ReleaseEditModal';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
 import { ReleaseDeleteDialog } from '@/components/releases/ReleaseDeleteDialog';
@@ -105,7 +104,6 @@ export function ReleasesPage() {
 
   // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRelease, setEditingRelease] = useState<CellRelease | null>(null);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [archivingRelease, setArchivingRelease] = useState<CellRelease | null>(null);
@@ -333,7 +331,7 @@ export function ReleasesPage() {
           onRelease={(r) => { setConfirmingRelease(r); setIsConfirmModalOpen(true); }}
           onArchive={(r) => { setArchivingRelease(r); setIsArchiveDialogOpen(true); }}
           onMerge={(r) => { console.log('Merge release (TBD):', r.id); }}
-          onEdit={(r) => { setEditingRelease(r); setIsEditModalOpen(true); }}
+          onEdit={(r) => { setEditingRelease(r); setIsCreateModalOpen(true); }}
           onDelete={(r) => { setDeletingRelease(r); setIsDeleteDialogOpen(true); }}
         />
       ) : (
@@ -352,19 +350,16 @@ export function ReleasesPage() {
         isOpen={isCreateModalOpen}
         projectKey={projectKey}
         projectId={projectId}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={(release: any) => catalystToast.success(`Release "${release.name}" has been created.`)}
+        editingRelease={editingRelease as any}
+        onClose={() => { setIsCreateModalOpen(false); setEditingRelease(null); }}
+        onSuccess={(release: any) =>
+          catalystFlag.success(
+            editingRelease
+              ? `Release "${release.name}" has been updated.`
+              : `Release "${release.name}" has been created.`,
+          )
+        }
       />
-
-      {editingRelease && (
-        <ReleaseEditModal
-          isOpen={isEditModalOpen}
-          projectKey={projectKey}
-          release={editingRelease as any}
-          onClose={() => { setIsEditModalOpen(false); setEditingRelease(null); }}
-          onSuccess={(release: any) => catalystToast.success(`Release "${release.name}" has been updated.`)}
-        />
-      )}
 
       {archivingRelease && (
         <ReleaseArchiveDialog
@@ -372,7 +367,7 @@ export function ReleasesPage() {
           release={archivingRelease as any}
           projectKey={projectKey}
           onClose={() => { setIsArchiveDialogOpen(false); setArchivingRelease(null); }}
-          onSuccess={() => catalystToast.success(`Release "${archivingRelease.name}" has been archived.`)}
+          onSuccess={() => catalystFlag.success(`Release "${archivingRelease.name}" has been archived.`)}
         />
       )}
 
@@ -382,7 +377,7 @@ export function ReleasesPage() {
           release={confirmingRelease as any}
           projectKey={projectKey}
           onClose={() => { setIsConfirmModalOpen(false); setConfirmingRelease(null); }}
-          onSuccess={(release: any) => catalystToast.success(`Release "${release.name}" published.`)}
+          onSuccess={(release: any) => catalystFlag.success(`Release "${release.name}" published.`)}
         />
       )}
 
@@ -392,7 +387,7 @@ export function ReleasesPage() {
           release={deletingRelease as any}
           projectKey={projectKey}
           onClose={() => { setIsDeleteDialogOpen(false); setDeletingRelease(null); }}
-          onSuccess={() => catalystToast.success(`Release "${deletingRelease.name}" has been deleted.`)}
+          onSuccess={() => catalystFlag.success(`Release "${deletingRelease.name}" has been deleted.`)}
         />
       )}
 
