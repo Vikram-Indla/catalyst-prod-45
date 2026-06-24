@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
+import { useDirectFromSync, useMarkSyncAsRead } from '@/hooks/useDirectFromSync';
 import { useActorProfiles } from '@/hooks/useActorProfiles';
 import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './types';
@@ -234,17 +235,38 @@ function EmptyState({ isDark }: { isDark: boolean }) {
 // ─── Main component ──────────────────────────────────────────────────────────
 
 export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadIds, onMarkRead }: DirectPanelProps) {
-  const { data, isLoading } = useNotificationsQuery('direct', unreadOnly);
+  // Layer 1: webhook-fired event notifications (mentions, comments, status changes)
+  // Passes unreadOnly=false so we get ALL events; we apply the filter ourselves after merging.
+  const { data: notifData, isLoading: notifLoading } = useNotificationsQuery('direct', false);
+  // Layer 2: ph_issues-based assigned work (always fresh from Jira sync — the primary feed)
+  const { data: syncItems, isLoading: syncLoading } = useDirectFromSync(false);
+
   const markAsReadMutation = useMarkAsRead();
+  const markSyncAsReadMutation = useMarkSyncAsRead();
 
   // Optimistic local read state — avoids waiting for query refetch after marking read
   const [localReadIds, setLocalReadIds] = useState<Set<string>>(new Set());
 
-  // Flatten paginated pages into a flat list of raw Notification rows
+  // Flatten paginated pages from the notifications table
+  const eventNotifications = useMemo<Notification[]>(() => {
+    if (!notifData?.pages) return [];
+    return notifData.pages.flat() as Notification[];
+  }, [notifData]);
+
+  // Merge: ph_issues assigned work (layer 2) + notification events (layer 1)
+  // Deduplicate by entity_id: if an event notification exists for the same entity_id,
+  // it takes precedence (it carries actor/verb info). Otherwise use the sync item.
   const rawNotifications = useMemo<Notification[]>(() => {
-    if (!data?.pages) return [];
-    return data.pages.flat() as Notification[];
-  }, [data]);
+    const eventEntityIds = new Set(eventNotifications.map(n => n.entity_id));
+    // Filter sync items to exclude those already covered by an event notification
+    const syncOnly = (syncItems ?? []).filter(n => !eventEntityIds.has(n.entity_id));
+    // Merge and sort descending by created_at
+    const merged = [...eventNotifications, ...syncOnly];
+    merged.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return merged;
+  }, [eventNotifications, syncItems]);
+
+  const isLoading = notifLoading || syncLoading;
 
   // Collect all actor IDs so we can batch-fetch their profiles (with avatar_url)
   const actorIds = useMemo(
@@ -277,11 +299,16 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   const handleMarkRead = useCallback((id: string) => {
     // Optimistic: mark read immediately in UI
     setLocalReadIds(prev => new Set(prev).add(id));
-    // Real write to DB — onSuccess invalidates ['notifications'] + ['notifications-unread-count']
-    markAsReadMutation.mutate(id);
-    // Also bubble up if parent needs to know
+    if (id.startsWith('sync::')) {
+      // Sync item from ph_issues — write a read-receipt to the notifications table
+      const raw = rawNotifications.find(n => n.id === id);
+      if (raw) markSyncAsReadMutation.mutate(raw);
+    } else {
+      // Real notification row — update read_at in notifications table
+      markAsReadMutation.mutate(id);
+    }
     onMarkRead?.(id);
-  }, [markAsReadMutation, onMarkRead]);
+  }, [markAsReadMutation, markSyncAsReadMutation, rawNotifications, onMarkRead]);
 
   if (isLoading) return <LoadingState isDark={isDark} />;
 
