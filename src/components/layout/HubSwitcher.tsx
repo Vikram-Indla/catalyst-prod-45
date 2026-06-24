@@ -294,7 +294,6 @@ export function HubSwitcher() {
                         role="menuitem"
                         aria-disabled="true"
                         data-hub-deprecated={hub.key}
-                        title="This module has been deprecated"
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -311,7 +310,7 @@ export function HubSwitcher() {
                           style={{ width: 32, height: 32, display: 'block', filter: 'grayscale(1)' }}
                         />
                         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
-                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{hub.label} (deprecated)</span>
+                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{hub.label}</span>
                         </span>
                       </div>
                     );
