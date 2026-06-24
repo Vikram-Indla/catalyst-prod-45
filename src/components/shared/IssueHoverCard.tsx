@@ -87,7 +87,31 @@ function useHoverIssue(issueKey: string, enabled: boolean) {
         .eq('issue_key', issueKey)
         .is('deleted_at', null)
         .maybeSingle();
-      return (data as unknown as HoverIssue) ?? null;
+      if (data) return data as unknown as HoverIssue;
+
+      // Fall back to business_requests for MDT-*/MIM-* keys not in ph_issues
+      const { data: biz } = await supabase
+        .from('business_requests')
+        .select('request_key, title, process_step, urgency, request_type')
+        .eq('request_key', issueKey)
+        .is('deleted_at', null)
+        .maybeSingle();
+      if (!biz) return null;
+      return {
+        issue_key: (biz as any).request_key,
+        summary: (biz as any).title ?? null,
+        description_text: null,
+        description_adf: null,
+        status: (biz as any).process_step ?? null,
+        status_category: null,
+        priority: (biz as any).urgency ?? null,
+        issue_type: 'Business Request',
+        project_key: null,
+        assignee_account_id: null,
+        assignee_display_name: null,
+        reporter_account_id: null,
+        reporter_display_name: null,
+      } as HoverIssue;
     },
   });
 }
