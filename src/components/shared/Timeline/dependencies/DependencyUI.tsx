@@ -12,7 +12,7 @@ import Avatar from '@atlaskit/avatar';
 import Select from '@atlaskit/select';
 import Tooltip from '@atlaskit/tooltip';
 import Lozenge from '@atlaskit/lozenge';
-import { Plus, Trash2, X, Check } from '@/lib/atlaskit-icons';
+import { Plus, Trash2, X, Check, ChevronDown } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusPill } from '@/components/shared/JiraTable/cells';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
@@ -29,11 +29,34 @@ import {
   type EndDateSource,
 } from './leadTime';
 
-export const BLOCKED_COL_W = 104;
-export const BLOCKS_COL_W = 104;
+export const BLOCKED_COL_W = 150;
+export const BLOCKS_COL_W = 150;
 export const DEP_PANEL_W = BLOCKED_COL_W + BLOCKS_COL_W;
 
 const cellBorder = '1px solid var(--ds-border, #DFE1E6)';
+
+/* Jira hover affordance — chevron at the cell's right edge, shown while the row is hovered. */
+function DepChevron() {
+  return (
+    <span aria-hidden style={{
+      position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)',
+      display: 'flex', color: 'var(--ds-text-subtle, #44546F)', pointerEvents: 'none',
+    }}>
+      <ChevronDown size={16} />
+    </span>
+  );
+}
+
+/* Jira dependency marker — small orange folded-corner triangle, top-right of a cell that has a dependency. */
+function DepCorner() {
+  return (
+    <span aria-hidden style={{
+      position: 'absolute', top: 0, right: 0, width: 0, height: 0,
+      borderTop: '9px solid var(--ds-background-warning-bold, #FF991F)',
+      borderLeft: '9px solid transparent',
+    }} />
+  );
+}
 
 function fmtDate(d: string | null | undefined): string {
   if (!d) return '—';
@@ -85,8 +108,9 @@ function LeadTimeCell({ issue }: { issue?: TimelineIssue }) {
 
 export function DependencyColumnHeaders({ height }: { height: number }) {
   const base: React.CSSProperties = {
-    height, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtle, #44546F)',
+    height, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+    paddingLeft: 8,
+    fontSize: 14, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)',
     background: 'var(--ds-surface-sunken, #F7F8F9)',
     borderBottom: '2px solid var(--ds-border, #DFE1E6)',
     borderLeft: cellBorder, userSelect: 'none',
@@ -118,16 +142,21 @@ interface DependencyColumnsBodyProps {
   showCreateEpicRow: boolean;
   onOpenAggregate: (issueKey: string, dir: 'blockedBy' | 'blocks', anchor: DOMRect) => void;
   onOpenGroupAggregate: (dir: 'blockedBy' | 'blocks', anchor: DOMRect) => void;
+  /** Keys to tint (#F0F1F2) — dependency-involved rows + their ancestors. */
+  tintKeys: Set<string>;
+  /** Shared row hover (synced with the sidebar panel). */
+  hoveredKey: string | null;
+  onHover: (key: string | null) => void;
 }
 
 export const DependencyColumnsBody = forwardRef<HTMLDivElement, DependencyColumnsBodyProps>(
-  function DependencyColumnsBody({ rows, counts, groupCounts, groupHeight, showReleases, releasesCollapsed, showCreateEpicRow, onOpenAggregate, onOpenGroupAggregate }, ref) {
+  function DependencyColumnsBody({ rows, counts, groupCounts, groupHeight, showReleases, releasesCollapsed, showCreateEpicRow, onOpenAggregate, onOpenGroupAggregate, tintKeys, hoveredKey, onHover }, ref) {
     // Jira aligns dependency cell content to the left edge, not centred.
     const cellBase: React.CSSProperties = {
+      position: 'relative',
       display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
       borderBottom: cellBorder, borderLeft: cellBorder, paddingLeft: 8, overflow: 'hidden',
     };
-    const dash = <span style={{ color: 'var(--ds-text-subtlest, #8590A2)', fontSize: 14 }}>—</span>;
     return (
       <div ref={ref} style={{ width: DEP_PANEL_W, flex: 1, minHeight: 0, flexShrink: 0, overflowY: 'hidden', overflowX: 'hidden', borderLeft: cellBorder }}>
         {showReleases && (
@@ -146,17 +175,32 @@ export const DependencyColumnsBody = forwardRef<HTMLDivElement, DependencyColumn
         )}
         {!releasesCollapsed && rows.map(({ issue }) => {
           const c = counts.get(issue.issueKey) ?? { blockedBy: 0, blocks: 0 };
+          const rowBg = hoveredKey === issue.issueKey
+            ? 'var(--cat-dep-row-hover, #F8F8F8)'
+            : tintKeys.has(issue.issueKey)
+              ? 'var(--cat-dep-row-bg, #F0F1F2)'
+              : 'transparent';
           return (
-            <div key={issue.issueKey} style={{ display: 'flex' }} role="row">
+            <div
+              key={issue.issueKey}
+              style={{ display: 'flex', background: rowBg, transition: 'background 80ms ease' }}
+              role="row"
+              onMouseEnter={() => onHover(issue.issueKey)}
+              onMouseLeave={() => onHover(null)}
+            >
               <div style={{ ...cellBase, width: BLOCKED_COL_W, borderLeft: 'none', height: ROW_H }}>
                 {c.blockedBy > 0
                   ? <ItemAggCount count={c.blockedBy} aria={`blocked by, ${issue.issueKey}`} onOpen={(rect) => onOpenAggregate(issue.issueKey, 'blockedBy', rect)} />
-                  : dash}
+                  : null}
+                {c.blockedBy > 0 && <DepCorner />}
+                {c.blockedBy > 0 && hoveredKey === issue.issueKey && <DepChevron />}
               </div>
               <div style={{ ...cellBase, width: BLOCKS_COL_W, height: ROW_H }}>
                 {c.blocks > 0
                   ? <ItemAggCount count={c.blocks} aria={`blocks, ${issue.issueKey}`} onOpen={(rect) => onOpenAggregate(issue.issueKey, 'blocks', rect)} />
-                  : dash}
+                  : null}
+                {c.blocks > 0 && <DepCorner />}
+                {c.blocks > 0 && hoveredKey === issue.issueKey && <DepChevron />}
               </div>
             </div>
           );

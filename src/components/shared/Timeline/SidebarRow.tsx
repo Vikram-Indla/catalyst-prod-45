@@ -75,6 +75,14 @@ export interface SidebarRowProps {
   /** This row is an ANCESTOR of the located work item — its collapse
    *  chevron renders magenta. */
   isLocatedAncestor?: boolean;
+  /** List-mode (dependency) tint — this row is dependency-involved (or an
+   *  ancestor of one). Renders the #F0F1F2 band. */
+  tinted?: boolean;
+  /** Shared hovered row key (synced with the dependency columns panel).
+   *  When `onSharedHover` is provided, row hover is driven by this instead
+   *  of the row's internal hover state. */
+  sharedHoveredKey?: string | null;
+  onSharedHover?: (key: string | null) => void;
 }
 
 export function SidebarRow({
@@ -98,6 +106,9 @@ export function SidebarRow({
   siblings = [],
   isLocated = false,
   isLocatedAncestor = false,
+  tinted = false,
+  sharedHoveredKey = null,
+  onSharedHover,
 }: SidebarRowProps) {
   const hasChildren = issue.children.length > 0;
   const [rowHovered, setRowHovered] = useState(false);
@@ -347,9 +358,11 @@ export function SidebarRow({
         overflow: 'hidden', cursor: 'pointer',
         background: isSelected
           ? 'var(--ds-background-selected, #E9F2FE)'
-          : rowHovered
-            ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'
-            : 'transparent',
+          : (onSharedHover ? sharedHoveredKey === issue.issueKey : rowHovered)
+            ? 'var(--cat-dep-row-hover, #F8F8F8)'
+            : tinted
+              ? 'var(--cat-dep-row-bg, #F0F1F2)'
+              : 'transparent',
         transition: 'background 80ms ease',
         position: 'relative',
       }}
@@ -371,8 +384,8 @@ export function SidebarRow({
         navigate(buildIssueDetailRoute(issue.issueKey));
       }}
       aria-expanded={hasChildren ? !collapsed : undefined}
-      onMouseEnter={() => setRowHovered(true)}
-      onMouseLeave={() => { if (!menuOpen) setRowHovered(false); }}
+      onMouseEnter={() => { setRowHovered(true); onSharedHover?.(issue.issueKey); }}
+      onMouseLeave={() => { if (!menuOpen) setRowHovered(false); onSharedHover?.(null); }}
     >
       {/* row checkbox — group rows aren't selectable */}
       {enableCheckbox && !issue.isGroup && (
@@ -450,11 +463,14 @@ export function SidebarRow({
                 type="button"
                 onClick={e => { e.stopPropagation(); navigate(buildIssueDetailRoute(issue.issueKey)); }}
                 style={{
-                  fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+                  fontSize: 13, fontWeight: 500, color: 'var(--ds-link, #0C66E4)',
                   whiteSpace: 'nowrap', lineHeight: 1.3,
                   background: 'none', border: 'none', padding: 0, cursor: 'pointer',
                   fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
+                  textDecoration: 'none',
                 }}
+                onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
+                onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
                 aria-label={`Open ${issue.issueKey} in full page`}
               >
                 {issue.issueKey}

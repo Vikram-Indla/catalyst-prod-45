@@ -155,6 +155,9 @@ export default function TimelineView(props: TimelineViewProps) {
     });
   }, []);
 
+  /* Shared row hover for List mode — syncs the sidebar + dependency columns. */
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+
   /* detail side panel */
   const [legendOpen, setLegendOpen] = useState(false);
   const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; displayType: string } | null>(null);
@@ -698,6 +701,31 @@ export default function TimelineView(props: TimelineViewProps) {
   }, []);
 
   const parentKeys = useMemo(() => collectParentKeys(tree), [tree]);
+
+  /* Select-all for List mode header checkbox — selectable = visible non-group rows. */
+  const depSelectableKeys = useMemo(
+    () => rows.filter(r => !r.issue.isGroup).map(r => r.issue.issueKey),
+    [rows],
+  );
+  const depAllSelected = depSelectableKeys.length > 0 && depSelectableKeys.every(k => selectedRows.has(k));
+  const depSomeSelected = depSelectableKeys.some(k => selectedRows.has(k));
+
+  /* List-mode tint set — every dependency-involved row PLUS all its ancestors
+     (epic/story chain), so a parent whose descendant has a dependency also tints. */
+  const depTintKeys = useMemo(() => {
+    const s = new Set<string>();
+    if (!depMode) return s;
+    const parentOf = new Map<string, string | null>();
+    for (const { issue } of rows) parentOf.set(issue.issueKey, issue.parentKey ?? null);
+    depCounts.forEach((c, key) => {
+      if (c.blockedBy > 0 || c.blocks > 0) {
+        s.add(key);
+        let p = parentOf.get(key) ?? null;
+        while (p && !s.has(p)) { s.add(p); p = parentOf.get(p) ?? null; }
+      }
+    });
+    return s;
+  }, [depMode, rows, depCounts]);
 
   const collapseAll = useCallback(() => setCollapsed(new Set(parentKeys)), [parentKeys]);
   const expandAll = useCallback(() => setCollapsed(new Set()), []);
@@ -1313,6 +1341,20 @@ export default function TimelineView(props: TimelineViewProps) {
                 justifyContent: 'space-between',
               }}
             >
+              {depMode ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  <input
+                    type="checkbox"
+                    aria-label="Select all rows"
+                    checked={depAllSelected}
+                    ref={el => { if (el) el.indeterminate = depSomeSelected && !depAllSelected; }}
+                    onChange={() => setSelectedRows(depAllSelected ? new Set() : new Set(depSelectableKeys))}
+                    style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-background-selected-bold, #0052CC)', margin: 0 }}
+                  />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', userSelect: 'none' }}>#</span>
+                </span>
+              ) : (
+              <>
               <span style={{
                 fontSize: 13, fontWeight: 653,
                 color: 'var(--ds-text, #172B4D)',
@@ -1372,6 +1414,8 @@ export default function TimelineView(props: TimelineViewProps) {
                     </button>
                   </Tooltip>
                 </div>
+              )}
+              </>
               )}
             </div>
 
@@ -1446,6 +1490,9 @@ export default function TimelineView(props: TimelineViewProps) {
                     siblings={siblings}
                     isLocated={locatedActive === issue.issueKey}
                     isLocatedAncestor={locatedAncestors.has(issue.issueKey)}
+                    tinted={depMode && depTintKeys.has(issue.issueKey)}
+                    sharedHoveredKey={depMode ? hoveredKey : null}
+                    onSharedHover={depMode ? setHoveredKey : undefined}
                   />
                 );
               })}
@@ -1562,6 +1609,9 @@ export default function TimelineView(props: TimelineViewProps) {
               showReleases={showReleases}
               releasesCollapsed={releasesCollapsed}
               showCreateEpicRow={showCreateEpicRow}
+              tintKeys={depTintKeys}
+              hoveredKey={hoveredKey}
+              onHover={setHoveredKey}
               onOpenAggregate={(key, _dir, anchor) => {
                 // Every work item (leaf OR parent epic) opens the rich card —
                 // matches Jira, which shows each item's own deps in the columnar card.

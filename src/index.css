@@ -191,6 +191,9 @@
   --cp-bg-surface: var(--ds-surface, #FFFFFF);
   --cp-bg-sunken: var(--ds-surface-sunken, #F7F8F9);
   --cp-bg-elevated: var(--ds-surface, #FFFFFF);
+  /* Jira Plans dependency-list tints — exact Jira hex, no ADS token matches (jira-parity bypass). */
+  --cat-dep-row-bg: #F0F1F2;
+  --cat-dep-row-hover: #F8F8F8;
   --cp-text-primary: var(--ds-text, #172B4D);
   --cp-text-secondary: var(--ds-text-subtle, #42526E);
   --cp-text-tertiary: var(--ds-text-subtlest, #6B778C);
