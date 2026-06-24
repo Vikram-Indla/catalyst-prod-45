@@ -28,20 +28,28 @@ async function fetchAndTransformJiraIssues(projectKeys: string[]): Promise<any[]
   const auth = btoa(`${JIRA_EMAIL}:${JIRA_API_TOKEN}`);
   const issues: any[] = [];
 
+  const fields = [
+    'summary', 'status', 'assignee', 'reporter', 'issuetype', 'parent',
+    'priority', 'created', 'updated', 'fixVersions', 'labels', 'duedate',
+  ];
+
   for (const projectKey of projectKeys) {
     const jql = `project = ${projectKey} AND created >= -30d`;
-    const url = `${JIRA_BASE_URL}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&maxResults=100`;
 
     try {
-      const response = await fetch(url, {
+      // POST with explicit fields — /search/jql returns field-less issues otherwise.
+      const response = await fetch(`${JIRA_BASE_URL}/rest/api/3/search/jql`, {
+        method: 'POST',
         headers: {
           Authorization: `Basic ${auth}`,
           'Content-Type': 'application/json',
+          Accept: 'application/json',
         },
+        body: JSON.stringify({ jql, fields, maxResults: 100 }),
       });
 
       if (!response.ok) {
-        console.error(`Jira API error for ${projectKey}: ${response.status}`);
+        console.error(`Jira API error for ${projectKey}: ${response.status} ${await response.text()}`);
         continue;
       }
 

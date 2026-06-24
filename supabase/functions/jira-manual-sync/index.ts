@@ -35,18 +35,26 @@ async function fetchJiraIssues(
   if (filters?.typeFilter) jql += ` AND type IN (${filters.typeFilter})`;
   if (filters?.statusFilter) jql += ` AND status IN (${filters.statusFilter})`;
 
-  const url = `${JIRA_BASE_URL}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&maxResults=100`;
+  // /rest/api/3/search/jql requires an explicit `fields` list in a POST body —
+  // GET without fields returns issues with NO fields object (all would be skipped).
+  const fields = [
+    'summary', 'status', 'assignee', 'reporter', 'issuetype', 'parent',
+    'priority', 'created', 'updated', 'fixVersions', 'labels', 'duedate',
+  ];
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`${JIRA_BASE_URL}/rest/api/3/search/jql`, {
+      method: 'POST',
       headers: {
         Authorization: `Basic ${auth}`,
         'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
+      body: JSON.stringify({ jql, fields, maxResults: 100 }),
     });
 
     if (!response.ok) {
-      console.error(`Jira API error: ${response.status}`);
+      console.error(`Jira API error: ${response.status} ${await response.text()}`);
       return [];
     }
 
