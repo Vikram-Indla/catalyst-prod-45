@@ -187,7 +187,7 @@ export function useProductHubTimeline(productCode: string | undefined) {
         for (const p of profiles ?? []) {
           nameById.set(p.id, {
             name: p.full_name ?? '',
-            avatarUrl: p.avatar_url ?? resolveAvatarUrl(p.full_name ?? ''),
+            avatarUrl: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null,
           });
         }
       }

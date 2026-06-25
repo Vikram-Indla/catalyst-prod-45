@@ -24,6 +24,7 @@
  */
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { resolveAvatarUrl as resolveBundledAvatar } from '@/lib/avatars';
 
 // "Active" releases = not archived/released/shipped
 const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
@@ -134,7 +135,7 @@ async function getAvatarMap(): Promise<Map<string, string | null>> {
 
       for (const r of resources || []) {
         if (r.name && r.profile_id) {
-          const url = profileAvatars.get(r.profile_id) || null;
+          const url = resolveBundledAvatar(r.name ?? null) ?? profileAvatars.get(r.profile_id) ?? null;
           avatarMap.set(r.name.toLowerCase(), url);
         }
       }

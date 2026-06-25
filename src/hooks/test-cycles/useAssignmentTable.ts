@@ -5,6 +5,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { 
   CycleAssignment, 
   TableFilters, 
@@ -186,7 +187,7 @@ export function useAssignmentTable(cycleId: string) {
             status,
             assigneeId: scope.assigned_to || null,
             assigneeName: profile?.full_name || null,
-            assigneeAvatar: profile?.avatar_url || null,
+            assigneeAvatar: resolveAvatarUrl(profile?.full_name ?? null) ?? profile?.avatar_url ?? null,
             priority: scope.priority || priority, // Use cycle-scope priority if set
             dueDate: scope.due_date || null, // Now from tm_cycle_scope
             module: folder?.name || 'General',

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type React from 'react';
+import { useNavigate } from 'react-router-dom';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { Box, xcss } from '@atlaskit/primitives';
@@ -38,6 +39,7 @@ const metaRowXcss = xcss({
 const REACTION_EMOJIS = ['👍', '👏', '🔥', '❤️', '😊'];
 
 export default function DirectNotificationRow({ notification, isRead, onMarkRead, isDark }: Props) {
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
@@ -59,9 +61,10 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   }, [target.key, target.iconType, isStarred, toggleStar]);
   const STAR_GOLD = 'var(--ds-icon-accent-yellow, #FFAB00)';
 
+  const idleBg   = isDark ? 'var(--ds-surface, #1A1A1A)' : 'var(--ds-surface-overlay, #FFFFFF)';
   const hoverBg  = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))');
   const pressBg  = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
-  const rowBg    = pressed ? pressBg : hovered ? hoverBg : 'transparent';
+  const rowBg    = pressed ? pressBg : hovered ? hoverBg : idleBg;
 
   const text1    = isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : token('color.text', '#292A2E');
   const text2    = isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : token('color.text.subtle',    '#626F86');
@@ -74,7 +77,13 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
 
   const handleClick = useCallback(() => {
     if (!isRead) onMarkRead(notification.id);
-  }, [isRead, notification.id, onMarkRead]);
+    const projectKey = notification.target.key.split('-')[0];
+    if (notification.target.iconType === 'incident') {
+      navigate(`/incident-hub/view/${notification.target.key}`);
+    } else {
+      navigate(`/project-hub/${projectKey}/allwork/${notification.target.key}`);
+    }
+  }, [isRead, notification.id, onMarkRead, notification.target.key, notification.target.iconType, navigate]);
 
   const handleMarkReadBtn = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -100,16 +109,19 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
       style={{
         display: 'flex',
         width: '100%',
-        padding: '8px 16px 10px',
+        padding: '12px 16px',
         background: rowBg,
-        border: 'none',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 4,
+        boxShadow: hovered ? '0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.16))' : '0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
         cursor: 'pointer',
         textAlign: 'left',
-        transition: 'background-color 150ms ease',
+        transition: 'all 150ms ease',
         outline: 'none',
         gap: 10,
         alignItems: 'flex-start',
         opacity: isRead ? 0.85 : 1,
+        marginBottom: 8,
       }}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}

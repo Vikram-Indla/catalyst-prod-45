@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useEffect, useMemo } from 'react';
 import { catalystToast } from '@/lib/catalystToast';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { Resource360Data, WorkItemAssignment, HierarchyNode, SunburstNode, SunburstMetrics } from '@/types/resource360';
 
 export function useResource360Data(resourceId: string | null) {
@@ -40,7 +41,7 @@ export function useResource360Data(resourceId: string | null) {
         email: profileData?.email || '',
         role: resourceData.role_name || 'Team Member',
         department: resourceData.department_name || 'Unassigned',
-        avatar_url: profileData?.avatar_url,
+        avatar_url: resolveAvatarUrl(resourceData.name ?? null) ?? profileData?.avatar_url ?? undefined,
         currentAllocation: 0,
         availableCapacity: 100,
       } as Resource360Data;

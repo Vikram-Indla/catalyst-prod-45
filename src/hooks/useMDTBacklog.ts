@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { Request, RequestStatus } from '@/types/request';
 
 /**
@@ -91,7 +92,7 @@ export function useRequestsBacklog() {
       // Build lookup maps
       const profileMap = new Map<string, { name: string; avatar: string | null }>();
       (profilesResult.data || []).forEach((p: any) => {
-        profileMap.set(p.id, { name: p.full_name || '', avatar: p.avatar_url || null });
+        profileMap.set(p.id, { name: p.full_name || '', avatar: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null });
       });
 
       const deptMap = new Map<string, string>();

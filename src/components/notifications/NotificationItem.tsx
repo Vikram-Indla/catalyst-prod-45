@@ -223,13 +223,17 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
         if (e.key === 'r' || e.key === 'R') { if (isUnread) onMarkRead?.(notification.id); }
       }}
       style={{
-        /* P-02: tightened padding, NO left border/bar */
+        /* Canonical card elevation — jira-compare 2026-06-25 */
         padding: '12px 16px',
         cursor: isDeleted ? 'default' : 'pointer',
         position: 'relative',
-        background: isPressed ? T.press : isHovered ? T.hover : 'transparent',
-        transition: 'background 150ms ease',
+        borderRadius: 4,
+        background: isPressed ? T.press : isHovered ? 'var(--ds-surface-overlay, #FFFFFF)' : 'var(--ds-surface, #FFFFFF)',
+        border: `1px solid ${isHovered ? 'var(--ds-border-focused, #0052CC)' : 'var(--ds-border, #DFE1E6)'}`,
+        boxShadow: isHovered ? 'var(--ds-shadow-raised, 0 2px 8px rgba(0, 0, 0, 0.16))' : 'var(--ds-shadow-overlay, 0 1px 3px rgba(9, 30, 66, 0.08))',
+        transition: 'all 150ms ease',
         outline: 'none',
+        marginBottom: 8,
       }}
     >
       <div style={{ display: 'flex', gap: 10 }}>
@@ -330,7 +334,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           {isDueDate && daysUntilDue !== null && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, marginTop: 8,
-              background: 'var(--ds-background-warning, rgba(217,119,6,.08))', borderRadius: 4, padding: '6px 10px',
+              background: 'var(--ds-background-warning, rgba(217,119,6,.08))', borderRadius: 4, padding: '4px 8px',
             }}>
               <Clock size={14} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />
               <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-warning-text, #92400E)' }}>

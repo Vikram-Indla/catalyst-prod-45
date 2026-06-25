@@ -3,6 +3,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export interface WorkItemDetail {
   id: string;
@@ -107,7 +108,7 @@ export function useWorkItemDetail(itemId: string | null) {
           .select('id, full_name, avatar_url')
           .in('id', profileIds);
         for (const p of profiles || []) {
-          profileMap.set(p.id, { full_name: p.full_name || '', avatar_url: p.avatar_url });
+          profileMap.set(p.id, { full_name: p.full_name || '', avatar_url: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null });
         }
       }
 
@@ -233,7 +234,7 @@ export function useWorkItemDetail(itemId: string | null) {
         status_category: (data as any).ph_workflow_statuses?.category ?? 'todo',
         status_color: (data as any).ph_workflow_statuses?.color ?? 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
         assignee_name: assignee?.full_name ?? null,
-        assignee_avatar: assignee?.avatar_url ?? null,
+        assignee_avatar: resolveAvatarUrl(assignee?.full_name ?? null) ?? assignee?.avatar_url ?? null,
         reporter_name: reporter?.full_name ?? null,
         parent_key: parentInfo?.item_key ?? null,
         parent_title: (parentInfo?.title || parentInfo?.summary) ?? null,

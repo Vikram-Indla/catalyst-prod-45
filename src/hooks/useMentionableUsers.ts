@@ -5,6 +5,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export interface MentionableUser {
   id: string;
@@ -69,7 +70,7 @@ export function useMentionableUsers() {
           name: r.name || 'Unknown',
           email: resolvedEmail,
           role: r.role_name || null,
-          avatar_url: profileData?.avatar_url || null,
+          avatar_url: resolveAvatarUrl(r.name ?? null) ?? profileData?.avatar_url ?? null,
           initials: getInitials(r.name || ''),
         };
       });

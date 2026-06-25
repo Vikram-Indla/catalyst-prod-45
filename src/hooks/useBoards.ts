@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { BoardListItem } from '@/types/board';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export function useBoards(projectId: string | undefined, projectKey?: string) {
   return useQuery<BoardListItem[]>({
@@ -41,7 +42,7 @@ export function useBoards(projectId: string | undefined, projectKey?: string) {
         (filters ?? []).forEach((f: any) => {
           filterOwnerMap[f.id] = {
             name: f.owner?.full_name ?? null,
-            avatarUrl: f.owner?.avatar_url ?? null,
+            avatarUrl: resolveAvatarUrl(f.owner?.full_name ?? null) ?? f.owner?.avatar_url ?? null,
           };
         });
       }

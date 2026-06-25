@@ -13,6 +13,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { ChatMessage } from '@/types/chat';
 import { parseChatSearchQuery } from '@/lib/chat/search-query';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { ChatSearchFilterState } from '@/components/chat/main/ChatSearchFilters';
 import { EMPTY_CHAT_SEARCH_FILTERS, hasActiveFilters } from '@/components/chat/main/ChatSearchFilters';
 
@@ -195,7 +196,7 @@ export function useMessageSearch(
               parentId: row.parent_id,
               authorId: row.author_id,
               authorName: row.author?.full_name || 'Unknown',
-              authorAvatarUrl: row.author?.avatar_url || null,
+              authorAvatarUrl: resolveAvatarUrl(row.author?.full_name ?? null) ?? row.author?.avatar_url ?? null,
               bodyText: row.body_text,
               bodyAdf: row.body_adf,
               createdAt: row.created_at,

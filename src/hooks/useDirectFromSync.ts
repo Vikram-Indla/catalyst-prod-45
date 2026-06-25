@@ -105,9 +105,11 @@ export function useDirectFromSync(unreadOnly: boolean) {
         status: (issue.status || 'TO DO').toUpperCase(),
         status_type: mapStatusType(issue.status_category),
         tab: 'direct' as const,
-        // Piggyback reporter name on metadata so DirectPanel can show "X updated"
-        // without needing a Supabase profiles round-trip.
-        metadata: { actor_name: issue.reporter_display_name ?? null } as Notification['metadata'],
+        // For assignment notifications from sync, don't store reporter name as actor.
+        // The actual assigner info exists only in webhook events. Showing reporter
+        // is misleading (reporter ≠ assigner). This allows event notifications to take priority
+        // and display the actual actor when available. If no event exists, generic text displays.
+        metadata: { actor_name: null } as Notification['metadata'],
         entity_deleted: false,
         is_dismissed: false,
         recipient_user_id: user.id,
