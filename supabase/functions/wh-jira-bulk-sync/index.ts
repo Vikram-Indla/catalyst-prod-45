@@ -773,6 +773,147 @@ Deno.serve(async (req) => {
       total_version_count: totalVersions,
     }).neq('id', '00000000-0000-0000-0000-000000000000')
 
+    // 13.5 — Actor backfill: for issues assigned to Catalyst users with no existing
+    // notification row, call Jira changelog to find who performed the assignment and
+    // write a 'assigned' notification row so the Direct tab shows the real actor name
+    // instead of "Jira Sync".
+    let actorBackfillCount = 0
+    let actorBackfillCandidates = 0
+    let actorBackfillNoMatch = 0
+    try {
+      const { data: catalystProfiles } = await supabase
+        .from('profiles')
+        .select('id, jira_account_id')
+        .not('jira_account_id', 'is', null)
+
+      const jiraIdToProfileId = new Map<string, string>(
+        (catalystProfiles ?? []).map((p: any) => [p.jira_account_id as string, p.id as string])
+      )
+      const catalystJiraIds = new Set(jiraIdToProfileId.keys())
+
+      // Query ph_issues directly — not from allIssues (which is JQL date-scoped and misses
+      // older "Done" issues assigned to Catalyst users that are no longer in the JQL window).
+      const { data: phIssues } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, issue_type, summary, status, status_category, assignee_account_id')
+        .in('assignee_account_id', [...catalystJiraIds])
+        .is('deleted_at', null)
+        .order('jira_updated_at', { ascending: false })
+
+      if (phIssues && phIssues.length > 0) {
+          // Check which (entity_id, recipient_user_id) pairs already have a direct notification row.
+          // Query by recipient_user_id (40 items max) NOT entity_id (1515 items) — avoids PostgREST URL limit.
+          const profileIds = [...new Set(
+            phIssues
+              .map((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id))
+              .filter(Boolean) as string[]
+          )]
+          const { data: existingRows } = await supabase
+            .from('notifications')
+            .select('entity_id, recipient_user_id')
+            .in('recipient_user_id', profileIds)
+            .eq('tab', 'direct')
+
+          const hasAnyRow = new Set<string>(
+            (existingRows ?? []).map((r: any) => `${r.entity_id}::${r.recipient_user_id}`)
+          )
+
+          // Icon type map — mirrors useDirectFromSync client-side map
+          const ICON_MAP: Record<string, string> = {
+            'Sub-task': 'subtask', 'Frontend': 'frontend', 'Backend': 'backend',
+            'Integration': 'subtask', 'Story': 'story', 'Task': 'task',
+            'QA Bug': 'bug', 'Defect': 'bug', 'Epic': 'epic', 'Feature': 'feature',
+            'Production Incident': 'incident', 'Change Request': 'change_request',
+            'Business Gap': 'business_gap', 'API Requirement': 'task',
+          }
+
+          // Build backfill list, cap at 100 changelog calls per sync run
+          const toBackfill = phIssues
+            .filter((pi: any) => {
+              const profileId = jiraIdToProfileId.get(pi.assignee_account_id)
+              return profileId && !hasAnyRow.has(`${pi.id}::${profileId}`)
+            })
+            .slice(0, 100)
+
+          actorBackfillCandidates = toBackfill.length
+          console.log(`[actor-backfill] ${phIssues.length} assigned issues, ${toBackfill.length} need backfill`)
+
+          let backfilled = 0
+          for (const pi of toBackfill) {
+            const profileId = jiraIdToProfileId.get(pi.assignee_account_id)
+            if (!profileId) continue
+
+            try {
+              const clRes = await fetch(
+                `${base}/rest/api/3/issue/${pi.issue_key}/changelog?maxResults=50`,
+                { headers }
+              )
+              if (!clRes.ok) continue
+
+              const cl = await clRes.json()
+
+              // Find the most recent changelog entry that assigned this issue TO this user
+              let actorName: string | null = null
+              let actorAccountId: string | null = null
+              let actorAvatarUrl: string | null = null
+
+              for (const historyItem of (cl.values ?? [])) {
+                const match = (historyItem.items ?? []).find(
+                  (item: any) => item.fieldId === 'assignee' && item.to === pi.assignee_account_id
+                )
+                if (match) {
+                  actorName = historyItem.author?.displayName ?? null
+                  actorAccountId = historyItem.author?.accountId ?? null
+                  actorAvatarUrl = historyItem.author?.avatarUrls?.['48x48'] ?? null
+                  break
+                }
+              }
+
+              if (!actorName) { actorBackfillNoMatch++; continue } // No matching assignee change found
+
+              // Use ph_issues row directly — reliable even for issues outside JQL lookback
+              const issueType: string | null = pi.issue_type ?? null
+              const statusCat = (pi.status_category ?? '').toLowerCase().replace(/[\s_-]/g, '')
+              const statusType = statusCat === 'inprogress' ? 'blue' : statusCat === 'done' ? 'green' : 'gray'
+
+              await supabase
+                .from('notifications')
+                .insert({
+                  recipient_user_id: profileId,
+                  entity_id: pi.id,
+                  entity_key: pi.issue_key,
+                  entity_title: pi.summary ?? '',
+                  entity_type: 'issue',
+                  entity_icon_type: issueType ? (ICON_MAP[issueType] ?? 'task') : 'task',
+                  notification_type: 'assigned',
+                  status: (pi.status ?? 'TO DO').toUpperCase(),
+                  status_type: statusType,
+                  tab: 'direct',
+                  hub_source: 'ProjectHub',
+                  read_at: null,
+                  metadata: {
+                    is_jira_sync: false,
+                    actor_display_name: actorName,
+                    actor_avatar_url: actorAvatarUrl,
+                    actor_jira_account_id: actorAccountId,
+                    issue_type_name: issueType,
+                  },
+                })
+
+              backfilled++
+              actorBackfillCount++
+            } catch (issueErr) {
+              console.warn(`[actor-backfill] ${pi.issue_key}: ${issueErr}`)
+            }
+          }
+
+          console.log(`[actor-backfill] Backfilled ${backfilled} actor rows`)
+      }
+    } catch (backfillErr) {
+      // Non-fatal — sync already completed, actor backfill is best-effort
+      console.warn(`[actor-backfill] Non-fatal error: ${backfillErr}`)
+    }
+
     // 14. Collect warnings
     const warnings: string[] = []
     const { data: unmapped } = await supabase
@@ -816,6 +957,7 @@ Deno.serve(async (req) => {
       pruned,
       warnings,
       duration_ms: duration,
+      actor_backfill: { candidates: actorBackfillCandidates, inserted: actorBackfillCount, no_match: actorBackfillNoMatch },
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
