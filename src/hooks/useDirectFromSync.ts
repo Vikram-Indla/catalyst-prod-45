@@ -73,48 +73,83 @@ export function useDirectFromSync(unreadOnly: boolean) {
       if (error) throw error;
       if (!issues?.length) return [];
 
-      // Fetch read-receipt rows from notifications table (keyed by entity_id)
+      // Fetch read-receipt + actor data from the notifications table (keyed by entity_id).
+      // Actor data is critical: the 'assigned' event rows (written by wh-jira-sync) carry
+      // actor_display_name in metadata. These rows may be beyond page-1 of the 20-per-page
+      // useNotificationsQuery pagination, so the merge in DirectPanel.tsx can't see them to
+      // exclude sync items or forward their actor data. We fetch here directly by entity_id
+      // (no pagination limit) so actor names always reach the sync item regardless of page depth.
       const ids = issues.map(i => i.id);
       const { data: readRows } = await supabase
         .from('notifications')
-        .select('entity_id, read_at')
+        .select('entity_id, read_at, notification_type, metadata, actor_user_id, created_at')
         .eq('recipient_user_id', user.id)
         .eq('tab', 'direct')
-        .in('entity_id', ids);
+        .in('entity_id', ids)
+        .order('created_at', { ascending: false });
 
-      const readMap = new Map<string, string | null>(
-        (readRows ?? []).map(r => [r.entity_id, r.read_at as string | null])
-      );
+      // Build read map AND actor map from fetched rows.
+      // Actor map: prefer 'assigned' event row (wh-jira-sync) over read-receipt rows for each entity_id.
+      const readMap = new Map<string, string | null>();
+      const actorMap = new Map<string, { name: string | null; avatarUrl: string | null; userId: string | null }>();
 
-      const mapped: Notification[] = issues.map(issue => ({
-        id: `sync::${issue.id}`,
-        created_at: issue.jira_updated_at ?? new Date().toISOString(),
-        read_at: readMap.get(issue.id) ?? null,
-        delivered_at: null,
-        snoozed_until: null,
-        // actor_user_id stays null — we store reporter name in metadata instead.
-        // This avoids a spurious profiles lookup for non-UUID strings.
-        actor_user_id: null,
-        notification_type: 'assigned_work_item' as const,
-        entity_type: 'issue' as const,
-        entity_id: issue.id,
-        entity_key: issue.issue_key,
-        entity_title: issue.summary,
-        entity_icon_type: mapIconType(issue.issue_type),
-        hub_source: 'ProjectHub',
-        status: (issue.status || 'TO DO').toUpperCase(),
-        status_type: mapStatusType(issue.status_category),
-        tab: 'direct' as const,
-        // For assignment notifications from sync, don't store reporter name as actor.
-        // The actual assigner info exists only in webhook events. Showing reporter
-        // is misleading (reporter ≠ assigner). This allows event notifications to take priority
-        // and display the actual actor when available. If no event exists, generic text displays.
-        // is_jira_sync flag → DirectNotificationRow renders 'Jira' initials avatar instead of grey silhouette.
-        metadata: { is_jira_sync: true } as unknown as Notification['metadata'],
-        entity_deleted: false,
-        is_dismissed: false,
-        recipient_user_id: user.id,
-      }));
+      for (const r of (readRows ?? [])) {
+        // Read state: use the most-recent read_at (rows are DESC by created_at, so first wins)
+        if (!readMap.has(r.entity_id)) {
+          readMap.set(r.entity_id, r.read_at as string | null);
+        } else if ((r.read_at as string | null) && !readMap.get(r.entity_id)) {
+          readMap.set(r.entity_id, r.read_at as string | null);
+        }
+
+        // Actor state: pick actor-rich assigned event row; skip read-receipt rows (metadata={})
+        const meta = r.metadata as Record<string, unknown> | null;
+        const actorName = (meta?.actor_display_name ?? meta?.actor_name) as string | undefined;
+        const actorAvatar = meta?.actor_avatar_url as string | undefined;
+        const isAssignmentEvent = ['assigned', 'assigned_work_item', 'assigned_story', 'tester_assigned'].includes(
+          r.notification_type as string
+        );
+        if (isAssignmentEvent && actorName && actorName.trim() && !actorMap.has(r.entity_id)) {
+          actorMap.set(r.entity_id, {
+            name: actorName.trim(),
+            avatarUrl: (actorAvatar && actorAvatar.trim()) ? actorAvatar.trim() : null,
+            userId: r.actor_user_id as string | null,
+          });
+        }
+      }
+
+      const mapped: Notification[] = issues.map(issue => {
+        const actor = actorMap.get(issue.id);
+        return {
+          id: `sync::${issue.id}`,
+          created_at: issue.jira_updated_at ?? new Date().toISOString(),
+          read_at: readMap.get(issue.id) ?? null,
+          delivered_at: null,
+          snoozed_until: null,
+          // If we found an actor-rich event row for this entity_id, forward its actor_user_id
+          // so the 5-layer actor resolution in DirectPanel.mapNotification can use it.
+          actor_user_id: actor?.userId ?? null,
+          notification_type: 'assigned_work_item' as const,
+          entity_type: 'issue' as const,
+          entity_id: issue.id,
+          entity_key: issue.issue_key,
+          entity_title: issue.summary,
+          entity_icon_type: mapIconType(issue.issue_type),
+          hub_source: 'ProjectHub',
+          status: (issue.status || 'TO DO').toUpperCase(),
+          status_type: mapStatusType(issue.status_category),
+          tab: 'direct' as const,
+          // Embed actor name from the event notification (bypasses pagination limit).
+          // is_jira_sync: true → DirectNotificationRow knows this is a sync item.
+          metadata: {
+            is_jira_sync: true,
+            actor_display_name: actor?.name ?? null,
+            actor_avatar_url: actor?.avatarUrl ?? null,
+          } as unknown as Notification['metadata'],
+          entity_deleted: false,
+          is_dismissed: false,
+          recipient_user_id: user.id,
+        };
+      });
 
       return unreadOnly ? mapped.filter(n => !n.read_at) : mapped;
     },
