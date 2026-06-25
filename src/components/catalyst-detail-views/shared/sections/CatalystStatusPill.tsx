@@ -291,7 +291,12 @@ export function CatalystStatusPill({
     if (isFrozen) return;
     if (!isOpen && triggerRef.current) {
       const r = triggerRef.current.getBoundingClientRect();
-      setAnchor({ top: r.bottom + 4, left: r.left });
+      const w = 220; // matches minWidth 200 + padding
+      const spaceRight = window.innerWidth - r.left;
+      const openLeft = spaceRight < w + 16;
+      const rawLeft = openLeft ? r.right - w : r.left;
+      const left = Math.max(8, Math.min(rawLeft, window.innerWidth - w - 8));
+      setAnchor({ top: r.bottom + 4, left });
     }
     setIsOpen((o) => !o);
   };

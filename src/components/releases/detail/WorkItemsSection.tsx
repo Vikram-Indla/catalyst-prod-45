@@ -23,8 +23,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import CanonicalPriorityIcon from '@/components/shared/PriorityIcon';
-import { useCatalystAvatarProfile } from '@/components/catalyst-detail-views/shared/hooks/useCatalystAvatarProfile';
+import { useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
@@ -95,15 +96,16 @@ function priorityIcon(priority: string | null) {
 function AssigneeAvatar({
   accountId, name, size = 'small',
 }: { accountId: string | null; name: string | null; size?: 'xsmall' | 'small' | 'medium' | 'large' }) {
-  const { data: profile } = useCatalystAvatarProfile(accountId);
+  const byJiraId = useApprovedProfilesByJiraId();
+  const profile = accountId ? byJiraId.get(accountId) : undefined;
   if (!accountId && !name) {
     return <CatalystAvatar size={size} />;
   }
   return (
     <CatalystAvatar
       size={size}
-      name={name || undefined}
-      src={profile?.avatar_url || undefined}
+      name={profile?.name || name || undefined}
+      src={profile?.avatarUrl || undefined}
     />
   );
 }
@@ -311,6 +313,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph_release_items', releaseId, releaseName] });
+      queryClient.invalidateQueries({ queryKey: ['ph_release_contributors', releaseId, releaseName] });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
       catalystFlag.success('Removed from version.');
     },
@@ -322,14 +325,6 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
       <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Section header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <button
-            type="button"
-            onClick={() => setCollapsed((v) => !v)}
-            aria-label={collapsed ? 'Expand' : 'Collapse'}
-            style={{ all: 'unset', cursor: 'pointer', display: 'inline-flex', color: SUBTLE }}
-          >
-            {collapsed ? <ChevronRightIcon label="" /> : <ChevronDownIcon label="" />}
-          </button>
           <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: TEXT }}>Work items</h2>
           <span
             style={{
@@ -347,6 +342,14 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
           >
             {items.length}
           </span>
+          <button
+            type="button"
+            onClick={() => setCollapsed((v) => !v)}
+            aria-label={collapsed ? 'Expand' : 'Collapse'}
+            style={{ all: 'unset', cursor: 'pointer', display: 'inline-flex', color: SUBTLE }}
+          >
+            {collapsed ? <ChevronRightIcon label="" /> : <ChevronDownIcon label="" />}
+          </button>
           <div style={{ flex: 1 }} />
           <button
             type="button"
@@ -561,7 +564,6 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             ['priority', 'Priority'],
             ['status', 'Work item status'],
             ['assignee', 'Assignee'],
-            ['featureFlag', 'Feature flag status'],
           ] as Array<[DisplayKey, string]>).map(([key, label]) => (
             <DisplayCheckRow
               key={key}
@@ -647,10 +649,13 @@ function menuItemStyle(): React.CSSProperties {
 function DisplayCheckRow({
   checked, label, onToggle,
 }: { checked: boolean; label: string; onToggle: () => void }) {
+  const [hover, setHover] = useState(false);
   return (
     <button
       type="button"
       onClick={onToggle}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       role="menuitemcheckbox"
       aria-checked={checked}
       style={{
@@ -662,9 +667,15 @@ function DisplayCheckRow({
         boxSizing: 'border-box',
         padding: '6px 12px',
         cursor: 'pointer',
-        background: checked ? BLUE_BG : 'transparent',
-        color: checked ? BLUE_TEXT : TEXT,
-        fontWeight: checked ? 600 : 400,
+        background: checked
+          ? 'var(--ds-background-selected, #E9F2FE)'
+          : hover
+            ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'
+            : 'transparent',
+        color: checked
+          ? 'var(--ds-text-selected, #0C66E4)'
+          : 'var(--ds-text-subtle, #505258)',
+        fontWeight: 400,
         fontSize: 14,
       }}
     >
@@ -958,22 +969,54 @@ function WorkItemRow({
   const tRef = useRef<HTMLButtonElement>(null);
   const pRef = useRef<HTMLDivElement>(null);
 
-  // Pull top 4 sibling releases for the Move-to submenu
+  // Pull top sibling releases for the Move-to submenu.
+  // Order by name (release_date column does not exist on ph_releases — that
+  // wrong ORDER BY silently returned 0 rows, so the menu showed empty).
+  // Fetch 5 then drop the current release client-side, slice to 4.
   const { data: siblings } = useQuery({
-    queryKey: ['siblings-for-move', projectId, item.id],
+    queryKey: ['siblings-for-move', projectId, item.id, releaseName],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_releases')
         .select('id, name, title, status')
         .eq('project_id', projectId)
         .neq('status', 'archived')
-        .order('release_date', { ascending: false })
-        .limit(4);
+        .order('name')
+        .limit(5);
       if (error) throw new Error(error.message);
-      return (data ?? []).filter((r: any) => (r.name || r.title) !== releaseName);
+      return (data ?? [])
+        .filter((r: any) => (r.name || r.title) !== releaseName)
+        .slice(0, 4);
     },
     enabled: open,
     staleTime: 30_000,
+  });
+
+  const queryClient = useQueryClient();
+  const moveMutation = useMutation({
+    mutationFn: async (target: { id: string; name: string | null; title: string | null }) => {
+      const { data: row, error: readErr } = await supabase
+        .from('ph_issues')
+        .select('sprint_release')
+        .eq('id', item.id)
+        .single();
+      if (readErr) throw new Error(readErr.message);
+      const current: any[] = Array.isArray((row as any)?.sprint_release) ? (row as any).sprint_release : [];
+      const filtered = current.filter((el) => el && el.name !== releaseName);
+      const next = [...filtered, { id: '', name: target.name || target.title, releaseDate: '' }];
+      const { error: upErr } = await supabase
+        .from('ph_issues')
+        .update({ sprint_release: next })
+        .eq('id', item.id);
+      if (upErr) throw new Error(upErr.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['ph_release_items'] });
+      queryClient.invalidateQueries({ queryKey: ['ph_release_contributors'] });
+      catalystFlag.success('Work item moved.');
+    },
+    onError: (e: any) => catalystFlag.error(e?.message || 'Failed to move'),
   });
 
   useEffect(() => {
@@ -1021,32 +1064,45 @@ function WorkItemRow({
         <a
           href="#"
           onClick={(e) => { e.preventDefault(); onOpen?.(); }}
-          style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500, fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap', cursor: 'pointer', flexShrink: 0 }}
+          style={{
+            color: 'var(--ds-link, #0C66E4)',
+            fontWeight: 400,
+            fontSize: 14,
+            fontFamily: 'inherit',
+            lineHeight: 1,
+            letterSpacing: 0,
+            textDecoration: 'underline',
+            whiteSpace: 'nowrap',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
         >
           {item.issue_key}
         </a>
-        <span style={{ flex: 1, minWidth: 0, color: TEXT, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{
+          flex: 1,
+          minWidth: 0,
+          color: 'var(--ds-text, #292A2E)',
+          fontSize: 14,
+          fontWeight: 400,
+          fontFamily: 'inherit',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
           {item.summary}
         </span>
         {display.priority && (
           <span style={{ display: 'inline-flex' }}>{priorityIcon(item.priority)}</span>
         )}
         {display.status && (
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              padding: '2px 8px',
-              borderRadius: 3,
-              background: statusStyle.bg,
-              color: statusStyle.color,
-              letterSpacing: 0.4,
-              whiteSpace: 'nowrap',
-              border: `1px solid ${BORDER}`,
-            }}
-          >
-            {(item.status || statusKey || 'todo').toUpperCase()}
-          </span>
+          <CatalystStatusPill
+            status={item.status || statusKey || 'Backlog'}
+            statusCategory={item.status_category as any}
+            issueType={item.issue_type as any}
+            interactive={false}
+            compact
+          />
         )}
         {display.assignee && (
           <span style={{ display: 'inline-flex' }}>
@@ -1079,25 +1135,29 @@ function WorkItemRow({
             padding: '6px 0',
           }}
         >
-          <div style={{ padding: '4px 12px', fontSize: 12, fontWeight: 700, color: SUBTLE }}>Move to</div>
-          {(siblings ?? []).slice(0, 4).map((s: any) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => { setOpen(false); /* fire move */ }}
-              style={menuItemStyle()}
-            >
-              {s.name || s.title}
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => { setOpen(false); setIsMoveModalOpen(true); }}
-            style={menuItemStyle()}
-          >
-            View all versions
-          </button>
-          <div style={{ height: 1, background: BORDER, margin: '6px 0' }} />
+          {(siblings ?? []).length > 0 && (
+            <>
+              <div style={{ padding: '4px 12px', fontSize: 12, fontWeight: 700, color: SUBTLE }}>Move to</div>
+              {(siblings ?? []).map((s: any) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => { setOpen(false); moveMutation.mutate(s); }}
+                  style={menuItemStyle()}
+                >
+                  {s.name || s.title}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => { setOpen(false); setIsMoveModalOpen(true); }}
+                style={menuItemStyle()}
+              >
+                View all versions
+              </button>
+              <div style={{ height: 1, background: BORDER, margin: '6px 0' }} />
+            </>
+          )}
           <button
             type="button"
             onClick={() => { setOpen(false); onRemove(); }}
@@ -1209,7 +1269,6 @@ function ProgressSection({ items }: { items: Issue[] }) {
             <ProgressStatRow color={PROGRESS_DONE} label="Done" count={counts.done} />
             <ProgressStatRow color={PROGRESS_WIP} label="In progress" count={counts.inProgress} />
             <ProgressStatRow color={PROGRESS_TODO} label="To do" count={counts.toDo} />
-            <ProgressStatRow color={PROGRESS_WARN} label="Warning" count={counts.warning} />
           </ul>
         )}
       </div>

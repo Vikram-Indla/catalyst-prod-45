@@ -469,6 +469,13 @@ function CatalystShellContent() {
   // a scroll container — same fullpage flex chain as allwork/backlog.
   const isChatRoute = location.pathname.startsWith("/chat");
 
+  // Release detail (/release-hub/releases-management/:releaseId) needs an
+  // independently-scrolling right rail — same fullpage flex chain so the
+  // page wrapper does NOT scroll; left main + right rail scroll on their own.
+  const isReleaseDetailRoute = /\/release-hub\/releases-management\/[^/]+/.test(
+    location.pathname,
+  );
+
   // Parse issue key from /issue/:issueKey for tab-title binding
   const fullPageIssueKey = isIssueFullPageRoute
     ? location.pathname.split("/")[2] || null
@@ -927,10 +934,10 @@ function CatalystShellContent() {
             <AnnouncementBanner />
           </Suspense>
           <div
-            className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
+            className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute || isReleaseDetailRoute ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
           >
             <div
-              className={`w-full max-w-full ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute ? "flex-1 min-h-0 flex flex-col overflow-hidden" : ""}`}
+              className={`w-full max-w-full ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute || isReleaseDetailRoute ? "flex-1 min-h-0 flex flex-col overflow-hidden" : ""}`}
             >
               {shouldWrapHubSurface ? (
                 /* jira-compare 2026-05-05 cycle 2 — D-4 fix · drop the LEFT

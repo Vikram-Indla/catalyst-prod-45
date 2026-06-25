@@ -24,7 +24,7 @@ import { catalystFlag } from '@/lib/catalystFlag';
 import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { useCatalystAvatarProfile } from '@/components/catalyst-detail-views/shared/hooks/useCatalystAvatarProfile';
+import { useApprovedProfiles, useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
 import type { Release, ReleaseStatus } from '@/types/phase3-releases';
 
 const BORDER = 'var(--ds-border, #DFE1E6)';
@@ -75,14 +75,28 @@ export function ReleaseSidePanel(props: Props) {
   const { data: items = [] } = useQuery({
     queryKey: ['ph_release_contributors', releaseId, releaseName],
     queryFn: async () => {
-      const { data } = await supabase
+      const target = (releaseName || '').trim();
+      if (!target) return [];
+      // Mirror WorkItemsSection: .contains() first, fallback to fetch+filter.
+      // This guarantees identical row set vs the visible work items table.
+      const select = 'assignee_account_id, assignee_display_name, sprint_release';
+      const containsResult = await supabase
         .from('ph_issues')
-        .select('assignee_account_id, assignee_display_name, sprint_release')
-        .not('sprint_release', 'is', null)
+        .select(select)
+        .contains('sprint_release', JSON.stringify([{ name: target }]) as any)
         .limit(2000);
-      return (data ?? []).filter((row: any) => {
+      if ((containsResult.data?.length ?? 0) > 0) {
+        return containsResult.data ?? [];
+      }
+      const fb = await supabase
+        .from('ph_issues')
+        .select(select)
+        .not('sprint_release', 'is', null)
+        .limit(5000);
+      if (!fb.data) return [];
+      return fb.data.filter((row: any) => {
         const arr = row.sprint_release;
-        return Array.isArray(arr) && arr.some((el: any) => el && el.name === releaseName);
+        return Array.isArray(arr) && arr.some((el: any) => el && el.name === target);
       });
     },
     enabled: !!releaseName,
@@ -93,10 +107,13 @@ export function ReleaseSidePanel(props: Props) {
     const seen = new Set<string>();
     const out: { accountId: string | null; name: string | null }[] = [];
     items.forEach((it: any) => {
-      const key = (it.assignee_display_name || it.assignee_account_id || '').trim();
-      if (!key || seen.has(key)) return;
+      const accountId = (it.assignee_account_id || '').trim();
+      const name = (it.assignee_display_name || '').trim();
+      if (!accountId && !name) return;
+      const key = accountId || `name:${name.toLowerCase()}`;
+      if (seen.has(key)) return;
       seen.add(key);
-      out.push({ accountId: it.assignee_account_id ?? null, name: it.assignee_display_name ?? null });
+      out.push({ accountId: accountId || null, name: name || null });
     });
     return out;
   }, [items]);
@@ -312,7 +329,12 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
     if (!pickerOpen || !plusRef.current) return;
     const update = () => {
       const r = plusRef.current!.getBoundingClientRect();
-      setPickerPos({ top: r.bottom + 6, left: r.right - 280, width: 280 });
+      const w = 280;
+      const spaceRight = window.innerWidth - r.left;
+      const openLeft = spaceRight < w + 16;
+      const rawLeft = openLeft ? r.right - w : r.left;
+      const left = Math.max(8, Math.min(rawLeft, window.innerWidth - w - 8));
+      setPickerPos({ top: r.bottom + 6, left, width: w });
     };
     update();
     window.addEventListener('scroll', update, true);
@@ -444,7 +466,11 @@ function ApproverRow({
   onRemove: () => void;
   onDescriptionSave: (next: string) => void;
 }) {
-  const { data: profile } = useCatalystAvatarProfile(approver.userId);
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profile = useMemo(
+    () => approvedProfiles.find((p) => p.id === approver.userId),
+    [approvedProfiles, approver.userId],
+  );
   const [hover, setHover] = useState(false);
 
   return (
@@ -462,7 +488,7 @@ function ApproverRow({
           background: hover || expanded ? HOVER_BG : 'transparent',
         }}
       >
-        <CatalystAvatar size="small" name={approver.name} src={profile?.avatar_url || approver.avatarUrl || undefined} />
+        <CatalystAvatar size="small" name={profile?.name || approver.name} src={profile?.avatarUrl || approver.avatarUrl || undefined} />
         <span style={{ flex: 1, fontSize: 14, color: LINK, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {approver.name}
         </span>
@@ -677,18 +703,16 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['approver-picker-users'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url')
-        .order('full_name');
-      if (error) throw new Error(error.message);
-      return (data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null }>;
-    },
-    staleTime: 5 * 60_000,
-  });
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const users = useMemo(
+    () =>
+      approvedProfiles.map((p) => ({
+        id: p.id,
+        full_name: p.name,
+        avatar_url: p.avatarUrl ?? null,
+      })),
+    [approvedProfiles],
+  );
 
   const filtered = useMemo(() => {
     const available = users.filter((u) => !selectedIds.has(u.id));
@@ -814,7 +838,12 @@ function StatusDropdown({
     if (!open || !triggerRef.current) return;
     const update = () => {
       const r = triggerRef.current!.getBoundingClientRect();
-      setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+      const w = Math.max(r.width, 220);
+      const spaceRight = window.innerWidth - r.left;
+      const openLeft = spaceRight < w + 16;
+      const rawLeft = openLeft ? r.right - w : r.left;
+      const left = Math.max(8, Math.min(rawLeft, window.innerWidth - w - 8));
+      setPos({ top: r.bottom + 4, left, width: w });
     };
     update();
     window.addEventListener('scroll', update, true);
@@ -1069,7 +1098,12 @@ function ProjectField({
     if (!open || !triggerRef.current) return;
     const update = () => {
       const r = triggerRef.current!.getBoundingClientRect();
-      setPos({ top: r.bottom + 4, left: r.left, width: Math.max(r.width, 240) });
+      const w = Math.max(r.width, 240);
+      const spaceRight = window.innerWidth - r.left;
+      const openLeft = spaceRight < w + 16;
+      const rawLeft = openLeft ? r.right - w : r.left;
+      const left = Math.max(8, Math.min(rawLeft, window.innerWidth - w - 8));
+      setPos({ top: r.bottom + 4, left, width: w });
     };
     update();
     window.addEventListener('scroll', update, true);
@@ -1223,7 +1257,7 @@ function ContributorsField({
         <span style={{ fontSize: 14, color: SUBTLEST }}>—</span>
       ) : (
         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-          {contributors.slice(0, 5).map((c, i) => (
+          {contributors.slice(0, 3).map((c, i) => (
             <span
               key={`${c.accountId || c.name || i}`}
               style={{
@@ -1237,8 +1271,24 @@ function ContributorsField({
               <ContribAvatar accountId={c.accountId} name={c.name} />
             </span>
           ))}
-          {contributors.length > 5 && (
-            <span style={{ marginLeft: 6, fontSize: 12, color: SUBTLE }}>+{contributors.length - 5}</span>
+          {contributors.length > 3 && (
+            <span
+              style={{
+                marginLeft: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                color: TEXT,
+                background: 'var(--ds-background-neutral, #F1F2F4)',
+                padding: '1px 8px',
+                borderRadius: 3,
+                minWidth: 18,
+                textAlign: 'center',
+                lineHeight: '18px',
+                display: 'inline-block',
+              }}
+            >
+              +{contributors.length - 3}
+            </span>
           )}
         </div>
       )}
@@ -1247,12 +1297,13 @@ function ContributorsField({
 }
 
 function ContribAvatar({ accountId, name }: { accountId: string | null; name: string | null }) {
-  const { data: profile } = useCatalystAvatarProfile(accountId);
+  const byJiraId = useApprovedProfilesByJiraId();
+  const profile = accountId ? byJiraId.get(accountId) : undefined;
   return (
     <CatalystAvatar
       size="small"
-      name={name || undefined}
-      src={profile?.avatar_url || undefined}
+      name={profile?.name || name || undefined}
+      src={profile?.avatarUrl || undefined}
     />
   );
 }

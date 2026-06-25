@@ -58,6 +58,11 @@ interface DescriptionProps {
    * provides hover affordance or when the placeholder should sit flat.
    */
   disableEmptyHover?: boolean;
+  /**
+   * When true, NEITHER the empty-state nor the filled-state shows a hover
+   * background tint. Use on surfaces that want a flat description block.
+   */
+  disableHover?: boolean;
 }
 
 export function Description({
@@ -67,6 +72,7 @@ export function Description({
   loadAdf,
   emptyPlaceholder = 'Add a description...',
   disableEmptyHover = false,
+  disableHover = false,
 }: DescriptionProps) {
   const [editing, setEditing] = useState(false);
   const queryClient = useQueryClient();
@@ -512,7 +518,7 @@ export function Description({
             if (issue) setEditing(true);
           }}
           onMouseEnter={(e) => {
-            if (issue && !disableEmptyHover) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
+            if (issue && !disableEmptyHover && !disableHover) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';
@@ -548,7 +554,7 @@ export function Description({
             }
           }}
           onMouseEnter={(e) => {
-            if (issue) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
+            if (issue && !disableHover) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';

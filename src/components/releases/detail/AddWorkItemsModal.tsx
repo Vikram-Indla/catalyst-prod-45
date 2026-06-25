@@ -167,7 +167,9 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
     },
     onSuccess: async (updatedCount) => {
       await queryClient.refetchQueries({
-        predicate: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === 'ph_release_items',
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items' || q.queryKey[0] === 'ph_release_contributors'),
       });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
       catalystFlag.success(`Added ${updatedCount} work item${updatedCount === 1 ? '' : 's'} to "${release.name}".`);
@@ -181,7 +183,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
     <>
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={onClose} width="small" shouldCloseOnOverlayClick={false}>
+        <Modal onClose={onClose} width={867} shouldCloseOnOverlayClick={false}>
           <ModalHeader hasCloseButton>
             <ModalTitle>Add work items to this version</ModalTitle>
           </ModalHeader>
@@ -327,21 +329,38 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                   gap: 8,
                   width: '100%',
                   boxSizing: 'border-box',
-                  padding: '6px 12px',
+                  padding: '8px 12px',
                   cursor: 'pointer',
-                  fontSize: 13,
-                  color: TEXT,
+                  fontFamily: 'inherit',
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 <span style={{ flex: '0 0 16px', display: 'inline-flex' }}>
-                  <JiraIssueTypeIcon type={it.issue_type as any} size={14} />
+                  <JiraIssueTypeIcon type={it.issue_type as any} size={16} />
                 </span>
-                <span style={{ flex: '0 0 80px', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <span style={{
+                  flex: '0 0 80px',
+                  fontSize: 14,
+                  fontWeight: 400,
+                  color: 'var(--ds-link, #0C66E4)',
+                  textDecoration: 'underline',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}>
                   {it.issue_key}
                 </span>
-                <span style={{ flex: 1, minWidth: 0, color: SUBTLE, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{
+                  flex: 1,
+                  minWidth: 0,
+                  fontSize: 14,
+                  fontWeight: 400,
+                  color: 'var(--ds-text, #292A2E)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}>
                   {it.summary}
                 </span>
               </button>

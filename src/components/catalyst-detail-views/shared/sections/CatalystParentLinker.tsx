@@ -309,10 +309,15 @@ function usePickerPosition(
       const el = triggerRef.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
+      const w = Math.max(r.width, 240);
+      const spaceRight = window.innerWidth - r.left;
+      const openLeft = spaceRight < w + 16;
+      const rawLeft = openLeft ? r.right - w : r.left;
+      const left = Math.max(8, Math.min(rawLeft, window.innerWidth - w - 8));
       setPos({
         top: r.bottom + 4,
-        left: r.left,
-        width: Math.max(r.width, 240),
+        left,
+        width: w,
       });
     };
     recompute();

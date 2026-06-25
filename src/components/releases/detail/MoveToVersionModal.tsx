@@ -45,8 +45,11 @@ export function MoveToVersionModal({
   });
 
   const options: ProductOption[] = useMemo(
-    () => (rows ?? []).map((r) => ({ id: r.id, name: r.name || r.title || r.id })),
-    [rows],
+    () =>
+      (rows ?? [])
+        .filter((r) => (r.name || r.title) !== currentReleaseName)
+        .map((r) => ({ id: r.id, name: r.name || r.title || r.id })),
+    [rows, currentReleaseName],
   );
 
   const mutation = useMutation({
@@ -71,6 +74,7 @@ export function MoveToVersionModal({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
       queryClient.invalidateQueries({ queryKey: ['ph_release_items'] });
+      queryClient.invalidateQueries({ queryKey: ['ph_release_contributors'] });
       catalystFlag.success('Work item moved.');
       onSuccess?.();
       onClose();
@@ -81,7 +85,7 @@ export function MoveToVersionModal({
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={onClose} width="small">
+        <Modal onClose={onClose} width={867}>
           <ModalHeader hasCloseButton>
             <ModalTitle>Move to version</ModalTitle>
           </ModalHeader>
