@@ -25,6 +25,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import CanonicalPriorityIcon from '@/components/shared/PriorityIcon';
 import { useCatalystAvatarProfile } from '@/components/catalyst-detail-views/shared/hooks/useCatalystAvatarProfile';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
@@ -103,7 +104,7 @@ function AssigneeAvatar({
     <CatalystAvatar
       size={size}
       name={name || undefined}
-      src={profile?.avatar_url || undefined}
+      src={resolveAvatarUrl(name) ?? profile?.avatar_url ?? undefined}
     />
   );
 }

@@ -109,7 +109,8 @@ export function useDirectFromSync(unreadOnly: boolean) {
         // The actual assigner info exists only in webhook events. Showing reporter
         // is misleading (reporter ≠ assigner). This allows event notifications to take priority
         // and display the actual actor when available. If no event exists, generic text displays.
-        metadata: { actor_name: null } as Notification['metadata'],
+        // is_jira_sync flag → DirectNotificationRow renders 'Jira' initials avatar instead of grey silhouette.
+        metadata: { is_jira_sync: true } as unknown as Notification['metadata'],
         entity_deleted: false,
         is_dismissed: false,
         recipient_user_id: user.id,

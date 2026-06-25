@@ -49,6 +49,10 @@ export default function DirectNotificationRow({
   const [pressed, setPressed] = useState(false);
 
   const actorName = notification.actor?.displayName ?? ((notification as any).metadata?.actor_display_name) ?? null;
+  // Jira-sync notifications have no real actor (reporter ≠ assigner). Use 'Jira' so
+  // CatalystAvatar renders colored initials instead of the grey silhouette (Path 3).
+  const isJiraSync = !!(notification as any).metadata?.is_jira_sync;
+  const avatarDisplayName = actorName ?? (isJiraSync ? 'Jira' : null);
   const verbText  = getVerbText(notification.verb, actorName);
   const relTime   = formatRelativeTime(notification.createdAt);
   const { target, aggregation, thread } = notification;
@@ -135,10 +139,10 @@ export default function DirectNotificationRow({
   // Build avatar src — priority: notification.actor.avatarUrl > metadata avatarUrl > bundled photo > undefined
   // notification.actor.avatarUrl comes from the profile relationship if loaded
   // metadata avatarUrl comes from webhook or sync data
-  // resolveAvatarUrl is bundled local photos
+  // resolveAvatarUrl is bundled local photos (uses avatarDisplayName so 'Jira' sync rows resolve correctly)
   const avatarSrc = notification.actor?.avatarUrl
     ?? ((notification as any).metadata?.actor_avatar_url)
-    ?? resolveAvatarUrl(actorName)
+    ?? resolveAvatarUrl(avatarDisplayName)
     ?? undefined;
 
   return (
@@ -185,10 +189,11 @@ export default function DirectNotificationRow({
     >
       {/* Avatar — face photo when available, deterministic initials otherwise.
           CatalystAvatar wraps Atlaskit Avatar so the row never shows the
-          faceless silhouette when we have a name. */}
+          faceless silhouette when we have a name. avatarDisplayName = actorName
+          for real actors, 'Jira' for sync rows with no real actor. */}
       <div style={{ flexShrink: 0, marginTop: 2 }}>
         <CatalystAvatar
-          name={actorName}
+          name={avatarDisplayName}
           src={avatarSrc}
           size="large"
           appearance="circle"

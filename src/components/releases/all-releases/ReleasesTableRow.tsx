@@ -5,6 +5,7 @@
 
 import { Release, STATUS_CONFIG, HEALTH_CONFIG, ReleaseStatus } from '@/types/releases';
 import { useNavigate } from 'react-router-dom';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
@@ -172,7 +173,7 @@ export function ReleasesTableRow({ release, index, isSelected, onToggleSelect }:
       {/* Owner */}
       <div className="flex justify-center">
         <Avatar
-          src={release.owner?.avatar_url || undefined}
+          src={resolveAvatarUrl(release.owner?.full_name) ?? undefined}
           name={release.owner?.full_name || '?'}
           size="small"
         />

@@ -25,6 +25,7 @@ import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmat
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useCatalystAvatarProfile } from '@/components/catalyst-detail-views/shared/hooks/useCatalystAvatarProfile';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { Release, ReleaseStatus } from '@/types/phase3-releases';
 
 const BORDER = 'var(--ds-border, #DFE1E6)';
@@ -462,7 +463,7 @@ function ApproverRow({
           background: hover || expanded ? HOVER_BG : 'transparent',
         }}
       >
-        <CatalystAvatar size="small" name={approver.name} src={profile?.avatar_url || approver.avatarUrl || undefined} />
+        <CatalystAvatar size="small" name={approver.name} src={resolveAvatarUrl(approver.name) ?? profile?.avatar_url ?? approver.avatarUrl ?? undefined} />
         <span style={{ flex: 1, fontSize: 14, color: LINK, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {approver.name}
         </span>
@@ -775,7 +776,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
                 onMouseEnter={(e) => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = HOVER_BG; }}
                 onMouseLeave={(e) => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
-                <CatalystAvatar size="small" name={u.full_name || undefined} src={u.avatar_url || undefined} />
+                <CatalystAvatar size="small" name={u.full_name || undefined} src={resolveAvatarUrl(u.full_name) ?? u.avatar_url ?? undefined} />
                 <span style={{ fontSize: 14, color: TEXT, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {u.full_name || 'Unknown'}
                 </span>
@@ -1252,7 +1253,7 @@ function ContribAvatar({ accountId, name }: { accountId: string | null; name: st
     <CatalystAvatar
       size="small"
       name={name || undefined}
-      src={profile?.avatar_url || undefined}
+      src={resolveAvatarUrl(name) ?? profile?.avatar_url ?? undefined}
     />
   );
 }
