@@ -261,18 +261,47 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
     return notifData.pages.flat() as Notification[];
   }, [notifData]);
 
+  // Deduplicate event notifications by entity_id.
+  // useMarkSyncAsRead writes a read-receipt row (notification_type='assigned_work_item',
+  // metadata={}) that shares the same entity_id as the original wh-jira-sync row
+  // (notification_type='assigned', metadata={actor_display_name:...}). Without
+  // deduplication, the most-recent read receipt (no actor) shadows the actor-rich row.
+  // Fix: for each entity_id, prefer the row with actor data; merge read_at from all rows.
+  const deduplicatedEventNotifications = useMemo<Notification[]>(() => {
+    const grouped = new Map<string, Notification[]>();
+    for (const n of eventNotifications) {
+      const arr = grouped.get(n.entity_id) ?? [];
+      arr.push(n);
+      grouped.set(n.entity_id, arr);
+    }
+    return Array.from(grouped.values()).map(rows => {
+      const hasActor = (n: Notification): boolean => {
+        const m = n.metadata as Record<string, unknown> | undefined;
+        return !!(n.actor_user_id || m?.actor_display_name || m?.actor_name);
+      };
+      const primary = rows.find(hasActor)
+        ?? [...rows].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+      const latestReadAt = rows.reduce<string | null>((acc, r) => {
+        if (!r.read_at) return acc;
+        if (!acc) return r.read_at;
+        return r.read_at > acc ? r.read_at : acc;
+      }, null);
+      return { ...primary, read_at: latestReadAt };
+    });
+  }, [eventNotifications]);
+
   // Merge: ph_issues assigned work (layer 2) + notification events (layer 1)
   // Deduplicate by entity_id: if an event notification exists for the same entity_id,
   // it takes precedence (it carries actor/verb info). Otherwise use the sync item.
   const rawNotifications = useMemo<Notification[]>(() => {
-    const eventEntityIds = new Set(eventNotifications.map(n => n.entity_id));
+    const eventEntityIds = new Set(deduplicatedEventNotifications.map(n => n.entity_id));
     // Filter sync items to exclude those already covered by an event notification
     const syncOnly = (syncItems ?? []).filter(n => !eventEntityIds.has(n.entity_id));
     // Merge and sort descending by created_at
-    const merged = [...eventNotifications, ...syncOnly];
+    const merged = [...deduplicatedEventNotifications, ...syncOnly];
     merged.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     return merged;
-  }, [eventNotifications, syncItems]);
+  }, [deduplicatedEventNotifications, syncItems]);
 
   const isLoading = notifLoading || syncLoading;
 

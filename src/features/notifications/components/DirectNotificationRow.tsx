@@ -51,7 +51,7 @@ export default function DirectNotificationRow({
 
   const actorName = notification.actor?.displayName ?? null;
   const avatarDisplayName = actorName;
-  const verbText  = getVerbText(notification.verb, actorName);
+  const verbText  = getVerbText(notification.verb, actorName, target.iconType);
   const relTime   = formatRelativeTime(notification.createdAt);
   const { target, aggregation, thread } = notification;
 

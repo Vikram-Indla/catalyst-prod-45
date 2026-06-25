@@ -38,12 +38,29 @@ export function formatRelativeTime(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-export function getVerbText(verb: string, actorName: string | null): string {
+function iconTypeToLabel(iconType?: string): string {
+  switch (iconType) {
+    case 'story':    return 'story';
+    case 'bug':      return 'bug';
+    case 'epic':     return 'epic';
+    case 'incident': return 'incident';
+    case 'subtask':  return 'subtask';
+    case 'task':     return 'task';
+    default:         return 'work item';
+  }
+}
+
+export function getVerbText(verb: string, actorName: string | null, iconType?: string): string {
+  const type = iconTypeToLabel(iconType);
   if (!actorName) {
-    return verb === 'assigned' ? 'You were assigned to' : 'System update on';
+    switch (verb) {
+      case 'assigned':       return `A ${type} was assigned to you`;
+      case 'status_changed': return 'Status updated on';
+      default:               return 'Update on';
+    }
   }
   switch (verb) {
-    case 'assigned':      return `${actorName} assigned you to`;
+    case 'assigned':      return `${actorName} assigned a ${type} to you`;
     case 'mentioned':     return `${actorName} mentioned you in`;
     case 'commented':     return `${actorName} commented on`;
     case 'updated':       return `${actorName} updated`;
