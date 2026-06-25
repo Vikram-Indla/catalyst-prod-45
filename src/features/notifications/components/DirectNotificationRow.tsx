@@ -3,6 +3,7 @@ import type React from "react";
 import { useNavigate } from "react-router-dom";
 import CatalystAvatar from "@/components/shared/CatalystAvatar";
 import { resolveAvatarUrl } from "@/lib/avatars";
+import PersonCircleIcon from "@atlaskit/icon/glyph/person-circle";
 import { Box, xcss } from "@atlaskit/primitives";
 import { token } from "@atlaskit/tokens";
 import type { DirectNotification } from "../types";
@@ -134,7 +135,7 @@ export default function DirectNotificationRow({
   );
 
   // Build avatar src — priority: notification.actor.avatarUrl > bundled photo > undefined.
-  // Only used when notification.actor is non-null (actor=null rows render a work-item icon instead).
+  // Only used when notification.actor is non-null (actor=null rows render a person-circle placeholder).
   const avatarSrc = notification.actor?.avatarUrl
     ?? resolveAvatarUrl(avatarDisplayName)
     ?? undefined;
@@ -181,9 +182,9 @@ export default function DirectNotificationRow({
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
     >
-      {/* Avatar slot — face/initials when a real actor is known; work-item type
-          icon in a neutral circle when no actor is available (e.g. Jira-sync
-          assignments where the actual assigner is not stored). */}
+      {/* Avatar slot — face/initials when actor is known; person-circle icon
+          in a neutral ADS circle when actor is unavailable (system-assigned
+          items where the actual assigner is not stored). */}
       <div style={{ flexShrink: 0, marginTop: 2 }}>
         {notification.actor !== null ? (
           <CatalystAvatar
@@ -205,7 +206,13 @@ export default function DirectNotificationRow({
               flexShrink: 0,
             }}
           >
-            <DirectWorkItemIcon type={target.iconType} size={22} />
+            <PersonCircleIcon
+              label=""
+              size="medium"
+              primaryColor={isDark
+                ? 'var(--ds-icon-subtle, #8696A7)'
+                : 'var(--ds-icon-subtle, #626F86)'}
+            />
           </div>
         )}
       </div>

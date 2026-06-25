@@ -652,6 +652,7 @@ serve(async (req) => {
                   metadata: {
                     actor_display_name: issue.fields.reporter?.displayName || null,
                     actor_avatar_url: issue.fields.reporter?.avatarUrls?.['48x48'] || null,
+                    actor_jira_account_id: issue.fields.reporter?.accountId || null,
                   },
                 })
               }
@@ -676,6 +677,7 @@ serve(async (req) => {
                   metadata: {
                     actor_display_name: issue.fields.reporter?.displayName || null,
                     actor_avatar_url: issue.fields.reporter?.avatarUrls?.['48x48'] || null,
+                    actor_jira_account_id: issue.fields.reporter?.accountId || null,
                   },
                 })
               }

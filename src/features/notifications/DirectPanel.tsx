@@ -3,7 +3,7 @@ import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
 import { useDirectFromSync, useMarkSyncAsRead } from '@/hooks/useDirectFromSync';
-import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
+import { useApprovedProfiles, useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
 import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './types';
 import { groupByDate } from './utils/date';
@@ -71,30 +71,36 @@ function mapStatusAppearance(statusType: StatusType) {
 function mapNotification(
   n: Notification,
   profiles: Map<string, { name: string; avatarUrl?: string | null }>,
-  profilesByName: Map<string, { name: string; avatarUrl?: string | null }>
+  profilesByName: Map<string, { name: string; avatarUrl?: string | null }>,
+  profilesByJiraId: Map<string, { name: string; avatarUrl?: string | null }>
 ): DirectNotification {
   const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
   const isCommentVerb = ['commented', 'mentioned'].includes(mapVerb(n.notification_type));
   const hasThread = !!(n.metadata?.comment_preview) || isCommentVerb;
 
-  // Actor resolution — 4 fallback layers:
-  //   1. profile by actor_user_id (Catalyst profile UUID, carries override avatar)
+  // Actor resolution — 5 fallback layers:
+  //   1. profile by actor_user_id (Catalyst UUID — set at sync time when reporter matched)
+  //   1.5 profile by actor_jira_account_id (Jira accountId — fires when UUID lookup fails)
   //   2. notification.actor embedded object (webhook snapshot)
-  //   3. metadata.actor_name (sync feed stores reporter_display_name here)
-  //      NOTE: sync feed uses 'actor_name', webhook uses 'actor_display_name' — check both
-  //   4. metadata.actor_display_name (Jira webhook actor for external users)
+  //   3. metadata.actor_name / actor_display_name (reporter display name from sync/webhook)
   const meta = n.metadata as Record<string, unknown> | undefined;
   const metadataActorName = (meta?.actor_name ?? meta?.actor_display_name) as string | undefined;
   const metadataActorAvatar = meta?.actor_avatar_url as string | undefined;
+  const metadataActorJiraId = meta?.actor_jira_account_id as string | undefined;
+  // Layer 1.5: jiraId lookup fires only when UUID-based profile lookup failed
+  const jiraIdProfile = (!profile && metadataActorJiraId)
+    ? profilesByJiraId.get(metadataActorJiraId)
+    : null;
   const resolvedDisplayName = profile?.name
+    ?? jiraIdProfile?.name
     ?? n.actor?.full_name
     ?? (metadataActorName && metadataActorName.trim() ? metadataActorName : null);
-  // Avatar: try id-based profile first, then name-based lookup (for sync reporter),
-  // then the webhook-embedded avatar URL.
+  // Avatar: UUID profile → jiraId profile → name-based → webhook snapshot (Jira CDN, banned by CatalystAvatar)
   const nameBasedProfile = resolvedDisplayName
     ? profilesByName.get(resolvedDisplayName.toLowerCase())
     : null;
   const resolvedAvatarUrl = profile?.avatarUrl
+    ?? jiraIdProfile?.avatarUrl
     ?? nameBasedProfile?.avatarUrl
     ?? n.actor?.avatar_url
     ?? (metadataActorAvatar && metadataActorAvatar.trim() ? metadataActorAvatar : null);
@@ -271,6 +277,7 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   const isLoading = notifLoading || syncLoading;
 
   const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profilesByJiraId = useApprovedProfilesByJiraId();
   const profiles = useMemo(
     () => new Map(approvedProfiles.map(p => [p.id, p])),
     [approvedProfiles]
@@ -282,8 +289,8 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
 
   // Map raw DB rows → DirectNotification display shape
   const notifications = useMemo<DirectNotification[]>(
-    () => rawNotifications.map(n => mapNotification(n, profiles, profilesByName)),
-    [rawNotifications, profiles, profilesByName]
+    () => rawNotifications.map(n => mapNotification(n, profiles, profilesByName, profilesByJiraId)),
+    [rawNotifications, profiles, profilesByName, profilesByJiraId]
   );
 
   // Read-state: merge DB read_at, local optimistic state, and external state
