@@ -3809,6 +3809,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // the chrome band, not inside the table card). The `title` prop is
       // intentionally NOT passed; passing it would double-render the H1.
       flush
+      // 2026-06-26: when caller owns the chrome (release navigator's
+      // customChromeBand), clamp shell to parent height. Without this the
+      // shell uses `minHeight: 100%` and grows past parent when the
+      // external toolbar + table content exceed the viewport — which
+      // breaks JiraTable's `max-height: 100%` scroll viewport. See
+      // AtlaskitPageShell.constrainHeight docstring.
+      constrainHeight={hideChrome}
       // 2026-05-21: chromeBg resolves from projects.settings.background
       // (project background picker). Falls back to BG_DEFAULT which is
       // now var(--ds-surface, #FFFFFF) — plain white matching AllWork.
