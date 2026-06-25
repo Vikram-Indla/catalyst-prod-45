@@ -43,7 +43,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
-  const actorName = notification.actor?.displayName ?? null;
+  const actorName = notification.actor?.displayName ?? ((notification as any).metadata?.actor_display_name) ?? null;
   const verbText  = getVerbText(notification.verb, actorName);
   const relTime   = formatRelativeTime(notification.createdAt);
   const { target, aggregation, thread } = notification;
