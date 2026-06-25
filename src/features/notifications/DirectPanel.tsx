@@ -261,26 +261,42 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
     return notifData.pages.flat() as Notification[];
   }, [notifData]);
 
-  // Deduplicate event notifications by entity_id.
-  // useMarkSyncAsRead writes a read-receipt row (notification_type='assigned_work_item',
-  // metadata={}) that shares the same entity_id as the original wh-jira-sync row
-  // (notification_type='assigned', metadata={actor_display_name:...}). Without
-  // deduplication, the most-recent read receipt (no actor) shadows the actor-rich row.
-  // Fix: for each entity_id, prefer the row with actor data; merge read_at from all rows.
+  // Deduplicate ONLY assignment-family notification pairs by entity_id.
+  //
+  // Problem: useMarkSyncAsRead inserts a read-receipt row (notification_type='assigned_work_item',
+  // metadata={}) that shares entity_id with the original wh-jira-sync 'assigned' row
+  // (metadata={actor_display_name:'Nada alfassam'}). entity_id = ph_issues.id (UUID),
+  // so grouping ALL types by entity_id alone would wrongly collapse commented+assigned for
+  // the same issue into one notification. Only collapse the assignment family.
+  //
+  // Assignment family: 'assigned' | 'assigned_work_item' | 'assigned_story' | 'tester_assigned'
+  // All map to verb='assigned' in mapVerb(). Other types (commented, status_changed, etc.) pass through.
   const deduplicatedEventNotifications = useMemo<Notification[]>(() => {
-    const grouped = new Map<string, Notification[]>();
+    const ASSIGNMENT_FAMILY = new Set([
+      'assigned', 'assigned_work_item', 'assigned_story', 'tester_assigned',
+    ]);
+    const assignmentsByEntityId = new Map<string, Notification[]>();
+    const nonAssignment: Notification[] = [];
+
     for (const n of eventNotifications) {
-      const arr = grouped.get(n.entity_id) ?? [];
-      arr.push(n);
-      grouped.set(n.entity_id, arr);
+      if (ASSIGNMENT_FAMILY.has(n.notification_type)) {
+        const arr = assignmentsByEntityId.get(n.entity_id) ?? [];
+        arr.push(n);
+        assignmentsByEntityId.set(n.entity_id, arr);
+      } else {
+        nonAssignment.push(n);
+      }
     }
-    return Array.from(grouped.values()).map(rows => {
+
+    const deduped = Array.from(assignmentsByEntityId.values()).map(rows => {
       const hasActor = (n: Notification): boolean => {
         const m = n.metadata as Record<string, unknown> | undefined;
         return !!(n.actor_user_id || m?.actor_display_name || m?.actor_name);
       };
+      // Pick actor-rich row first; fall back to most recent
       const primary = rows.find(hasActor)
         ?? [...rows].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+      // Merge most-recent read_at so already-read state survives dedup
       const latestReadAt = rows.reduce<string | null>((acc, r) => {
         if (!r.read_at) return acc;
         if (!acc) return r.read_at;
@@ -288,6 +304,8 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
       }, null);
       return { ...primary, read_at: latestReadAt };
     });
+
+    return [...deduped, ...nonAssignment];
   }, [eventNotifications]);
 
   // Merge: ph_issues assigned work (layer 2) + notification events (layer 1)

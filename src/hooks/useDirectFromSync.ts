@@ -139,23 +139,32 @@ export function useMarkSyncAsRead() {
       const now = new Date().toISOString();
       const issueId = notification.entity_id;
 
-      // Check for an existing receipt row first
-      const { data: existing } = await supabase
+      // Use .select() (not .maybeSingle()) — multiple rows can exist for the same
+      // entity_id+tab when a read-receipt 'assigned_work_item' row coexists with
+      // the original 'assigned' event row. .maybeSingle() errors on >1 rows,
+      // which caused the old code to fall through to INSERT and create a third row.
+      const { data: existingRows } = await supabase
         .from('notifications')
-        .select('id, read_at')
+        .select('id, read_at, notification_type')
         .eq('recipient_user_id', user.id)
         .eq('entity_id', issueId)
-        .eq('tab', 'direct')
-        .maybeSingle();
+        .eq('tab', 'direct');
 
-      if (existing) {
-        if (!existing.read_at) {
+      // Prefer the actor-rich 'assigned' event row; fall back to any row found.
+      const toUpdate = existingRows?.find(r => r.notification_type === 'assigned')
+        ?? existingRows?.find(r => (r.notification_type as string) !== 'assigned_work_item')
+        ?? existingRows?.[0];
+
+      if (toUpdate) {
+        if (!toUpdate.read_at) {
           await supabase
             .from('notifications')
             .update({ read_at: now })
-            .eq('id', existing.id);
+            .eq('id', toUpdate.id);
         }
       } else {
+        // No existing notification for this issue — create a read receipt so
+        // read state survives across sessions.
         await supabase
           .from('notifications')
           .insert({
