@@ -23,6 +23,10 @@ export class HuddleConnection {
   private localStream: MediaStream | null = null;
   private unsub: (() => void) | null = null;
   private remoteId: string | null = null;
+  /** ICE candidates received before setRemoteDescription was called are buffered here and drained immediately after. */
+  private pendingCandidates: RTCIceCandidateInit[] = [];
+  /** Set to true after the first successful setRemoteDescription so buffered candidates can be flushed. */
+  private remoteDescSet = false;
 
   constructor(private opts: HuddleConnectionOpts) {}
 
@@ -54,6 +58,7 @@ export class HuddleConnection {
   private ensurePc(): RTCPeerConnection {
     if (this.pc) return this.pc;
     const pc = new RTCPeerConnection({ iceServers: getIceServers() });
+    // addTrack is skipped when localStream is null (start() is the only intended caller and always sets it first).
     this.localStream?.getTracks().forEach((t) => pc.addTrack(t, this.localStream as MediaStream));
     pc.ontrack = (e) => {
       const [stream] = e.streams;
@@ -83,6 +88,7 @@ export class HuddleConnection {
       case 'join': {
         this.remoteId = sig.from;
         // Re-announce so a peer who joined first also learns about us.
+        // Loop-safety relies on the signaling layer's self:false filter; the sig.from === selfId guard above is the backup.
         chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'join', from: this.opts.selfId });
         if (this.amOfferer()) {
           const pc = this.ensurePc();
@@ -96,6 +102,11 @@ export class HuddleConnection {
         this.remoteId = sig.from;
         const pc = this.ensurePc();
         await pc.setRemoteDescription(sig.sdp);
+        this.remoteDescSet = true;
+        for (const c of this.pendingCandidates) {
+          try { await this.pc?.addIceCandidate(c); } catch { /* stale candidate */ }
+        }
+        this.pendingCandidates = [];
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
         chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'answer', from: this.opts.selfId, sdp: answer });
@@ -103,10 +114,20 @@ export class HuddleConnection {
       }
       case 'answer': {
         await this.pc?.setRemoteDescription(sig.sdp);
+        this.remoteDescSet = true;
+        for (const c of this.pendingCandidates) {
+          try { await this.pc?.addIceCandidate(c); } catch { /* stale candidate */ }
+        }
+        this.pendingCandidates = [];
         break;
       }
       case 'ice-candidate': {
-        try { await this.pc?.addIceCandidate(sig.candidate); } catch { /* candidate before remote desc — ignore */ }
+        if (this.pc && this.remoteDescSet) {
+          try { await this.pc.addIceCandidate(sig.candidate); } catch { /* stale candidate */ }
+        } else {
+          // Buffer early candidates — remote description not yet set; drain happens after setRemoteDescription.
+          this.pendingCandidates.push(sig.candidate);
+        }
         break;
       }
       case 'leave': {

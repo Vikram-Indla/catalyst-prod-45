@@ -14,6 +14,8 @@ vi.mock('../ChatRealtimeManager', () => ({
 const track = { stop: vi.fn(), enabled: true };
 const fakeStream = { getTracks: () => [track], getAudioTracks: () => [track] } as unknown as MediaStream;
 
+let lastPC: FakePC;
+
 class FakePC {
   connectionState: RTCPeerConnectionState = 'new';
   onicecandidate: any; ontrack: any; onconnectionstatechange: any;
@@ -24,6 +26,7 @@ class FakePC {
   setRemoteDescription = vi.fn(async () => {});
   addIceCandidate = vi.fn(async () => {});
   close = vi.fn();
+  constructor() { lastPC = this; }
 }
 
 beforeEach(() => {
@@ -60,11 +63,40 @@ describe('HuddleConnection', () => {
     expect(track.enabled).toBe(true);
   });
 
+  it('buffers early ICE candidates and applies them after setRemoteDescription', async () => {
+    const c = new HuddleConnection({ conversationId: 'cv', selfId: 'zzz', onRemoteStream: () => {}, onConnectionState: () => {} });
+    await c.start();
+
+    // Deliver an ICE candidate BEFORE any offer/answer (remoteDescSet is false).
+    const earlyCandidate = { candidate: 'candidate:1 1 UDP 2113667327 10.0.0.1 56789 typ host', sdpMid: '0', sdpMLineIndex: 0 };
+    signalCb!({ kind: 'ice-candidate', from: 'aaa', candidate: earlyCandidate });
+    await Promise.resolve();
+
+    // PC has not been created yet (no join/offer received), so addIceCandidate cannot have been called.
+    // Even if PC existed, remoteDescSet=false means the candidate is buffered.
+    const pcBeforeOffer = lastPC as FakePC | undefined;
+    if (pcBeforeOffer) {
+      expect(pcBeforeOffer.addIceCandidate).not.toHaveBeenCalled();
+    }
+
+    // Now deliver an offer (sets remoteDescription → drains buffer).
+    // selfId='zzz' > 'aaa' so zzz is the answerer; receiving an offer is valid.
+    signalCb!({ kind: 'offer', from: 'aaa', sdp: { type: 'offer', sdp: 'o' } });
+    await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
+
+    // After setRemoteDescription the buffered candidate must have been applied.
+    expect(lastPC.addIceCandidate).toHaveBeenCalledWith(earlyCandidate);
+  });
+
   it('close stops tracks, broadcasts leave, closes peer', async () => {
     const c = new HuddleConnection({ conversationId: 'cv', selfId: 'aaa', onRemoteStream: () => {}, onConnectionState: () => {} });
     await c.start();
+    // Trigger PC creation so we can verify close() is called on it.
+    signalCb!({ kind: 'join', from: 'zzz' });
+    await Promise.resolve(); await Promise.resolve();
     c.close();
     expect(track.stop).toHaveBeenCalled();
     expect(sent.some(s => s.kind === 'leave' && s.from === 'aaa')).toBe(true);
+    expect(lastPC.close).toHaveBeenCalled();
   });
 });
