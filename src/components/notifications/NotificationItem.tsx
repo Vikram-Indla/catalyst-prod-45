@@ -153,7 +153,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
   const metaActorAvatar = (notification.metadata as any)?.actor_avatar_url || null;
   const hasActor = !!notification.actor_user_id || !!metaActorName;
   const actorName = actorProfile?.full_name || notification.actor?.full_name || metaActorName || null;
-  const avatarUrl = resolveAvatarUrl(actorName) ?? actorProfile?.avatar_url ?? notification.actor?.avatar_url ?? metaActorAvatar ?? null;
+  const avatarUrl = actorProfile?.avatar_url ?? notification.actor?.avatar_url ?? metaActorAvatar ?? resolveAvatarUrl(actorName) ?? null;
 
   const renderAvatar = () => {
     if (!hasActor) {
