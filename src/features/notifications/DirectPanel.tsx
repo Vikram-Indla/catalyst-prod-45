@@ -86,9 +86,11 @@ function mapNotification(
   const meta = n.metadata as Record<string, unknown> | undefined;
   const metadataActorName = (meta?.actor_name ?? meta?.actor_display_name) as string | undefined;
   const metadataActorAvatar = meta?.actor_avatar_url as string | undefined;
+  const isJiraSync = !!meta?.is_jira_sync;
   const resolvedDisplayName = profile?.name
     ?? n.actor?.full_name
-    ?? (metadataActorName && metadataActorName.trim() ? metadataActorName : null);
+    ?? (metadataActorName && metadataActorName.trim() ? metadataActorName : null)
+    ?? (isJiraSync ? 'Jira' : null);
   // Avatar: try id-based profile first, then name-based lookup (for sync reporter),
   // then the webhook-embedded avatar URL.
   const nameBasedProfile = resolvedDisplayName
