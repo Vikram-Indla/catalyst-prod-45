@@ -1,0 +1,108 @@
+=== STAKEHOLDER QUESTIONS — POST PHASE 2/3 ARCHAEOLOGY ===
+Date: 2026-06-25
+Status: AWAITING STAKEHOLDER INPUT (do not act until answered)
+Evidence basis: 98 prod-only migrations classified from production ledger lmqwtldpfacrrlvdnmld
+
+All questions below are supported by Phase 2/3 evidence.
+NO deployment decisions are made here. Questions inform MUST PORT / CAN IGNORE / ESCALATE
+classification which has NOT been done yet.
+
+────────────────────────────────────────────────────────────────────────────────
+PRIORITY 1 — RBAC CONFLICT (blocks local RBAC migration deployment)
+────────────────────────────────────────────────────────────────────────────────
+
+Q1. add_new_app_role_values (20260620115137) extended the app_role enum in production.
+    Local RBAC migration 20260626000000_create_normalized_rbac_schema.sql creates tables
+    using app_role. What values does this prod migration add?
+    Are they compatible with the RBAC schema's assumptions?
+
+    Evidence: prod-only migration exists; RBAC local migrations not yet applied anywhere.
+    Risk: enum mismatch causes apply_migration failure or silent type conflict.
+    Needed: confirm enum values added in prod; compare to RBAC schema DDL.
+
+Q2. update_invite_default_role_add_dept_fk (20260620115146) adds a dept FK to invites.
+    Does local have the departments table referenced by this FK?
+    Evidence: prod-only; touches invite table schema.
+
+────────────────────────────────────────────────────────────────────────────────
+PRIORITY 2 — ENTIRELY PROD-ONLY MODULES (intent unknown without SQL read)
+────────────────────────────────────────────────────────────────────────────────
+
+Q3. CONNECT module (5 migrations: connect_engine_schema, connect_link_previews,
+    connect_pair_hash_md5, connect_native_schema, connect_native_rls_rpc — all 20260617):
+    Is this a planned feature still in development, or was it shipped?
+    Does local src/ reference any connect_* tables?
+    Evidence: 5 prod-only migrations in 3h window; no local equivalent found.
+
+Q4. ITSM module (itsm_1a_incident_schema — 20260617011928):
+    "1a" prefix suggests multi-phase. Was phase 1b+ planned or abandoned?
+    Is any ITSM UI built? Does it rely on these prod tables?
+    Evidence: single prod-only schema migration; no local equivalent.
+
+Q5. NOTION module (notion_sync_daily_cron — 20260621041143):
+    Is Notion sync active in production? What does the cron do?
+    Note: CLAUDE.md bans Notion from Projects module but this may be a separate sync.
+    Evidence: single prod-only cron migration.
+
+────────────────────────────────────────────────────────────────────────────────
+PRIORITY 3 — SCHEMA DIVERGENCE (local code may break against prod schema)
+────────────────────────────────────────────────────────────────────────────────
+
+Q6. consolidate_planner_tables_to_tasks (20260602143337): prod renamed/merged
+    planner tables into tasks. Local src/ still references planner_tasks?
+    Evidence: prod-only rename migration; CLAUDE.md notes tasks module was planner.
+    Risk: local hooks/queries against planner_* tables will fail on prod schema.
+
+Q7. work_items_settings phase 1-4 (20260516225257-20260516225354): 4-phase schema
+    build for work type config. Local has no equivalent.
+    Is this schema actively used by the work item UI in prod?
+    Evidence: 4 prod-only schema migrations; no local name match.
+
+Q8. create_story_sprints_table (20260623084235): sprint schema prod-only.
+    Is sprint UI shipping? Does local code reference sprint tables?
+    Evidence: most recent prod-only schema addition.
+
+Q9. create_standup_sessions_v2 (20260614114131): standup schema prod-only.
+    Is standup feature active? Does local code use this table?
+
+Q10. ARCHIVE SYSTEM: create_archive_system + create_archive_functions +
+     add_deleted_by_and_shredding (20260603): soft-delete system in prod.
+     Does local src/ use archived/deleted_by columns? If not, prod soft-deletes
+     are silently ignored by local queries.
+     Evidence: 3 prod-only schema migrations defining the archive system.
+
+────────────────────────────────────────────────────────────────────────────────
+PRIORITY 4 — SEED DATA / TEST DATA CLEANUP
+────────────────────────────────────────────────────────────────────────────────
+
+Q11. seed_test_profiles_for_otp (20260516020048): test OTP profiles seeded in prod.
+     Are these real users or test accounts that should be removed?
+     Evidence: prod-only; "test_profiles" in name.
+
+Q12. chat_seed_sample_conversations (20260608122516): sample chat data seeded in prod.
+     Is this real data or test/demo data? Should it be purged?
+     Evidence: prod-only seed migration.
+
+────────────────────────────────────────────────────────────────────────────────
+PRIORITY 5 — OPERATIONAL (lower urgency)
+────────────────────────────────────────────────────────────────────────────────
+
+Q13. deploy_gate_and_settings (20260620212229): unknown schema. What does this gate
+     control? Is it safe to skip locally?
+     Evidence: prod-only; name suggests feature-flagging or deployment control.
+
+Q14. add_shared_user_scopes_rpc (20260602123536): RPC + schema in prod.
+     Is this called by any edge function or client? What scopes does it expose?
+     Evidence: prod-only; [SCHEMA,RLS] flagged.
+
+Q15. Duplicate migration name: add_scheduled_design_audit appears as BOTH
+     20260518213107 AND 20260518214840 (same name, 1h27m apart).
+     Was the second one a re-apply after a failure? Are both in effect?
+     Evidence: schema_migrations table shows both versions applied.
+
+────────────────────────────────────────────────────────────────────────────────
+QUESTIONS NOT SUPPORTED BY PHASE 2/3 EVIDENCE (excluded per rules)
+────────────────────────────────────────────────────────────────────────────────
+- Timeline for RBAC deployment: requires business decision, not schema evidence
+- Which prod-only migrations to port: final decision after stakeholder input
+- SQL content of any migration: would require read access to prod migration history table

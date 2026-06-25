@@ -1,0 +1,252 @@
+=== PROD-ONLY MIGRATION ARCHAEOLOGY — SOURCE REFERENCE SUMMARY ===
+Production env : lmqwtldpfacrrlvdnmld
+Staging env    : cyijbdeuehohvhnsywig (MCP scoped here, not used for this analysis)
+Analysis date  : 2026-06-25
+Total prod-only (no local equivalent): 98 (handover estimated 94; delta=4 from duplicate names)
+Date range     : 20260516 – 20260623
+Local migration count: 1006 | Prod migration count: 1035
+
+NOTE: All classifications are PROVISIONAL. No SQL executed. No mutation.
+
+============================================================
+MODULE: CHAT (14 migrations)
+============================================================
+  20260608090736  chat_get_or_create_dm_rpc          [SCHEMA] CREATE_FUNCTION
+  20260608095135  chat_project_channel_and_ticket_thread_rpcs
+  20260608105121  chat_auto_project_channel_v2
+  20260608105156  chat_channel_insert_admin_only     [RLS]
+  20260608120642  chat_backfill_project_channels     DATA_MIGRATION
+  20260608120934  chat_project_channel_auto_trigger  CREATE_TRIGGER_CRON
+  20260608122516  chat_seed_sample_conversations     SEED_DATA
+  20260608162525  chat_channel_trigger_on_jira_projects  CREATE_TRIGGER_CRON
+  20260608170429  chat_p2b_notif_pref
+  20260608170546  chat_p2d_search_modifiers
+  20260608170629  chat_p2e_broadcast_mentions
+  20260608170710  chat_p2f_link_previews
+  20260612012115  chat_fullscreen_schema_additions   [SCHEMA]
+  20260614001332  chat_pinned_messages_rls_policies  [RLS] RLS_POLICY
+
+  PATTERN: Dense cluster 20260608-20260614. Chat module built entirely in prod.
+  Phase labels: p2b/p2d/p2e/p2f suggest multi-phase rollout.
+  chat_fullscreen_schema_additions likely adds columns to chat_conversations or chat_messages.
+  RISK: chat_seed_sample_conversations = test data potentially still in prod.
+
+============================================================
+MODULE: PROJECT_HUB (26 migrations)
+============================================================
+  20260516114009  add_projects_key_unique_index      CREATE_INDEX
+  20260516115133  fix_projects_key_constraint        FIX_CONSTRAINT
+  20260516225257  work_items_settings_phase1_work_types  [SCHEMA]
+  20260516225315  work_items_settings_phase2_screen_config  [SCHEMA]
+  20260516225335  work_items_settings_phase3_field_layout   [SCHEMA]
+  20260516225354  work_items_settings_phase4_field_scheme   [SCHEMA]
+  20260516230530  seed_bau_project_members_v2        SEED_DATA
+  20260517152843  project_members_user_id_fk_to_profiles_2026_05_17  FIX_CONSTRAINT
+  20260517153010  projects_add_lead_id_2026_05_17    [SCHEMA]
+  20260519144658  add_composite_indexes_for_project_date_queries  CREATE_INDEX
+  20260528200416  fix_ph_comments_select_rls_allow_own_comments  [RLS] RLS_POLICY
+  20260529164627  fix_ph_comments_select_allow_all_authenticated
+  20260601131304  create_product_members_table       [SCHEMA] CREATE_TABLE
+  20260602143337  consolidate_planner_tables_to_tasks  [SCHEMA] ALTER_TABLE
+  20260602160215  rename_task_fk_constraints_to_match_tables  FIX_CONSTRAINT
+  20260602160332  fix_generate_task_key_use_key_column  FIX_CONSTRAINT
+  20260602163328  create_task_saved_filters_and_calendar_view  [SCHEMA] CREATE_TABLE
+  20260602163850  fix_user_availability_id_generated_by_default  DATA_FIX
+  20260602164357  fix_user_availability_backup_fk_to_profiles  FIX_CONSTRAINT
+  20260607175455  mention_collaboration_cron_job     CREATE_TRIGGER_CRON
+  20260607175502  mention_notifications_realtime
+  20260609194818  user_recent_items_project_member_select
+  20260614114131  create_standup_sessions_v2         [SCHEMA] CREATE_TABLE
+  20260617052735  tasks_assignment_status_notifications
+  20260617053003  tasks_notifications_target_live_table
+  20260623084235  create_story_sprints_table         [SCHEMA] CREATE_TABLE
+
+  PATTERN: Spans full date range. Mix of schema (work_items_settings phases,
+  tasks consolidation, standup, sprints) and data fixes (ph_comments RLS, fk fixes).
+  work_items_settings 4-phase = significant schema build-out.
+  consolidate_planner_tables_to_tasks = destructive rename, local tasks module may diverge.
+  create_story_sprints_table = local has no sprint schema.
+
+============================================================
+MODULE: INFRASTRUCTURE (11 migrations)
+============================================================
+  20260516020048  seed_test_profiles_for_otp         SEED_DATA
+  20260517112811  repoint_orphan_profile_vikram_2026_05_17  DATA_FIX
+  20260603075011  create_archive_system              [SCHEMA] CREATE_TABLE
+  20260603075038  create_archive_functions           [SCHEMA] CREATE_TABLE
+  20260603101943  add_deleted_by_and_shredding       [SCHEMA] ALTER_TABLE
+  20260616192406  fix_catalyst_notify_trigger_products_branch  CREATE_TRIGGER_CRON
+  20260617053403  fix_shared_notify_trigger_target_live_table  CREATE_TRIGGER_CRON
+  20260617054003  notify_trigger_add_tm_defects_approvals_fix_initiatives  [SCHEMA] CREATE_TRIGGER_CRON
+  20260618081641  repair_resource_country_links_from_profiles  DATA_FIX
+  20260620212229  deploy_gate_and_settings           [SCHEMA]
+  20260621104514  add_archived_column_to_tm_test_cases  [SCHEMA] ALTER_TABLE
+
+  PATTERN: archive_system + archive_functions + add_deleted_by_and_shredding = soft-delete
+  system built in prod only. deploy_gate_and_settings = unknown scope.
+  seed_test_profiles_for_otp = test data concern.
+  repoint_orphan_profile_vikram_2026_05_17 = one-off personal data fix.
+
+============================================================
+MODULE: WORKFLOW (8 migrations)
+============================================================
+  20260516235200  catalyst_workflow_4types_story_epic_subtask_qabug  SEED_DATA
+  20260601055655  verify_br_workflow                 DATA_FIX
+  20260612193713  workflow_admin_schema              [SCHEMA] CREATE_TABLE
+  20260612194214  workflow_admin_seed                SEED_DATA
+  20260613015433  business_request_workflow_13_statuses_v3  SEED_DATA
+  20260621065710  workflow_from_jira_data_v2
+  20260621083629  seed_br_brd_task_workflows_v5      SEED_DATA
+  20260621084029  seed_story_workflow_v2             SEED_DATA
+
+  PATTERN: workflow_admin_schema is the structural piece; rest is seed data.
+  Multiple "v2/v3/v5" suffixes = iterated seeding. workflow_from_jira_data_v2
+  suggests automated Jira→workflow derivation.
+  Local has workflow_admin_schema named files (118 name-matched prod-only count includes some).
+
+============================================================
+MODULE: DESIGN_SYSTEM (8 migrations)
+============================================================
+  20260518130241  routing_taxonomy_violations_table
+  20260518130300  routing_taxonomy_cron_schedule     CREATE_TRIGGER_CRON
+  20260518213107  add_scheduled_design_audit         [SCHEMA] CREATE_TRIGGER_CRON
+  20260518213351  create_audit_tables_clean          [SCHEMA] CREATE_TABLE
+  20260518214840  add_scheduled_design_audit         [SCHEMA] CREATE_TRIGGER_CRON  ← DUPLICATE NAME
+  20260518233237  fix_design_violations_rls_for_admin_ui  [RLS] RLS_POLICY
+  20260519000250  design_violations_add_fix_metadata  [SCHEMA]
+  20260519000857  design_violations_unique_constraint  FIX_CONSTRAINT
+
+  PATTERN: Dense 20260518-20260519. add_scheduled_design_audit appears TWICE
+  (20260518213107 and 20260518214840) — same name, different versions, +1h27m apart.
+  This accounts for part of the 98 vs 94 discrepancy.
+  Local has design_violations table (has local equivalent at different version).
+
+============================================================
+MODULE: ACCESS_MGMT (5 migrations)
+============================================================
+  20260517112843  profiles_email_unique_2026_05_17  FIX_CONSTRAINT
+  20260602123536  add_shared_user_scopes_rpc         [SCHEMA,RLS] ALTER_TABLE
+  20260603060510  add_nickname_to_profiles           [SCHEMA] ALTER_TABLE
+  20260620115137  add_new_app_role_values            [SCHEMA,RLS] RLS_POLICY
+  20260620115146  update_invite_default_role_add_dept_fk  [RLS] FIX_CONSTRAINT
+
+  PATTERN: add_new_app_role_values = extends app_role enum — CRITICAL for RBAC.
+  If local RBAC migrations assume a different enum set, this is a conflict point.
+  add_shared_user_scopes_rpc = unknown scope; may touch user-level permissions.
+
+============================================================
+MODULE: CONNECT (5 migrations)
+============================================================
+  20260617004634  connect_engine_schema              [SCHEMA]
+  20260617005054  connect_link_previews
+  20260617010434  connect_pair_hash_md5
+  20260617025517  connect_native_schema              [SCHEMA]
+  20260617025612  connect_native_rls_rpc             [RLS] RLS_POLICY
+
+  PATTERN: Dense cluster 20260617. "Connect" module entirely prod-only.
+  Not referenced in local src/ (needs grep verification per entry in local_search.csv).
+  connect_engine_schema + connect_native_schema = two separate schema phases.
+
+============================================================
+MODULE: JIRA_SYNC (8 migrations)
+============================================================
+  20260516022236  create_webhook_tables              [SCHEMA] CREATE_TABLE
+  20260516022253  create_sync_cooldowns              [SCHEMA] CREATE_TABLE
+  20260516113423  create_jira_sync_comments_backfill  [SCHEMA] CREATE_TABLE
+  20260517162558  helper_bulk_upsert_ph_issues_2026_05_17
+  20260517162732  helper_bulk_upsert_ph_issues_fix_2026_05_17
+  20260610195652  jira_filter_id_unique_nonpartial   FIX_CONSTRAINT
+  20260621031731  fix_ph_jira_connection_rls_use_user_roles  [RLS] RLS_POLICY
+  20260623231506  jira_integration_minimal
+
+  PATTERN: create_webhook_tables / create_sync_cooldowns = webhook infrastructure
+  built in prod, not ported locally. helper_bulk_upsert functions = operational
+  utilities run hot-patched. fix_ph_jira_connection_rls = RLS bug fix.
+  jira_integration_minimal = 20260623, possibly a rollback/stub.
+
+============================================================
+MODULE: RELEASE_HUB (4 migrations)
+============================================================
+  20260619175640  create_rh_release_portfolio_view   [SCHEMA] CREATE_TABLE
+  20260619203014  release_lifecycle_5stage           [SCHEMA]
+  20260623163626  releases_target_date_nullable
+  20260623163655  releases_jira_version_full_unique_index  CREATE_INDEX
+
+  PATTERN: release_lifecycle_5stage = significant schema. Local release module
+  likely diverged after 20260619.
+
+============================================================
+MODULE: AI (2 migrations)
+============================================================
+  20260607173551  add_generation_count_to_story_cache  [SCHEMA] ALTER_TABLE
+  20260617221320  ai_theme_quota_and_6am_prewarm
+
+  PATTERN: ai_theme_quota_and_6am_prewarm = cron or quota table. Small footprint.
+
+============================================================
+MODULE: ITSM (1 migration)
+============================================================
+  20260617011928  itsm_1a_incident_schema            [SCHEMA]
+
+  PATTERN: Single schema migration. ITSM module entirely prod-only, no local equivalent.
+  "1a" prefix suggests multi-phase planned but only first phase applied.
+
+============================================================
+MODULE: NOTION (1 migration)
+============================================================
+  20260621041143  notion_sync_daily_cron             CREATE_TRIGGER_CRON
+
+  PATTERN: Single cron. No local equivalent.
+
+============================================================
+MODULE: BOARDS (2 migrations)
+============================================================
+  20260521163615  add_board_query_and_board_type_to_create_board  [SCHEMA] CREATE_TABLE
+  20260601175352  add_card_color_method_to_boards    [SCHEMA] ALTER_TABLE
+
+============================================================
+MODULE: UNKNOWN (3 migrations)
+============================================================
+  20260516022445  create_phase2_checkpoint_tables    [SCHEMA] CREATE_TABLE
+  20260521205222  cleanup_legacy_wh_filter_rls_policies  [RLS] RLS_POLICY
+  20260619221109  fix_portfolio_view_status_category_case  DATA_FIX
+
+============================================================
+SUMMARY TABLE
+============================================================
+  chat              14  (cluster: 20260608-20260614)
+  project_hub       26  (spans full range)
+  infrastructure    11  (archive system, deploy_gate, notify triggers)
+  workflow           8  (mostly seed data + admin schema)
+  design_system      8  (dense: 20260518-20260519; duplicate name found)
+  jira_sync          8  (webhook infra, helpers, RLS fix)
+  access_mgmt        5  (RBAC-adjacent: add_new_app_role_values is critical)
+  connect            5  (20260617 cluster; entirely prod-only)
+  release_hub        4  (lifecycle schema, portfolio view)
+  boards             2
+  ai                 2
+  itsm               1  (20260617; entirely prod-only)
+  notion             1  (cron only)
+  unknown            3
+  ─────────────────────
+  TOTAL             98
+
+KEY FINDINGS (provisional):
+1. RBAC CONFLICT RISK: add_new_app_role_values (20260620115137) modifies app_role enum.
+   Local RBAC migrations (20260626000000_create_normalized_rbac_schema.sql) depend on
+   app_role values. Must confirm enum overlap before applying local RBAC migrations.
+
+2. DUPLICATE NAME: add_scheduled_design_audit appears as both 20260518213107 and
+   20260518214840 (same name, 1h27m gap). Explains part of 98-vs-94 discrepancy.
+
+3. SEED DATA IN PROD: seed_test_profiles_for_otp + chat_seed_sample_conversations
+   = test data potentially live. Needs verification.
+
+4. ENTIRELY PROD-ONLY MODULES: connect, itsm, notion have zero local equivalents.
+   These represent features built outside the local dev workflow.
+
+5. SOFT-DELETE SYSTEM: create_archive_system + create_archive_functions +
+   add_deleted_by_and_shredding = prod-only. Local code may not support soft-delete.
+
+6. PLANNER→TASKS RENAME: consolidate_planner_tables_to_tasks (20260602143337)
+   dropped/renamed planner tables. Local still has planner schema references.
