@@ -98,10 +98,14 @@ Deno.serve(async (req) => {
                 const match = (h.items ?? []).find((item: any) => item.fieldId === 'assignee' && item.to === pi.assignee_account_id)
                 if (match) { actorName = h.author?.displayName ?? null; actorAccountId = h.author?.accountId ?? null; actorAvatarUrl = h.author?.avatarUrls?.['48x48'] ?? null; break }
               }
-              if (!actorName) { actorBackfillNoMatch++; continue }
               const issueType: string | null = pi.issue_type ?? null
               const statusCat = (pi.status_category ?? '').toLowerCase().replace(/[\s_-]/g, '')
               const statusType = statusCat === 'inprogress' ? 'blue' : statusCat === 'done' ? 'green' : 'gray'
+              if (!actorName) {
+                actorBackfillNoMatch++
+                await supabase.from('notifications').insert({ recipient_user_id: profileId, entity_id: pi.id, entity_key: pi.issue_key, entity_title: pi.summary ?? '', entity_type: 'issue', entity_icon_type: issueType ? (ICON_MAP[issueType] ?? 'task') : 'task', notification_type: 'assigned', status: (pi.status ?? 'TO DO').toUpperCase(), status_type: statusType, tab: 'direct', hub_source: 'ProjectHub', read_at: null, metadata: { is_jira_sync: true, actor_display_name: null, issue_type_name: issueType } }).select('id').maybeSingle()
+                continue
+              }
               await supabase.from('notifications').insert({ recipient_user_id: profileId, entity_id: pi.id, entity_key: pi.issue_key, entity_title: pi.summary ?? '', entity_type: 'issue', entity_icon_type: issueType ? (ICON_MAP[issueType] ?? 'task') : 'task', notification_type: 'assigned', status: (pi.status ?? 'TO DO').toUpperCase(), status_type: statusType, tab: 'direct', hub_source: 'ProjectHub', read_at: null, metadata: { is_jira_sync: false, actor_display_name: actorName, actor_avatar_url: actorAvatarUrl, actor_jira_account_id: actorAccountId, issue_type_name: issueType } })
               actorBackfillCount++
             } catch (e) { console.warn(`[actor-backfill] ${pi.issue_key}: ${e}`) }
@@ -914,12 +918,25 @@ Deno.serve(async (req) => {
                 }
               }
 
-              if (!actorName) { actorBackfillNoMatch++; continue } // No matching assignee change found
-
               // Use ph_issues row directly — reliable even for issues outside JQL lookback
               const issueType: string | null = pi.issue_type ?? null
               const statusCat = (pi.status_category ?? '').toLowerCase().replace(/[\s_-]/g, '')
               const statusType = statusCat === 'inprogress' ? 'blue' : statusCat === 'done' ? 'green' : 'gray'
+
+              if (!actorName) {
+                // No changelog match — insert an is_jira_sync placeholder so this issue
+                // exits the candidate queue and doesn't burn changelog API calls on every run.
+                actorBackfillNoMatch++
+                await supabase.from('notifications').insert({
+                  recipient_user_id: profileId, entity_id: pi.id, entity_key: pi.issue_key,
+                  entity_title: pi.summary ?? '', entity_type: 'issue',
+                  entity_icon_type: issueType ? (ICON_MAP[issueType] ?? 'task') : 'task',
+                  notification_type: 'assigned', status: (pi.status ?? 'TO DO').toUpperCase(),
+                  status_type: statusType, tab: 'direct', hub_source: 'ProjectHub', read_at: null,
+                  metadata: { is_jira_sync: true, actor_display_name: null, issue_type_name: issueType },
+                }).select('id').maybeSingle() // suppress error if duplicate
+                continue
+              }
 
               await supabase
                 .from('notifications')
