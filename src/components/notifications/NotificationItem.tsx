@@ -140,12 +140,21 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
 
   const T = {
     text1: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
-    text2: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-    text3: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-    hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
-    press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
+    // H9 fix: text2/text3 must be theme-aware for WCAG AA contrast (2026-06-25)
+    text2: isDark
+      ? 'var(--cp-text-tertiary, var(--cp-ink-3, #A1A1A1))'
+      : 'var(--cp-text-tertiary, var(--cp-ink-3, #42526E))',
+    text3: isDark
+      ? 'var(--cp-text-muted, var(--cp-ink-4, #878787))'
+      : 'var(--cp-text-muted, var(--cp-ink-4, #6B778C))',
+    hover: isDark
+      ? 'var(--cp-interact-hover, rgba(255,255,255,0.06))'
+      : 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
+    press: isDark
+      ? 'var(--cp-border-subtle, rgba(255,255,255,0.08))'
+      : 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     borderStrong: isDark ? 'var(--ds-border-bold, #454545)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.2))',
-    checkStroke: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+    checkStroke: isDark ? '#3B82F6' : '#0052CC',  // Checkmark color theme-aware
   };
 
   /* ═══ C-03: Actor avatar logic ═══ */
