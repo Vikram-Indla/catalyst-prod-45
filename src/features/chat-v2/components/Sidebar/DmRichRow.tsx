@@ -1,5 +1,6 @@
 import React from 'react';
 import { PresenceAvatar } from '../shared/PresenceAvatar';
+import { HeadphonesIcon } from '../shared/Icon';
 import { formatRowTimestamp } from '../../lib/formatTimestamp';
 import type { ChatConversation } from '@/types/chat';
 
@@ -7,13 +8,14 @@ interface DmRichRowProps {
   conversation: ChatConversation;
   isActive: boolean;
   onClick: () => void;
+  hasHuddle?: boolean;
 }
 
 /**
  * Slack-style DM list row used by the dedicated Direct messages tab.
  * Layout: stacked avatar(s) | name (full names for groups) + last-message preview | timestamp.
  */
-export function DmRichRow({ conversation, isActive, onClick }: DmRichRowProps) {
+export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }: DmRichRowProps) {
   const {
     title,
     lastMessageAt,
@@ -49,6 +51,7 @@ export function DmRichRow({ conversation, isActive, onClick }: DmRichRowProps) {
         transition: 'background var(--cv2-transition-fast)',
         position: 'relative',
         minWidth: 0,
+        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success, #22A06B)' } : null),
       }}
       onMouseEnter={e => {
         if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)';
@@ -84,6 +87,11 @@ export function DmRichRow({ conversation, isActive, onClick }: DmRichRowProps) {
           >
             {displayTitle}
           </span>
+          {hasHuddle && (
+            <span aria-label="Active huddle" title="Active huddle" style={{ marginLeft: 4, color: 'var(--ds-icon-success, #22A06B)', display: 'inline-flex', flex: '0 0 auto' }}>
+              <HeadphonesIcon size={12} />
+            </span>
+          )}
           {ts && (
             <span
               style={{
