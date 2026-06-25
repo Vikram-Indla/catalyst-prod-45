@@ -312,11 +312,51 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   // Deduplicate by entity_id: if an event notification exists for the same entity_id,
   // it takes precedence (it carries actor/verb info). Otherwise use the sync item.
   const rawNotifications = useMemo<Notification[]>(() => {
-    const eventEntityIds = new Set(deduplicatedEventNotifications.map(n => n.entity_id));
+    // Build actor map from sync items. useDirectFromSync fetches actor data from the
+    // notifications table without pagination limits, so it can reach 'assigned' event rows
+    // that sit beyond page 1 of useNotificationsQuery. When the deduped event notification
+    // has no actor (e.g. only the empty read-receipt row was in page 1), enrich it here.
+    const syncActorMap = new Map<string, { name: string; avatarUrl: string | null; userId: string | null }>();
+    for (const s of (syncItems ?? [])) {
+      const meta = s.metadata as Record<string, unknown> | null;
+      const name = (meta?.actor_display_name as string | null | undefined)?.trim();
+      if (name) {
+        syncActorMap.set(s.entity_id, {
+          name,
+          avatarUrl: (meta?.actor_avatar_url as string | null | undefined)?.trim() || null,
+          userId: s.actor_user_id,
+        });
+      }
+    }
+
+    const ASSIGNMENT_FAMILY = new Set([
+      'assigned', 'assigned_work_item', 'assigned_story', 'tester_assigned',
+    ]);
+
+    // Enrich actor-less assignment events with actor data from the sync items
+    const enriched = deduplicatedEventNotifications.map(n => {
+      if (!ASSIGNMENT_FAMILY.has(n.notification_type)) return n;
+      const meta = n.metadata as Record<string, unknown> | undefined;
+      const alreadyHasActor = !!(n.actor_user_id || meta?.actor_display_name || meta?.actor_name);
+      if (alreadyHasActor) return n;
+      const syncActor = syncActorMap.get(n.entity_id);
+      if (!syncActor) return n;
+      return {
+        ...n,
+        actor_user_id: syncActor.userId,
+        metadata: {
+          ...(meta ?? {}),
+          actor_display_name: syncActor.name,
+          actor_avatar_url: syncActor.avatarUrl,
+        } as Notification['metadata'],
+      };
+    });
+
+    const eventEntityIds = new Set(enriched.map(n => n.entity_id));
     // Filter sync items to exclude those already covered by an event notification
     const syncOnly = (syncItems ?? []).filter(n => !eventEntityIds.has(n.entity_id));
     // Merge and sort descending by created_at
-    const merged = [...deduplicatedEventNotifications, ...syncOnly];
+    const merged = [...enriched, ...syncOnly];
     merged.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     return merged;
   }, [deduplicatedEventNotifications, syncItems]);
