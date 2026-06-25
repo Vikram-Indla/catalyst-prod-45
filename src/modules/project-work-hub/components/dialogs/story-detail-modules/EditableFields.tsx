@@ -1019,7 +1019,14 @@ export function EditableLabels({
   }));
 
   return (
-    <div style={{ flex: 1, minWidth: 0 }}>
+    <div style={{
+      flex: 1,
+      minWidth: 0,
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '4px',
+      alignItems: 'flex-start',
+    }}>
       <CreatableSelect<LabelOption, true>
         inputId={`labels-${issueKey ?? issueId}`}
         isMulti
@@ -1043,12 +1050,26 @@ export function EditableLabels({
         noOptionsMessage={() => "Type to create a label"}
         // Give each chip a per-label border colour (Jira-parity rainbow pill).
         styles={{
+          container: (base) => ({
+            ...base,
+            flex: '1 1 auto',
+            minWidth: '100px',
+          }),
+          control: (base) => ({
+            ...base,
+            minHeight: 'auto',
+          }),
           multiValue: (base, state) => ({
             ...base,
             border: `1px solid ${getLabelColor((state.data as LabelOption).value)}`,
             background:
               "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
             borderRadius: 3,
+            padding: '2px 6px',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            maxWidth: '100%',
           }),
           multiValueLabel: (base) => ({
             ...base,
@@ -1056,6 +1077,14 @@ export function EditableLabels({
               "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
             fontSize: 12,
             fontWeight: 500,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }),
+          multiValueRemove: (base) => ({
+            ...base,
+            marginLeft: '4px',
+            minWidth: '16px',
           }),
         }}
       />
