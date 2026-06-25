@@ -143,6 +143,10 @@ const TestAdminCaseStatusesPage = lazy(() => import("../pages/admin/test/TestCas
 const TestAdminRunStatusesPage  = lazy(() => import("../pages/admin/test/TestRunStatusesPage"));
 const TestAdminPermissionsPage  = lazy(() => import("../pages/admin/test/TestPermissionsPage"));
 
+// RBAC Admin — mock-safe mode (schema not yet deployed)
+const RolesAdminPageLazy       = lazy(() => import("../pages/admin/RolesAdminPage"));
+const PermissionsAdminPageLazy = lazy(() => import("../pages/admin/PermissionsAdminPage"));
+
 // TestHub
 const TestHubDashboardPage = lazy(() => import("../pages/testhub/DashboardPage"));
 const TestHubMyWorkPage = lazy(() => import("../pages/testhub/MyWorkPage"));
@@ -946,6 +950,9 @@ export default function FullAppRoutes() {
           <Route path="test/case-statuses" element={<S><TestAdminCaseStatusesPage /></S>} />
           <Route path="test/run-statuses"  element={<S><TestAdminRunStatusesPage /></S>} />
           <Route path="test/permissions"   element={<S><TestAdminPermissionsPage /></S>} />
+          {/* RBAC Admin — mock-safe mode; RBAC_SCHEMA_DEPLOYED=false */}
+          <Route path="roles"       element={<S><RolesAdminPageLazy /></S>} />
+          <Route path="permissions" element={<S><PermissionsAdminPageLazy /></S>} />
         </Route>
 
         {/* /ads-validator — design governance audit viewer; aliased to canonical admin governance page */}
