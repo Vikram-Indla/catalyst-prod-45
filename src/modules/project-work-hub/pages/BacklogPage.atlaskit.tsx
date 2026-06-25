@@ -4163,7 +4163,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             // panel is open keeps the table's right edge visible.
             flex: 1,
             minWidth: 0,
-            paddingRight: panelItem ? panelWidth : 0,
+            paddingRight: panelItem ? panelWidth : 24,
             transition: 'padding-right 180ms ease, width 150ms ease, flex-basis 150ms ease',
             // Apr 27, 2026: page-level overflow was eating the table's own
             // .jira-table-viewport scroll. Switching to overflow:hidden +
