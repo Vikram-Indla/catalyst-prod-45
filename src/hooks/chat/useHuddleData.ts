@@ -3,7 +3,7 @@
  * Huddle data hooks. chat_huddles / chat_huddle_participants are not in the
  * generated types — use the same `db` cast as useConversations.
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback, useId } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -27,6 +27,10 @@ async function fetchActiveHuddles(): Promise<HuddleRow[]> {
 /** Conversation ids that currently have an active huddle. Realtime-refreshed. */
 export function useActiveHuddleIds(): Set<string> {
   const qc = useQueryClient();
+  // Unique per mount — this hook runs in BOTH the sidebar and every message
+  // panel; a shared channel name makes Supabase throw "cannot add
+  // postgres_changes callbacks ... already subscribed" on the second mount.
+  const instanceId = useId();
   const { data } = useQuery({
     queryKey: ['chat', 'huddles', 'active'],
     queryFn: fetchActiveHuddles,
@@ -34,18 +38,19 @@ export function useActiveHuddleIds(): Set<string> {
   });
   useEffect(() => {
     const channel = supabase
-      .channel('huddles-active-global')
+      .channel(`huddles-active-global-${instanceId}`)
       .on('postgres_changes' as 'system', { event: '*', schema: 'public', table: 'chat_huddles' } as never,
         () => qc.invalidateQueries({ queryKey: ['chat', 'huddles', 'active'] }))
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [qc]);
+  }, [qc, instanceId]);
   return new Set((data ?? []).map((h) => h.conversation_id));
 }
 
 /** The active huddle (if any) for one conversation, with participants + full flag. */
 export function useActiveHuddle(conversationId: string | null) {
   const qc = useQueryClient();
+  const instanceId = useId();
   const key = ['chat', 'huddle', conversationId];
   const { data, refetch } = useQuery({
     queryKey: key,
@@ -70,7 +75,7 @@ export function useActiveHuddle(conversationId: string | null) {
   useEffect(() => {
     if (!conversationId) return;
     const channel = supabase
-      .channel(`huddle:${conversationId}`)
+      .channel(`huddle:${conversationId}:${instanceId}`)
       .on('postgres_changes' as 'system', { event: '*', schema: 'public', table: 'chat_huddles', filter: `conversation_id=eq.${conversationId}` } as never,
         () => qc.invalidateQueries({ queryKey: key }))
       .on('postgres_changes' as 'system', { event: '*', schema: 'public', table: 'chat_huddle_participants' } as never,
@@ -78,7 +83,7 @@ export function useActiveHuddle(conversationId: string | null) {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [conversationId]);
+  }, [conversationId, instanceId]);
   return { huddle: data ?? null, refetch };
 }
 
