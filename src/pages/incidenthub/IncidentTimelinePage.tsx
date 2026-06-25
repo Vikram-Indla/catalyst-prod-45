@@ -373,6 +373,8 @@ export default function IncidentTimelinePage() {
       detailRouteOwnerKey="INCIDENTS"
       mutations={mutations}
       menuVariant="jira"
+      createTopLevelConfig={{ label: 'Create incident', iconType: 'Production Incident' }}
+      childTypesOverride={['Production Incident']}
     />
   );
 }
