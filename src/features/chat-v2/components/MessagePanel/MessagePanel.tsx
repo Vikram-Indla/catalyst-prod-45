@@ -65,10 +65,15 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
   const onStartHuddle = async () => {
     try { await startOrJoin(conversation); }
     catch (e) {
-      const full = e instanceof Error && e.message === 'HUDDLE_FULL';
+      console.error('[huddle] start failed:', e);
+      const msg = e instanceof Error ? e.message : String(e);
+      const full = msg === 'HUDDLE_FULL';
+      const mic = e instanceof DOMException || /getUserMedia|NotAllowed|NotFound|Permission|microphone/i.test(msg);
       catalystToast.error(
         full ? 'Huddle is full' : 'Could not start huddle',
-        full ? 'A huddle allows 2 people.' : 'Check microphone permission and try again.',
+        full ? 'A huddle allows 2 people.'
+          : mic ? 'Microphone blocked — allow mic access and try again.'
+          : msg,
       );
     }
   };

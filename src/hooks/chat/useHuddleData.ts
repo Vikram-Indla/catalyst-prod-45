@@ -123,12 +123,17 @@ export function useHuddleActions() {
       const { data: created, error } = await db.from('chat_huddles')
         .insert({ conversation_id: conversationId, started_by: user.id })
         .select('id').single();
-      if (error || !created) throw new Error('HUDDLE_START_FAILED');
+      if (error || !created) {
+        throw new Error(`HUDDLE_START_FAILED: ${error?.message ?? 'no row returned'}${error?.code ? ` [${error.code}]` : ''}`);
+      }
       huddleId = (created as HuddleRow).id;
     }
     // Insert participant row (left_at = null = live). Only reached when not already in.
-    await db.from('chat_huddle_participants')
+    const { error: partErr } = await db.from('chat_huddle_participants')
       .insert({ huddle_id: huddleId, user_id: user.id });
+    if (partErr) {
+      throw new Error(`HUDDLE_JOIN_FAILED: ${partErr.message}${partErr.code ? ` [${partErr.code}]` : ''}`);
+    }
     await enter({
       conversationId,
       huddleId: huddleId as string,
