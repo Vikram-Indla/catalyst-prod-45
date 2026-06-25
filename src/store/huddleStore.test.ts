@@ -5,14 +5,16 @@ const startMock = vi.fn(async () => {});
 const closeMock = vi.fn();
 const setMuteMock = vi.fn();
 vi.mock('@/lib/chat/huddle/HuddleConnection', () => ({
-  HuddleConnection: vi.fn().mockImplementation(() => ({
-    start: startMock, close: closeMock, setMicMuted: setMuteMock,
-  })),
+  HuddleConnection: vi.fn().mockImplementation(function () {
+    return { start: startMock, close: closeMock, setMicMuted: setMuteMock };
+  }),
 }));
 
 import { useHuddleStore } from './huddleStore';
 
 beforeEach(() => {
+  // reset module-level connection ref via the real leave() path, then zero the mocks
+  if (useHuddleStore.getState().active) useHuddleStore.getState().leave();
   startMock.mockClear(); closeMock.mockClear(); setMuteMock.mockClear();
   useHuddleStore.setState({ active: null });
 });

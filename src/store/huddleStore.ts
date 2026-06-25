@@ -25,14 +25,6 @@ interface HuddleStore {
   _setConnectionState: (s: RTCPeerConnectionState) => void;
 }
 
-type HuddleOpts = ConstructorParameters<typeof HuddleConnection>[0];
-type HuddleFactory = (opts: HuddleOpts) => HuddleConnection;
-
-// Call via a factory alias so vi.fn().mockImplementation(() => ({...})) works in tests
-// (vitest 4 arrow-function mocks are not constructable, but ARE callable as plain functions).
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const makeConnection: HuddleFactory = (HuddleConnection as any);
-
 // Non-React module refs — the live peer + remote audio element must NOT live in
 // store state (they are not serializable and must survive re-renders).
 let connection: HuddleConnection | null = null;
@@ -63,7 +55,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
   enter: async ({ conversationId, huddleId, conversationName, selfId }) => {
     // Tear down any existing call first (one huddle at a time).
     if (connection) { connection.close(); connection = null; detachRemote(); }
-    connection = makeConnection({
+    connection = new HuddleConnection({
       conversationId,
       selfId,
       onRemoteStream: attachRemote,
@@ -96,13 +88,3 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     set({ active: { ...a, connectionState: s } });
   },
 }));
-
-// When the store's active field is externally reset to null (e.g. test beforeEach
-// calling setState({ active: null })), also clear the module-level connection ref
-// so the next enter() doesn't see a stale connection and call close() prematurely.
-useHuddleStore.subscribe((state, prev) => {
-  if (prev.active !== null && state.active === null) {
-    connection = null;
-    detachRemote();
-  }
-});
