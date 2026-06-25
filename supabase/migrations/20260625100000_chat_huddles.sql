@@ -2,6 +2,24 @@
 -- join affordance, and cross-route persistence. Signaling itself is ephemeral
 -- (Supabase broadcast) and is NOT stored here.
 
+-- Dependency guarantee: chat_is_member is required by the RLS policies below.
+-- It exists on prod but was ABSENT on staging as of 2026-06-25. CREATE OR
+-- REPLACE is idempotent and identical to the canonical param-shadowing-fixed
+-- definition (qualified params avoid the column-shadowing always-true bug), so
+-- re-applying on an env that already has it is a no-op.
+CREATE OR REPLACE FUNCTION public.chat_is_member(convo_id uuid, user_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE SECURITY DEFINER
+SET search_path TO 'public'
+AS $function$
+  SELECT EXISTS (
+    SELECT 1 FROM public.chat_conversation_members m
+    WHERE m.conversation_id = chat_is_member.convo_id
+      AND m.user_id = chat_is_member.user_id
+  );
+$function$;
+
 CREATE TABLE IF NOT EXISTS public.chat_huddles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   conversation_id uuid NOT NULL REFERENCES public.chat_conversations(id) ON DELETE CASCADE,
