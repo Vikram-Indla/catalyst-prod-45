@@ -24,6 +24,7 @@ Deno.serve(async (req) => {
 
   const body = await req.json().catch(() => ({}))
   const syncType: string = body.sync_type || 'full'
+  const backfillOnly: boolean = body.backfill_only === true
   const overrideIssueTypes: string[] | undefined = body.issue_types
   const overrideSprintRelease: string[] | undefined = body.sprint_release
   const overrideProjects: string[] | undefined = body.projects || body.projectKeys
@@ -67,6 +68,50 @@ Deno.serve(async (req) => {
     const base = conn.site_url.replace(/\/$/, '')
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json' }
+
+    // backfill_only mode: skip all Jira fetch + upsert steps, jump straight to actor backfill
+    if (backfillOnly) {
+      let actorBackfillCount = 0
+      let actorBackfillCandidates = 0
+      let actorBackfillNoMatch = 0
+      try {
+        const { data: catalystProfiles } = await supabase.from('profiles').select('id, jira_account_id').not('jira_account_id', 'is', null)
+        const jiraIdToProfileId = new Map<string, string>((catalystProfiles ?? []).map((p: any) => [p.jira_account_id as string, p.id as string]))
+        const catalystJiraIds = new Set(jiraIdToProfileId.keys())
+        const { data: phIssues } = await supabase.from('ph_issues').select('id, issue_key, issue_type, summary, status, status_category, assignee_account_id').in('assignee_account_id', [...catalystJiraIds]).is('deleted_at', null).order('jira_updated_at', { ascending: false })
+        if (phIssues && phIssues.length > 0) {
+          const profileIds = [...new Set(phIssues.map((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id)).filter(Boolean) as string[])]
+          const { data: existingRows } = await supabase.from('notifications').select('entity_id, recipient_user_id').in('recipient_user_id', profileIds).eq('tab', 'direct')
+          const hasAnyRow = new Set<string>((existingRows ?? []).map((r: any) => `${r.entity_id}::${r.recipient_user_id}`))
+          const ICON_MAP: Record<string, string> = { 'Sub-task': 'subtask', 'Frontend': 'frontend', 'Backend': 'backend', 'Integration': 'subtask', 'Story': 'story', 'Task': 'task', 'QA Bug': 'bug', 'Defect': 'bug', 'Epic': 'epic', 'Feature': 'feature', 'Production Incident': 'incident', 'Change Request': 'change_request', 'Business Gap': 'business_gap', 'API Requirement': 'task' }
+          const toBackfill = phIssues.filter((pi: any) => { const profileId = jiraIdToProfileId.get(pi.assignee_account_id); return profileId && !hasAnyRow.has(`${pi.id}::${profileId}`) }).slice(0, 100)
+          actorBackfillCandidates = toBackfill.length
+          for (const pi of toBackfill) {
+            const profileId = jiraIdToProfileId.get(pi.assignee_account_id)
+            if (!profileId) continue
+            try {
+              const clRes = await fetch(`${base}/rest/api/3/issue/${pi.issue_key}/changelog?maxResults=50`, { headers })
+              if (!clRes.ok) continue
+              const cl = await clRes.json()
+              let actorName: string | null = null, actorAccountId: string | null = null, actorAvatarUrl: string | null = null
+              for (const h of (cl.values ?? [])) {
+                const match = (h.items ?? []).find((item: any) => item.fieldId === 'assignee' && item.to === pi.assignee_account_id)
+                if (match) { actorName = h.author?.displayName ?? null; actorAccountId = h.author?.accountId ?? null; actorAvatarUrl = h.author?.avatarUrls?.['48x48'] ?? null; break }
+              }
+              if (!actorName) { actorBackfillNoMatch++; continue }
+              const issueType: string | null = pi.issue_type ?? null
+              const statusCat = (pi.status_category ?? '').toLowerCase().replace(/[\s_-]/g, '')
+              const statusType = statusCat === 'inprogress' ? 'blue' : statusCat === 'done' ? 'green' : 'gray'
+              await supabase.from('notifications').insert({ recipient_user_id: profileId, entity_id: pi.id, entity_key: pi.issue_key, entity_title: pi.summary ?? '', entity_type: 'issue', entity_icon_type: issueType ? (ICON_MAP[issueType] ?? 'task') : 'task', notification_type: 'assigned', status: (pi.status ?? 'TO DO').toUpperCase(), status_type: statusType, tab: 'direct', hub_source: 'ProjectHub', read_at: null, metadata: { is_jira_sync: false, actor_display_name: actorName, actor_avatar_url: actorAvatarUrl, actor_jira_account_id: actorAccountId, issue_type_name: issueType } })
+              actorBackfillCount++
+            } catch (e) { console.warn(`[actor-backfill] ${pi.issue_key}: ${e}`) }
+          }
+        }
+      } catch (e) { console.warn(`[actor-backfill-only] ${e}`) }
+      const duration = Date.now() - startTime
+      if (logId) await supabase.from('ph_sync_log').update({ status: 'completed', completed_at: new Date().toISOString(), issues_upserted: 0 }).eq('id', logId)
+      return new Response(JSON.stringify({ success: true, mode: 'backfill_only', actor_backfill: { candidates: actorBackfillCandidates, inserted: actorBackfillCount, no_match: actorBackfillNoMatch }, duration_ms: duration }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    }
 
     // 3. Discover actual project keys from Jira and build name lookup
     let allProjectKeys: string[] = []
