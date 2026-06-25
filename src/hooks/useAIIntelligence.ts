@@ -5,6 +5,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { isDeveloperRole } from '@/constants/r360RoleClassification';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { HubClosureData } from '@/components/resources/ai-intelligence/HubClosures';
 import type { BacklogHub, BacklogMetrics } from '@/components/resources/ai-intelligence/DeliveryBacklog';
 import type { PatternInsight } from '@/components/resources/ai-intelligence/BehavioralPatterns';
@@ -56,7 +57,7 @@ export function useResourceInfo(resourceId: string | undefined) {
         id: resourceId,
         full_name: profile?.full_name || ri?.name || 'Unknown',
         role_name: roleParts.length > 0 ? roleParts.join(' · ') : 'Team Member',
-        avatar_url: profile?.avatar_url || null,
+        avatar_url: resolveAvatarUrl(profile?.full_name ?? null) ?? profile?.avatar_url ?? null,
         jira_account_id: ri?.jira_account_id || null,
         rid: profile?.rid || ri?.rid || `RES-${String(resourceId).slice(-3).toUpperCase()}`,
       } as ResourceInfo;

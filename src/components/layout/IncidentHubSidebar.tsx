@@ -7,7 +7,6 @@
 import {
   List,
   BarChart3,
-  Sparkles,
   FileText,
   Users,
   Link2,
@@ -47,7 +46,6 @@ const sections: SidebarSection[] = [
       { id: 'dashboard', title: 'Dashboard', path: '/incident-hub/dashboard', icon: NavDashboardIcon, exact: false },
       { id: 'incident-list', title: 'All Incidents', path: '/incident-hub/all-incidents', icon: List, exact: false, badgeVariant: 'danger' },
       { id: 'analytics', title: 'Analytics', path: '/incident-hub/analytics', icon: BarChart3, exact: false },
-      { id: 'insights', title: 'Insights', path: '/incident-hub/insights', icon: Sparkles, exact: false },
       /* 2026-06-16: "Kanban" → "Board" — matches the label used by
          project and product hubs. Path repointed to /incident-hub/board
          (canonical KanbanPage with mode='incident'); the legacy

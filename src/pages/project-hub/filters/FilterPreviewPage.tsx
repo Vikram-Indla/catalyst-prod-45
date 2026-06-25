@@ -58,6 +58,7 @@ import {
 import { JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
 import { JQLEditor } from '@/components/filters/JQLEditor';
 import { useJQLValuePool } from '@/hooks/workhub/useJQLValuePool';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import type { FilterCategory as JiraFilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { WorkItem } from '@/types/workItem.types';
 import FilterIconCore from '@atlaskit/icon/core/filter';
@@ -742,6 +743,9 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const members = useProjectMembers((isProduct || isIncident || isTasks || isRelease) ? undefined : projectKey);
   const jqlValuePool = useJQLValuePool(facetItems, projectKey);
 
+  // Single source of truth for user pickers: only APPROVED access management users.
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+
   // Load saved filter when navigated from FiltersListPage with ?filterId=
   const { data: loadedFilter } = useQuery({
     queryKey: ['ph_saved_filter', urlFilterId],
@@ -780,8 +784,25 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
     const ALL_FACETS = ['workType', 'status', 'assignee', ...MORE_FILTERS_FACETS] as const;
     const out: Record<string, FacetOption[]> = {};
     for (const f of ALL_FACETS) out[f] = distinctOptions(facetItems, f as any);
+
+    // Gate assignee options to APPROVED access management users only.
+    // Build from approved profiles with a jira_account_id so the server filter
+    // (.in('assignee_account_id', ...)) works correctly. This also eliminates
+    // duplicates: profiles has exactly one row per person regardless of how many
+    // Jira account IDs appear in ph_issues for that person.
+    const approvedAssignees: FacetOption[] = approvedProfiles
+      .filter(p => (p as any).jiraAccountId)
+      .map(p => ({ value: (p as any).jiraAccountId as string, label: p.name }));
+    if (approvedAssignees.length > 0) {
+      out['assignee'] = approvedAssignees;
+    } else {
+      // Fallback: keep ph_issues-derived options but filter by approved names
+      const approvedNames = new Set(approvedProfiles.map(p => p.name.toLowerCase()));
+      out['assignee'] = out['assignee'].filter(o => approvedNames.has(o.label.toLowerCase()));
+    }
+
     return out;
-  }, [facetItems]);
+  }, [facetItems, approvedProfiles]);
 
   // When a saved filter is loaded via ?filterId=, use its stored JQL directly.
   // In JQL mode, use the raw jqlText. Otherwise derive from chip state.

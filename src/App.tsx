@@ -5,6 +5,7 @@ import { ENABLE_FULL_APP } from './lib/featureFlags';
 
 // ─── Core infrastructure (always loaded) ────────────────────────────
 import { FlagsHost } from '@/components/shared/JiraTable';
+import { CatalystFlagHost } from '@/lib/catalystFlag';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
@@ -190,6 +191,7 @@ function App() {
        */}
       <IntlProvider locale="en" messages={{}}>
       <FlagsHost />
+      <CatalystFlagHost />
       <UWVProvider>
       <AuthProvider>
         

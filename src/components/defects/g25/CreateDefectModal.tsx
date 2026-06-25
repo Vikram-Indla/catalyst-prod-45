@@ -9,8 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { defectSchema, DefectFormValues } from '@/schemas/defectSchema';
 import { useCreateDefect } from '@/hooks/test-management/useDefects';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import type { DefectSeverity } from '@/types/test-management';
 
 const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
@@ -19,10 +18,8 @@ interface Props { open: boolean; onClose: () => void; linkedTestCaseId?: string;
 
 export function CreateDefectModalG25({ open, onClose, linkedTestCaseId, linkedExecutionId }: Props) {
   const create = useCreateDefect();
-  const { data: users } = useQuery({
-    queryKey: ['profiles-list'],
-    queryFn: async () => { const { data, error } = await supabase.from('profiles').select('id, full_name').order('full_name'); if (error) throw error; return data || []; },
-  });
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const users = approvedProfiles.map(p => ({ id: p.id, full_name: p.name }));
 
   const form = useForm<DefectFormValues>({
     resolver: zodResolver(defectSchema),

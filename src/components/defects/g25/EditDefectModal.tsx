@@ -11,18 +11,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { defectSchema, DefectFormValues } from '@/schemas/defectSchema';
 import { useUpdateDefectG25 } from '@/hooks/useDefectsG25';
 import { Defect } from '@/types/defects';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 interface Props { open: boolean; onClose: () => void; defect: Defect; }
 
 export function EditDefectModalG25({ open, onClose, defect }: Props) {
   const isJira = defect.jira_source === true;
   const update = useUpdateDefectG25();
-  const { data: users } = useQuery({
-    queryKey: ['profiles-list'],
-    queryFn: async () => { const { data, error } = await supabase.from('profiles').select('id, full_name').order('full_name'); if (error) throw error; return data || []; },
-  });
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const users = approvedProfiles.map(p => ({ id: p.id, full_name: p.name }));
 
   const form = useForm<DefectFormValues>({
     resolver: zodResolver(defectSchema),

@@ -26,7 +26,7 @@ export function useNotificationsQuery(
     queryFn: async ({ pageParam }: { pageParam: string | null }) => {
       let query = supabase
         .from('notifications')
-        .select('*')
+        .select('*, actor:actor_user_id(id, full_name, initials, avatar_url, color)')
         .eq('recipient_user_id', userId!)
       .eq('entity_deleted', false)
       .eq('is_dismissed', false)
@@ -132,5 +132,27 @@ export function useSnoozeNotification() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
+  });
+}
+
+export function useActorProfiles(actorUserIds: (string | null)[] | undefined) {
+  return useQuery({
+    queryKey: ['actor-profiles', actorUserIds?.sort()],
+    queryFn: async () => {
+      if (!actorUserIds || actorUserIds.length === 0) return {};
+      const uniqueIds = Array.from(new Set(actorUserIds.filter((id): id is string => !!id)));
+      if (uniqueIds.length === 0) return {};
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, initials, color')
+        .in('id', uniqueIds);
+      if (error) throw error;
+      return (data ?? []).reduce((acc, profile) => {
+        acc[profile.id] = profile;
+        return acc;
+      }, {} as Record<string, any>);
+    },
+    enabled: !!(actorUserIds && actorUserIds.length > 0),
+    staleTime: 5 * 60 * 1000,
   });
 }

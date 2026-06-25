@@ -2,9 +2,10 @@
  * Generic Comments Section — catalyst-ds replacement.
  * Reads from `comments` table (entity_id + entity_type).
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { catalystToast } from '@/lib/catalystToast';
 import { ActivityPanel } from '@/components/catalyst-ds';
 import type { CdsComment, CdsUser } from '@/components/catalyst-ds';
@@ -16,18 +17,28 @@ interface CommentsSectionProps {
 
 export function CommentsSection({ entityId, entityType }: CommentsSectionProps) {
   const queryClient = useQueryClient();
-  const [currentUser, setCurrentUser] = useState<CdsUser | undefined>();
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profileMap = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.id, p])),
+    [approvedProfiles]
+  );
 
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>();
   useQuery({
     queryKey: ['current-user-shared-comments'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-      const { data: profile } = await supabase.from('profiles').select('id, full_name, email, avatar_url').eq('id', user.id).single();
-      if (profile) setCurrentUser({ id: profile.id, name: profile.full_name || profile.email || 'You', avatarUrl: profile.avatar_url, email: profile.email });
+      if (user) setCurrentUserId(user.id);
       return user;
     },
   });
+
+  const currentUser: CdsUser | undefined = useMemo(() => {
+    if (!currentUserId) return undefined;
+    const p = profileMap.get(currentUserId);
+    if (!p) return undefined;
+    return { id: p.id, name: p.name, avatarUrl: p.avatarUrl ?? null, email: p.email };
+  }, [currentUserId, profileMap]);
 
   const { data: rawComments = [], isLoading } = useQuery({
     queryKey: ['comments', entityId, entityType],
@@ -40,14 +51,7 @@ export function CommentsSection({ entityId, entityType }: CommentsSectionProps) 
         .eq('entity_type', entityType)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      if (!data?.length) return [];
-      const userIds = [...new Set(data.map((c: any) => c.user_id).filter(Boolean))];
-      const profileMap = new Map<string, any>();
-      if (userIds.length > 0) {
-        const { data: profiles } = await supabase.from('profiles').select('id, full_name, email, avatar_url').in('id', userIds);
-        if (profiles) profiles.forEach((p: any) => profileMap.set(p.id, p));
-      }
-      return data.map((c: any) => ({ ...c, profile: profileMap.get(c.user_id) }));
+      return data ?? [];
     },
   });
 
@@ -73,11 +77,14 @@ export function CommentsSection({ entityId, entityType }: CommentsSectionProps) 
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['comments', entityId, entityType] }); catalystToast.success('Comment deleted'); },
   });
 
-  const comments: CdsComment[] = rawComments.map((r: any) => ({
-    id: r.id,
-    author: { id: r.user_id || 'unknown', name: r.profile?.full_name || r.profile?.email || 'Unknown', avatarUrl: r.profile?.avatar_url || null, email: r.profile?.email },
-    content: r.content || '', createdAt: r.created_at,
-  }));
+  const comments: CdsComment[] = rawComments.map((r: any) => {
+    const p = profileMap.get(r.user_id);
+    return {
+      id: r.id,
+      author: { id: r.user_id || 'unknown', name: p?.name || 'Unknown', avatarUrl: p?.avatarUrl ?? null, email: p?.email },
+      content: r.content || '', createdAt: r.created_at,
+    };
+  });
 
   return (
     <ActivityPanel

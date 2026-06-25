@@ -1,22 +1,30 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import Modal, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-} from '@atlaskit/modal-dialog';
+/**
+ * ReleaseConfirmationModal — confirm releasing a release.
+ *
+ * Jira parity:
+ *   - Title: orange warning icon + "Release {release.name}"
+ *   - "This release contains N unresolved work items."
+ *   - Radio: Move unresolved work items to <dropdown>  OR  Ignore unresolved work items
+ *   - Release date picker (defaults to release.release_date or today)
+ *   - Footer: Release (yellow, enabled once choice + date valid) + Cancel
+ *   - No "Create release notes" checkbox (out of scope).
+ *
+ * Phase 1 backend:
+ *   - Update source.status='released', actual_date=releaseDate, release_date=releaseDate
+ *   - TODO: re-point unresolved ph_issues.sprint_release entries when actionType='move'
+ */
+import React, { useEffect, useMemo, useState } from 'react';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
-import TextField from '@atlaskit/textfield';
-import { DatePicker as AkDatePicker } from '@atlaskit/datetime-picker';
-import Checkbox from '@atlaskit/checkbox';
-import Select from '@atlaskit/select';
-import Flag from '@atlaskit/flag';
-import { useUpdateRelease } from '@/hooks/releases/useUpdateRelease';
-import { useReleases } from '@/hooks/releases/useReleases';
-import { Release } from '@/types/phase3-releases';
+import WarningIcon from '@atlaskit/icon/glyph/warning';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Release } from '@/types/phase3-releases';
+import { catalystFlag } from '@/lib/catalystFlag';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { ProductSelect, type ProductOption } from './ReleaseFilters';
 
-interface ReleaseConfirmationModalProps {
+interface Props {
   isOpen: boolean;
   release: Release;
   projectKey: string;
@@ -24,288 +32,214 @@ interface ReleaseConfirmationModalProps {
   onSuccess?: (release: Release) => void;
 }
 
-// Unresolved = todo + in_progress work items for this release's Jira version,
-// computed from vw_release_jira_progress (matched by jira_version_id).
-const getUnresolvedCount = async (jiraVersionId?: string): Promise<number> => {
-  if (!jiraVersionId) return 0;
-  try {
-    const { data, error } = await supabase
-      .from('vw_release_jira_progress')
-      .select('todo, in_progress')
-      .eq('version_id', jiraVersionId)
-      .maybeSingle();
-    if (error || !data) return 0;
-    return (data.todo ?? 0) + (data.in_progress ?? 0);
-  } catch {
-    return 0;
-  }
+type Action = 'move' | 'ignore' | null;
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontWeight: 600,
+  fontSize: 12,
+  color: 'var(--ds-text, #172B4D)',
+  marginBottom: 6,
 };
 
-export function ReleaseConfirmationModal({
-  isOpen,
-  release,
-  projectKey,
-  onClose,
-  onSuccess,
-}: ReleaseConfirmationModalProps) {
-  const [actionType, setActionType] = useState<'move' | 'ignore' | null>(null);
-  const [moveToReleaseId, setMoveToReleaseId] = useState<string | null>(null);
-  const [releaseDate, setReleaseDate] = useState(
-    release.release_date || new Date().toISOString().split('T')[0]
-  );
-  const [createReleaseNotes, setCreateReleaseNotes] = useState(false);
-  const [unresolvedCount, setUnresolvedCount] = useState(0);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [flagMessage, setFlagMessage] = useState<{ type: string; text: string } | null>(null);
+const radioRow: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  cursor: 'pointer',
+  fontSize: 14,
+  color: 'var(--ds-text, #292A2E)',
+  userSelect: 'none',
+};
 
-  const { data: releasesData } = useReleases(projectKey);
-  const updateMutation = useUpdateRelease(release.id);
+const todayIso = () => new Date().toISOString().split('T')[0];
 
-  // Fetch unresolved issues count
+export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess }: Props) {
+  const [action, setAction] = useState<Action>('move');
+  const [targetId, setTargetId] = useState<string | null>(null);
+  const [releaseDate, setReleaseDate] = useState<string>(release.release_date || todayIso());
+  const queryClient = useQueryClient();
+
   useEffect(() => {
-    if (isOpen) {
-      getUnresolvedCount((release as any).jira_version_id).then(setUnresolvedCount);
-    }
-  }, [isOpen, release]);
+    if (!isOpen) return;
+    setAction('move');
+    setTargetId(null);
+    setReleaseDate(release.release_date || todayIso());
+  }, [isOpen, release.id, release.release_date]);
 
-  // Filter to unreleased versions, exclude self
-  const unreleaseVersionOptions = useMemo(() => {
-    return (releasesData?.data || [])
-      .filter((r) => r.status === 'unreleased' && r.id !== release.id)
-      .map((r) => ({ label: r.name, value: r.id }));
-  }, [releasesData, release.id]);
+  // Unresolved work-item count: ph_issues whose sprint_release.name matches this release
+  // AND whose status_category is not 'done'.
+  const { data: unresolvedCount = 0 } = useQuery({
+    queryKey: ['unresolved-items', release.id, release.name],
+    queryFn: async () => {
+      const releaseName = release.name;
+      if (!releaseName) return 0;
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('id, status_category, sprint_release')
+        .not('sprint_release', 'is', null);
+      if (error) throw new Error(error.message);
+      let n = 0;
+      for (const row of data ?? []) {
+        const arr = (row as any).sprint_release;
+        if (!Array.isArray(arr)) continue;
+        const matches = arr.some((el: any) => el && el.name === releaseName);
+        if (!matches) continue;
+        const sc = String((row as any).status_category ?? '').toLowerCase();
+        if (sc !== 'done') n++;
+      }
+      return n;
+    },
+    enabled: isOpen,
+    staleTime: 30_000,
+  });
 
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
+  // Other non-archived, non-released targets in the same project — for "Move to" picker
+  const { data: candidates } = useQuery({
+    queryKey: ['ph-releases-for-release-confirm', release.project_id, release.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_releases')
+        .select('id, name, title, status, project_id')
+        .eq('project_id', release.project_id)
+        .neq('id', release.id)
+        .neq('status', 'archived')
+        .neq('status', 'released')
+        .order('name');
+      if (error) throw new Error(error.message);
+      return (data ?? []) as Array<{ id: string; name: string | null; title: string | null; status: string }>;
+    },
+    enabled: isOpen,
+    staleTime: 30_000,
+  });
 
-    // Must select action only when there are unresolved items to handle
-    if (unresolvedCount > 0 && !actionType) {
-      newErrors.action = 'You must select how to handle unresolved items.';
-    }
+  const options: ProductOption[] = useMemo(
+    () => (candidates ?? []).map((c) => ({ id: c.id, name: c.name || c.title || c.id })),
+    [candidates],
+  );
 
-    // If move selected, must choose target
-    if (actionType === 'move' && !moveToReleaseId) {
-      newErrors.moveToRelease = 'You must select a target version for moving items.';
-    }
+  const hasUnresolved = unresolvedCount > 0;
 
-    // Release date validation
-    if (releaseDate && !/^\d{4}-\d{2}-\d{2}$/.test(releaseDate)) {
-      newErrors.releaseDate = 'The date you entered is not valid.';
-    }
+  const canSubmit =
+    !!releaseDate &&
+    (!hasUnresolved || action === 'ignore' || (action === 'move' && !!targetId));
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
-
-    try {
-      // Catalyst-local release: mark released + record actual date.
-      // (Work items link to Jira versions via ph_issues.sprint_release JSONB, which
-      //  Catalyst does not reassign while wh-jira-sync is parked — so no move step.)
-      const payload: any = {
-        status: 'released',
-        release_date: releaseDate,
-        actual_date: releaseDate,
-      };
-
-      updateMutation.mutate(payload, {
-        onSuccess: (result) => {
-          setFlagMessage({
-            type: 'success',
-            text: `Release ${release.name} published`,
-          });
-          onSuccess?.(result);
-          setTimeout(() => onClose(), 600);
-        },
-        onError: (error) => {
-          setFlagMessage({
-            type: 'error',
-            text: error instanceof Error ? error.message : 'Failed to release version',
-          });
-        },
-      });
-    } catch (error) {
-      setFlagMessage({
-        type: 'error',
-        text: error instanceof Error ? error.message : 'An error occurred',
-      });
-    }
-  };
-
-  const handleClose = () => {
-    setActionType(null);
-    setMoveToReleaseId(null);
-    setReleaseDate(release.release_date || new Date().toISOString().split('T')[0]);
-    setCreateReleaseNotes(false);
-    setErrors({});
-    onClose();
-  };
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('ph_releases')
+        .update({
+          status: 'released',
+          actual_date: releaseDate,
+          release_date: releaseDate,
+          target_date: releaseDate,
+        })
+        .eq('id', release.id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      onSuccess?.(release);
+      onClose();
+    },
+    onError: (err: any) => {
+      catalystFlag.error(err?.message || 'Failed to release');
+    },
+  });
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={handleClose} width={600}>
-        <ModalHeader>
-          <ModalTitle>Release {release.name}?</ModalTitle>
-        </ModalHeader>
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={onClose} width="small">
+          <ModalHeader hasCloseButton>
+            <ModalTitle>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: 'var(--ds-icon-warning, #E2B203)', display: 'inline-flex' }}>
+                  <WarningIcon label="" primaryColor="var(--ds-icon-warning, #E2B203)" size="medium" />
+                </span>
+                <span>Release {release.name}</span>
+              </span>
+            </ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
+                This release contains{' '}
+                <span style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500 }}>
+                  {unresolvedCount} unresolved work item{unresolvedCount === 1 ? '' : 's'}
+                </span>
+                .
+              </p>
 
-        <ModalBody>
-          <form onSubmit={handleSubmit}>
-            {/* Section 1: Unresolved items gate */}
-            {unresolvedCount > 0 && (
-              <div
-                style={{
-                  marginBottom: '24px',
-                  padding: '12px 16px',
-                  backgroundColor: 'var(--ds-background-warning-subtle, #FFF7D6)',
-                  border: '1px solid var(--ds-border-warning, #FFAB00)',
-                  borderRadius: '3px',
-                }}
-              >
-                <p style={{ margin: '0 0 8px 0', color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
-                  This release contains {unresolvedCount} unresolved work item{unresolvedCount !== 1 ? 's' : ''}.
-                </p>
-              </div>
-            )}
-
-            {/* Section 2: Action options */}
-            {unresolvedCount > 0 && (
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                    <input
-                      type="radio"
-                      name="action"
-                      value="move"
-                      checked={actionType === 'move'}
-                      onChange={(e) => setActionType(e.target.value as 'move')}
-                      style={{ marginRight: '8px' }}
-                    />
-                    <span style={{ color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
-                      Move open items to next version
-                    </span>
-                  </label>
-                  {actionType === 'move' && (
-                    <div style={{ marginLeft: '24px', marginBottom: '12px' }}>
-                      <Select
-                        options={unreleaseVersionOptions}
-                        value={
-                          unreleaseVersionOptions.find((opt) => opt.value === moveToReleaseId) || null
-                        }
-                        onChange={(opt) => setMoveToReleaseId(opt?.value || null)}
-                        placeholder="Select version..."
-                        isClearable={false}
+              {hasUnresolved && (
+                <div>
+                  <div style={labelStyle}>
+                    Unresolved work items
+                    <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 2 }}>*</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <label style={radioRow}>
+                      <input
+                        style={{ accentColor: 'var(--ds-border-selected, #1868DB)' }}
+                        type="radio"
+                        name="release-action"
+                        checked={action === 'move'}
+                        onChange={() => setAction('move')}
                       />
-                      {errors.moveToRelease && (
-                        <div
-                          style={{
-                            color: 'var(--ds-text-danger, #AE2A19)',
-                            marginTop: '4px',
-                          }}
-                          role="alert"
-                        >
-                          {errors.moveToRelease}
-                        </div>
-                      )}
+                      <span>Move unresolved work items to</span>
+                    </label>
+                    <div style={{ marginLeft: 24 }}>
+                      <ProductSelect
+                        options={options}
+                        value={targetId}
+                        onChange={setTargetId}
+                        placeholder="Select version"
+                        searchPlaceholder="Search releases"
+                        disabled={action !== 'move'}
+                      />
                     </div>
-                  )}
-                </div>
-
-                <label style={{ display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type="radio"
-                    name="action"
-                    value="ignore"
-                    checked={actionType === 'ignore'}
-                    onChange={(e) => setActionType(e.target.value as 'ignore')}
-                    style={{ marginRight: '8px' }}
-                  />
-                  <span style={{ color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
-                    Ignore unresolved items
-                  </span>
-                </label>
-              </div>
-            )}
-
-            {errors.action && (
-              <div
-                style={{
-                  color: 'var(--ds-text-danger, #AE2A19)',
-                  marginBottom: '16px',
-                }}
-                role="alert"
-              >
-                {errors.action}
-              </div>
-            )}
-
-            {/* Section 3: Release date picker */}
-            <div style={{ marginBottom: '24px' }}>
-              <label
-                style={{
-                  display: 'block',
-                  color: 'var(--ds-text, #172B4D)',
-                  fontWeight: 500,
-                  marginBottom: '8px',
-                }}
-              >
-                Release date
-              </label>
-              <AkDatePicker
-                value={releaseDate}
-                onChange={(isoDate) => setReleaseDate(isoDate)}
-                formatDisplayLabel="yyyy-MM-dd"
-              />
-              {errors.releaseDate && (
-                <div
-                  style={{
-                    color: 'var(--ds-text-danger, #AE2A19)',
-                    marginTop: '4px',
-                  }}
-                  role="alert"
-                >
-                  {errors.releaseDate}
+                    <label style={radioRow}>
+                      <input
+                        style={{ accentColor: 'var(--ds-border-selected, #1868DB)' }}
+                        type="radio"
+                        name="release-action"
+                        checked={action === 'ignore'}
+                        onChange={() => { setAction('ignore'); setTargetId(null); }}
+                      />
+                      <span>Ignore unresolved work items</span>
+                    </label>
+                  </div>
                 </div>
               )}
+
+              <div>
+                <div style={labelStyle}>Release date</div>
+                <CatalystDatePicker
+                  value={releaseDate ? new Date(releaseDate) : null}
+                  onChange={(date) =>
+                    setReleaseDate(date ? date.toISOString().split('T')[0] : '')
+                  }
+                  placeholder="Release date"
+                />
+              </div>
             </div>
-
-            {/* Section 4: Release notes checkbox */}
-            <div style={{ marginBottom: '24px' }}>
-              <Checkbox
-                isChecked={createReleaseNotes}
-                onChange={(e) => setCreateReleaseNotes(e.currentTarget.checked)}
-                label="Create release notes"
-              />
-            </div>
-          </form>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button appearance="subtle" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button
-            appearance="primary"
-            onClick={handleSubmit}
-            isLoading={updateMutation.isPending}
-          >
-            Release
-          </Button>
-        </ModalFooter>
-      </Modal>
-
-      {flagMessage && (
-        <Flag
-          id={`flag-${Date.now()}`}
-          icon={flagMessage.type === 'success' ? undefined : undefined}
-          title={flagMessage.text}
-          isDismissed={false}
-          onDismissed={() => setFlagMessage(null)}
-          appearance={flagMessage.type as any}
-        />
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              appearance="warning"
+              isDisabled={!canSubmit || mutation.isPending}
+              isLoading={mutation.isPending}
+              onClick={() => mutation.mutate()}
+            >
+              Release
+            </Button>
+          </ModalFooter>
+        </Modal>
       )}
-    </>
+    </ModalTransition>
   );
 }

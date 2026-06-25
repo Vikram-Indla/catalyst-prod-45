@@ -1,18 +1,29 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
-import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw, X } from "lucide-react";
+import {
+  ExternalLink,
+  MoreVertical,
+  CheckCheck,
+  MessageSquare,
+  Settings,
+  RefreshCw,
+  X,
+} from "lucide-react";
 import type { Notification, NotificationTab } from "@/types/notifications";
 import { PANEL_WIDTH } from "@/constants/notificationConstants";
-import { useNotificationsQuery, useMarkAsRead, useMarkAllAsRead, useSnoozeNotification } from "@/hooks/useNotificationsNew";
+import {
+  useNotificationsQuery,
+  useMarkAsRead,
+  useMarkAllAsRead,
+  useSnoozeNotification,
+} from "@/hooks/useNotificationsNew";
 import { NOTIF_LAST_OPENED_KEY } from "@/hooks/useDirectFromSync";
 import { useUnreadCount } from "@/hooks/useUnreadCount";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useActorProfiles } from "@/hooks/useActorProfiles";
 import { useTheme } from "@/hooks/useTheme";
-import NotificationItem from "./NotificationItem";
 import SectionHeader from "./SectionHeader";
 import EmptyState from "./EmptyState";
 import LoadingSkeleton from "./LoadingSkeleton";
@@ -25,12 +36,12 @@ import DirectPanel from "@/features/notifications/DirectPanel";
 
 function useLastSyncTime() {
   return useQuery({
-    queryKey: ['last-jira-sync'],
+    queryKey: ["last-jira-sync"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('ph_sync_log')
-        .select('completed_at, projects_synced')
-        .order('completed_at', { ascending: false })
+        .from("ph_sync_log")
+        .select("completed_at, projects_synced")
+        .order("completed_at", { ascending: false })
         .limit(1)
         .maybeSingle();
       if (error || !data?.completed_at) return null;
@@ -44,7 +55,7 @@ function useLastSyncTime() {
 function formatSyncAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return 'just now';
+  if (mins < 1) return "just now";
   if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `${hrs}h ago`;
@@ -58,34 +69,38 @@ interface NotificationPanelProps {
 
 function useUserId() {
   return useQuery({
-    queryKey: ['auth-user-id'],
+    queryKey: ["auth-user-id"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       return user?.id ?? null;
     },
     staleTime: 5 * 60 * 1000,
   });
 }
 
-function groupByDate(items: Notification[]): { label: string; items: Notification[] }[] {
+function groupByDate(
+  items: Notification[]
+): { label: string; items: Notification[] }[] {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today.getTime() - 86400000);
 
   const groups: { label: string; items: Notification[] }[] = [
-    { label: 'Today', items: [] },
-    { label: 'Yesterday', items: [] },
-    { label: 'Older', items: [] },
+    { label: "Today", items: [] },
+    { label: "Yesterday", items: [] },
+    { label: "Older", items: [] },
   ];
 
-  items.forEach(n => {
+  items.forEach((n) => {
     const d = new Date(n.created_at);
     if (d >= today) groups[0].items.push(n);
     else if (d >= yesterday) groups[1].items.push(n);
     else groups[2].items.push(n);
   });
 
-  return groups.filter(g => g.items.length > 0);
+  return groups.filter((g) => g.items.length > 0);
 }
 
 // After the 2026-04-24 For You migration, the notifications drawer is a
@@ -93,36 +108,42 @@ function groupByDate(items: Notification[]): { label: string; items: Notificatio
 // Ageing previously lived here but have been relocated to /for-you where
 // they render as first-class tabs alongside Recommended / Assigned / etc.
 const TABS: { key: NotificationTab; label: string }[] = [
-  { key: 'direct', label: 'Direct' },
-  { key: 'watching', label: 'Watching' },
+  { key: "direct", label: "Direct" },
+  { key: "watching", label: "Watching" },
 ];
 
-export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
+export default function NotificationPanel({
+  isOpen,
+  onClose,
+}: NotificationPanelProps) {
   const { data: userId } = useUserId();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const { data: lastSyncTime } = useLastSyncTime();
 
-  // Dark mode tokens
+  // Theme tokens — direct RGBA values for visible borders (2026-06-25 visibility fix)
+  // CSS vars like --cp-border-subtle resolve to 6% opacity which is too subtle.
   const T = {
-    panelBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    surfaceBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    text1: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
-    text2: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-    text3: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-    border: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
-    borderStrong: 'var(--cp-border-default, rgba(15,23,42,0.12))',
-    hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
-    press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
+    panelBg: isDark ? "#1D2125" : "#FFFFFF",
+    surfaceBg: isDark ? "#1D2125" : "#FFFFFF",
+    text1: isDark ? "#EDEDED" : "#0F172A",
+    text2: isDark ? "#A1A1A1" : "#42526E",
+    text3: isDark ? "#878787" : "#6B778C",
+    border: isDark ? "#2E2E2E" : "rgba(15,23,42,0.15)", // Direct values, not CSS vars
+    borderStrong: isDark ? "#454545" : "rgba(15,23,42,0.20)",
+    hover: isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.04)",
+    press: isDark ? "rgba(255,255,255,0.10)" : "rgba(15,23,42,0.08)",
     shadow: isDark
-      ? '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.4)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.5))'
-      : '0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.12)), 0 0 1px var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
-    menuBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    divider: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
+      ? "0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.4)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.5))"
+      : "0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.12)), 0 0 1px var(--ds-shadow-overlay, rgba(15,23,42,0.08))",
+    menuBg:
+      "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+    divider: "var(--cp-border-subtle, rgba(15,23,42,0.08))",
+    checkStroke: isDark ? "#3B82F6" : "#0052CC",
   };
 
-  const [activeTab, setActiveTab] = useState<NotificationTab>('direct');
+  const [activeTab, setActiveTab] = useState<NotificationTab>("direct");
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -135,13 +156,13 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // W6 — Load unread-only preference from notification_preferences
   const { data: savedUnreadPref } = useQuery({
-    queryKey: ['notif-pref', userId],
+    queryKey: ["notif-pref", userId],
     queryFn: async () => {
       const { data } = await supabase
-        .from('notification_preferences')
-        .select('show_unread_only')
-        .eq('user_id', userId!)
-        .eq('notification_type', 'all')
+        .from("notification_preferences")
+        .select("show_unread_only")
+        .eq("user_id", userId!)
+        .eq("notification_type", "all")
         .single();
       return data?.show_unread_only ?? false;
     },
@@ -156,19 +177,20 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const { mutate: updatePref } = useMutation({
     mutationFn: async (showUnreadOnly: boolean) => {
       if (!userId) return;
-      const { error } = await supabase
-        .from('notification_preferences')
-        .upsert({
+      const { error } = await supabase.from("notification_preferences").upsert(
+        {
           user_id: userId,
-          notification_type: 'all',
+          notification_type: "all",
           show_unread_only: showUnreadOnly,
-        }, { onConflict: 'user_id,notification_type' });
+        },
+        { onConflict: "user_id,notification_type" }
+      );
       if (error) throw error;
     },
   });
 
   const handleToggleUnread = useCallback(() => {
-    setUnreadOnly(prev => {
+    setUnreadOnly((prev) => {
       const next = !prev;
       updatePref(next);
       return next;
@@ -179,29 +201,19 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const { data: unreadCount } = useUnreadCount();
 
   // W1 — Real data from Supabase (disabled for 'direct' — DirectPanel fetches its own data)
-  const { data, fetchNextPage, hasNextPage, isLoading, isError, refetch } = useNotificationsQuery(
-    activeTab,
-    unreadOnly,
-    activeTab !== 'direct',
-  );
-  const allNotifications: Notification[] = (data?.pages.flat() ?? []) as unknown as Notification[];
+  const { data, fetchNextPage, hasNextPage, isLoading, isError, refetch } =
+    useNotificationsQuery(activeTab, unreadOnly, activeTab !== "direct");
+  const allNotifications: Notification[] = (data?.pages.flat() ??
+    []) as unknown as Notification[];
 
   // Deduplicate: keep only the most recent notification per entity_key+type
   const seen = new Set<string>();
-  const notifications = allNotifications.filter(n => {
+  const notifications = allNotifications.filter((n) => {
     const key = `${n.entity_key}::${n.notification_type}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
-
-  // Batch-fetch actor profiles for all visible notifications
-  const actorIds = useMemo(
-    () => notifications.map(n => n.actor_user_id).filter((id): id is string => !!id),
-    [notifications]
-  );
-  const { data: actorProfiles } = useActorProfiles(actorIds);
-
 
   useEffect(() => {
     setHasError(isError);
@@ -232,8 +244,10 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   useEffect(() => {
     if (!sentinelRef.current || !hasNextPage) return;
     const observer = new IntersectionObserver(
-      (entries) => { if (entries[0].isIntersecting) fetchNextPage(); },
-      { threshold: 0.1 },
+      (entries) => {
+        if (entries[0].isIntersecting) fetchNextPage();
+      },
+      { threshold: 0.1 }
     );
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
@@ -248,7 +262,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   useEffect(() => {
     if (isOpen) {
       localStorage.setItem(NOTIF_LAST_OPENED_KEY, new Date().toISOString());
-      queryClient.invalidateQueries({ queryKey: ['notifications-unread-count-sync'] });
+      queryClient.invalidateQueries({
+        queryKey: ["notifications-unread-count-sync"],
+      });
     }
   }, [isOpen, queryClient]);
 
@@ -256,57 +272,65 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) onClose();
+      if (panelRef.current && !panelRef.current.contains(e.target as Node))
+        onClose();
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, [isOpen, onClose]);
 
   // Keyboard: Escape, Arrow keys, R for read, M for mark-all
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         if (menuOpen) setMenuOpen(false);
         else onClose();
         return;
       }
       // M = mark all read
-      if (e.key === 'm' || e.key === 'M') {
+      if (e.key === "m" || e.key === "M") {
         if (!menuOpen) markAllRead(undefined);
       }
     };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
   }, [isOpen, menuOpen, onClose, markAllRead]);
 
   // Close menu on outside click
   useEffect(() => {
     if (!menuOpen) return;
     const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target as Node))
+        setMenuOpen(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, [menuOpen]);
 
   // W4 — Click handler: mark read + close + open global detail modal
-  const handleItemClick = useCallback((n: Notification) => {
-    if (!n.read_at) markAsRead(n.id);
-    onClose();
+  const handleItemClick = useCallback(
+    (n: Notification) => {
+      if (!n.read_at) markAsRead(n.id);
+      onClose();
 
-    // CatalystDetailRouter queries ph_issues by issue_key (text), not UUID.
-    // Prefer entity_key (the Jira key e.g. "BAU-5757"); fall back to entity_id.
-    const detailId = n.entity_key || n.entity_id;
-    if (detailId) {
-      const { openDetail } = useGlobalSearchStore.getState();
-      openDetail({ id: detailId, itemType: n.entity_icon_type || undefined });
-    }
-  }, [markAsRead, onClose]);
+      // CatalystDetailRouter queries ph_issues by issue_key (text), not UUID.
+      // Prefer entity_key (the Jira key e.g. "BAU-5757"); fall back to entity_id.
+      const detailId = n.entity_key || n.entity_id;
+      if (detailId) {
+        const { openDetail } = useGlobalSearchStore.getState();
+        openDetail({ id: detailId, itemType: n.entity_icon_type || undefined });
+      }
+    },
+    [markAsRead, onClose]
+  );
 
-  const handleMarkRead = useCallback((id: string) => {
-    markAsRead(id);
-  }, [markAsRead]);
+  const handleMarkRead = useCallback(
+    (id: string) => {
+      markAsRead(id);
+    },
+    [markAsRead]
+  );
 
   if (!isOpen && !isAnimating) return null;
 
@@ -314,9 +338,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // Determine empty state variant
   const getEmptyVariant = () => {
-    if (activeTab === 'watching') return 'noWatching' as const;
-    if (unreadOnly) return 'allCaughtUp' as const;
-    return 'noNotifications' as const;
+    if (activeTab === "watching") return "noWatching" as const;
+    if (unreadOnly) return "allCaughtUp" as const;
+    return "noNotifications" as const;
   };
 
   return (
@@ -325,9 +349,11 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
       role="dialog"
       aria-modal="true"
       aria-label="Notifications"
-      onAnimationEnd={() => { if (!isOpen) setIsAnimating(false); }}
+      onAnimationEnd={() => {
+        if (!isOpen) setIsAnimating(false);
+      }}
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 52,
         right: 16,
         width: PANEL_WIDTH,
@@ -337,12 +363,12 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         borderRadius: 6,
         boxShadow: T.shadow,
         zIndex: 400,
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
         animation: isOpen
-          ? 'notif-panel-in 200ms cubic-bezier(0.16,1,0.3,1) forwards'
-          : 'notif-panel-out 150ms ease-in forwards',
+          ? "notif-panel-in 200ms cubic-bezier(0.16,1,0.3,1) forwards"
+          : "notif-panel-out 150ms ease-in forwards",
       }}
     >
       <style>{`
@@ -377,55 +403,127 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
       `}</style>
 
       {/* Header */}
-      <div style={{ padding: '16px 20px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 600, color: T.text1, margin: 0, lineHeight: 1.2 }}>
+      <div style={{ padding: "16px 20px 0" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span
+              style={{
+                fontFamily: "var(--cp-font-heading)",
+                fontSize: 24,
+                fontWeight: 600,
+                color: T.text1,
+                margin: 0,
+                lineHeight: 1.2,
+              }}
+            >
               Notifications
             </span>
             {/* P-01: Sync chip removed from header */}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {/* m-10: Unread toggle with count */}
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: T.text2 }}>
-              Only show unread{unreadOnly && unreadCount !== undefined ? ` (${unreadCount})` : ''}
+            <span
+              style={{
+                fontFamily: "var(--cp-font-body)",
+                fontSize: 13,
+                color: T.text2,
+              }}
+            >
+              Only show unread
+              {unreadOnly && unreadCount !== undefined
+                ? ` (${unreadCount})`
+                : ""}
             </span>
             <button
               onClick={handleToggleUnread}
-              aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
+              aria-label={
+                unreadOnly ? "Show all notifications" : "Show only unread"
+              }
               style={{
-                width: 36, height: 20, borderRadius: 12, cursor: 'pointer', border: 'none',
-                background: unreadOnly ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : ('var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
-                position: 'relative', transition: 'background 200ms ease',
+                width: 36,
+                height: 20,
+                borderRadius: 12,
+                cursor: "pointer",
+                border: "none",
+                background: unreadOnly
+                  ? "var(--ds-text-success, var(--cp-success, #16A34A))"
+                  : "var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))",
+                position: "relative",
+                transition: "background 200ms ease",
                 padding: 0,
               }}
             >
-              <span style={{
-                position: 'absolute', top: 2, left: unreadOnly ? 18 : 2,
-                width: 16, height: 16, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                transition: 'left 200ms cubic-bezier(0.16,1,0.3,1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
+              <span
+                style={{
+                  position: "absolute",
+                  top: 2,
+                  left: unreadOnly ? 18 : 2,
+                  width: 16,
+                  height: 16,
+                  borderRadius: "50%",
+                  background:
+                    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+                  transition: "left 200ms cubic-bezier(0.16,1,0.3,1)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 {unreadOnly ? (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="var(--ds-text-success, var(--cp-success, #16A34A))" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                    <path
+                      d="M1.5 4L3 5.5L6.5 2"
+                      stroke="var(--ds-text-success, var(--cp-success, #16A34A))"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 ) : (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2L6 6M6 2L2 6" stroke="var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                    <path
+                      d="M2 2L6 6M6 2L2 6"
+                      stroke="var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
                 )}
               </span>
             </button>
             {/* Open full page */}
             <button
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: T.text2 }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 4,
+                borderRadius: 4,
+                color: T.text2,
+              }}
               title="Open in full page"
               aria-label="Open notifications in full page"
             >
               <ExternalLink size={16} />
             </button>
             {/* More menu */}
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: "relative" }}>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: T.text2 }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 4,
+                  borderRadius: 4,
+                  color: T.text2,
+                }}
                 aria-label="More options"
                 aria-expanded={menuOpen}
               >
@@ -436,36 +534,79 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   ref={menuRef}
                   role="menu"
                   style={{
-                    position: 'absolute', top: '100%', right: 0, marginTop: 4,
-                    background: T.menuBg, border: `0.5px solid ${T.border}`, borderRadius: 6,
-                    boxShadow: T.shadow, minWidth: 200, zIndex: 10,
-                    padding: '4px 0',
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    marginTop: 4,
+                    background: T.menuBg,
+                    border: `0.5px solid ${T.border}`,
+                    borderRadius: 6,
+                    boxShadow: T.shadow,
+                    minWidth: 200,
+                    zIndex: 10,
+                    padding: "4px 0",
                   }}
                 >
                   {[
-                    { icon: CheckCheck, label: 'Mark all as read', action: () => { markAllRead(undefined); setMenuOpen(false); }, dividerAfter: true },
-                    { icon: MessageSquare, label: 'Give feedback', action: () => setMenuOpen(false), dividerAfter: false },
-                    { icon: Settings, label: 'Notification settings', action: () => setMenuOpen(false), dividerAfter: false },
+                    {
+                      icon: CheckCheck,
+                      label: "Mark all as read",
+                      action: () => {
+                        markAllRead(undefined);
+                        setMenuOpen(false);
+                      },
+                      dividerAfter: true,
+                    },
+                    {
+                      icon: MessageSquare,
+                      label: "Give feedback",
+                      action: () => setMenuOpen(false),
+                      dividerAfter: false,
+                    },
+                    {
+                      icon: Settings,
+                      label: "Notification settings",
+                      action: () => setMenuOpen(false),
+                      dividerAfter: false,
+                    },
                   ].map(({ icon: Icon, label, action, dividerAfter }) => (
                     <div key={label}>
                       <button
                         role="menuitem"
                         onClick={action}
                         style={{
-                          display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                          padding: '10px 14px', background: 'none', border: 'none',
-                          cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 13, color: T.text1,
-                          transition: 'background 150ms ease',
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          width: "100%",
+                          padding: "10px 14px",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontFamily: "var(--cp-font-body)",
+                          fontSize: 13,
+                          color: T.text1,
+                          transition: "background 150ms ease",
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = T.hover}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = T.hover)
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background = "transparent")
+                        }
                       >
                         <Icon size={16} color={T.text2} />
                         {label}
                       </button>
                       {/* m-05: divider between "Give feedback" and "Notification settings" */}
                       {dividerAfter && (
-                        <div style={{ height: '0.5px', background: T.divider, margin: '0 14px' }} />
+                        <div
+                          style={{
+                            height: "0.5px",
+                            background: T.divider,
+                            margin: "0 14px",
+                          }}
+                        />
                       )}
                     </div>
                   ))}
@@ -477,12 +618,20 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               onClick={onClose}
               aria-label="Close notifications"
               style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                padding: 4, borderRadius: 4, color: T.text2,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 4,
+                borderRadius: 4,
+                color: T.text2,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = T.hover)}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = T.hover)}
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "transparent")
+              }
             >
               <X size={16} />
             </button>
@@ -490,8 +639,14 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: `0.75px solid ${T.border}`, marginTop: 12 }}>
-          {TABS.map(tab => {
+        <div
+          style={{
+            display: "flex",
+            borderBottom: `0.75px solid ${T.border}`,
+            marginTop: 12,
+          }}
+        >
+          {TABS.map((tab) => {
             const isActive = activeTab === tab.key;
             return (
               <button
@@ -500,16 +655,31 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 role="tab"
                 aria-selected={isActive}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '8px 14px', height: 'auto',
-                  background: 'none', border: 'none', borderBottom: isActive ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: isActive ? 600 : 500,
-                  color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.text2,
-                  transition: 'color 150ms ease',
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "8px 14px",
+                  height: "auto",
+                  background: "none",
+                  border: "none",
+                  borderBottom: isActive
+                    ? "2px solid var(--ds-link, #2563eb)"
+                    : "2px solid transparent",
+                  cursor: "pointer",
+                  fontFamily: "var(--cp-font-body)",
+                  fontSize: 14,
+                  fontWeight: isActive ? 600 : 500,
+                  color: isActive
+                    ? "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
+                    : T.text2,
+                  transition: "color 150ms ease",
                 }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = T.text1; }}
-                onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = T.text2; }}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.color = T.text1;
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) e.currentTarget.style.color = T.text2;
+                }}
               >
                 {tab.label}
               </button>
@@ -522,28 +692,54 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
       <div
         ref={listRef}
         onScroll={handleScroll}
-        style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}
+        style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}
       >
         {/* 1.5 — Error state */}
         {hasError ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', gap: 12 }}>
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, color: T.text3 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "48px 20px",
+              gap: 12,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "var(--cp-font-body)",
+                fontSize: 14,
+                color: T.text3,
+              }}
+            >
               Could not load notifications
             </span>
             <button
-              onClick={() => { setHasError(false); refetch(); }}
+              onClick={() => {
+                setHasError(false);
+                refetch();
+              }}
               style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '8px 16px', borderRadius: 6,
-                border: `0.5px solid ${T.borderStrong}`, background: 'transparent',
-                cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500, color: T.text2,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 16px",
+                borderRadius: 6,
+                border: `0.5px solid ${T.borderStrong}`,
+                background: "transparent",
+                cursor: "pointer",
+                fontFamily: "var(--cp-font-body)",
+                fontSize: 13,
+                fontWeight: 500,
+                color: T.text2,
               }}
             >
               <RefreshCw size={14} />
               Retry
             </button>
           </div>
-        ) : activeTab === 'watching' ? (
+        ) : activeTab === "watching" ? (
           <WatchingTab unreadOnly={unreadOnly} isDark={isDark} />
         ) : (
           <DirectPanel unreadOnly={unreadOnly} isDark={isDark} />

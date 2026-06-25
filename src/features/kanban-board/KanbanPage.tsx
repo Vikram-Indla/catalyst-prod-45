@@ -100,6 +100,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
     const boardId = boardConfig.boardId;
     if (key && boardId) navigate(`/project-hub/${key}/boards/${boardId}/map-statuses`);
   }, [key, boardConfig.boardId, navigate]);
+  const [hideDone, setHideDone] = useState(true);
   const { updateStatus, toggleFlag, updateAssignee, createIssue, updateSummary, addLabel, archiveIssue, deleteIssue, setParent, linkIssue } = useKanbanMutations(mode);
   const currentUser = useCurrentUser();
   const [assigneeTarget, setAssigneeTarget] = useState<{ issue: BoardIssue; anchor: HTMLElement } | null>(null);
@@ -375,6 +376,8 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
               renderMenu={renderMenu}
               columnFooter={columnFooter}
               cardHealthKey={mode === 'product' ? (issue) => issue.id : undefined}
+              hideDone={hideDone}
+              onToggleHideDone={() => setHideDone((v) => !v)}
             />
           )}
         </div>

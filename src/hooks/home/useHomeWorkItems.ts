@@ -9,6 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItemType } from '@/components/ja/icons/WorkItemTypeIcon';
 import { useCallback, useEffect, useMemo } from 'react';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 // ============================================
 // TYPES
@@ -129,8 +130,9 @@ async function fetchStarredItems(params: {
   page: number;
   pageSize: number;
   userId?: string;
+  profileMap?: Map<string, string>;
 }): Promise<HomeWorkItemsResponse> {
-  const { domain, search, sort, page, pageSize, userId } = params;
+  const { domain, search, sort, page, pageSize, userId, profileMap: injectedProfileMap } = params;
   const from = (page - 1) * pageSize;
 
   if (!userId) {
@@ -192,11 +194,7 @@ async function fetchStarredItems(params: {
       .in('id', storyIds)
       .is('deleted_at', null);
 
-    const assigneeIds = (stories || []).map(s => s.assignee_id).filter(Boolean);
-    const { data: profiles } = assigneeIds.length > 0
-      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds)
-      : { data: [] };
-    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+    const profileMap = injectedProfileMap ?? new Map<string, string>();
 
     (stories || []).forEach(s => {
       const starredItem = filteredStarred.find(st => st.item_id === s.id);
@@ -231,11 +229,7 @@ async function fetchStarredItems(params: {
       .in('id', featureIds)
       .is('deleted_at', null);
 
-    const assigneeIds = (features || []).map(f => f.assignee_id).filter(Boolean);
-    const { data: profiles } = assigneeIds.length > 0
-      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds as string[])
-      : { data: [] };
-    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+    const profileMap = injectedProfileMap ?? new Map<string, string>();
 
     (features || []).forEach(f => {
       const starredItem = filteredStarred.find(st => st.item_id === f.id);
@@ -268,11 +262,7 @@ async function fetchStarredItems(params: {
       .in('id', epicIds)
       .is('deleted_at', null);
 
-    const assigneeIds = (epics || []).map(e => e.assignee_id).filter(Boolean);
-    const { data: profiles } = assigneeIds.length > 0
-      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds as string[])
-      : { data: [] };
-    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+    const profileMap = injectedProfileMap ?? new Map<string, string>();
 
     (epics || []).forEach(e => {
       const starredItem = filteredStarred.find(st => st.item_id === e.id);
@@ -301,11 +291,7 @@ async function fetchStarredItems(params: {
       .select('id, key, title, status, priority, blocked, updated_at, created_at, assignee_id, planned_date, ready_for_sprint, decision_required, review_status')
       .in('id', taskIds);
 
-    const assigneeIds = (tasks || []).map(t => t.assignee_id).filter(Boolean);
-    const { data: profiles } = assigneeIds.length > 0
-      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds)
-      : { data: [] };
-    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+    const profileMap = injectedProfileMap ?? new Map<string, string>();
 
     (tasks || []).forEach(t => {
       const starredItem = filteredStarred.find(st => st.item_id === t.id);
@@ -341,11 +327,7 @@ async function fetchStarredItems(params: {
       .in('id', incidentIds)
       .is('deleted_at', null);
 
-    const assigneeIds = (incidents || []).map(i => i.assignee_id).filter(Boolean);
-    const { data: profiles } = assigneeIds.length > 0
-      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds)
-      : { data: [] };
-    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+    const profileMap = injectedProfileMap ?? new Map<string, string>();
 
     (incidents || []).forEach(inc => {
       const starredItem = filteredStarred.find(st => st.item_id === inc.id);
@@ -418,6 +400,7 @@ async function fetchOperations(params: {
   pageSize: number;
   updatedRangeDate: Date | null;
   userId?: string;
+  profileMap?: Map<string, string>;
 }): Promise<HomeWorkItemsResponse> {
   const { scope, search, filters, sort, page, pageSize, updatedRangeDate, userId } = params;
   const from = (page - 1) * pageSize;
@@ -472,12 +455,7 @@ async function fetchOperations(params: {
   const { data: incidents, count, error } = await query;
   if (error) throw error;
 
-  // Fetch assignee names
-  const assigneeIds = (incidents || []).map(i => i.assignee_id).filter(Boolean);
-  const { data: profiles } = assigneeIds.length > 0 
-    ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds)
-    : { data: [] };
-  const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+  const profileMap = params.profileMap ?? new Map<string, string>();
 
   const allItems: HomeWorkItem[] = (incidents || []).map(inc => ({
     id: inc.id,
@@ -530,6 +508,7 @@ async function fetchDelivery(params: {
   pageSize: number;
   updatedRangeDate: Date | null;
   userId?: string;
+  profileMap?: Map<string, string>;
 }): Promise<HomeWorkItemsResponse> {
   const { scope, search, filters, sort, page, pageSize, updatedRangeDate, userId } = params;
   const from = (page - 1) * pageSize;
@@ -565,12 +544,7 @@ async function fetchDelivery(params: {
   if (storyErr) throw storyErr;
   totalStories = storyCount || 0;
 
-  // Fetch assignee names for stories
-  const storyAssigneeIds = (stories || []).map(s => s.assignee_id).filter(Boolean);
-  const { data: storyProfiles } = storyAssigneeIds.length > 0 
-    ? await supabase.from('profiles').select('id, full_name').in('id', storyAssigneeIds)
-    : { data: [] };
-  const storyProfileMap = new Map((storyProfiles || []).map(p => [p.id, p.full_name]));
+  const storyProfileMap = params.profileMap ?? new Map<string, string>();
 
   (stories || []).forEach(s => {
     const storyKey = s.story_key || `US-${s.id.slice(0, 6)}`;
@@ -627,12 +601,7 @@ async function fetchDelivery(params: {
     if (featureErr) throw featureErr;
     totalFeatures = featureCount || 0;
 
-    // Assignee names for features
-    const featureAssigneeIds = (features || []).map(f => f.assignee_id).filter(Boolean);
-    const { data: featureProfiles } = featureAssigneeIds.length > 0
-      ? await supabase.from('profiles').select('id, full_name').in('id', featureAssigneeIds as string[])
-      : { data: [] };
-    const featureProfileMap = new Map((featureProfiles || []).map(p => [p.id, p.full_name]));
+    const featureProfileMap = params.profileMap ?? new Map<string, string>();
 
     (features || []).forEach(f => {
       const featureKey = f.display_id || `F-${f.id.slice(0, 6)}`;
@@ -675,12 +644,7 @@ async function fetchDelivery(params: {
     if (epicErr) throw epicErr;
     totalEpics = epicCount || 0;
 
-    // Fetch assignee names for epics
-    const epicAssigneeIds = (epics || []).map(e => e.assignee_id).filter(Boolean);
-    const { data: epicProfiles } = epicAssigneeIds.length > 0
-      ? await supabase.from('profiles').select('id, full_name').in('id', epicAssigneeIds as string[])
-      : { data: [] };
-    const epicProfileMap = new Map((epicProfiles || []).map(p => [p.id, p.full_name]));
+    const epicProfileMap = params.profileMap ?? new Map<string, string>();
 
     (epics || []).forEach(e => {
       items.push({
@@ -744,6 +708,7 @@ async function fetchPlanner(params: {
   pageSize: number;
   updatedRangeDate: Date | null;
   userId?: string;
+  profileMap?: Map<string, string>;
 }): Promise<HomeWorkItemsResponse> {
   const { scope, search, filters, sort, page, pageSize, updatedRangeDate, userId } = params;
   const from = (page - 1) * pageSize;
@@ -790,12 +755,7 @@ async function fetchPlanner(params: {
   const { data: tasks, count, error } = await query;
   if (error) throw error;
   
-  // Fetch assignee names for tasks
-  const taskAssigneeIds = (tasks || []).map(t => t.assignee_id).filter(Boolean);
-  const { data: taskProfiles } = taskAssigneeIds.length > 0 
-    ? await supabase.from('profiles').select('id, full_name').in('id', taskAssigneeIds)
-    : { data: [] };
-  const taskProfileMap = new Map((taskProfiles || []).map(p => [p.id, p.full_name]));
+  const taskProfileMap = params.profileMap ?? new Map<string, string>();
 
   const allItems: HomeWorkItem[] = (tasks || []).map(t => ({
     id: t.id,
@@ -873,6 +833,7 @@ async function fetchAll(params: {
   pageSize: number;
   updatedRangeDate: Date | null;
   userId?: string;
+  profileMap?: Map<string, string>;
 }): Promise<HomeWorkItemsResponse> {
   const { page, pageSize } = params;
 
@@ -953,6 +914,13 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
   const updatedRangeDate = getUpdatedRangeDate(effectiveFilters.updatedRange);
   const queryKey = createQueryKey(params);
 
+  // Approved profiles — single source of truth; passed into all fetch fns via closure
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profileMap = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.id, p.name])),
+    [approvedProfiles],
+  );
+
   const query = useQuery({
     queryKey,
     queryFn: async (): Promise<HomeWorkItemsResponse> => {
@@ -964,7 +932,7 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
           const { data: { user } } = await supabase.auth.getUser();
           effectiveUserId = user?.id;
         }
-        
+
         const starredResult = await fetchStarredItems({
           domain,
           search,
@@ -973,6 +941,7 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
           page,
           pageSize,
           userId: effectiveUserId,
+          profileMap,
         });
 
         // Get other scope counts for the tabs (workedOn, assigned)
@@ -985,6 +954,7 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
           pageSize: 1,
           updatedRangeDate: null,
           userId: effectiveUserId,
+          profileMap,
         };
 
         let workedOnCount = 0;
@@ -1042,6 +1012,7 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
         pageSize,
         updatedRangeDate,
         userId,
+        profileMap,
       };
 
       switch (domain) {

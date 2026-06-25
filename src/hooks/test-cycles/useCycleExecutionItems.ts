@@ -16,6 +16,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useCallback } from 'react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 // Execution status directly from tm_cycle_scope.current_status
 export type ExecutionStatus = 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
@@ -269,7 +270,7 @@ export function useCycleExecutionItems(cycleId: string, filters?: ExecutionFilte
           assignee: assigneeProfile ? {
             id: assigneeProfile.id,
             full_name: assigneeProfile.full_name || 'Unknown',
-            avatar_url: assigneeProfile.avatar_url,
+            avatar_url: resolveAvatarUrl(assigneeProfile.full_name ?? null) ?? assigneeProfile.avatar_url ?? null,
           } : null,
           dueDate: scope.due_date || null,
           latestRunId: run?.id || null,

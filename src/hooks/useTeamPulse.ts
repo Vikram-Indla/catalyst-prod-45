@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { UserStatus } from '@/lib/presence';
 import { aggregateSharedScopes, type SharedScope, type SharedScopeRow } from './teamPulseScopes';
 
@@ -70,7 +71,7 @@ export function useTeamPulse() {
       const members: TeamPulseMember[] = (statusRows ?? []).map((r: any) => ({
         user_id:        r.user_id,
         full_name:      r.full_name,
-        avatar_url:     r.avatar_url,
+        avatar_url:     resolveAvatarUrl(r.full_name ?? null) ?? r.avatar_url ?? null,
         last_seen_at:   r.last_seen_at,
         effective_state: r.effective_state,
         leave_kind:     r.leave_kind,
@@ -182,7 +183,7 @@ export function useTeamPulseManagedTeam() {
       const members: TeamPulseMember[] = ((statusRows ?? []) as any[]).map((r: any) => ({
         user_id:         r.user_id,
         full_name:       r.full_name,
-        avatar_url:      r.avatar_url,
+        avatar_url:      resolveAvatarUrl(r.full_name ?? null) ?? r.avatar_url ?? null,
         last_seen_at:    r.last_seen_at,
         effective_state: r.effective_state,
         leave_kind:      r.leave_kind,

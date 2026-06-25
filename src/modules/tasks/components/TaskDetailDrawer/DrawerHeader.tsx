@@ -5,6 +5,7 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { X, ChevronDown, Check, Link2, MoreHorizontal, Edit, Copy, Trash2 } from '@/lib/atlaskit-icons';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   DropdownMenu,
@@ -67,22 +68,6 @@ function useStatuses() {
     gcTime: 30 * 60 * 1000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-  });
-}
-
-function useProfiles() {
-  return useQuery({
-    queryKey: ['drawer-profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, email')
-        .order('full_name');
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
   });
 }
 
@@ -346,7 +331,11 @@ function AssigneeSelector({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { data: profiles = [] } = useProfiles();
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = useMemo(
+    () => approvedProfiles.map(p => ({ id: p.id, full_name: p.name, email: p.email, avatar_url: p.avatarUrl ?? null })),
+    [approvedProfiles]
+  );
 
   useEffect(() => {
     if (open) {

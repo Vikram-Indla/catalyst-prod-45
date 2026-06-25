@@ -4,6 +4,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export interface CycleTestCase {
   id: string;
@@ -159,7 +160,7 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
           assignee: assigneeProfile ? {
             id: assigneeProfile.id,
             full_name: assigneeProfile.full_name || 'Unknown',
-            avatar_url: assigneeProfile.avatar_url,
+            avatar_url: resolveAvatarUrl(assigneeProfile.full_name ?? null) ?? assigneeProfile.avatar_url ?? null,
           } : null,
           dueDate: scope.due_date || null,  // Now reading from tm_cycle_scope.due_date
           executedAt: run?.completed_at || null,

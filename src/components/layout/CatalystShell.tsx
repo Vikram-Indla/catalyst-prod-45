@@ -567,6 +567,7 @@ function CatalystShellContent() {
   const isSelfFramedRoute =
     /^\/(project|product)-hub\/[^/]+\/backlog/.test(location.pathname) ||
     /^\/project-hub\/[^/]+\/allwork\/[^/]+/.test(location.pathname) ||
+    /^\/release-hub\/releases-management\/[^/]+$/.test(location.pathname) ||
     location.pathname.startsWith("/browse/"); // full-screen issue view
 
   // Hub routes that explicitly opt out of the Jira blue canvas — pure white

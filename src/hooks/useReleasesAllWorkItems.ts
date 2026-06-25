@@ -12,6 +12,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { WorkItem } from '@/types/workItem.types';
 
 function initialsFromName(name: string | null | undefined): string {
@@ -120,7 +121,7 @@ export function useReleasesAllWorkItems() {
           .select('id, full_name, avatar_url')
           .in('id', managerIds);
         (profs ?? []).forEach((p: any) => {
-          profById.set(p.id, { name: p.full_name ?? null, avatar: p.avatar_url ?? null });
+          profById.set(p.id, { name: p.full_name ?? null, avatar: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null });
         });
       }
       return list.map((r) => releaseRowToWorkItem({

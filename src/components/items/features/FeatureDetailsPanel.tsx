@@ -157,8 +157,9 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
       if (!data) return null;
 
       // Fetch relations in parallel
+      // TODO: owner profile fetch can use useApprovedProfiles profileMap once lifted out of queryFn
       const [ownerResult, epicResult, projectResult, contributorsResult, changeNumberResult] = await Promise.all([
-        data.owner_id 
+        data.owner_id
           ? supabase.from('profiles').select('id, full_name, email, avatar_url, role').eq('id', data.owner_id).single()
           : { data: null },
         data.epic_id

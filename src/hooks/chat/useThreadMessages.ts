@@ -7,6 +7,7 @@ import { useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { ChatMessage } from '@/types/chat';
 
 const db = supabase as unknown as { from: (table: string) => any };
@@ -31,7 +32,7 @@ async function fetchThread(conversationId: string, parentId: string): Promise<Ch
     if (authors) {
       authorMap = new Map(
         (authors as Array<{ id: string; full_name: string | null; avatar_url: string | null }>)
-          .map((a) => [a.id, { name: a.full_name ?? '', avatar: a.avatar_url }]),
+          .map((a) => [a.id, { name: a.full_name ?? '', avatar: resolveAvatarUrl(a.full_name ?? null) ?? a.avatar_url }]),
       );
     }
   }
@@ -42,7 +43,7 @@ async function fetchThread(conversationId: string, parentId: string): Promise<Ch
     parentId: m.parent_id,
     authorId: m.author_id,
     authorName: authorMap.get(m.author_id)?.name ?? '',
-    authorAvatarUrl: null,
+    authorAvatarUrl: authorMap.get(m.author_id)?.avatar ?? null,
     bodyText: m.body_text ?? '',
     bodyAdf: m.body_adf ?? null,
     createdAt: m.created_at,

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
+import { Plus, Star, MoreHorizontal, Kanban } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button/new';
 import AkAvatar from '@atlaskit/avatar';
@@ -90,10 +90,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
     ? `${projectName}${projectKey ? ` (${projectKey})` : ''}`
     : (projectKey ?? '—');
 
-  // Project avatar initial letter + color for Location column
-  const locationInitial = (projectName ?? projectKey ?? '?')[0]?.toUpperCase() ?? '?';
-
-  const columns: Column<BoardListItem>[] = useMemo(() => [
+const columns: Column<BoardListItem>[] = useMemo(() => [
     {
       id: '__star',
       label: '',
@@ -168,15 +165,14 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
           fontSize: 14, color: 'var(--ds-text-subtle, #505258)',
           overflow: 'hidden',
         }}>
-          {/* Project avatar */}
+          {/* Board icon — matches Jira's board list location column */}
           <span style={{
             width: 16, height: 16, borderRadius: 2, flexShrink: 0,
-            background: 'var(--ds-background-accent-teal-subtler, #C6EDFB)',
-            color: 'var(--ds-text-accent-teal, #164555)',
+            background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
+            color: 'var(--ds-icon-accent-blue, #0055CC)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 10, fontWeight: 700,
           }}>
-            {locationInitial}
+            <Kanban size={10} />
           </span>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {locationLabel}
@@ -206,7 +202,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath, projectN
         </span>
       ),
     },
-  ], [locationLabel, locationInitial, handleDelete, projectId, toggleStar, navigate, boardBasePath, projectKey, copyBoard, setMoveTarget, setCopyTarget]);
+  ], [locationLabel, handleDelete, projectId, toggleStar, navigate, boardBasePath, projectKey, copyBoard, setMoveTarget, setCopyTarget]);
 
   const spaceFilterOptions = useMemo(() =>
     spaceOptions.map(s => ({ label: s, value: s })), [spaceOptions]);

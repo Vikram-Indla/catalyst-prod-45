@@ -7,7 +7,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
-import { useActorProfiles } from '@/hooks/useActorProfiles';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from '@/features/notifications/types';
 import { groupByDate } from '@/features/notifications/utils/date';
@@ -70,7 +70,7 @@ function mapStatusAppearance(statusType: StatusType) {
 
 function mapNotification(
   n: Notification,
-  profiles: Map<string, { full_name: string; avatar_url: string | null }>
+  profiles: Map<string, { full_name: string; avatarUrl?: string | null }>
 ): DirectNotification {
   const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
   const isCommentVerb = ['commented', 'mentioned'].includes(mapVerb(n.notification_type));
@@ -84,7 +84,7 @@ function mapNotification(
       ? {
           id: n.actor_user_id,
           displayName: profile?.full_name ?? (n.actor?.full_name ?? 'Unknown'),
-          avatarUrl: profile?.avatar_url ?? n.actor?.avatar_url ?? null,
+          avatarUrl: profile?.avatarUrl ?? n.actor?.avatar_url ?? null,
         }
       : null,
     verb: mapVerb(n.notification_type),
@@ -199,12 +199,11 @@ export default function WatchingTab({ unreadOnly, isDark }: WatchingTabProps) {
     return data.pages.flat() as Notification[];
   }, [data]);
 
-  const actorIds = useMemo(
-    () => rawNotifications.map(n => n.actor_user_id).filter((id): id is string => !!id),
-    [rawNotifications]
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = useMemo(
+    () => new Map(approvedProfiles.map(p => [p.id, p])),
+    [approvedProfiles]
   );
-  const { data: profilesMap } = useActorProfiles(actorIds);
-  const profiles = profilesMap ?? new Map();
 
   const notifications = useMemo<DirectNotification[]>(
     () => rawNotifications.map(n => mapNotification(n, profiles)),

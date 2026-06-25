@@ -61,7 +61,12 @@ interface HubEntry {
   moduleKey: string;
 }
 
-const HUBS: HubEntry[] = [
+interface DeprecatedHubEntry extends HubEntry {
+  /** Mark as deprecated and non-navigable (dead option) */
+  deprecated?: boolean;
+}
+
+const HUBS: DeprecatedHubEntry[] = [
   { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1', moduleKey: 'home' },
   { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2', moduleKey: 'enterprise' },
   { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3', moduleKey: 'product' },
@@ -71,8 +76,8 @@ const HUBS: HubEntry[] = [
   { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7', moduleKey: 'testhub' },
   { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8', moduleKey: 'operations' },
   { key: 'task',     label: 'Tasks',    href: '/tasks/overview',             section: 'build_ship', tone: 'yellow',  shortcut: '9', moduleKey: 'planner' },
-  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0', moduleKey: 'planner' },
-  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-', moduleKey: 'wiki' },
+  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0', moduleKey: 'planner', deprecated: true },
+  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-', moduleKey: 'wiki', deprecated: true },
 ];
 
 const SECTIONS: { key: SectionKey; title: string }[] = [
@@ -244,6 +249,16 @@ export function HubSwitcher() {
           overflow: 'visible',
         }}
       >
+        <style>{`
+          [data-hub-switcher-section] [class*="SectionTitle"] {
+            color: var(--ds-text-subtle, #505258) !important;
+          }
+          @media (prefers-color-scheme: dark) {
+            [data-hub-switcher-section] [class*="SectionTitle"] {
+              color: var(--ds-text-subtle, #e0e0e0) !important;
+            }
+          }
+        `}</style>
         <div
           style={{
             display: 'flex',
@@ -269,18 +284,46 @@ export function HubSwitcher() {
               outline: 'none',
               background: 'transparent',
               fontSize: 14,
-              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #f0f0f0)))',
             }}
           />
         </div>
 
-        <MenuGroup>
+        <MenuGroup data-hub-switcher-section>
           {SECTIONS.map(({ key, title }) => {
             const rows = hubsBySection(key);
             if (rows.length === 0) return null;
             return (
               <Section key={key} title={title}>
                 {rows.map((hub) => {
+                  // Deprecated hub: visually enabled but non-navigable (dead).
+                  if (hub.deprecated) {
+                    return (
+                      <div
+                        key={hub.key}
+                        role="menuitem"
+                        aria-disabled="true"
+                        data-hub-deprecated={hub.key}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '12px 12px',
+                          cursor: 'not-allowed',
+                          userSelect: 'none',
+                        }}
+                      >
+                        <img
+                          src={HUB_ICON_REGISTRY[hub.key]}
+                          alt={hub.label}
+                          style={{ width: 32, height: 32, display: 'block' }}
+                        />
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
+                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{hub.label}</span>
+                        </span>
+                      </div>
+                    );
+                  }
                   // Inaccessible hub: shown but grayed-out, non-navigable, locked.
                   if (!isAccessible(hub)) {
                     return (
@@ -294,10 +337,16 @@ export function HubSwitcher() {
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
-                          padding: '8px 12px',
+                          padding: '12px 12px',
                           cursor: 'not-allowed',
                           opacity: 0.55,
                           userSelect: 'none',
+                          borderRadius: 4,
+                          background: 'var(--ds-surface, #FFFFFF)',
+                          border: '1px solid var(--ds-border, #DFE1E6)',
+                          boxShadow: '0 1px 3px rgba(9, 30, 66, 0.08)',
+                          marginBottom: 4,
+                          outline: 'none',
                         }}
                       >
                         <img

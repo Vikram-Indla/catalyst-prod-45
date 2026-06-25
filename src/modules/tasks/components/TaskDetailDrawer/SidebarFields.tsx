@@ -14,6 +14,7 @@ import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { useAuth } from '@/lib/auth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { catalystToast } from '@/lib/catalystToast';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 interface SidebarFieldsProps {
   task: any;
@@ -56,21 +57,6 @@ function useStatuses() {
         .from('task_statuses')
         .select('*')
         .order('position');
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-function useProfiles() {
-  return useQuery({
-    queryKey: ['drawer-profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, email')
-        .order('full_name');
       if (error) throw error;
       return data || [];
     },
@@ -146,7 +132,11 @@ function getInitials(name: string | null) {
 
 export function SidebarFields({ task, onFieldChange }: SidebarFieldsProps) {
   const { data: statuses = [] } = useStatuses();
-  const { data: profiles = [] } = useProfiles();
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profiles = useMemo(
+    () => approvedProfiles.map(p => ({ id: p.id, full_name: p.name, email: p.email, avatar_url: p.avatarUrl ?? null })),
+    [approvedProfiles]
+  );
   const { data: workstreams = [] } = useWorkstreams();
 
   const currentStatus = statuses.find((s: any) => s.id === task.status_id) || task.status;

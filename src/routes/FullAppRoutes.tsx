@@ -6,7 +6,7 @@ function IssueRedirectToBrowse() {
   return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
 }
 
-import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
+import { ENABLE_AI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
 import { ModuleGuard } from '../components/guards/ModuleGuard';
@@ -28,9 +28,6 @@ const RAGAuditPage = ENABLE_AI ? lazy(() => import("../pages/RAGAuditPage")) : (
 // merged into /admin/workhub/sync-logs. The route entries above are now
 // pure redirects, so the page imports are no longer needed. Files remain
 // in src/pages/admin/ until a follow-up cleanup commit removes them.
-
-// Dev-only prototypes
-const EvidenceToExecutionFullLazy = lazy(() => import("../pages/dev/EvidenceToExecutionFull"));
 
 const Resource360PageNew = lazy(() => import("../components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("../pages/Resource360MemberDetail"));
@@ -64,6 +61,7 @@ const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/Fi
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
+const ReleaseDetailPageLazy = lazy(() => import("../pages/release-hub/ReleaseDetailPage").then(m => ({ default: m.ReleaseDetailPage })));
 const DependenciesPageLazy = lazy(() => import("../pages/project-hub/DependenciesPage"));
 const ProductDependenciesPageLazy = lazy(() => import("../pages/product-hub/ProductDependenciesPage"));
 const IncidentHubDependenciesPageLazy = lazy(() => import("../pages/incidenthub/IncidentHubDependenciesPage"));
@@ -135,9 +133,7 @@ const IncidentHubFilterDetailPage = lazy(() => import("../pages/incidenthub/Inci
 const IncidentHubTimelinePage = lazy(() => import("../pages/incidenthub/IncidentTimelinePage"));
 const IncidentHubDashboardPage = lazy(() => import("../pages/incidenthub/IncidentDashboardPage"));
 const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
-const IncidentHubInsightsPage = lazy(() => import("../pages/incidenthub/IncidentInsightsPage"));
-const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentReportsPage"));
-const IncidentHubCommitteeQueuePage = lazy(() => import("../pages/incidenthub/CommitteeQueuePage"));
+// IncidentHubReportsPage and IncidentHubCommitteeQueuePage deprecated — routes removed
 const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
 // TestHub Admin
@@ -164,19 +160,8 @@ const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability
 const TestHubReportsPage = lazy(() => import("../pages/testhub/reports/ReportsPage"));
 const TestHubReportDetailPage = lazy(() => import("../pages/testhub/reports/ReportDetailPage"));
 
-const WikiHomePage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
-const WikiCategoryPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiCategoryPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiArticlePage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiArticlePage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiWhatsNewPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiWhatsNewPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiLearningPathsPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiLearningPathsPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiLearningPathDetailPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiLearningPathDetailPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiSubscriptionsPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiSubscriptionsPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiAllArticlesPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiAllArticlesPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiVerificationPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiVerificationPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiAnalyticsPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiAnalyticsPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiTemplatesPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiTemplatesPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiKnowledgeGraphPage = (ENABLE_AI && ENABLE_WIKI) ? lazy(() => import("../modules-dormant/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
+// Wiki module — DEPRECATED 2026-06-25
+// All wiki routes removed; modules-dormant/wiki remains in codebase for historical reference.
 
 const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("../components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
@@ -233,13 +218,8 @@ const TasksFilterDetailPage = lazy(() => import("../modules/tasks/pages/TasksFil
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 
-const PlanLibraryPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.PlanLibraryPage })));
-const PlanEditorPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.PlanEditorPage })));
-const ScenarioComparePage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.ScenarioComparePage })));
-const MasterPlanPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.MasterPlanPage })));
-const PlanHubResourcesPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.ResourcesPage })));
-const PlanHubAIPage = ENABLE_AI ? lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.AIAssistantPage }))) : () => <FeatureComingSoon title="PlanHub AI" />;
-const PlanHubReportsPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.ReportCenterPage })));
+// Plan Hub module — DEPRECATED 2026-06-25
+// All planhub routes removed; modules-dormant/planhub remains in codebase for historical reference.
 
 const Defects = lazy(() => import("../pages/Defects"));
 const Tasks = lazy(() => import("../pages/Tasks"));
@@ -277,7 +257,6 @@ const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepart
 const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ReleaseOpsAdminPage = lazy(() => import("../pages/admin/ReleaseOpsAdminPage"));
 const JiraSyncPage = lazy(() => import("../pages/admin/connections/JiraSyncPage").then(m => ({ default: m.JiraSyncPage })));
-const JiraSyncPageMockup = lazy(() => import("../pages/admin/connections/JiraSyncPageMockup").then(m => ({ default: m.JiraSyncPageMockup })));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 // Connections hub — each integration gets a page under /admin/connections/*
 const NotionConnectionPage = lazy(() => import("../pages/admin/connections/NotionConnectionPage"));
@@ -463,9 +442,6 @@ export default function FullAppRoutes() {
         <Route path="/kb-admin" element={<Navigate to="/admin/kb" replace />} />
         <Route path="/kb-data-audit" element={<S><KBDataAuditPage /></S>} />
         <Route path="/chat" element={<S><ChatPageLazy /></S>} />
-
-        {/* ═══ Dev Prototypes (Dev Only) ═══ */}
-        <Route path="/dev/product/evidence-to-execution" element={<S><EvidenceToExecutionFullLazy /></S>} />
 
         <Route path="/work-hub-test" element={<S><WorkHubLayout /></S>}>
           <Route index element={<Navigate to="summary" replace />} />
@@ -728,9 +704,7 @@ export default function FullAppRoutes() {
         {/* 2026-06-16: Work tab — canonical ProjectAllWorkView with mode='incident'. */}
         <Route path="/incident-hub/work" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubWorkPage /></S></MG>} />
         <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
-        <Route path="/incident-hub/insights" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubInsightsPage /></S></MG>} />
-        <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportsPage /></S></MG>} />
-        <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
+        {/* /incident-hub/reports and /incident-hub/committee-queue deprecated — routes removed */}
         <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
         {/* 2026-06-16: redirect alias — the BacklogPage's default
             "open in full page" pattern was {baseUrl}/backlog/{key} which
@@ -754,6 +728,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/releases-management" element={<S><ReleasesPageLazy /></S>} />
+        <Route path="/release-hub/releases-management/:releaseId" element={<S><ReleaseDetailPageLazy /></S>} />
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
         <Route path="/release-hub/changes/:changeId" element={<S><ChangeDetailPage /></S>} />
         <Route path="/release-hub/sop-templates" element={<S><SopTemplatesPage /></S>} />
@@ -786,30 +761,11 @@ export default function FullAppRoutes() {
         <Route path="/planner" element={<Navigate to="/tasks/overview" replace />} />
         <Route path="/planner/*" element={<Navigate to="/tasks/overview" replace />} />
 
+        {/* Plan Hub deprecated 2026-06-25 — all routes removed */}
+        <Route path="/planhub*" element={<Navigate to="/tasks/overview" replace />} />
 
-        <Route path="/planhub" element={<ModuleGuard moduleCode="planner"><S><PlanLibraryPage /></S></ModuleGuard>} />
-        <Route path="/planhub/plan/:planId" element={<S><PlanEditorPage /></S>} />
-        <Route path="/planhub/compare" element={<S><ScenarioComparePage /></S>} />
-        <Route path="/planhub/master" element={<S><MasterPlanPage /></S>} />
-        <Route path="/planhub/resources" element={<S><PlanHubResourcesPage /></S>} />
-        <Route path="/planhub/ai" element={<S><PlanHubAIPage /></S>} />
-        <Route path="/planhub/reports" element={<S><PlanHubReportsPage /></S>} />
-        <Route path="/planhub/capacity" element={<S><CapacityPlannerPage /></S>} />
-        <Route path="/planhub/budget-planner" element={<S><BudgetPlannerPage /></S>} />
-
-        <Route path="/wiki" element={<ModuleGuard moduleCode="wiki"><S><WikiHomePage /></S></ModuleGuard>} />
-        <Route path="/wiki/search" element={<S><WikiSearchPage /></S>} />
-        <Route path="/wiki/whats-new" element={<S><WikiWhatsNewPage /></S>} />
-        <Route path="/wiki/learning-paths" element={<S><WikiLearningPathsPage /></S>} />
-        <Route path="/wiki/learning-paths/:pathId" element={<S><WikiLearningPathDetailPage /></S>} />
-        <Route path="/wiki/subscriptions" element={<S><WikiSubscriptionsPage /></S>} />
-        <Route path="/wiki/all-articles" element={<S><WikiAllArticlesPage /></S>} />
-        <Route path="/wiki/verification" element={<S><WikiVerificationPage /></S>} />
-        <Route path="/wiki/analytics" element={<S><WikiAnalyticsPage /></S>} />
-        <Route path="/wiki/templates" element={<S><WikiTemplatesPage /></S>} />
-        <Route path="/wiki/knowledge-graph" element={<S><WikiKnowledgeGraphPage /></S>} />
-        <Route path="/wiki/category/:slug" element={<S><WikiCategoryPage /></S>} />
-        <Route path="/wiki/:pageSlug" element={<S><WikiArticlePage /></S>} />
+        {/* Wiki deprecated 2026-06-25 — all routes removed */}
+        <Route path="/wiki*" element={<Navigate to="/for-you" replace />} />
 
         <Route path="/mining" element={<S><MiningComingSoon /></S>} />
         <Route path="/product/room" element={<S><ProductRoomPage /></S>} />
@@ -956,10 +912,6 @@ export default function FullAppRoutes() {
               a page; old workhub paths redirect for backward compatibility.    */}
           <Route path="connections" element={<Navigate to="/admin/connections/jira" replace />} />
           <Route path="connections/jira" element={<S><JiraSyncPage /></S>} />
-          {/* Mockup is a dev-only design reference (sample data). Never in production. */}
-          {import.meta.env.DEV && (
-            <Route path="connections/jira/mockup" element={<S><JiraSyncPageMockup /></S>} />
-          )}
           <Route path="workflows/hierarchy" element={<S><WorkHubHierarchyPage /></S>} />
           <Route path="connections/jira/hierarchy" element={<Navigate to="/admin/workflows/hierarchy" replace />} />
           <Route path="connections/notion" element={<S><NotionConnectionPage /></S>} />

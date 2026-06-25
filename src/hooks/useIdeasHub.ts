@@ -6,6 +6,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 // ═══ TYPES ═══
 export interface IdeaRow {
@@ -219,6 +220,7 @@ export function useIdeaHubComments(ideaId: string | null) {
       const comments = data ?? [];
       if (comments.length === 0) return [];
 
+      // TODO: replace with useApprovedProfiles when this can be lifted out of queryFn
       const userIds = [...new Set(comments.map((c: any) => c.user_id).filter(Boolean))];
       const { data: profiles } = await supabase
         .from('profiles')
@@ -350,17 +352,10 @@ export function useDeleteIdea() {
 }
 
 // ═══ PROFILES ═══
-export function useProfiles() {
-  return useQuery({
-    queryKey: ideasHubKeys.profiles(),
-    queryFn: async (): Promise<ProfileRow[]> => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url')
-        .order('full_name');
-      if (error) throw error;
-      return (data ?? []) as ProfileRow[];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+export function useProfiles(): ReturnType<typeof useApprovedProfiles> & { data: ProfileRow[] | undefined } {
+  const result = useApprovedProfiles();
+  return {
+    ...result,
+    data: result.data?.map(p => ({ id: p.id, full_name: p.name, avatar_url: p.avatarUrl ?? null })) as ProfileRow[] | undefined,
+  } as any;
 }
