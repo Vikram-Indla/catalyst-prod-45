@@ -139,22 +139,13 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
   const isDeleted = notification.entity_deleted;
 
   const T = {
-    text1: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
-    // H9 fix: text2/text3 must be theme-aware for WCAG AA contrast (2026-06-25)
-    text2: isDark
-      ? 'var(--cp-text-tertiary, var(--cp-ink-3, #A1A1A1))'
-      : 'var(--cp-text-tertiary, var(--cp-ink-3, #42526E))',
-    text3: isDark
-      ? 'var(--cp-text-muted, var(--cp-ink-4, #878787))'
-      : 'var(--cp-text-muted, var(--cp-ink-4, #6B778C))',
-    hover: isDark
-      ? 'var(--cp-interact-hover, rgba(255,255,255,0.06))'
-      : 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
-    press: isDark
-      ? 'var(--cp-border-subtle, rgba(255,255,255,0.08))'
-      : 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
-    borderStrong: isDark ? 'var(--ds-border-bold, #454545)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.2))',
-    checkStroke: isDark ? '#3B82F6' : '#0052CC',  // Checkmark color theme-aware
+    text1: isDark ? '#EDEDED' : '#0F172A',
+    text2: isDark ? '#A1A1A1' : '#42526E',
+    text3: isDark ? '#878787' : '#6B778C',
+    hover: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.04)',
+    press: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.08)',
+    borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.20)',
+    checkStroke: isDark ? '#3B82F6' : '#0052CC',
   };
 
   /* ═══ C-03: Actor avatar logic ═══ */

@@ -102,39 +102,24 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const { isDark } = useTheme();
   const { data: lastSyncTime } = useLastSyncTime();
 
-  // Theme tokens — theme-aware fallbacks for light/dark mode (2026-06-25 visibility fix)
+  // Theme tokens — direct RGBA values for visible borders (2026-06-25 visibility fix)
+  // CSS vars like --cp-border-subtle resolve to 6% opacity which is too subtle.
   const T = {
-    panelBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    surfaceBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    text1: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
-    // H9 fix: text2/text3 must be theme-aware to maintain WCAG AA contrast
-    text2: isDark
-      ? 'var(--cp-text-tertiary, var(--cp-ink-3, #A1A1A1))'  // Light on dark
-      : 'var(--cp-text-tertiary, var(--cp-ink-3, #42526E))',  // Dark on light
-    text3: isDark
-      ? 'var(--cp-text-muted, var(--cp-ink-4, #878787))'  // Light-muted on dark
-      : 'var(--cp-text-muted, var(--cp-ink-4, #6B778C))',  // Dark-muted on light
-    // H1/H4 fix: border must use full CSS var + theme-aware fallback (min 12% opacity in light, solid in dark)
-    border: isDark
-      ? 'var(--cp-border-subtle, #2E2E2E)'  // Dark mode: solid dark border
-      : 'var(--cp-border-subtle, rgba(15,23,42,0.12))',  // Light mode: 12% opacity (not 8%)
-    borderStrong: isDark
-      ? 'var(--cp-border-default, #454545)'  // Dark mode: stronger dark
-      : 'var(--cp-border-default, rgba(15,23,42,0.16))',  // Light mode: 16% opacity (not 12%)
-    hover: isDark
-      ? 'var(--cp-interact-hover, rgba(255,255,255,0.06))'  // Light hover on dark
-      : 'var(--cp-interact-hover, rgba(15,23,42,0.04))',  // Dark hover on light
-    press: isDark
-      ? 'var(--cp-border-subtle, rgba(255,255,255,0.08))'  // Light press on dark
-      : 'var(--cp-border-subtle, rgba(15,23,42,0.08))',  // Dark press on light
+    panelBg: isDark ? '#1D2125' : '#FFFFFF',
+    surfaceBg: isDark ? '#1D2125' : '#FFFFFF',
+    text1: isDark ? '#EDEDED' : '#0F172A',
+    text2: isDark ? '#A1A1A1' : '#42526E',
+    text3: isDark ? '#878787' : '#6B778C',
+    border: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)',  // Direct values, not CSS vars
+    borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.20)',
+    hover: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.04)',
+    press: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.08)',
     shadow: isDark
-      ? '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.4)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.5))'
-      : '0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.12)), 0 0 1px var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
-    menuBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    divider: isDark
-      ? 'var(--cp-border-subtle, #2E2E2E)'  // Dark mode: solid dark divider
-      : 'var(--cp-border-subtle, rgba(15,23,42,0.12))',  // Light mode: 12% opacity divider
-    checkStroke: isDark ? '#3B82F6' : '#0052CC',  // Checkmark color in mark-read button
+      ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
+      : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
+    menuBg: isDark ? '#22272B' : '#FFFFFF',
+    divider: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)',
+    checkStroke: isDark ? '#3B82F6' : '#0052CC',
   };
 
   const [activeTab, setActiveTab] = useState<NotificationTab>('direct');
