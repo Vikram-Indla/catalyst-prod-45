@@ -673,7 +673,10 @@ serve(async (req) => {
                   status: issue.fields.status?.name || 'To Do',
                   status_type: statusType,
                   tab: 'watching',
-                  metadata: {},
+                  metadata: {
+                    actor_display_name: issue.fields.reporter?.displayName || null,
+                    actor_avatar_url: issue.fields.reporter?.avatarUrls?.['48x48'] || null,
+                  },
                 })
               }
             }
