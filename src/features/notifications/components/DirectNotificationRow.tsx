@@ -48,11 +48,8 @@ export default function DirectNotificationRow({
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
-  const actorName = notification.actor?.displayName ?? ((notification as any).metadata?.actor_display_name) ?? null;
-  // Jira-sync notifications have no real actor (reporter ≠ assigner). Use 'Jira' so
-  // CatalystAvatar renders colored initials instead of the grey silhouette (Path 3).
-  const isJiraSync = !!(notification as any).metadata?.is_jira_sync;
-  const avatarDisplayName = actorName ?? (isJiraSync ? 'Jira' : null);
+  const actorName = notification.actor?.displayName ?? null;
+  const avatarDisplayName = actorName;
   const verbText  = getVerbText(notification.verb, actorName);
   const relTime   = formatRelativeTime(notification.createdAt);
   const { target, aggregation, thread } = notification;
@@ -136,12 +133,9 @@ export default function DirectNotificationRow({
     [notification.id, onMarkRead]
   );
 
-  // Build avatar src — priority: notification.actor.avatarUrl > metadata avatarUrl > bundled photo > undefined
-  // notification.actor.avatarUrl comes from the profile relationship if loaded
-  // metadata avatarUrl comes from webhook or sync data
-  // resolveAvatarUrl is bundled local photos (uses avatarDisplayName so 'Jira' sync rows resolve correctly)
+  // Build avatar src — priority: notification.actor.avatarUrl > bundled photo > undefined.
+  // Only used when notification.actor is non-null (actor=null rows render a work-item icon instead).
   const avatarSrc = notification.actor?.avatarUrl
-    ?? ((notification as any).metadata?.actor_avatar_url)
     ?? resolveAvatarUrl(avatarDisplayName)
     ?? undefined;
 
@@ -187,17 +181,33 @@ export default function DirectNotificationRow({
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
     >
-      {/* Avatar — face photo when available, deterministic initials otherwise.
-          CatalystAvatar wraps Atlaskit Avatar so the row never shows the
-          faceless silhouette when we have a name. avatarDisplayName = actorName
-          for real actors, 'Jira' for sync rows with no real actor. */}
+      {/* Avatar slot — face/initials when a real actor is known; work-item type
+          icon in a neutral circle when no actor is available (e.g. Jira-sync
+          assignments where the actual assigner is not stored). */}
       <div style={{ flexShrink: 0, marginTop: 2 }}>
-        <CatalystAvatar
-          name={avatarDisplayName}
-          src={avatarSrc}
-          size="large"
-          appearance="circle"
-        />
+        {notification.actor !== null ? (
+          <CatalystAvatar
+            name={avatarDisplayName}
+            src={avatarSrc}
+            size="large"
+            appearance="circle"
+          />
+        ) : (
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: 'var(--ds-background-neutral, #F1F2F4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <DirectWorkItemIcon type={target.iconType} size={22} />
+          </div>
+        )}
       </div>
 
       {/* Text content */}
