@@ -163,36 +163,77 @@ export default function DirectNotificationRow({
       style={{
         display: "flex",
         width: "100%",
-        padding: "12px 16px",
+        padding: "8px 16px",
         background: rowBg,
-        border: "1px solid var(--ds-border, #DFE1E6)",
-        borderRadius: 4,
-        boxShadow: hovered
-          ? "0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.16))"
-          : "0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))",
+        border: "none",
+        borderBottom: `1px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, #DFE1E6)'}`,
+        borderRadius: 0,
+        boxShadow: "none",
         cursor: "pointer",
         textAlign: "left",
-        transition: "all 150ms ease",
+        transition: "background 100ms ease",
         outline: "none",
         gap: 10,
         alignItems: "flex-start",
-        opacity: isRead ? 0.85 : 1,
-        marginBottom: 8,
+        opacity: isRead ? 0.8 : 1,
+        marginBottom: 0,
       }}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
     >
-      {/* Avatar slot — face/initials when actor is known; person-circle icon
-          in a neutral ADS circle when actor is unavailable (system-assigned
-          items where the actual assigner is not stored). */}
+      {/* Avatar slot:
+          - 'user': CatalystAvatar with initials/photo
+          - 'system': muted circle with sync icon (Jira-assigned)
+          - null/unknown: grey person-circle placeholder */}
       <div style={{ flexShrink: 0, marginTop: 2 }}>
-        {notification.actor !== null ? (
+        {notification.actor?.actorType === 'user' ? (
           <CatalystAvatar
             name={avatarDisplayName}
             src={avatarSrc}
             size="large"
             appearance="circle"
           />
+        ) : notification.actor?.actorType === 'system' ? (
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: isDark
+                ? 'var(--ds-surface-overlay, #2A2A2A)'
+                : 'var(--ds-background-neutral, #F1F2F4)',
+              border: `1.5px dashed ${isDark ? 'var(--ds-border, #444)' : 'var(--ds-border, #B3BAC5)'}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+            title="Jira Sync"
+          >
+            {/* Sync icon */}
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <path
+                d="M2.5 9a6.5 6.5 0 0 1 11.1-4.6M15.5 9a6.5 6.5 0 0 1-11.1 4.6"
+                stroke={isDark ? 'var(--ds-icon-subtle, #8696A7)' : 'var(--ds-icon-subtle, #626F86)'}
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+              <polyline
+                points="13.5,4 15.5,4.4 15.1,6.4"
+                stroke={isDark ? 'var(--ds-icon-subtle, #8696A7)' : 'var(--ds-icon-subtle, #626F86)'}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <polyline
+                points="4.5,14 2.5,13.6 2.9,11.6"
+                stroke={isDark ? 'var(--ds-icon-subtle, #8696A7)' : 'var(--ds-icon-subtle, #626F86)'}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
         ) : (
           <div
             style={{
@@ -238,7 +279,12 @@ export default function DirectNotificationRow({
               minWidth: 0,
             }}
           >
-            {actorName && <span style={{ fontWeight: 600 }}>{actorName} </span>}
+            {actorName && notification.actor?.actorType === 'user' && (
+              <span style={{ fontWeight: 600 }}>{actorName} </span>
+            )}
+            {actorName && notification.actor?.actorType === 'system' && (
+              <span style={{ fontWeight: 400, fontStyle: 'italic', color: text3 }}>{actorName} </span>
+            )}
             <span style={{ fontWeight: 500 }}>
               {actorName ? verbText.replace(`${actorName} `, "") : verbText}
             </span>

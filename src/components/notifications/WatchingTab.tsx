@@ -7,11 +7,12 @@ import { useMemo, useState, useCallback } from 'react';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
-import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
+import { useApprovedProfiles, useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
 import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from '@/features/notifications/types';
 import { groupByDate } from '@/features/notifications/utils/date';
 import DirectNotificationRow from '@/features/notifications/components/DirectNotificationRow';
+import { resolveActorIdentity, type ActorResolutionMaps } from '@/features/notifications/resolveActorIdentity';
 
 interface WatchingTabProps {
   unreadOnly: boolean;
@@ -70,21 +71,26 @@ function mapStatusAppearance(statusType: StatusType) {
 
 function mapNotification(
   n: Notification,
-  profiles: Map<string, { full_name: string; avatarUrl?: string | null }>
+  maps: ActorResolutionMaps
 ): DirectNotification {
-  const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
+  const meta = n.metadata as Record<string, unknown> | undefined;
+  const isJiraSync = !!(meta?.is_jira_sync);
   const isCommentVerb = ['commented', 'mentioned'].includes(mapVerb(n.notification_type));
   const hasThread = !!(n.metadata?.comment_preview) || isCommentVerb;
+
+  const identity = resolveActorIdentity(n.actor_user_id, meta, maps, isJiraSync);
 
   return {
     id: n.id,
     createdAt: n.created_at,
     readAt: n.read_at,
-    actor: n.actor_user_id
+    actor: identity.actorType !== 'unknown'
       ? {
-          id: n.actor_user_id,
-          displayName: profile?.full_name ?? (n.actor?.full_name ?? 'Unknown'),
-          avatarUrl: profile?.avatarUrl ?? n.actor?.avatar_url ?? null,
+          id: n.actor_user_id ?? `${identity.source}:${n.id}`,
+          displayName: identity.displayName,
+          avatarUrl: identity.avatarUrl ?? null,
+          actorType: identity.actorType,
+          initials: identity.initials,
         }
       : null,
     verb: mapVerb(n.notification_type),
@@ -200,14 +206,19 @@ export default function WatchingTab({ unreadOnly, isDark }: WatchingTabProps) {
   }, [data]);
 
   const { data: approvedProfiles = [] } = useApprovedProfiles();
-  const profiles = useMemo(
-    () => new Map(approvedProfiles.map(p => [p.id, p])),
-    [approvedProfiles]
+  const profilesByJiraId = useApprovedProfilesByJiraId();
+  const actorMaps = useMemo<ActorResolutionMaps>(
+    () => ({
+      byId: new Map(approvedProfiles.map(p => [p.id, p])),
+      byJiraId: profilesByJiraId,
+      byName: new Map(approvedProfiles.map(p => [p.name.toLowerCase(), p])),
+    }),
+    [approvedProfiles, profilesByJiraId]
   );
 
   const notifications = useMemo<DirectNotification[]>(
-    () => rawNotifications.map(n => mapNotification(n, profiles)),
-    [rawNotifications, profiles]
+    () => rawNotifications.map(n => mapNotification(n, actorMaps)),
+    [rawNotifications, actorMaps]
   );
 
   const resolvedReadIds = useMemo<Set<string>>(() => {

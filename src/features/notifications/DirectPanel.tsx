@@ -9,6 +9,7 @@ import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './t
 import { groupByDate } from './utils/date';
 import DirectNotificationRow from './components/DirectNotificationRow';
 import MentionActivityCard from '@/components/notifications/MentionActivityCard';
+import { resolveActorIdentity, type ActorResolutionMaps } from './resolveActorIdentity';
 
 interface DirectPanelProps {
   unreadOnly: boolean;
@@ -70,50 +71,26 @@ function mapStatusAppearance(statusType: StatusType) {
 
 function mapNotification(
   n: Notification,
-  profiles: Map<string, { name: string; avatarUrl?: string | null }>,
-  profilesByName: Map<string, { name: string; avatarUrl?: string | null }>,
-  profilesByJiraId: Map<string, { name: string; avatarUrl?: string | null }>
+  maps: ActorResolutionMaps
 ): DirectNotification {
-  const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
+  const meta = n.metadata as Record<string, unknown> | undefined;
+  const isJiraSync = !!(meta?.is_jira_sync);
   const isCommentVerb = ['commented', 'mentioned'].includes(mapVerb(n.notification_type));
   const hasThread = !!(n.metadata?.comment_preview) || isCommentVerb;
 
-  // Actor resolution — 5 fallback layers:
-  //   1. profile by actor_user_id (Catalyst UUID — set at sync time when reporter matched)
-  //   1.5 profile by actor_jira_account_id (Jira accountId — fires when UUID lookup fails)
-  //   2. notification.actor embedded object (webhook snapshot)
-  //   3. metadata.actor_name / actor_display_name (reporter display name from sync/webhook)
-  const meta = n.metadata as Record<string, unknown> | undefined;
-  const metadataActorName = (meta?.actor_name ?? meta?.actor_display_name) as string | undefined;
-  const metadataActorAvatar = meta?.actor_avatar_url as string | undefined;
-  const metadataActorJiraId = meta?.actor_jira_account_id as string | undefined;
-  // Layer 1.5: jiraId lookup fires only when UUID-based profile lookup failed
-  const jiraIdProfile = (!profile && metadataActorJiraId)
-    ? profilesByJiraId.get(metadataActorJiraId)
-    : null;
-  const resolvedDisplayName = profile?.name
-    ?? jiraIdProfile?.name
-    ?? n.actor?.full_name
-    ?? (metadataActorName && metadataActorName.trim() ? metadataActorName : null);
-  // Avatar: UUID profile → jiraId profile → name-based → webhook snapshot (Jira CDN, banned by CatalystAvatar)
-  const nameBasedProfile = resolvedDisplayName
-    ? profilesByName.get(resolvedDisplayName.toLowerCase())
-    : null;
-  const resolvedAvatarUrl = profile?.avatarUrl
-    ?? jiraIdProfile?.avatarUrl
-    ?? nameBasedProfile?.avatarUrl
-    ?? n.actor?.avatar_url
-    ?? (metadataActorAvatar && metadataActorAvatar.trim() ? metadataActorAvatar : null);
+  const identity = resolveActorIdentity(n.actor_user_id, meta, maps, isJiraSync);
 
   return {
     id: n.id,
     createdAt: n.created_at,
     readAt: n.read_at,
-    actor: (n.actor_user_id || resolvedDisplayName)
+    actor: identity.actorType !== 'unknown'
       ? {
-          id: n.actor_user_id ?? `metadata:${n.id}`,
-          displayName: resolvedDisplayName ?? 'Unknown',
-          avatarUrl: resolvedAvatarUrl,
+          id: n.actor_user_id ?? `${identity.source}:${n.id}`,
+          displayName: identity.displayName,
+          avatarUrl: identity.avatarUrl ?? null,
+          actorType: identity.actorType,
+          initials: identity.initials,
         }
       : null,
     verb: mapVerb(n.notification_type),
@@ -127,9 +104,6 @@ function mapNotification(
     },
     thread: hasThread
       ? {
-          // commentPreview may be empty string for comment-verb notifications
-          // that haven't stored a preview yet — the thread card still renders
-          // with the "View thread" link so the user can navigate to it.
           commentPreview: n.metadata?.comment_preview ?? '',
           reactions: n.metadata?.reactions ?? {},
           replyCount: 0,
@@ -374,10 +348,15 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
     [approvedProfiles]
   );
 
+  const actorMaps = useMemo<ActorResolutionMaps>(
+    () => ({ byId: profiles, byJiraId: profilesByJiraId, byName: profilesByName }),
+    [profiles, profilesByJiraId, profilesByName]
+  );
+
   // Map raw DB rows → DirectNotification display shape
   const notifications = useMemo<DirectNotification[]>(
-    () => rawNotifications.map(n => mapNotification(n, profiles, profilesByName, profilesByJiraId)),
-    [rawNotifications, profiles, profilesByName, profilesByJiraId]
+    () => rawNotifications.map(n => mapNotification(n, actorMaps)),
+    [rawNotifications, actorMaps]
   );
 
   // Read-state: merge DB read_at, local optimistic state, and external state

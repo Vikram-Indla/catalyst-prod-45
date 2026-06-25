@@ -199,7 +199,9 @@ export function useMarkSyncAsRead() {
         }
       } else {
         // No existing notification for this issue — create a read receipt so
-        // read state survives across sessions.
+        // read state survives across sessions. Include actor metadata from the
+        // sync item so future resolver passes can extract the actor name.
+        const srcMeta = notification.metadata as Record<string, unknown> | null;
         await supabase
           .from('notifications')
           .insert({
@@ -215,7 +217,11 @@ export function useMarkSyncAsRead() {
             tab: 'direct',
             hub_source: 'ProjectHub',
             read_at: now,
-            metadata: {},
+            metadata: {
+              is_jira_sync: true,
+              actor_display_name: srcMeta?.actor_display_name ?? null,
+              actor_avatar_url: srcMeta?.actor_avatar_url ?? null,
+            },
           });
       }
     },

@@ -20,6 +20,9 @@ export interface DirectActor {
   id: string;
   displayName: string;
   avatarUrl?: string | null;
+  /** 'user' = known person, 'system' = Jira Sync/automated, 'unknown' = no data */
+  actorType: 'user' | 'system' | 'unknown';
+  initials: string;
 }
 
 export interface DirectTarget {
