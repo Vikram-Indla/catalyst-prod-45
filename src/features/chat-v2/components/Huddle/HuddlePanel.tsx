@@ -30,7 +30,7 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 12,
+        gap: 16,
         padding: '8px 16px',
         borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         background: 'var(--ds-surface-sunken, #F7F8F9)',
@@ -42,8 +42,8 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
       </span>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {huddle.participants.map((p) => (
-          <span key={p.userId} style={{ marginLeft: -4 }}>
-            <Avatar size="small" />
+          <span key={p.userId} style={{ marginLeft: -4 }} title={p.name || undefined}>
+            <Avatar size="small" name={p.name || undefined} />
           </span>
         ))}
       </div>

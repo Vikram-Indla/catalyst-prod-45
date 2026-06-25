@@ -57,7 +57,13 @@ export function useActiveHuddle(conversationId: string | null) {
       if (!hud) return null;
       const { data: parts } = await db.from('chat_huddle_participants')
         .select('huddle_id, user_id, left_at').eq('huddle_id', (hud as HuddleRow).id).is('left_at', null);
-      const participants = ((parts ?? []) as ParticipantRow[]).map((p) => ({ userId: p.user_id }));
+      const ids = ((parts ?? []) as ParticipantRow[]).map((p) => p.user_id);
+      let nameMap: Record<string, string> = {};
+      if (ids.length) {
+        const { data: profs } = await db.from('profiles').select('id, full_name').in('id', ids);
+        nameMap = Object.fromEntries(((profs ?? []) as { id: string; full_name: string | null }[]).map((r) => [r.id, r.full_name ?? '']));
+      }
+      const participants = ids.map((uid) => ({ userId: uid, name: nameMap[uid] || '' }));
       return { id: (hud as HuddleRow).id, participants, isFull: participants.length >= HUDDLE_CAP };
     },
   });
