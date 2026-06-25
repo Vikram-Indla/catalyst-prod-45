@@ -49,11 +49,11 @@ export default function DirectNotificationRow({
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
+  const { target, aggregation, thread } = notification;
   const actorName = notification.actor?.displayName ?? null;
   const avatarDisplayName = actorName;
   const verbText  = getVerbText(notification.verb, actorName, target.iconType);
   const relTime   = formatRelativeTime(notification.createdAt);
-  const { target, aggregation, thread } = notification;
 
   // Hover-revealed star → unified user_starred_items store. The row is a
   // <button>, so the star is a role="button" span (a nested <button> would be
