@@ -6,6 +6,7 @@ import {
   BellOffIcon,
   ChevronDownIcon,
   DmsIcon,
+  HeadphonesIcon,
   PinIcon,
   StarIcon,
   SummarizeIcon,
@@ -25,6 +26,10 @@ interface MessagePanelHeaderProps {
   /** Triggered when the user picks a preset from the summarize menu. */
   onSummarize?: (preset: SummarizePreset) => void;
   onClose?: () => void;
+  /** Called when the user clicks the headphone (huddle) button. */
+  onStartHuddle?: () => void;
+  /** When true, tints the huddle button to indicate an active huddle. */
+  huddleActive?: boolean;
 }
 
 export function MessagePanelHeader({
@@ -35,6 +40,8 @@ export function MessagePanelHeader({
   onToggleStar,
   onSummarize,
   onClose,
+  onStartHuddle,
+  huddleActive,
 }: MessagePanelHeaderProps) {
   const isStarred = !!conversation.isStarred;
   // Notifications toggle is local UI state — clicking the bell swaps to a
@@ -133,6 +140,16 @@ export function MessagePanelHeader({
         </button>
       </div>
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+        {onStartHuddle && (
+          <IconButton
+            label={huddleActive ? 'Join huddle' : 'Start huddle'}
+            onClick={onStartHuddle}
+            size="md"
+            active={huddleActive}
+          >
+            <HeadphonesIcon size={16} />
+          </IconButton>
+        )}
         <IconButton
           label={muted ? 'Unmute notifications' : 'Mute notifications'}
           onClick={() => setMuted(v => !v)}
