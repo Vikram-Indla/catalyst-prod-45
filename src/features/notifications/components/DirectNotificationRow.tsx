@@ -90,8 +90,14 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
     onMarkRead(notification.id);
   }, [notification.id, onMarkRead]);
 
-  // Build avatar src — prefer real avatar_url, fall back to undefined (shows initials)
-  const avatarSrc = resolveAvatarUrl(actorName) ?? notification.actor?.avatarUrl ?? undefined;
+  // Build avatar src — priority: notification.actor.avatarUrl > metadata avatarUrl > bundled photo > undefined
+  // notification.actor.avatarUrl comes from the profile relationship if loaded
+  // metadata avatarUrl comes from webhook or sync data
+  // resolveAvatarUrl is bundled local photos
+  const avatarSrc = notification.actor?.avatarUrl
+    ?? ((notification as any).metadata?.actor_avatar_url)
+    ?? resolveAvatarUrl(actorName)
+    ?? undefined;
 
   return (
     <button
