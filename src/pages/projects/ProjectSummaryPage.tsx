@@ -287,9 +287,9 @@ function SummaryView() {
   };
 
   const statusData = [
-    { name: 'To Do', value: 8, color: '#4C9AFF' },
+    { name: 'To Do', value: 8, color: 'var(--ds-background-information-bold, #0C66E4)' },
     { name: 'In Progress', value: 5, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-    { name: 'Done', value: 4, color: '#36B37E' },
+    { name: 'Done', value: 4, color: 'var(--ds-background-success-bold, #1F845A)' },
   ];
 
   const priorityData = [

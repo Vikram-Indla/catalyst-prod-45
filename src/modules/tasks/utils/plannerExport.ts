@@ -20,20 +20,20 @@ interface ExportOptions {
 // Brand colors for enterprise styling
 const BRAND_COLORS = {
   primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  secondary: '#1e40af',
+  secondary: 'var(--ds-link-pressed, #1e40af)',
   accent: 'var(--ds-text-brand, #3b82f6)',
-  text: '#1f2937',
-  textMuted: '#6b7280',
+  text: 'var(--ds-text, #172B4D)',
+  textMuted: 'var(--ds-text-subtlest, #626F86)',
   border: 'var(--ds-border, #e5e7eb)',
-  success: '#10b981',
+  success: 'var(--ds-background-success-bold, #059669)',
   warning: 'var(--ds-text-warning, #f59e0b)',
   danger: 'var(--ds-text-danger, #ef4444)',
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
   critical: 'var(--ds-text-danger, #ef4444)',
-  high: '#f97316',
-  medium: '#eab308',
+  high: 'var(--ds-background-warning-bold, #f97316)',
+  medium: 'var(--ds-background-warning-bold, #E2B203)',
   low: 'var(--ds-text-success, #22c55e)',
 };
 
@@ -211,7 +211,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
         cellPadding: 2.5,
       },
       alternateRowStyles: {
-        fillColor: '#f9fafb',
+        fillColor: 'var(--ds-surface-sunken, #F7F8F9)',
       },
       columnStyles: {
         0: { cellWidth: 25, fontStyle: 'bold', textColor: BRAND_COLORS.primary },

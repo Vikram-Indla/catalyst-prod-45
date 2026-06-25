@@ -30,7 +30,7 @@ function getBubbleColor(status: string): string {
 }
 
 const QUADRANTS = [
-  { top: 0, left: 0, label: 'QUICK WINS', bg: '#F0FDF4', labelColor: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  { top: 0, left: 0, label: 'QUICK WINS', bg: 'var(--ds-background-success, #DFFCF0)', labelColor: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   { top: 0, left: '50%', label: 'BIG BETS', bg: 'var(--ds-background-selected, #EFF6FF)', labelColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   { top: '50%', left: 0, label: 'FILL-INS', bg: 'var(--ds-surface-sunken, #F8FAFC)', labelColor: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' },
   { top: '50%', left: '50%', label: 'MONEY PIT', bg: 'var(--ds-background-danger, #FEF2F2)', labelColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
@@ -75,7 +75,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
             <div style={{
               width: '160px', fontSize: '12px', fontWeight: 600, padding: '5px 10px',
-              background: 'var(--cp-bg-page, #F8FAFC)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: '6px',
+              background: 'var(--cp-bg-page, #F8FAFC)', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: '6px',
               color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer',
             }}>
               {ctrl.value}
@@ -87,7 +87,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
-          width: '100%', height: '520px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+          width: '100%', height: '520px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
           borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}
@@ -130,8 +130,8 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '10px', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   fontFamily: 'var(--cp-font-mono)',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                  boxShadow: hoveredDot === dot.key ? '0 4px 14px rgba(0,0,0,0.25)' : '0 2px 6px rgba(0,0,0,0.15)',
+                  textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))',
+                  boxShadow: hoveredDot === dot.key ? '0 4px 14px var(--ds-shadow-raised, rgba(0,0,0,0.25))' : '0 2px 6px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
                   transform: hoveredDot === dot.key ? 'scale(1.3)' : 'scale(1)',
                   zIndex: hoveredDot === dot.key ? 10 : 2,
                   transition: 'transform 0.2s, box-shadow 0.2s',
@@ -144,7 +144,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                     position: 'absolute', bottom: `${dot.size + 8}px`, left: '50%', transform: 'translateX(-50%)',
                     background: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', borderRadius: '8px',
                     padding: '8px 12px', whiteSpace: 'nowrap', zIndex: 20,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
                   }}>
                     <div style={{ fontWeight: 700, marginBottom: '2px' }}>{dot.key} · {dot.title}</div>
                     <div style={{ fontSize: '11px', color: 'var(--ds-text-disabled, #CBD5E1)' }}>

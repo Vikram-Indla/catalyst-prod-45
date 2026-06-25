@@ -23,17 +23,17 @@ export const BreachedAlertBanner = memo(function BreachedAlertBanner({
     <div 
       className={cn(
         "mx-4 sm:mx-6 mb-4 px-4 py-3.5 flex items-center justify-between rounded-[10px]",
-        "bg-[rgba(239,68,68,0.06)] dark:bg-[rgba(239,68,68,0.15)]",
-        "border border-[rgba(239,68,68,0.15)] dark:border-[rgba(239,68,68,0.3)]"
+        "bg-[var(--ds-background-danger, rgba(239,68,68,0.06))] dark:bg-[var(--ds-background-danger, rgba(239,68,68,0.15))]",
+        "border border-[var(--ds-background-danger, rgba(239,68,68,0.15))] dark:border-[var(--ds-background-danger, rgba(239,68,68,0.3))]"
       )}
     >
       <div className="flex items-center gap-3">
-        <AlertTriangle className="h-5 w-5 text-[var(--ds-text-danger,#ef4444)] dark:text-[#f87171]" />
+        <AlertTriangle className="h-5 w-5 text-[var(--ds-text-danger,#ef4444)] dark:text-[var(--ds-background-danger, #FFECEB)]" />
         <div className="flex items-center gap-2">
-          <span className="text-[15px] font-bold text-[var(--ds-text-danger,#ef4444)] dark:text-[#f87171]">
+          <span className="text-[15px] font-bold text-[var(--ds-text-danger,#ef4444)] dark:text-[var(--ds-background-danger, #FFECEB)]">
             {breachedCount} SLA {breachedCount === 1 ? 'Breach' : 'Breaches'}
           </span>
-          <span className="text-sm text-[rgba(239,68,68,0.8)] dark:text-[rgba(248,113,113,0.8)]">
+          <span className="text-sm text-[var(--ds-background-danger, rgba(239,68,68,0.8))] dark:text-[rgba(248,113,113,0.8)]">
             Immediate attention required
           </span>
         </div>
@@ -44,8 +44,8 @@ export const BreachedAlertBanner = memo(function BreachedAlertBanner({
         className={cn(
           "font-semibold transition-colors",
           "border-[var(--ds-text-danger,#ef4444)] text-[var(--ds-text-danger,#ef4444)]",
-          "dark:border-[#f87171] dark:text-[#f87171]",
-          "hover:bg-[var(--ds-text-danger,#ef4444)] hover:text-white dark:hover:bg-[#f87171]"
+          "dark:border-[var(--ds-background-danger, #FFECEB)] dark:text-[var(--ds-background-danger, #FFECEB)]",
+          "hover:bg-[var(--ds-text-danger,#ef4444)] hover:text-white dark:hover:bg-[var(--ds-background-danger, #FFECEB)]"
         )}
         onClick={onViewBreached}
       >

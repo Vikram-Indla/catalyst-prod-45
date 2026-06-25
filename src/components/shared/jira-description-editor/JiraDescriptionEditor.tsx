@@ -175,7 +175,7 @@ export function JiraDescriptionEditor({
     return (
       <div className="jde-root" data-readonly={readOnly} style={{ minHeight }}>
         <div className="jde-content" style={{ minHeight, display: 'flex', alignItems: 'center', padding: '8px 12px' }}>
-          <span style={{ color: '#A5ADBA', fontSize: 14, fontStyle: 'italic' }}>
+          <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: 14, fontStyle: 'italic' }}>
             {placeholder}
           </span>
         </div>

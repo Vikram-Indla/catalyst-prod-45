@@ -180,9 +180,9 @@ function SortableRow({
           <button
             onClick={() => onResourceCountClick(assignment, budgetData?.linkedResources || [])}
             className="flex items-center gap-1.5 px-2 py-1 rounded transition-colors cursor-pointer"
-            style={{ background: 'rgba(34,197,94,0.1)', color: 'var(--ds-text-success, #15803D)' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.2)')}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.1)')}
+            style={{ background: 'var(--ds-background-success-bold, rgba(34,197,94,0.1))', color: 'var(--ds-text-success, #15803D)' }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-success-bold, rgba(34,197,94,0.2))')}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-success-bold, rgba(34,197,94,0.1))')}
           >
             <span style={{ display: 'inline-flex' }}><PeopleGroupIcon label="" size="small" /></span>
             <span className="text-sm font-medium">{resourceCount}</span>
@@ -235,7 +235,7 @@ function SortableRow({
               className="h-8 w-[130px] flex items-center justify-start text-left font-normal text-xs px-2 rounded border"
               style={{
                 borderColor: 'var(--ds-border, #DCDFE4)',
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
                 color: assignment.start_date ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
               }}
             >
@@ -261,7 +261,7 @@ function SortableRow({
               className="h-8 w-[130px] flex items-center justify-start text-left font-normal text-xs px-2 rounded border"
               style={{
                 borderColor: 'var(--ds-border, #DCDFE4)',
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
                 color: assignment.end_date ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
               }}
             >
@@ -830,7 +830,7 @@ export default function ResourceAssignmentsPage() {
           const typeAppearance = ASSIGNMENT_TYPE_APPEARANCES[group.type] || ASSIGNMENT_TYPE_APPEARANCES.Unspecified;
 
           return (
-            <div key={group.type} className="rounded-xl overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+            <div key={group.type} className="rounded-xl overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
               {/* Group Header */}
               <button
                 onClick={() => toggleGroup(group.type)}
@@ -860,7 +860,7 @@ export default function ResourceAssignmentsPage() {
                   onDragEnd={(e) => handleDragEnd(e, group.type)}
                 >
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    {/* Jira-parity table headers: 12/653/rgb(80,82,88) SENTENCE-CASE
+                    {/* Jira-parity table headers: 12/653/var(--ds-text-subtle, rgb(80,82,88)) SENTENCE-CASE
                         (not uppercase), hairline bottom border, padding 8px 12px 8px 0. */}
                     <thead>
                       <tr>
@@ -888,7 +888,7 @@ export default function ResourceAssignmentsPage() {
                               fontWeight: 653,
                               color: 'var(--ds-text-subtle, #505258)',
                               padding: '8px 12px 8px 0',
-                              borderBottom: '1.67px solid rgba(11, 18, 14, 0.14)',
+                              borderBottom: '1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))',
                               textTransform: 'none',
                               letterSpacing: 'normal',
                               lineHeight: '16px',
@@ -941,7 +941,7 @@ export default function ResourceAssignmentsPage() {
         })}
 
         {groupedAssignments.length === 0 && (
-          <div className="rounded-xl px-4 py-8 text-center" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+          <div className="rounded-xl px-4 py-8 text-center" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '1px solid var(--ds-border, #DCDFE4)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
             No assignments configured. Click "Add Assignment" to create one.
           </div>
         )}
@@ -1205,7 +1205,7 @@ export default function ResourceAssignmentsPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(34,197,94,0.1)' }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-success-bold, rgba(34,197,94,0.1))' }}>
                 <span style={{ display: 'inline-flex', color: 'var(--ds-text-success, #15803D)' }}><PeopleGroupIcon label="" size="small" /></span>
               </div>
               <div>
@@ -1238,9 +1238,9 @@ export default function ResourceAssignmentsPage() {
                       <div
                         key={resource.id}
                         className="flex items-center px-4 py-3 rounded-lg transition-colors"
-                        style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}
+                        style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}
                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
-                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}
+                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))')}
                       >
                         <div className="w-16">
                           <span className="text-xs font-mono font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand, #0C66E4)', background: 'var(--ds-background-selected, #E9F2FF)' }}>

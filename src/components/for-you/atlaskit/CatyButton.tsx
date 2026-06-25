@@ -103,7 +103,7 @@ export function CatyButton({
             top: '-6px',
             right: '-6px',
             background: 'var(--ds-background-danger-bold, #AE2A19)',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             borderRadius: '50%',
             width: '20px',
             height: '20px',

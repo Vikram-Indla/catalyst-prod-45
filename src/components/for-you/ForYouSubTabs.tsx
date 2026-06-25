@@ -63,7 +63,7 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: isActive ? 'rgba(255,255,255,0.9)' : 'var(--cp-hover)',
+                background: isActive ? 'var(--ds-surface, rgba(255,255,255,0.9))' : 'var(--cp-hover)',
                 color: isActive ? 'var(--cp-blue-text)' : 'var(--cp-t3)',
               }}
             >

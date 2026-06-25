@@ -29,7 +29,7 @@ function getAvatarGradient(key: string) {
     M: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', N: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', O: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', P: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', Q: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', R: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
     S: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', T: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', U: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', V: 'var(--ds-text-success, var(--cp-success, #16A34A))', W: 'var(--ds-text-success, var(--cp-success, #16A34A))', X: 'var(--ds-text-success, var(--cp-success, #16A34A))', Y: 'var(--ds-text-success, var(--cp-success, #16A34A))', Z: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   };
-  return map[letter] || '#0284C7';
+  return map[letter] || 'var(--ds-link, #0284c7)';
 }
 
 export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav }: Props) {
@@ -57,7 +57,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
               <div style={{ fontSize: 12, color: 'var(--fg-3)' }}>{project.department || 'No department'} · {project.project_key}</div>
             </div>
             <button onClick={onToggleFav} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-              <Star size={18} fill={isFav ? '#EAB308' : 'none'} color={isFav ? '#EAB308' : 'var(--ds-text-disabled, #CBD5E1)'} />
+              <Star size={18} fill={isFav ? 'var(--ds-background-warning-bold, #E2B203)' : 'none'} color={isFav ? 'var(--ds-background-warning-bold, #E2B203)' : 'var(--ds-text-disabled, #CBD5E1)'} />
             </button>
           </div>
 
@@ -98,7 +98,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
                   fontSize: 13,
                   fontWeight: tab === t ? 600 : 400,
                   color: tab === t ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--fg-3)',
-                  borderBottom: tab === t ? '2px solid #2563EB' : '2px solid transparent',
+                  borderBottom: tab === t ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
                   background: 'none',
                   border: 'none',
                   borderBottomWidth: 2,

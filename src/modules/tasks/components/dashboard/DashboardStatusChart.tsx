@@ -17,8 +17,8 @@ const STATUS_COLORS: Record<string, string> = {
   backlog: 'var(--ds-text-subtlest, #64748b)',
   planned: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   progress: 'var(--ds-text-warning, #d97706)',
-  review: '#8b5cf6',
-  done: '#10b981',
+  review: 'var(--ds-background-discovery-bold, #6E5DC6)',
+  done: 'var(--ds-background-success-bold, #1F845A)',
 };
 
 export function DashboardStatusChart({ data }: DashboardStatusChartProps) {

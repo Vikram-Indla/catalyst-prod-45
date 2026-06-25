@@ -1,0 +1,464 @@
+name: Design Compliance Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**/*.tsx'
+      - 'src/**/*.ts'
+      - 'src/**/*.css'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**/*.tsx'
+      - 'src/**/*.ts'
+      - 'src/**/*.css'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Three jobs:
+#   1. token-validator   — ADS token + style violations, fails if > 600
+#   2. atlaskit-auditor  — buggy @atlaskit packages without documented workarounds
+#   3. regression-check  — visual drift vs Jira (only runs on PRs labelled 'visual')
+# ─────────────────────────────────────────────────────────────────────────────
+
+jobs:
+  # ───────────────────────────────────────────────────────────────────────────
+  # JOB 1: Token Validator
+  # Runs the existing Node.js design governance audit.
+  # Threshold: fail if total violations exceed 600 (Phase 1–3 baseline).
+  # ───────────────────────────────────────────────────────────────────────────
+  token-validator:
+    name: 🎨 Token Validator
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Audit self-test (scanner integrity check)
+        id: self_test
+        run: |
+          echo "🧪 Verifying audit scanners are not broken..."
+          node design-governance/scripts/self-test.mjs
+          echo "self_test_ok=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Flag broken scanner
+        if: steps.self_test.outcome == 'failure'
+        run: |
+          echo "::error::Audit scanner self-test FAILED — the governance tooling itself is broken."
+          echo "::error::Fix design-governance/rules/ before merging."
+          exit 1
+
+      - name: Run design audit and count violations
+        id: audit
+        run: |
+          echo "🔍 Running full design system audit on src/..."
+          set +e
+          AUDIT_OUTPUT=$(node design-governance/rules/audit.js src/ 2>&1)
+          AUDIT_EXIT=$?
+          set -e
+
+          echo "$AUDIT_OUTPUT"
+
+          # Extract total violation count from last "VIOLATIONS: N" line
+          TOTAL=$(echo "$AUDIT_OUTPUT" | grep -oE 'VIOLATIONS:[[:space:]]*[0-9]+' | tail -1 | grep -oE '[0-9]+' || echo "0")
+          if [ -z "$TOTAL" ]; then
+            TOTAL=$(echo "$AUDIT_OUTPUT" | grep -oE '[0-9]+ violation' | head -1 | grep -oE '[0-9]+' || echo "0")
+          fi
+
+          echo "total_violations=$TOTAL" >> $GITHUB_OUTPUT
+          echo "audit_exit=$AUDIT_EXIT" >> $GITHUB_OUTPUT
+
+          # Save full report as artifact
+          echo "$AUDIT_OUTPUT" > /tmp/audit-report.txt
+          echo "📊 Total violations detected: $TOTAL"
+
+      - name: Save audit report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-report-${{ github.run_number }}
+          path: /tmp/audit-report.txt
+          retention-days: 30
+
+      - name: Enforce violation threshold (≤ 600)
+        run: |
+          TOTAL=${{ steps.audit.outputs.total_violations }}
+          THRESHOLD=600
+
+          echo "Total violations: $TOTAL  |  Threshold: $THRESHOLD"
+
+          if [ "$TOTAL" -gt "$THRESHOLD" ]; then
+            echo "::error::Design system violations ($TOTAL) exceed threshold ($THRESHOLD)."
+            echo "::error::Run 'node design-governance/rules/audit.js src/' locally to see all violations."
+            exit 1
+          fi
+
+          echo "✅ Violations ($TOTAL) within acceptable threshold ($THRESHOLD)."
+
+      - name: Build violation summary for PR comment
+        if: github.event_name == 'pull_request'
+        id: summary
+        run: |
+          TOTAL=${{ steps.audit.outputs.total_violations }}
+          if [ "$TOTAL" -eq "0" ]; then
+            HEALTH="✅ EXCELLENT"
+          elif [ "$TOTAL" -le "200" ]; then
+            HEALTH="🟢 GOOD"
+          elif [ "$TOTAL" -le "600" ]; then
+            HEALTH="🟡 AT-RISK"
+          else
+            HEALTH="🔴 CRITICAL"
+          fi
+          echo "health=$HEALTH" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+
+      - name: Post PR comment (pass)
+        if: github.event_name == 'pull_request' && success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const total = '${{ steps.summary.outputs.total }}';
+            const health = '${{ steps.summary.outputs.health }}';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: [
+                '## 🎨 Design Compliance Report',
+                '',
+                `**Health:** ${health}`,
+                `**Total violations:** ${total} / 600 threshold`,
+                '',
+                '**What was checked:**',
+                '- Hardcoded hex colors (must use `var(--ds-*)` tokens)',
+                '- Tailwind color/font/spacing utilities (banned)',
+                '- Non-4px spacing values',
+                '- Banned font imports (Google Fonts, Fontsource)',
+                '- Inline third-party components (react-select, react-modal)',
+                '- `text-transform: uppercase` labels',
+                '',
+                '_Run `node design-governance/rules/audit.js src/` locally for full details._',
+              ].join('\n')
+            });
+
+      - name: Post PR comment (fail)
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: [
+                '## ❌ Design Compliance BLOCKED',
+                '',
+                'This PR exceeds the design system violation threshold (600).',
+                '',
+                '**Fix locally:**',
+                '```bash',
+                'node design-governance/rules/audit.js src/',
+                '```',
+                '',
+                '**Common fixes:**',
+                '- Replace hardcoded hex with `var(--ds-background-*)` / `var(--ds-text-*)` tokens',
+                '- Replace Tailwind color classes with ADS tokens in CSS',
+                '- Use `@atlaskit/*` components — not `react-select`, `react-modal`, etc.',
+                '- Spacing must be 4/8/12/16/24/32/40/48px only',
+                '- Labels must be sentence-case (no `text-transform: uppercase`)',
+                '',
+                'See [`design-governance/GOVERNANCE_POLICY.md`](design-governance/GOVERNANCE_POLICY.md) for full rules.',
+              ].join('\n')
+            });
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # JOB 2: Atlaskit Auditor
+  # Scans for known-buggy @atlaskit package usage patterns without
+  # documented workarounds (the portal pattern, etc.).
+  # Non-blocking for buggy packages that have an approved workaround.
+  # Blocking for direct use of @atlaskit/popup or DropdownMenu inside
+  # overflow:hidden without the workaround.
+  # ───────────────────────────────────────────────────────────────────────────
+  atlaskit-auditor:
+    name: 🔍 Atlaskit Auditor
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Check for known-buggy atlaskit usage patterns
+        id: atlaskit_check
+        run: |
+          EXIT=0
+          REPORT=""
+
+          # ── Rule 1: @atlaskit/popup direct use (empty-portal bug in v4.16) ──
+          # OK if used with createPortal workaround. Flag bare <Popup usage.
+          POPUP_RAW=$(grep -rn "from '@atlaskit/popup'" src/ --include="*.tsx" --include="*.ts" | grep -v "// portal-workaround\|createPortal" || true)
+          if [ -n "$POPUP_RAW" ]; then
+            COUNT=$(echo "$POPUP_RAW" | wc -l | tr -d ' ')
+            REPORT="${REPORT}\n⚠️  @atlaskit/popup — ${COUNT} usage(s) without portal workaround annotation"
+            REPORT="${REPORT}\n   Bug: empty-portal in v4.16 inside overflow:hidden containers"
+            REPORT="${REPORT}\n   Fix: Use createPortal to document.body with getBoundingClientRect()"
+            REPORT="${REPORT}\n   OR add // portal-workaround comment on the import line if already fixed"
+            echo "$POPUP_RAW" | head -5
+          fi
+
+          # ── Rule 2: @atlaskit/dropdown-menu inside known overflow:hidden components ──
+          # Check for DropdownMenu inside files that also render overflow:hidden wrappers
+          DD_FILES=$(grep -rln "from '@atlaskit/dropdown-menu'" src/ --include="*.tsx" || true)
+          OVERFLOW_IN_DD=""
+          for f in $DD_FILES; do
+            if grep -q "overflow.*hidden\|overflow: 'hidden'" "$f" 2>/dev/null; then
+              OVERFLOW_IN_DD="${OVERFLOW_IN_DD} $f"
+            fi
+          done
+          if [ -n "$OVERFLOW_IN_DD" ]; then
+            COUNT=$(echo "$OVERFLOW_IN_DD" | wc -w | tr -d ' ')
+            REPORT="${REPORT}\n🚨 @atlaskit/dropdown-menu + overflow:hidden — ${COUNT} file(s) at risk"
+            REPORT="${REPORT}\n   Bug: Popper.js v2 positions dropdown at (0,0) inside overflow:hidden ancestors"
+            REPORT="${REPORT}\n   Files: $(echo $OVERFLOW_IN_DD | tr ' ' '\n' | head -3 | tr '\n' ' ')"
+            REPORT="${REPORT}\n   Fix: Replace with portal createPortal pattern (see CLAUDE.md 2026-06-13)"
+            EXIT=1
+          fi
+
+          # ── Rule 3: @atlaskit/flag import style ──
+          # Flag must be default import; FlagGroup is named. Both on one line = bug.
+          FLAG_WRONG=$(grep -rn "import { Flag," src/ --include="*.tsx" --include="*.ts" || true)
+          if [ -n "$FLAG_WRONG" ]; then
+            COUNT=$(echo "$FLAG_WRONG" | wc -l | tr -d ' ')
+            REPORT="${REPORT}\n🚨 @atlaskit/flag — wrong import style in ${COUNT} file(s)"
+            REPORT="${REPORT}\n   Bug: Flag is a default export, not named. Causes runtime SyntaxError."
+            REPORT="${REPORT}\n   Fix: import Flag from '@atlaskit/flag'; import { FlagGroup } from '@atlaskit/flag';"
+            EXIT=1
+          fi
+
+          # ── Rule 4: @atlaskit/editor-core — verify not replaced by TipTap ──
+          TIPTAP=$(grep -rn "from '@tiptap\|from 'tiptap'" src/ --include="*.tsx" --include="*.ts" || true)
+          if [ -n "$TIPTAP" ]; then
+            COUNT=$(echo "$TIPTAP" | wc -l | tr -d ' ')
+            REPORT="${REPORT}\n🚨 TipTap editor detected in ${COUNT} location(s) — BANNED"
+            REPORT="${REPORT}\n   Rule: Rich text editor must be @atlaskit/editor-core + AtlaskitRenderer"
+            REPORT="${REPORT}\n   Fix: Replace TipTap with @atlaskit/editor-core"
+            EXIT=1
+          fi
+
+          # ── Rule 5: react-select direct import (non-atlaskit) ──
+          REACT_SELECT=$(grep -rn "from 'react-select'" src/ --include="*.tsx" --include="*.ts" || true)
+          if [ -n "$REACT_SELECT" ]; then
+            COUNT=$(echo "$REACT_SELECT" | wc -l | tr -d ' ')
+            REPORT="${REPORT}\n🚨 react-select (non-atlaskit) — ${COUNT} usage(s) — BANNED"
+            REPORT="${REPORT}\n   Rule: All selects must use @atlaskit/select"
+            EXIT=1
+          fi
+
+          # ── Summary ──
+          if [ -z "$REPORT" ]; then
+            echo "✅ All @atlaskit usage patterns look clean."
+          else
+            echo -e "Atlaskit Audit Findings:\n$REPORT"
+            if [ $EXIT -ne 0 ]; then
+              echo ""
+              echo "❌ Blocking issues found. Fix before merging."
+            fi
+          fi
+
+          echo "$REPORT" > /tmp/atlaskit-report.txt
+          exit $EXIT
+
+      - name: Save atlaskit report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlaskit-report-${{ github.run_number }}
+          path: /tmp/atlaskit-report.txt
+          retention-days: 30
+
+      - name: Post atlaskit findings to PR
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: [
+                '## 🔍 Atlaskit Auditor — Issues Found',
+                '',
+                'One or more `@atlaskit/*` packages are being used in a way that causes runtime bugs.',
+                'Download the `atlaskit-report` artifact from this run for details.',
+                '',
+                '**Quick reference:**',
+                '- `@atlaskit/popup` v4.16 has an empty-portal bug inside `overflow:hidden` → use `createPortal`',
+                '- `@atlaskit/dropdown-menu` + `overflow:hidden` → Popper.js positions at (0,0) → use portal pattern',
+                '- `@atlaskit/flag` → `Flag` is a DEFAULT export, `FlagGroup` is named — never `import { Flag }`',
+                '- No TipTap, no `react-select` — use `@atlaskit/editor-core` and `@atlaskit/select` instead',
+                '',
+                'See `CLAUDE.md` sections `2026-06-13` and `2026-06-10` for full bug docs.',
+              ].join('\n')
+            });
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # JOB 3: Regression Check (visual drift vs Jira reference)
+  # Only runs on PRs with the 'visual' label.
+  # Installs Playwright, boots the dev server, takes screenshots,
+  # and diffs against reference snapshots stored in design-governance/snapshots/.
+  # ───────────────────────────────────────────────────────────────────────────
+  regression-check:
+    name: 📸 Visual Regression Check
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'visual')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Create .env for CI
+        run: |
+          cat > .env.local << 'EOF'
+          VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          EOF
+
+      - name: Start dev server
+        run: |
+          npm run dev &
+          DEV_PID=$!
+          echo "DEV_PID=$DEV_PID" >> $GITHUB_ENV
+          # Wait up to 60s for server to be ready
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8080 > /dev/null 2>&1; then
+              echo "✅ Dev server ready on :8080"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Run visual regression snapshots
+        run: |
+          mkdir -p /tmp/visual-diffs
+
+          # Snapshot key surfaces against reference screenshots
+          # References live in design-governance/snapshots/*.png
+          # If no reference exists, save current as new baseline (first run)
+
+          node -e "
+          const { chromium } = require('@playwright/test');
+          const fs = require('fs');
+          const path = require('path');
+
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+
+            const surfaces = [
+              { name: 'allwork', path: '/project-hub/BAU/allwork' },
+              { name: 'backlog', path: '/project-hub/BAU/backlog' },
+              { name: 'for-you', path: '/for-you' },
+            ];
+
+            const refDir = 'design-governance/snapshots';
+            const diffDir = '/tmp/visual-diffs';
+            let drifts = 0;
+
+            for (const { name, path: route } of surfaces) {
+              await page.goto('http://localhost:8080' + route, { waitUntil: 'networkidle', timeout: 30000 });
+              await page.waitForTimeout(2000);
+
+              const shot = await page.screenshot({ fullPage: false });
+              const refPath = path.join(refDir, name + '.png');
+              const currentPath = path.join(diffDir, name + '-current.png');
+              fs.writeFileSync(currentPath, shot);
+
+              if (fs.existsSync(refPath)) {
+                // Compare pixel count (simple diff — replace with pixelmatch for production)
+                const ref = fs.readFileSync(refPath);
+                if (shot.length !== ref.length) {
+                  console.log('⚠️  Visual drift detected on: ' + name);
+                  drifts++;
+                } else {
+                  console.log('✅ ' + name + ': no drift');
+                }
+              } else {
+                fs.mkdirSync(refDir, { recursive: true });
+                fs.writeFileSync(refPath, shot);
+                console.log('📸 New baseline saved: ' + name);
+              }
+            }
+
+            await browser.close();
+            if (drifts > 0) {
+              console.log('\\n⚠️  ' + drifts + ' surface(s) show visual drift. Review screenshots in artifact.');
+            }
+            process.exit(drifts > 0 ? 1 : 0);
+          })();
+          "
+        continue-on-error: true
+
+      - name: Upload visual diff screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs-${{ github.run_number }}
+          path: /tmp/visual-diffs/
+          retention-days: 14
+
+      - name: Post visual drift comment
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: [
+                '## 📸 Visual Regression — Drift Detected',
+                '',
+                'One or more surfaces show visual drift from the reference screenshots.',
+                '',
+                '**Download the `visual-diffs` artifact** from this run to compare before/after.',
+                '',
+                'If the change is intentional:',
+                '1. Update reference snapshots in `design-governance/snapshots/`',
+                '2. Commit the updated snapshots',
+                '3. Re-run this check',
+                '',
+                'If the change is unintentional, fix the visual regression before merging.',
+              ].join('\n')
+            });

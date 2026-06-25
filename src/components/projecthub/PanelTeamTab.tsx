@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0284C7', '#6366F1'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-link, #0C66E4)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 function getColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -148,12 +148,12 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       {/* Search + Add button */}
       <div className="flex items-center gap-2 mx-4 mt-3 mb-2">
         <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 38, padding: '8px 12px' }}>
-          <Search size={14} className="shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" />
+          <Search size={14} className="shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by name, role, or email..."
-            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:placeholder:text-[#7D7D7D]"
+            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:placeholder:text-[var(--ds-text-subtlest, #626F86)]"
             style={{ fontSize: 13, border: 'none', boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', MozAppearance: 'none', background: 'transparent', borderRadius: 0 }}
           />
         </div>
@@ -190,7 +190,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                 <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 11 }}>
                   {u.role_name || 'No role'}
                   {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}
-                  {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]">{u.department_name}</span>}
+                  {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]">{u.department_name}</span>}
                 </div>
               </div>
               <button
@@ -207,7 +207,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
       {/* Existing team members */}
       {grouped.length === 0 && searchSuggestions.length === 0 ? (
-        <div className="text-center py-8 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 13 }}>
+        <div className="text-center py-8 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 13 }}>
           {search ? `No team members match "${search}"` : 'No team members assigned'}
           {!search && (
             <div className="mt-3">
@@ -223,7 +223,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
             <div key={g.category} className="mt-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
-                <span className="rounded-full bg-[var(--ds-background-selected,#EFF6FF)] dark:bg-[rgba(59,130,246,0.15)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[var(--ds-text-brand,#60A5FA)]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
+                <span className="rounded-full bg-[var(--ds-background-selected,#EFF6FF)] dark:bg-[var(--ds-background-information-bold, rgba(59,130,246,0.15))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[var(--ds-text-brand,#60A5FA)]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
                 <div className="flex-1 bg-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 1 }} />
               </div>
 
@@ -243,14 +243,14 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                       <div style={{ fontSize: 12, color: ROLE_COLOR[m.project_role] || 'var(--cp-blue)', fontWeight: 500, lineHeight: '18px' }}>
                         {m.project_role || 'member'}
                       </div>
-                      <div className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 11, lineHeight: '16px' }}>
+                      <div className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11, lineHeight: '16px' }}>
                         {resourceRoleMap.get(m.user_id) || m.job_role || 'Unassigned'}
                       </div>
                     </div>
 
                     <button
                       onClick={e => { e.stopPropagation(); removeMember.mutate(m.user_id); }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md flex-shrink-0 bg-[var(--ds-background-danger,#FEF2F2)] dark:bg-[rgba(220,38,38,0.10)] border border-[#FECACA] dark:border-[rgba(220,38,38,0.20)]"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md flex-shrink-0 bg-[var(--ds-background-danger,#FEF2F2)] dark:bg-[var(--ds-background-danger-bold, rgba(220,38,38,0.10))] border border-[var(--ds-background-danger, #FFECEB)] dark:border-[var(--ds-background-danger-bold, rgba(220,38,38,0.20))]"
                       style={{ width: 28, height: 28, cursor: 'pointer' }}
                       title="Remove member"
                     >

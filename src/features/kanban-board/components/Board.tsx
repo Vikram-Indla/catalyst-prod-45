@@ -52,21 +52,21 @@ const AddColumnSlot: React.FC<{ onAdd: (name: string) => void }> = ({ onAdd }) =
               // so clicking away always dismisses an empty input — no mode trap.
               onBlur={() => { name.trim() ? submit() : cancel(); }}
               placeholder="Column name"
-              style={{ flex: 1, minWidth: 0, height: 36, padding: '0 8px', borderRadius: 6, border: `2px solid ${token('color.border.focused', '#4C9AFF')}`, outline: 'none', fontSize: 13, fontFamily: 'inherit' }}
+              style={{ flex: 1, minWidth: 0, height: 36, padding: '0 8px', borderRadius: 6, border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold, #0C66E4)')}`, outline: 'none', fontSize: 13, fontFamily: 'inherit' }}
             />
             {/* onMouseDown fires before the input's blur, so cancel wins even with text typed */}
             <button
               type="button" aria-label="Cancel" title="Cancel"
               onMouseDown={(e) => { e.preventDefault(); cancel(); }}
-              style={{ width: 28, height: 28, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer', color: token('color.icon.subtle', '#626F86'), fontSize: 16, lineHeight: 1 }}
+              style={{ width: 28, height: 28, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer', color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 16, lineHeight: 1 }}
             >✕</button>
           </div>
-          <div style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86'), padding: '4px 2px 0' }}>Enter to add · Esc to cancel</div>
+          <div style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), padding: '4px 2px 0' }}>Enter to add · Esc to cancel</div>
         </div>
       ) : (
         <button
           aria-label="Create column" onClick={() => setAdding(true)}
-          style={{ width: 40, height: 40, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token('color.background.neutral', 'rgba(5,21,36,0.06)'), color: token('color.icon.subtle', '#626F86'), fontSize: 20, lineHeight: 1 }}
+          style={{ width: 40, height: 40, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token('color.background.neutral', 'rgba(5,21,36,0.06)'), color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 20, lineHeight: 1 }}
           onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(5,21,36,0.10)'); }}
           onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'rgba(5,21,36,0.06)'); }}
         >+</button>
@@ -200,7 +200,7 @@ export const Board: React.FC<BoardProps> = ({
     <div ref={scrollWrapRef} className="kb-board-scroll" style={{
       flex: 1, minHeight: 0, minWidth: 0, overflowX: 'auto', overflowY: 'auto',
       height: boardHeight, maxHeight: boardHeight,
-      background: token('elevation.surface', '#FFFFFF'), display: 'flex', flexDirection: 'column',
+      background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), display: 'flex', flexDirection: 'column',
     }}>
       {/* Defer columns until the board height is measured, so each ColumnBody's
           card virtualizer mounts into an already-bounded scroll container (its

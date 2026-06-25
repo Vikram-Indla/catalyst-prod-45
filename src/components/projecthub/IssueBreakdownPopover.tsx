@@ -18,14 +18,14 @@ interface Props {
 }
 
 const TYPE_BAR_COLORS: Record<string, string> = {
-  epic: '#6554C0', story: '#36B37E', task: '#2684FF', bug: '#FF5630',
-  subtask: '#2684FF', 'sub-task': '#2684FF', incident: '#FF5630',
-  'production incident': '#FF5630', 'new feature': '#36B37E',
-  feature: '#36B37E', improvement: '#36B37E', changes: '#FFAB00',
-  'change request': '#FFAB00', question: '#6554C0', problem: '#FF5630',
-  defect: '#FF5630', issue: '#2684FF', 'qa bug': '#FF5630',
-  backend: '#2684FF', frontend: '#2684FF', integration: '#2684FF',
-  figma: '#2684FF', 'business request': '#36B37E', 'business gap': '#6554C0',
+  epic: 'var(--ds-background-discovery-bold, #6554C0)', story: 'var(--ds-background-success-bold, #1F845A)', task: 'var(--ds-link, #0C66E4)', bug: 'var(--ds-background-danger-bold, #C9372C)',
+  subtask: 'var(--ds-link, #0C66E4)', 'sub-task': 'var(--ds-link, #0C66E4)', incident: 'var(--ds-background-danger-bold, #C9372C)',
+  'production incident': 'var(--ds-background-danger-bold, #C9372C)', 'new feature': 'var(--ds-background-success-bold, #1F845A)',
+  feature: 'var(--ds-background-success-bold, #1F845A)', improvement: 'var(--ds-background-success-bold, #1F845A)', changes: 'var(--ds-background-warning-bold, #E2B203)',
+  'change request': 'var(--ds-background-warning-bold, #E2B203)', question: 'var(--ds-background-discovery-bold, #6554C0)', problem: 'var(--ds-background-danger-bold, #C9372C)',
+  defect: 'var(--ds-background-danger-bold, #C9372C)', issue: 'var(--ds-link, #0C66E4)', 'qa bug': 'var(--ds-background-danger-bold, #C9372C)',
+  backend: 'var(--ds-link, #0C66E4)', frontend: 'var(--ds-link, #0C66E4)', integration: 'var(--ds-link, #0C66E4)',
+  figma: 'var(--ds-link, #0C66E4)', 'business request': 'var(--ds-background-success-bold, #1F845A)', 'business gap': 'var(--ds-background-discovery-bold, #6554C0)',
 };
 
 function getBarColor(type: string): string {

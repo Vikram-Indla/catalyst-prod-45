@@ -81,20 +81,20 @@ interface RequestDetailPanelProps {
 const STATUS_COLORS: Record<string, string> = {
   new_request: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',      // Blue
   new_demand: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',       // Blue
-  draft: 'bg-[#737373]',            // Gray
+  draft: 'bg-[var(--ds-text-subtlest, #626F86)]',            // Gray
   in_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',        // Blue
   ea_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',        // Blue
   analyse: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',          // Blue
-  approved: 'bg-[#0d9488]',         // Teal
-  ready_to_implement: 'bg-[#0d9488]', // Teal
+  approved: 'bg-[var(--ds-icon-information, #1D7AFC)]',         // Teal
+  ready_to_implement: 'bg-[var(--ds-icon-information, #1D7AFC)]', // Teal
   implement: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',        // Blue
-  closed: 'bg-[#0d9488]',           // Teal
-  completed: 'bg-[#0d9488]',        // Teal
+  closed: 'bg-[var(--ds-icon-information, #1D7AFC)]',           // Teal
+  completed: 'bg-[var(--ds-icon-information, #1D7AFC)]',        // Teal
   rejected: 'bg-[var(--ds-text-danger,#ef4444)]',         // Red
   on_hold: 'bg-[var(--ds-text-warning,#d97706)]',          // Orange
 };
 
-const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[#737373]';
+const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[var(--ds-text-subtlest, #626F86)]';
 
 // Quarter options (canonical storage format: "Q1-2026"; display: "Q1 2026")
 const QUARTER_OPTIONS = [
@@ -394,7 +394,7 @@ export function RequestDetailPanel({
     ? 'bg-[var(--ds-text-danger,#ef4444)]'  // Red for high/critical
     : request.autoPriority?.toLowerCase() === 'medium' 
       ? 'bg-[var(--ds-text-warning,#d97706)]'  // Orange for medium
-      : 'bg-[#737373]'; // Gray for low/unscored
+      : 'bg-[var(--ds-text-subtlest, #626F86)]'; // Gray for low/unscored
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '—';

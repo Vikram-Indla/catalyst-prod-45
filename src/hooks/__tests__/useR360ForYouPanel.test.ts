@@ -27,9 +27,9 @@ describe('computeProjectAllocations', () => {
 
   it('all percentages sum to exactly 100', () => {
     const input = [
-      { projectId: 'p1', name: 'A', key: 'A', color: '#000', role: 'lead' },
-      { projectId: 'p2', name: 'B', key: 'B', color: '#000', role: 'member' },
-      { projectId: 'p3', name: 'C', key: 'C', color: '#000', role: 'reviewer' },
+      { projectId: 'p1', name: 'A', key: 'A', color: 'var(--ds-text, #172B4D)', role: 'lead' },
+      { projectId: 'p2', name: 'B', key: 'B', color: 'var(--ds-text, #172B4D)', role: 'member' },
+      { projectId: 'p3', name: 'C', key: 'C', color: 'var(--ds-text, #172B4D)', role: 'reviewer' },
     ];
     const result = computeProjectAllocations(input);
     const total = result.reduce((s, p) => s + p.allocationPct, 0);
@@ -38,8 +38,8 @@ describe('computeProjectAllocations', () => {
 
   it('lead role gets strictly more allocation than member', () => {
     const result = computeProjectAllocations([
-      { projectId: 'p1', name: 'Lead project', key: 'LP', color: '#000', role: 'lead' },
-      { projectId: 'p2', name: 'Member project', key: 'MP', color: '#000', role: 'member' },
+      { projectId: 'p1', name: 'Lead project', key: 'LP', color: 'var(--ds-text, #172B4D)', role: 'lead' },
+      { projectId: 'p2', name: 'Member project', key: 'MP', color: 'var(--ds-text, #172B4D)', role: 'member' },
     ]);
     const lead   = result.find((p) => p.role === 'lead');
     const member = result.find((p) => p.role === 'member');
@@ -48,7 +48,7 @@ describe('computeProjectAllocations', () => {
 
   it('single project gets the full 80% project pool', () => {
     const result = computeProjectAllocations([
-      { projectId: 'p1', name: 'Solo', key: 'S', color: '#000', role: 'lead' },
+      { projectId: 'p1', name: 'Solo', key: 'S', color: 'var(--ds-text, #172B4D)', role: 'lead' },
     ]);
     const project = result.find((p) => !p.isBuffer);
     expect(project?.allocationPct).toBe(80);
@@ -63,8 +63,8 @@ describe('computeProjectAllocations', () => {
 
   it('reviewer gets less allocation than member', () => {
     const result = computeProjectAllocations([
-      { projectId: 'p1', name: 'A', key: 'A', color: '#000', role: 'member' },
-      { projectId: 'p2', name: 'B', key: 'B', color: '#000', role: 'reviewer' },
+      { projectId: 'p1', name: 'A', key: 'A', color: 'var(--ds-text, #172B4D)', role: 'member' },
+      { projectId: 'p2', name: 'B', key: 'B', color: 'var(--ds-text, #172B4D)', role: 'reviewer' },
     ]);
     const member   = result.find((p) => p.role === 'member');
     const reviewer = result.find((p) => p.role === 'reviewer');
@@ -73,7 +73,7 @@ describe('computeProjectAllocations', () => {
 
   it('Buffer entry has isBuffer=true; all others have isBuffer=false', () => {
     const result = computeProjectAllocations([
-      { projectId: 'p1', name: 'X', key: 'X', color: '#000', role: 'lead' },
+      { projectId: 'p1', name: 'X', key: 'X', color: 'var(--ds-text, #172B4D)', role: 'lead' },
     ]);
     const buffers    = result.filter((p) => p.isBuffer);
     const nonBuffers = result.filter((p) => !p.isBuffer);

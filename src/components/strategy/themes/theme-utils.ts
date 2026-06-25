@@ -20,21 +20,21 @@ export function deriveHealthStatus(theme: StrategicTheme): HealthStatus {
 // ═══ STATUS CONFIG — Light / Dark ═══
 type StatusStyle = { label: string; bg: string; text: string; dot: string };
 export const STATUS_CONFIG: Record<HealthStatus, StatusStyle> = {
-  on_track:  { label: 'On Track',  bg: 'rgba(220,252,231,0.7)',  text: '#15803d', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  at_risk:   { label: 'At Risk',   bg: 'rgba(254,243,199,0.6)',  text: '#92400E', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  off_track: { label: 'Off Track', bg: 'rgba(254,226,226,0.6)',  text: 'var(--ds-text-danger, #991B1B)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
+  on_track:  { label: 'On Track',  bg: 'var(--ds-background-success, rgba(220,252,231,0.7))',  text: 'var(--ds-background-success-bold, #1F845A)', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  at_risk:   { label: 'At Risk',   bg: 'var(--ds-background-warning, rgba(254,243,199,0.6))',  text: 'var(--ds-text-warning, #974F0C)', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  off_track: { label: 'Off Track', bg: 'var(--ds-background-danger, rgba(254,226,226,0.6))',  text: 'var(--ds-text-danger, #991B1B)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   planned:   { label: 'Planned',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtle, #475569)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
-  completed: { label: 'Completed', bg: 'rgba(238,242,255,0.7)', text: '#3730A3', dot: '#6366F1' },
+  completed: { label: 'Completed', bg: 'var(--ds-background-discovery, rgba(238,242,255,0.7))', text: 'var(--ds-background-discovery-bold, #3730a3)', dot: 'var(--ds-background-discovery-bold, #6366f1)' },
   draft:     { label: 'Planned',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtle, #475569)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
 };
 
 export const STATUS_CONFIG_DARK: Record<HealthStatus, StatusStyle> = {
-  on_track:  { label: 'On Track',  bg: '#182820', text: '#86EFAC', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  at_risk:   { label: 'At Risk',   bg: '#2A2418', text: '#FBBF24', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  off_track: { label: 'Off Track', bg: '#2A1C1E', text: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  planned:   { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: '#B8BCC8', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
-  completed: { label: 'Completed', bg: '#1A2030', text: '#93C5FD', dot: '#6366F1' },
-  draft:     { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: '#B8BCC8', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  on_track:  { label: 'On Track',  bg: 'var(--ds-text, #172B4D)', text: 'var(--ds-background-success, #DFFCF0)', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  at_risk:   { label: 'At Risk',   bg: '#2A2418', text: 'var(--ds-background-warning-bold, #E2B203)', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  off_track: { label: 'Off Track', bg: 'var(--ds-text, #172B4D)', text: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
+  planned:   { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: 'var(--ds-text-disabled, #8590A2)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  completed: { label: 'Completed', bg: 'var(--ds-text, #172B4D)', text: 'var(--ds-background-information-bold, #0C66E4)', dot: 'var(--ds-background-discovery-bold, #6366f1)' },
+  draft:     { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: 'var(--ds-text-disabled, #8590A2)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
 };
 
 export function getStatusConfig(health: HealthStatus, isDark: boolean): StatusStyle {
@@ -44,25 +44,25 @@ export function getStatusConfig(health: HealthStatus, isDark: boolean): StatusSt
 // ═══ BSC PERSPECTIVE — Light / Dark ═══
 type BscStyle = { label: string; bg: string; text: string; border: string };
 export const BSC_CONFIG: Record<string, BscStyle> = {
-  'Financial':        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#92400E', border: '#FDE68A' },
-  'Customer':         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#1E40AF', border: '#BFDBFE' },
-  'Internal Process': { label: 'Internal Process', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
-  'Learning & Growth':{ label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#5B21B6', border: '#DDD6FE' },
-  financial:        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#92400E', border: '#FDE68A' },
-  customer:         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#1E40AF', border: '#BFDBFE' },
-  internal_process: { label: 'Internal Process', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
-  learning_growth:  { label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#5B21B6', border: '#DDD6FE' },
+  'Financial':        { label: 'Financial',        bg: 'var(--ds-background-warning, rgba(254,243,199,0.3))', text: 'var(--ds-text-warning, #974F0C)', border: 'var(--ds-background-warning, #FFF7D6)' },
+  'Customer':         { label: 'Customer',         bg: 'var(--ds-background-information, rgba(219,234,254,0.3))', text: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-background-information, #E9F2FF)' },
+  'Internal Process': { label: 'Internal Process', bg: 'var(--ds-background-success, rgba(204,251,241,0.3))', text: 'var(--ds-text-success, #216E4E)', border: 'var(--ds-background-success, #DFFCF0)' },
+  'Learning & Growth':{ label: 'Learning & Growth',bg: 'var(--ds-background-discovery, rgba(237,233,254,0.3))', text: 'var(--ds-background-discovery-bold, #5b21b6)', border: 'var(--ds-background-discovery, #F3F0FF)' },
+  financial:        { label: 'Financial',        bg: 'var(--ds-background-warning, rgba(254,243,199,0.3))', text: 'var(--ds-text-warning, #974F0C)', border: 'var(--ds-background-warning, #FFF7D6)' },
+  customer:         { label: 'Customer',         bg: 'var(--ds-background-information, rgba(219,234,254,0.3))', text: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-background-information, #E9F2FF)' },
+  internal_process: { label: 'Internal Process', bg: 'var(--ds-background-success, rgba(204,251,241,0.3))', text: 'var(--ds-text-success, #216E4E)', border: 'var(--ds-background-success, #DFFCF0)' },
+  learning_growth:  { label: 'Learning & Growth',bg: 'var(--ds-background-discovery, rgba(237,233,254,0.3))', text: 'var(--ds-background-discovery-bold, #5b21b6)', border: 'var(--ds-background-discovery, #F3F0FF)' },
 };
 
 export const BSC_CONFIG_DARK: Record<string, BscStyle> = {
-  'Financial':        { label: 'Financial',        bg: 'rgba(251,191,36,0.12)',  text: '#FBBF24', border: 'rgba(251,191,36,0.25)' },
-  'Customer':         { label: 'Customer',         bg: 'rgba(96,165,250,0.12)',  text: '#93C5FD', border: 'rgba(96,165,250,0.25)' },
-  'Internal Process': { label: 'Internal Process', bg: 'rgba(45,212,191,0.12)',  text: '#5EEAD4', border: 'rgba(45,212,191,0.25)' },
-  'Learning & Growth':{ label: 'Learning & Growth',bg: 'rgba(167,139,250,0.12)', text: '#C4B5FD', border: 'rgba(167,139,250,0.25)' },
-  financial:        { label: 'Financial',        bg: 'rgba(251,191,36,0.12)',  text: '#FBBF24', border: 'rgba(251,191,36,0.25)' },
-  customer:         { label: 'Customer',         bg: 'rgba(96,165,250,0.12)',  text: '#93C5FD', border: 'rgba(96,165,250,0.25)' },
-  internal_process: { label: 'Internal Process', bg: 'rgba(45,212,191,0.12)',  text: '#5EEAD4', border: 'rgba(45,212,191,0.25)' },
-  learning_growth:  { label: 'Learning & Growth',bg: 'rgba(167,139,250,0.12)', text: '#C4B5FD', border: 'rgba(167,139,250,0.25)' },
+  'Financial':        { label: 'Financial',        bg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))',  text: 'var(--ds-background-warning-bold, #E2B203)', border: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
+  'Customer':         { label: 'Customer',         bg: 'var(--ds-background-information-bold, rgba(96,165,250,0.12))',  text: 'var(--ds-background-information-bold, #0C66E4)', border: 'var(--ds-background-information-bold, rgba(96,165,250,0.25))' },
+  'Internal Process': { label: 'Internal Process', bg: 'var(--ds-background-success-bold, rgba(45,212,191,0.12))',  text: 'var(--ds-background-success, #DCFFF1)', border: 'var(--ds-background-success-bold, rgba(45,212,191,0.25))' },
+  'Learning & Growth':{ label: 'Learning & Growth',bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.12))', text: 'var(--ds-background-discovery, #F3F0FF)', border: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.25))' },
+  financial:        { label: 'Financial',        bg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))',  text: 'var(--ds-background-warning-bold, #E2B203)', border: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
+  customer:         { label: 'Customer',         bg: 'var(--ds-background-information-bold, rgba(96,165,250,0.12))',  text: 'var(--ds-background-information-bold, #0C66E4)', border: 'var(--ds-background-information-bold, rgba(96,165,250,0.25))' },
+  internal_process: { label: 'Internal Process', bg: 'var(--ds-background-success-bold, rgba(45,212,191,0.12))',  text: 'var(--ds-background-success, #DCFFF1)', border: 'var(--ds-background-success-bold, rgba(45,212,191,0.25))' },
+  learning_growth:  { label: 'Learning & Growth',bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.12))', text: 'var(--ds-background-discovery, #F3F0FF)', border: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.25))' },
 };
 
 export function getBscConfig(key: string, isDark: boolean): BscStyle | null {
@@ -88,8 +88,8 @@ export const PRIORITY_CONFIG: Record<string, { label: string; color: string }> =
 
 // ═══ COLOR SWATCHES ═══
 export const THEME_COLORS = [
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, #7C3AED)', '#EC4899',
-  'var(--quality-high, #059669)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#0284C7', '#4F46E5', '#CA8A04',
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', 'var(--ds-background-accent-magenta-bolder, #ec4899)',
+  'var(--quality-high, var(--ds-background-success-bold, #059669))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-link, #0C66E4)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-text-warning, #974F0C)',
 ];
 
 // ═══ PROGRESS BAR COLOR ═══
@@ -114,7 +114,7 @@ export function getInitials(name: string | null): string {
 
 export function getAvatarColor(name: string | null): string {
   if (!name) return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', '#EC4899', 'var(--quality-high, #059669)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--quality-high, var(--ds-background-success-bold, #059669))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

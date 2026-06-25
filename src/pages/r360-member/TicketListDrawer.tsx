@@ -26,7 +26,7 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
       <div className="r3-overlay" onClick={onClose} />
       <div className="r3-panel r3-panel--open" style={{ maxWidth: 480 }}>
         {/* Header */}
-        <div className="r3-panel-header" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)', paddingBottom: 12 }}>
+        <div className="r3-panel-header" style={{ borderBottom: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', paddingBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, background: accentBg, color: accentColor, fontSize: 14, fontWeight: 700 }}>
@@ -55,7 +55,7 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
                   cursor: 'pointer', transition: 'background 80ms ease',
-                  borderBottom: '1px solid rgba(15,23,42,0.05)',
+                  borderBottom: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.05))',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}

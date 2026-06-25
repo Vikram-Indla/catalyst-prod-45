@@ -21,7 +21,7 @@ const PRIORITY_BAR_COLORS: Record<string, string> = {
   critical: 'var(--ds-text-danger, #ef4444)',
   high: 'var(--ds-text-warning, #f59e0b)',
   medium: 'var(--ds-text-brand, #3b82f6)',
-  low: '#c8ccd0'
+  low: 'var(--ds-border, #DFE1E6)'
 };
 
 export function TimelineBar({ feature, left, width, onClick }: TimelineBarProps) {

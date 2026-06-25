@@ -47,9 +47,9 @@ export function DocumentExport({ title, content }: DocumentExportProps) {
     h2, h3 { color: var(--ds-surface-raised, #1a1a1a); }
     blockquote { border-left: 4px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); margin: 1em 0; padding-left: 1em; color: #666; }
     code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
-    pre { background: var(--ds-surface-raised, #1a1a1a); color: #f8f8f8; padding: 16px; border-radius: 6px; overflow-x: auto; }
+    pre { background: var(--ds-surface-raised, #1a1a1a); color: var(--ds-surface-sunken, #F7F8F9); padding: 16px; border-radius: 6px; overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; margin: 1em 0; }
-    th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+    th, td { border: 1px solid var(--ds-border, #DFE1E6); padding: 8px 12px; text-align: left; }
     th { background: #f4f4f4; }
     .info-panel { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 16px; margin: 1em 0; }
     .warning-panel { background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px 16px; margin: 1em 0; }
@@ -59,7 +59,7 @@ export function DocumentExport({ title, content }: DocumentExportProps) {
 <body>
   <h1>${title}</h1>
   ${content}
-  <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;">
+  <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--ds-border, #DFE1E6); color: #666; font-size: 12px;">
     Exported from Catalyst Knowledge Hub on ${new Date().toLocaleDateString()}
   </footer>
 </body>

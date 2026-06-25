@@ -110,7 +110,7 @@ export function T10CheckoutModalNew({
         style={{
           position: 'fixed',
           inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          backgroundColor: 'var(--ds-shadow-raised, rgba(0, 0, 0, 0.4))',
           zIndex: 600,
           animation: isClosing ? undefined : 't10-fadeIn 200ms ease',
         }}
@@ -128,7 +128,7 @@ export function T10CheckoutModalNew({
           maxWidth: '520px',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: '12px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25))',
           zIndex: 601,
           overflow: 'hidden',
           animation: isClosing
@@ -163,10 +163,10 @@ export function T10CheckoutModalNew({
             >
               <CheckCircle size={32} />
             </div>
-            <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#111827', margin: '0 0 8px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '0 0 8px' }}>
               Checkout Complete!
             </h3>
-            <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
+            <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: 0 }}>
               {selectedIds.length} items have been checked out.
               {startNextWeek && ' A new week has been started.'}
             </p>
@@ -191,7 +191,7 @@ export function T10CheckoutModalNew({
                   justifyContent: 'center',
                   width: '40px',
                   height: '40px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  backgroundColor: 'var(--ds-surface, rgba(255, 255, 255, 0.2))',
                   borderRadius: '8px',
                 }}
               >
@@ -217,7 +217,7 @@ export function T10CheckoutModalNew({
                   backgroundColor: 'transparent',
                   border: 'none',
                   borderRadius: '6px',
-                  color: 'rgba(255, 255, 255, 0.8)',
+                  color: 'var(--ds-surface, rgba(255, 255, 255, 0.8))',
                   cursor: 'pointer',
                 }}
               >
@@ -227,7 +227,7 @@ export function T10CheckoutModalNew({
 
             {/* Body */}
             <div style={{ padding: '24px' }}>
-              <p style={{ fontSize: '15px', color: '#374151', marginBottom: '16px' }}>
+              <p style={{ fontSize: '15px', color: 'var(--ds-text-subtle, #44546F)', marginBottom: '16px' }}>
                 <strong style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>{completedItems.length}</strong> items completed this week
               </p>
 
@@ -253,8 +253,8 @@ export function T10CheckoutModalNew({
                         alignItems: 'center',
                         gap: '12px',
                         padding: '12px 14px',
-                        backgroundColor: isSelected ? 'var(--ds-background-selected, #eff6ff)' : '#f9fafb',
-                        border: isSelected ? '1px solid #2563eb' : '1px solid #e5e7eb',
+                        backgroundColor: isSelected ? 'var(--ds-background-selected, #eff6ff)' : 'var(--ds-surface-sunken, #F7F8F9)',
+                        border: isSelected ? '1px solid var(--ds-link, #2563eb)' : '1px solid var(--ds-border, #DFE1E6)',
                         borderRadius: '8px',
                         cursor: 'pointer',
                       }}
@@ -263,7 +263,7 @@ export function T10CheckoutModalNew({
                         style={{
                           width: '20px',
                           height: '20px',
-                          border: isSelected ? '2px solid #2563eb' : '2px solid #d1d5db',
+                          border: isSelected ? '2px solid var(--ds-link, #2563eb)' : '2px solid var(--ds-border, #DFE1E6)',
                           borderRadius: '4px',
                           backgroundColor: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
                           display: 'flex',
@@ -282,7 +282,7 @@ export function T10CheckoutModalNew({
                           justifyContent: 'center',
                           fontSize: '12px',
                           fontWeight: 600,
-                          color: '#6b7280',
+                          color: 'var(--ds-text-subtlest, #626F86)',
                           backgroundColor: 'var(--ds-border, #e5e7eb)',
                           borderRadius: '50%',
                         }}
@@ -294,7 +294,7 @@ export function T10CheckoutModalNew({
                           style={{
                             fontSize: '14px',
                             fontWeight: 500,
-                            color: '#1f2937',
+                            color: 'var(--ds-text, #172B4D)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -307,7 +307,7 @@ export function T10CheckoutModalNew({
                             style={{
                               fontFamily: "'SF Mono', Monaco, monospace",
                               fontSize: '11px',
-                              color: '#6b7280',
+                              color: 'var(--ds-text-subtlest, #626F86)',
                             }}
                           >
                             {item.taskhub_key}
@@ -326,7 +326,7 @@ export function T10CheckoutModalNew({
                   flexDirection: 'column',
                   gap: '12px',
                   paddingTop: '16px',
-                  borderTop: '1px solid #f3f4f6',
+                  borderTop: '1px solid var(--ds-background-neutral-subtle, #F7F8F9)',
                 }}
               >
                 {incompleteCount > 0 && (
@@ -343,7 +343,7 @@ export function T10CheckoutModalNew({
                       style={{
                         width: '18px',
                         height: '18px',
-                        border: carryOver ? '2px solid #2563eb' : '2px solid #d1d5db',
+                        border: carryOver ? '2px solid var(--ds-link, #2563eb)' : '2px solid var(--ds-border, #DFE1E6)',
                         borderRadius: '4px',
                         backgroundColor: carryOver ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
                         display: 'flex',
@@ -353,9 +353,9 @@ export function T10CheckoutModalNew({
                     >
                       {carryOver && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                     </div>
-                    <span style={{ fontSize: '14px', color: '#374151' }}>
+                    <span style={{ fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
                       Carry over incomplete items to next week{' '}
-                      <span style={{ color: '#6b7280' }}>({incompleteCount} items)</span>
+                      <span style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>({incompleteCount} items)</span>
                     </span>
                   </label>
                 )}
@@ -373,7 +373,7 @@ export function T10CheckoutModalNew({
                     style={{
                       width: '18px',
                       height: '18px',
-                      border: startNextWeek ? '2px solid #2563eb' : '2px solid #d1d5db',
+                      border: startNextWeek ? '2px solid var(--ds-link, #2563eb)' : '2px solid var(--ds-border, #DFE1E6)',
                       borderRadius: '4px',
                       backgroundColor: startNextWeek ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
                       display: 'flex',
@@ -383,7 +383,7 @@ export function T10CheckoutModalNew({
                   >
                     {startNextWeek && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                   </div>
-                  <span style={{ fontSize: '14px', color: '#374151' }}>
+                  <span style={{ fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
                     Start next week after checkout
                   </span>
                 </label>
@@ -397,8 +397,8 @@ export function T10CheckoutModalNew({
                 justifyContent: 'flex-end',
                 gap: '12px',
                 padding: '16px 24px',
-                backgroundColor: '#f9fafb',
-                borderTop: '1px solid #e5e7eb',
+                backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
+                borderTop: '1px solid var(--ds-border, #DFE1E6)',
               }}
             >
               <button
@@ -408,9 +408,9 @@ export function T10CheckoutModalNew({
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: '#374151',
+                  color: 'var(--ds-text-subtle, #44546F)',
                   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: '6px',
                   cursor: 'pointer',
                 }}

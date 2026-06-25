@@ -36,23 +36,23 @@ function InsightsBars({ issues }: { issues: BoardIssue[] }) {
     if (i.issueType) byType[i.issueType] = (byType[i.issueType] || 0) + 1;
   }
   const max = Math.max(1, ...Object.values(cat));
-  const colors: Record<string, string> = { 'To Do': token('color.background.neutral.bold', '#44546F'), 'In Progress': token('color.background.information.bold', '#0C66E4'), Done: token('color.background.success.bold', '#1F845A') };
+  const colors: Record<string, string> = { 'To Do': token('color.background.neutral.bold', 'var(--ds-icon, #44546F)'), 'In Progress': token('color.background.information.bold', 'var(--ds-link, #0C66E4)'), Done: token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)') };
   const topTypes = Object.entries(byType).sort((a, b) => b[1] - a[1]).slice(0, 5);
   return (
     <div style={{ padding: '8px 12px', width: 260 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', '#626F86'), marginBottom: 6 }}>Status</div>
+      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 6 }}>Status</div>
       {Object.entries(cat).map(([k, v]) => (
         <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-          <span style={{ width: 84, fontSize: 12, color: token('color.text.subtle', '#44546F') }}>{k}</span>
+          <span style={{ width: 84, fontSize: 12, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{k}</span>
           <div style={{ flex: 1, height: 8, background: token('color.background.neutral', '#091E420F'), borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ width: `${(v / max) * 100}%`, height: '100%', background: colors[k] }} />
           </div>
-          <span style={{ width: 28, textAlign: 'right', fontSize: 12, fontWeight: 600, color: token('color.text', '#172B4D') }}>{v}</span>
+          <span style={{ width: 28, textAlign: 'right', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{v}</span>
         </div>
       ))}
-      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', '#626F86'), margin: '10px 0 6px' }}>Top types</div>
+      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), margin: '10px 0 6px' }}>Top types</div>
       {topTypes.map(([k, v]) => (
-        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: token('color.text', '#172B4D'), marginBottom: 2 }}>
+        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 2 }}>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{k}</span><span style={{ fontWeight: 600 }}>{v}</span>
         </div>
       ))}
@@ -84,7 +84,7 @@ function AvatarFilter({ api, avatars }: { api: FilterApi; avatars: Map<string, s
               style={{
                 marginLeft: i === 0 ? 0 : SIZES.AVATAR_OVERLAP, border: 'none', background: 'none', padding: 0,
                 borderRadius: '50%', cursor: 'pointer', position: 'relative', zIndex: active ? 2 : 1,
-                boxShadow: active ? `0 0 0 2px ${token('color.border.selected', '#0C66E4')}` : `0 0 0 2px ${token('elevation.surface', '#FFFFFF')}`,
+                boxShadow: active ? `0 0 0 2px ${token('color.border.selected', 'var(--ds-link, #0C66E4)')}` : `0 0 0 2px ${token('elevation.surface', 'var(--ds-surface, #FFFFFF)')}`,
                 filter: dim ? 'grayscale(1) opacity(0.5)' : 'none', transition: 'filter 150ms ease',
               }}
             >
@@ -93,7 +93,7 @@ function AvatarFilter({ api, avatars }: { api: FilterApi; avatars: Map<string, s
           </span>
         );
       })}
-      {overflow > 0 && <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 600, color: token('color.text.subtlest', '#626F86') }}>+{overflow}</span>}
+      {overflow > 0 && <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 600, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>+{overflow}</span>}
     </div>
   );
 }
@@ -103,8 +103,8 @@ function triggerStyle(active: boolean): React.CSSProperties {
     height: 32, padding: '0 8px', borderRadius: 3, border: 'none', cursor: 'pointer',
     display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 14, fontWeight: 500,
     fontFamily: 'inherit', flexShrink: 0,
-    background: active ? token('color.background.selected', '#E9F2FF') : 'transparent',
-    color: active ? token('color.text.selected', '#0C66E4') : token('color.text.subtle', '#44546F'),
+    background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
+    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
   };
 }
 
@@ -181,7 +181,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
           placeholder={STRINGS.SEARCH_PLACEHOLDER}
           aria-label={STRINGS.SEARCH_PLACEHOLDER}
           isCompact
-          elemBeforeInput={<span style={{ paddingLeft: 6, display: 'inline-flex' }}><SearchIcon label="" size="small" primaryColor={token('color.icon.subtle', '#626F86')} /></span>}
+          elemBeforeInput={<span style={{ paddingLeft: 6, display: 'inline-flex' }}><SearchIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} /></span>}
         />
       </div>
 
@@ -211,7 +211,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
       {standupActive && (
         <button onClick={onEndStandup}
           style={{ height: 32, padding: '0 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, fontFamily: 'inherit', flexShrink: 0,
-            background: token('color.background.selected', '#E9F2FF'), color: token('color.text.selected', '#0C66E4') }}>End standup</button>
+            background: token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.selected', 'var(--ds-link, #0C66E4)') }}>End standup</button>
       )}
 
       <PortalMenu ariaLabel="Board insights" align="right" minWidth={260} trigger={() => (
@@ -229,7 +229,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
       )}>
         {() => (
           <>
-            <div style={{ padding: '6px 12px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', '#626F86') }}>Card fields</div>
+            <div style={{ padding: '6px 12px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>Card fields</div>
             {FIELD_LABELS.map((f) => (
               <MenuItem key={f.key} selected={visibleFields[f.key]} onClick={() => onToggleField(f.key)}>{f.label}</MenuItem>
             ))}

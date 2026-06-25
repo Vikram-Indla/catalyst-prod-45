@@ -100,24 +100,24 @@ export function StoryProposalModal({
           gap: 16,
           alignItems: 'center',
           padding: '8px 0 16px',
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           marginBottom: 16,
         }}>
-          <div style={{ fontSize: 12, color: token('color.text.subtle', '#42526E') }}>
+          <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
             <strong>{proposals.length}</strong> stories proposed
           </div>
-          <div style={{ fontSize: 12, color: token('color.text.subtle', '#42526E') }}>
+          <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
             <strong>{existingCount}</strong> existing
           </div>
           <div style={{
             fontSize: 12,
             color: coveragePercent >= 80
-              ? token('color.text.success', '#006644')
-              : token('color.text.warning', '#FF8B00'),
+              ? token('color.text.success', 'var(--ds-text-success, #006644)')
+              : token('color.text.warning', 'var(--ds-background-warning-bold, #E2B203)'),
           }}>
             <strong>{coveragePercent}%</strong> coverage
           </div>
-          <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+          <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
             {selectedCount} of {proposals.length} selected
           </span>
           <Button appearance="subtle" spacing="compact" onClick={selectedCount === proposals.length ? onDeselectAll : onSelectAll}>

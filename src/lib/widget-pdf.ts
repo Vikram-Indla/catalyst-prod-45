@@ -27,8 +27,8 @@ interface DownloadOptions {
 const HEADER_HEIGHT_MM = 22;
 const PAGE_MARGIN_MM = 12;
 const HEADER_PRIMARY = 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))';
-const HEADER_SUBTLE = '#505258';
-const BRAND_BLUE = '#0C66E4';
+const HEADER_SUBTLE = 'var(--ds-text-subtle, #44546F)';
+const BRAND_BLUE = 'var(--ds-link, #0C66E4)';
 
 export async function downloadWidgetAsPdf(
   el: HTMLElement | null,
@@ -43,7 +43,7 @@ export async function downloadWidgetAsPdf(
   // Background white so dark-mode users get a readable export.
   const canvas = await html2canvas(el, {
     scale: 2,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'var(--ds-surface, #FFFFFF)',
     logging: false,
     useCORS: true,
   });

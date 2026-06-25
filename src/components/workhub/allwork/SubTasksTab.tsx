@@ -59,7 +59,7 @@ export function useSubTasks(parentKey: string | null) {
 }
 
 /* ── Avatar ── */
-const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#2F54EB'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)', '#13C2C2', '#2F54EB'];
 function MiniAvatar({ name }: { name: string }) {
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   return (
@@ -84,12 +84,12 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
       style={{
         display: 'flex', flexDirection: 'column', gap: 8,
         padding: '12px 14px', width: '100%', textAlign: 'left',
-        border: '1px solid #E4E4E7', borderRadius: 8,
+        border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8,
         cursor: 'pointer', backgroundColor: 'var(--bg-app)',
         transition: 'all 0.12s ease',
       }}
-      onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FAFAFA'; e.currentTarget.style.borderColor = '#D4D4D8'; }}
-      onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--bg-app)'; e.currentTarget.style.borderColor = '#E4E4E7'; }}
+      onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #FAFAFA)'; e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
+      onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--bg-app)'; e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
     >
       {/* Row 1: Icon + Key + Summary */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -143,7 +143,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0', gap: 8 }}>
-        <Loader2 size={16} color="#71717A" style={{ animation: 'spin 1s linear infinite' }} />
+        <Loader2 size={16} color="var(--ds-text-subtlest, #626F86)" style={{ animation: 'spin 1s linear infinite' }} />
         <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Loading sub-tasks…</span>
       </div>
     );
@@ -174,7 +174,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
       {/* Summary bar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px', backgroundColor: '#FAFAFA', borderRadius: 8, border: '1px solid #E4E4E7',
+        padding: '10px 14px', backgroundColor: 'var(--ds-surface-sunken, #FAFAFA)', borderRadius: 8, border: '1px solid var(--ds-border, #DFE1E6)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
@@ -183,7 +183,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {[
               { count: todoTasks.length, label: 'To Do', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' },
-              { count: progressTasks.length, label: 'In Progress', bg: '#0C66E4', color: 'var(--bg-app)' },
+              { count: progressTasks.length, label: 'In Progress', bg: 'var(--ds-link, #0C66E4)', color: 'var(--bg-app)' },
               { count: doneTasks.length, label: 'Done', bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--bg-app)' },
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -200,10 +200,10 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         {/* Progress bar */}
         <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 4, overflow: 'hidden', backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
           {doneTasks.length > 0 && (
-            <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: '#00875A', transition: 'width 0.3s ease' }} />
+            <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: 'var(--ds-background-success-bold, #1F845A)', transition: 'width 0.3s ease' }} />
           )}
           {progressTasks.length > 0 && (
-            <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: '#0065FF', transition: 'width 0.3s ease' }} />
+            <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: 'var(--ds-link, #0065FF)', transition: 'width 0.3s ease' }} />
           )}
         </div>
       </div>

@@ -60,7 +60,7 @@ export function RoadmapFilters({
           }}
           onFocus={e => {
             e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
-            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)';
+            e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))';
           }}
           onBlur={e => {
             e.currentTarget.style.borderColor = surface.border;
@@ -83,7 +83,7 @@ export function RoadmapFilters({
                 fontWeight: isActive ? 600 : 500,
                 background: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                 color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : ink[2],
-                border: isActive ? '1px solid #2563EB' : '1px solid transparent',
+                border: isActive ? '1px solid var(--ds-link, #2563eb)' : '1px solid transparent',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}

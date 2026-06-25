@@ -130,7 +130,7 @@
 }
 
 .lwi-header__add:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 
@@ -170,7 +170,7 @@
   border-radius: 4px;
   overflow: hidden;
   padding: 6px 0;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
 
 /* ── Row ──────────────────────────────────── */
@@ -181,7 +181,7 @@
   gap: 10px;
   height: 40px;
   padding: 0 10px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   transition: background-color 120ms ease;
 }
 
@@ -193,7 +193,7 @@
 
 .lwi-row:hover,
 .lwi-row:focus-within {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.03));
 }
 
 .lwi-row[data-state='pending'] {
@@ -349,7 +349,7 @@
 }
 
 .lwi-row__action-btn:hover {
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 
@@ -370,7 +370,7 @@
 .lwi-empty__heading {
   font-size: 13px;
   font-weight: 650;
-  color: #42526E;
+  color: var(--ds-text-subtle, #42526E);
 }
 
 .lwi-empty__sub {
@@ -387,8 +387,8 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: #FFEDEB;
-  color: #BF2600;
+  background: var(--ds-background-danger, #FFECEB);
+  color: var(--ds-text-danger, #AE2A19);
   border-radius: 4px;
   font-size: 13px;
 }
@@ -408,7 +408,7 @@
   padding: 0 10px;
   border: 1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
   border-radius: 4px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
 
 .lwi-skeleton__pulse {
@@ -470,7 +470,7 @@
   gap: 4px;
   border: none;
   background: transparent;
-  color: var(--cp-text-secondary, var(--cp-text-secondary, #44546F));
+  color: var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)));
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;
@@ -481,7 +481,7 @@
 }
 
 .lwi-toolbar__create:hover:not(:disabled) {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   text-decoration: underline;
 }
@@ -546,12 +546,12 @@
 .dark .lwi-header__add:hover { background-color: var(--ds-surface-overlay, #1F1F1F); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 
 .dark .lwi-group__header { color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .lwi-group__rows { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .lwi-row { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); }
+.dark .lwi-group__rows { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .lwi-row { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))); }
 .dark .lwi-row + .lwi-row { border-top-color: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .lwi-row:hover,
 .dark .lwi-row:focus-within { background-color: var(--ds-surface-overlay, #1F1F1F); }
-.dark .lwi-row__key { color: #4C9AFF; }
+.dark .lwi-row__key { color: var(--ds-background-information-bold, #0C66E4); }
 .dark .lwi-row__summary { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .lwi-row__avatar-empty { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .lwi-row__action-btn { color: var(--ds-text-subtlest, #A1A1A1); }
@@ -561,7 +561,7 @@
 .dark .lwi-empty__sub { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .lwi-error { background: #3B1F1C; color: #FFB9B0; }
 
-.dark .lwi-skeleton__row { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #292929)); }
+.dark .lwi-skeleton__row { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))); border-color: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .lwi-skeleton__pulse { background: var(--ds-border, var(--cp-ink-1, #292929)); }
 
 .dark .lwi-toolbar { border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
@@ -612,7 +612,7 @@
    (2026-06-21, Vikram screenshot). */
 .lwi-group__rows table tbody tr {
   height: 40px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   transition: background-color 120ms ease;
   border-block-end: none !important;
 }
@@ -624,7 +624,7 @@
 
 .lwi-group__rows table tbody tr:hover,
 .lwi-group__rows table tbody tr:focus-within {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: var(--ds-shadow-raised, rgba(0, 0, 0, 0.03));
 }
 
 .lwi-group__rows table tbody td {
@@ -684,7 +684,7 @@
 
 /* Dark mode DynamicTable overrides */
 .dark .lwi-group__rows table tbody tr {
-  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
 }
 
 .dark .lwi-group__rows table tbody tr + tr {

@@ -62,7 +62,7 @@ export function CalendarGrid({
         className="grid border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
         style={{ gridTemplateColumns: `120px repeat(${columns.length}, 1fr)` }}
       >
-        <div className="p-3 bg-slate-50 dark:bg-[#111111] border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+        <div className="p-3 bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
           <span className="text-xs font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] uppercase">Release</span>
         </div>
         {columns.map((col, i) => (
@@ -70,7 +70,7 @@ export function CalendarGrid({
             key={i}
             className={cn(
               "p-3 text-center border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-r-0",
-              col.isWeekend ? "bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-[#111111]" : "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
+              col.isWeekend ? "bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-[var(--ds-text, #172B4D)]" : "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
             )}
           >
             <span className="text-xs font-medium text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{col.label}</span>
@@ -109,7 +109,7 @@ export function CalendarGrid({
               key={i}
               className={cn(
                 "border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-r-0",
-                col.isWeekend && "bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-[#111111]"
+                col.isWeekend && "bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-[var(--ds-text, #172B4D)]"
               )}
             />
           ))}

@@ -61,7 +61,7 @@ export const Card: React.FC<CardProps> = ({
 
   const base: React.CSSProperties = {
     position: 'relative', display: 'flex', flexDirection: 'column', gap: SIZES.CARD_GAP,
-    background: token('elevation.surface.raised', '#FFFFFF'),
+    background: token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
     borderRadius: SIZES.CARD_RADIUS,
     padding: SIZES.CARD_PADDING,
     boxShadow: token('elevation.shadow.raised', '0 1px 1px #091E4240, 0 0 1px #091E424F'),
@@ -69,20 +69,20 @@ export const Card: React.FC<CardProps> = ({
     transition: 'background-color 100ms ease',
   };
   if (issue.isFlagged) {
-    base.borderLeft = `${SIZES.CARD_FLAG_BORDER}px solid ${token('color.border.warning', '#F5CD47')}`;
+    base.borderLeft = `${SIZES.CARD_FLAG_BORDER}px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}`;
     base.background = token('color.background.warning', '#FFFBF0');
     base.paddingLeft = SIZES.CARD_PADDING - SIZES.CARD_FLAG_BORDER;
-    base.boxShadow = `inset 0 0 0 1px ${token('color.border.warning', '#F5CD47')}, 0 1px 1px #091E4240, 0 0 1px #091E424F`;
+    base.boxShadow = `inset 0 0 0 1px ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}, 0 1px 1px #091E4240, 0 0 1px #091E424F`;
   }
   if (hover && !isDragging) {
     base.background = issue.isFlagged
       ? token('color.background.warning.hovered', '#F8E6A0')
-      : token('elevation.surface.raised.hovered', '#F1F2F4');
+      : token('elevation.surface.raised.hovered', 'var(--ds-background-neutral, #F1F2F4)');
   }
   if (isSelected) {
-    base.outline = `2px solid ${token('color.border.selected', '#0C66E4')}`;
+    base.outline = `2px solid ${token('color.border.selected', 'var(--ds-link, #0C66E4)')}`;
     base.outlineOffset = '2px';
-    base.background = token('color.background.selected', '#E9F2FF');
+    base.background = token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)');
   }
   if (isDragging) { base.opacity = 0.4; base.background = token('color.background.disabled', '#091E420F'); }
 
@@ -110,7 +110,7 @@ export const Card: React.FC<CardProps> = ({
         <div style={{ position: 'absolute', left: 2, top: '50%', transform: 'translateY(-50%)', opacity: 0.3, transition: 'opacity 100ms ease' }}>
           <span style={{ display: 'inline-flex', flexDirection: 'column', gap: 1 }}>
             {[0, 1, 2].map((i) => (
-              <span key={i} style={{ width: 12, height: 1.5, background: token('color.icon.subtle', '#626F86'), borderRadius: 1 }} />
+              <span key={i} style={{ width: 12, height: 1.5, background: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), borderRadius: 1 }} />
             ))}
           </span>
         </div>
@@ -126,13 +126,13 @@ export const Card: React.FC<CardProps> = ({
           onKeyDown={(e) => { e.stopPropagation(); if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitEdit(); } if (e.key === 'Escape') { setEditing(false); } }}
           onBlur={commitEdit}
           rows={2}
-          style={{ width: '100%', resize: 'none', border: `2px solid ${token('color.border.focused', '#4C9AFF')}`, borderRadius: 4, padding: 4, fontSize: 14, lineHeight: '20px', fontFamily: 'inherit', color: token('color.text', '#172B4D'), outline: 'none' }}
+          style={{ width: '100%', resize: 'none', border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold, #0C66E4)')}`, borderRadius: 4, padding: 4, fontSize: 14, lineHeight: '20px', fontFamily: 'inherit', color: token('color.text', 'var(--ds-text, #172B4D)'), outline: 'none' }}
         />
       ) : (
         <p
           style={{
             margin: 0, fontSize: 14, lineHeight: '20px', fontWeight: 400,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
             wordBreak: 'break-word', paddingRight: hover ? 18 : 0,
             cursor: onEditSummary ? 'text' : 'pointer',
           }}
@@ -152,7 +152,7 @@ export const Card: React.FC<CardProps> = ({
                 borderRadius: 3,
               }}
             >
-              <EditIcon label="" size="small" primaryColor={token('color.icon.subtle', '#626F86')} />
+              <EditIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />
             </button>
           )}
         </p>
@@ -167,7 +167,7 @@ export const Card: React.FC<CardProps> = ({
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, height: 18, padding: '0 6px', borderRadius: 3,
             border: `1px solid ${due.overdue ? token('color.border.danger', '#E2483D') : token('color.border', '#091E4224')}`,
-            color: due.overdue ? token('color.text.danger', '#AE2A19') : token('color.text.subtle', '#44546F'),
+            color: due.overdue ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             fontSize: 11, fontWeight: 500,
           }}>
             {due.overdue ? '⚠ ' : ''}{due.label}
@@ -183,17 +183,17 @@ export const Card: React.FC<CardProps> = ({
               display: 'inline-flex', alignItems: 'center', gap: 4, height: SIZES.LABEL_HEIGHT,
               padding: '0 4px', borderRadius: 2,
               background: LABEL_COLORS[i % LABEL_COLORS.length],
-              color: '#FFFFFF', fontSize: 10, fontWeight: 500,
+              color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 10, fontWeight: 500,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%',
             }} title={label}>
-              <span style={{ display: 'inline-block', width: SIZES.LABEL_WIDTH, height: 2, background: 'rgba(255,255,255,0.5)' }} />
+              <span style={{ display: 'inline-block', width: SIZES.LABEL_WIDTH, height: 2, background: 'var(--ds-surface, rgba(255,255,255,0.5))' }} />
               {label}
             </span>
           ))}
           {issue.labels.length > SIZES.MAX_LABELS && (
             <span style={{
               display: 'inline-flex', alignItems: 'center', height: SIZES.LABEL_HEIGHT,
-              padding: '0 4px', color: token('color.text.subtlest', '#626F86'), fontSize: 10,
+              padding: '0 4px', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), fontSize: 10,
             }}>
               +{issue.labels.length - SIZES.MAX_LABELS}
             </span>
@@ -209,10 +209,10 @@ export const Card: React.FC<CardProps> = ({
           </Tooltip>
           <span
             style={{
-              fontSize: 12, lineHeight: '16px', color: token('color.text.subtlest', '#626F86'),
+              fontSize: 12, lineHeight: '16px', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               borderBottom: '1px solid transparent', transition: 'border-color 100ms ease',
-              ...(hover ? { borderBottom: `1px solid ${token('color.border.subtle', '#626F86')}` } : {}),
+              ...(hover ? { borderBottom: `1px solid ${token('color.border.subtle', 'var(--ds-icon-subtle, #626F86)')}` } : {}),
             }}
           >
             {issue.issueKey}
@@ -227,7 +227,7 @@ export const Card: React.FC<CardProps> = ({
           )}
           {visibleFields.estimate && issue.storyPoints != null && (
             <Tooltip content={`Story point estimate: ${issue.storyPoints}`} delay={SIZES.TOOLTIP_DELAY}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: SIZES.POINTS_HEIGHT, height: SIZES.POINTS_HEIGHT, padding: '0 6px', borderRadius: SIZES.POINTS_RADIUS, background: token('color.background.neutral', '#F1F2F4'), color: token('color.text.subtlest', '#626F86'), fontSize: 12, fontWeight: 600 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: SIZES.POINTS_HEIGHT, height: SIZES.POINTS_HEIGHT, padding: '0 6px', borderRadius: SIZES.POINTS_RADIUS, background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), fontSize: 12, fontWeight: 600 }}>
                 {issue.storyPoints}
               </span>
             </Tooltip>
@@ -239,7 +239,7 @@ export const Card: React.FC<CardProps> = ({
                 style={{
                   display: 'inline-flex', cursor: onAvatarClick ? 'pointer' : 'default',
                   borderRadius: 3, padding: 2, transition: 'background-color 100ms ease',
-                  ...(hover ? { background: token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') } : {}),
+                  ...(hover ? { background: token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))') } : {}),
                 }}
               >
                 {issue.assigneeName

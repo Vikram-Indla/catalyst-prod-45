@@ -20,23 +20,23 @@ interface TimelineViewProps {
 
 const HEALTH_BAR_COLORS: Record<HealthLevel, string> = {
   critical: 'var(--ds-text-danger, #ef4444)',
-  at_risk: '#f97316',
-  attention: '#eab308',
+  at_risk: 'var(--ds-background-warning-bold, #f97316)',
+  attention: 'var(--ds-background-warning-bold, #E2B203)',
   healthy: 'var(--ds-text-success, #22c55e)',
 };
 
 const HEALTH_BAR_BG: Record<HealthLevel, string> = {
-  critical: 'rgba(239,68,68,0.35)',
+  critical: 'var(--ds-background-danger, rgba(239,68,68,0.35))',
   at_risk: 'rgba(249,115,22,0.35)',
   attention: 'rgba(234,179,8,0.35)',
-  healthy: 'rgba(34,197,94,0.35)',
+  healthy: 'var(--ds-background-success-bold, rgba(34,197,94,0.35))',
 };
 
 const VERSION_BADGE_COLORS: Record<HealthLevel, { bg: string; text: string }> = {
   critical: { bg: 'var(--ds-background-danger, #fef2f2)', text: 'var(--ds-text-danger, #ef4444)' },
-  at_risk: { bg: '#fff7ed', text: '#f97316' },
-  attention: { bg: '#fefce8', text: '#a16207' },
-  healthy: { bg: '#f0fdf4', text: 'var(--ds-text-success, #16a34a)' },
+  at_risk: { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-background-warning-bold, #f97316)' },
+  attention: { bg: '#fefce8', text: 'var(--ds-text-warning, #974F0C)' },
+  healthy: { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #16a34a)' },
 };
 
 export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
@@ -126,7 +126,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
   return (
     <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm overflow-hidden">
         {/* Controls Row */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50/50 dark:bg-[#111111]">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50/50 dark:bg-[var(--ds-text, #172B4D)]">
           <div className="flex border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md overflow-hidden">
             {(['week', 'month', 'quarter'] as ZoomLevel[]).map(level => (
               <button
@@ -148,8 +148,8 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
           <div className="flex items-center gap-4 text-[11px]">
             {[
               { label: 'Critical', color: 'var(--ds-text-danger, #ef4444)' },
-              { label: 'At Risk', color: '#f97316' },
-              { label: 'Attention', color: '#eab308' },
+              { label: 'At Risk', color: 'var(--ds-background-warning-bold, #f97316)' },
+              { label: 'Attention', color: 'var(--ds-background-warning-bold, #E2B203)' },
               { label: 'Healthy', color: 'var(--ds-text-success, #22c55e)' },
             ].map(item => (
               <div key={item.label} className="flex items-center gap-1.5">
@@ -158,7 +158,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
               </div>
             ))}
             {[
-              { label: 'Code Freeze', color: '#f97316' },
+              { label: 'Code Freeze', color: 'var(--ds-background-warning-bold, #f97316)' },
               { label: 'Go Live', color: 'var(--ds-text-success, #22c55e)' },
             ].map(item => (
               <div key={item.label} className="flex items-center gap-1.5">
@@ -170,7 +170,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
         </div>
 
         {/* Header Row */}
-        <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[#111111]">
+        <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[var(--ds-text, #172B4D)]">
           <div className="w-[240px] shrink-0 px-4 py-2.5 border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] flex items-center">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Release ↕</span>
           </div>
@@ -241,7 +241,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                     style={{ left: `${todayPct}%` }}
                     aria-label={`Today, ${format(new Date(), 'MMMM d, yyyy')}`}
                   >
-                    <div className="w-[2px] h-full bg-red-500 opacity-60" style={{ borderLeft: '1px dashed #ef4444' }} />
+                    <div className="w-[2px] h-full bg-red-500 opacity-60" style={{ borderLeft: '1px dashed var(--ds-background-danger-bold, #ef4444)' }} />
                     {releases.indexOf(release) === 0 && (
                       <span className="absolute -top-0 left-1 text-[9px] font-semibold text-red-500">Today</span>
                     )}
@@ -268,7 +268,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                       left: barStyle.left,
                       width: barStyle.width,
                       height: '24px',
-                      boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                      boxShadow: '0 1px 4px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
                     }}
                   >
                     {/* Progress fill */}
@@ -284,11 +284,11 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                     {/* Text overlay */}
                     <div className="relative z-[2] flex items-center justify-between w-full px-2">
                       {showName && (
-                        <span className="text-[10px] font-medium text-white truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                        <span className="text-[10px] font-medium text-white truncate" style={{ textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))' }}>
                           {release.name}
                         </span>
                       )}
-                      <span className="text-[10px] font-bold text-white ml-auto shrink-0" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                      <span className="text-[10px] font-bold text-white ml-auto shrink-0" style={{ textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))' }}>
                         {progress}%
                       </span>
                     </div>
@@ -305,7 +305,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                     >
                       <div
                         className="w-[10px] h-[10px] rotate-45"
-                        style={{ background: m.type === 'code_freeze' ? '#f97316' : 'var(--ds-text-success, #22c55e)' }}
+                        style={{ background: m.type === 'code_freeze' ? 'var(--ds-background-warning-bold, #f97316)' : 'var(--ds-text-success, #22c55e)' }}
                       />
                     </div>
                   </Tooltip>

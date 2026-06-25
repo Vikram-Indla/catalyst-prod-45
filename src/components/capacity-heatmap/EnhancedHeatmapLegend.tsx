@@ -38,11 +38,11 @@ export const EnhancedHeatmapLegend = memo(function EnhancedHeatmapLegend({
             pulse 
           />
           <ContractStatusItem 
-            color="#ca8a04" 
+            color="var(--ds-text-warning, #974F0C)" 
             label="30-60d" 
           />
           <ContractStatusItem 
-            color="#0d9488" 
+            color="var(--ds-chart-teal-bold, #0d9488)" 
             label="60+d" 
           />
           <ContractStatusItem 

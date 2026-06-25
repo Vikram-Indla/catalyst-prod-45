@@ -119,7 +119,7 @@ export default function IdeationDrivesView() {
         const IconComponent = getDriveIcon(drive.title);
         return (
           <div key={drive.id} style={{
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: '6px',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: '6px',
             padding: '20px', marginBottom: '16px',
           }}>
             {/* Title + Icon + Status */}
@@ -127,7 +127,7 @@ export default function IdeationDrivesView() {
               {/* V12: Lucide icon container */}
               <div style={{
                 width: 36, height: 50, borderRadius: 8,
-                background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, color: 'var(--cp-text-secondary, #475569)',
               }}>
@@ -189,7 +189,7 @@ export default function IdeationDrivesView() {
               {drive.ideas.map(idea => (
                 <span key={idea.idea_key} style={{
                   fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-                  background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid #DBEAFE', borderRadius: '4px', padding: '1px 6px',
+                  background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: '4px', padding: '1px 6px',
                 }}>{idea.idea_key}</span>
               ))}
             </div>

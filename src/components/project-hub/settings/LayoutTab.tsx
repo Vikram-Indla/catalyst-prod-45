@@ -44,7 +44,7 @@ function VisibilityDot({ visible, required }: { visible: boolean; required: bool
     <span
       style={{
         display: 'inline-block', width: 7, height: 7, borderRadius: '50%',
-        background: visible ? 'var(--cp-success, #16A34A)' : '#CBD5E1',
+        background: visible ? 'var(--cp-success, #16A34A)' : 'var(--ds-border, #DFE1E6)',
         marginLeft: 4, flexShrink: 0,
       }}
       title={visible ? 'Visible' : 'Hidden'}
@@ -112,8 +112,8 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
                       <span
                         style={{
                           fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
-                          background: f.is_visible ? '#DCFCE7' : 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
-                          color: f.is_visible ? '#15803D' : 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
+                          background: f.is_visible ? 'var(--ds-background-success, #DFFCF0)' : 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
+                          color: f.is_visible ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
                         }}
                       >
                         {f.is_visible ? 'Shown' : 'Hidden'}

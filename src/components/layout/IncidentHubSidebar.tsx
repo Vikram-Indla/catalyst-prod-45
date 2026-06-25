@@ -10,6 +10,7 @@ import {
   Sparkles,
   FileText,
   Users,
+  Link2,
 } from '@/lib/atlaskit-icons';
 import {
   NavWorkIcon,
@@ -63,6 +64,7 @@ const sections: SidebarSection[] = [
          issue_type='Production Incident'). Same Gantt chrome as project
          + product hubs. */
       { id: 'timeline', title: 'Timeline', path: '/incident-hub/timeline', icon: NavTimelineIcon, exact: false },
+      { id: 'dependencies', title: 'Dependencies', path: '/incident-hub/dependencies', icon: Link2, exact: false },
       { id: 'reports', title: 'Reports', path: '/incident-hub/reports', icon: FileText, exact: false },
       { id: 'committee-queue', title: 'Committee Queue', path: '/incident-hub/committee-queue', icon: Users, exact: false },
     ],

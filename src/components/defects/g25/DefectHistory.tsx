@@ -4,9 +4,9 @@ import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const resultColors: Record<string, string> = {
-  passed: 'text-[#006644]',
-  failed: 'text-[#DE350B]',
-  blocked: 'text-[#FF8B00]',
+  passed: 'text-[var(--ds-text-success, #006644)]',
+  failed: 'text-[var(--ds-background-danger-bold, #C9372C)]',
+  blocked: 'text-[var(--ds-background-warning-bold, #E2B203)]',
   skipped: 'text-muted-foreground',
 };
 

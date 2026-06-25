@@ -121,14 +121,14 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(15, 23, 42, 0.3)' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.3))' }} />
 
       <div style={{
         position: 'fixed', top: '50%', left: '50%',
         transform: 'translate(-50%, -50%)',
         zIndex: 70, width: 640, maxHeight: '85vh',
         background: 'var(--cp-float)', borderRadius: 12,
-        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)',
+        boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
         display: 'flex', flexDirection: 'column',
         animation: 'modalIn 200ms ease',
       }}>

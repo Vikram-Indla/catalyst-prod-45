@@ -44,7 +44,7 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
       className="flex items-center w-full"
       style={{
         background: 'var(--sem-warning-bg)',
-        borderBottom: '0.75px solid #FDE68A',
+        borderBottom: '0.75px solid var(--ds-background-warning, #FFF7D6)',
         padding: '8px 28px',
         fontFamily: 'var(--cp-font-body)',
         fontSize: 12,

@@ -24,7 +24,7 @@ export function ConfirmDialog({
     <div style={{
       position: 'fixed', inset: 0, zIndex: 10000,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(9, 30, 66, 0.4)',
+      background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.4))',
     }} onClick={onCancel}>
       <div onClick={e => e.stopPropagation()} style={{
         background: 'var(--ds-surface, #FFF)', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw',
@@ -43,7 +43,7 @@ export function ConfirmDialog({
           >{cancelLabel}</button>
           <button onClick={onConfirm} style={{
             padding: '7px 16px', borderRadius: 4,
-            background: destructive ? '#DE350B' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+            background: destructive ? 'var(--ds-background-danger-bold, #C9372C)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             color: 'var(--ds-surface, #FFF)', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             transition: 'opacity 0.15s',
           }}

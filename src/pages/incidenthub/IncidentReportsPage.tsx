@@ -32,7 +32,7 @@ export default function IncidentReportsPage() {
       <ProjectPageHeader projectKey="INCIDENTS" hubType="incident" />
       <div className="px-6 pt-2 pb-4">
         {/* Tab Bar */}
-        <div className="flex items-center gap-1 mb-6" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+        <div className="flex items-center gap-1 mb-6" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
           {TABS.map((tab, i) => (
             <button
               key={tab}
@@ -44,7 +44,7 @@ export default function IncidentReportsPage() {
                 fontSize: 12,
                 fontWeight: activeTab === i ? 650 : 400,
                 color: activeTab === i ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-                borderBottom: activeTab === i ? '2px solid #2563EB' : '2px solid transparent',
+                borderBottom: activeTab === i ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
               }}
             >
               {tab}

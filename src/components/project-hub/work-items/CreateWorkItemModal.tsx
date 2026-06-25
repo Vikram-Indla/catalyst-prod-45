@@ -240,7 +240,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
       onClick={handleClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-[rgba(15,23,42,0.5)]" />
+      <div className="absolute inset-0 bg-[var(--ds-shadow-overlay, rgba(15,23,42,0.5))]" />
 
       {/* Modal */}
       <div
@@ -619,7 +619,7 @@ function FixedDropdown({
         width: width || '100%',
         maxHeight: maxHeight || 'auto',
         border: '1px solid var(--divider)',
-        boxShadow: '0 8px 20px rgba(0,0,0,0.18)',
+        boxShadow: '0 8px 20px var(--ds-shadow-raised, rgba(0,0,0,0.18))',
         zIndex: 9999,
       }}
       onClick={onClick}

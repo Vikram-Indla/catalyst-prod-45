@@ -16,7 +16,7 @@ export const WorkListLoadingState = memo(function WorkListLoadingState() {
         justifyContent: 'center',
         padding: '48px 24px',
         gap: '16px',
-        color: '#626F86',
+        color: 'var(--ds-icon-subtle, #626F86)',
       }}
     >
       <div
@@ -25,7 +25,7 @@ export const WorkListLoadingState = memo(function WorkListLoadingState() {
           width: '32px',
           height: '32px',
           border: '3px solid #E6EDFA',
-          borderTop: '3px solid #0055CC',
+          borderTop: '3px solid var(--ds-link, #0C66E4)',
           borderRadius: '50%',
           animation: 'spin 1s linear infinite',
         }}
@@ -51,7 +51,7 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
         justifyContent: 'center',
         padding: '48px 24px',
         gap: '12px',
-        color: '#626F86',
+        color: 'var(--ds-icon-subtle, #626F86)',
       }}
     >
       <div
@@ -79,8 +79,8 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
         style={{
           marginTop: '12px',
           padding: '8px 12px',
-          backgroundColor: '#0055CC',
-          color: '#FFFFFF',
+          backgroundColor: 'var(--ds-link, #0C66E4)',
+          color: 'var(--ds-text-inverse, #FFFFFF)',
           border: 'none',
           borderRadius: '3px',
           fontSize: '14px',
@@ -92,7 +92,7 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
           e.currentTarget.style.backgroundColor = '#0044A3';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#0055CC';
+          e.currentTarget.style.backgroundColor = 'var(--ds-link, #0C66E4)';
         }}
       >
         Create issue

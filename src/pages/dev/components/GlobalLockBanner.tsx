@@ -30,11 +30,11 @@ export function GlobalLockBanner({ owner, itemKey }: GlobalLockBannerProps) {
             Evidence-to-Execution is currently locked
           </Heading>
         </Inline>
-        <div style={{ fontSize: '14px', color: '#172B4D', marginLeft: 24 }}>
+        <div style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)', marginLeft: 24 }}>
           <strong>{owner}</strong> is preparing evidence for <strong>{itemKey}</strong> — Industrial
           License Renewal Enhancement.
         </div>
-        <div style={{ fontSize: '13px', color: '#626F86', marginLeft: 24 }}>
+        <div style={{ fontSize: '13px', color: 'var(--ds-icon-subtle, #626F86)', marginLeft: 24 }}>
           Evidence-to-Execution is locked until this job completes. Check back in a few seconds.
         </div>
       </Stack>

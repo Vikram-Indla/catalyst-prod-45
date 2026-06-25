@@ -86,9 +86,9 @@ function FocusWidget({
         "w-full p-3 rounded-lg transition-all text-left",
         "bg-transparent border border-transparent",
         // Blue-tinted hover for brand consistency
-        "hover:bg-[rgba(37,99,235,0.06)] dark:hover:bg-[rgba(37,99,235,0.12)]",
-        "hover:border-[rgba(37,99,235,0.2)] dark:hover:border-[rgba(37,99,235,0.3)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(37,99,235,0.5)]"
+        "hover:bg-[var(--ds-background-information, rgba(37,99,235,0.06))] dark:hover:bg-[var(--ds-background-information, rgba(37,99,235,0.12))]",
+        "hover:border-[var(--ds-background-information, rgba(37,99,235,0.2))] dark:hover:border-[var(--ds-background-information, rgba(37,99,235,0.3))]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-background-information, rgba(37,99,235,0.5))]"
       )}
       onClick={onClick}
     >
@@ -105,7 +105,7 @@ function FocusWidget({
         <span className={cn(
           "text-base font-bold tabular-nums shrink-0",
           primaryCount > 0 
-            ? "text-[#0d9488] dark:text-[#2dd4bf]" 
+            ? "text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-[var(--ds-background-success, #DCFFF1)]" 
             : "text-muted-foreground"
         )}>
           {primaryCount}
@@ -189,7 +189,7 @@ function WorkItemsDataGrid({
   };
 
   return (
-    <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+    <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_var(--ds-shadow-raised, rgba(0,0,0,0.4))]">
       {/* Sticky Header - responsive: hide Level/Assignee on mobile */}
       <div 
         className="hidden md:grid items-center py-3 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10 bg-muted/50 dark:bg-muted/30"
@@ -787,7 +787,7 @@ export const HomeContentV2 = memo(function HomeContentV2() {
               )}
             >
               {/* Header with blue accent per design system v2.0 */}
-              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[#525252] dark:text-[#a3a3a3] border-b border-border pb-2">
+              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[var(--ds-text-subtle, #44546F)] dark:text-[var(--ds-text-disabled, #8590A2)] border-b border-border pb-2">
                 <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] rounded-r" />
                 My Focus
               </div>

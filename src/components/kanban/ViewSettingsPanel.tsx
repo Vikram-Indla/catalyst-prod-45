@@ -35,7 +35,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
       onClick={() => onChange(!checked)}
       style={{
         width: 36, height: 20, borderRadius: 10, border: 'none',
-        background: checked ? '#36B37E' : tk.chipBg,
+        background: checked ? 'var(--ds-background-success-bold, #1F845A)' : tk.chipBg,
         position: 'relative', cursor: 'pointer', flexShrink: 0,
         transition: 'background 150ms',
         display: 'flex', alignItems: 'center',
@@ -47,7 +47,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
         position: 'absolute',
         left: checked ? 18 : 2,
         transition: 'left 150ms',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+        boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
       }} />
     </button>
   );

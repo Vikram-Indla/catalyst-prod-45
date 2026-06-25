@@ -48,7 +48,7 @@ const MOCK_COLLABORATORS: Collaborator[] = [
     name: 'Mike Johnson',
     email: 'mike.j@company.com',
     avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike',
-    color: '#10B981',
+    color: 'var(--ds-background-success-bold, #059669)',
     status: 'viewing',
     lastActive: new Date(Date.now() - 30000),
   },

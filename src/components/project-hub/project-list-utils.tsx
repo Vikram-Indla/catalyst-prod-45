@@ -62,9 +62,9 @@ export function StatusBadge({ status }: { status: string }) {
  * Uses dot + label with muted backgrounds
  */
 const HEALTH_STYLES: Record<string, { bg: string; color: string; dot: string }> = {
-  on_track:  { bg: '#E3FCEF', color: '#006644', dot: '#006644' },
-  at_risk:   { bg: '#FFF7E6', color: '#974F0C', dot: '#974F0C' },
-  off_track: { bg: '#FFEBE6', color: '#BF2600', dot: '#BF2600' },
+  on_track:  { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #006644)', dot: 'var(--ds-text-success, #006644)' },
+  at_risk:   { bg: '#FFF7E6', color: 'var(--ds-text-warning, #974F0C)', dot: 'var(--ds-text-warning, #974F0C)' },
+  off_track: { bg: 'var(--ds-background-danger, #FFECEB)', color: 'var(--ds-text-danger, #AE2A19)', dot: 'var(--ds-text-danger, #AE2A19)' },
 };
 
 export function HealthBadge({ health }: { health: string | null }) {
@@ -96,7 +96,7 @@ export function HealthBadge({ health }: { health: string | null }) {
   );
 }
 
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--quality-high, #059669)', '#0369A1', '#BE185D'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--quality-high, #059669)', '#0369A1', 'var(--ds-background-accent-magenta-bolder, #be185d)'];
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -135,7 +135,7 @@ export function AvatarStack({ names }: { names: string[] }) {
             fontFamily: 'var(--cp-font-body)',
             zIndex: show - i,
             position: 'relative',
-            boxShadow: '0 0 0 1px rgba(0,0,0,0.06)',
+            boxShadow: '0 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
           }}
         >
           {getInitials(name)}
@@ -155,7 +155,7 @@ export function AvatarStack({ names }: { names: string[] }) {
             fontWeight: 700,
             border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             fontFamily: 'var(--cp-font-body)',
-            boxShadow: '0 0 0 1px rgba(0,0,0,0.06)',
+            boxShadow: '0 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
           }}
         >
           +{overflow}

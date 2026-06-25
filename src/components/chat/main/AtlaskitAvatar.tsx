@@ -47,12 +47,12 @@ function pixelSizeToAtlaskitSize(px: number): 'xsmall' | 'small' | 'medium' | 'l
 function getColorForSeed(seed: string): string {
   // Use a stable color palette
   const colors = [
-    '#0C66E4', // blue (brand)
-    '#216E4E', // green
-    '#AE2A19', // red
-    '#974F0C', // orange/amber
-    '#5E4DB2', // purple
-    '#626F86', // grey
+    'var(--ds-link, #0C66E4)', // blue (brand)
+    'var(--ds-text-success, #216E4E)', // green
+    'var(--ds-text-danger, #AE2A19)', // red
+    'var(--ds-text-warning, #974F0C)', // orange/amber
+    'var(--ds-background-discovery-bold, #6E5DC6)', // purple
+    'var(--ds-icon-subtle, #626F86)', // grey
   ];
 
   let hash = 0;

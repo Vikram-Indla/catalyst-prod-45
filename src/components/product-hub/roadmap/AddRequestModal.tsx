@@ -76,7 +76,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
       <div
         onClick={onClose}
         className="animate-fade-in"
-        style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, backgroundColor: 'var(--ds-shadow-raised, rgba(0,0,0,0.3))', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', zIndex: 300 }}
       />
 
       {/* Modal — scale entrance */}
@@ -90,7 +90,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
           position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
           width: 640, maxWidth: '90vw', maxHeight: '80vh',
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, border: `1px solid ${SURFACE.border}`,
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', zIndex: 301,
+          boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 301,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           fontFamily: FONT.body,
         }}
@@ -176,7 +176,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                 {isOnRoadmap ? (
                   <span
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md"
-                    style={{ color: 'var(--ds-text-success, var(--cp-success, #16A34A))', border: '1px solid #BBF7D0', background: '#F0FDF4' }}
+                    style={{ color: 'var(--ds-text-success, var(--cp-success, #16A34A))', border: '1px solid var(--ds-background-success, #DFFCF0)', background: 'var(--ds-background-success, #DFFCF0)' }}
                   >
                     <CheckCircle2 size={12} /> On Roadmap
                   </span>

@@ -223,12 +223,12 @@ function categoryBg(category: 'todo' | 'in_progress' | 'done' | undefined, ms: n
   if (!ms || ms <= 0) return 'transparent';
   switch (category) {
     case 'in_progress':
-      return 'rgba(143, 184, 246, 0.22)';
+      return 'var(--ds-background-information, rgba(143, 184, 246, 0.22))';
     case 'done':
-      return 'rgba(179, 223, 114, 0.30)';
+      return 'var(--ds-background-success-bold, rgba(179, 223, 114, 0.30))';
     case 'todo':
     default:
-      return 'rgba(221, 222, 225, 0.55)';
+      return 'var(--ds-background-neutral, rgba(221, 222, 225, 0.55))';
   }
 }
 
@@ -452,7 +452,7 @@ export default function TimeInStatusWidget({
                     width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     textAlign: 'left',
                     padding: '4px',
-                    borderBottom: '0.5px solid rgba(11,18,14,0.14)',
+                    borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
                     borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                     ...SMALL_STRONG,
                     fontWeight: 500,
@@ -470,7 +470,7 @@ export default function TimeInStatusWidget({
                       minWidth: STATUS_COL_MIN,
                       textAlign: 'left',
                       padding: '4px',
-                      borderBottom: '0.5px solid rgba(11,18,14,0.14)',
+                      borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
                       borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
                     }}
                   >
@@ -488,7 +488,7 @@ export default function TimeInStatusWidget({
                     minWidth: 96,
                     padding: '4px',
                     textAlign: 'right',
-                    borderBottom: '0.5px solid rgba(11,18,14,0.14)',
+                    borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
                     ...STRONG,
                     fontWeight: 500,
                     background: token('elevation.surface', '#FFFFFF'),

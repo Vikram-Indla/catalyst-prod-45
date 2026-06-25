@@ -87,7 +87,7 @@ function ListCard({
   return (
     <div
       onClick={onClick}
-      className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5"
+      className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.08)))] hover:-translate-y-0.5"
     >
       {/* LEFT SIDE */}
       <div className="flex-1 min-w-0">
@@ -215,7 +215,7 @@ function CompletedWeekCard({ week }: { week: T10CompletedWeekView }) {
   const rate = getCompletionRate();
 
   return (
-    <div className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5">
+    <div className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.08)))] hover:-translate-y-0.5">
       {/* Check icon */}
       <div className="w-12 h-12 flex items-center justify-center bg-emerald-50 text-emerald-500 rounded-full mr-4 flex-shrink-0">
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -471,7 +471,7 @@ export function T10LandingPageV3() {
     archivedLoading;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[var(--ds-surface,var(--cp-bg,#0A0A0A))]">
+    <div className="min-h-screen bg-[var(--ds-surface-sunken, #FAFAFA)] dark:bg-[var(--ds-surface,var(--cp-bg,#0A0A0A))]">
       {/* ═══════════════════════════════════════════════════════════════════════
           HEADER
           ═══════════════════════════════════════════════════════════════════════ */}
@@ -508,7 +508,7 @@ export function T10LandingPageV3() {
           maxWidth: '1100px',
           minHeight: 'calc(100vh - 64px)',
           borderRadius: '20px 20px 0 0',
-          boxShadow: '0 -2px 20px rgba(0,0,0,0.04)',
+          boxShadow: '0 -2px 20px var(--ds-shadow-raised, rgba(0,0,0,0.04))',
           padding: '32px 40px',
         }}
       >
@@ -563,7 +563,7 @@ export function T10LandingPageV3() {
         </div>
 
         {/* TABS */}
-        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-[#111111] rounded-xl w-fit mb-6 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-[var(--ds-text, #172B4D)] rounded-xl w-fit mb-6 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
           <button
             onClick={() => setActiveTab('this-week')}
             className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${

@@ -13,10 +13,10 @@ interface Column {
 
 const COLUMNS: Column[] = [
   { id: 'uncommitted', label: 'UNCOMMITTED', accent: 'var(--ds-text-disabled, #CBD5E1)', dashed: true },
-  { id: 'Q1', label: 'Q1 2026', accent: '#6D28D9', dashed: false },
+  { id: 'Q1', label: 'Q1 2026', accent: 'var(--ds-background-discovery-bold, #6d28d9)', dashed: false },
   { id: 'Q2', label: 'Q2 2026', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', dashed: false },
   { id: 'Q3', label: 'Q3 2026', accent: 'var(--cp-teal-60, #0D9488)', dashed: false },
-  { id: 'Q4', label: 'Q4 2026', accent: '#92400E', dashed: false },
+  { id: 'Q4', label: 'Q4 2026', accent: 'var(--ds-text-warning, #974F0C)', dashed: false },
 ];
 
 interface RoadmapKanbanProps {

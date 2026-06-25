@@ -22,8 +22,8 @@ interface Props {
 function ColumnsIcon({ label }: { label?: string }) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-label={label} role="img">
-      <rect x="3" y="4" width="18" height="16" rx="2" stroke="#42526E" strokeWidth="1.6" />
-      <path d="M9 4v16M15 4v16" stroke="#42526E" strokeWidth="1.6" />
+      <rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--ds-text-subtle, #42526E)" strokeWidth="1.6" />
+      <path d="M9 4v16M15 4v16" stroke="var(--ds-text-subtle, #42526E)" strokeWidth="1.6" />
     </svg>
   );
 }
@@ -63,17 +63,17 @@ export function UWVColumnPicker({ columns, prefs, onSave }: Props) {
           style={{
             width: 280,
             padding: 16,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
             border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
             borderRadius: 6,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16)',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
           }}
         >
           <div
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: '#5E6C84',
+              color: 'var(--ds-text-subtle, #44546F)',
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
               marginBottom: 8,
@@ -98,7 +98,7 @@ export function UWVColumnPicker({ columns, prefs, onSave }: Props) {
                 style={{
                   fontSize: 11,
                   fontWeight: 700,
-                  color: '#5E6C84',
+                  color: 'var(--ds-text-subtle, #44546F)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   margin: '12px 0 8px',
@@ -126,7 +126,7 @@ export function UWVColumnPicker({ columns, prefs, onSave }: Props) {
               gap: 8,
               marginTop: 16,
               paddingTop: 12,
-              borderTop: '1px solid #EBECF0',
+              borderTop: '1px solid var(--ds-border, #DFE1E6)',
             }}
           >
             <Button appearance="subtle" onClick={() => setIsOpen(false)}>

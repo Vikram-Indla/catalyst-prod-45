@@ -16,19 +16,19 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
   return (
     <>
       {/* Backdrop */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(0,0,0,0.6)' : 'rgba(15,23,42,0.3)', zIndex: 60 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: isDark ? 'var(--ds-shadow-raised, rgba(0,0,0,0.6))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.3))', zIndex: 60 }} />
       {/* Drawer */}
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, maxWidth: '90vw',
-        background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', zIndex: 61, boxShadow: isDark ? '-4px 0 24px rgba(0,0,0,0.3)' : '-4px 0 24px rgba(0,0,0,0.08)',
+        background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', zIndex: 61, boxShadow: isDark ? '-4px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.3))' : '-4px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
         display: 'flex', flexDirection: 'column', animation: 'slideInRight 200ms ease-out',
       }}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)',
+          padding: '20px 24px', borderBottom: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))',
           display: 'flex', alignItems: 'center', gap: 12,
         }}>
-          <div style={{ width: 36, height: 50, borderRadius: 6, background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--cp-blue-wash)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 36, height: 50, borderRadius: 6, background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--cp-blue-wash)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <FileText size={18} style={{ color: 'var(--cp-blue)' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -59,7 +59,7 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
             {Array.from({ length: qr.steps ?? 0 }).map((_, i) => (
               <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <div style={{
-                  width: 24, height: 24, borderRadius: '50%', background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--cp-blue-wash)', flexShrink: 0,
+                  width: 24, height: 24, borderRadius: '50%', background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--cp-blue-wash)', flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)',
                 }}>{i + 1}</div>

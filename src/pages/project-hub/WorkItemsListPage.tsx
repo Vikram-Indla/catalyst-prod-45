@@ -282,8 +282,8 @@ export default function WorkItemsListPage() {
             onClick={() => setSyncDrawerOpen(true)}
             style={{
               height: 32, paddingInline: token('space.150', '12px'), borderRadius: 4,
-              border: `1px solid ${token('color.border', '#DFE1E6')}`, background: 'none',
-              fontSize: 11, fontWeight: 500, color: token('color.text.subtle', '#475569'),
+              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, background: 'none',
+              fontSize: 11, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
               fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px'),
             }}

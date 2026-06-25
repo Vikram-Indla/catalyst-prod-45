@@ -256,7 +256,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
   const overlayStyle: React.CSSProperties = {
     position: 'fixed',
     inset: 0,
-    background: 'rgba(9, 30, 66, 0.54)',
+    background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
     zIndex: 9999,
     display: 'flex',
     alignItems: 'flex-start',
@@ -266,9 +266,9 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
   const dialogStyle: React.CSSProperties = {
     width: 480,
     maxWidth: 'calc(100vw - 48px)',
-    background: token('elevation.surface', '#FFFFFF'),
+    background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
     borderRadius: 8,
-    boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+    boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9, 30, 66, 0.25))',
     display: 'flex',
     flexDirection: 'column',
     maxHeight: 'calc(100vh - 120px)',
@@ -285,7 +285,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
     fontSize: 20,
     fontWeight: 653,
     letterSpacing: '-0.003em',
-    color: token('color.text', '#292A2E'),
+    color: token('color.text', 'var(--ds-text, #172B4D)'),
   };
   const modalFooterStyle: React.CSSProperties = {
     display: 'flex',
@@ -316,7 +316,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
             projectKey={iconKey}
             avatarUrl={project?.avatar_url}
             iconName={project?.icon || 'mountain'}
-            color={project?.color || '#2563EB'}
+            color={project?.color || 'var(--ds-link, #2563eb)'}
             name={projectName}
           />
         </span>
@@ -375,10 +375,10 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
               top: menuAnchor.top,
               left: menuAnchor.left,
               zIndex: 9001,
-              background: token('elevation.surface.overlay', '#FFFFFF'),
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 4,
-              boxShadow: '0 4px 16px rgba(9, 30, 66, 0.16)',
+              boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
               minWidth: 220,
               padding: '6px 0',
             }}
@@ -414,10 +414,10 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                     border: 'none', background: 'transparent',
                     textAlign: 'left', fontSize: 14, fontWeight: 400,
                     fontFamily: 'inherit',
-                    color: token('color.text', '#292A2E'),
+                    color: token('color.text', 'var(--ds-text, #172B4D)'),
                     cursor: 'pointer',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06))'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   {(item as any).label}
@@ -442,7 +442,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
               <h2 id="phc-add-people-title" style={modalTitleStyle}>Add people to {projectName}</h2>
             </div>
             <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ fontSize: 13, color: token('color.text.subtle', '#626F86') }}>
+              <div style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
                 Add a registered user by email. Press Enter or click Add.
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -469,11 +469,11 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
 
               {/* Current members list (live from project_members / product_members) */}
               <div style={{ marginTop: 4 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#626F86'), marginBottom: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 8 }}>
                   Members ({members.length})
                 </div>
                 {members.length === 0 ? (
-                  <div style={{ fontSize: 13, color: token('color.text.subtle', '#626F86'), padding: '8px 0' }}>
+                  <div style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), padding: '8px 0' }}>
                     No members yet. Add someone above.
                   </div>
                 ) : (
@@ -484,23 +484,23 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                         style={{
                           display: 'flex', alignItems: 'center', gap: 10,
                           padding: '6px 8px', borderRadius: 4,
-                          background: token('elevation.surface', '#FFFFFF'),
+                          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                         }}
                       >
                         <div style={{
                           width: 28, height: 28, borderRadius: '50%',
                           background: token('color.background.accent.blue.subtler', '#CCE0FF'),
-                          color: token('color.text', '#172B4D'),
+                          color: token('color.text', 'var(--ds-text, #172B4D)'),
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: 11, fontWeight: 700, flexShrink: 0,
                         }}>
                           {(m.name || m.email || '?').slice(0, 2).toUpperCase()}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 13, color: token('color.text', '#292A2E'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {m.name}
                           </div>
-                          <div style={{ fontSize: 11, color: token('color.text.subtle', '#626F86'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {m.email} · {m.role}
                           </div>
                         </div>

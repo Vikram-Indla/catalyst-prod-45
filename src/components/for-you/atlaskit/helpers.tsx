@@ -157,7 +157,7 @@ export function ForYouEmptyState({
     <div style={{ padding: '48px 16px' }}>
       <EmptyState
         header={title}
-        description={<span style={{ color: token('color.text.subtle', '#626F86') }}>{description}</span>}
+        description={<span style={{ color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>{description}</span>}
         renderImage={renderImage}
         primaryAction={
           primaryActionText && onPrimaryAction ? (
@@ -166,8 +166,8 @@ export function ForYouEmptyState({
               onClick={onPrimaryAction}
               style={{
                 padding: '8px 16px',
-                background: token('color.background.selected.bold', '#0C66E4'),
-                color: token('color.text.inverse', '#FFFFFF'),
+                background: token('color.background.selected.bold', 'var(--ds-link, #0C66E4)'),
+                color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
                 border: 'none',
                 borderRadius: 3,
                 cursor: 'pointer',

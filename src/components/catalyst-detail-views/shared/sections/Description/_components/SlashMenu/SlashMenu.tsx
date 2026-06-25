@@ -55,13 +55,13 @@ interface Props {
 }
 
 const COLOR_TO_HEX: Record<SlashIconColor, string> = {
-  green: '#22A06B',
-  blue: '#1868DB',
+  green: 'var(--ds-background-success-bold, #1F845A)',
+  blue: 'var(--ds-link, #1868DB)',
   orange: '#E56910',
-  purple: '#8270DB',
-  red: '#C9372C',
-  gray: '#626F86',
-  brand: '#1868DB',
+  purple: 'var(--ds-background-discovery-bold, #6E5DC6)',
+  red: 'var(--ds-background-danger-bold, #C9372C)',
+  gray: 'var(--ds-icon-subtle, #626F86)',
+  brand: 'var(--ds-link, #1868DB)',
 };
 
 function renderIcon(iconId: SlashIconId, color: SlashIconColor) {
@@ -176,7 +176,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
-        boxShadow: '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+        boxShadow: '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',

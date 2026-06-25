@@ -195,7 +195,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
 
       {/* Pagination */}
       <div className="flex items-center justify-between px-4 py-3 border-t" style={{ borderColor }}>
-        <span style={{ fontSize: 12, color: isDark ? '#9CA3AF' : 'var(--fg-3)' }}>
+        <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-disabled, #8590A2)' : 'var(--fg-3)' }}>
           Showing {Math.min((page - 1) * perPage + 1, sorted.length)}–{Math.min(page * perPage, sorted.length)} of {sorted.length} themes
         </span>
         <div className="flex items-center gap-2">
@@ -210,7 +210,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               cursor: page === 1 ? 'default' : 'pointer',
             }}
           >←</button>
-          <span style={{ fontSize: 12, color: isDark ? '#9CA3AF' : 'var(--fg-3)' }}>Page {page} of {totalPages}</span>
+          <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-disabled, #8590A2)' : 'var(--fg-3)' }}>Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
@@ -231,12 +231,12 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
           background: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12,
           padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
-          boxShadow: '0 8px 30px rgba(0,0,0,0.25)', zIndex: 50,
+          boxShadow: '0 8px 30px var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 50,
         }}>
           <span style={{ fontSize: 13, fontWeight: 500 }}>{selected.size} selected</span>
           <button style={{ fontSize: 11, background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Change Status</button>
           <button style={{ fontSize: 11, background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Assign Owner</button>
-          <button style={{ fontSize: 11, background: 'rgba(239,68,68,0.7)', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Delete</button>
+          <button style={{ fontSize: 11, background: 'var(--ds-background-danger, rgba(239,68,68,0.7))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Delete</button>
         </div>
       )}
     </div>

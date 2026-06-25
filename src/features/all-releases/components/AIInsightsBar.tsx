@@ -40,16 +40,16 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
   const getBgColor = (type: AIReleaseInsight['type']) => {
     switch (type) {
       case 'critical': return 'bg-red-50 border-red-100';
-      case 'warning': return 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] border-[rgba(15,23,42,0.12)]';
+      case 'warning': return 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))]';
       case 'positive': return 'bg-green-50 border-green-100';
     }
   };
 
   return (
-    <div className="border rounded-xl p-4 mb-6" style={{ background: 'var(--ds-background-selected, #EFF6FF)', borderColor: '#DBEAFE' }}>
+    <div className="border rounded-xl p-4 mb-6" style={{ background: 'var(--ds-background-selected, #EFF6FF)', borderColor: 'var(--ds-background-information, #E9F2FF)' }}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg" style={{ background: '#DBEAFE' }}>
+          <div className="p-1.5 rounded-lg" style={{ background: 'var(--ds-background-information, #E9F2FF)' }}>
             <SparklesIcon label="" size="small" primaryColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
           </div>
           <span className="font-semibold text-slate-800">AI Insights</span>
@@ -59,7 +59,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
             </span>
           )}
           {warningCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium rounded-full" style={{ background: '#DBEAFE', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+            <span className="px-2 py-0.5 text-xs font-medium rounded-full" style={{ background: 'var(--ds-background-information, #E9F2FF)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
               {warningCount} warnings
             </span>
           )}

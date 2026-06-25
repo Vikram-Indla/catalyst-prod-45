@@ -136,7 +136,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center animate-fade-in"
-      style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
+      style={{ backgroundColor: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))' }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"

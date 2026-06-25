@@ -146,7 +146,7 @@ export default function BacklogDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--cp-font-body)', color: '#5E6C84' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text-subtle, #44546F)' }}>
         Loading…
       </div>
     );

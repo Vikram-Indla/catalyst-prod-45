@@ -180,8 +180,8 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       style={{
         position: 'absolute', top: '100%', right: 0, marginTop: 4,
         width: 400, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: '1px solid #DDDEE1', borderRadius: 10,
-        boxShadow: '0 12px 36px rgba(9,30,66,0.15), 0 2px 8px rgba(9,30,66,0.08)',
+        border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 10,
+        boxShadow: '0 12px 36px var(--ds-shadow-raised, rgba(9,30,66,0.15)), 0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
         zIndex: 60, fontFamily: 'var(--cp-font-body)',
         maxHeight: 'calc(100vh - 200px)', overflowY: 'auto',
       }}
@@ -189,12 +189,12 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
     >
       {/* Header */}
       <div className="flex items-center justify-between" style={{
-        padding: '14px 20px', borderBottom: '1px solid #EBECF0',
+        padding: '14px 20px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         background: 'var(--ds-surface-sunken, #FAFBFC)',
         borderTopLeftRadius: 10, borderTopRightRadius: 10,
       }}>
         <div className="flex items-center gap-2">
-          <Filter size={15} color="#42526E" />
+          <Filter size={15} color="var(--ds-text-subtle, #42526E)" />
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', letterSpacing: '-0.01em' }}>
             Advanced Filters
           </span>
@@ -222,7 +222,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <X size={15} color="#42526E" />
+            <X size={15} color="var(--ds-text-subtle, #42526E)" />
           </button>
         </div>
       </div>
@@ -304,7 +304,7 @@ function MultiSelectFilterSection({
   }, [selected, onChange]);
 
   return (
-    <div style={{ borderBottom: '1px solid #EBECF0' }}>
+    <div style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
       <button
         onClick={() => setOpen(v => !v)}
         className="flex items-center justify-between w-full"
@@ -327,7 +327,7 @@ function MultiSelectFilterSection({
           )}
         </span>
         <ChevronDown
-          size={14} color="#5E6C84"
+          size={14} color="var(--ds-text-subtle, #44546F)"
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}
         />
       </button>
@@ -341,12 +341,12 @@ function MultiSelectFilterSection({
                 placeholder={placeholder}
                 style={{
                   width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
-                  border: '1px solid #DDDEE1', borderRadius: 4,
+                  border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4,
                   fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'var(--ds-surface-sunken, #FAFBFC)',
                   outline: 'none', fontFamily: 'var(--cp-font-body)',
                 }}
                 onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))')}
-                onBlur={e => (e.currentTarget.style.borderColor = '#DDDEE1')}
+                onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)')}
               />
             </div>
           )}
@@ -359,7 +359,7 @@ function MultiSelectFilterSection({
                   onClick={() => toggle(opt)}
                   className="flex items-center gap-3 w-full"
                   style={{
-                    padding: '7px 8px', background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
+                    padding: '7px 8px', background: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 13.5,
                     color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', textAlign: 'left', borderRadius: 4,
                     fontWeight: isSelected ? 600 : 400,
@@ -369,7 +369,7 @@ function MultiSelectFilterSection({
                 >
                   <span style={{
                     width: 18, height: 18, borderRadius: 3,
-                    border: isSelected ? 'none' : '2px solid #C1C7D0',
+                    border: isSelected ? 'none' : '2px solid var(--ds-border, #DFE1E6)',
                     background: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,
@@ -382,7 +382,7 @@ function MultiSelectFilterSection({
               );
             })}
             {filtered.length === 0 && (
-              <div style={{ padding: '10px 4px', fontSize: 13, color: '#5E6C84' }}>No results</div>
+              <div style={{ padding: '10px 4px', fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>No results</div>
             )}
           </div>
         </div>
@@ -407,7 +407,7 @@ function DateRangeFilterSection({
   const hasValue = !!after || !!before;
 
   return (
-    <div style={{ borderBottom: '1px solid #EBECF0' }}>
+    <div style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
       <button
         onClick={() => setOpen(v => !v)}
         className="flex items-center justify-between w-full"
@@ -430,7 +430,7 @@ function DateRangeFilterSection({
           )}
         </span>
         <ChevronDown
-          size={14} color="#5E6C84"
+          size={14} color="var(--ds-text-subtle, #44546F)"
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}
         />
       </button>
@@ -443,7 +443,7 @@ function DateRangeFilterSection({
               onChange={onChangeAfter}
               tk={tk}
             />
-            <span style={{ fontSize: 12, color: '#5E6C84', fontWeight: 500 }}>—</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)', fontWeight: 500 }}>—</span>
             <DatePickerBtn
               label="Before"
               value={before}

@@ -758,8 +758,8 @@ function renderMenuItem(
         />
       )}
       {/* Icon container — ADS icon color tokens:
-          active  → color.icon.brand (#0052CC) — council-approved 2026-05-28
-          inactive → color.icon.subtle (#6B778C)
+          active  → color.icon.brand (var(--ds-link, #0052CC)) — council-approved 2026-05-28
+          inactive → color.icon.subtle (var(--ds-text-subtlest, #6B778C))
           Source: https://atlassian.design/foundations/color */}
       <span
         className="flex items-center justify-center flex-shrink-0"

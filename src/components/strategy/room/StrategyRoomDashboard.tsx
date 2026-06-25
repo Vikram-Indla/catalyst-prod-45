@@ -63,16 +63,16 @@ interface StrategyRoomDashboardProps {
 
 const TOKENS = `
 [data-srd] {
-  --srd-ink:#09090B; --srd-ink-2:#18181B; --srd-ink-3:#3F3F46;
-  --srd-ink-m:#71717A;
-  --srd-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --srd-bg-2:#FAFAFA; --srd-bg-3:#F4F4F5;
-  --srd-bdr:#E4E4E7; --srd-bdr-s:#D4D4D8;
-  --srd-blue:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-blue-h:var(--ds-background-brand-bold-hovered, #1D4ED8); --srd-blue-bg:var(--ds-background-selected, #EFF6FF); --srd-blue-bdr:#BFDBFE;
-  --srd-teal:var(--cp-teal-60, #0D9488); --srd-teal-t:#0A8277; --srd-teal-bg:#F0FDFA;
-  --srd-green:var(--ds-text-success, var(--cp-success, #16A34A)); --srd-green-t:#11853D; --srd-green-bg:#F0FDF4;
+  --srd-ink:var(--ds-text, #172B4D); --srd-ink-2:var(--ds-text, #172B4D); --srd-ink-3:var(--ds-text-subtle, #44546F);
+  --srd-ink-m:var(--ds-text-subtlest, #626F86);
+  --srd-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --srd-bg-2:var(--ds-surface-sunken, #FAFAFA); --srd-bg-3:var(--ds-surface-sunken, #F7F8F9);
+  --srd-bdr:var(--ds-border, #DFE1E6); --srd-bdr-s:var(--ds-border, #DFE1E6);
+  --srd-blue:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-blue-h:var(--ds-background-brand-bold-hovered, #1D4ED8); --srd-blue-bg:var(--ds-background-selected, #EFF6FF); --srd-blue-bdr:var(--ds-background-information, #E9F2FF);
+  --srd-teal:var(--cp-teal-60, #0D9488); --srd-teal-t:#0A8277; --srd-teal-bg:var(--ds-background-success, #DFFCF0);
+  --srd-green:var(--ds-text-success, var(--cp-success, #16A34A)); --srd-green-t:#11853D; --srd-green-bg:var(--ds-background-success, #DFFCF0);
   --srd-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --srd-red-t:#D92525; --srd-red-bg:var(--ds-background-danger, #FEF2F2);
   --srd-purple:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --srd-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-ai-d:#1E40AF; --srd-ai-bg:var(--ds-background-selected, #EFF6FF); --srd-ai-bdr:#93C5FD;
+  --srd-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-ai-d:var(--ds-link-pressed, #0747A6); --srd-ai-bg:var(--ds-background-selected, #EFF6FF); --srd-ai-bdr:var(--ds-background-information, #E9F2FF);
   --srd-r:4px; --srd-r2:6px; --srd-r3:8px; --srd-r4:12px; --srd-pill:9999px;
   font-family: var(--cp-font-body); color:var(--srd-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
@@ -80,10 +80,10 @@ const TOKENS = `
 
 /* ── DARK MODE — Dark mode overrides ── */
 .dark [data-srd] , [data-theme="dark"] [data-srd] {
-  --srd-ink: rgba(255,255,255,0.92);
-  --srd-ink-2: rgba(255,255,255,0.72);
-  --srd-ink-3: rgba(255,255,255,0.72);
-  --srd-ink-m: rgba(255,255,255,0.60);
+  --srd-ink: var(--ds-surface, rgba(255,255,255,0.92));
+  --srd-ink-2: var(--ds-surface, rgba(255,255,255,0.72));
+  --srd-ink-3: var(--ds-surface, rgba(255,255,255,0.72));
+  --srd-ink-m: var(--ds-surface, rgba(255,255,255,0.60));
   --srd-bg: var(--ds-surface, #0A0A0A);
   --srd-bg-2: var(--ds-surface, #0A0A0A);
   --srd-bg-3: var(--ds-border, var(--cp-ink-1, #292929));
@@ -91,27 +91,27 @@ const TOKENS = `
   --srd-bdr-s: var(--ds-border-bold, #454545);
   --srd-blue: var(--ds-text-brand, #3B82F6);
   --srd-blue-h: var(--ds-text-brand, #60A5FA);
-  --srd-blue-bg: rgba(59,130,246,0.08);
-  --srd-blue-bdr: rgba(59,130,246,0.16);
-  --srd-teal: #5EEAD4;
-  --srd-teal-t: #5EEAD4;
+  --srd-blue-bg: var(--ds-background-information-bold, rgba(59,130,246,0.08));
+  --srd-blue-bdr: var(--ds-background-information-bold, rgba(59,130,246,0.16));
+  --srd-teal: var(--ds-background-success, #DCFFF1);
+  --srd-teal-t: var(--ds-background-success, #DCFFF1);
   --srd-teal-bg: rgba(94,234,212,0.08);
-  --srd-green: #4ADE80;
-  --srd-green-t: #4ADE80;
-  --srd-green-bg: rgba(74,222,128,0.08);
+  --srd-green: var(--ds-background-success, #DFFCF0);
+  --srd-green-t: var(--ds-background-success, #DFFCF0);
+  --srd-green-bg: var(--ds-background-success-bold, rgba(74,222,128,0.08));
   --srd-red: var(--ds-border-danger, #FCA5A5);
   --srd-red-t: var(--ds-border-danger, #FCA5A5);
-  --srd-red-bg: rgba(239,68,68,0.10);
+  --srd-red-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
   --srd-purple: var(--ds-text-brand, #60A5FA);
   --srd-ai: var(--ds-text-brand, #3B82F6);
   --srd-ai-d: var(--ds-text-brand, #60A5FA);
-  --srd-ai-bg: rgba(59,130,246,0.08);
-  --srd-ai-bdr: rgba(59,130,246,0.16);
+  --srd-ai-bg: var(--ds-background-information-bold, rgba(59,130,246,0.08));
+  --srd-ai-bdr: var(--ds-background-information-bold, rgba(59,130,246,0.16));
 }
 
 @keyframes srd-pulse{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes srd-fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-[data-srd] .srd-banner:hover{box-shadow:0 4px 16px rgba(37,99,235,.15);transform:translateY(-1px)}
+[data-srd] .srd-banner:hover{box-shadow:0 4px 16px var(--ds-background-information, rgba(37,99,235,.15));transform:translateY(-1px)}
 [data-srd] .srd-btn:hover{border-color:var(--srd-bdr-s);background:var(--srd-bg-2)}
 [data-srd] .srd-btn-p:hover{background:var(--srd-blue-h)}
 [data-srd] .srd-chip:hover{background:var(--srd-bg-2)}
@@ -269,7 +269,7 @@ export default function StrategyRoomDashboard({
       {/* VISION — editable, from database */}
       {vision && (
         <div className="srd-vision" style={{ border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '10px 20px', background: 'var(--srd-blue-bg)', ...F(12), fontSize: 13, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--srd-blue)', textTransform: 'uppercase', letterSpacing: '.08em', background: 'rgba(37,99,235,.08)', padding: '3px 8px', borderRadius: 'var(--srd-r)', flexShrink: 0 }}>Vision {visionYear}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--srd-blue)', textTransform: 'uppercase', letterSpacing: '.08em', background: 'var(--ds-background-information, rgba(37,99,235,.08))', padding: '3px 8px', borderRadius: 'var(--srd-r)', flexShrink: 0 }}>Vision {visionYear}</span>
           {editingVision ? (
             <div style={{ flex: 1, ...F(6) }}>
               <input
@@ -288,7 +288,7 @@ export default function StrategyRoomDashboard({
               <Pencil size={12} style={{ color: 'var(--srd-ink-m)', opacity: 0.4 }} />
             </span>
           )}
-          <span style={{ ...M(11), color: 'var(--srd-blue)', background: 'rgba(37,99,235,.08)', padding: '2px 8px', borderRadius: 'var(--srd-pill)', flexShrink: 0 }}>Target {visionYear}</span>
+          <span style={{ ...M(11), color: 'var(--srd-blue)', background: 'var(--ds-background-information, rgba(37,99,235,.08))', padding: '2px 8px', borderRadius: 'var(--srd-pill)', flexShrink: 0 }}>Target {visionYear}</span>
         </div>
       )}
 

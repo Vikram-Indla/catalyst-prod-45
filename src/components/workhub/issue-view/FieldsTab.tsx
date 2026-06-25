@@ -15,9 +15,9 @@ interface Props {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-text-danger, #EF4444)', High: '#F97316', Medium: 'var(--ds-text-brand, #3B82F6)', Low: 'var(--ds-text-success, #22C55E)', Lowest: '#8C8F96',
+  Highest: 'var(--ds-text-danger, #EF4444)', High: 'var(--ds-background-warning-bold, #E2B203)', Medium: 'var(--ds-text-brand, #3B82F6)', Low: 'var(--ds-text-success, #22C55E)', Lowest: '#8C8F96',
 };
-const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 
 function formatDate(d: string | null): string {
   if (!d) return 'None';

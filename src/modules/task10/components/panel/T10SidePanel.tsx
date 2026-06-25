@@ -142,11 +142,11 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
 
   const getRankStyles = () => {
     if (rankTier === 'top') {
-      return { background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, #1e40af 100%)', color: 'white' };
+      return { background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-link-pressed, #0747A6) 100%)', color: 'white' };
     } else if (rankTier === 'mid') {
-      return { background: '#6b7280', color: 'white' };
+      return { background: 'var(--ds-text-subtlest, #626F86)', color: 'white' };
     }
-    return { background: 'transparent', border: '2px dashed #d1d5db', color: '#9ca3af' };
+    return { background: 'transparent', border: '2px dashed var(--ds-border, #DFE1E6)', color: 'var(--ds-text-subtlest, #626F86)' };
   };
 
 
@@ -167,7 +167,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {hasChanges && (
-              <span style={{ fontSize: '12px', color: '#9ca3af', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #626F86)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <Save size={14} /> Saving...
               </span>
             )}
@@ -239,7 +239,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
                   <div className={`t10-checkbox ${isCompleted ? 'checked' : ''}`} style={{ width: '26px', height: '26px' }}>
                     {isCompleted && <Check size={14} strokeWidth={3} />}
                   </div>
-                  <span style={{ fontSize: '14px', color: isCompleted ? '#10b981' : '#4b5563', fontWeight: isCompleted ? 600 : 400 }}>
+                  <span style={{ fontSize: '14px', color: isCompleted ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--ds-text-subtlest, #626F86)', fontWeight: isCompleted ? 600 : 400 }}>
                     {isCompleted ? 'Completed' : 'Mark as completed'}
                   </span>
                 </div>
@@ -261,7 +261,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
                       {item.assignee_name}
                     </>
                   ) : (
-                    <span style={{ color: '#9ca3af' }}>
+                    <span style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>
                       <Plus size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
                       Add assignee
                     </span>
@@ -300,7 +300,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
                       {formatShortDate(item.due_date)}
                     </span>
                   ) : (
-                    <span style={{ color: '#9ca3af' }}>
+                    <span style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>
                       <Plus size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
                       Add due date
                     </span>

@@ -50,9 +50,9 @@ const SOURCE_ICONS = {
 function SourceAwareTitle({ title, source, style = {} }: { title: string; source: 'jira' | 'catalyst' | 'notion' | null; style?: Record<string, any> }) {
   const [showSource, setShowSource] = useState(false);
   const sourceColors = {
-    jira: '#0747A6',
-    catalyst: '#172B4D',
-    notion: '#000000',
+    jira: 'var(--ds-link-pressed, #0747A6)',
+    catalyst: 'var(--ds-text, #172B4D)',
+    notion: 'var(--ds-text, #172B4D)',
   };
 
   return (

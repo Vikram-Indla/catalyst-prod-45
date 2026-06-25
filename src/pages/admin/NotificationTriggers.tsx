@@ -481,7 +481,7 @@ function TriggerRow({
         background: isSelected ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
       }}
       onMouseEnter={e => {
-        if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.02)';
+        if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.02))';
       }}
       onMouseLeave={e => {
         (e.currentTarget as HTMLElement).style.background = isSelected ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent';

@@ -401,7 +401,7 @@
   font-weight: 600;
   border: none;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.16));
   white-space: nowrap;
   animation: c-fade-in 120ms ease;
 }

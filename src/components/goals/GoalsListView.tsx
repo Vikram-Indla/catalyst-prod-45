@@ -18,28 +18,28 @@ const DK = {
 };
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
-  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
-  'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
-  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46' },
-  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E' },
+  'Nada Alfassam':      { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' },
+  'Sitah Alqahtani':    { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)' },
+  'Sulaiman Alessa':    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' },
+  'ibrahim alqusiyer':  { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
   'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
-  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6' },
+  'Izza Ali':           { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)' },
 };
 function getAvatarColors(name: string) {
   if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const palettes = [{ bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' }, { bg: '#E0E7FF', text: '#3730A3' }, { bg: '#FEF3C7', text: '#92400E' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#5B21B6' }];
+  const palettes = [{ bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' }, { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' }, { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)' }, { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)' }];
   return palettes[Math.abs(hash) % palettes.length];
 }
 
 function statusBadge(status: string, isDark = false) {
   const map: Record<string, { dot: string; bg: string; text: string; bgDk: string; txtDk: string; label: string }> = {
-    active:      { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#182820', txtDk: '#86EFAC', label: 'Active' },
-    on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#182820', txtDk: '#86EFAC', label: 'On Track' },
-    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDk: '#1A2030', txtDk: '#93C5FD', label: 'Completed' },
-    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDk: '#2A2418', txtDk: '#FBBF24', label: 'At Risk' },
-    off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgDk: '#2A1C1E', txtDk: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
+    active:      { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, #1F845A)', bgDk: 'var(--ds-text, #172B4D)', txtDk: 'var(--ds-background-success, #DFFCF0)', label: 'Active' },
+    on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, #1F845A)', bgDk: 'var(--ds-text, #172B4D)', txtDk: 'var(--ds-background-success, #DFFCF0)', label: 'On Track' },
+    completed:   { dot: 'var(--ds-background-discovery-bold, #6E5DC6)', bg: 'rgba(79,70,229,0.08)',  text: 'var(--ds-background-discovery-bold, #4338ca)', bgDk: 'var(--ds-text, #172B4D)', txtDk: 'var(--ds-background-information-bold, #0C66E4)', label: 'Completed' },
+    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, rgba(217,119,6,0.08))',  text: 'var(--ds-background-warning-bold, #b45309)', bgDk: '#2A2418', txtDk: 'var(--ds-background-warning-bold, #E2B203)', label: 'At Risk' },
+    off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.08))',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgDk: 'var(--ds-text, #172B4D)', txtDk: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
     draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
     not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
     cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Cancelled' },

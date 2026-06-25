@@ -51,7 +51,7 @@ export interface TimelineIssue {
 /* ─────────────────────────────── ui state types ───────────────────────── */
 
 export type ZoomLevel = 'week' | 'month' | 'quarter';
-export type OpenDropdown = 'type' | 'status' | 'assignee' | 'quick' | 'more' | null;
+export type OpenDropdown = 'type' | 'status' | 'assignee' | 'quick' | 'more' | 'workitem' | null;
 
 export interface FlatRow {
   issue: TimelineIssue;
@@ -73,7 +73,7 @@ export const ROW_H = 52;
 export const DEFAULT_SIDEBAR_W = 384;
 export const MIN_SIDEBAR_W = 350;
 export const MAX_SIDEBAR_W = 560;
-export const HEADER_H = 40;
+export const HEADER_H = 28;
 export const BAR_H = 24;
 export const BAR_RADIUS = 3;
 export const MIN_BAR_W = 18;
@@ -127,7 +127,7 @@ export interface SavedFilterRow {
 export interface TimelineMutations {
   onUpdateDates?: (issueKey: string, startDate: string | null, dueDate: string | null) => Promise<void>;
   onRemoveDates?: (issueKey: string) => Promise<void>;
-  onCreateEpic?: (summary: string) => Promise<TimelineIssue | null>;
+  onCreateEpic?: (summary: string, issueType?: string) => Promise<TimelineIssue | null>;
   onCreateChild?: (parentKey: string, parentType: string, type: string, summary: string) => Promise<TimelineIssue | null>;
   onChangeParent?: (issueKey: string, newParentKey: string) => Promise<void>;
   onAddDependency?: (issueKey: string, linkType: string, targetKey: string) => Promise<void>;

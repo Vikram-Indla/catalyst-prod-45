@@ -169,12 +169,12 @@ export const WORK_ITEM_TYPE_CONFIG: Record<WorkItemType, { label: string; color:
 
 // Priority config
 export const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; icon: string }> = {
-  HIGHEST: { label: 'Highest', color: '#FF5630', icon: 'chevrons-up' },
+  HIGHEST: { label: 'Highest', color: 'var(--ds-background-danger-bold, #C9372C)', icon: 'chevrons-up' },
   HIGH: { label: 'High', color: '#FF7452', icon: 'chevron-up' },
-  MEDIUM: { label: 'Medium', color: '#FFAB00', icon: 'minus' },
-  LOW: { label: 'Low', color: '#36B37E', icon: 'chevron-down' },
+  MEDIUM: { label: 'Medium', color: 'var(--ds-background-warning-bold, #E2B203)', icon: 'minus' },
+  LOW: { label: 'Low', color: 'var(--ds-background-success-bold, #1F845A)', icon: 'chevron-down' },
   LOWEST: { label: 'Lowest', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', icon: 'chevrons-down' },
-  NONE: { label: 'None', color: '#97A0AF', icon: 'minus' },
+  NONE: { label: 'None', color: 'var(--ds-text-disabled, #8590A2)', icon: 'minus' },
 };
 
 // Status colors

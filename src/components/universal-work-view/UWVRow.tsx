@@ -42,7 +42,7 @@ const CELL_BASE: React.CSSProperties = {
   padding: '0 8px',
   fontSize: 13,
   fontWeight: 400,
-  color: '#292A2E',
+  color: 'var(--ds-text, #172B4D)',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
@@ -81,7 +81,7 @@ function KeyLink({ keyText, onClick }: { keyText: string; onClick: () => void })
         color: 'var(--cp-blue)',
         fontFamily: 'var(--cp-font-mono)',
         textDecoration: hover ? 'underline' : 'none',
-        background: hover ? '#E9F2FF' : 'transparent',
+        background: hover ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
         padding: '1px 4px',
         borderRadius: 3,
         whiteSpace: 'nowrap',
@@ -158,7 +158,7 @@ function renderCell(
         <span
           dir="auto"
           style={{
-            color: '#292A2E',
+            color: 'var(--ds-text, #172B4D)',
             fontSize: 13,
             fontWeight: 400,
             overflow: 'hidden',
@@ -256,7 +256,7 @@ function renderCell(
           <span
             style={{
               fontSize: 14,
-              color: '#292A2E',
+              color: 'var(--ds-text, #172B4D)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -342,7 +342,7 @@ export const UWVRow = React.memo(function UWVRow({
   onToggleExpand,
   onClick,
 }: UWVRowProps) {
-  const selectedShadow = 'inset 3px 0 0 #0C66E4, inset 0 -1px 0 0 #E4E6EA';
+  const selectedShadow = 'inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 #E4E6EA';
   const restShadow = 'inset 0 -1px 0 0 #E4E6EA';
 
   return (
@@ -360,7 +360,7 @@ export const UWVRow = React.memo(function UWVRow({
       }}
       onMouseEnter={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = '#F7F8F9';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, #F7F8F9)';
         }
       }}
       onMouseLeave={(e) => {

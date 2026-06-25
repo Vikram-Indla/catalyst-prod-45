@@ -54,7 +54,7 @@ export function HealthGauge({ score, level, trend, isWinner }: HealthGaugeProps)
       {isWinner && (
         <div 
           className="absolute -top-1 -right-1 text-lg"
-          style={{ color: '#0d9488' }}
+          style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}
         >
           ★
         </div>
@@ -101,7 +101,7 @@ export function HealthGauge({ score, level, trend, isWinner }: HealthGaugeProps)
         {trend && (
           <div 
             className="flex items-center gap-1 text-xs"
-            style={{ color: trend.direction === 'up' ? '#0d9488' : trend.direction === 'down' ? 'var(--ds-text-danger, #ef4444)' : 'var(--ds-text-subtlest, #94a3b8)' }}
+            style={{ color: trend.direction === 'up' ? 'var(--ds-chart-teal-bold, #0d9488)' : trend.direction === 'down' ? 'var(--ds-text-danger, #ef4444)' : 'var(--ds-text-subtlest, #94a3b8)' }}
           >
             <TrendIcon className="w-3 h-3" />
             <span>{trend.value}% trend</span>

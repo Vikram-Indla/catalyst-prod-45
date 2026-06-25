@@ -80,7 +80,7 @@ export function IncidentDetailsPanel({
   return (
     <div className="space-y-4">
       {/* Status Panel - Jira style */}
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-[#E8E8E8] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg p-4">
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg p-4">
         <IncidentStatusDropdown
           currentStatus={currentStatus}
           onStatusChange={onStatusChange}
@@ -89,18 +89,18 @@ export function IncidentDetailsPanel({
       </div>
 
       {/* Details Panel */}
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-[#E8E8E8] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg p-4">
-        <h4 className="text-[11px] font-semibold uppercase text-[#8C8C8C] mb-3">Details</h4>
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg p-4">
+        <h4 className="text-[11px] font-semibold uppercase text-[var(--ds-text-subtlest, #626F86)] mb-3">Details</h4>
         <div className="space-y-0">
           {/* Priority (calculated, read-only) */}
-          <div className="flex justify-between items-center py-2.5 border-b border-[#F0F0F0]">
-            <span className="text-[11px] uppercase font-medium text-[#8C8C8C]">Priority</span>
+          <div className="flex justify-between items-center py-2.5 border-b border-[var(--ds-background-neutral, #F0F0F0)]">
+            <span className="text-[11px] uppercase font-medium text-[var(--ds-text-subtlest, #626F86)]">Priority</span>
             <PriorityBadge priority={calculatedPriority} />
           </div>
 
           {/* Impact */}
-          <div className="flex justify-between items-center py-2.5 border-b border-[#F0F0F0]">
-            <span className="text-[11px] uppercase font-medium text-[#8C8C8C]">Impact</span>
+          <div className="flex justify-between items-center py-2.5 border-b border-[var(--ds-background-neutral, #F0F0F0)]">
+            <span className="text-[11px] uppercase font-medium text-[var(--ds-text-subtlest, #626F86)]">Impact</span>
             {isEditMode ? (
               <Select value={currentImpact} onValueChange={(v) => onFieldChange('impact', v)}>
                 <SelectTrigger className="w-28 h-8">
@@ -118,8 +118,8 @@ export function IncidentDetailsPanel({
           </div>
 
           {/* Urgency */}
-          <div className="flex justify-between items-center py-2.5 border-b border-[#F0F0F0]">
-            <span className="text-[11px] uppercase font-medium text-[#8C8C8C]">Urgency</span>
+          <div className="flex justify-between items-center py-2.5 border-b border-[var(--ds-background-neutral, #F0F0F0)]">
+            <span className="text-[11px] uppercase font-medium text-[var(--ds-text-subtlest, #626F86)]">Urgency</span>
             {isEditMode ? (
               <Select value={currentUrgency} onValueChange={(v) => onFieldChange('urgency', v)}>
                 <SelectTrigger className="w-28 h-8">
@@ -137,8 +137,8 @@ export function IncidentDetailsPanel({
           </div>
 
           {/* Assignee */}
-          <div className="flex justify-between items-center py-2.5 border-b border-[#F0F0F0]">
-            <span className="text-[11px] uppercase font-medium text-[#8C8C8C]">Assignee</span>
+          <div className="flex justify-between items-center py-2.5 border-b border-[var(--ds-background-neutral, #F0F0F0)]">
+            <span className="text-[11px] uppercase font-medium text-[var(--ds-text-subtlest, #626F86)]">Assignee</span>
             {isEditMode ? (
               <Select 
                 value={currentAssignee?.id} 
@@ -170,8 +170,8 @@ export function IncidentDetailsPanel({
           </div>
 
           {/* Reporter (read-only) */}
-          <div className="flex justify-between items-center py-2.5 border-b border-[#F0F0F0]">
-            <span className="text-[11px] uppercase font-medium text-[#8C8C8C]">Reporter</span>
+          <div className="flex justify-between items-center py-2.5 border-b border-[var(--ds-background-neutral, #F0F0F0)]">
+            <span className="text-[11px] uppercase font-medium text-[var(--ds-text-subtlest, #626F86)]">Reporter</span>
             <div className="flex items-center gap-2">
               <CatalystOwnerAvatar name={incident.reporter.name} initials={incident.reporter.initials} size="sm" />
               <span className="text-[13px] font-medium">{incident.reporter.name}</span>
@@ -179,28 +179,28 @@ export function IncidentDetailsPanel({
           </div>
 
           {/* Component */}
-          <div className="flex justify-between items-center py-2.5 border-b border-[#F0F0F0]">
-            <span className="text-[11px] uppercase font-medium text-[#8C8C8C]">Component</span>
+          <div className="flex justify-between items-center py-2.5 border-b border-[var(--ds-background-neutral, #F0F0F0)]">
+            <span className="text-[11px] uppercase font-medium text-[var(--ds-text-subtlest, #626F86)]">Component</span>
             <span className="text-[13px] font-medium">{incident.component}</span>
           </div>
 
           {/* Created */}
-          <div className="flex justify-between items-center py-2.5 border-b border-[#F0F0F0]">
-            <span className="text-[11px] uppercase font-medium text-[#8C8C8C]">Created</span>
+          <div className="flex justify-between items-center py-2.5 border-b border-[var(--ds-background-neutral, #F0F0F0)]">
+            <span className="text-[11px] uppercase font-medium text-[var(--ds-text-subtlest, #626F86)]">Created</span>
             <span className="text-[13px] font-medium">{formatDate(incident.createdAt)}</span>
           </div>
 
           {/* Updated */}
           <div className="flex justify-between items-center py-2.5">
-            <span className="text-[11px] uppercase font-medium text-[#8C8C8C]">Updated</span>
+            <span className="text-[11px] uppercase font-medium text-[var(--ds-text-subtlest, #626F86)]">Updated</span>
             <span className="text-[13px] font-medium">{formatDate(incident.updatedAt)}</span>
           </div>
         </div>
       </div>
 
       {/* Labels */}
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-[#E8E8E8] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg p-4">
-        <h4 className="text-[11px] font-semibold uppercase text-[#8C8C8C] mb-3">Labels</h4>
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg p-4">
+        <h4 className="text-[11px] font-semibold uppercase text-[var(--ds-text-subtlest, #626F86)] mb-3">Labels</h4>
         <div className="flex flex-wrap gap-1.5 items-center">
           {currentLabels.map(label => (
             <span key={label} className="inline-flex items-center gap-1">
@@ -218,7 +218,7 @@ export function IncidentDetailsPanel({
             </span>
           ))}
           {currentLabels.length === 0 && !isEditMode && (
-            <span className="text-[13px] text-[#8C8C8C]">No labels</span>
+            <span className="text-[13px] text-[var(--ds-text-subtlest, #626F86)]">No labels</span>
           )}
         </div>
         {isEditMode && (
@@ -228,7 +228,7 @@ export function IncidentDetailsPanel({
                 key={label}
                 variant="ghost"
                 size="sm"
-                className="h-6 text-xs text-[#8C8C8C] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
+                className="h-6 text-xs text-[var(--ds-text-subtlest, #626F86)] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
                 onClick={() => handleAddLabel(label)}
               >
                 + {label}

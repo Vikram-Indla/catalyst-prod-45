@@ -118,7 +118,7 @@ export function TemplateAssignmentRules({
                   <div 
                     className={`
                       w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0
-                      ${isSelected ? 'bg-[#dbeafe]' : 'bg-slate-100'}
+                      ${isSelected ? 'bg-[var(--ds-background-information, #E9F2FF)]' : 'bg-slate-100'}
                     `}
                   >
                     <Icon className={`w-5 h-5 ${isSelected ? 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' : 'text-slate-500'}`} />
@@ -278,7 +278,7 @@ export function TemplateAssignmentRules({
                   (rules.weights?.skill || 40) + 
                   (rules.weights?.history || 15) + 
                   (rules.weights?.availability || 15) === 100
-                    ? 'text-[#0d9488]'
+                    ? 'text-[var(--ds-chart-teal-bold, #0d9488)]'
                     : 'text-[var(--ds-text-warning,#d97706)]'
                 }`}>
                   {(rules.weights?.workload || 30) + 

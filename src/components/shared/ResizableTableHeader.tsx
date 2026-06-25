@@ -85,7 +85,7 @@ export function ResizableTableHeader({
       {isDragOver && (
         <div style={{
           position: 'absolute', left: 0, top: 6, bottom: 6,
-          width: 2, borderRadius: 1, background: '#93C5FD', zIndex: 15,
+          width: 2, borderRadius: 1, background: 'var(--ds-background-information-bold, #0C66E4)', zIndex: 15,
         }} />
       )}
 

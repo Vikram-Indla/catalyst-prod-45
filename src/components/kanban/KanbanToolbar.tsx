@@ -352,7 +352,7 @@ function DropdownPanel({ children, width, align, tk }: { children: React.ReactNo
       ...(align === 'right' ? { right: 0 } : { left: 0 }),
       zIndex: 100, width, background: tk.surfaceBg,
       border: `1px solid ${tk.border}`, borderRadius: 10,
-      boxShadow: '0 8px 24px rgba(0,0,0,0.18), 0 0 1px rgba(0,0,0,0.12)',
+      boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.18)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
       overflow: 'hidden',
     }}>
       {children}

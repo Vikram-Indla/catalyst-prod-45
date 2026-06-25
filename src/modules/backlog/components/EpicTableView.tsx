@@ -374,15 +374,15 @@ export function EpicTableView({
         className={cn(
           "flex flex-col flex-1 rounded-[14px] border overflow-hidden",
           "bg-[var(--industry-bg-card)] border-[var(--industry-border-default)]",
-          "dark:bg-[#171717] dark:border-[#404040]"
+          "dark:bg-[var(--ds-text, #172B4D)] dark:border-[var(--ds-text-subtle, #44546F)]"
         )}
-        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+        style={{ boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.04))' }}
       >
         {/* Header Bar */}
         <div className={cn(
           "flex items-center justify-between px-4 py-2.5 border-b",
           "border-[var(--industry-border-default)] bg-[var(--industry-bg-subtle)]",
-          "dark:border-[#404040] dark:bg-[#0f0f0f]"
+          "dark:border-[var(--ds-text-subtle, #44546F)] dark:bg-[var(--ds-text, #172B4D)]"
         )}>
           <div className="flex items-center gap-3">
             <span className="text-sm text-[var(--industry-text-secondary)] dark:text-gray-300">
@@ -444,12 +444,12 @@ export function EpicTableView({
             <table className="w-full min-w-[900px] border-collapse text-[13px]">
               <thead className={cn(
                 "sticky top-0 z-10",
-                "bg-[var(--industry-bg-card)] dark:bg-[#0f0f0f]"
+                "bg-[var(--industry-bg-card)] dark:bg-[var(--ds-text, #172B4D)]"
               )}>
                 <tr>
                   <th className={cn(
                     "w-8 px-2 py-3.5 text-left border-b",
-                    "border-[var(--industry-border-default)] dark:border-[#404040]"
+                    "border-[var(--industry-border-default)] dark:border-[var(--ds-text-subtle, #44546F)]"
                   )} />
                   {displayColumns.map(column => {
                     const isActive = sortConfig.column === column.key;
@@ -459,7 +459,7 @@ export function EpicTableView({
                         className={cn(
                           "text-left border-b whitespace-nowrap px-4 py-3.5",
                           "text-[11px] uppercase font-semibold tracking-[0.5px]",
-                          "border-[var(--industry-border-default)] dark:border-[#404040]",
+                          "border-[var(--industry-border-default)] dark:border-[var(--ds-text-subtle, #44546F)]",
                           isActive 
                             ? "text-[var(--brand-gold)] dark:text-[#d4a855]" 
                             : "text-[var(--industry-text-muted)] dark:text-gray-400",
@@ -474,7 +474,7 @@ export function EpicTableView({
                             onCheckedChange={() => toggleAll()}
                             className={cn(
                               "data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]",
-                              "border-border/50 dark:border-border/30 dark:bg-[#262626]"
+                              "border-border/50 dark:border-border/30 dark:bg-[var(--ds-text, #172B4D)]"
                             )}
                           />
                         ) : (
@@ -491,7 +491,7 @@ export function EpicTableView({
                   {/* Actions column header */}
                   <th className={cn(
                     "w-[80px] text-right px-4 py-3.5 border-b",
-                    "border-[var(--industry-border-default)] dark:border-[#404040]"
+                    "border-[var(--industry-border-default)] dark:border-[var(--ds-text-subtle, #44546F)]"
                   )} />
                 </tr>
               </thead>
@@ -500,11 +500,11 @@ export function EpicTableView({
                   <tbody 
                     ref={provided.innerRef} 
                     {...provided.droppableProps}
-                    className="divide-y divide-gray-100 dark:divide-[#404040]"
+                    className="divide-y divide-gray-100 dark:divide-[var(--ds-text-subtle, #44546F)]"
                   >
                     {isLoading ? (
                       Array.from({ length: 6 }).map((_, i) => (
-                        <tr key={i} className="border-b border-[var(--industry-border-subtle)] dark:border-[#404040]">
+                        <tr key={i} className="border-b border-[var(--industry-border-subtle)] dark:border-[var(--ds-text-subtle, #44546F)]">
                           <td className="px-2 py-3.5" />
                           {displayColumns.map(col => (
                             <td key={col.key} className="px-4 py-3.5">
@@ -529,9 +529,9 @@ export function EpicTableView({
                               {...provided.draggableProps}
                               className={cn(
                                 "transition-colors cursor-pointer",
-                                "hover:bg-[var(--industry-bg-hover)] dark:hover:bg-[#262626]/50",
+                                "hover:bg-[var(--industry-bg-hover)] dark:hover:bg-[var(--ds-text, #172B4D)]/50",
                                 selectedSet.has(row.id) && "bg-blue-500/[0.08] dark:bg-blue-500/[0.15]",
-                                snapshot.isDragging && "bg-muted dark:bg-[#333333] shadow-lg"
+                                snapshot.isDragging && "bg-muted dark:bg-[var(--ds-text, #172B4D)] shadow-lg"
                               )}
                               onClick={() => onRowClick(row.id)}
                               onMouseEnter={() => setHoveredRowId(row.id)}

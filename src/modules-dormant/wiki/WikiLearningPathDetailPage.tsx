@@ -18,7 +18,7 @@ export default function WikiLearningPathDetailPage() {
   const qc = useQueryClient();
   const { isDark } = useTheme();
 
-  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))';
 
   // Fetch path
   const { data: path, isLoading: pathLoading } = useQuery({
@@ -179,7 +179,7 @@ export default function WikiLearningPathDetailPage() {
               transition: 'background 80ms', cursor: 'pointer',
               opacity: isComplete ? 0.7 : 1,
             }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-background-information, rgba(37,99,235,0.04))'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 500 }}>{idx + 1}</span>

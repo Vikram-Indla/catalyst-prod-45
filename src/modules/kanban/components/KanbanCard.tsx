@@ -116,9 +116,9 @@ function RankBadge({ rank }: { rank: number | null }) {
         px-2 py-0.5 
         rounded 
         text-[10px] font-semibold 
-        bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.15)]
+        bg-[var(--ds-background-information, rgba(37,99,235,0.1))] dark:bg-[var(--ds-background-information, rgba(37,99,235,0.15))]
         text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-[var(--ds-text-brand,#60a5fa)]
-        border border-[rgba(37,99,235,0.2)] dark:border-[rgba(96,165,250,0.3)]
+        border border-[var(--ds-background-information, rgba(37,99,235,0.2))] dark:border-[var(--ds-background-information-bold, rgba(96,165,250,0.3))]
       "
     >
       #{rank}
@@ -188,7 +188,7 @@ if (compactMode) {
         `}
         style={{
           borderLeftWidth: '4px',
-          borderLeftColor: department?.color || '#a3a3a3',
+          borderLeftColor: department?.color || 'var(--ds-text-disabled, #8590A2)',
           opacity: isDragging ? 0.6 : 1,
         }}
       >

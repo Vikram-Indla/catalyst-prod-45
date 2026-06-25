@@ -56,12 +56,12 @@ function flagDefaults(entry: ComponentRegistryEntry): FlagDraft {
 // ─── Hub quick-select presets ─────────────────────────────────────────────────
 
 const HUB_PRESETS: Array<{ label: string; route: string; color: string }> = [
-  { label: 'Projects',  route: '/project-hub', color: '#0C66E4' },
-  { label: 'Products',  route: '/product-hub',  color: '#6E5DC6' },
-  { label: 'Home',      route: '/for-you',      color: '#1F845A' },
-  { label: 'Incidents', route: '/incidents',    color: '#AE2A19' },
-  { label: 'Admin',     route: '/admin',        color: '#626F86' },
-  { label: 'Global (all routes)', route: '', color: '#44546F' },
+  { label: 'Projects',  route: '/project-hub', color: 'var(--ds-link, #0C66E4)' },
+  { label: 'Products',  route: '/product-hub',  color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  { label: 'Home',      route: '/for-you',      color: 'var(--ds-background-success-bold, #1F845A)' },
+  { label: 'Incidents', route: '/incidents',    color: 'var(--ds-text-danger, #AE2A19)' },
+  { label: 'Admin',     route: '/admin',        color: 'var(--ds-icon-subtle, #626F86)' },
+  { label: 'Global (all routes)', route: '', color: 'var(--ds-icon, #44546F)' },
 ];
 
 // ─── PublishTab ───────────────────────────────────────────────────────────────
@@ -296,7 +296,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                 display: 'block',
                 marginBottom: token('space.075', '6px'),
               }}
@@ -315,7 +315,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                       padding: '4px 12px',
                       borderRadius: 3,
                       background: isActive ? hub.color : `${hub.color}22`,
-                      color: isActive ? '#fff' : hub.color,
+                      color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : hub.color,
                       border: 'none',
                       cursor: submitting ? 'not-allowed' : 'pointer',
                       fontSize: 12,
@@ -331,7 +331,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
               style={{
                 marginTop: token('space.050', '4px'),
                 fontSize: 11,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
               }}
             >
               Click a hub to pre-fill the route scope below. Or use the
@@ -408,10 +408,10 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
         {entry && (
           <div
             style={{
-              border: `1px solid ${token('color.border', '#DCDFE4')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
               borderRadius: 6,
               padding: token('space.200', '16px'),
-              background: token('elevation.surface', '#FFFFFF'),
+              background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px'), flexWrap: 'wrap' }}>
@@ -484,11 +484,11 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                           alignItems: 'center',
                           gap: token('space.150', '12px'),
                           padding: '8px 12px',
-                          border: `1px solid ${token('color.border', '#DCDFE4')}`,
+                          border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
                           borderRadius: 4,
                           background: overridden
-                            ? token('color.background.information', '#E9F2FF')
-                            : token('color.background.neutral.subtle', '#F7F8F9'),
+                            ? token('color.background.information', 'var(--ds-background-selected, #E9F2FF)')
+                            : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
                         }}
                       >
                         <span
@@ -532,7 +532,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                   marginTop: token('space.200', '16px'),
                   padding: token('space.150', '12px'),
                   borderRadius: 4,
-                  background: token('color.background.neutral.subtle', '#F7F8F9'),
+                  background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
                   color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                   fontSize: 13,
                 }}

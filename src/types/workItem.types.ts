@@ -86,25 +86,25 @@ export interface ProjectInfo {
 export const STATUS_LOZENGE_MAP: Record<WorkItemStatus, {
   bg: string; text: string; label: string;
 }> = {
-  backlog:          { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: '#253858', label: 'BACKLOG' },
-  in_progress:      { bg: '#DEEBFF', text: '#0747A6', label: 'IN PROGRESS' },
-  done:             { bg: '#E3FCEF', text: '#006644', label: 'DONE' },
-  in_production:    { bg: '#E3FCEF', text: '#006644', label: 'IN PRODUCTION' },
-  ready_for_qa:     { bg: '#E3FCEF', text: '#006644', label: 'READY FOR QA' },
-  in_requirements:  { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: '#253858', label: 'IN REQUIREMENTS' },
-  in_uat:           { bg: '#E3FCEF', text: '#006644', label: 'IN UAT' },
-  in_qa:            { bg: '#DEEBFF', text: '#0747A6', label: 'IN QA' },
-  in_dev:           { bg: '#DEEBFF', text: '#0747A6', label: 'IN DEV' },
-  closed:           { bg: '#E3FCEF', text: '#006644', label: 'CLOSED' },
+  backlog:          { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: 'var(--ds-text, #253858)', label: 'BACKLOG' },
+  in_progress:      { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'IN PROGRESS' },
+  done:             { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'DONE' },
+  in_production:    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'IN PRODUCTION' },
+  ready_for_qa:     { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'READY FOR QA' },
+  in_requirements:  { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: 'var(--ds-text, #253858)', label: 'IN REQUIREMENTS' },
+  in_uat:           { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'IN UAT' },
+  in_qa:            { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'IN QA' },
+  in_dev:           { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'IN DEV' },
+  closed:           { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'CLOSED' },
 };
 
 // Work item type colour mapping (canonical SVG icons)
 export const WORK_ITEM_TYPE_COLOR: Record<WorkItemType, string> = {
-  epic:        '#6554C0',
-  story:       '#36B37E',
-  bug:         '#FF5630',
-  task:        '#2684FF',
-  subtask:     '#2684FF',
-  feature:     '#36B37E',
-  improvement: '#36B37E',
+  epic:        'var(--ds-background-discovery-bold, #6554C0)',
+  story:       'var(--ds-background-success-bold, #1F845A)',
+  bug:         'var(--ds-background-danger-bold, #C9372C)',
+  task:        'var(--ds-link, #0C66E4)',
+  subtask:     'var(--ds-link, #0C66E4)',
+  feature:     'var(--ds-background-success-bold, #1F845A)',
+  improvement: 'var(--ds-background-success-bold, #1F845A)',
 };

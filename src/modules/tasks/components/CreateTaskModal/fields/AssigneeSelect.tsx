@@ -28,7 +28,7 @@ interface AssigneeSelectProps {
   className?: string;
 }
 
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#0d9488', '#6b7280', '#8b5cf6', '#f97316'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-subtlest, #626F86)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-warning-bold, #E2B203)'];
 function getAvatarColor(name: string): string {
   const index = (name?.charCodeAt(0) ?? 0) % AVATAR_COLORS.length;
   return AVATAR_COLORS[index];

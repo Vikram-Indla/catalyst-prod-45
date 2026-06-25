@@ -14,7 +14,7 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
       style={{
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderRadius: 6,
-        background: token('color.background.neutral.subtle', '#FAFBFC'),
+        background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
         padding: token('space.200', '16px'),
         display: 'flex',
         flexDirection: 'column',
@@ -47,7 +47,7 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: token('color.text.subtlest', '#8993A4'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             padding: 4,
             borderRadius: 4,
             fontSize: 16,
@@ -69,8 +69,8 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
           onClick={onClose}
           style={{
             padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-            background: token('color.background.brand.bold', '#0C66E4'),
-            color: token('color.text.inverse', '#FFFFFF'),
+            background: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'),
+            color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
             border: 'none',
             borderRadius: 4,
             fontSize: 13,

@@ -124,9 +124,9 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
               "h-9 px-5 text-sm font-semibold",
               "w-full md:w-auto",
               "text-white border-0",
-              "shadow-[0_2px_8px_rgba(37,99,235,0.18)]",
-              "hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(37,99,235,0.25)]",
-              "active:translate-y-0 active:shadow-[0_1px_4px_rgba(37,99,235,0.15)]",
+              "shadow-[0_2px_8px_var(--ds-background-information, rgba(37,99,235,0.18))]",
+              "hover:-translate-y-px hover:shadow-[0_4px_16px_var(--ds-background-information, rgba(37,99,235,0.25))]",
+              "active:translate-y-0 active:shadow-[0_1px_4px_var(--ds-background-information, rgba(37,99,235,0.15))]",
               "transition-all duration-150 ease-smooth",
               "focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[hsl(var(--brand-primary))]"
             )}

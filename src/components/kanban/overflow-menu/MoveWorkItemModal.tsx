@@ -136,14 +136,14 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
       onClick={handleOverlayClick}
       style={{
         position: 'fixed', inset: 0, zIndex: 10001,
-        background: 'rgba(0,0,0,0.5)',
+        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.5))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}
     >
       <div style={{
         width: 520, maxHeight: '80vh', background: modalBg,
         borderRadius: 8, border: `1px solid ${border}`,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+        boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.3))',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Header */}
@@ -273,8 +273,8 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
           {/* Error */}
           {error && (
             <div style={{
-              padding: '8px 12px', background: '#FFEBE6', borderRadius: 4,
-              fontSize: 12, color: '#DE350B', marginBottom: 8,
+              padding: '8px 12px', background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 4,
+              fontSize: 12, color: 'var(--ds-background-danger-bold, #C9372C)', marginBottom: 8,
             }}>
               {error}
             </div>

@@ -21,7 +21,7 @@ interface ConflictResolutionDrawerProps {
   onResolve: (conflictId: string, resolution: 'keep_catalyst' | 'keep_jira') => void;
 }
 
-const JIRA_DIAMOND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24"><path fill="#9A3412" d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.7c0 2.4 1.96 4.34 4.34 4.35V2.84a.84.84 0 0 0-.84-.84zM6.77 6.8a4.362 4.362 0 0 0 4.34 4.34h1.78v1.71a4.362 4.362 0 0 0 4.35 4.35V7.63a.839.839 0 0 0-.84-.83zM2 11.6c0 2.4 1.96 4.34 4.35 4.34h1.78v1.72c.01 2.39 1.97 4.34 4.35 4.34v-9.57a.84.84 0 0 0-.84-.83z"/></svg>`;
+const JIRA_DIAMOND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24"><path fill="var(--ds-text-danger, #AE2A19)" d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.7c0 2.4 1.96 4.34 4.34 4.35V2.84a.84.84 0 0 0-.84-.84zM6.77 6.8a4.362 4.362 0 0 0 4.34 4.34h1.78v1.71a4.362 4.362 0 0 0 4.35 4.35V7.63a.839.839 0 0 0-.84-.83zM2 11.6c0 2.4 1.96 4.34 4.35 4.34h1.78v1.72c.01 2.39 1.97 4.34 4.35 4.34v-9.57a.84.84 0 0 0-.84-.83z"/></svg>`;
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -57,7 +57,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0, zIndex: 50,
-          background: 'rgba(15,23,42,0.30)',
+          background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.30))',
           opacity: animating ? 1 : 0,
           transition: 'opacity 200ms ease',
         }}
@@ -68,7 +68,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 51,
           width: 720,
-          boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
+          boxShadow: '-8px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
           display: 'flex', flexDirection: 'column',
           fontFamily: 'var(--cp-font-body)',
           transform: animating ? 'translateX(0)' : 'translateX(100%)',
@@ -132,7 +132,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                         <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalyst Version</span>
                         <span style={{ fontSize: 10, color: 'var(--fg-3)', marginLeft: 4 }}>Your edit</span>
                       </div>
-                      <div className="bg-[rgba(37,99,235,0.06)]" style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', borderRadius: 4 }}>
+                      <div className="bg-[var(--ds-background-information, rgba(37,99,235,0.06))]" style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', borderRadius: 4 }}>
                         {conflict.catalystValue}
                       </div>
                     </div>

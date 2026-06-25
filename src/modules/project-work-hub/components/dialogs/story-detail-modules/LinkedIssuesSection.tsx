@@ -67,7 +67,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
         <div style={{
           position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 200,
           background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 4,
-          boxShadow: '0 4px 8px rgba(9,30,66,.25)', zIndex: 60, overflow: 'hidden',
+          boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,.25))', zIndex: 60, overflow: 'hidden',
           maxHeight: 320, overflowY: 'auto',
         }}>
           {JIRA_LINK_TYPES.map(opt => (
@@ -225,7 +225,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
           style={{
             flex: 1, minHeight: 36, display: 'flex', flexWrap: 'wrap', alignItems: 'center',
             gap: 4, padding: '4px 8px',
-            border: '2px solid #4C9AFF', borderRadius: 3, background: 'var(--ds-surface, #fff)',
+            border: '2px solid var(--ds-background-information-bold, #0C66E4)', borderRadius: 3, background: 'var(--ds-surface, #fff)',
             cursor: 'text', position: 'relative',
           }}
           onClick={() => inputRef.current?.focus()}
@@ -270,7 +270,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
 
       {/* Search results dropdown */}
       {showDropdown && filteredResults.length > 0 && (
-        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, background: 'var(--ds-surface, #fff)', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
+        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, background: 'var(--ds-surface, #fff)', marginBottom: 8, boxShadow: '0 4px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.13))' }}>
           <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {search.trim() ? 'Search results' : 'Recently viewed'}
           </div>
@@ -283,7 +283,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
                   cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', borderLeft: '3px solid transparent',
                   transition: 'background 0.1s, border-color 0.1s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; e.currentTarget.style.borderLeftColor = '#4C9AFF'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; e.currentTarget.style.borderLeftColor = 'var(--ds-background-information-bold, #0C66E4)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderLeftColor = 'transparent'; }}
               >
                 <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
@@ -312,7 +312,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             style={{
               height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
               background: selectedItems.length ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
-              color: selectedItems.length ? 'var(--ds-surface, #fff)' : '#A5ADBA', fontSize: 14, fontWeight: 500,
+              color: selectedItems.length ? 'var(--ds-surface, #fff)' : 'var(--ds-text-subtlest, #626F86)', fontSize: 14, fontWeight: 500,
               cursor: selectedItems.length ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
             }}
           >
@@ -511,7 +511,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
           <div style={{ border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, overflow: 'hidden' }}>
             {(typeLinks as any[]).map((link: any) => {
               const target = link.target;
-              const avatarColor = target.assignee_display_name ? getAvatarColor(target.assignee_display_name) : '#8993A4';
+              const avatarColor = target.assignee_display_name ? getAvatarColor(target.assignee_display_name) : 'var(--ds-text-disabled, #8590A2)';
               // §20 / L41 — pill colour resolved from the Atlaskit helper.
               const issueIcon = WORK_ITEM_ICONS[target.issue_type?.toLowerCase()] ?? WORK_ITEM_ICONS.story;
               return (

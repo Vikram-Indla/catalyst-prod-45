@@ -368,7 +368,7 @@ export function AddParentPicker({
         className="p-0 z-[10001]"
         style={{
           borderRadius: 8,
-          boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.12)',
+          boxShadow: '0 8px 16px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
           width: showAllPanel ? 480 : 380,
         }}
       >
@@ -399,7 +399,7 @@ export function AddParentPicker({
                 <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No {plural} found</div>
               )}
             </div>
-            <div style={{ borderTop: '1px solid #EBECF0' }}>
+            <div style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
               {/* Unlink parent */}
               {parentKey && (
                 <button
@@ -450,7 +450,7 @@ export function AddParentPicker({
                 onChange={e => setSearchTerm(e.target.value)}
                 autoFocus
                 style={{
-                  width: '100%', padding: '8px 12px', border: '2px solid #4C9AFF', borderRadius: 4,
+                  width: '100%', padding: '8px 12px', border: '2px solid var(--ds-background-information-bold, #0C66E4)', borderRadius: 4,
                   fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', outline: 'none', background: 'var(--ds-surface, #FFF)',
                   boxSizing: 'border-box',
                 }}
@@ -462,10 +462,10 @@ export function AddParentPicker({
                     style={{
                       width: '100%', padding: '10px 14px', border: 'none', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                       textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                      fontSize: 14, color: '#DE350B', fontWeight: 500, transition: 'background 100ms',
-                      borderBottom: '1px solid #EBECF0',
+                      fontSize: 14, color: 'var(--ds-background-danger-bold, #C9372C)', fontWeight: 500, transition: 'background 100ms',
+                      borderBottom: '1px solid var(--ds-border, #DFE1E6)',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#FFEBE6')}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger, #FFECEB)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                   >
                     Remove
@@ -486,7 +486,7 @@ export function AddParentPicker({
                         textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
                         fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', transition: 'background 100ms',
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.background = '#DEEBFF')}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-information, #E9F2FF)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
                       <JiraIssueTypeIcon type={row.issue_type ?? iconType} size={16} />

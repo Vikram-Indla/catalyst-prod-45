@@ -28,11 +28,11 @@ export function CompareInsightsBar({ insights }: CompareInsightsBarProps) {
   const getIcon = (type: ComparisonInsight['type']) => {
     switch (type) {
       case 'critical':
-        return <ErrorIcon label="" size="small" primaryColor="#ffffff" />;
+        return <ErrorIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />;
       case 'warning':
-        return <WarningIcon label="" size="small" primaryColor="#ffffff" />;
+        return <WarningIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />;
       case 'positive':
-        return <CheckCircleIcon label="" size="small" primaryColor="#ffffff" />;
+        return <CheckCircleIcon label="" size="small" primaryColor="var(--ds-surface, #FFFFFF)" />;
       default:
         return null;
     }
@@ -42,7 +42,7 @@ export function CompareInsightsBar({ insights }: CompareInsightsBarProps) {
     <div 
       className="rounded-lg p-4 mb-6"
       style={{
-        background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+        background: 'linear-gradient(135deg, var(--ds-background-discovery-bold, #8b5cf6) 0%, var(--ds-background-discovery-bold, #6366f1) 100%)',
       }}
     >
       <div className="flex items-start gap-3">

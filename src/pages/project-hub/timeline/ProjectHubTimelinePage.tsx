@@ -220,14 +220,14 @@ export default function ProjectHubTimelinePage() {
       );
       invalidate();
     },
-    onCreateEpic: async (summary) => {
+    onCreateEpic: async (summary, issueType = 'Epic') => {
       if (!projectKey) return null;
     const localKey = await generateIssueKey(projectKey.toUpperCase());
       const optimistic: TimelineIssue = {
         id: '',
         issueKey: localKey,
         projectKey: projectKey.toUpperCase(),
-        issueType: 'Epic',
+        issueType,
         summary,
         status: 'To Do',
         statusCategory: 'default',
@@ -249,7 +249,7 @@ export default function ProjectHubTimelinePage() {
         await (supabase as any).from('ph_issues').insert({
           issue_key: localKey,
           project_key: projectKey.toUpperCase(),
-          issue_type: 'Epic',
+          issue_type: issueType,
           summary,
           status: 'To Do',
           source: 'catalyst',
@@ -395,6 +395,7 @@ export default function ProjectHubTimelinePage() {
       resolveItemType={resolveItemType}
       detailRouteOwnerKey={projectKey ?? ''}
       mutations={mutations}
+      enableCreateEpicRow
       menuVariant="jira"
       locatedKey={locateKey ?? undefined}
     />

@@ -44,11 +44,11 @@ const getEventIcon = (type: string) => {
 // Sample mention suggestions - using teal for variety per design spec v2
 const mentionSuggestions = [
   { id: 'u1', name: 'h.binslimah.c', initials: 'HB', color: 'bg-gray-500' },
-  { id: 'u2', name: 'Yahya Aloyoni', initials: 'YA', color: 'bg-[#0d9488]' },
-  { id: 'u3', name: 'Nada Alfassam', initials: 'NA', color: 'bg-[#0f766e]' },
+  { id: 'u2', name: 'Yahya Aloyoni', initials: 'YA', color: 'bg-[var(--ds-chart-teal-bold, #0d9488)]' },
+  { id: 'u3', name: 'Nada Alfassam', initials: 'NA', color: 'bg-[var(--ds-chart-teal-bolder, #0f766e)]' },
   { id: 'u4', name: 'Yazeed Daraz', initials: 'YD', color: 'bg-blue-500' },
   { id: 'u5', name: 'Imran Aslam', initials: 'IA', color: 'bg-gray-400' },
-  { id: 'u6', name: 'Suleiman Ahmad Allawanseh', initials: 'SA', color: 'bg-[#0d9488]' },
+  { id: 'u6', name: 'Suleiman Ahmad Allawanseh', initials: 'SA', color: 'bg-[var(--ds-chart-teal-bold, #0d9488)]' },
 ];
 
 export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentTimelineProps) {
@@ -128,7 +128,7 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
           {/* Rich Text Toolbar */}
           <div className={cn(
             "border border-border rounded-t-md bg-white",
-            isEditorFocused ? "border-[#4C9AFF] ring-2 ring-[#4C9AFF]/20" : ""
+            isEditorFocused ? "border-[var(--ds-background-information-bold, #0C66E4)] ring-2 ring-[var(--ds-background-information-bold, #0C66E4)]/20" : ""
           )}>
             <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
               {/* Text format dropdown */}
@@ -268,7 +268,7 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
               size="sm"
               onClick={handlePostComment}
               disabled={!newComment.trim()}
-              className="h-8 bg-[var(--cp-primary-60, #0052CC)] hover:bg-[#0747A6] text-white"
+              className="h-8 bg-[var(--cp-primary-60, #0052CC)] hover:bg-[var(--ds-link-pressed, #0747A6)] text-white"
             >
               Save
             </Button>

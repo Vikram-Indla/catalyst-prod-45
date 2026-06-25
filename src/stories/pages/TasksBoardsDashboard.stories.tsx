@@ -37,7 +37,7 @@ const boardTask: BoardTask = {
   created_at: lastWeek, updated_at: now,
   status_id: 's2', status_name: 'In Progress',
   assignee_id: 'u1', assignee_name: 'Vikram Indla',
-  workstream_id: 'w1', workstream_name: 'Platform', workstream_color: '#0052CC',
+  workstream_id: 'w1', workstream_name: 'Platform', workstream_color: 'var(--ds-link, #0052CC)',
   labels: [{ id: 'l1', name: 'backend', color: 'blue' }],
   checklist_total: 5, checklist_done: 2, comments_count: 3,
 } as any;
@@ -73,7 +73,7 @@ export const KPIStrip: StoryObj = {
         metrics={metrics} unassignedCount={4}
         userRole="Team Lead"
         assignedWorkstreams={[
-          { id: 'w1', name: 'Platform', color: '#0052CC' },
+          { id: 'w1', name: 'Platform', color: 'var(--ds-link, #0052CC)' },
           { id: 'w2', name: 'Frontend', color: '#00B8D9' },
         ]}
       />
@@ -95,11 +95,11 @@ export const KPIStripClean: StoryObj = {
 // ─── DashboardStatusChartV2 ────────────────────────────────────────────────
 
 const statusData: StatusDistribution[] = [
-  { status_id: 's1', status_name: 'Backlog', status_slug: 'backlog', status_color: '#64748b', position: 0, task_count: 34, percentage: 24 },
-  { status_id: 's2', status_name: 'Planned', status_slug: 'planned', status_color: '#3b82f6', position: 1, task_count: 28, percentage: 20 },
-  { status_id: 's3', status_name: 'In Progress', status_slug: 'progress', status_color: '#f59e0b', position: 2, task_count: 42, percentage: 30 },
-  { status_id: 's4', status_name: 'Review', status_slug: 'review', status_color: '#8b5cf6', position: 3, task_count: 18, percentage: 13 },
-  { status_id: 's5', status_name: 'Done', status_slug: 'done', status_color: '#22c55e', position: 4, task_count: 20, percentage: 14 },
+  { status_id: 's1', status_name: 'Backlog', status_slug: 'backlog', status_color: 'var(--ds-text-subtlest, #626F86)', position: 0, task_count: 34, percentage: 24 },
+  { status_id: 's2', status_name: 'Planned', status_slug: 'planned', status_color: 'var(--ds-background-information-bold, #3b82f6)', position: 1, task_count: 28, percentage: 20 },
+  { status_id: 's3', status_name: 'In Progress', status_slug: 'progress', status_color: 'var(--ds-background-warning-bold, #f59e0b)', position: 2, task_count: 42, percentage: 30 },
+  { status_id: 's4', status_name: 'Review', status_slug: 'review', status_color: 'var(--ds-background-discovery-bold, #6E5DC6)', position: 3, task_count: 18, percentage: 13 },
+  { status_id: 's5', status_name: 'Done', status_slug: 'done', status_color: 'var(--ds-background-success-bold, #1F845A)', position: 4, task_count: 20, percentage: 14 },
 ];
 
 export const StatusChart: StoryObj = {
@@ -111,7 +111,7 @@ export const StatusChart: StoryObj = {
 const workstream: Workstream = {
   id: 'w1', name: 'Platform Engineering', slug: 'platform',
   description: 'Core platform infrastructure and shared services',
-  color: '#0052CC', icon: null, sort_order: 1,
+  color: 'var(--ds-link, #0052CC)', icon: null, sort_order: 1,
   is_active: true, is_archived: false, lead_id: 'u1',
   start_date: '2026-01-01', due_date: '2026-12-31',
   created_at: '2026-01-01T00:00:00Z', updated_at: now,
@@ -132,7 +132,7 @@ export const WorkstreamArchived: StoryObj = {
   render: () => (
     <Wrap width={400}>
       <WorkstreamCard
-        workstream={{ ...workstream, id: 'w2', name: 'Legacy Migration', is_archived: true, color: '#94a3b8' }}
+        workstream={{ ...workstream, id: 'w2', name: 'Legacy Migration', is_archived: true, color: 'var(--ds-text-disabled, #8590A2)' }}
         onLeadChange={fn()} onEdit={fn()} onArchive={fn()} onDelete={fn()} onOpenDrawer={fn()}
       />
     </Wrap>

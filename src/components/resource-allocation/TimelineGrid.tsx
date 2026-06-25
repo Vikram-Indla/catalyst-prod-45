@@ -185,7 +185,7 @@ export function TimelineGrid({
                           "text-[9px] font-bold uppercase px-1.5 py-0.5 rounded",
                           firstBar.status === 'committed' 
                             ? "bg-primary/10 text-primary border border-primary/20"
-                            : "bg-[#fef3c7] text-[#92400e] border border-[#fcd34d]"
+                            : "bg-[var(--ds-background-warning, #FFF7D6)] text-[var(--ds-text-warning, #974F0C)] border border-[var(--ds-background-warning, #FFF7D6)]"
                         )}>
                           {firstBar.status}
                         </span>
@@ -300,7 +300,7 @@ export function TimelineGrid({
                         className="h-7 rounded-md flex items-center justify-center text-[11px] font-bold mx-1"
                         style={{
                           width: 'calc(100% - 8px)',
-                          backgroundColor: '#d1fae5',
+                          backgroundColor: 'var(--ds-background-success, #DFFCF0)',
                           color: 'var(--quality-high, #059669)',
                           border: '1px solid #a7f3d0',
                         }}
@@ -387,7 +387,7 @@ export function TimelineGrid({
                       "h-full rounded-full transition-all",
                       cap.status === 'over' ? "bg-destructive" : 
                       cap.status === 'full' ? "bg-primary" : 
-                      "bg-[#0d9488]"
+                      "bg-[var(--ds-chart-teal-bold, #0d9488)]"
                     )}
                     style={{ width: `${Math.min(100, cap.total)}%` }}
                   />

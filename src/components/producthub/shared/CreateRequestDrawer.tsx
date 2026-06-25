@@ -18,7 +18,7 @@ import { DepartmentSelect } from './DepartmentSelect';
 
 /* ── Token constants ── */
 const T = {
-  ink: '#09090B', inkSec: '#18181B', inkMuted: '#71717A',
+  ink: 'var(--ds-text, #172B4D)', inkSec: 'var(--ds-text, #172B4D)', inkMuted: 'var(--ds-text-subtlest, #626F86)',
   surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', surfSec: 'var(--bg-1, #F8FAFC)',
   border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderStrong: 'var(--ds-text-disabled, #CBD5E1)',
   primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', primaryHover: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', primaryBg: 'var(--ds-background-selected, #EFF6FF)',
@@ -145,7 +145,7 @@ function FieldWrapper({ label, required, children }: { label: string; required?:
   );
 }
 
-const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[#71717A]";
+const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[var(--ds-text-subtlest, #626F86)]";
 
 /* ── Main Component ── */
 export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated, initialStatus }: CreateRequestDrawerProps) {
@@ -273,7 +273,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
         onClick={doClose}
         style={{
           position: 'fixed', inset: 0, zIndex: 600,
-          background: 'rgba(0,0,0,.5)',
+          background: 'var(--ds-shadow-raised, rgba(0,0,0,.5))',
           animation: `${closing ? 'niFadeOut 200ms' : 'niFadeIn 150ms'} ease-out forwards`,
         }}
       />
@@ -283,7 +283,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
         zIndex: 610, width: 580, maxHeight: '90vh', display: 'flex', flexDirection: 'column',
         background: T.surface, borderRadius: 16,
-        boxShadow: '0 24px 80px rgba(0,0,0,.18)',
+        boxShadow: '0 24px 80px var(--ds-shadow-raised, rgba(0,0,0,.18))',
         fontFamily: 'var(--cp-font-body)',
         animation: `${closing ? 'niSlideOut 200ms' : 'niSlideIn 250ms'} cubic-bezier(.4,0,.2,1) forwards`,
       }}>
@@ -361,7 +361,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               onChange={e => updateField('description', e.target.value)}
               placeholder="Brief description of the business request scope and objectives..."
               rows={3}
-              className="w-full px-3 py-2 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[#71717A]"
+              className="w-full px-3 py-2 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[var(--ds-text-subtlest, #626F86)]"
               style={{ borderColor: T.border }}
             />
           </FieldWrapper>
@@ -455,7 +455,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               style={{
                 padding: '9px 24px', border: 'none', borderRadius: 8,
                 background: T.primary, color: 'var(--ds-surface, #fff)', fontSize: 13, fontWeight: 600,
-                cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,.25)',
+                cursor: 'pointer', boxShadow: '0 2px 8px var(--ds-background-information, rgba(37,99,235,.25))',
                 opacity: (createMutation.isPending || !form.title.trim()) ? 0.5 : 1,
               }}
             >

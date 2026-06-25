@@ -343,7 +343,7 @@ export function ProfilePicker({
               background: 'var(--ds-surface-overlay, #FFFFFF)',
               border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: 6,
-              boxShadow: '0 8px 24px rgba(9,30,66,0.15)',
+              boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
               overflow: 'hidden',
             }}
           >

@@ -141,13 +141,13 @@ export default function ForYouPage() {
   // Build filter categories for JiraBasicFilter panel
   const filterCategories = React.useMemo<FilterCategory[]>(() => {
     const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-    const PALETTE = ['#1868DB', '#E2631E', '#5E4DB2', '#1B3459', '#0D7C66', '#B34D00', '#943A79', '#0055CC'];
+    const PALETTE = ['var(--ds-link, #1868DB)', '#E2631E', 'var(--ds-background-discovery-bold, #6E5DC6)', '#1B3459', '#0D7C66', '#B34D00', '#943A79', 'var(--ds-link, #0C66E4)'];
     const pickColor = (name: string) => { let h = 0; for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h); return PALETTE[Math.abs(h) % PALETTE.length]; };
     const HUB_ICONS: Record<string, React.ReactNode> = {
-      Incident: <AlertTriangleIcon size={14} color="#FF5630" strokeWidth={2} />,
-      Product: <LayoutGrid size={14} color="#6554C0" strokeWidth={2} />,
+      Incident: <AlertTriangleIcon size={14} color="var(--ds-background-danger-bold, #C9372C)" strokeWidth={2} />,
+      Product: <LayoutGrid size={14} color="var(--ds-background-discovery-bold, #6554C0)" strokeWidth={2} />,
       Project: <Folder size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" strokeWidth={2} />,
-      Task: <CheckSquare size={14} color="#4BADE8" strokeWidth={2} />,
+      Task: <CheckSquare size={14} color="var(--ds-background-information-bold, #1D7AFC)" strokeWidth={2} />,
       Plan: <BookOpen size={14} color="var(--cp-teal-60, #0D9488)" strokeWidth={2} />,
       Strategy: <Zap size={14} color="var(--ds-text-warning, var(--cp-warning, #D97706))" strokeWidth={2} />,
     };

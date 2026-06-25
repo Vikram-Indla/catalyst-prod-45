@@ -218,13 +218,13 @@ function SaveRunModal({
   return createPortal(
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9000,
-      background: 'rgba(9,30,66,0.54)',
+      background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <div style={{
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         borderRadius: 8, padding: 24, width: 480,
-        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
       }}>
         <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
           Save execution
@@ -259,7 +259,7 @@ function SaveRunModal({
             style={{
               padding: '8px 16px', borderRadius: 4, border: 'none',
               background: 'var(--ds-background-brand-bold, #0052CC)',
-              color: '#fff', cursor: saving ? 'not-allowed' : 'pointer',
+              color: 'var(--ds-text-inverse, #FFFFFF)', cursor: saving ? 'not-allowed' : 'pointer',
               fontSize: 14, fontWeight: 500, opacity: saving ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 8,
             }}
@@ -412,11 +412,11 @@ function StepRunner({
         </span>
         <div style={{ display: 'flex', gap: 6 }}>
           {!timer.running ? (
-            <button onClick={timer.start} style={timerBtnStyle('#006644')}>▶ Start</button>
+            <button onClick={timer.start} style={timerBtnStyle('var(--ds-text-success, #006644)')}>▶ Start</button>
           ) : (
-            <button onClick={timer.pause} style={timerBtnStyle('#974F0C')}>⏸ Pause</button>
+            <button onClick={timer.pause} style={timerBtnStyle('var(--ds-text-warning, #974F0C)')}>⏸ Pause</button>
           )}
-          <button onClick={timer.reset} disabled={timer.elapsed === 0 && !timer.running} style={timerBtnStyle('#42526E')}>
+          <button onClick={timer.reset} disabled={timer.elapsed === 0 && !timer.running} style={timerBtnStyle('var(--ds-text-subtle, #42526E)')}>
             ↺ Reset
           </button>
         </div>

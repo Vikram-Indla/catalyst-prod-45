@@ -15,6 +15,8 @@
  *   - KanbanPage, CardsPage, RequestListingPage, ProductRoadmapPage
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
@@ -53,7 +55,6 @@ import type { CatalystViewBaseProps } from '../shared/types';
 import { useBusinessRequestHealth } from '@/hooks/useBusinessRequestHealth';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import { useClearableOnOpen } from '@/hooks/useClearableOnOpen';
-import { ReleaseSection } from './ReleaseSection';
 
 export default function CatalystViewBusinessRequestV3({
   isOpen, onClose, itemId,
@@ -63,6 +64,21 @@ export default function CatalystViewBusinessRequestV3({
 }: CatalystViewBaseProps) {
   const { request, resolvedId, isLoading, updateField, deleteRequest } =
     useProductHubBusinessRequest({ requestKey: itemId });
+
+  const { data: productName } = useQuery({
+    queryKey: ['product-name', request?.product_id],
+    queryFn: async () => {
+      if (!request?.product_id) return null;
+      const { data } = await supabase
+        .from('products')
+        .select('name')
+        .eq('id', request.product_id)
+        .single();
+      return (data as { name: string } | null)?.name ?? null;
+    },
+    enabled: !!request?.product_id,
+    staleTime: 10 * 60 * 1000,
+  });
 
   const { health } = useBusinessRequestHealth(itemId);
 
@@ -101,10 +117,10 @@ export default function CatalystViewBusinessRequestV3({
       entityKey: request.request_key ?? undefined,
       displaySummary: request.title,
       projectId: undefined,
-      projectName: 'Product Hub',
+      projectName: productName ?? 'Product Hub',
       navPath: `/product-hub/requests/${request.request_key ?? resolvedId}`,
     });
-  }, [isOpen, resolvedId, request?.title, request?.request_key, trackRecent]);
+  }, [isOpen, resolvedId, request?.title, request?.request_key, trackRecent, productName]);
 
   /* ── Description adapter — canonical Tiptap Description, fed by
      business_requests.description (string column). The column may hold
@@ -251,7 +267,7 @@ export default function CatalystViewBusinessRequestV3({
           />
         </KeyDetailsFieldRow>
         {health && (
-          <KeyDetailsFieldRow label="Health" alignBlock="center">
+          <KeyDetailsFieldRow label="Delivery" alignBlock="start">
             <HealthStatusBadge health={health} />
           </KeyDetailsFieldRow>
         )}
@@ -417,17 +433,6 @@ export default function CatalystViewBusinessRequestV3({
         }
         hideDiscuss={isClosed}
       >
-        {/* Tier 3.4: BR Release field */}
-        {request?.id && (
-          <ReleaseSection
-            brId={request.id}
-            projectId={request.product_id}
-            releaseId={request?.release_id ?? null}
-            onReleaseChange={() => {
-              // TODO: Implement release change handler if needed
-            }}
-          />
-        )}
       </CatalystSidebarDetails>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -445,7 +450,7 @@ export default function CatalystViewBusinessRequestV3({
         itemType="Business Request"
         itemKey={request?.request_key ?? null}
         projectKey={projectKey || request?.project_key || 'MIM'}
-        projectName="Product Hub"
+        projectName={productName ?? 'Product Hub'}
         moreMenuItems={useMemo(
           () => [
             { label: 'Print', onClick: () => window.print() },

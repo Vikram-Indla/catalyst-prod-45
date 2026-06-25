@@ -116,7 +116,7 @@ function FieldMenu({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection
             background: T.surfaceOverlay,
             border: `1px solid ${T.border}`,
             borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.2)',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
             padding: '4px 0',
             minWidth: 220,
             zIndex: 9999,
@@ -633,7 +633,7 @@ export default function FieldLayoutPage() {
                 style={{
                   padding: '7px 16px', fontSize: 14, borderRadius: 4, fontWeight: 500,
                   border: 'none', background: dirty ? T.brand : T.bgNeutral,
-                  color: dirty ? '#FFFFFF' : T.textSubtle,
+                  color: dirty ? 'var(--ds-text-inverse, #FFFFFF)' : T.textSubtle,
                   cursor: (!dirty || saving) ? 'not-allowed' : 'pointer',
                   opacity: saving ? 0.7 : 1,
                 }}

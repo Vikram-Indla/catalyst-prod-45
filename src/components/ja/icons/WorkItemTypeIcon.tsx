@@ -9,10 +9,10 @@ interface WorkItemTypeIconProps {
 
 const ICON_COLORS: Record<WorkItemType, string> = {
   epic: '#904EE2', // Purple - represents large scope
-  story: '#36B37E', // Green
+  story: 'var(--ds-background-success-bold, #1F845A)', // Green
   feature: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', // Amber (was purple - per design system governance)
-  task: '#0065FF', // Blue
-  defect: '#FF5630', // Red
+  task: 'var(--ds-link, #0065FF)', // Blue
+  defect: 'var(--ds-background-danger-bold, #C9372C)', // Red
 };
 
 export function WorkItemTypeIcon({ type, size = 16 }: WorkItemTypeIconProps) {

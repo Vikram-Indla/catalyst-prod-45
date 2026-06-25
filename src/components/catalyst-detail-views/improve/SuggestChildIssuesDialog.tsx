@@ -182,7 +182,7 @@ export function SuggestChildIssuesDialog({
         <ModalTitle>{triggerLabel} — Suggest {childLabel.toLowerCase()}</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', '#6B6E76') }}>
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)') }}>
           {loading
             ? 'Generating suggestions…'
             : suggestions.length > 0
@@ -192,7 +192,7 @@ export function SuggestChildIssuesDialog({
 
         <div>
           {loading && (
-            <div style={{ padding: '32px 0', textAlign: 'center', color: token('color.text.subtle', '#6B6E76'), fontSize: 14 }}>
+            <div style={{ padding: '32px 0', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 14 }}>
               Generating suggestions…
             </div>
           )}
@@ -202,8 +202,8 @@ export function SuggestChildIssuesDialog({
               style={{
                 padding: 12,
                 borderRadius: 4,
-                background: token('color.background.danger', '#FFEBE6'),
-                color: token('color.text.danger', '#AE2A19'),
+                background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
+                color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
                 fontSize: 13,
               }}
             >
@@ -212,7 +212,7 @@ export function SuggestChildIssuesDialog({
           )}
 
           {!loading && !error && suggestions.length === 0 && (
-            <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtle', '#6B6E76'), fontSize: 14 }}>
+            <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 14 }}>
               No suggestions returned.
             </div>
           )}
@@ -229,8 +229,8 @@ export function SuggestChildIssuesDialog({
                     borderRadius: 6,
                     border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                     background: checked.has(i)
-                      ? token('color.background.selected', '#E9F2FF')
-                      : token('elevation.surface', '#FFFFFF'),
+                      ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
+                      : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                     cursor: 'pointer',
                   }}
                   onClick={() => toggleCheck(i)}
@@ -248,7 +248,7 @@ export function SuggestChildIssuesDialog({
                         style={{
                           fontSize: 14,
                           fontWeight: 600,
-                          color: token('color.text', '#292A2E'),
+                          color: token('color.text', 'var(--ds-text, #172B4D)'),
                         }}
                       >
                         {s.title}
@@ -257,7 +257,7 @@ export function SuggestChildIssuesDialog({
                         style={{
                           fontSize: 11,
                           fontWeight: 700,
-                          color: token('color.text.subtle', '#6B6E76'),
+                          color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                           textTransform: 'uppercase',
                           letterSpacing: '0.04em',
                         }}
@@ -271,7 +271,7 @@ export function SuggestChildIssuesDialog({
                           margin: '4px 0 0',
                           fontSize: 13,
                           lineHeight: '18px',
-                          color: token('color.text.subtle', '#42526E'),
+                          color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
                           whiteSpace: 'pre-wrap',
                         }}
                       >

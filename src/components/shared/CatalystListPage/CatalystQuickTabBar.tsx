@@ -52,13 +52,13 @@ export function CatalystQuickTabBar({
               background: 'none',
               border: 'none',
               borderBottom: isActive
-                ? `2px solid ${token('color.border.selected', '#0052CC')}`
+                ? `2px solid ${token('color.border.selected', 'var(--ds-link, #0052CC)')}`
                 : '2px solid transparent',
               padding: '8px 16px',
               fontSize: 14,
               fontWeight: isActive ? 600 : 400,
               color: isActive
-                ? token('color.text.selected', '#0052CC')
+                ? token('color.text.selected', 'var(--ds-link, #0052CC)')
                 : token('color.text.subtle'),
               cursor: 'pointer',
               marginBottom: -1,

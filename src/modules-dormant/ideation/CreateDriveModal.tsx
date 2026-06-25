@@ -130,14 +130,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       style={{
         position: 'fixed', inset: 0, zIndex: 300,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(0,0,0,0.5)',
+        background: 'var(--ds-shadow-raised, rgba(0,0,0,0.5))',
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div style={{
         width: '640px', maxHeight: '90vh', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRadius: '16px', display: 'flex', flexDirection: 'column',
-        boxShadow: isDark ? 'none' : '0 25px 50px -12px rgba(0,0,0,0.25)',
+        boxShadow: isDark ? 'none' : '0 25px 50px -12px var(--ds-shadow-raised, rgba(0,0,0,0.25))',
         padding: '28px',
       }}>
         {/* Header */}
@@ -167,7 +167,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => handleBlur('title')}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))'; }}
               maxLength={100}
             />
             {touched.title && errors.title && <div style={errorStyle}>{errors.title}</div>}
@@ -186,7 +186,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => handleBlur('description')}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))'; }}
               maxLength={500}
             />
             {touched.description && errors.description && <div style={errorStyle}>{errors.description}</div>}
@@ -206,7 +206,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     style={{
                       width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       borderRadius: '8px', cursor: 'pointer',
-                      border: isSelected ? '1.5px solid #2563EB' : `1.5px solid ${'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
+                      border: isSelected ? '1.5px solid var(--ds-link, #2563eb)' : `1.5px solid ${'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
                       background: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                       transition: 'all 150ms ease',
                     }}
@@ -377,11 +377,11 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             style={{
               padding: '10px 24px', fontSize: '14px', fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              background: (!isValid || createMutation.isPending) ? '#93C5FD' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+              background: (!isValid || createMutation.isPending) ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
               border: 'none', borderRadius: '8px',
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '6px',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.05))',
               transition: 'background 150ms ease', fontFamily: 'var(--cp-font-body)',
             }}
             onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)'; }}

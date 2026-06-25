@@ -42,11 +42,11 @@ vi.mock('@/integrations/supabase/client', () => {
 import { useUpdatePlannerTask } from '../useTaskItems';
 
 const SEEDED_STATUSES = [
-  { id: 'uuid-backlog', slug: 'backlog', name: 'Backlog', color: '#000', order: 0 },
-  { id: 'uuid-planned', slug: 'planned', name: 'Planned', color: '#000', order: 1 },
-  { id: 'uuid-in-progress', slug: 'in-progress', name: 'In Progress', color: '#000', order: 2 },
-  { id: 'uuid-review', slug: 'review', name: 'Review', color: '#000', order: 3 },
-  { id: 'uuid-done', slug: 'done', name: 'Done', color: '#000', order: 4 },
+  { id: 'uuid-backlog', slug: 'backlog', name: 'Backlog', color: 'var(--ds-text, #172B4D)', order: 0 },
+  { id: 'uuid-planned', slug: 'planned', name: 'Planned', color: 'var(--ds-text, #172B4D)', order: 1 },
+  { id: 'uuid-in-progress', slug: 'in-progress', name: 'In Progress', color: 'var(--ds-text, #172B4D)', order: 2 },
+  { id: 'uuid-review', slug: 'review', name: 'Review', color: 'var(--ds-text, #172B4D)', order: 3 },
+  { id: 'uuid-done', slug: 'done', name: 'Done', color: 'var(--ds-text, #172B4D)', order: 4 },
 ];
 
 function makeWrapper(seedStatuses: typeof SEEDED_STATUSES | null = SEEDED_STATUSES) {

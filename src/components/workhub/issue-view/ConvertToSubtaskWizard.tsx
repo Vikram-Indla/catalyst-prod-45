@@ -166,8 +166,8 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.54)' }} onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} style={{ background: 'var(--ds-surface, #fff)', borderRadius: 8, width: 720, maxWidth: '95vw', maxHeight: '85vh', overflow: 'hidden', display: 'flex', boxShadow: '0 12px 40px rgba(9,30,66,.35)' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))' }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{ background: 'var(--ds-surface, #fff)', borderRadius: 8, width: 720, maxWidth: '95vw', maxHeight: '85vh', overflow: 'hidden', display: 'flex', boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(9,30,66,.35))' }}>
         {/* Left stepper rail */}
         <div style={{ width: 220, background: 'var(--ds-surface-sunken, #FAFBFC)', borderRight: `1px solid var(--ds-border, #EBECF0)`, padding: '24px 16px', flexShrink: 0 }}>
           {STEPS.map((label, i) => (
@@ -227,7 +227,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
               <div style={{ marginBottom: 20 }}>
                 <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', display: 'block', marginBottom: 6 }}>Parent Issue</label>
                 {selectedParentIssue ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
                     <JiraIssueTypeIcon type={selectedParentIssue.issue_type} size={16} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-link, #0C66E4)' }}>{selectedParentIssue.issue_key}</span>
                     <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', flex: 1 }}>{selectedParentIssue.summary}</span>
@@ -251,7 +251,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                       {searchingParents && <Loader2 size={14} className="animate-spin" style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }} />}
                     </div>
                     {showDropdown && (
-                      <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2, background: 'var(--ds-surface, #fff)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4, boxShadow: '0 8px 16px rgba(9,30,66,.15), 0 0 1px rgba(9,30,66,.31)', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
+                      <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2, background: 'var(--ds-surface, #fff)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', borderRadius: 4, boxShadow: '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,.15)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,.31))', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
                         {/* Section label */}
                         {parentSearch.trim().length === 0 && parentCandidates.length > 0 && (
                           <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Recent issues</div>
@@ -366,7 +366,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {/* Navigation buttons */}
           <div style={{ display: 'flex', gap: 8, marginTop: 20, borderTop: `1px solid var(--ds-border, #EBECF0)`, paddingTop: 16 }}>
             {step > 0 && (
-              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                 Back
               </button>
             )}

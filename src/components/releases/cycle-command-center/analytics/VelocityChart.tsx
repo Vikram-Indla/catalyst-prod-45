@@ -60,25 +60,25 @@ export function VelocityChart({ cycleId, days = 14 }: VelocityChartProps) {
               <XAxis 
                 dataKey="dateLabel" 
                 tick={{ fontSize: 11 }} 
-                stroke="#9ca3af"
+                stroke="var(--ds-text-disabled, #8590A2)"
               />
               <YAxis 
                 yAxisId="left"
                 tick={{ fontSize: 11 }} 
-                stroke="#9ca3af"
+                stroke="var(--ds-text-disabled, #8590A2)"
                 allowDecimals={false}
               />
               <YAxis 
                 yAxisId="right"
                 orientation="right"
                 tick={{ fontSize: 11 }} 
-                stroke="#9ca3af"
+                stroke="var(--ds-text-disabled, #8590A2)"
                 allowDecimals={false}
               />
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: 'white', 
-                  border: '1px solid #e5e7eb',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: '8px',
                   fontSize: '12px'
                 }}

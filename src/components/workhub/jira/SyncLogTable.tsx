@@ -26,9 +26,9 @@ function getRelativeTime(dateStr: string): string {
 }
 
 const typeBadgeColors: Record<string, { bg: string; color: string }> = {
-  full: { bg: '#dbeafe', color: 'var(--cp-blue)' },
-  incremental: { bg: '#ccfbf1', color: 'var(--sem-success)' },
-  manual: { bg: '#f4f4f5', color: 'var(--fg-3)' },
+  full: { bg: 'var(--ds-background-information, #E9F2FF)', color: 'var(--cp-blue)' },
+  incremental: { bg: 'var(--ds-background-success, #DCFFF1)', color: 'var(--sem-success)' },
+  manual: { bg: 'var(--ds-surface-sunken, #F7F8F9)', color: 'var(--fg-3)' },
 };
 
 export function SyncLogTable({ logs, projects, isLoading }: SyncLogTableProps) {
@@ -146,7 +146,7 @@ export function SyncLogTable({ logs, projects, isLoading }: SyncLogTableProps) {
                       {errCount > 0 ? (
                         <span
                           className="inline-block px-2 py-0.5 text-[11px] font-semibold rounded-full"
-                          style={{ backgroundColor: '#fee2e2', color: 'var(--sem-danger)' }}
+                          style={{ backgroundColor: 'var(--ds-background-danger, #FFECEB)', color: 'var(--sem-danger)' }}
                         >
                           {errCount}
                         </span>

@@ -9,30 +9,30 @@
 .caty-panel {
   /* ==================== HEADER ==================== */
   --caty-header-bg: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --caty-header-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --caty-header-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   
   /* ==================== SURFACES ==================== */
   --caty-surface-page: var(--ds-surface-sunken, #f8fafc);
-  --caty-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --caty-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --caty-surface-hover: var(--ds-surface-sunken, #f1f5f9);
-  --caty-surface-input: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --caty-surface-input: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --caty-surface-skeleton: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --caty-surface-user: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   
   /* ==================== TEXT ==================== */
   --caty-text-primary: var(--ds-text, #0f172a);
-  --caty-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  --caty-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
   --caty-text-muted: var(--ds-text-subtlest, #64748b);
   --caty-text-light: var(--ds-text-subtlest, #94a3b8);
-  --caty-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --caty-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   
   /* ==================== STATUS ==================== */
   --caty-status-critical: var(--ds-text-danger, #dc2626);
   --caty-status-critical-bg: var(--ds-background-danger, #fef2f2);
-  --caty-status-warning: #ea580c;
-  --caty-status-warning-bg: #fff7ed;
-  --caty-status-safe: var(--quality-high, #059669);
-  --caty-status-safe-bg: #ecfdf5;
+  --caty-status-warning: var(--ds-background-warning-bold, #E2B203);
+  --caty-status-warning-bg: var(--ds-background-warning, #FFF7D6);
+  --caty-status-safe: var(--quality-high, var(--ds-background-success-bold, #059669));
+  --caty-status-safe-bg: var(--ds-background-success, #DFFCF0);
   --caty-status-total: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --caty-status-total-bg: var(--ds-background-selected, #eff6ff);
   
@@ -42,10 +42,10 @@
   --caty-capacity-danger: var(--ds-text-danger, #ef4444);    /* 86-100%+ */
   
   /* ==================== DEPARTMENTS ==================== */
-  --caty-dept-product: #8b5cf6;
+  --caty-dept-product: var(--ds-background-discovery-bold, #8b5cf6);
   --caty-dept-delivery: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --caty-dept-operations: #ea580c;
-  --caty-dept-support: #f97316;
+  --caty-dept-operations: var(--ds-background-warning-bold, #E2B203);
+  --caty-dept-support: var(--ds-background-warning-bold, #f97316);
   --caty-dept-governance: var(--ds-text-subtlest, #64748b);
   
   /* ==================== BORDERS ==================== */
@@ -69,10 +69,10 @@
   --caty-radius-full: 9999px;
   
   /* ==================== SHADOWS ==================== */
-  --caty-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --caty-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --caty-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
-  --caty-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  --caty-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
+  --caty-shadow-md: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
+  --caty-shadow-lg: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
+  --caty-shadow-focus: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.15));
   
   /* ==================== TYPOGRAPHY ==================== */
   --caty-font-family: var(--cp-font-body);
@@ -100,23 +100,23 @@
 [data-theme="dark"] .caty-panel,
 .dark .caty-panel {
   --caty-surface-page: var(--ds-text, #0f172a);
-  --caty-surface-card: #1e293b;
-  --caty-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
-  --caty-surface-input: #1e293b;
-  --caty-surface-skeleton: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  --caty-surface-card: var(--ds-text, #172B4D);
+  --caty-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
+  --caty-surface-input: var(--ds-text, #172B4D);
+  --caty-surface-skeleton: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
   
   --caty-text-primary: var(--ds-surface-sunken, #f1f5f9);
   --caty-text-secondary: var(--ds-text-disabled, #cbd5e1);
   --caty-text-muted: var(--ds-text-subtlest, #94a3b8);
   --caty-text-light: var(--ds-text-subtlest, #64748b);
   
-  --caty-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
-  --caty-border-light: #1e293b;
+  --caty-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
+  --caty-border-light: var(--ds-text, #172B4D);
   
-  --caty-status-critical-bg: rgba(220, 38, 38, 0.15);
-  --caty-status-warning-bg: rgba(234, 88, 12, 0.15);
+  --caty-status-critical-bg: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.15));
+  --caty-status-warning-bg: var(--ds-background-warning-bold, rgba(234, 88, 12, 0.15));
   --caty-status-safe-bg: rgba(5, 150, 105, 0.15);
-  --caty-status-total-bg: rgba(37, 99, 235, 0.15);
+  --caty-status-total-bg: var(--ds-background-information, rgba(37, 99, 235, 0.15));
 }
 
 /* ==================== REDUCED MOTION ==================== */
@@ -162,13 +162,13 @@
 }
 
 @keyframes catyFabBreathe {
-  0%, 100% { box-shadow: 0 4px 24px rgba(37, 99, 235, 0.4), 0 0 60px rgba(37, 99, 235, 0.25); }
-  50% { box-shadow: 0 4px 32px rgba(37, 99, 235, 0.5), 0 0 80px rgba(37, 99, 235, 0.35); }
+  0%, 100% { box-shadow: 0 4px 24px var(--ds-background-information, rgba(37, 99, 235, 0.4)), 0 0 60px var(--ds-background-information, rgba(37, 99, 235, 0.25)); }
+  50% { box-shadow: 0 4px 32px var(--ds-background-information, rgba(37, 99, 235, 0.5)), 0 0 80px var(--ds-background-information, rgba(37, 99, 235, 0.35)); }
 }
 
 @keyframes catyStatusPulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(34, 197, 94, 0.5); }
-  50% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.8); }
+  0%, 100% { box-shadow: 0 0 8px var(--ds-background-success-bold, rgba(34, 197, 94, 0.5)); }
+  50% { box-shadow: 0 0 15px var(--ds-background-success-bold, rgba(34, 197, 94, 0.8)); }
 }
 
 /* ==================== FAB BUTTON ==================== */
@@ -192,7 +192,7 @@
 
 .caty-fab:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 32px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 6px 32px var(--ds-background-information, rgba(37, 99, 235, 0.5));
 }
 
 .caty-fab-badge {
@@ -211,14 +211,14 @@
   justify-content: center;
   padding: 0 6px;
   border: 2px solid white;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 2px 8px var(--ds-background-danger-bold, rgba(220, 38, 38, 0.4));
 }
 
 /* ==================== OVERLAY ==================== */
 .caty-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
   backdrop-filter: blur(2px);
   z-index: 999;
 }
@@ -233,7 +233,7 @@
   max-height: calc(100vh - 48px);
   background: var(--caty-surface-page);
   border-radius: var(--caty-radius-xl);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -263,7 +263,7 @@
   inset: 0;
   background: 
     radial-gradient(ellipse at 30% 0%, var(--ds-border-bold, #454545), transparent 50%),
-    radial-gradient(ellipse at 70% 100%, rgba(0,0,0,0.1), transparent 50%);
+    radial-gradient(ellipse at 70% 100%, var(--ds-shadow-raised, rgba(0,0,0,0.1)), transparent 50%);
   pointer-events: none;
 }
 
@@ -291,7 +291,7 @@
   align-items: center;
   gap: 6px;
   font-size: var(--caty-font-size-sm);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ds-surface, rgba(255, 255, 255, 0.8));
 }
 
 .caty-status-dot {
@@ -315,16 +315,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--ds-surface, rgba(255, 255, 255, 0.8));
+  background: var(--ds-surface, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--ds-surface, rgba(255, 255, 255, 0.1));
   cursor: pointer;
   transition: all var(--caty-transition-fast);
 }
 
 .caty-header-btn:hover {
   color: white;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--ds-surface, rgba(255, 255, 255, 0.2));
 }
 
 .caty-header-btn:disabled {
@@ -370,7 +370,7 @@
 }
 
 .caty-message.user .caty-message-avatar {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  background: linear-gradient(135deg, var(--ds-background-discovery-bold, #8b5cf6), var(--ds-background-discovery-bold, #7C3AED));
   color: white;
   order: 1;
 }
@@ -584,17 +584,17 @@
 
 .caty-kpi-tile.critical {
   background: var(--caty-status-critical-bg);
-  border-color: rgba(220, 38, 38, 0.2);
+  border-color: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.2));
 }
 
 .caty-kpi-tile.warning {
   background: var(--caty-status-warning-bg);
-  border-color: rgba(234, 88, 12, 0.2);
+  border-color: var(--ds-background-warning-bold, rgba(234, 88, 12, 0.2));
 }
 
 .caty-kpi-tile.total {
   background: var(--caty-status-total-bg);
-  border-color: rgba(37, 99, 235, 0.2);
+  border-color: var(--ds-background-information, rgba(37, 99, 235, 0.2));
 }
 
 .caty-kpi-icon {
@@ -675,8 +675,8 @@
 
 .caty-dept-card.critical-dept {
   background: var(--caty-status-critical-bg);
-  border-color: rgba(220, 38, 38, 0.3);
-  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.2);
+  border-color: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.3));
+  box-shadow: 0 0 0 1px var(--ds-background-danger-bold, rgba(220, 38, 38, 0.2));
 }
 
 .caty-dept-card.product { border-left-color: var(--caty-dept-product); }
@@ -781,12 +781,12 @@
 }
 
 .caty-dept-status.warning-light {
-  background: rgba(234, 88, 12, 0.1);
+  background: var(--ds-background-warning-bold, rgba(234, 88, 12, 0.1));
   color: var(--caty-status-warning);
 }
 
 .caty-dept-status.warning-medium {
-  background: rgba(234, 88, 12, 0.2);
+  background: var(--ds-background-warning-bold, rgba(234, 88, 12, 0.2));
   color: var(--caty-status-warning);
   font-weight: 600;
 }
@@ -863,11 +863,11 @@
 }
 
 .caty-resource-avatar.contract-warning {
-  background: linear-gradient(135deg, var(--caty-status-critical), #b91c1c);
+  background: linear-gradient(135deg, var(--caty-status-critical), var(--ds-text-danger, #AE2A19));
 }
 
 .caty-resource-avatar.utilization-warning {
-  background: linear-gradient(135deg, var(--caty-status-warning), #c2410c);
+  background: linear-gradient(135deg, var(--caty-status-warning), var(--ds-text-danger, #AE2A19));
 }
 
 .caty-resource-info {
@@ -1134,7 +1134,7 @@
   text-align: center;
   background: var(--caty-status-warning-bg);
   border-radius: var(--caty-radius-lg);
-  border: 1px solid rgba(234, 88, 12, 0.2);
+  border: 1px solid var(--ds-background-warning-bold, rgba(234, 88, 12, 0.2));
   margin: var(--caty-space-4);
 }
 
@@ -1235,7 +1235,7 @@
 
 .caty-enterprise-prose h2 {
   font-size: 13.5px;
-  color: #1e40af;
+  color: var(--ds-link-pressed, #1e40af);
   border-left: 3px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   padding-left: 10px;
   margin-top: 16px;
@@ -1289,7 +1289,7 @@
 /* Inline code */
 .caty-enterprise-prose code {
   background: var(--ds-surface-sunken, #f1f5f9);
-  color: #1e40af;
+  color: var(--ds-link-pressed, #1e40af);
   padding: 1px 5px;
   border-radius: 4px;
   font-size: 12px;
@@ -1307,7 +1307,7 @@
   margin: 10px 0;
   font-size: 12px;
   line-height: 1.5;
-  border: 1px solid #1e293b;
+  border: 1px solid var(--ds-text, #172B4D);
 }
 
 .caty-enterprise-prose pre code {

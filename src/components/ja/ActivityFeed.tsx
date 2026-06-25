@@ -14,7 +14,7 @@ const typeConfig: Record<ActivityType, { icon: React.ElementType; bgStyle: React
   // CLAUDE.md §11 — canonical work-item colours (§L38 hex-only).
   epic: { icon: Briefcase, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: '#904EE2' } },
   feature: { icon: GitBranch, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'var(--accent-color)' } },
-  story: { icon: BookOpen, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: '#63BA3C' } },
+  story: { icon: BookOpen, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'var(--ds-background-success-bold, #1F845A)' } },
   demand: { icon: FileText, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'var(--text-2)' } },
 };
 

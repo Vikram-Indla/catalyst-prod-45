@@ -56,9 +56,9 @@ export interface ConsumerCardProps {
 }
 
 const RISK_COLORS = {
-  safe:     { bg: '#DFFCF0', text: '#216E4E', label: 'SAFE TO REMOVE' },
-  caution:  { bg: '#FFF7D6', text: '#7F5F01', label: 'VERIFY BEFORE REMOVING' },
-  critical: { bg: '#FFEDEB', text: '#AE2A19', label: 'DO NOT REMOVE — BREAKS APP' },
+  safe:     { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'SAFE TO REMOVE' },
+  caution:  { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', label: 'VERIFY BEFORE REMOVING' },
+  critical: { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)', label: 'DO NOT REMOVE — BREAKS APP' },
 };
 
 export function ConsumerCard({ component, source, consumers, ads, risk, notes }: ConsumerCardProps) {

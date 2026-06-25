@@ -83,7 +83,7 @@ export function T10ListCardV3({
       onClick={hasCurrentWeek ? onCardClick : undefined}
       style={{
         backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: '1px solid #e2e8f0',
+        border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: '12px',
         padding: '20px 24px',
         cursor: hasCurrentWeek ? 'pointer' : 'default',
@@ -92,7 +92,7 @@ export function T10ListCardV3({
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)';
-        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
+        e.currentTarget.style.boxShadow = '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.04))';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))';
@@ -110,8 +110,8 @@ export function T10ListCardV3({
               fontWeight: 600,
               fontFamily: 'monospace',
               color: 'var(--ds-text-brand, #3b82f6)',
-              backgroundColor: 'rgba(59, 130, 246, 0.08)',
-              border: '1px solid rgba(59, 130, 246, 0.2)',
+              backgroundColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.08))',
+              border: '1px solid var(--ds-background-information-bold, rgba(59, 130, 246, 0.2))',
               borderRadius: '6px',
             }}
           >
@@ -140,7 +140,7 @@ export function T10ListCardV3({
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
               color: list.status === 'active' ? 'var(--ds-text-success, #16a34a)' : 'var(--ds-text-subtlest, #64748b)',
-              backgroundColor: list.status === 'active' ? 'rgba(22, 163, 74, 0.08)' : 'var(--ds-surface-sunken, #f1f5f9)',
+              backgroundColor: list.status === 'active' ? 'var(--ds-background-success-bold, rgba(22, 163, 74, 0.08))' : 'var(--ds-surface-sunken, #f1f5f9)',
               borderRadius: '99px',
             }}
           >
@@ -195,9 +195,9 @@ export function T10ListCardV3({
                   marginTop: '4px',
                   width: '140px',
                   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  border: '1px solid #e2e8f0',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
                   zIndex: 50,
                   padding: '4px',
                 }}
@@ -268,7 +268,7 @@ export function T10ListCardV3({
                 height: '100%',
                 width: `${progressPercent}%`,
                 background: progressPercent === 100 
-                  ? 'linear-gradient(90deg, var(--ds-text-success, #22c55e), #4ade80)' 
+                  ? 'linear-gradient(90deg, var(--ds-text-success, #22c55e), var(--ds-background-success-bold, #1F845A))' 
                   : 'linear-gradient(90deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, #60a5fa))',
                 borderRadius: '4px',
                 transition: 'width 0.3s ease',
@@ -283,7 +283,7 @@ export function T10ListCardV3({
             {slotsAvailable > 0 && totalCount > 0 && (
               <>
                 <span style={{ color: 'var(--ds-text-disabled, #cbd5e1)' }}>·</span>
-                <span style={{ color: '#0d9488', fontWeight: 500 }}>{slotsAvailable} slots available</span>
+                <span style={{ color: 'var(--ds-icon-information, #1D7AFC)', fontWeight: 500 }}>{slotsAvailable} slots available</span>
               </>
             )}
           </div>
@@ -377,7 +377,7 @@ export function T10ListCardV3({
                 fontSize: '11px',
                 fontWeight: 600,
                 color: 'var(--ds-text-brand, #3b82f6)',
-                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                backgroundColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.08))',
                 borderRadius: '4px',
               }}
             >
@@ -390,7 +390,7 @@ export function T10ListCardV3({
               style={{
                 marginLeft: '8px',
                 paddingLeft: '12px',
-                borderLeft: '2px solid #3b82f6',
+                borderLeft: '2px solid var(--ds-background-information-bold, #3b82f6)',
                 marginTop: '4px',
               }}
             >

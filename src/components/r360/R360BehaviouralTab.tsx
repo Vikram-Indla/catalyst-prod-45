@@ -12,7 +12,7 @@ const WORK_DAYS = [0, 1, 2, 3, 4]; // Sun=0..Thu=4
 const DAY_ABBRS = ['Su', 'Mo', 'Tu', 'We', 'Th'];
 
 const HUB_COLORS: Record<string, string> = {
-  BAU: 'var(--cp-teal-60, #0D9488)', bau: 'var(--cp-teal-60, #0D9488)', incident: DANGER, Product: '#3F3F46', Task: '#D4D4D8',
+  BAU: 'var(--cp-teal-60, #0D9488)', bau: 'var(--cp-teal-60, #0D9488)', incident: DANGER, Product: 'var(--ds-text-subtle, #44546F)', Task: 'var(--ds-border, #DFE1E6)',
 };
 
 interface BehaviouralTabProps {
@@ -120,7 +120,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
               const isPeak = val === rhythmData.max && val > 0;
               return (
                 <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: 'var(--cp-font-mono)', color: isPeak ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : '#374151' }}>{val}</span>
+                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: 'var(--cp-font-mono)', color: isPeak ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--ds-text-subtle, #44546F)' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 4,
                     backgroundColor: isPeak ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--cp-blue)',
@@ -154,7 +154,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
                 border: '1px solid var(--divider)', borderRadius: 8, padding: '12px 14px', background: 'var(--bg-app)',
                 cursor: tile.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
-              onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
             >
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
@@ -183,7 +183,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
                 borderBottom: i < arr.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 cursor: row.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
-              onMouseEnter={e => { if (row.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseEnter={e => { if (row.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { if (row.onClick) e.currentTarget.style.background = 'transparent'; }}
             >
               <span style={{ fontSize: 12, color: INK2 }}>{row.label}</span>

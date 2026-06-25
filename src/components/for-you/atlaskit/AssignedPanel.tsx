@@ -79,7 +79,7 @@ export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect
   }, [items, showDone]);
 
   if (isLoading) {
-    return <div style={{ padding: 24, color: token('color.text.subtle', '#626F86') }}>Loading…</div>;
+    return <div style={{ padding: 24, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>Loading…</div>;
   }
 
   if (items.length === 0 && !isRefreshing) {
@@ -97,7 +97,7 @@ export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '8px 16px',
-          color: token('color.text.subtlest', '#626F86'),
+          color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
           fontSize: 12,
         }}>
           <Spinner size="small" /> Refreshing…
@@ -124,7 +124,7 @@ export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect
             margin: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
             background: 'transparent', border: 'none',
             font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text.subtlest', '#626F86'),
+            color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
             cursor: 'pointer', padding: `${token('space.050', '4px')} 0`,
             textDecoration: 'underline', textDecorationColor: 'transparent',
             transition: 'color 150ms, text-decoration-color 150ms',
@@ -136,7 +136,7 @@ export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect
           }}
           onMouseLeave={e => {
             const b = e.currentTarget;
-            b.style.color = token('color.text.subtlest', '#626F86');
+            b.style.color = token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)');
             b.style.textDecorationColor = 'transparent';
           }}
         >
@@ -162,7 +162,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
       </span>
       <span style={{
         font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: token('color.text.subtlest', '#626F86'),
+        color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
       }}>
         {count}
       </span>

@@ -53,14 +53,14 @@ export function SchedulingRules() {
       <span style={{
         width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-app, #fff)', position: 'absolute',
         top: 2, left: checked ? 18 : 2, transition: 'left .2s',
-        boxShadow: '0 1px 3px rgba(0,0,0,.2)',
+        boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.2))',
       }} />
     </button>
   )
 
   const cardStyle: React.CSSProperties = {
     background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8,
-    padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
+    padding: 20, marginBottom: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
   }
 
   const priorities = [
@@ -87,7 +87,7 @@ export function SchedulingRules() {
             Date Precedence
           </h2>
           <span style={{
-            fontSize: 9, background: '#ECFDF5', color: '#10B981', padding: '2px 8px',
+            fontSize: 9, background: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-background-success-bold, #1F845A)', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Priority Chain</span>
         </div>
@@ -110,7 +110,7 @@ export function SchedulingRules() {
         ))}
 
         <div style={{
-          background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: 8,
           padding: '10px 14px', marginTop: 14, display: 'flex', gap: 8, alignItems: 'flex-start',
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>
@@ -151,25 +151,25 @@ export function SchedulingRules() {
             Version Name Parser
           </h2>
           <span style={{
-            fontSize: 9, background: '#FFFBEB', color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', padding: '2px 8px',
+            fontSize: 9, background: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Fallback</span>
         </div>
 
         <div style={{
-          background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: 8,
+          background: 'var(--ds-background-warning, #FFF7D6)', border: '1px solid var(--ds-background-warning, #FFF7D6)', borderRadius: 8,
           padding: '12px 14px', marginBottom: 14,
         }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
             <span style={{ fontSize: 14 }}>⚠</span>
             <div>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#92400E', margin: '0 0 6px' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-warning, #974F0C)', margin: '0 0 6px' }}>
                 Version Name Parsing
               </p>
-              <p style={{ fontSize: 11, color: '#92400E', margin: 0, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 11, color: 'var(--ds-text-warning, #974F0C)', margin: 0, lineHeight: 1.6 }}>
                 When a Sprint/Iteration has no releaseDate, Catalyst attempts to extract a date from the version name:
               </p>
-              <div style={{ marginTop: 8, fontSize: 11, color: '#92400E', lineHeight: 2 }}>
+              <div style={{ marginTop: 8, fontSize: 11, color: 'var(--ds-text-warning, #974F0C)', lineHeight: 2 }}>
                 <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
                 {' → 2026-02-28  '}
                 <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>

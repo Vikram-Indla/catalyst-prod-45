@@ -302,7 +302,7 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
         ref={ref}
         className={cn(
           'flex gap-3 py-3',
-          isHighlighted && 'bg-[#DEEBFF]/30 dark:bg-[#1C3A5C]/20 -mx-3 px-3 rounded',
+          isHighlighted && 'bg-[var(--ds-background-information, #E9F2FF)]/30 dark:bg-[#1C3A5C]/20 -mx-3 px-3 rounded',
           className
         )}
       >

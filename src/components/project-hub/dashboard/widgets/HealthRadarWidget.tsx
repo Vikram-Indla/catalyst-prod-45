@@ -14,15 +14,15 @@ import { LABEL, BODY, STRONG, SMALL } from '../dashboardTypography';
 const HEALTH_BADGE: Record<string, { bg: string; text: string }> = {
   Overdue: {
     bg: 'var(--ds-background-accent-red-bolder, #C9372C)',
-    text: '#FFFFFF',
+    text: 'var(--ds-surface, #FFFFFF)',
   },
   'At Risk': {
     bg: 'var(--ds-background-accent-orange-bolder, #C25100)',
-    text: '#FFFFFF',
+    text: 'var(--ds-surface, #FFFFFF)',
   },
   Healthy: {
     bg: 'var(--ds-background-accent-green-bolder, #1F845A)',
-    text: '#FFFFFF',
+    text: 'var(--ds-surface, #FFFFFF)',
   },
   Uncommitted: {
     bg: 'var(--ds-background-neutral, #F1F2F4)',

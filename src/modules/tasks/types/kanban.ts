@@ -71,31 +71,31 @@ export const CATALYST_COLORS = {
   primaryHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   primaryLight: 'var(--ds-background-selected, #eff6ff)',
   
-  teal: '#0d9488',
-  tealLight: '#f0fdfa',
+  teal: 'var(--ds-chart-teal-bold, #0d9488)',
+  tealLight: 'var(--ds-background-success, #DFFCF0)',
   
   warning: 'var(--ds-text-warning, #d97706)',
-  warningLight: '#fffbeb',
+  warningLight: 'var(--ds-background-warning, #FFF7D6)',
   
   danger: 'var(--ds-text-danger, #ef4444)',
   dangerLight: 'var(--ds-background-danger, #fef2f2)',
   
-  success: '#10b981',
-  successLight: '#ecfdf5',
+  success: 'var(--ds-background-success-bold, #059669)',
+  successLight: 'var(--ds-background-success, #DFFCF0)',
   
-  purple: '#8b5cf6',
-  purpleLight: '#f5f3ff',
+  purple: 'var(--ds-background-discovery-bold, #8b5cf6)',
+  purpleLight: 'var(--ds-background-discovery, #F3F0FF)',
   
-  gray50: '#f9fafb',
-  gray100: '#f3f4f6',
+  gray50: 'var(--ds-surface-sunken, #F7F8F9)',
+  gray100: 'var(--ds-background-neutral-subtle, #F7F8F9)',
   gray200: 'var(--ds-border, #e5e7eb)',
-  gray300: '#d1d5db',
-  gray400: '#9ca3af',
-  gray500: '#6b7280',
-  gray600: '#4b5563',
-  gray700: '#374151',
-  gray800: '#1f2937',
-  gray900: '#111827',
+  gray300: 'var(--ds-border, #DFE1E6)',
+  gray400: 'var(--ds-text-disabled, #8590A2)',
+  gray500: 'var(--ds-text-subtlest, #626F86)',
+  gray600: 'var(--ds-text-subtlest, #626F86)',
+  gray700: 'var(--ds-text-subtle, #44546F)',
+  gray800: 'var(--ds-text, #172B4D)',
+  gray900: 'var(--ds-text, #172B4D)',
 } as const;
 
 // Status color mapping by slug - Catalyst V5 semantic colors

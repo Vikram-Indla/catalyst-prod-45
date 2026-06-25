@@ -178,7 +178,7 @@ export function CreateTaskModal({
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: 'rgba(15, 23, 42, 0.6)',
+              backgroundColor: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.6))',
               backdropFilter: 'blur(4px)',
               zIndex: 99998,
             }}
@@ -208,7 +208,7 @@ export function CreateTaskModal({
                 maxHeight: '90vh',
                 backgroundColor: COLORS.surfaceCard,
                 borderRadius: '16px',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+                boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4))',
                 overflow: 'hidden',
                 position: 'relative',
                 display: 'flex',
@@ -365,7 +365,7 @@ export function CreateTaskModal({
                     }}
                     onFocus={(e) => {
                       e.currentTarget.style.borderColor = COLORS.borderFocus;
-                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.15)';
+                      e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))';
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor = errors.title ? 'var(--ds-text-danger, #ef4444)' : COLORS.borderDefault;
@@ -409,7 +409,7 @@ export function CreateTaskModal({
                     }}
                     onFocus={(e) => {
                       e.currentTarget.style.borderColor = COLORS.borderFocus;
-                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.15)';
+                      e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))';
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor = COLORS.borderDefault;
@@ -513,19 +513,19 @@ export function CreateTaskModal({
                     borderRadius: '12px',
                     cursor: (isPending || !title.trim()) ? 'not-allowed' : 'pointer',
                     opacity: (isPending || !title.trim()) ? 0.5 : 1,
-                    boxShadow: (isPending || !title.trim()) ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)',
+                    boxShadow: (isPending || !title.trim()) ? 'none' : '0 4px 12px var(--ds-background-information, rgba(37, 99, 235, 0.3))',
                     transition: 'all 0.15s',
                     fontFamily: 'inherit',
                   }}
                   onMouseEnter={(e) => {
                     if (!isPending && title.trim()) {
                       e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold-hovered, #1d4ed8)';
-                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 99, 235, 0.4)';
+                      e.currentTarget.style.boxShadow = '0 6px 16px var(--ds-background-information, rgba(37, 99, 235, 0.4))';
                     }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = COLORS.accent;
-                    e.currentTarget.style.boxShadow = (isPending || !title.trim()) ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)';
+                    e.currentTarget.style.boxShadow = (isPending || !title.trim()) ? 'none' : '0 4px 12px var(--ds-background-information, rgba(37, 99, 235, 0.3))';
                   }}
                 >
                   {isPending ? (
@@ -609,7 +609,7 @@ function PriorityDropdown({ value, onChange }: PriorityDropdownProps) {
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none'
         }}
       >
         <ColorDot color={currentColor} size={10} />
@@ -629,7 +629,7 @@ function PriorityDropdown({ value, onChange }: PriorityDropdownProps) {
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
             zIndex: 100001,
             padding: '6px',
             maxHeight: '280px',
@@ -707,7 +707,7 @@ function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamD
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none'
         }}
       >
         {selectedWorkstream && <ColorDot color={displayColor} size={10} />}
@@ -729,7 +729,7 @@ function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamD
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
             zIndex: 100001,
             padding: '6px',
             maxHeight: '280px',
@@ -786,7 +786,7 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
   const displayInitials = selectedUser?.initials || (selectedUser ? selectedUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '?');
   
   const getColorFromName = (name: string): string => {
-    const colors = ['var(--ds-text-brand, #3b82f6)', '#8b5cf6', '#ec4899', '#14b8a6', 'var(--ds-text-warning, #f59e0b)', '#6366f1'];
+    const colors = ['var(--ds-text-brand, #3b82f6)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-warning, #f59e0b)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -827,7 +827,7 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none'
         }}
       >
         {selectedUser && <Avatar initials={displayInitials} color={displayColor} size="sm" />}
@@ -847,7 +847,7 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
             zIndex: 100001,
             padding: '6px',
             maxHeight: '320px',
@@ -1048,7 +1048,7 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange, 
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none'
         }}
       >
         <Calendar size={18} style={{ color: COLORS.textLight, flexShrink: 0 }} />
@@ -1074,7 +1074,7 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange, 
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.25)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25))',
             zIndex: 100001,
             padding: '16px',
             width: '300px'

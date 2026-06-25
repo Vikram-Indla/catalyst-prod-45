@@ -188,7 +188,7 @@ function LinkAsSplitButton({
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          color: open ? "#0052CC" : "var(--ds-text-subtlest, #6B778C)",
+          color: open ? "var(--ds-link, #0052CC)" : "var(--ds-text-subtlest, #6B778C)",
           padding: 0,
           borderTopRightRadius: 3,
           borderBottomRightRadius: 3,
@@ -207,7 +207,7 @@ function LinkAsSplitButton({
             border:
               "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
             borderRadius: 4,
-            boxShadow: "0 4px 8px rgba(9,30,66,.25)",
+            boxShadow: "0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,.25))",
             zIndex: 70,
             maxHeight: 320,
             overflowY: "auto",
@@ -808,7 +808,7 @@ export function AiLinkSimilarPanel({
                     padding: 2,
                     color:
                       feedback === "down"
-                        ? "#FF5630"
+                        ? "var(--ds-background-danger-bold, #C9372C)"
                         : "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                   }}
                   title="Not helpful"

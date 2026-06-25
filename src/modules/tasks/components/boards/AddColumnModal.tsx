@@ -29,23 +29,23 @@ interface AddColumnModalProps {
 // Do NOT use var(--ds-*) token strings here: they exceed 7 chars and overflow
 // the column. The swatch renders identically via backgroundColor.
 const STATUS_COLORS = [
-  { name: 'Slate', value: '#94a3b8' },
-  { name: 'Blue', value: '#3b82f6' },
-  { name: 'Teal', value: '#14b8a6' },
-  { name: 'Green', value: '#22c55e' },
-  { name: 'Yellow', value: '#eab308' },
-  { name: 'Orange', value: '#f97316' },
-  { name: 'Red', value: '#ef4444' },
-  { name: 'Purple', value: '#8b5cf6' },
-  { name: 'Pink', value: '#ec4899' },
-  { name: 'Cyan', value: '#06b6d4' },
-  { name: 'Amber', value: '#f59e0b' },
-  { name: 'Emerald', value: '#10b981' },
+  { name: 'Slate', value: 'var(--ds-text-disabled, #8590A2)' },
+  { name: 'Blue', value: 'var(--ds-background-information-bold, #3b82f6)' },
+  { name: 'Teal', value: 'var(--ds-icon-information, #1D7AFC)' },
+  { name: 'Green', value: 'var(--ds-background-success-bold, #1F845A)' },
+  { name: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
+  { name: 'Orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
+  { name: 'Red', value: 'var(--ds-background-danger-bold, #ef4444)' },
+  { name: 'Purple', value: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder, #BE185D)' },
+  { name: 'Cyan', value: 'var(--ds-icon-information, #1D7AFC)' },
+  { name: 'Amber', value: 'var(--ds-background-warning-bold, #f59e0b)' },
+  { name: 'Emerald', value: 'var(--ds-background-success-bold, #1F845A)' },
 ];
 
 export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
   const [name, setName] = useState('');
-  const [color, setColor] = useState('#94a3b8');
+  const [color, setColor] = useState('var(--ds-text-disabled, #8590A2)');
   
   const createColumn = useCreateColumn();
 
@@ -57,7 +57,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
     try {
       await createColumn.mutateAsync({ name: name.trim(), color });
       setName('');
-      setColor('#94a3b8');
+      setColor('var(--ds-text-disabled, #8590A2)');
       onOpenChange(false);
     } catch {
       // Error handled in hook
@@ -66,7 +66,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
 
   const handleClose = () => {
     setName('');
-    setColor('#94a3b8');
+    setColor('var(--ds-text-disabled, #8590A2)');
     onOpenChange(false);
   };
 

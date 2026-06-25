@@ -309,7 +309,7 @@ export const TaskBoardModal: React.FC<TaskBoardModalProps> = ({
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.6)',
+          backgroundColor: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.6))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -329,7 +329,7 @@ export const TaskBoardModal: React.FC<TaskBoardModalProps> = ({
             maxHeight: '92vh',
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+            boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4))',
             overflow: 'hidden'
           }}
         >

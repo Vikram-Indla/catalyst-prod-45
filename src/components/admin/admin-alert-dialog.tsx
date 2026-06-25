@@ -90,7 +90,7 @@ export function AlertDialogDescription({ children }: { children?: React.ReactNod
         margin: '4px 0 0',
         fontSize: 14,
         lineHeight: '20px',
-        color: token('color.text.subtle', '#626F86'),
+        color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
       }}
     >
       {children}
@@ -176,7 +176,7 @@ export function AdminAlertDialog({
               margin: '4px 0 0',
               fontSize: 14,
               lineHeight: '20px',
-              color: token('color.text.subtle', '#626F86'),
+              color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
             }}
           >
             {description}

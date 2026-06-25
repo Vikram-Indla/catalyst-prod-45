@@ -6,21 +6,21 @@
 .strategy-room {
   /* ── Surfaces ── */
   --catalyst-bg-app: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
-  --catalyst-bg-surface-0: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --catalyst-bg-surface-0: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --catalyst-bg-surface-1: var(--ds-surface-sunken, #F8FAFC);
   --catalyst-bg-surface-2: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   --catalyst-bg-surface-3: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
-  --catalyst-bg-hover: rgba(0,0,0,0.04);
-  --catalyst-bg-active: rgba(0,0,0,0.06);
+  --catalyst-bg-hover: var(--ds-shadow-raised, rgba(0,0,0,0.04));
+  --catalyst-bg-active: var(--ds-shadow-raised, rgba(0,0,0,0.06));
   --catalyst-bg-selected: var(--ds-background-selected, #EFF6FF);
 
   /* ── Text ── */
   --catalyst-text-primary: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
-  --catalyst-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));  /* slate-700, contrast 8.6:1 — passes AAA */
+  --catalyst-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));  /* slate-700, contrast 8.6:1 — passes AAA */
   --catalyst-text-tertiary: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));   /* slate-500, contrast 5.6:1 — passes AA */
-  --catalyst-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --catalyst-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   --catalyst-text-link: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --catalyst-text-on-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --catalyst-text-on-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 
   /* ── Borders ── */
   --catalyst-border-default: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
@@ -32,29 +32,29 @@
   --catalyst-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --catalyst-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --catalyst-primary-bg: var(--ds-background-selected, #EFF6FF);
-  --catalyst-success: var(--cp-teal-60, #0D9488);
-  --catalyst-success-bg: #F0FDFA;
+  --catalyst-success: var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488));
+  --catalyst-success-bg: var(--ds-background-success, #DFFCF0);
   --catalyst-warning: var(--ds-text-warning, var(--cp-warning, #D97706));
-  --catalyst-warning-bg: #FFFBEB;
+  --catalyst-warning-bg: var(--ds-background-warning, #FFF7D6);
   --catalyst-danger: var(--ds-text-danger, #EF4444);
   --catalyst-danger-bg: var(--ds-background-danger, #FEF2F2);
-  --catalyst-ai-purple: var(--cp-purple-60, #7C3AED);
-  --catalyst-ai-purple-bg: #F5F3FF;
+  --catalyst-ai-purple: var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED));
+  --catalyst-ai-purple-bg: var(--ds-background-discovery, #F3F0FF);
 
   /* ── Theme Colors (Strategic Themes) ── */
   --theme-digital: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --theme-workforce: var(--cp-teal-60, #0D9488);
+  --theme-workforce: var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488));
   --theme-supply-chain: var(--ds-text-warning, var(--cp-warning, #D97706));
   --theme-esg: var(--ds-text-success, var(--cp-success, #16A34A));
 
   /* ── Workstream Colors ── */
-  --catalyst-ws-senaie: #06B6D4;
-  --catalyst-ws-catalyst: #8B5CF6;
-  --catalyst-ws-tahommona: #6366F1;
-  --catalyst-ws-delivery: #F97316;
-  --catalyst-ws-mim: #EC4899;
-  --catalyst-ws-standalone: #84CC16;
-  --catalyst-ws-dataai: #14B8A6;
+  --catalyst-ws-senaie: var(--ds-icon-information, #1D7AFC);
+  --catalyst-ws-catalyst: var(--ds-background-discovery-bold, #8b5cf6);
+  --catalyst-ws-tahommona: var(--ds-background-discovery-bold, #6366f1);
+  --catalyst-ws-delivery: var(--ds-background-warning-bold, #f97316);
+  --catalyst-ws-mim: var(--ds-background-accent-magenta-bolder, #ec4899);
+  --catalyst-ws-standalone: var(--ds-background-success-bold, #1F845A);
+  --catalyst-ws-dataai: var(--ds-background-accent-teal-bolder, #14b8a6);
 
   /* ── Radius ── */
   --catalyst-radius-xs: 2px;
@@ -66,9 +66,9 @@
   --catalyst-radius-full: 9999px;
 
   /* ── Shadows ── */
-  --catalyst-shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-  --catalyst-shadow-dropdown: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-  --catalyst-shadow-modal: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+  --catalyst-shadow-card: 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.04));
+  --catalyst-shadow-dropdown: 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 2px 4px var(--ds-shadow-raised, rgba(0,0,0,0.04));
+  --catalyst-shadow-modal: 0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.06));
 
   /* ── Typography ── */
   --catalyst-font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -97,21 +97,21 @@
 
 /* ── DARK MODE — Dark mode overrides ── */
 .dark .strategy-room , [data-theme="dark"] .strategy-room {
-  --catalyst-bg-app: var(--cp-bg-page, #1F1F21);
-  --catalyst-bg-surface-0: var(--cp-bg-page, #1F1F21);
-  --catalyst-bg-surface-1: var(--cp-bg-page, #1F1F21);
-  --catalyst-bg-surface-2: var(--cp-bg-page, #1F1F21);
+  --catalyst-bg-app: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
+  --catalyst-bg-surface-0: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
+  --catalyst-bg-surface-1: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
+  --catalyst-bg-surface-2: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
   --catalyst-bg-surface-3: var(--ds-border, var(--cp-ink-1, #292929));
   --catalyst-bg-hover: var(--ds-surface-overlay, #1F1F1F);
   --catalyst-bg-active: var(--ds-border, var(--cp-ink-1, #292929));
-  --catalyst-bg-selected: rgba(59,130,246,0.08);
+  --catalyst-bg-selected: var(--ds-background-information-bold, rgba(59,130,246,0.08));
 
   --catalyst-text-primary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --catalyst-text-secondary: var(--ds-text-subtlest, #A1A1A1);
   --catalyst-text-tertiary: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
-  --catalyst-text-inverse: var(--cp-bg-page, #1F1F21);
-  --catalyst-text-link: #7DB8FC;
-  --catalyst-text-on-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --catalyst-text-inverse: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
+  --catalyst-text-link: var(--ds-background-information-bold, #0C66E4);
+  --catalyst-text-on-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 
   --catalyst-border-default: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --catalyst-border-strong: var(--ds-border-bold, #454545);
@@ -120,33 +120,33 @@
 
   --catalyst-primary: var(--ds-text-brand, #3B82F6);
   --catalyst-primary-hover: var(--ds-text-brand, #60A5FA);
-  --catalyst-primary-bg: rgba(59,130,246,0.08);
-  --catalyst-success: #4ADE80;
-  --catalyst-success-bg: rgba(74,222,128,0.08);
-  --catalyst-warning: #FBBF24;
-  --catalyst-warning-bg: rgba(251,191,36,0.08);
+  --catalyst-primary-bg: var(--ds-background-information-bold, rgba(59,130,246,0.08));
+  --catalyst-success: var(--ds-background-success, #DFFCF0);
+  --catalyst-success-bg: var(--ds-background-success-bold, rgba(74,222,128,0.08));
+  --catalyst-warning: var(--ds-background-warning-bold, #E2B203);
+  --catalyst-warning-bg: var(--ds-background-warning-bold, rgba(251,191,36,0.08));
   --catalyst-danger: var(--ds-border-danger, #FCA5A5);
-  --catalyst-danger-bg: rgba(239,68,68,0.10);
-  --catalyst-ai-purple: #A78BFA;
-  --catalyst-ai-purple-bg: rgba(167,139,250,0.08);
+  --catalyst-danger-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
+  --catalyst-ai-purple: var(--ds-background-discovery, #F3F0FF);
+  --catalyst-ai-purple-bg: var(--ds-background-discovery-bold, rgba(167,139,250,0.08));
 
   --theme-digital: var(--ds-text-brand, #60A5FA);
-  --theme-workforce: #5EEAD4;
-  --theme-supply-chain: #FBBF24;
-  --theme-esg: #4ADE80;
+  --theme-workforce: var(--ds-background-success, #DCFFF1);
+  --theme-supply-chain: var(--ds-background-warning-bold, #E2B203);
+  --theme-esg: var(--ds-background-success, #DFFCF0);
 
   --catalyst-shadow-card: none;
-  --catalyst-shadow-dropdown: 0 4px 12px rgba(0,0,0,0.3);
-  --catalyst-shadow-modal: 0 12px 40px rgba(0,0,0,0.4);
+  --catalyst-shadow-dropdown: 0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.3));
+  --catalyst-shadow-modal: 0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.4));
 
   /* Workstream colors — lightened for dark bg contrast */
-  --catalyst-ws-senaie: #22D3EE;
-  --catalyst-ws-catalyst: #A78BFA;
-  --catalyst-ws-tahommona: #818CF8;
-  --catalyst-ws-delivery: #FB923C;
-  --catalyst-ws-mim: #F472B6;
+  --catalyst-ws-senaie: var(--ds-icon-information, #1D7AFC);
+  --catalyst-ws-catalyst: var(--ds-background-discovery, #F3F0FF);
+  --catalyst-ws-tahommona: var(--ds-background-discovery, #F3F0FF);
+  --catalyst-ws-delivery: var(--ds-background-warning-bold, #E2B203);
+  --catalyst-ws-mim: var(--ds-background-accent-magenta-subtle, #FCE7F3);
   --catalyst-ws-standalone: #A3E635;
-  --catalyst-ws-dataai: #2DD4BF;
+  --catalyst-ws-dataai: var(--ds-background-success, #DCFFF1);
 }
 
 /* ── Density: Compact ── */

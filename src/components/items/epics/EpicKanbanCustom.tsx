@@ -44,7 +44,7 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
   const queryClient = useQueryClient();
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [newColumnLabel, setNewColumnLabel] = useState('');
-  const [newColumnColor, setNewColumnColor] = useState('#6B7280');
+  const [newColumnColor, setNewColumnColor] = useState('var(--ds-text-subtlest, #626F86)');
 
   // Fetch user's custom columns
   const { data: customColumns = [], isLoading: isLoadingColumns } = useQuery({
@@ -71,7 +71,7 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
         { id: 'new', column_id: 'new', label: 'New', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', wip_limit: null },
         { id: 'in_progress', column_id: 'in_progress', label: 'In Progress', color: 'var(--ds-text-brand, #3B82F6)', wip_limit: null },
         { id: 'review', column_id: 'review', label: 'Review', color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', wip_limit: null },
-        { id: 'completed', column_id: 'completed', label: 'Completed', color: '#10B981', wip_limit: null },
+        { id: 'completed', column_id: 'completed', label: 'Completed', color: 'var(--ds-background-success-bold, #059669)', wip_limit: null },
       ];
 
   const columnEpics: Record<string, Epic[]> = {};
@@ -97,7 +97,7 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-custom-columns'] });
       setNewColumnLabel('');
-      setNewColumnColor('#6B7280');
+      setNewColumnColor('var(--ds-text-subtlest, #626F86)');
       catalystToast.success('Column added');
     },
     onError: () => catalystToast.error('Failed to add column'),

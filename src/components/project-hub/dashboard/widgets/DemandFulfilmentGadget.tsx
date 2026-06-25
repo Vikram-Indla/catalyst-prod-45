@@ -152,10 +152,10 @@ const workingDaysBetween = (target: Date, today: Date): number => {
 type RagState = 'overdue' | 'risk' | 'ontrack' | 'none';
 
 const ragColors: Record<RagState, { dot: string; bg: string; fg: string; border: string; bar: string }> = {
-  overdue: { dot: '#FF5630', bg: 'var(--ds-background-danger, #FFECEB)', fg: '#AE2A19', border: '#FFB8AC', bar: '#FF5630' },
-  risk:    { dot: '#FFAB00', bg: '#FFF7D6', fg: 'var(--ds-text-accent-yellow, #7F5F01)', border: '#F5CD47', bar: '#FFAB00' },
-  ontrack: { dot: '#36B37E', bg: '#DCFFF1', fg: 'var(--ds-text-accent-green, #216E4E)', border: '#4BCE97', bar: '#36B37E' },
-  none:    { dot: '#97A0AF', bg: 'var(--ds-surface-sunken, #F4F5F7)', fg: 'var(--ds-text-subtlest, #6B778C)', border: 'var(--ds-border, #DFE1E6)', bar: '#97A0AF' },
+  overdue: { dot: 'var(--ds-background-danger-bold, #C9372C)', bg: 'var(--ds-background-danger, #FFECEB)', fg: 'var(--ds-text-danger, #AE2A19)', border: '#FFB8AC', bar: 'var(--ds-background-danger-bold, #C9372C)' },
+  risk:    { dot: 'var(--ds-background-warning-bold, #E2B203)', bg: 'var(--ds-background-warning, #FFF7D6)', fg: 'var(--ds-text-accent-yellow, #7F5F01)', border: 'var(--ds-background-warning-bold, #E2B203)', bar: 'var(--ds-background-warning-bold, #E2B203)' },
+  ontrack: { dot: 'var(--ds-background-success-bold, #1F845A)', bg: 'var(--ds-background-success, #DFFCF0)', fg: 'var(--ds-text-accent-green, #216E4E)', border: 'var(--ds-background-success-bold, #1F845A)', bar: 'var(--ds-background-success-bold, #1F845A)' },
+  none:    { dot: 'var(--ds-text-disabled, #8590A2)', bg: 'var(--ds-surface-sunken, #F4F5F7)', fg: 'var(--ds-text-subtlest, #6B778C)', border: 'var(--ds-border, #DFE1E6)', bar: 'var(--ds-text-disabled, #8590A2)' },
 };
 
 const computeRag = (targetDate: string | null, threshold: number): { state: RagState; daysLeft: number | null } => {
@@ -758,7 +758,7 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
         style={{
           /* 2026-06-09 Vikram parity — match Summary cell styling: 14/400. */
           ...BODY,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
         }}
         title="No target date set"
       >
@@ -872,7 +872,7 @@ function SettingsPopupBody({
   };
   const subLabelStyle = {
     ...LABEL,
-    color: token('color.text.subtle', '#6B778C'),
+    color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
     marginBottom: 2,
   };
 
@@ -880,7 +880,7 @@ function SettingsPopupBody({
     <div style={{ width: 300, padding: 12 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{ font: token('font.heading.small'), color: token('color.text', '#292A2E') }}>
+        <span style={{ font: token('font.heading.small'), color: token('color.text', 'var(--ds-text, #172B4D)') }}>
           Gadget Settings
         </span>
         <IconButton
@@ -948,7 +948,7 @@ function SettingsPopupBody({
         </div>
       )}
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DFE1E6')}` }} />
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` }} />
 
       {/* Threshold */}
       <div style={sectionHeadingStyle}>
@@ -967,7 +967,7 @@ function SettingsPopupBody({
         <span>or fewer days remain</span>
       </div>
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DFE1E6')}` }} />
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` }} />
 
       {/* Item types */}
       <div style={sectionHeadingStyle}>
@@ -984,7 +984,7 @@ function SettingsPopupBody({
         label="Defects / Bugs"
       />
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }} />
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }} />
 
       {/* Filter by status — grouped by status_category */}
       <div style={sectionHeadingStyle}>Filter by status</div>
@@ -1092,7 +1092,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         minWidth: 0,
       }}
     >
@@ -1111,7 +1111,7 @@ function KpiCell({
       <span
         style={{
           ...H_NUM,
-          color: accent ?? token('color.text', '#292A2E'),
+          color: accent ?? token('color.text', 'var(--ds-text, #172B4D)'),
         }}
       >
         {value}
@@ -1153,7 +1153,7 @@ function DemandRowItem({
       return next;
     });
   return (
-    <div style={{ borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
+    <div style={{ borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` }}>
       <div
         onClick={onToggle}
         style={{
@@ -1170,7 +1170,7 @@ function DemandRowItem({
           transition: 'background 120ms',
           cursor: 'pointer',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'))}
+        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
         {/* Chevron */}
@@ -1184,7 +1184,7 @@ function DemandRowItem({
             transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
           }}
         >
-          <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
+          <ChevronRightIcon label="" color={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} LEGACY_size="small" />
         </span>
 
         {/* Type icon — Epic icon for unlinked epics, Request/default for MDTs */}
@@ -1205,7 +1205,7 @@ function DemandRowItem({
                  14/400/color.link, NOT mono, NOT STRONG. Probe side-by-side
                  confirmed Catalyst was rendering 14/600/mono vs Jira 14/400/sans. */
               ...BODY,
-              color: token('color.link', '#0C66E4'),
+              color: token('color.link', 'var(--ds-link, #0C66E4)'),
               textDecoration: 'none',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -1229,7 +1229,7 @@ function DemandRowItem({
           style={{
             ...BODY,
             fontFamily: ATLAS_SANS,
-            color: token('color.link', '#0C66E4'),
+            color: token('color.link', 'var(--ds-link, #0C66E4)'),
             textDecoration: 'none',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -1249,7 +1249,7 @@ function DemandRowItem({
 
         {/* Progress + stat — inline (bar left, text right). Apr 26, 2026:
             bar 6→10px height, fill colours via Atlaskit canonical bolder
-            tokens (was bespoke #1F845A / #0C66E4 hex), text 12→13px
+            tokens (was bespoke var(--ds-background-success-bold, #1F845A) / var(--ds-link, #0C66E4) hex), text 12→13px
             tabular-nums for column-edge alignment. */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div
@@ -1258,7 +1258,7 @@ function DemandRowItem({
               height: 10,
               flexShrink: 0,
               borderRadius: 5,
-              background: token('color.background.neutral', '#F1F2F4'),
+              background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
               overflow: 'hidden',
             }}
           >
@@ -1285,7 +1285,7 @@ function DemandRowItem({
               color:
                 pct === 100
                   ? 'var(--ds-text-accent-green-bolder, #216E4E)'
-                  : token('color.text.subtle', '#44546F'),
+                  : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
               whiteSpace: 'nowrap',
             }}
           >
@@ -1307,8 +1307,8 @@ function DemandRowItem({
             gap: 8,
             fontFamily: ATLAS_SANS,
             color: row.assignee_name && row.assignee_name !== '—'
-              ? token('color.text', '#172B4D')
-              : token('color.text.subtle', '#44546F'),
+              ? token('color.text', 'var(--ds-text, #172B4D)')
+              : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             fontSize: 14,
             fontWeight: 400,
             whiteSpace: 'nowrap',
@@ -1338,8 +1338,8 @@ function DemandRowItem({
       {expanded && (
         <div
           style={{
-            background: token('elevation.surface', '#FFFFFF'),
-            borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+            borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
             paddingTop: 4,
             paddingBottom: 6,
           }}
@@ -1349,7 +1349,7 @@ function DemandRowItem({
               style={{
                 ...SMALL,
                 fontFamily: ATLAS_SANS,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                 fontStyle: 'italic',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1357,7 +1357,7 @@ function DemandRowItem({
                 padding: '6px 16px 6px 28px',
               }}
             >
-              <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
+              <InformationIcon label="" color={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} LEGACY_size="small" />
               {isUnlinkedEpic
                 ? 'No stories under this epic yet.'
                 : 'No stories linked. Add stories under the epics in this demand to track progress.'}
@@ -1382,9 +1382,9 @@ function DemandRowItem({
                     gap: 12,
                     padding: '10px 24px 10px 28px',
                     minHeight: 40,
-                    borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
-                    borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
-                    background: token('elevation.surface', '#FFFFFF'),
+                    borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                    borderLeft: `3px solid ${token('color.border.brand', 'var(--ds-link, #0C66E4)')}`,
+                    background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                   }}
                 >
                   <span />
@@ -1397,7 +1397,7 @@ function DemandRowItem({
                     style={{
                       ...BODY,
                       fontFamily: ATLAS_SANS,
-                      color: token('color.link', '#0C66E4'),
+                      color: token('color.link', 'var(--ds-link, #0C66E4)'),
                       textDecoration: 'none',
                       whiteSpace: 'nowrap',
                     }}
@@ -1411,7 +1411,7 @@ function DemandRowItem({
                     style={{
                       ...BODY,
                       fontFamily: ATLAS_SANS,
-                      color: token('color.link', '#0C66E4'),
+                      color: token('color.link', 'var(--ds-link, #0C66E4)'),
                       textDecoration: 'none',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -1430,7 +1430,7 @@ function DemandRowItem({
                   <span
                     style={{
                       ...BODY,
-                      color: storyDue ? token('color.text', '#172B4D') : token('color.text.subtle', '#44546F'),
+                      color: storyDue ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                       whiteSpace: 'nowrap',
                     }}
                     title={storyDue ? `Due ${storyDue}` : 'No due date'}
@@ -1448,8 +1448,8 @@ function DemandRowItem({
                       fontSize: 14,
                       fontWeight: 400,
                       color: hasAssignee
-                        ? token('color.text', '#172B4D')
-                        : token('color.text.subtle', '#44546F'),
+                        ? token('color.text', 'var(--ds-text, #172B4D)')
+                        : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -1503,7 +1503,7 @@ function DemandRowItem({
                         alignItems: 'center',
                         gap: 8,
                         padding: '6px 16px 6px 28px',
-                        borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                        borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
                         cursor: hasStories ? 'pointer' : 'default',
                       }}
                     >
@@ -1518,7 +1518,7 @@ function DemandRowItem({
                           opacity: hasStories ? 1 : 0,
                         }}
                       >
-                        <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
+                        <ChevronRightIcon label="" color={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} LEGACY_size="small" />
                       </span>
                       <a
                         href={epicUrl}
@@ -1526,7 +1526,7 @@ function DemandRowItem({
                         style={{
                           ...SMALL_STRONG,
                           fontFamily: ATLAS_SANS,
-                          color: token('color.link', '#0C66E4'),
+                          color: token('color.link', 'var(--ds-link, #0C66E4)'),
                           textDecoration: 'none',
                           whiteSpace: 'nowrap',
                         }}
@@ -1550,7 +1550,7 @@ function DemandRowItem({
                           width: '100%',
                           height: 6,
                           borderRadius: 3,
-                          background: token('color.background.accent.gray.subtler', '#DCDFE4'),
+                          background: token('color.background.accent.gray.subtler', 'var(--ds-border-disabled, #DCDFE4)'),
                           overflow: 'hidden',
                         }}
                       >
@@ -1587,9 +1587,9 @@ function DemandRowItem({
                             gap: 12,
                             padding: '10px 24px 10px 28px',
                             minHeight: 40,
-                            borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
-                            borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
-                            background: token('elevation.surface', '#FFFFFF'),
+                            borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                            borderLeft: `3px solid ${token('color.border.brand', 'var(--ds-link, #0C66E4)')}`,
+                            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                           }}
                         >
                           <span />
@@ -1602,7 +1602,7 @@ function DemandRowItem({
                             style={{
                               ...BODY,
                               fontFamily: ATLAS_SANS,
-                              color: token('color.link', '#0C66E4'),
+                              color: token('color.link', 'var(--ds-link, #0C66E4)'),
                               textDecoration: 'none',
                               whiteSpace: 'nowrap',
                             }}
@@ -1616,7 +1616,7 @@ function DemandRowItem({
                             style={{
                               ...BODY,
                               fontFamily: ATLAS_SANS,
-                              color: token('color.link', '#0C66E4'),
+                              color: token('color.link', 'var(--ds-link, #0C66E4)'),
                               textDecoration: 'none',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -1632,7 +1632,7 @@ function DemandRowItem({
                           <span
                             style={{
                               ...BODY,
-                              color: storyDue ? token('color.text', '#172B4D') : token('color.text.subtle', '#44546F'),
+                              color: storyDue ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                               whiteSpace: 'nowrap',
                             }}
                             title={storyDue ? `Due ${storyDue}` : 'No due date'}
@@ -1650,8 +1650,8 @@ function DemandRowItem({
                               fontSize: 14,
                               fontWeight: 400,
                               color: hasAssignee
-                                ? token('color.text', '#172B4D')
-                                : token('color.text.subtle', '#44546F'),
+                                ? token('color.text', 'var(--ds-text, #172B4D)')
+                                : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -1687,7 +1687,7 @@ function DemandRowItem({
                     gap: 4,
                   }}
                 >
-                  <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
+                  <InformationIcon label="" color={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} LEGACY_size="small" />
                   Set a target date on {row.initiative_key} in ProductHub to enable RAG tracking.
                 </div>
               )}
@@ -1875,7 +1875,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       }
     >
       {/* KPI headline strip + clickable filter pills.
-          Apr 26 2026 — bespoke hex palette (#DEEBFF/#0747A6/#FFF7D6/...)
+          Apr 26 2026 — bespoke hex palette (var(--ds-background-information, #E9F2FF)/var(--ds-link-pressed, #0747A6)/var(--ds-background-warning, #FFF7D6)/...)
           replaced with Atlaskit canonical Lozenge appearances:
             Active  → inprogress (blue)
             Overdue → moved      (amber)
@@ -1958,8 +1958,8 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
             <div
               style={{
                 display: 'flex',
-                background: token('elevation.surface.sunken', '#F7F8F9'),
-                borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+                background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+                borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
                 fontFamily: ATLAS_SANS,
               }}
             >
@@ -2001,14 +2001,14 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           alignItems: 'center',
           gap: 12,
           padding: `4px ${token('space.300', '24px')}`,
-          borderBottom: '0.5px solid rgba(11,18,14,0.14)',
-          background: token('elevation.surface.sunken', '#F7F8F9'),
+          borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
+          background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
           ...SMALL_STRONG,
           fontWeight: 500,
           fontFamily: ATLAS_SANS,
           textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text', '#292A2E'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'),
         }}
       >
         <span />
@@ -2071,7 +2071,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
               double-scrollbar that resulted from a 300px inner + outer body. */}
           <div>
             {visibleRows.length === 0 ? (
-              <div style={{ ...SMALL, padding: 20, color: token('color.text.subtle', '#6B778C'), textAlign: 'center' }}>
+              <div style={{ ...SMALL, padding: 20, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), textAlign: 'center' }}>
                 Nothing in this filter.
               </div>
             ) : (
@@ -2091,7 +2091,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           </div>
 
           {visibleByTab.length > 10 && (
-            <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', '#DFE1E6')}` }}>
+            <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` }}>
               <button
                 type="button"
                 onClick={() => {
@@ -2120,7 +2120,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 style={{
                   ...SMALL_STRONG,
                   fontFamily: ATLAS_SANS,
-                  color: token('color.link', '#0C66E4'),
+                  color: token('color.link', 'var(--ds-link, #0C66E4)'),
                   background: 'transparent',
                   border: 0,
                   cursor: 'pointer',
@@ -2134,7 +2134,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           )}
 
           {delivered.length > 0 && (
-            <div style={{ background: token('elevation.surface.sunken', '#F7F8F9'), borderTop: `1px solid ${token('color.border', '#DFE1E6')}` }}>
+            <div style={{ background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'), borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` }}>
               <button
                 onClick={() => setDeliveredOpen((v) => !v)}
                 style={{
@@ -2150,7 +2150,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                   textAlign: 'left',
                 }}
               >
-                <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
+                <CheckCircleIcon label="" color={token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)')} LEGACY_size="small" />
                 {delivered.length} delivered this period
                 <ChevronDown
                   size={12}
@@ -2187,31 +2187,31 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
         alignItems: 'center',
         gap: 8,
         padding: '6px 16px',
-        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         font: token('font.body.small'),
       }}
     >
-      <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
+      <CheckCircleIcon label="" color={token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)')} LEGACY_size="small" />
       <a
         href={row.isUnlinkedEpic
           ? `/project-hub/${projectKey}/allwork?issue=${row.initiative_key}`
           : `/producthub/backlog?selectedIssue=${row.initiative_key}`}
         style={{
           ...LABEL,
-          color: token('color.link', '#0C66E4'),
+          color: token('color.link', 'var(--ds-link, #0C66E4)'),
           textDecoration: 'none',
           whiteSpace: 'nowrap',
         }}
       >
         {row.initiative_key}
       </a>
-      <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#292A2E') }}>
+      <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', 'var(--ds-text, #172B4D)') }}>
         {row.title}
       </span>
-      <span style={{ ...LABEL, color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ ...LABEL, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)') }}>
         {row.deliveredAt ? format(new Date(row.deliveredAt), 'dd MMM yyyy') : '—'}
       </span>
-      <span style={{ ...LABEL, color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ ...LABEL, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)') }}>
         {row.total} {row.total === 1 ? 'story' : 'stories'}
       </span>
       {onTime ? (

@@ -38,7 +38,7 @@ export default function WikiSubscriptionsPage() {
   const [newTag, setNewTag] = useState('');
   const { isDark } = useTheme();
 
-  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))';
 
   // Fetch subscriptions
   const { data: subs = [], isLoading } = useQuery({
@@ -125,7 +125,7 @@ export default function WikiSubscriptionsPage() {
                 cursor: 'pointer', transition: 'all 120ms', textAlign: 'left',
               }}
             >
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: active ? (isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'), color: active ? (isDark ? '#93C5FD' : '#1E40AF') : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))') }}>{d.code}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.15))' : 'var(--ds-background-information, #E9F2FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'), color: active ? (isDark ? 'var(--ds-background-information, #E9F2FF)' : 'var(--ds-link-pressed, #0747A6)') : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))') }}>{d.code}</span>
               <span style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', flex: 1 }}>{d.name}</span>
               <div style={{
                 width: 36, height: 20, borderRadius: 12,
@@ -136,7 +136,7 @@ export default function WikiSubscriptionsPage() {
                   width: 16, height: 16, borderRadius: '50%', background: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   position: 'absolute', top: 2,
                   left: active ? 18 : 2, transition: 'left 150ms',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+                  boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
                 }} />
               </div>
             </button>
@@ -167,7 +167,7 @@ export default function WikiSubscriptionsPage() {
           placeholder="Add a tag..."
           style={{
             height: 32, padding: '8px 12px', fontSize: 12, borderRadius: 6,
-            border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.1)'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.1))'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             outline: 'none', width: 180, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined,
           }}
         />
@@ -188,7 +188,7 @@ export default function WikiSubscriptionsPage() {
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px',
             borderBottom: `0.75px solid ${border}`, transition: 'background 80ms',
           }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-background-information, rgba(37,99,235,0.04))'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
             <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', flexShrink: 0 }} />

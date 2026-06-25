@@ -26,18 +26,18 @@ function OutcomeLozenge({ outcome }: { outcome: Outcome }) {
   const config: Record<Outcome, { label: string; bg: string; color: string }> = {
     clean: {
       label: 'Clean release',
-      bg: token('color.background.success', '#DFFCF0'),
-      color: token('color.text.success', '#216E4E'),
+      bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'),
+      color: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
     },
     broke: {
       label: 'Production incident',
-      bg: token('color.background.danger', '#FFECEB'),
-      color: token('color.text.danger', '#AE2A19'),
+      bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
+      color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
     },
     minor: {
       label: 'Minor issue',
-      bg: token('color.background.warning', '#FFF7D6'),
-      color: token('color.text.warning', '#7F5F01'),
+      bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
+      color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
     },
   };
   const { label, bg, color } = config[outcome];
@@ -73,7 +73,7 @@ function TypePill({ label }: { label: string }) {
         fontSize: 11,
         lineHeight: '16px',
         fontWeight: 500,
-        background: token('color.background.neutral.subtle', '#F4F5F7'),
+        background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
         color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
       }}
     >
@@ -119,8 +119,8 @@ export function RecentReleasesWidget() {
         style={{
           height: 200,
           borderRadius: 8,
-          background: token('color.background.neutral', '#F4F5F7'),
-          boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
     );
@@ -157,7 +157,7 @@ export function RecentReleasesWidget() {
             style={{
               padding: 24,
               fontSize: 13,
-              color: token('color.text.subtlest', '#8993A4'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
               textAlign: 'center',
             }}
           >
@@ -201,7 +201,7 @@ export function RecentReleasesWidget() {
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={e => {
                     Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(
-                      td => { (td as HTMLTableCellElement).style.background = token('color.background.neutral.hovered', '#F1F2F4'); },
+                      td => { (td as HTMLTableCellElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)'); },
                     );
                   }}
                   onMouseLeave={e => {
@@ -216,7 +216,7 @@ export function RecentReleasesWidget() {
                         fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                         fontSize: 12,
                         fontWeight: 600,
-                        color: token('color.link', '#0C66E4'),
+                        color: token('color.link', 'var(--ds-link, #0C66E4)'),
                       }}
                     >
                       {brKey(item.id)}

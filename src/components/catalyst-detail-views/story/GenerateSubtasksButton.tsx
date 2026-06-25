@@ -35,7 +35,7 @@ function GeneratingOverlay({ label }: { label: string }) {
       style={{
         position: 'fixed',
         top: 0, left: 0, right: 0, bottom: 0,
-        background: 'rgba(255, 255, 255, 0.75)',
+        background: 'var(--ds-surface, rgba(255, 255, 255, 0.75))',
         zIndex: 99990,
         display: 'flex',
         flexDirection: 'column',
@@ -52,7 +52,7 @@ function GeneratingOverlay({ label }: { label: string }) {
         marginTop: 16,
         fontSize: 16,
         fontWeight: 500,
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', 'var(--ds-text, #172B4D)'),
       }}>
         {label}
       </div>

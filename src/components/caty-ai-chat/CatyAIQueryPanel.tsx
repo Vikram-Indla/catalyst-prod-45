@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 interface Props { projectId: string; }
 
 const EXAMPLE_QUERIES = ["What's our pass rate this week?", "Show me all failed tests", "Which tests have the most defects?", "How many tests were executed today?"];
-const CHART_COLORS = ['var(--ds-text-brand, #3B82F6)', 'var(--ds-text-brand, #3b82f6)', '#10b981', 'var(--ds-text-warning, #f59e0b)', 'var(--ds-text-danger, #ef4444)', '#06b6d4'];
+const CHART_COLORS = ['var(--ds-text-brand, #3B82F6)', 'var(--ds-text-brand, #3b82f6)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-text-warning, #f59e0b)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-icon-information, #1D7AFC)'];
 
 export function CatyAIQueryPanel({ projectId }: Props) {
   const [question, setQuestion] = useState('');

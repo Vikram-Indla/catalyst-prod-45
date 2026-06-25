@@ -63,11 +63,11 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
   return createPortal(
     <div style={{
       position: 'fixed', inset: 0, zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.4)', fontFamily: 'var(--cp-font-body)',
+      background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))', fontFamily: 'var(--cp-font-body)',
     }} onClick={onClose}>
       <div style={{
         width: 480, maxHeight: '70vh', background: 'var(--cp-float)', borderRadius: 8,
-        boxShadow: '0 16px 48px rgba(0,0,0,0.20)', display: 'flex', flexDirection: 'column',
+        boxShadow: '0 16px 48px var(--ds-shadow-raised, rgba(0,0,0,0.20))', display: 'flex', flexDirection: 'column',
       }} onClick={e => e.stopPropagation()}>
 
         {/* Header */}

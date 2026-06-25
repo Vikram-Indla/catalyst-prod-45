@@ -435,7 +435,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
             // editor uses the default (220) for a taller starting box.
             minHeight={80}
             onImproveClick={improveContext ? handleImproveClick : undefined}
-            improveLabel="Improve writing"
+            improveLabel="Improve"
             onEditorReady={setEditor}
             belowEditor={(editor) => (
               <MentionSuggestionPill

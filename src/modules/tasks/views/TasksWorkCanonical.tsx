@@ -46,20 +46,20 @@ function TasksLeftToolbarSlot({
   const [teamOpen, setTeamOpen] = useState(false);
   const groupLabel = GROUP_OPTIONS.find((o) => o.id === groupBy)?.label ?? 'None';
   const teamLabel = teams.find((t) => t.id === selectedTeamId)?.name ?? 'All Workstreams';
-  const borderSubtle = token('color.border', '#DFE1E6');
-  const surface = token('elevation.surface', '#FFFFFF');
-  const textPrimary = token('color.text', '#292A2E');
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+  const borderSubtle = token('color.border', 'var(--ds-border, #DFE1E6)');
+  const surface = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
+  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
   const btnStyle = (active: boolean): React.CSSProperties => ({
     display: 'inline-flex',
     alignItems: 'center',
     gap: 6,
     height: 32,
     padding: '0 10px',
-    border: `1px solid ${active ? token('color.border.selected', '#0C66E4') : borderSubtle}`,
+    border: `1px solid ${active ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : borderSubtle}`,
     borderRadius: 3,
-    background: active ? token('color.background.selected', '#E9F2FE') : surface,
-    color: active ? token('color.text.selected', '#0C66E4') : textPrimary,
+    background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : surface,
+    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : textPrimary,
     fontSize: 13,
     fontWeight: 500,
     fontFamily: 'inherit',
@@ -70,10 +70,10 @@ function TasksLeftToolbarSlot({
     top: 36,
     left: 0,
     minWidth: 200,
-    background: token('elevation.surface.overlay', '#FFFFFF'),
+    background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
     border: `1px solid ${borderSubtle}`,
     borderRadius: 6,
-    boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+    boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
     padding: '4px 0',
     zIndex: 1000,
     fontFamily: 'inherit',

@@ -103,7 +103,7 @@ const deleteBtnActiveStyle: React.CSSProperties = {
   border: '1px solid var(--cv2-danger, #E01E5A)',
   borderRadius: 6,
   background: 'var(--cv2-danger, #E01E5A)',
-  color: '#FFFFFF',
+  color: 'var(--ds-text-inverse, #FFFFFF)',
   fontFamily: 'var(--cv2-font)',
   fontSize: 13,
   fontWeight: 500,

@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
 
 const PHASE_APPROVAL = '#F5A623';
-const PHASE_PAUSED   = '#6B778C';
+const PHASE_PAUSED   = 'var(--ds-text-subtlest, #6B778C)';
 
 function daysWaiting(iso: string | null): number {
   if (!iso) return 0;
@@ -42,12 +42,12 @@ function InterventionCard({
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderLeft: `3px solid ${PHASE_PAUSED}`,
         borderRadius: 6,
-        background: token('elevation.surface', '#FFFFFF'),
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         cursor: 'pointer',
         transition: 'background 120ms',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', '#F1F2F4'); }}
-      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', '#FFFFFF'); }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)'); }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
         <span
@@ -55,7 +55,7 @@ function InterventionCard({
             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
             fontSize: 12,
             fontWeight: 600,
-            color: token('color.link', '#0C66E4'),
+            color: token('color.link', 'var(--ds-link, #0C66E4)'),
           }}
         >
           {brKey(id)}
@@ -65,7 +65,7 @@ function InterventionCard({
             fontSize: 14,
             fontWeight: 600,
             color: overdue
-              ? token('color.text.danger', '#AE2A19')
+              ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
               : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontVariantNumeric: 'tabular-nums',
             whiteSpace: 'nowrap',
@@ -128,12 +128,12 @@ function ApprovalCard({
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderLeft: `3px solid ${PHASE_APPROVAL}`,
         borderRadius: 6,
-        background: token('elevation.surface', '#FFFFFF'),
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         cursor: 'pointer',
         transition: 'background 120ms',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', '#F1F2F4'); }}
-      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', '#FFFFFF'); }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)'); }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
         <span
@@ -141,7 +141,7 @@ function ApprovalCard({
             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
             fontSize: 12,
             fontWeight: 600,
-            color: token('color.link', '#0C66E4'),
+            color: token('color.link', 'var(--ds-link, #0C66E4)'),
           }}
         >
           {brKey(id)}
@@ -151,7 +151,7 @@ function ApprovalCard({
             fontSize: 14,
             fontWeight: 600,
             color: overdue
-              ? token('color.text.danger', '#AE2A19')
+              ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
               : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontVariantNumeric: 'tabular-nums',
             whiteSpace: 'nowrap',
@@ -239,8 +239,8 @@ export function ActiveInterventionsWidget() {
         style={{
           height: 200,
           borderRadius: 8,
-          background: token('color.background.neutral', '#F4F5F7'),
-          boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
     );
@@ -273,7 +273,7 @@ export function ActiveInterventionsWidget() {
             style={{
               padding: 24,
               fontSize: 13,
-              color: token('color.text.subtlest', '#8993A4'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
               textAlign: 'center',
             }}
           >
@@ -306,7 +306,7 @@ export function ActiveInterventionsWidget() {
                 summary={`${holdItems.length} request${holdItems.length !== 1 ? 's' : ''} · paused with a reason`}
               />
               {holdItems.length === 0 ? (
-                <div style={{ fontSize: 13, color: token('color.text.subtlest', '#8993A4'), padding: '12px 0' }}>
+                <div style={{ fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), padding: '12px 0' }}>
                   No requests on hold.
                 </div>
               ) : (

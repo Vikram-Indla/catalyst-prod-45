@@ -153,10 +153,10 @@ export function ToolbarMenuButton({
             top: anchor.top,
             right: anchor.right,
             minWidth: 180,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
             padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
@@ -171,7 +171,7 @@ export function ToolbarMenuButton({
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: '0.04em',
-                  color: token('color.text.subtlest', '#6B778C'),
+                  color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                 }}>
                   {group.title}
                 </div>
@@ -209,7 +209,7 @@ export function ToolbarMenuButton({
                         : 'transparent',
                       color: item.isDisabled
                         ? token('color.text.disabled', '#A6A7AA')
-                        : token('color.text', '#292A2E'),
+                        : token('color.text', 'var(--ds-text, #172B4D)'),
                       fontSize: 14,
                       fontFamily: 'inherit',
                       textAlign: 'left',

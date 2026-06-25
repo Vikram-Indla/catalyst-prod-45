@@ -22,7 +22,7 @@ interface ResourceUser {
   avatar_url: string | null;
 }
 
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0284C7', '#6366F1'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-link, #0C66E4)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 function getColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -101,12 +101,12 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
           </p>
 
           <div className="flex items-center gap-2 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 40, padding: '0 14px' }}>
-            <Search size={15} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" />
+            <Search size={15} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, role, or email..."
-              className="flex-1 bg-transparent outline-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:placeholder:text-[#7D7D7D]"
+              className="flex-1 bg-transparent outline-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:placeholder:text-[var(--ds-text-subtlest, #626F86)]"
               style={{ fontSize: 13 }}
               autoFocus
             />
@@ -116,10 +116,10 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
         <div className="border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ maxHeight: 380, overflowY: 'auto' }}>
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 size={20} className="animate-spin text-slate-400 dark:text-[#7D7D7D]" />
+              <Loader2 size={20} className="animate-spin text-slate-400 dark:text-[var(--ds-text-subtlest, #626F86)]" />
             </div>
           ) : available.length === 0 ? (
-            <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 13 }}>
+            <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 13 }}>
               {search ? `No users match "${search}"` : 'All users are already members'}
             </div>
           ) : (
@@ -143,12 +143,12 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
                     <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 11, lineHeight: '16px' }}>
                       {u.role_name || 'No role'}
                       {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}
-                      {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]">{u.department_name}</span>}
+                      {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]">{u.department_name}</span>}
                     </div>
                   </div>
 
                   {u.email && (
-                    <span className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 11 }}>{u.email.split('@')[0]}</span>
+                    <span className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11 }}>{u.email.split('@')[0]}</span>
                   )}
 
                   <button
@@ -165,7 +165,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
         </div>
 
         <div className="px-5 py-3 flex items-center justify-between border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-          <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 11 }}>
+          <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11 }}>
             {available.length} user{available.length !== 1 ? 's' : ''} available
           </span>
           <button

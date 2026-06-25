@@ -475,7 +475,7 @@ function mapIssueToWorkItem(
       id: row.assignee_account_id || 'none',
       name: assigneeName,
       initials: getInitials(assigneeName),
-      avatarColor: '#6b7280',
+      avatarColor: 'var(--ds-text-subtlest, #626F86)',
     },
     reporter: row.reporter_display_name || undefined,
     group: row.jira_updated_at ? computeGroup(row.jira_updated_at) : 'EARLIER',

@@ -47,7 +47,7 @@ export function ThemeToggle({ testId }: ThemeToggleProps = {}) {
         style={{
           width: 36,
           height: 36,
-          color: token('color.text.subtle', '#626F86'),
+          color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
           background: 'transparent',
           border: 'none',
           cursor: 'pointer',
@@ -55,17 +55,17 @@ export function ThemeToggle({ testId }: ThemeToggleProps = {}) {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))');
-          e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(0,0,0,0.04)');
+          e.currentTarget.style.background = token('color.background.neutral.hovered', 'var(--ds-shadow-raised, rgba(0,0,0,0.04))');
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.color = token('color.text.subtle', '#626F86');
+          e.currentTarget.style.color = token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)');
           e.currentTarget.style.background = 'transparent';
         }}
         onFocus={(e) => {
           e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))');
         }}
         onBlur={(e) => {
-          e.currentTarget.style.color = token('color.text.subtle', '#626F86');
+          e.currentTarget.style.color = token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)');
         }}
         title={label}
       >

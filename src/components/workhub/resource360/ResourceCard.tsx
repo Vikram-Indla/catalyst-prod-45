@@ -45,7 +45,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
             <div style={{ fontSize: 13, color: 'var(--fg-3)', marginTop: 1 }}>
               {r.role || 'Team Member'}
               {r.assignment_type && (
-                <span style={{ marginLeft: 6, fontSize: 11, padding: '1px 6px', borderRadius: 4, background: 'rgba(100,116,139,0.1)', color: 'var(--fg-2)', fontWeight: 500 }}>
+                <span style={{ marginLeft: 6, fontSize: 11, padding: '1px 6px', borderRadius: 4, background: 'var(--ds-text-subtlest, rgba(100,116,139,0.1))', color: 'var(--fg-2)', fontWeight: 500 }}>
                   {r.assignment_type}
                 </span>
               )}
@@ -84,7 +84,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
               style={{
                 padding: '2px 8px',
                 borderRadius: 9999,
-                background: 'rgba(37, 99, 235, 0.08)',
+                background: 'var(--ds-background-information, rgba(37, 99, 235, 0.08))',
                 color: 'var(--cp-blue)',
                 fontWeight: 500,
               }}
@@ -97,7 +97,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
 
       <style>{`
         .wh-resource-card:hover {
-          box-shadow: 0 4px 12px -2px rgba(0,0,0,0.08) !important;
+          box-shadow: 0 4px 12px -2px var(--ds-shadow-raised, rgba(0,0,0,0.08)) !important;
           border-color: var(--divider) !important;
         }
         .wh-resource-card:focus-visible {

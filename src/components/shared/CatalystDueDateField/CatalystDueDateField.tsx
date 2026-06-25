@@ -146,12 +146,12 @@ if (typeof document !== "undefined") {
     }
     /* Per-cell hover (light mode default — Atlaskit's token renders too subtle). */
     [role="grid"] [role="gridcell"] button:not([data-selected]):not([data-disabled]):hover {
-      background-color: rgba(9, 30, 66, 0.08) !important;
+      background-color: var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08)) !important;
     }
     /* Per-cell hover (dark mode override). */
     .dark [role="grid"] [role="gridcell"] button:not([data-selected]):not([data-disabled]):hover,
     [data-theme="dark"] [role="grid"] [role="gridcell"] button:not([data-selected]):not([data-disabled]):hover {
-      background-color: rgba(255, 255, 255, 0.08) !important;
+      background-color: var(--ds-surface, rgba(255, 255, 255, 0.08)) !important;
     }
   `;
   document.head.appendChild(s);

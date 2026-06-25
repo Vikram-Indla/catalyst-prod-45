@@ -25,7 +25,7 @@ const COLORS = {
   borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
   accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  accentLight: '#dbeafe'
+  accentLight: 'var(--ds-background-information, #E9F2FF)'
 };
 
 export const LabelsManager: React.FC<LabelsManagerProps> = ({
@@ -145,7 +145,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
             zIndex: 99999,
             overflow: 'hidden'
           }}
@@ -245,7 +245,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                         borderRadius: '6px',
                         backgroundColor: color.value,
                         border: newLabelColor === color.value 
-                          ? '2px solid #0f172a' 
+                          ? '2px solid var(--ds-text, #172B4D)' 
                           : '2px solid transparent',
                         cursor: 'pointer',
                         padding: 0

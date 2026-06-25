@@ -28,7 +28,7 @@ interface TemplateMilestonesProps {
 
 const MILESTONE_TYPES = [
   { value: 'checkpoint', label: 'Checkpoint', icon: Flag, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  { value: 'review', label: 'Review', icon: CheckCircle, color: '#0d9488' },
+  { value: 'review', label: 'Review', icon: CheckCircle, color: 'var(--ds-chart-teal-bold, #0d9488)' },
   { value: 'deadline', label: 'Deadline', icon: AlertCircle, color: 'var(--ds-text-danger, #ef4444)' },
 ] as const;
 

@@ -112,8 +112,8 @@ export function CatalystAiSearch({
         gap: 8,
         height: 36,
         padding: '0 4px 0 8px',
-        background: token('elevation.surface', '#FFFFFF'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderRadius: 6,
         boxSizing: 'border-box',
         transition: 'border-color 150ms ease, box-shadow 150ms ease',
@@ -126,7 +126,7 @@ export function CatalystAiSearch({
           display: 'inline-flex',
           alignItems: 'center',
           flexShrink: 0,
-          color: token('color.text.subtle', '#505258'),
+          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
         }}
       >
         <SearchIconCore label="" color="currentColor" />
@@ -151,7 +151,7 @@ export function CatalystAiSearch({
           boxShadow: 'none',
           font: 'inherit',
           fontSize: 14,
-          color: token('color.text', '#292A2E'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'),
           appearance: 'none',
           WebkitAppearance: 'none',
         }}
@@ -174,20 +174,20 @@ export function CatalystAiSearch({
           // Defined-but-secondary: a hairline-bordered chip so it's clearly a
           // button (not invisible) yet visually subordinate to the primary
           // magnifier + input search. AI is opt-in, not co-equal.
-          border: `0.5px solid ${token('color.border', '#DFE1E6')}`,
+          border: `0.5px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           borderRadius: 999,
-          background: token('elevation.surface', '#FFFFFF'),
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
           cursor: 'pointer',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)');
+          e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))');
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = token('elevation.surface', '#FFFFFF');
+          e.currentTarget.style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
         }}
       >
         <CatyHead size={16} title="Ask Caty" />
-        <span style={{ fontSize: 12, fontWeight: 500, color: token('color.text.subtle', '#505258') }}>Ask</span>
+        <span style={{ fontSize: 12, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>Ask</span>
       </button>
     </div>
   );

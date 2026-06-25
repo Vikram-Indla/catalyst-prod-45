@@ -65,14 +65,14 @@ export function T10SearchBarV3({ value, onChange }: T10SearchBarV3Props) {
           fontSize: '14px',
           color: 'var(--ds-text, #0f172a)',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: '1px solid #e2e8f0',
+          border: '1px solid var(--ds-border, #DFE1E6)',
           borderRadius: '12px',
           outline: 'none',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         }}
         onFocus={(e) => {
           e.target.style.borderColor = 'var(--ds-text-brand, #3b82f6)';
-          e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+          e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))';
         }}
         onBlur={(e) => {
           e.target.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))';

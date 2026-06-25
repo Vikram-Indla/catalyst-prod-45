@@ -133,7 +133,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
                 <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis' }}>{chip.name}</span>
                 <span style={{
                   background: chip.overdue ? 'var(--sem-danger, #EF4444)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-                  color: '#fff', borderRadius: 8, padding: '0 5px', fontSize: 10, fontWeight: 700,
+                  color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 8, padding: '0 5px', fontSize: 10, fontWeight: 700,
                 }}>{chip.count}</span>
                 {chip.daysLabel && (
                   <span style={{ opacity: 0.75, fontSize: 10 }}>{chip.daysLabel}</span>

@@ -210,7 +210,7 @@ export function CreateEpicModal({ isOpen, onClose, programId }: CreateEpicModalP
         "[&>button]:hidden"
       )}>
         {/* Accent Bar - Catalyst gradient */}
-        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[#0d9488] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[var(--ds-icon-information, #1D7AFC)] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
 
         {/* Header with Progress Ring */}
         <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-gray-900">

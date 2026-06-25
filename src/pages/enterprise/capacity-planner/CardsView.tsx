@@ -154,7 +154,7 @@ export function CardsView({
             <div key={deptName} className="space-y-3 pb-4 border-b border-border last:border-b-0">
               {/* Group Header - Enterprise Style */}
               <div
-                className="flex items-center justify-between px-5 py-4 border border-[#e5e5e5] rounded-xl cursor-pointer hover:shadow-md transition-all"
+                className="flex items-center justify-between px-5 py-4 border border-[var(--ds-border, #DFE1E6)] rounded-xl cursor-pointer hover:shadow-md transition-all"
                 style={{
                   backgroundColor: `${CATALYST.blue.primary}08`,
                   borderLeftWidth: '4px',
@@ -170,13 +170,13 @@ export function CardsView({
                     <span className="text-lg font-bold text-[var(--ds-surface,#0a0a0a)]">{deptName}</span>
                     <div className="flex items-center gap-4 mt-1">
                       {availableCount > 0 && (
-                        <span className="text-sm text-[#525252] flex items-center gap-1.5">
+                        <span className="text-sm text-[var(--ds-text-subtle, #44546F)] flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CATALYST.teal.primary }} />
                           <span className="font-medium">{availableCount}</span> available
                         </span>
                       )}
                       {atCapacityCount > 0 && (
-                        <span className="text-sm text-[#525252] flex items-center gap-1.5">
+                        <span className="text-sm text-[var(--ds-text-subtle, #44546F)] flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CATALYST.blue.primary }} />
                           <span className="font-medium">{atCapacityCount}</span> at capacity
                         </span>
@@ -186,8 +186,8 @@ export function CardsView({
                 </div>
                 <div className="flex items-center gap-5">
                   <div className="flex flex-col items-end gap-1">
-                    <span className="text-xs font-medium text-[#737373]">Avg: {avgUtil}%</span>
-                    <div className="w-32 h-2 bg-[#e5e5e5] rounded-full overflow-hidden">
+                    <span className="text-xs font-medium text-[var(--ds-text-subtlest, #626F86)]">Avg: {avgUtil}%</span>
+                    <div className="w-32 h-2 bg-[var(--ds-border, #DFE1E6)] rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full"
                         style={{
@@ -207,8 +207,8 @@ export function CardsView({
                     </span>
                   </div>
                   {expanded
-                    ? <ChevronUp className="w-5 h-5 text-[#737373]" />
-                    : <ChevronDown className="w-5 h-5 text-[#737373]" />
+                    ? <ChevronUp className="w-5 h-5 text-[var(--ds-text-subtlest, #626F86)]" />
+                    : <ChevronDown className="w-5 h-5 text-[var(--ds-text-subtlest, #626F86)]" />
                   }
                 </div>
               </div>

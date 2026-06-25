@@ -45,7 +45,7 @@ if (
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
   background:
-    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
   borderRadius: 4,
   border: "none",
   boxShadow: "var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,.15))",
@@ -213,7 +213,7 @@ export function AvatarCircle({
           fontSize,
           fontWeight: 700,
           color:
-            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
         }}
       >
         {initials}
@@ -864,7 +864,7 @@ export function EditablePriority({
               background: "var(--ds-surface, #fff)",
               border: "1px solid var(--ds-border, #DFE1E6)",
               borderRadius: 6,
-              boxShadow: "0 8px 16px rgba(9,30,66,0.15)",
+              boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
               zIndex: 1000,
               padding: "6px 0",
             }}
@@ -1045,7 +1045,7 @@ export function EditableLabels({
             ...base,
             border: `1px solid ${getLabelColor((state.data as LabelOption).value)}`,
             background:
-              "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+              "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
             borderRadius: 3,
           }),
           multiValueLabel: (base) => ({

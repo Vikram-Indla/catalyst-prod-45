@@ -37,9 +37,9 @@ const matrixData = [
 ];
 
 const matrixColors = [
-  ['bg-[rgba(239,68,68,0.1)] text-[var(--ds-text-danger,#ef4444)]', 'bg-[rgba(245,158,11,0.1)] text-[var(--ds-text-warning,#b45309)]', 'bg-[rgba(245,158,11,0.1)] text-[var(--ds-text-warning,#b45309)]'],
-  ['bg-[rgba(245,158,11,0.1)] text-[var(--ds-text-warning,#b45309)]', 'bg-[rgba(245,158,11,0.1)] text-[var(--ds-text-warning,#b45309)]', 'bg-[rgba(13,148,136,0.1)] text-[var(--ds-text-success,#0d9488)]'],
-  ['bg-[rgba(245,158,11,0.1)] text-[var(--ds-text-warning,#b45309)]', 'bg-[rgba(13,148,136,0.1)] text-[var(--ds-text-success,#0d9488)]', 'bg-[rgba(13,148,136,0.1)] text-[var(--ds-text-success,#0d9488)]'],
+  ['bg-[var(--ds-background-danger, rgba(239,68,68,0.1))] text-[var(--ds-text-danger,#ef4444)]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]'],
+  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]'],
+  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]'],
 ];
 
 const matrixLabels = [
@@ -261,7 +261,7 @@ export default function IncidentsDashboard() {
                   <div
                     key={member.initials}
                     className="flex items-center gap-3 p-3 rounded-lg"
-                    style={{ backgroundColor: 'rgba(37, 99, 235, 0.1)' }}
+                    style={{ backgroundColor: 'var(--ds-background-information, rgba(37, 99, 235, 0.1))' }}
                   >
                     <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">
                       {member.initials}

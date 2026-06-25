@@ -123,7 +123,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
           background: 'var(--cv2-bg-panel)',
           color: 'var(--cv2-text)',
           borderRadius: 12,
-          boxShadow: '0 24px 60px rgba(0,0,0,0.45)',
+          boxShadow: '0 24px 60px var(--ds-shadow-raised, rgba(0,0,0,0.45))',
           fontFamily: 'var(--cv2-font)',
           display: 'flex',
           flexDirection: 'column',
@@ -255,7 +255,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
             style={{
               background: 'transparent',
               border: 'none',
-              color: !start && !end ? 'var(--cv2-text-muted)' : '#1D9BD1',
+              color: !start && !end ? 'var(--cv2-text-muted)' : 'var(--ds-link, #0C66E4)',
               fontSize: 14,
               fontWeight: 600,
               cursor: !start && !end ? 'default' : 'pointer',
@@ -287,8 +287,8 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
                 if (start && end) onSubmit({ start: toISO(start), end: toISO(end) });
               }}
               style={{
-                background: canSubmit ? '#007A5A' : 'rgba(255,255,255,0.08)',
-                color: canSubmit ? '#FFFFFF' : 'var(--cv2-text-muted)',
+                background: canSubmit ? '#007A5A' : 'var(--ds-surface, rgba(255,255,255,0.08))',
+                color: canSubmit ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
                 border: 'none',
                 borderRadius: 6,
                 padding: '8px 18px',
@@ -332,7 +332,7 @@ function DateInput({
         gap: 8,
         height: 40,
         padding: '0 12px',
-        border: `1px solid ${showRing ? '#1D9BD1' : 'var(--cv2-border-strong)'}`,
+        border: `1px solid ${showRing ? 'var(--ds-link, #0C66E4)' : 'var(--cv2-border-strong)'}`,
         borderRadius: 6,
         background: 'transparent',
       }}
@@ -542,13 +542,13 @@ function DayCell({
   let buttonRadius: string | number = 6;
 
   if (isEndpoint) {
-    buttonBackground = '#1264A3';
-    buttonColor = '#FFFFFF';
-    buttonBorder = '2px solid #1D9BD1';
+    buttonBackground = 'var(--ds-link, #0065FF)';
+    buttonColor = 'var(--ds-surface, #FFFFFF)';
+    buttonBorder = '2px solid var(--ds-link, #0C66E4)';
     buttonRadius = 6;
   } else if (isToday) {
-    buttonBorder = '2px solid #1D9BD1';
-    buttonColor = '#1D9BD1';
+    buttonBorder = '2px solid var(--ds-link, #0C66E4)';
+    buttonColor = 'var(--ds-link, #0C66E4)';
     buttonRadius = '50%';
   } else if (isInRange) {
     buttonColor = 'var(--cv2-text-strong)';

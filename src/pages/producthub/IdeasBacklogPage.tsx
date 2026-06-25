@@ -347,17 +347,17 @@ export default function IdeasBacklogPage() {
 function StatusBadge({ status }: { status: string }) {
   const { isDark } = useTheme();
   const darkColors: Record<string, { bg: string; text: string }> = {
-    'Draft':                    { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'rgba(255,255,255,0.72)' },
-    'Submitted':                { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'rgba(255,255,255,0.72)' },
-    'Under Review':             { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
-    'Approved':                 { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
-    'Rejected':                 { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'rgba(255,255,255,0.72)' },
-    'Converted':                { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
-    'Converted to Request':  { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
+    'Draft':                    { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
+    'Submitted':                { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
+    'Under Review':             { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, #0C66E4)' },
+    'Approved':                 { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, #0C66E4)' },
+    'Rejected':                 { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
+    'Converted':                { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success, #DFFCF0)' },
+    'Converted to Request':  { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success, #DFFCF0)' },
   };
   const s = isDark
     ? (darkColors[status] ?? { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-text-subtlest, #A1A1A1)' })
-    : (STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' });
+    : (STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' });
   const label = status === 'Converted to Request' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{

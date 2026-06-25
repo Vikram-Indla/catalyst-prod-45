@@ -399,7 +399,7 @@
   .ws-summary-card:active,
   .t10-list-card:active,
   .t10-priority-card:active {
-    background-color: var(--ws-bg-tertiary, #f1f5f9) !important;
+    background-color: var(--ws-bg-tertiary, var(--ds-surface-sunken, #F7F8F9)) !important;
   }
 
   /* Scrollable areas momentum */
@@ -530,7 +530,7 @@
     height: 40px;
     border: none;
     background: transparent;
-    color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+    color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
     cursor: pointer;
     border-radius: 8px;
   }
@@ -554,7 +554,7 @@
     padding: 16px !important;
     border-radius: 8px !important;
     margin-bottom: 8px !important;
-    border: 1px solid var(--ws-border-primary, var(--cp-bg-sunken, #e2e8f0)) !important;
+    border: 1px solid var(--ws-border-primary, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))) !important;
   }
 
   .ws-row-name {
@@ -567,7 +567,7 @@
     flex-wrap: wrap;
     gap: 8px;
     font-size: 12px;
-    color: var(--ws-text-tertiary, #64748b);
+    color: var(--ws-text-tertiary, var(--ds-text-subtlest, #626F86));
   }
 
   /* Health badge inline on mobile */
@@ -897,21 +897,21 @@
    ========================================================================== */
 
 .dark .mobile-bottom-nav , [data-theme="dark"] .mobile-bottom-nav {
-  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 
 .dark .mobile-bottom-nav-item , [data-theme="dark"] .mobile-bottom-nav-item {
-  color: #7D7D7D;
+  color: var(--ds-text-subtlest, #626F86);
 }
 
 .dark .mobile-bottom-nav-item.active , [data-theme="dark"] .mobile-bottom-nav-item.active {
   color: var(--ds-text-brand, #60A5FA);
-  background: rgba(59,130,246,0.10);
+  background: var(--ds-background-information-bold, rgba(59,130,246,0.10));
 }
 
 .dark .mobile-menu-toggle , [data-theme="dark"] .mobile-menu-toggle {
-  color: var(--fg-2, #A1A1A1);
+  color: var(--fg-2, var(--ds-text-subtlest, #626F86));
 }
 
 .dark .mobile-menu-toggle:hover , [data-theme="dark"] .mobile-menu-toggle:hover {
@@ -919,11 +919,11 @@
 }
 
 .dark .modal-header , [data-theme="dark"] .modal-header {
-  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 
 .dark .modal-footer , [data-theme="dark"] .modal-footer {
-  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
   border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }

@@ -99,7 +99,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
             style={{
               border: '1px solid var(--divider)',
               borderRadius: 8,
-              boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
+              boxShadow: '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07))',
             }}
           >
             {searchResults.map(user => (

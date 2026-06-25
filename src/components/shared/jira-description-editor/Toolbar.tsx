@@ -13,15 +13,15 @@ import { uploadImageToSupabase } from './mediaUpload';
 // ─── Jira's 13 text colors ────────────────────────────────────────────────────
 const TEXT_COLORS = [
   { label: 'Default', value: null },
-  { label: 'Subtle', value: '#6B778C' },
-  { label: 'Red', value: '#DE350B' },
-  { label: 'Orange', value: '#FF8B00' },
-  { label: 'Yellow', value: '#FF991F' },
-  { label: 'Green', value: '#00875A' },
+  { label: 'Subtle', value: 'var(--ds-text-subtlest, #6B778C)' },
+  { label: 'Red', value: 'var(--ds-background-danger-bold, #C9372C)' },
+  { label: 'Orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
+  { label: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
+  { label: 'Green', value: 'var(--ds-background-success-bold, #1F845A)' },
   { label: 'Teal', value: '#00B8D9' },
   { label: 'Blue', value: 'var(--cp-primary-60, #0052CC)' },
-  { label: 'Purple', value: '#6554C0' },
-  { label: 'Pink', value: '#FF5630' },
+  { label: 'Purple', value: 'var(--ds-background-discovery-bold, #6554C0)' },
+  { label: 'Pink', value: 'var(--ds-background-danger-bold, #C9372C)' },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -267,7 +267,7 @@ function ColorBtn({ editor }: { editor: Editor }) {
                 setOpen(false);
               }}
               className="jde-color-swatch"
-              style={{ background: c.value ?? 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', outline: currentColor === c.value ? '2px solid #2563EB' : 'none' }}
+              style={{ background: c.value ?? 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', outline: currentColor === c.value ? '2px solid var(--ds-link, #2563eb)' : 'none' }}
             />
           ))}
         </div>
@@ -313,7 +313,7 @@ function LinkBtn({ editor }: { editor: Editor }) {
       </TbBtn>
       {open && (
         <div className="jde-link-dialog">
-          <div style={{ fontSize: 11, fontWeight: 650, marginBottom: 6, color: '#42526E' }}>Link URL</div>
+          <div style={{ fontSize: 11, fontWeight: 650, marginBottom: 6, color: 'var(--ds-text-subtle, #42526E)' }}>Link URL</div>
           <input
             ref={inputRef}
             value={url}
@@ -383,12 +383,12 @@ const INSERT_ITEMS = [
   },
   {
     label: 'Mention',
-    icon: <AtSign size={14} style={{ color: '#42526E' }} />,
+    icon: <AtSign size={14} style={{ color: 'var(--ds-text-subtle, #42526E)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent('@').run(),
   },
   {
     label: 'Decision',
-    icon: <Lightbulb size={14} style={{ color: '#FF8B00' }} />,
+    icon: <Lightbulb size={14} style={{ color: 'var(--ds-background-warning-bold, #E2B203)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'note' }, content: [{ type: 'paragraph', content: [{ type: 'text', text: '🟡 Decision: ' }] }] }).run(),
   },
   { type: 'divider' as const },
@@ -420,22 +420,22 @@ const INSERT_ITEMS = [
   },
   {
     label: 'Note panel',
-    icon: <StickyNote size={14} style={{ color: '#6554C0' }} />,
+    icon: <StickyNote size={14} style={{ color: 'var(--ds-background-discovery-bold, #6554C0)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'note' }, content: [{ type: 'paragraph' }] }).run(),
   },
   {
     label: 'Warning panel',
-    icon: <AlertTriangle size={14} style={{ color: '#FF8B00' }} />,
+    icon: <AlertTriangle size={14} style={{ color: 'var(--ds-background-warning-bold, #E2B203)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'warning' }, content: [{ type: 'paragraph' }] }).run(),
   },
   {
     label: 'Success panel',
-    icon: <CheckCircle size={14} style={{ color: '#00875A' }} />,
+    icon: <CheckCircle size={14} style={{ color: 'var(--ds-background-success-bold, #1F845A)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'success' }, content: [{ type: 'paragraph' }] }).run(),
   },
   {
     label: 'Error panel',
-    icon: <AlertCircle size={14} style={{ color: '#DE350B' }} />,
+    icon: <AlertCircle size={14} style={{ color: 'var(--ds-background-danger-bold, #C9372C)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'error' }, content: [{ type: 'paragraph' }] }).run(),
   },
   { type: 'divider' as const },
@@ -541,7 +541,7 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
   }, []);
 
   const AI_ACTIONS = [
-    { label: 'Improve writing', icon: <Sparkles size={13} /> },
+    { label: 'Improve', icon: <Sparkles size={13} /> },
     { label: 'Fix spelling & grammar', icon: <Sparkles size={13} /> },
     { label: 'Make shorter', icon: <Sparkles size={13} /> },
     { label: 'Make longer', icon: <Sparkles size={13} /> },
@@ -554,7 +554,7 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
       <button
         onMouseDown={e => { e.preventDefault(); setOpen(v => !v); }}
         className="jde-tb-style-btn"
-        title="AI: Improve description"
+        title="Improve"
         style={{ color: 'var(--cp-purple-60, #7C3AED)', gap: 3 }}
       >
         <Sparkles size={13} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />

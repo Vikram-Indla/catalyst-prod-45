@@ -17,11 +17,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Fallback colors in case DB color is missing
 const STATUS_COLOR_FALLBACKS: Record<string, string> = {
-  'backlog': '#9ca3af',
+  'backlog': 'var(--ds-text-subtlest, #626F86)',
   'planned': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   'in-progress': 'var(--ds-text-warning, #d97706)',
-  'review': '#8b5cf6',
-  'done': '#10b981',
+  'review': 'var(--ds-background-discovery-bold, #6E5DC6)',
+  'done': 'var(--ds-background-success-bold, #1F845A)',
 };
 
 interface KanbanColumnProps {

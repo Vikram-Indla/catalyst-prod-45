@@ -132,7 +132,7 @@ export function useCreateLabel() {
         .insert({
           project_id: input.projectId,
           name: input.name,
-          color: input.color || '#6B7280',
+          color: input.color || 'var(--ds-text-subtlest, #626F86)',
         })
         .select()
         .single();

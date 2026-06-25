@@ -65,6 +65,8 @@ const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailP
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
 const DependenciesPageLazy = lazy(() => import("../pages/project-hub/DependenciesPage"));
+const ProductDependenciesPageLazy = lazy(() => import("../pages/product-hub/ProductDependenciesPage"));
+const IncidentHubDependenciesPageLazy = lazy(() => import("../pages/incidenthub/IncidentHubDependenciesPage"));
 
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
@@ -535,6 +537,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/roadmaps/:id" element={<MG k="producthub" t="ProductHub"><S><FilterRoadmapPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/timeline/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductTimelineDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePage /></S></MG>} />
+        <Route path="/product-hub/:key/dependencies" element={<MG k="producthub" t="ProductHub"><S><ProductDependenciesPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
@@ -714,6 +717,7 @@ export default function FullAppRoutes() {
             issue_type='Production Incident'). Same Gantt chrome as
             /project-hub/:key/timeline and /product-hub/:key/timeline. */}
         <Route path="/incident-hub/timeline" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubTimelinePage /></S></MG>} />
+        <Route path="/incident-hub/dependencies" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDependenciesPageLazy /></S></MG>} />
         {/* 2026-06-17: Dashboard tab — canonical ProjectDashboardPage with
             mode='incident'. Same 11-widget grid as project + product hubs,
             with the 5 widgets that don't apply (Epic Progress, Scope

@@ -23,12 +23,12 @@ export const COLORS = {
   // Accent
   accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   accentHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-  accentLight: '#dbeafe',
+  accentLight: 'var(--ds-background-information, #E9F2FF)',
   
   // Warning
-  warningBg: '#fffbeb',
-  warningBorder: '#fde68a',
-  warningText: '#92400e',
+  warningBg: 'var(--ds-background-warning, #FFF7D6)',
+  warningBorder: 'var(--ds-background-warning, #FFF7D6)',
+  warningText: 'var(--ds-text-warning, #974F0C)',
   warningIcon: 'var(--ds-text-warning, #d97706)',
   
   // File Types
@@ -36,7 +36,7 @@ export const COLORS = {
   filePdfIcon: 'var(--ds-text-danger, #dc2626)',
   fileDocBg: 'var(--ds-background-selected, #eff6ff)',
   fileDocIcon: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  fileImgBg: '#f0fdf4',
+  fileImgBg: 'var(--ds-background-success, #DFFCF0)',
   fileImgIcon: 'var(--ds-text-success, #16a34a)'
 } as const;
 
@@ -45,25 +45,25 @@ export const STATUS_COLORS: Record<string, string> = {
   'Backlog': 'var(--ds-text-subtlest, #94a3b8)',
   'Planned': 'var(--ds-text-brand, #3b82f6)',
   'In Progress': 'var(--ds-text-warning, #f59e0b)',
-  'In Review': '#8b5cf6',
+  'In Review': 'var(--ds-background-discovery-bold, #8b5cf6)',
   'Done': 'var(--ds-text-success, #16a34a)'
 };
 
 // Priority Colors — MEDIUM IS YELLOW #eab308
 export const PRIORITY_COLORS: Record<string, string> = {
   'Critical': 'var(--ds-text-danger, #dc2626)',
-  'High': '#f97316',
-  'Medium': '#eab308',  // YELLOW — NOT BLUE
+  'High': 'var(--ds-background-warning-bold, #f97316)',
+  'Medium': 'var(--ds-background-warning-bold, #E2B203)',  // YELLOW — NOT BLUE
   'Low': 'var(--ds-text-subtlest, #94a3b8)'
 };
 
 // Workstream Colors — MIM IS GRAY var(--ds-text-subtlest, #64748b)
 export const WORKSTREAM_COLORS: Record<string, string> = {
-  'Catalyst': '#6366f1',
-  'Data & AI': '#8b5cf6',
-  'Delivery': '#ec4899',
+  'Catalyst': 'var(--ds-background-discovery-bold, #6366f1)',
+  'Data & AI': 'var(--ds-background-discovery-bold, #8b5cf6)',
+  'Delivery': 'var(--ds-background-accent-magenta-bolder, #ec4899)',
   'MIM': 'var(--ds-text-subtlest, #64748b)',  // GRAY — NOT PINK
-  'Senaei': '#14b8a6'
+  'Senaei': 'var(--ds-background-accent-teal-bolder, #14b8a6)'
 };
 
 // Options Arrays
@@ -72,9 +72,9 @@ export { CATALYST_PRIORITIES as PRIORITIES } from '@/lib/catalyst-priority';
 export const WORKSTREAMS = ['Catalyst', 'Data & AI', 'Delivery', 'MIM', 'Senaei'] as const;
 
 export const DEFAULT_ASSIGNEES = [
-  { id: '1', name: 'Vikram Indla', initials: 'VI', color: '#8b5cf6' },
+  { id: '1', name: 'Vikram Indla', initials: 'VI', color: 'var(--ds-background-discovery-bold, #8b5cf6)' },
   { id: '2', name: 'Ahmed Khan', initials: 'AK', color: 'var(--ds-text-brand, #3b82f6)' },
-  { id: '3', name: 'Sarah Johnson', initials: 'SJ', color: '#ec4899' },
-  { id: '4', name: 'Mohammed Ali', initials: 'MA', color: '#14b8a6' },
+  { id: '3', name: 'Sarah Johnson', initials: 'SJ', color: 'var(--ds-background-accent-magenta-bolder, #ec4899)' },
+  { id: '4', name: 'Mohammed Ali', initials: 'MA', color: 'var(--ds-background-accent-teal-bolder, #14b8a6)' },
   { id: '0', name: 'Unassigned', initials: '?', color: 'var(--ds-text-subtlest, #94a3b8)' }
 ];

@@ -688,7 +688,7 @@ export function CatalystSidebarDetails({
               was based on a BAU-5419 Lane A re-probe that misread the context items.
               Vikram approved 2026-05-10.
               Feature EXCLUDED: sprintRelease NOT in Feature scheme (type 10173). */}
-          {issue?.issue_type !== 'Feature' && (
+          {issue?.issue_type !== 'Feature' && issue?.issue_type !== 'Business Request' && (
             <FieldRow label="Sprint/Iteration" alignBlock="start">
               {issue && (
                 <EditableSprintRelease

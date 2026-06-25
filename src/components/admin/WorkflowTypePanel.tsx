@@ -21,14 +21,14 @@ import { STATUS_CATEGORY_COLORS, STATUS_CATEGORY_LABELS, type StatusCategory } f
 
 // ── CatalystStatusPill color density (matches CatalystStatusPill.tsx exactly) ─
 const STATUS_BG: Record<string, string> = {
-  success:    '#94C748',
-  inprogress: '#8FB8F6',
+  success:    'var(--ds-background-success-bold, #6A9A23)',
+  inprogress: 'var(--ds-background-information, #E9F2FF)',
   moved:      '#F3D664',
   new:        '#B8ACF6',
   removed:    '#FD9891',
-  default:    '#DDDEE1',
+  default:    'var(--ds-border, #DFE1E6)',
 };
-const STATUS_TEXT = '#292A2E';
+const STATUS_TEXT = 'var(--ds-text, #172B4D)';
 const CAT_TO_APPEARANCE: Record<string, string> = {
   todo: 'default', in_progress: 'inprogress', done: 'success', terminal: 'removed',
 };
@@ -524,7 +524,7 @@ function TransitionGroupRow({
                 <TransitionPill
                   key={t.id}
                   name={toStatus?.name ?? t.to_status_id}
-                  color={toStatus?.color ?? '#64748B'}
+                  color={toStatus?.color ?? 'var(--ds-text-subtlest, #626F86)'}
                   category={toStatus?.category ?? 'todo'}
                   isGlobal={isGlobalTrans}
                   onRemove={() => {
@@ -842,7 +842,7 @@ function CopyWorkflowMenu({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 6,
-        boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         padding: '4px 0',
         minWidth: 180,
         zIndex: 9999,

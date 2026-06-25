@@ -200,7 +200,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   fontSize: 11,
                   fontWeight: 600,
                   letterSpacing: '0.06em',
-                  color: token('color.text.subtle', '#6B778C'),
+                  color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
                 }}
               >
                 Scheduled leave
@@ -214,7 +214,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   cursor: clearing ? 'not-allowed' : 'pointer',
                   fontSize: 11,
                   fontWeight: 600,
-                  color: token('color.text.danger', '#AE2A19'),
+                  color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
                   padding: '4px',
                   opacity: clearing ? 0.5 : 1,
                 }}
@@ -229,9 +229,9 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   style={{
                     padding: '4px 8px',
                     borderRadius: 3,
-                    background: token('color.background.information.subtle', '#E9F2FF'),
+                    background: token('color.background.information.subtle', 'var(--ds-background-selected, #E9F2FF)'),
                     fontSize: 12,
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', 'var(--ds-text, #172B4D)'),
                   }}
                 >
                   {LEAVE_KIND_LABELS[leave.kind] ?? leave.kind}

@@ -7,9 +7,9 @@
 import { useTheme } from '@/hooks/useTheme';
 
 const SEV_STYLES: Record<string, { bg: string; text: string; border: string; darkBg: string; darkText: string; darkBorder: string }> = {
-  SEV1: { bg: '#FEE2E2', text: 'var(--ds-text-danger, #991B1B)', border: '#FECACA', darkBg: 'rgba(248,113,113,0.12)', darkText: 'var(--ds-border-danger, #FCA5A5)', darkBorder: 'rgba(248,113,113,0.25)' },
-  SEV2: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A', darkBg: 'rgba(251,191,36,0.12)', darkText: '#FCD34D', darkBorder: 'rgba(251,191,36,0.25)' },
-  SEV3: { bg: '#DBEAFE', text: '#1E40AF', border: '#BFDBFE', darkBg: 'rgba(59,130,246,0.12)', darkText: '#93C5FD', darkBorder: 'rgba(59,130,246,0.25)' },
+  SEV1: { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #991B1B)', border: 'var(--ds-background-danger, #FFECEB)', darkBg: 'rgba(248,113,113,0.12)', darkText: 'var(--ds-border-danger, #FCA5A5)', darkBorder: 'rgba(248,113,113,0.25)' },
+  SEV2: { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', border: 'var(--ds-background-warning, #FFF7D6)', darkBg: 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))', darkText: 'var(--ds-background-warning, #FFF7D6)', darkBorder: 'var(--ds-background-warning-bold, rgba(251,191,36,0.25))' },
+  SEV3: { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-background-information, #E9F2FF)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.12))', darkText: 'var(--ds-background-information-bold, #0C66E4)', darkBorder: 'var(--ds-background-information-bold, rgba(59,130,246,0.25))' },
   SEV4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtle, #475569)', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', darkBg: 'var(--ds-border, var(--cp-ink-1, #292929))', darkText: 'var(--ds-text-subtlest, #A1A1A1)', darkBorder: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' },
 };
 

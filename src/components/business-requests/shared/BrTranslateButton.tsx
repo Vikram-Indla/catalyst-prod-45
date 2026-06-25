@@ -39,7 +39,7 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: token('color.background.neutral', '#F4F5F7'),
+        background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderRadius: 3,
         cursor: loading ? 'default' : 'pointer',
@@ -51,12 +51,12 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         if (!loading) {
           e.currentTarget.style.background = token(
             'color.background.neutral.hovered',
-            'rgba(9,30,66,0.06)',
+            'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
           );
         }
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = token('color.background.neutral', '#F4F5F7');
+        e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)');
       }}
     >
       {loading ? (

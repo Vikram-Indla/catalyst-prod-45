@@ -40,12 +40,12 @@ const EMOJI_OPTIONS = ['📈', '⚙️', '🛡️', '🎯', '💡', '🚀', '�
 
 const COLOR_OPTIONS = [
   { value: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', label: 'Blue' },
-  { value: '#0d9488', label: 'Teal' },
-  { value: '#7c3aed', label: 'Purple' },
+  { value: 'var(--ds-chart-teal-bold, #0d9488)', label: 'Teal' },
+  { value: 'var(--ds-background-discovery-bold, #7C3AED)', label: 'Purple' },
   { value: 'var(--quality-high, #059669)', label: 'Green' },
   { value: 'var(--ds-text-warning, #d97706)', label: 'Orange' },
   { value: 'var(--ds-text-danger, #dc2626)', label: 'Red' },
-  { value: '#4f46e5', label: 'Indigo' },
+  { value: 'var(--ds-background-discovery-bold, #6E5DC6)', label: 'Indigo' },
 ];
 
 export function PlannerCreateTeamModal({

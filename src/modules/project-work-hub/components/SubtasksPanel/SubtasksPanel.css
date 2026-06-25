@@ -122,9 +122,9 @@
 .sp-progress-fill {
   height: 100%;
   /* 2026-06-23 (Vikram) — progress fill uses the canonical Catalyst done
-     green token --cp-status-done-green (#6A9A23). Defined in index.css
-     :root + .dark. Was Jira-parity #94C748 lime previously. */
-  background: var(--cp-status-done-green, #6A9A23);
+     green token --cp-status-done-green (var(--ds-background-success-bold, #6A9A23)). Defined in index.css
+     :root + .dark. Was Jira-parity var(--ds-background-success-bold, #6A9A23) lime previously. */
+  background: var(--cp-status-done-green, var(--ds-background-success-bold, #6A9A23));
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -159,7 +159,7 @@
 .sp-table-body .sp-create-wrap {
   margin-top: 0;
   padding: 4px 8px 4px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
 
 /* Jira-parity: table header cells in subtasks panel — compact padding + muted label color.
@@ -167,7 +167,7 @@
    12px/653 (not 11px/600 as previously set).
    2026-06-23 — Replace JiraTable global header bottom border (inset 0 -2px,
    bold) with a small 1px hairline matching the vertical column dividers
-   (border-right on th: 1px solid --ds-border #EBECF0). */
+   (border-right on th: 1px solid --ds-border var(--ds-border, #DFE1E6)). */
 .sp-ak-table .jira-table-grid table thead > tr > th {
   padding: 0 12px !important;
   color: var(--ds-text-subtle, #505258) !important;
@@ -194,7 +194,7 @@
 
 /* 2026-06-23 — Priority inline-edit trigger is 180px min-width. The Priority
    column is narrower than 180px so the edit field needs to overflow into the
-   adjacent cell while open (Jira parity, image #162). Defeat both the td
+   adjacent cell while open (Jira parity, image var(--ds-text-success, #216E4E)). Defeat both the td
    inline overflow:hidden AND JiraTable's inner cell-content div overflow:
    hidden when the descendant is actively editing. */
 .sp-ak-table .jira-table-grid table tbody > tr > td:has([data-priority-editing="true"]) {
@@ -255,7 +255,7 @@
 }
 
 /* 2026-06-23 — Jira parity row hover: whole row paints --ds-surface-hovered
-   (#F0F1F2). Individual cell on hover adds an extra layered tint so the
+   (var(--ds-background-neutral, #F1F2F4)). Individual cell on hover adds an extra layered tint so the
    hovered cell appears DARKER than the rest of the row. Layering done via
    --ds-background-neutral-subtle-hovered (rgba so it stacks on row bg). */
 .sp-ak-table .jira-table-grid table tbody > tr:hover > td {
@@ -359,12 +359,12 @@
   opacity: 1;
 }
 .sp-panel .sp-desc-trigger:hover {
-  background: #EBECF0;
+  background: var(--ds-border, #DFE1E6);
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-panel .sp-desc-trigger:focus-visible {
   outline: none;
-  border-color: var(--cp-primary-60, #0052CC);
+  border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
   opacity: 1;
 }
@@ -375,8 +375,8 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--cp-primary-60, #0052CC);
-  box-shadow: 0 0 0 1.5px var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-primary-60, var(--ds-link, #0052CC));
+  box-shadow: 0 0 0 1.5px var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
 
 /* 2026-06-23 — Summary edit pencil. Mirrors `.sp-desc-trigger` opacity/hover
@@ -411,7 +411,7 @@
 }
 .sp-panel .sp-summary-edit-btn:focus-visible {
   outline: none;
-  border-color: var(--cp-primary-60, #0052CC);
+  border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
   opacity: 1;
 }
@@ -434,7 +434,7 @@
   width: 400px;
   /* 2026-06-23 — Summary inline-edit input renders at fixed 400px so it
      overflows into adjacent cells when the Work column is narrow but does
-     NOT stretch across the entire row (Jira parity, image #164). Combined
+     NOT stretch across the entire row (Jira parity, image var(--ds-text-success, #216E4E)). Combined
      with td + inner-div overflow:visible overrides below. */
   min-width: 400px;
   max-width: 400px;
@@ -445,7 +445,7 @@
   outline: none;
   font-size: 14px;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   font-family: inherit;
   box-sizing: border-box;
   position: relative;
@@ -467,26 +467,26 @@
   height: 32px;
   padding: 0;
   border: 1px solid var(--ds-border, #DFE1E6);
-  background: var(--cp-bg-elevated, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF));
   border-radius: 3px;
   color: var(--ds-text-subtle, var(--cp-text-secondary, #42526E));
   cursor: pointer;
   flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08);
+  box-shadow: 0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08));
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
   /* 2026-06-23 — lock opacity to 1 so neither inherited dim states nor the
      hover bg swap reads as "faded" on the tick / cross icons. */
   opacity: 1 !important;
 }
 .sp-inline-summary-btn:hover {
-  background: var(--cp-bg-elevated, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF));
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
-  border-color: var(--cp-primary-60, #0052CC);
+  border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   opacity: 1 !important;
 }
 .sp-inline-summary-btn:focus-visible {
   outline: none;
-  border-color: var(--cp-primary-60, #0052CC);
+  border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
 }
 /* Cells containing the inline editor need overflow:visible so the
@@ -547,7 +547,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   flex-shrink: 0;
 }
 
@@ -669,7 +669,7 @@
   height: 16px;
   border-radius: 3px;
   border: 1.5px solid var(--ds-border, rgba(9,30,66,0.3));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -687,7 +687,7 @@
   background: var(--ds-link, var(--cp-primary-60, #0052CC));
   border-radius: 1px;
 }
-.sp-row--selected .sp-checkbox-dash { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); }
+.sp-row--selected .sp-checkbox-dash { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))); }
 
 /* ══════════════════════════════════════════════
    Popover (@atlaskit/popup content)
@@ -696,7 +696,7 @@
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 6px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: var(--cp-font-body);
 }
@@ -779,7 +779,7 @@
   top: calc(100% + 4px);
   right: 0;
   width: 220px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 6px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
@@ -836,7 +836,7 @@
   padding: 0 8px;
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   cursor: pointer;
   font-size: 13px;
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
@@ -850,7 +850,7 @@
   top: calc(100% + 2px);
   left: 0;
   min-width: 180px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 4px;
   box-shadow: var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.25));
@@ -935,7 +935,7 @@
      rule below swaps to brand blue. */
   border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 3px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
 .sp-create-wrap:focus-within .sp-create-row {
   border-color: var(--ds-border-focused, #4C9AFF);
@@ -990,7 +990,7 @@
   top: calc(100% - 18px);
   left: 0;
   right: 0;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 4px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
@@ -1056,7 +1056,7 @@
 }
 /* jira-compare 2026-05-04 (D2): ADS Button defaults — 32px height, 14px/500,
    neutral background (not outlined). Matched to @atlaskit/button default style.
-   font-size 13→14px, font-weight 400→500, stale var(--cp-text-primary, var(--cp-text-inverse, #172B4D)) token → #292A2E. */
+   font-size 13→14px, font-weight 400→500, stale var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D))) token → var(--ds-text, #172B4D). */
 .sp-empty-cta {
   display: inline-flex;
   align-items: center;
@@ -1128,7 +1128,7 @@
   font-size: 11px;
   font-weight: 700;
   color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   padding: 1px 8px;
   border-radius: 9px;
 }
@@ -1145,7 +1145,7 @@
   text-align: center;
 }
 .sp-board-card {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.1));
   border-radius: 4px;
   padding: 8px 10px;
@@ -1154,7 +1154,7 @@
 }
 .sp-board-card:hover {
   border-color: var(--ds-border-bold, rgba(9,30,66,0.2));
-  box-shadow: 0 1px 3px rgba(9,30,66,0.1);
+  box-shadow: 0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1));
 }
 .sp-board-card-summary {
   font-size: 13px;
@@ -1194,16 +1194,16 @@
   flex-wrap: wrap;
   margin-top: 8px;
   padding: 8px 12px;
-  background: #0C2340;
+  background: var(--ds-text, #172B4D);
   border-radius: 6px;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  box-shadow: 0 4px 12px rgba(9,30,66,0.25);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
+  box-shadow: 0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,0.25));
 }
 .sp-bulkbar-count {
   font-size: 13px;
   font-weight: 600;
   padding: 4px 8px 4px 0;
-  border-right: 1px solid rgba(255,255,255,0.2);
+  border-right: 1px solid var(--ds-surface, rgba(255,255,255,0.2));
   margin-right: 4px;
 }
 .sp-bulkbar-btn {
@@ -1212,28 +1212,28 @@
   gap: 4px;
   height: 28px;
   padding: 0 10px;
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid var(--ds-surface, rgba(255,255,255,0.3));
   border-radius: 3px;
   background: transparent;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   cursor: pointer;
   font-size: 13px;
   font-family: inherit;
   transition: background 0.12s, border-color 0.12s;
 }
 .sp-bulkbar-btn:hover:not(:disabled) {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.5);
+  background: var(--ds-surface, rgba(255,255,255,0.1));
+  border-color: var(--ds-surface, rgba(255,255,255,0.5));
 }
 .sp-bulkbar-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .sp-bulkbar-btn--danger {
   border-color: rgba(255,99,89,0.6);
-  color: #FFB4AB;
+  color: var(--ds-background-danger, #FFECEB);
 }
 .sp-bulkbar-btn--danger:hover:not(:disabled) {
   background: rgba(255,99,89,0.15);
-  border-color: #FF8A80;
-  color: #FFD1CA;
+  border-color: var(--ds-background-danger, #FFECEB);
+  color: var(--ds-background-danger, #FFECEB);
 }
 .sp-bulkbar-cancel {
   display: inline-flex;
@@ -1244,7 +1244,7 @@
   margin-left: auto;
   border: none;
   background: transparent;
-  color: rgba(255,255,255,0.85);
+  color: var(--ds-surface, rgba(255,255,255,0.85));
   cursor: pointer;
   font-size: 13px;
   font-family: inherit;
@@ -1252,8 +1252,8 @@
   transition: background 0.12s;
 }
 .sp-bulkbar-cancel:hover {
-  background: rgba(255,255,255,0.12);
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--ds-surface, rgba(255,255,255,0.12));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
 }
 
 /* ══════════════════════════════════════════════
@@ -1279,7 +1279,7 @@
   border-left: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
 }
 .adf-editor-content table td {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   color: var(--ds-text, #292A2E);
   font-size: 14px;
   font-weight: 400;

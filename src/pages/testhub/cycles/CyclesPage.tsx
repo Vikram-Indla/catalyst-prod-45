@@ -195,18 +195,18 @@ function BulkCycleMenu({ triggerRef, onArchive, onDelete, onClose }: {
       position: 'fixed', top: rect.bottom + 4, left: rect.left,
       background: 'var(--ds-surface-overlay, #FFFFFF)',
       border: '1px solid var(--ds-border, #DFE1E6)',
-      borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+      borderRadius: 6, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
       padding: '4px 0', minWidth: 160, zIndex: 9999,
     }}>
       <button role="menuitem" style={{ ...item, color: 'var(--ds-text-warning, #974F0C)' }}
         onClick={onArchive}
-        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
         onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
         Archive selected
       </button>
       <button role="menuitem" style={{ ...item, color: 'var(--ds-text-danger, #AE2A19)' }}
         onClick={onDelete}
-        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
         onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
         Delete selected
       </button>
@@ -249,7 +249,7 @@ function CycleRowMenu({ cycle, onClose }: { cycle: TMCycle; onClose: () => void 
           position: 'fixed', top: pos.top, left: pos.left,
           background: 'var(--ds-surface-overlay, #FFFFFF)',
           border: '1px solid var(--ds-border, #DFE1E6)',
-          borderRadius: 6, boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+          borderRadius: 6, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
           padding: '4px 0', minWidth: 160, zIndex: 9999,
         }}>
           {(['Copy', 'Archive', 'Delete'] as const).map(action => (
@@ -271,7 +271,7 @@ function CycleRowMenu({ cycle, onClose }: { cycle: TMCycle; onClose: () => void 
                        action === 'Archive' ? 'var(--ds-text-warning, #974F0C)' :
                        'var(--ds-text, #172B4D)',
               }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))'}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}
             >
               {action === 'Copy' ? 'Copy cycle' : action === 'Archive' ? 'Archive cycle' : 'Delete cycle'}
@@ -427,11 +427,11 @@ function CreateCyclePanel({ projectId, onClose }: { projectId: string; onClose: 
 
   return createPortal(
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(9,30,66,0.32)', zIndex: 399 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.32))', zIndex: 399 }} />
       <div role="dialog" aria-modal="true" aria-label="Create cycle" style={{
         position: 'fixed', top: '5vh', left: '50%', transform: 'translateX(-50%)',
         width: 760, maxHeight: '90vh', background: 'var(--ds-surface-overlay, #FFFFFF)',
-        borderRadius: 8, boxShadow: '0 8px 32px rgba(9,30,66,0.32)',
+        borderRadius: 8, boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.32))',
         zIndex: 400, display: 'flex', flexDirection: 'column', fontFamily: 'var(--ds-font-family-body)',
       }}>
         {/* Header */}
@@ -464,7 +464,7 @@ function CreateCyclePanel({ projectId, onClose }: { projectId: string; onClose: 
             <button key={tab} style={tabBtnStyle(activeTab === tab)} onClick={() => setActiveTab(tab)}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
               {tab === 'cases' && selectedCaseIds.size > 0 && (
-                <span style={{ marginLeft: 6, background: 'var(--ds-background-brand-bold, #0052CC)', color: '#fff', borderRadius: 10, padding: '1px 6px', fontSize: 11 }}>
+                <span style={{ marginLeft: 6, background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)', borderRadius: 10, padding: '1px 6px', fontSize: 11 }}>
                   {selectedCaseIds.size}
                 </span>
               )}

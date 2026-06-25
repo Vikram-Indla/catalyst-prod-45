@@ -34,8 +34,8 @@ export function hubLabel(hub?: string | null): string {
 export function hubColour(hub?: string | null): string {
   switch ((hub ?? '').toLowerCase()) {
     case 'projecthub': return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
-    case 'producthub': return '#3F3F46';
-    case 'taskhub': return '#D4D4D8';
+    case 'producthub': return 'var(--ds-text-subtle, #44546F)';
+    case 'taskhub': return 'var(--ds-border, #DFE1E6)';
     case 'incidenthub': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
     case 'testhub': return 'var(--cp-teal-60, #0D9488)';
     case 'releasehub': return 'var(--cp-purple-60, #7C3AED)';

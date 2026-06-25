@@ -49,7 +49,7 @@ export const LABEL: CSSProperties = {
   fontSize: 11,
   lineHeight: '16px',
   fontWeight: 500,
-  color: token('color.text.subtlest', '#626F86'),
+  color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
 };
 
 /** Secondary table cell text, compact rows — between LABEL and BODY. */
@@ -57,7 +57,7 @@ export const SMALL: CSSProperties = {
   fontSize: 12,
   lineHeight: '16px',
   fontWeight: 400,
-  color: token('color.text', '#292A2E'),
+  color: token('color.text', 'var(--ds-text, #172B4D)'),
 };
 
 /** Emphasised compact text — bold counts in compact rows. */
@@ -65,7 +65,7 @@ export const SMALL_STRONG: CSSProperties = {
   fontSize: 12,
   lineHeight: '16px',
   fontWeight: 600,
-  color: token('color.text', '#292A2E'),
+  color: token('color.text', 'var(--ds-text, #172B4D)'),
 };
 
 /** Primary body text — row labels, status text, the default voice. */
@@ -73,7 +73,7 @@ export const BODY: CSSProperties = {
   fontSize: 14,
   lineHeight: '20px',
   fontWeight: 400,
-  color: token('color.text', '#292A2E'),
+  color: token('color.text', 'var(--ds-text, #172B4D)'),
 };
 
 /** Emphasised body — counts, names, sortable cell highlights. */
@@ -81,7 +81,7 @@ export const STRONG: CSSProperties = {
   fontSize: 14,
   lineHeight: '20px',
   fontWeight: 600,
-  color: token('color.text', '#292A2E'),
+  color: token('color.text', 'var(--ds-text, #172B4D)'),
 };
 
 /** Row titles, table cell titles, emphasised secondary heading. */
@@ -89,7 +89,7 @@ export const TITLE: CSSProperties = {
   fontSize: 16,
   lineHeight: '24px',
   fontWeight: 500,
-  color: token('color.text', '#292A2E'),
+  color: token('color.text', 'var(--ds-text, #172B4D)'),
 };
 
 /** KPI strip headline numbers. Atlaskit `font.heading.xlarge`. */
@@ -97,7 +97,7 @@ export const H_NUM: CSSProperties = {
   fontSize: 24,
   lineHeight: '28px',
   fontWeight: 600,
-  color: token('color.text', '#292A2E'),
+  color: token('color.text', 'var(--ds-text, #172B4D)'),
   fontVariantNumeric: 'tabular-nums',
 };
 
@@ -109,12 +109,12 @@ export const MONO: CSSProperties = {
 
 /** Subtle text colour — for secondary meta. Pair with BODY/LABEL. */
 export const SUBTLE: CSSProperties = {
-  color: token('color.text.subtle', '#44546F'),
+  color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
 };
 
 /** Subtlest text colour — for tertiary meta + captions. */
 export const SUBTLEST: CSSProperties = {
-  color: token('color.text.subtlest', '#626F86'),
+  color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
 };
 
 /** Truncation primitive — display:block + overflow + ellipsis. Combine

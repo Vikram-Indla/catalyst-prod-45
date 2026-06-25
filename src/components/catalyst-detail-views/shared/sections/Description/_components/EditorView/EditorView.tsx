@@ -72,7 +72,7 @@ export function EditorView({
         border: "1px solid var(--ds-border, #DFE1E6)",
         borderRadius: 4,
         background: "var(--ds-surface, #FFFFFF)",
-        boxShadow: "0 1px 2px rgba(9,30,66,0.08)",
+        boxShadow: "0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))",
         /* Caps the editor height; when content exceeds this, the body
            scrolls internally with the toolbar staying pinned in place. */
         maxHeight: "70vh",

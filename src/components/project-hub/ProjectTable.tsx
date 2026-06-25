@@ -26,7 +26,7 @@ export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu
       <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)' }}>
         <thead>
           <tr
-            className={isDark ? 'bg-[#111111]' : 'bg-[var(--ds-surface-sunken,#F8FAFC)]'}
+            className={isDark ? 'bg-[var(--ds-text, #172B4D)]' : 'bg-[var(--ds-surface-sunken,#F8FAFC)]'}
             style={{ height: 36, maxHeight: 36, position: 'sticky', top: 0, zIndex: 1 }}
           >
             {COLUMNS.map(col => (

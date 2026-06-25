@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { X } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#EA580C', '#0284C7'];
+const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-link, #0C66E4)'];
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
   admin: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   member: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
-  viewer: { bg: '#FFFBEB', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  viewer: { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
 };
 
 interface MemberRowProps {
@@ -85,7 +85,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
             className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
             style={{
               width: 120, border: '1px solid var(--divider)',
-              borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
+              borderRadius: 8, boxShadow: '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07))',
               overflow: 'hidden',
             }}
           >
@@ -112,7 +112,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
       {!isCurrentUser ? (
         <button
           onClick={() => onRemove(id)}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[#FEE2E2]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--ds-background-danger, #FFECEB)]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           <X size={14} color="var(--fg-4)" />

@@ -463,7 +463,7 @@ export function SyncConfigPanel() {
                             onChange={(vals) => updateProjectConfig(pk, { issue_types: vals })}
                             placeholder={typesLoading ? 'Loading types...' : 'All types (no filter)'}
                             emptyMessage="No issue types found. Run a sync first."
-                            accentColor="#0891B2"
+                            accentColor="var(--ds-link, #0C66E4)"
                           />
                           <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.issue_types.length === 0

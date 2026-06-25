@@ -36,7 +36,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
             onClick={() => onTabChange(tab.key)}
             className={`flex items-center gap-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] ${
               isActive
-                ? isDark ? 'bg-[#0D1526] border-[#1E3A5F]' : 'bg-[#DEEBFF] border-[#B3D4FF]'
+                ? isDark ? 'bg-[var(--ds-text, #172B4D)] border-[var(--ds-text, #172B4D)]' : 'bg-[var(--ds-background-information, #E9F2FF)] border-[var(--ds-background-information, #E9F2FF)]'
                 : 'bg-transparent border-transparent'
             }`}
             style={{
@@ -56,8 +56,8 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               <Star
                 size={13}
                 strokeWidth={2}
-                fill={isActive ? '#FFAB00' : 'none'}
-                color={isActive ? '#FFAB00' : ('var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))')}
+                fill={isActive ? 'var(--ds-background-warning-bold, #E2B203)' : 'none'}
+                color={isActive ? 'var(--ds-background-warning-bold, #E2B203)' : ('var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))')}
               />
             )}
             {tab.label}

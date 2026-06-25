@@ -89,7 +89,7 @@ export const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, works
             borderRadius: '8px',
             cursor: 'pointer',
             transition: 'all 0.15s ease',
-            boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+            boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.15))' : 'none',
             minWidth: '140px',
           }}
         >
@@ -118,7 +118,7 @@ export const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, works
               backgroundColor: COLORS.surfaceCard,
               border: `1px solid ${COLORS.borderDefault}`,
               borderRadius: '12px',
-              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+              boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
               zIndex: 100001,
               padding: '6px',
               maxHeight: '280px',

@@ -9,10 +9,10 @@ import { StageDrillDownDrawer } from './StageDrillDownDrawer';
 
 // ── Phase colour system ───────────────────────────────────────────────────────
 
-const PHASE_DEMAND   = '#4C9AFF';
+const PHASE_DEMAND   = 'var(--ds-background-information-bold, #0C66E4)';
 const PHASE_APPROVAL = '#F5A623';
 const PHASE_DELIVERY = '#8A7CFF';
-const PHASE_CLOSURE  = '#36B37E';
+const PHASE_CLOSURE  = 'var(--ds-background-success-bold, #1F845A)';
 
 function phaseColor(sortOrder: number): string {
   if (sortOrder <= 3) return PHASE_DEMAND;
@@ -77,8 +77,8 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
         style={{
           height: 200,
           borderRadius: 8,
-          background: token('color.background.neutral', '#F4F5F7'),
-          boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
     );
@@ -145,7 +145,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
               height: 28,
               borderRadius: 4,
               overflow: 'hidden',
-              background: token('color.background.neutral.subtle', '#F4F5F7'),
+              background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
             }}
           >
             {sorted.map(step => {
@@ -163,7 +163,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#fff',
+                    color: 'var(--ds-text-inverse, #FFFFFF)',
                     fontSize: 11,
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -241,21 +241,21 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                   borderRadius: 6,
                   textAlign: 'center',
                   cursor: 'pointer',
-                  background: token('elevation.surface', '#FFFFFF'),
+                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                   transition: 'background 120ms, border-color 120ms',
                 }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', '#F1F2F4');
+                  (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)');
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', '#FFFFFF');
+                  (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
                 }}
               >
                 <div
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: token('color.text.subtlest', '#8993A4'),
+                    color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                   }}
                 >
                   {num}
@@ -299,8 +299,8 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                         padding: '1px 6px',
                         borderRadius: 8,
                         fontWeight: 600,
-                        background: token('color.background.danger', '#FFECEB'),
-                        color: token('color.text.danger', '#AE2A19'),
+                        background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
+                        color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
                       }}
                     >
                       {stalled} stuck
@@ -314,8 +314,8 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                         padding: '1px 6px',
                         borderRadius: 8,
                         fontWeight: 600,
-                        background: token('color.background.success', '#DFFCF0'),
-                        color: token('color.text.success', '#216E4E'),
+                        background: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'),
+                        color: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
                       }}
                     >
                       on track

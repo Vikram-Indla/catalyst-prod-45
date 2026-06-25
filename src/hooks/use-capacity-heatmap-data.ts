@@ -14,16 +14,16 @@ import { getContractStatus } from '@/hooks/useResourceProfiles';
 
 // Assignment colors - Catalyst V5 compliant
 const ASSIGNMENT_COLORS: Record<string, string> = {
-  'Senaei BAU': '#2563eb',
-  'Innovation Platform': '#1d4ed8',
-  'Inspection Project': '#0d9488',
-  'International Relations': '#0f766e',
-  'MIM Website': '#14b8a6',
-  'Senaei OPS': '#3b82f6',
-  'Sectorial Services': '#64748b',
-  'Tahommena': '#0d9488',
-  'Data Platform': '#3b82f6',
-  'Unassigned': '#94a3b8',
+  'Senaei BAU': 'var(--ds-link, #2563eb)',
+  'Innovation Platform': 'var(--ds-link-pressed, #1d4ed8)',
+  'Inspection Project': 'var(--ds-chart-teal-bold, #0d9488)',
+  'International Relations': 'var(--ds-chart-teal-bolder, #0f766e)',
+  'MIM Website': 'var(--ds-background-accent-teal-bolder, #14b8a6)',
+  'Senaei OPS': 'var(--ds-background-information-bold, #3b82f6)',
+  'Sectorial Services': 'var(--ds-text-subtlest, #626F86)',
+  'Tahommena': 'var(--ds-chart-teal-bold, #0d9488)',
+  'Data Platform': 'var(--ds-background-information-bold, #3b82f6)',
+  'Unassigned': 'var(--ds-text-disabled, #8590A2)',
 };
 
 function getAssignmentColor(name: string | null | undefined): string {

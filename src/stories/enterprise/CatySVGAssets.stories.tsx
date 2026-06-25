@@ -160,7 +160,7 @@ export const CatyFabIconStory: StoryObj = {
       <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         {([16, 24, 32, 40, 48, 56, 64, 80, 96] as const).map(s => (
           <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8, padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 4px rgba(9,30,66,0.12)' }}>
+            <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8, padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))' }}>
               <CatyFabIcon size={s} />
             </div>
             <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>{s}px</span>
@@ -170,7 +170,7 @@ export const CatyFabIconStory: StoryObj = {
       <div style={{ marginTop: 32, display: 'flex', gap: 32, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>Default (breathing)</span>
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px rgba(9,30,66,0.12)' }}>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))' }}>
             <CatyFabIcon size={56} />
           </div>
         </div>
@@ -182,12 +182,12 @@ export const CatyFabIconStory: StoryObj = {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>Awake state (hover)</span>
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px rgba(9,30,66,0.12)' }}>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))' }}>
             <span className="cc-fab-icon" style={{ display: 'inline-block', width: 56, height: 56 }}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width={56} height={56} className="is-awake" role="img" aria-label="Ask Caty awake">
                 <defs>
                   <linearGradient id="askdg-sb" x1="256" y1="40" x2="256" y2="470" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#F79357" /><stop offset=".5" stopColor="#F53F68" />
+                    <stop stopColor="#F79357" /><stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" />
                     <stop offset=".75" stopColor="#B41572" /><stop offset="1" stopColor="#CC1E9A" />
                   </linearGradient>
                 </defs>
@@ -195,24 +195,24 @@ export const CatyFabIconStory: StoryObj = {
                 <g className="cf-sb">
                   <path d="M404 392 Q462 392 456 336" fill="none" stroke="url(#askdg-sb)" strokeWidth="26" strokeLinecap="round" />
                   <path d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z" fill="url(#askdg-sb)" />
-                  <text x="350" y="293" textAnchor="middle" fontFamily="'Atlassian Sans', system-ui, sans-serif" fontSize="84" fontWeight="800" fontStyle="italic" fill="var(--caty-fg, #23222B)">ask</text>
+                  <text x="350" y="293" textAnchor="middle" fontFamily="'Atlassian Sans', system-ui, sans-serif" fontSize="84" fontWeight="800" fontStyle="italic" fill="var(--caty-fg, var(--ds-text, #172B4D))">ask</text>
                   <g className="cf-ears-sb">
                     <path d="M270 100 Q300 26 322 100 Z" fill="url(#askdg-sb)" /><path d="M358 100 Q388 24 408 100 Z" fill="url(#askdg-sb)" />
-                    <path d="M288 96 Q301 56 312 94" fill="none" stroke="var(--caty-fg, #23222B)" strokeWidth="9" strokeLinecap="round" opacity=".55" />
-                    <path d="M374 96 Q387 54 398 94" fill="none" stroke="var(--caty-fg, #23222B)" strokeWidth="9" strokeLinecap="round" opacity=".55" />
+                    <path d="M288 96 Q301 56 312 94" fill="none" stroke="var(--caty-fg, var(--ds-text, #172B4D))" strokeWidth="9" strokeLinecap="round" opacity=".55" />
+                    <path d="M374 96 Q387 54 398 94" fill="none" stroke="var(--caty-fg, var(--ds-text, #172B4D))" strokeWidth="9" strokeLinecap="round" opacity=".55" />
                   </g>
-                  <g stroke="var(--caty-fg, #23222B)" strokeWidth="9.5" strokeLinecap="round" fill="none">
+                  <g stroke="var(--caty-fg, var(--ds-text, #172B4D))" strokeWidth="9.5" strokeLinecap="round" fill="none">
                     <path d="M300 172 Q244 168 226 178" /><path d="M300 182 Q240 185 222 198" /><path d="M302 192 Q248 201 232 214" />
                     <path d="M398 172 Q454 168 472 178" /><path d="M398 182 Q458 185 476 198" /><path d="M396 192 Q452 201 468 214" />
                   </g>
-                  <path d="M340 176 L356 176 Q348 188 340 176 Z" fill="var(--caty-fg, #23222B)" />
-                  <g className="cf-eyes-sb" fill="none" stroke="var(--caty-fg, #23222B)" strokeWidth="13" strokeLinecap="round">
+                  <path d="M340 176 L356 176 Q348 188 340 176 Z" fill="var(--caty-fg, var(--ds-text, #172B4D))" />
+                  <g className="cf-eyes-sb" fill="none" stroke="var(--caty-fg, var(--ds-text, #172B4D))" strokeWidth="13" strokeLinecap="round">
                     <path d="M304 150 Q322 170 340 150" /><path d="M356 150 Q374 170 392 150" />
                   </g>
                   <g className="cf-awake-sb">
                     <circle cx="322" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="4.5" />
                     <circle cx="374" cy="150" r="20" fill="var(--ds-surface, #FFFFFF)" stroke="var(--caty-fg, #23222B)" strokeWidth="4.5" />
-                    <circle cx="324" cy="153" r="8.5" fill="var(--caty-fg, #23222B)" /><circle cx="376" cy="153" r="8.5" fill="var(--caty-fg, #23222B)" />
+                    <circle cx="324" cy="153" r="8.5" fill="var(--caty-fg, var(--ds-text, #172B4D))" /><circle cx="376" cy="153" r="8.5" fill="var(--caty-fg, var(--ds-text, #172B4D))" />
                     <circle cx="320" cy="147" r="3.2" fill="var(--ds-surface, #FFFFFF)" /><circle cx="372" cy="147" r="3.2" fill="var(--ds-surface, #FFFFFF)" />
                   </g>
                 </g>

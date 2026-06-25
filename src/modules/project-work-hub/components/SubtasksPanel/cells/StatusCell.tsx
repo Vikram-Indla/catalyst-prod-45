@@ -18,11 +18,11 @@ type AllowedAppearance = 'default' | 'inprogress' | 'success';
 
 /** Jira-exact background/foreground per status category — matches CatalystStatusPill.tsx */
 function statusBg(appearance: AllowedAppearance): { bg: string; fg: string } {
-  const fg = '#292A2E'; // universal dark text — same for all Jira status pills
+  const fg = 'var(--ds-text, #172B4D)'; // universal dark text — same for all Jira status pills
   switch (appearance) {
-    case 'success':    return { bg: '#94C748',                fg }; // Done — lime green
+    case 'success':    return { bg: 'var(--ds-background-success-bold, #6A9A23)',                fg }; // Done — lime green
     case 'inprogress': return { bg: '#669DF1',                fg }; // In Progress — medium blue
-    default:           return { bg: 'rgba(5, 21, 36, 0.06)', fg }; // To Do — near-transparent
+    default:           return { bg: 'var(--ds-shadow-overlay, rgba(5, 21, 36, 0.06))', fg }; // To Do — near-transparent
   }
 }
 

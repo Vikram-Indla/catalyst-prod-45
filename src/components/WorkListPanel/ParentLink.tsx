@@ -47,7 +47,7 @@ export const ParentLink = memo(function ParentLink({
         style={{
           border: 'none',
           background: 'transparent',
-          color: '#0055CC',
+          color: 'var(--ds-link, #0C66E4)',
           fontSize: '12px',
           fontWeight: 500,
           fontFamily: 'var(--cp-font-mono)',
@@ -57,10 +57,10 @@ export const ParentLink = memo(function ParentLink({
           transition: 'color 150ms',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.color = '#0055CC';
+          e.currentTarget.style.color = 'var(--ds-link, #0C66E4)';
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.color = '#0055CC';
+          e.currentTarget.style.color = 'var(--ds-link, #0C66E4)';
         }}
       >
         {parentKey}

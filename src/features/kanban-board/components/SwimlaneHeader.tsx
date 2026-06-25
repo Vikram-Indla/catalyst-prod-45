@@ -33,14 +33,14 @@ export const SwimlaneHeader: React.FC<Props> = ({ label, count, collapsed, avata
   >
     <span style={{ display: 'inline-flex', flexShrink: 0 }}>
       {collapsed
-        ? <ChevronRightIcon label="" size="medium" primaryColor={token('color.icon.subtle', '#626F86')} />
-        : <ChevronDownIcon label="" size="medium" primaryColor={token('color.icon.subtle', '#626F86')} />}
+        ? <ChevronRightIcon label="" size="medium" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />
+        : <ChevronDownIcon label="" size="medium" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />}
     </span>
     {showAvatar && <Avatar size="small" src={avatarUrl ?? undefined} name={avatarName || label} />}
-    <span style={{ fontSize: 14, fontWeight: 600, color: token('color.text', '#172B4D'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+    <span style={{ fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
       {label}
     </span>
-    <span style={{ fontSize: 14, fontWeight: 400, color: token('color.text.subtlest', '#626F86'), flexShrink: 0 }}>
+    <span style={{ fontSize: 14, fontWeight: 400, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), flexShrink: 0 }}>
       ({count} work item{count === 1 ? '' : 's'})
     </span>
   </button>

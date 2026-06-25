@@ -82,7 +82,7 @@ export function TestHubSection({ storyId }: { storyId: string }) {
         <button className="sdm-create-btn sdm-visibility-btn"><AddIcon label="Link test" /> Link test</button>
       </>
     }>
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(9,30,66,.14)', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.14))', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
         {([{ key: 'cases' as const, label: 'Test Cases', count: testCases.length }, { key: 'executions' as const, label: 'Test Executions', count: executions.length }]).map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
             flex: 1, height: 33, fontSize: 12, fontWeight: 500, border: 'none', background: 'transparent', cursor: 'pointer',

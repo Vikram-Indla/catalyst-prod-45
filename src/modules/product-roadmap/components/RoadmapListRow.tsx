@@ -19,11 +19,11 @@ const TYPE_COLORS: Record<string, string> = {
 // ── Avatar color — deterministic from initials ──
 const AVATAR_COLORS = [
   'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', // blue
-  '#6366F1', // indigo
+  'var(--ds-background-discovery-bold, #6E5DC6)', // indigo
   'var(--cp-teal-60, #0D9488)', // teal
   'var(--ds-text-warning, var(--cp-warning, #D97706))', // amber
   'var(--ds-text-success, var(--cp-success, #16A34A))', // green
-  '#0891B2', // cyan
+  'var(--ds-link, #0C66E4)', // cyan
   'var(--ds-text-danger, var(--cp-danger, #DC2626))', // red
   'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', // slate
 ];
@@ -78,7 +78,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
         height: 44,
         backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
         borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
-        outline: isFocused ? '2px solid #2563EB' : 'none',
+        outline: isFocused ? '2px solid var(--ds-link, #2563eb)' : 'none',
         outlineOffset: -2,
       }}
       onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-1, #F8FAFC)'; }}
@@ -124,7 +124,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: '0.02em',
-            boxShadow: '0 0 0 2px #FFFFFF',
+            boxShadow: '0 0 0 2px var(--ds-surface, #FFFFFF)',
           }}
           title={name || undefined}
         >

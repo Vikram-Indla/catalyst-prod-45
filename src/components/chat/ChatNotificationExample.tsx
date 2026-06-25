@@ -180,7 +180,7 @@ export function ChatMainViewWithNotifications({
                       padding: '4px 8px',
                       borderRadius: '12px',
                       border: `1px solid ${r.reactedByMe ? 'blue' : '#ccc'}`,
-                      backgroundColor: r.reactedByMe ? '#e8f4ff' : '#f5f5f5',
+                      backgroundColor: r.reactedByMe ? '#e8f4ff' : 'var(--ds-surface-sunken, #F7F8F9)',
                       cursor: 'pointer',
                       fontSize: '12px',
                     }}

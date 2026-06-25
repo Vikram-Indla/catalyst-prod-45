@@ -133,14 +133,14 @@ const OBSERVER_CAP = 60;
 type HubFilter = 'All' | 'Projects' | 'Products' | 'Home' | 'Incidents' | 'Admin';
 
 const HUB_COLORS: Record<string, string> = {
-  Projects:  '#0C66E4',
-  Products:  '#6E5DC6',
-  Home:      '#1F845A',
-  Incidents: '#AE2A19',
-  Admin:     '#626F86',
-  Shared:    '#758195',
-  Other:     '#9FADBC',
-  Deferred:  '#C7D1DB',
+  Projects:  'var(--ds-link, #0C66E4)',
+  Products:  'var(--ds-background-discovery-bold, #6E5DC6)',
+  Home:      'var(--ds-background-success-bold, #1F845A)',
+  Incidents: 'var(--ds-text-danger, #AE2A19)',
+  Admin:     'var(--ds-icon-subtle, #626F86)',
+  Shared:    'var(--ds-text-subtle, #44546F)',
+  Other:     'var(--ds-text-disabled, #8590A2)',
+  Deferred:  'var(--ds-border, #DFE1E6)',
 };
 
 const HUB_ORDER = ['Projects', 'Products', 'Home', 'Incidents', 'Admin', 'Shared', 'Other', 'Deferred'];
@@ -393,8 +393,8 @@ const PANEL_BASE: React.CSSProperties = {
 const SNIPPET_STYLE: React.CSSProperties = {
   display: 'block',
   fontSize: 12,
-  background: token('color.background.neutral.subtle', '#F7F8F9'),
-  border: `1px solid ${token('color.border', '#DCDFE4')}`,
+  background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+  border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
   borderRadius: 4,
   padding: token('space.150', '12px'),
   overflowX: 'auto',
@@ -455,13 +455,13 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
           gap: token('space.100', '8px'),
           flexWrap: 'wrap',
           paddingBottom: token('space.150', '12px'),
-          borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
         }}
       >
         {status === 'observed' && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.brand.bold', '#0C66E4'), color: '#fff' }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'), color: 'var(--ds-surface, #FFFFFF)' }}
             onClick={() => setPanel(panel === 'mark-canonical' ? null : 'mark-canonical')}
           >
             Mark canonical
@@ -470,7 +470,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
         {(status === 'canonical' || status === 'observed') && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', '#DCDFE4')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', '#FFFFFF'), color: token('color.text', '#172B4D') }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, #172B4D)') }}
             onClick={() => setPanel(panel === 'deprecate' ? null : 'deprecate')}
           >
             Deprecate →
@@ -479,7 +479,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
         {(status === 'deprecated' || status === 'banned') && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', '#DCDFE4')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', '#FFFFFF'), color: token('color.text', '#172B4D') }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, #172B4D)') }}
             onClick={() => setPanel(panel === 'restore' ? null : 'restore')}
           >
             Restore ↑
@@ -488,7 +488,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
         {status !== 'banned' && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.danger.bold', '#AE2A19'), color: '#fff' }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.danger.bold', 'var(--ds-text-danger, #AE2A19)'), color: 'var(--ds-surface, #FFFFFF)' }}
             onClick={() => setPanel(panel === 'ban' ? null : 'ban')}
           >
             Ban ✕
@@ -499,20 +499,20 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
       {/* Inline action panels — expand below buttons, no portal needed */}
 
       {panel === 'ban' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.danger', '#FFEDEB'), border: `1px solid ${token('color.border.danger', '#FF8F73')}` }}>
-          <div style={{ fontWeight: 600, color: token('color.text.danger', '#AE2A19'), marginBottom: 8 }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), border: `1px solid ${token('color.border.danger', 'var(--ds-background-danger, #FFECEB)')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), marginBottom: 8 }}>
             Ban {entry.name}
           </div>
-          <p style={{ color: token('color.text', '#172B4D'), marginBottom: 12 }}>
+          <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 12 }}>
             Permanently bans this component. It will appear with a red BANNED badge so future engineers
             cannot re-introduce it.
             {entry.consumers.length > 0 && (
-              <span style={{ color: token('color.text.danger', '#AE2A19'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
                 ⚠ {entry.consumers.length} live reference{entry.consumers.length === 1 ? '' : 's'} must be removed first.
               </span>
             )}
           </p>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 4 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
             Ban reason (banned_reason)
           </label>
           <Textfield
@@ -520,7 +520,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             onChange={(e) => setBanReason((e.target as HTMLInputElement).value)}
             placeholder="One sentence — why this component must never be used"
           />
-          <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', '#44546F'), marginTop: 12, marginBottom: 4 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginTop: 12, marginBottom: 4 }}>
             Add to BANNED array in <code>src/registry/components.registry.ts</code>:
           </div>
           <code style={SNIPPET_STYLE}>{banSnippet}</code>
@@ -534,19 +534,19 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
       )}
 
       {panel === 'deprecate' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.warning', '#FFF7D6'), border: `1px solid ${token('color.border.warning', '#F5CD47')}` }}>
-          <div style={{ fontWeight: 600, color: token('color.text.warning', '#7F5F01'), marginBottom: 8 }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'), marginBottom: 8 }}>
             Deprecate {entry.name}
           </div>
-          <p style={{ color: token('color.text', '#172B4D'), marginBottom: 12 }}>
+          <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 12 }}>
             Engineers will see a yellow DEPRECATED badge and a migration pointer.
             {entry.consumers.length > 0 && (
-              <span style={{ color: token('color.text.warning', '#7F5F01'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+              <span style={{ color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
                 ⚠ {entry.consumers.length} consumer{entry.consumers.length === 1 ? '' : 's'} will need migration.
               </span>
             )}
           </p>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 4 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
             Replacement component id (deprecation_target)
           </label>
           <Textfield
@@ -565,11 +565,11 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
       )}
 
       {panel === 'mark-canonical' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.success', '#DFFCF0'), border: `1px solid ${token('color.border.success', '#4BCE97')}` }}>
-          <div style={{ fontWeight: 600, color: token('color.text.success', '#216E4E'), marginBottom: 8 }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), border: `1px solid ${token('color.border.success', 'var(--ds-background-success-bold, #1F845A)')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text.success', 'var(--ds-text-success, #216E4E)'), marginBottom: 8 }}>
             Mark {entry.name} as canonical
           </div>
-          <p style={{ color: token('color.text', '#172B4D'), marginBottom: 12 }}>
+          <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 12 }}>
             Promotes this component to canonical status — green badge, standard for its use case.
             Copy the snippet below and add it to the CANONICAL array, updating the fields marked ← update.
           </p>
@@ -584,14 +584,14 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
       )}
 
       {panel === 'restore' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.neutral.subtle', '#F7F8F9'), border: `1px solid ${token('color.border', '#DCDFE4')}` }}>
-          <div style={{ fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 8 }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'), border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>
             Restore {entry.name}
           </div>
-          <p style={{ color: token('color.text', '#172B4D'), marginBottom: 12 }}>
+          <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 12 }}>
             Restore from <strong>{entry.status}</strong> to canonical status.
             {entry.status === 'banned' && (
-              <span style={{ color: token('color.text.danger', '#AE2A19'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+              <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), display: 'block', marginTop: 6, fontWeight: 600 }}>
                 ⚠ Restoring a banned component requires Vikram's explicit approval.
               </span>
             )}
@@ -636,7 +636,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
         }}
       >
         <Heading size="xsmall">Hub breakdown</Heading>
-        <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+        <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
           {hubEntries.length} hub{hubEntries.length === 1 ? '' : 's'} · tap to publish targeted
         </span>
       </div>
@@ -644,7 +644,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.075', '6px') }}>
         {hubEntries.map(([hub, files]) => {
           const isOpen = openHub === hub;
-          const color = HUB_COLORS[hub] ?? '#9FADBC';
+          const color = HUB_COLORS[hub] ?? 'var(--ds-text-disabled, #8590A2)';
           const route = HUB_ROUTES[hub] ?? '/';
           const isDeferred = hub === 'Deferred';
 
@@ -668,7 +668,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
             <div
               key={hub}
               style={{
-                border: `1px solid ${isOpen ? color : token('color.border', '#DCDFE4')}`,
+                border: `1px solid ${isOpen ? color : token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
                 borderRadius: 6,
                 overflow: 'hidden',
               }}
@@ -697,7 +697,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                   style={{
                     fontSize: 13,
                     fontWeight: 600,
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', 'var(--ds-text, #172B4D)'),
                     flex: 1,
                   }}
                 >
@@ -706,7 +706,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                 <span
                   style={{
                     fontSize: 11,
-                    color: token('color.text.subtlest', '#626F86'),
+                    color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                     marginRight: token('space.075', '6px'),
                   }}
                 >
@@ -716,7 +716,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                   <span
                     style={{
                       fontSize: 11,
-                      color: token('color.text.disabled', '#8590A2'),
+                      color: token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'),
                       fontStyle: 'italic',
                     }}
                   >
@@ -733,7 +733,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                       fontSize: 12,
                       fontWeight: 600,
                       background: isOpen ? color : `${color}22`,
-                      color: isOpen ? '#fff' : color,
+                      color: isOpen ? 'var(--ds-text-inverse, #FFFFFF)' : color,
                     }}
                     onClick={() => setOpenHub(isOpen ? null : hub)}
                   >
@@ -747,8 +747,8 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                 <div
                   style={{
                     padding: token('space.150', '12px'),
-                    borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
-                    background: token('color.background.neutral.subtle', '#F7F8F9'),
+                    borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
                   }}
                 >
                   {/* File list with hub dots */}
@@ -756,7 +756,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                     style={{
                       fontSize: 11,
                       fontWeight: 600,
-                      color: token('color.text.subtlest', '#626F86'),
+                      color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
                       marginBottom: token('space.075', '6px'),
@@ -790,7 +790,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                         <a
                           href={`vscode://file/${REPO_ROOT_ABS}/${f}`}
                           style={{
-                            color: token('color.link', '#0C66E4'),
+                            color: token('color.link', 'var(--ds-link, #0C66E4)'),
                             textDecoration: 'none',
                             fontFamily: 'var(--ds-font-family-code)',
                             fontSize: 11,
@@ -807,7 +807,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                     style={{
                       fontSize: 11,
                       fontWeight: 600,
-                      color: token('color.text.subtlest', '#626F86'),
+                      color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
                       marginBottom: 4,
@@ -837,7 +837,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                         fontSize: 12,
                         fontWeight: 600,
                         background: color,
-                        color: '#fff',
+                        color: 'var(--ds-text-inverse, #FFFFFF)',
                       }}
                       onClick={() => navigator.clipboard.writeText(testPlan)}
                     >
@@ -892,7 +892,7 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                         cursor: 'pointer',
                         fontSize: 12,
                         background: 'transparent',
-                        color: token('color.text.subtle', '#44546F'),
+                        color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                       }}
                       onClick={() => setOpenHub(null)}
                     >
@@ -936,7 +936,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
               padding: '2px 8px',
               borderRadius: 3,
               background: token('color.background.neutral', '#091E420F'),
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             }}
           >
             {entry.origin === 'atlaskit' ? 'Atlaskit' : 'Internal'}
@@ -947,7 +947,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
             marginTop: token('space.100', '8px'),
             fontSize: 12,
             fontFamily: 'var(--ds-font-family-code)',
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
           }}
         >
           {entry.source}
@@ -956,7 +956,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
           style={{
             marginTop: token('space.150', '12px'),
             fontSize: 13,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             fontStyle: 'italic',
           }}
         >
@@ -989,7 +989,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
           >
             {visible.map((path) => {
               const hub = getHubForFile(path);
-              const hubColor = HUB_COLORS[hub] ?? '#9FADBC';
+              const hubColor = HUB_COLORS[hub] ?? 'var(--ds-text-disabled, #8590A2)';
               return (
                 <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span
@@ -1006,7 +1006,7 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
                   <a
                     href={`vscode://file/${path}`}
                     style={{
-                      color: token('color.link', '#0C66E4'),
+                      color: token('color.link', 'var(--ds-link, #0C66E4)'),
                       textDecoration: 'none',
                       fontFamily: 'var(--ds-font-family-code)',
                       fontSize: 12,
@@ -1055,7 +1055,7 @@ function StatsStrip() {
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: token('color.text.subtlest', '#626F86'),
+              color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
               marginBottom: 4,
@@ -1068,8 +1068,8 @@ function StatsStrip() {
               fontSize: 32,
               fontWeight: 700,
               color: (item as { danger?: boolean }).danger
-                ? token('color.text.danger', '#AE2A19')
-                : token('color.text', '#172B4D'),
+                ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+                : token('color.text', 'var(--ds-text, #172B4D)'),
               lineHeight: 1,
             }}
           >
@@ -1156,18 +1156,18 @@ function InventoryPane() {
         display: 'grid',
         gridTemplateColumns: '240px 300px 1fr',
         gap: 0,
-        border: `1px solid ${token('color.border', '#DCDFE4')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
         borderRadius: 8,
         overflow: 'hidden',
         minHeight: 600,
-        background: token('elevation.surface', '#FFFFFF'),
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
       }}
     >
       {/* Column 1 — Module + Status + Hub nav (240px — k-notation avoids truncation) */}
       <div
         style={{
-          borderRight: `1px solid ${token('color.border', '#DCDFE4')}`,
-          background: token('color.background.neutral.subtle', '#F7F8F9'),
+          borderRight: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+          background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
           overflowY: 'auto',
         }}
       >
@@ -1185,7 +1185,7 @@ function InventoryPane() {
                     setSelectedId('');
                   }}
                   iconAfter={
-                    <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+                    <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
                       {formatCount(moduleCounts[m])}
                     </span>
                   }
@@ -1219,7 +1219,7 @@ function InventoryPane() {
                 isSelected={hubFilter === 'All'}
                 onClick={() => { setHubFilter('All'); setSelectedId(''); }}
                 iconAfter={
-                  <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+                  <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
                     {formatCount(ACTIVE_ENTRIES_STATIC.length)}
                   </span>
                 }
@@ -1245,7 +1245,7 @@ function InventoryPane() {
                           display: 'inline-block',
                         }}
                       />
-                      <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+                      <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
                         {formatCount(hubCounts[hub] ?? 0)}
                       </span>
                     </span>
@@ -1258,7 +1258,7 @@ function InventoryPane() {
               <ButtonItem
                 isDisabled
                 iconAfter={
-                  <span style={{ fontSize: 10, color: token('color.text.disabled', '#8590A2'), fontStyle: 'italic' }}>
+                  <span style={{ fontSize: 10, color: token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'), fontStyle: 'italic' }}>
                     soon
                   </span>
                 }
@@ -1273,7 +1273,7 @@ function InventoryPane() {
       {/* Column 2 — Component list */}
       <div
         style={{
-          borderRight: `1px solid ${token('color.border', '#DCDFE4')}`,
+          borderRight: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
           display: 'flex',
           flexDirection: 'column',
           overflowY: 'auto',
@@ -1282,7 +1282,7 @@ function InventoryPane() {
         <div
           style={{
             padding: token('space.100', '8px'),
-            borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+            borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
           }}
         >
           <Textfield
@@ -1297,11 +1297,11 @@ function InventoryPane() {
           <div
             style={{
               padding: `${token('space.075', '6px')} ${token('space.100', '8px')}`,
-              borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
               display: 'flex',
               gap: 4,
               flexWrap: 'wrap',
-              background: token('color.background.neutral.subtle', '#F7F8F9'),
+              background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
             }}
           >
             {activeModule !== 'All' && (
@@ -1310,11 +1310,11 @@ function InventoryPane() {
                 style={{
                   padding: '2px 8px',
                   borderRadius: 12,
-                  border: `1px solid ${token('color.border', '#DCDFE4')}`,
+                  border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
                   background: token('color.background.neutral', '#091E420F'),
                   fontSize: 11,
                   cursor: 'pointer',
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', 'var(--ds-text, #172B4D)'),
                 }}
                 onClick={() => { setActiveModule('All'); setSelectedId(''); }}
               >
@@ -1327,11 +1327,11 @@ function InventoryPane() {
                 style={{
                   padding: '2px 8px',
                   borderRadius: 12,
-                  border: `1px solid ${token('color.border', '#DCDFE4')}`,
+                  border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
                   background: token('color.background.neutral', '#091E420F'),
                   fontSize: 11,
                   cursor: 'pointer',
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', 'var(--ds-text, #172B4D)'),
                 }}
                 onClick={() => { setStatusFilter('all'); setSelectedId(''); }}
               >
@@ -1344,11 +1344,11 @@ function InventoryPane() {
                 style={{
                   padding: '2px 8px',
                   borderRadius: 12,
-                  border: `1px solid ${HUB_COLORS[hubFilter] ?? token('color.border', '#DCDFE4')}`,
-                  background: `${HUB_COLORS[hubFilter] ?? '#0C66E4'}18`,
+                  border: `1px solid ${HUB_COLORS[hubFilter] ?? token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                  background: `${HUB_COLORS[hubFilter] ?? 'var(--ds-link, #0C66E4)'}18`,
                   fontSize: 11,
                   cursor: 'pointer',
-                  color: HUB_COLORS[hubFilter] ?? token('color.text', '#172B4D'),
+                  color: HUB_COLORS[hubFilter] ?? token('color.text', 'var(--ds-text, #172B4D)'),
                   fontWeight: 600,
                 }}
                 onClick={() => { setHubFilter('All'); setSelectedId(''); }}
@@ -1363,7 +1363,7 @@ function InventoryPane() {
             <div
               style={{
                 padding: token('space.300', '24px'),
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                 fontSize: 13,
               }}
             >
@@ -1373,11 +1373,11 @@ function InventoryPane() {
                 style={{
                   padding: '4px 12px',
                   borderRadius: 3,
-                  border: `1px solid ${token('color.border', '#DCDFE4')}`,
-                  background: token('elevation.surface', '#FFFFFF'),
+                  border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                   cursor: 'pointer',
                   fontSize: 12,
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', 'var(--ds-text, #172B4D)'),
                 }}
                 onClick={() => {
                   setActiveModule('All');
@@ -1402,10 +1402,10 @@ function InventoryPane() {
                     textAlign: 'left',
                     padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
                     border: 'none',
-                    borderBottom: `1px solid ${token('color.border.subtle', '#F1F2F4')}`,
+                    borderBottom: `1px solid ${token('color.border.subtle', 'var(--ds-background-neutral, #F1F2F4)')}`,
                     background:
                       selectedId === entry.id
-                        ? token('color.background.selected', '#E9F2FF')
+                        ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
                         : 'transparent',
                     cursor: 'pointer',
                     display: 'flex',
@@ -1425,7 +1425,7 @@ function InventoryPane() {
                       style={{
                         fontSize: 13,
                         fontWeight: selectedId === entry.id ? 600 : 400,
-                        color: token('color.text', '#172B4D'),
+                        color: token('color.text', 'var(--ds-text, #172B4D)'),
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -1442,13 +1442,13 @@ function InventoryPane() {
                             width: 6,
                             height: 6,
                             borderRadius: '50%',
-                            background: HUB_COLORS[topHub] ?? '#9FADBC',
+                            background: HUB_COLORS[topHub] ?? 'var(--ds-text-disabled, #8590A2)',
                             display: 'inline-block',
                           }}
                         />
                       )}
                       {entry.consumers.length > 0 && (
-                        <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+                        <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
                           {formatCount(entry.consumers.length)}×
                         </span>
                       )}
@@ -1477,7 +1477,7 @@ function InventoryPane() {
         ) : (
           <div
             style={{
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
               fontSize: 13,
               paddingTop: token('space.200', '16px'),
             }}
@@ -1488,11 +1488,11 @@ function InventoryPane() {
               style={{
                 padding: '4px 12px',
                 borderRadius: 3,
-                border: `1px solid ${token('color.border', '#DCDFE4')}`,
-                background: token('elevation.surface', '#FFFFFF'),
+                border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                 cursor: 'pointer',
                 fontSize: 12,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
               onClick={() => setSelectedId(ACTIVE_ENTRIES_STATIC[0]?.id ?? '')}
             >
@@ -1516,9 +1516,9 @@ function BannedRegistryPanel() {
           key={entry.id}
           style={{
             padding: token('space.200', '16px'),
-            border: `1px solid ${token('color.border.danger', '#FF8F73')}`,
+            border: `1px solid ${token('color.border.danger', 'var(--ds-background-danger, #FFECEB)')}`,
             borderRadius: 6,
-            background: token('color.background.danger', '#FFEDEB'),
+            background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
           }}
         >
           <div
@@ -1529,17 +1529,17 @@ function BannedRegistryPanel() {
               marginBottom: token('space.100', '8px'),
             }}
           >
-            <strong style={{ fontSize: 14, color: token('color.text.danger', '#AE2A19') }}>
+            <strong style={{ fontSize: 14, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
               {entry.name}
             </strong>
             <Lozenge appearance="removed">Banned</Lozenge>
             {entry.banned_anchor && (
-              <span style={{ fontSize: 11, color: token('color.text.subtle', '#44546F') }}>
+              <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
                 {entry.banned_anchor}
               </span>
             )}
           </div>
-          <p style={{ margin: 0, fontSize: 13, color: token('color.text', '#172B4D') }}>
+          <p style={{ margin: 0, fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
             {entry.banned_reason}
           </p>
         </div>
@@ -1560,24 +1560,24 @@ function ApplyPanel({ rec, onClose }: { rec: AiRec; onClose: () => void }) {
       : `// Add to CANONICAL array in src/registry/components.registry.ts:\n{\n  id: '${rec.entry.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}',\n  name: '${rec.entry.name}',\n  status: 'canonical',\n  version: '1.0.0',\n}`;
 
   const bg = rec.severity === 'urgent'
-    ? token('color.background.danger', '#FFEDEB')
+    ? token('color.background.danger', 'var(--ds-background-danger, #FFECEB)')
     : rec.severity === 'high'
-    ? token('color.background.warning', '#FFF7D6')
-    : token('color.background.neutral.subtle', '#F7F8F9');
+    ? token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)')
+    : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)');
 
   const border = rec.severity === 'urgent'
-    ? `1px solid ${token('color.border.danger', '#FF8F73')}`
+    ? `1px solid ${token('color.border.danger', 'var(--ds-background-danger, #FFECEB)')}`
     : rec.severity === 'high'
-    ? `1px solid ${token('color.border.warning', '#F5CD47')}`
-    : `1px solid ${token('color.border', '#DCDFE4')}`;
+    ? `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}`
+    : `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`;
 
   return (
     <div style={{ ...PANEL_BASE, background: bg, border, marginBottom: token('space.200', '16px') }}>
-      <div style={{ fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 6 }}>
+      <div style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 6 }}>
         Apply: {rec.title}
       </div>
-      <p style={{ color: token('color.text', '#172B4D'), marginBottom: 8 }}>{rec.detail}</p>
-      <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#44546F'), marginBottom: 4 }}>
+      <p style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>{rec.detail}</p>
+      <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 4 }}>
         Action: {rec.suggestedAction}
       </div>
       <code style={SNIPPET_STYLE}>{snippet}</code>
@@ -1597,21 +1597,21 @@ function AiRecommendationsPane() {
   const [appliedRecs, setAppliedRecs] = useState<Set<string>>(new Set());
 
   const severityColor = {
-    urgent: token('color.text.danger', '#AE2A19'),
-    high: token('color.text.warning', '#7F5F01'),
-    medium: token('color.text', '#172B4D'),
+    urgent: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
+    high: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
+    medium: token('color.text', 'var(--ds-text, #172B4D)'),
   };
 
   const severityBg = {
-    urgent: token('color.background.danger', '#FFEDEB'),
-    high: token('color.background.warning', '#FFF7D6'),
-    medium: token('color.background.neutral.subtle', '#F7F8F9'),
+    urgent: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
+    high: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
+    medium: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
   };
 
   const severityBorder = {
-    urgent: token('color.border.danger', '#FF8F73'),
-    high: token('color.border.warning', '#F5CD47'),
-    medium: token('color.border', '#DCDFE4'),
+    urgent: token('color.border.danger', 'var(--ds-background-danger, #FFECEB)'),
+    high: token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)'),
+    medium: token('color.border', 'var(--ds-border-disabled, #DCDFE4)'),
   };
 
   if (AI_RECS.length === 0) {
@@ -1620,7 +1620,7 @@ function AiRecommendationsPane() {
         style={{
           padding: token('space.400', '32px'),
           textAlign: 'center',
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
         }}
       >
         <div style={{ fontSize: 32, marginBottom: token('space.200', '16px') }}>✅</div>
@@ -1642,9 +1642,9 @@ function AiRecommendationsPane() {
           <div
             key={rec.id}
             style={{
-              border: `1px solid ${isApplied ? token('color.border.success', '#4BCE97') : severityBorder[rec.severity]}`,
+              border: `1px solid ${isApplied ? token('color.border.success', 'var(--ds-background-success-bold, #1F845A)') : severityBorder[rec.severity]}`,
               borderRadius: 6,
-              background: isApplied ? token('color.background.success', '#DFFCF0') : severityBg[rec.severity],
+              background: isApplied ? token('color.background.success', 'var(--ds-background-success, #DFFCF0)') : severityBg[rec.severity],
               opacity: isApplied ? 0.7 : 1,
             }}
           >
@@ -1672,7 +1672,7 @@ function AiRecommendationsPane() {
                       fontSize: 11,
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      color: isApplied ? token('color.text.success', '#216E4E') : severityColor[rec.severity],
+                      color: isApplied ? token('color.text.success', 'var(--ds-text-success, #216E4E)') : severityColor[rec.severity],
                       letterSpacing: '0.05em',
                     }}
                   >
@@ -1682,11 +1682,11 @@ function AiRecommendationsPane() {
                     {rec.type === 'ban-violation' ? 'Ban violation' : rec.type === 'deprecation-pending' ? 'Deprecation' : 'Promote'}
                   </Lozenge>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
                   {rec.title}
                 </div>
                 {isExpanded && (
-                  <p style={{ fontSize: 13, color: token('color.text.subtle', '#44546F'), marginTop: 8, marginBottom: 0 }}>
+                  <p style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginTop: 8, marginBottom: 0 }}>
                     {rec.detail}
                   </p>
                 )}
@@ -1695,7 +1695,7 @@ function AiRecommendationsPane() {
                 {!isApplied && (
                   <button
                     type="button"
-                    style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.brand.bold', '#0C66E4'), color: '#fff' }}
+                    style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'), color: 'var(--ds-surface, #FFFFFF)' }}
                     onClick={() => setApplyRec(rec)}
                   >
                     Apply →
@@ -1703,7 +1703,7 @@ function AiRecommendationsPane() {
                 )}
                 <button
                   type="button"
-                  style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', '#DCDFE4')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', '#FFFFFF'), color: token('color.text', '#172B4D') }}
+                  style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, #172B4D)') }}
                   onClick={() => setExpandedRec(isExpanded ? null : rec.id)}
                 >
                   {isExpanded ? 'Less' : 'Details'}
@@ -1711,7 +1711,7 @@ function AiRecommendationsPane() {
                 {!isApplied && (
                   <button
                     type="button"
-                    style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', '#DCDFE4')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', '#FFFFFF'), color: token('color.text', '#172B4D') }}
+                    style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, #172B4D)') }}
                     onClick={() => setAppliedRecs((prev) => new Set([...prev, rec.id]))}
                   >
                     Mark done
@@ -1752,7 +1752,7 @@ export default function ComponentsAdminPage() {
         <p
           style={{
             fontSize: 14,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             marginTop: token('space.100', '8px'),
             marginBottom: token('space.300', '24px'),
           }}

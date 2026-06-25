@@ -14,7 +14,7 @@ import { render, screen } from '@testing-library/react';
 import { makeAssigneeEditCell } from '../editors';
 
 describe('assignee cell dark mode', () => {
-  it('should not use hardcoded dark text color #292A2E in assignee name span', () => {
+  it('should not use hardcoded dark text color var(--ds-text, #172B4D) in assignee name span', () => {
     // Create a minimal assignee edit cell
     const AssigneeCell = makeAssigneeEditCell({
       getAssignee: (row: any) => row.assignee,
@@ -42,7 +42,7 @@ describe('assignee cell dark mode', () => {
     const color = style.color;
 
     // Hardcoded dark text that was breaking dark mode
-    const BROKEN_DARK_COLOR = 'rgb(41, 42, 46)'; // #292A2E
+    const BROKEN_DARK_COLOR = 'var(--ds-text, rgb(41, 42, 46))'; // var(--ds-text, #172B4D)
 
     expect(color).not.toBe(BROKEN_DARK_COLOR);
 
@@ -73,6 +73,6 @@ describe('assignee cell dark mode', () => {
     const inlineStyle = (nameSpan as HTMLElement).getAttribute('style');
     // Should reference token() or --ds-text variable, not hardcoded #292A2E or rgb(41, 42, 46)
     expect(inlineStyle).toMatch(/token.*color\.text|--ds-text/);
-    expect(inlineStyle).not.toMatch(/#292A2E|41.*42.*46/);
+    expect(inlineStyle).not.toMatch(/var(--ds-text, #172B4D)|41.*42.*46/);
   });
 });

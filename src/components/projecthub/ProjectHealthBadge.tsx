@@ -2,15 +2,15 @@ import type { ProjectHealth } from '@/types/projecthub';
 import { PROJECT_HEALTH_DISPLAY } from '@/types/projecthub';
 
 const HEALTH_STYLES_LIGHT: Record<string, { dot: string; text: string }> = {
-  on_track: { dot: 'var(--ds-text-success, #22C55E)', text: '#15803D' },
+  on_track: { dot: 'var(--ds-text-success, #22C55E)', text: 'var(--ds-background-success-bold, #1F845A)' },
   at_risk: { dot: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   off_track: { dot: 'var(--ds-text-danger, #EF4444)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
 };
 
 const HEALTH_STYLES_DARK: Record<string, { dot: string; text: string }> = {
-  on_track: { dot: '#4ADE80', text: '#86EFAC' },
-  at_risk: { dot: '#FBBF24', text: '#FDE68A' },
-  off_track: { dot: '#F87171', text: 'var(--ds-border-danger, #FCA5A5)' },
+  on_track: { dot: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success, #DFFCF0)' },
+  at_risk: { dot: 'var(--ds-background-warning-bold, #E2B203)', text: 'var(--ds-background-warning, #FFF7D6)' },
+  off_track: { dot: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-border-danger, #FCA5A5)' },
 };
 
 export function ProjectHealthBadge({ health }: { health: ProjectHealth }) {

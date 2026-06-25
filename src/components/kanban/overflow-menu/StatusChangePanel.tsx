@@ -29,7 +29,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
         position: 'absolute', left: '100%', top: 0, zIndex: 10000,
         width: 240, maxHeight: 400, display: 'flex', flexDirection: 'column',
         background: tk.surfaceBg, border: `1px solid ${tk.border}`,
-        borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.24)',
+        borderRadius: 8, boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.24))',
         overflow: 'hidden',
       }}
       onClick={e => e.stopPropagation()}
@@ -59,7 +59,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
         {KANBAN_COLUMNS.map(col => {
           const statuses = col.statuses.filter(s => !q || s.toLowerCase().includes(q));
           if (statuses.length === 0) return null;
-          const categoryDot = col.category === 'done' ? '#006644' : col.category === 'in_progress' ? '#0747A6' : '#5E6C84';
+          const categoryDot = col.category === 'done' ? 'var(--ds-text-success, #006644)' : col.category === 'in_progress' ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text-subtle, #44546F)';
           return (
             <div key={col.id}>
               <div style={{

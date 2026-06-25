@@ -68,7 +68,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
       position: 'fixed', bottom: 80, right: 24, width: 380, height: 520,
       background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', borderRadius: 12, zIndex: 51,
       border: `0.75px solid ${border}`,
-      boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.12)',
+      boxShadow: isDark ? '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.4))' : '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
     }}>
       {/* Header */}
@@ -84,7 +84,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           <div style={{ fontSize: 10, color: 'var(--fg-3)' }}>Knowledge assistant</div>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'var(--fg-3)' }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(15,23,42,0.04)'}
+          onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))'}
           onMouseLeave={e => e.currentTarget.style.background = 'none'}
         >
           <X size={16} />
@@ -154,7 +154,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
             border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'var(--cp-font-body)',
             background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-1)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined,
           }}
-          onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
+          onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.08))'; }}
           onBlur={e => { e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(0,0,0,0.06))'; e.currentTarget.style.boxShadow = 'none'; }}
         />
         <button onClick={handleSend} disabled={sending || !input.trim()} style={{

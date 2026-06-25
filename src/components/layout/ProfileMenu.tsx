@@ -147,7 +147,7 @@ export function ProfileMenu() {
             gap: 8,
             padding: '12px 16px',
             borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-            background: token('elevation.surface.sunken', '#F4F5F7'),
+            background: token('elevation.surface.sunken', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
           }}
         >
           <PresenceRing
@@ -173,7 +173,7 @@ export function ProfileMenu() {
             <div
               style={{
                 fontSize: 12,
-                color: token('color.text.subtle', '#6B778C'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -191,7 +191,7 @@ export function ProfileMenu() {
               fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.06em',
-              color: token('color.text.subtle', '#6B778C'),
+              color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
             }}
           >
             Account

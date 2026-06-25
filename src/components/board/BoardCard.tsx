@@ -20,7 +20,7 @@ const PRIORITY_BORDER_COLORS: Record<string, string> = {
   critical: 'var(--ds-text-danger, #ef4444)',
   high: 'var(--ds-text-warning, #f59e0b)',
   medium: 'var(--ds-text-brand, #3b82f6)',
-  low: '#c8ccd0'
+  low: 'var(--ds-border, #DFE1E6)'
 };
 
 export function BoardCard({ 
@@ -87,7 +87,7 @@ export function BoardCard({
           <span
             className="px-1.5 py-0.5 rounded text-[10px]"
             style={{
-              background: 'rgba(59, 130, 246, 0.1)',
+              background: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))',
               color: 'var(--ds-text-brand, #3b82f6)'
             }}
           >
@@ -104,7 +104,7 @@ export function BoardCard({
               className="h-full rounded-full transition-all"
               style={{
                 width: `${feature.progress_percentage}%`,
-                background: feature.progress_percentage === 100 ? '#0d9488' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))'
+                background: feature.progress_percentage === 100 ? 'var(--ds-chart-teal-bold, #0d9488)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))'
               }}
             />
           </div>

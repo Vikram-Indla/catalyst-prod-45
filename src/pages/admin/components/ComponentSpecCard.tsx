@@ -31,14 +31,14 @@ const REPO_ROOT = '/Users/vikramindla/Documents/GitHub/catalyst-prod-45';
 // ─── Hub utilities (mirrored from ComponentsAdminPage for consumer badges) ────
 
 const SPEC_HUB_COLORS: Record<string, string> = {
-  Projects:  '#0C66E4',
-  Products:  '#6E5DC6',
-  Home:      '#1F845A',
-  Incidents: '#AE2A19',
-  Admin:     '#626F86',
-  Shared:    '#758195',
-  Other:     '#9FADBC',
-  Deferred:  '#C7D1DB',
+  Projects:  'var(--ds-link, #0C66E4)',
+  Products:  'var(--ds-background-discovery-bold, #6E5DC6)',
+  Home:      'var(--ds-background-success-bold, #1F845A)',
+  Incidents: 'var(--ds-text-danger, #AE2A19)',
+  Admin:     'var(--ds-icon-subtle, #626F86)',
+  Shared:    'var(--ds-text-subtle, #44546F)',
+  Other:     'var(--ds-text-disabled, #8590A2)',
+  Deferred:  'var(--ds-border, #DFE1E6)',
 };
 
 function getHubForConsumer(filePath: string): string {
@@ -92,7 +92,7 @@ function VscodeLink({ path, label }: { path: string; label?: string }) {
     <a
       href={href}
       style={{
-        color: token('color.link', '#0C66E4'),
+        color: token('color.link', 'var(--ds-link, #0C66E4)'),
         textDecoration: 'none',
         fontFamily: 'var(--ds-font-family-code)',
         fontSize: 12,
@@ -110,14 +110,14 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
       <div
         style={{
           marginTop: token('space.100', '8px'),
-          border: `1px solid ${token('color.border', '#DCDFE4')}`,
+          border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
           borderRadius: 6,
           overflow: 'hidden',
         }}
       >
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
-            <tr style={{ background: token('color.background.neutral.subtle', '#F7F8F9') }}>
+            <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
               <th style={{ textAlign: 'left', padding: token('space.100', '8px'), fontWeight: 600 }}>Flag</th>
               <th style={{ textAlign: 'left', padding: token('space.100', '8px'), fontWeight: 600 }}>Default</th>
               <th style={{ textAlign: 'left', padding: token('space.100', '8px'), fontWeight: 600 }}>Description</th>
@@ -125,7 +125,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
           </thead>
           <tbody>
             {flags.map(flag => (
-              <tr key={flag.name} style={{ borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }}>
+              <tr key={flag.name} style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }}>
                 <td
                   style={{
                     padding: token('space.100', '8px'),
@@ -216,7 +216,7 @@ function ConsumerList({ name }: { name: string }) {
       >
         {visible.map(path => {
           const hub = getHubForConsumer(path);
-          const hubColor = SPEC_HUB_COLORS[hub] ?? '#9FADBC';
+          const hubColor = SPEC_HUB_COLORS[hub] ?? 'var(--ds-text-disabled, #8590A2)';
           return (
             <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span
@@ -301,7 +301,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
               target="_blank"
               rel="noreferrer"
               style={{
-                color: token('color.link', '#0C66E4'),
+                color: token('color.link', 'var(--ds-link, #0C66E4)'),
                 fontSize: 12,
                 textDecoration: 'none',
               }}
@@ -330,8 +330,8 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
           style={{
             padding: token('space.150', '12px'),
             borderRadius: 6,
-            background: token('color.background.warning', '#FFF7D6'),
-            color: token('color.text.warning', '#7F5F01'),
+            background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
+            color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
             fontSize: 13,
           }}
         >

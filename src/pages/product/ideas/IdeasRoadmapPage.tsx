@@ -58,7 +58,7 @@ function LoadingSkeleton({ isDark }: { isDark?: boolean }) {
       {[1, 2, 3, 4, 5].map(col => (
         <div key={col} style={{
           flex: 1, minWidth: 220, display: 'flex', flexDirection: 'column', gap: 8,
-          borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', padding: 12,
+          borderRadius: 8, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', padding: 12,
         }}>
           <div style={{ height: 20, width: 100, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, marginBottom: 8 }} />
           {[1, 2, 3].map(i => <SkeletonCard key={i} isDark={isDark} />)}
@@ -326,9 +326,9 @@ export default function IdeasRoadmapPage() {
       {toast && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: '#1E293B', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', padding: '8px 20px',
+          background: 'var(--ds-text, #172B4D)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', padding: '8px 20px',
           borderRadius: 8, fontSize: 13, fontWeight: 600, zIndex: 100,
-          boxShadow: '0 4px 12px rgba(0,0,0,.15)',
+          boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,.15))',
           animation: 'fadeInUp 250ms ease',
         }}>
           {toast}

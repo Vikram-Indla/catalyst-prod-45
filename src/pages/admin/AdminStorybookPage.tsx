@@ -10,7 +10,7 @@ const T = {
   textSubtle: 'var(--ds-text-subtle)',
   bgPage: 'var(--ds-background-accent-gray-subtlest)',
   border: 'var(--ds-border)',
-  code: '#f4f5f7',
+  code: 'var(--ds-background-neutral-subtle, #F4F5F7)',
 };
 
 const CodeBlock = ({ code }: { code: string }) => (
@@ -494,7 +494,7 @@ const columns = [
           }))}
         />
 
-        <div style={{ marginTop: '32px', padding: '16px', background: '#F4F5F7', borderRadius: '3px', borderLeft: '4px solid #0052CC' }}>
+        <div style={{ marginTop: '32px', padding: '16px', background: 'var(--ds-background-neutral-subtle, #F4F5F7)', borderRadius: '3px', borderLeft: '4px solid var(--ds-link, #0052CC)' }}>
           <p style={{ margin: '0', color: T.text, fontSize: '13px', lineHeight: '1.5' }}>
             <strong>Integration Note:</strong> All @Catalyst/* packages are symlinked into node_modules during local development. They are published to npm under the @Catalyst scope and installed as external dependencies in production. For the latest source code and issues, see the respective GitHub repositories.
           </p>

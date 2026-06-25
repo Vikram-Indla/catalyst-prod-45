@@ -220,7 +220,7 @@ export function TableToolbar({ editor, containerRef }: Props) {
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 6,
-        boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
+        boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
         zIndex: 2147483600,
         visibility: pos ? 'visible' : 'hidden',
       }}
@@ -365,7 +365,7 @@ function Dropdown({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 6,
-        boxShadow: '0 6px 20px rgba(9,30,66,0.18)',
+        boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
         padding: 4,
         display: 'flex',
         flexDirection: 'column',

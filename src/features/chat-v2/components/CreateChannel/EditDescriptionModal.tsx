@@ -161,7 +161,7 @@ export function EditDescriptionModal({
               height: 36,
               padding: '0 18px',
               background: !canSave ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success, #007A5A)',
-              color: !canSave ? 'var(--cv2-text-muted)' : '#FFFFFF',
+              color: !canSave ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
               border: 'none',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',

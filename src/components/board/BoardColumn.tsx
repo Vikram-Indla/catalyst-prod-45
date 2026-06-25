@@ -26,16 +26,16 @@ interface BoardColumnProps {
 
 // Column header colors from spec
 const COLUMN_HEADER_COLORS: Record<WorkflowStatus, string> = {
-  backlog: '#c8ccd0',
-  design: '#0d9488',
+  backlog: 'var(--ds-border, #DFE1E6)',
+  design: 'var(--ds-chart-teal-bold, #0d9488)',
   ready_for_dev: 'var(--ds-text-brand, #3b82f6)',
   in_development: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   qa_testing: 'var(--ds-text-warning, #f59e0b)',
-  uat_testing: '#9ca3af',
-  in_beta: '#0d9488',
-  ready_for_prod: '#0d9488',
-  in_production: '#0f766e',
-  on_hold: '#737373'
+  uat_testing: 'var(--ds-text-disabled, #8590A2)',
+  in_beta: 'var(--ds-chart-teal-bold, #0d9488)',
+  ready_for_prod: 'var(--ds-chart-teal-bold, #0d9488)',
+  in_production: 'var(--ds-chart-teal-bolder, #0f766e)',
+  on_hold: 'var(--ds-text-subtlest, #626F86)'
 };
 
 export function BoardColumn({
@@ -130,8 +130,8 @@ export function BoardColumn({
             'flex-1 p-2 rounded-b-lg min-h-[200px]',
             'bg-gray-50 dark:bg-gray-900',
             isDragOver && 'bg-yellow-50 dark:bg-yellow-900/20',
-            isAtLimit && 'bg-[rgba(245,158,11,0.1)]',
-            isOverLimit && 'bg-[rgba(239,68,68,0.1)]'
+            isAtLimit && 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))]',
+            isOverLimit && 'bg-[var(--ds-background-danger, rgba(239,68,68,0.1))]'
           )}
         >
           {features.map((feature) => (

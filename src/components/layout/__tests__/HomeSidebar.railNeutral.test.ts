@@ -16,11 +16,11 @@ import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 
 const HUBS_DIR = resolve(__dirname, '../../../assets/icons/hubs');
-const NEUTRAL = '#44546F';
+const NEUTRAL = 'var(--ds-icon, #44546F)';
 const HUBS = ['home', 'strategy', 'ideation', 'product', 'project', 'release', 'test', 'incident', 'tasks', 'plan', 'wiki'];
 
 // Allowed: the neutral ink + white + shorthand white. Everything else is an accent.
-const ALLOWED = new Set([NEUTRAL.toLowerCase(), '#ffffff', '#fff']);
+const ALLOWED = new Set([NEUTRAL.toLowerCase(), 'var(--ds-surface, #FFFFFF)', 'var(--ds-surface, #FFFFFF)']);
 
 describe('collapsed Home rail is monochrome (neutral ink only)', () => {
   it.each(HUBS)('%s-outline.svg uses only the neutral ink, no accent', (hub) => {

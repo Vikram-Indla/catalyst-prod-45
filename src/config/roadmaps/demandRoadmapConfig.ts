@@ -149,7 +149,7 @@ export const demandRoadmapConfig: RoadmapConfig = {
 
 header: {
     icon: 'MIM',
-    iconGradient: 'linear-gradient(135deg, var(--cp-workstream-catalyst-primary, #2563eb), #60a5fa)',
+    iconGradient: 'linear-gradient(135deg, var(--cp-workstream-catalyst-primary, #2563eb), var(--ds-background-information-bold, #0C66E4))',
   },
 
   legend: {

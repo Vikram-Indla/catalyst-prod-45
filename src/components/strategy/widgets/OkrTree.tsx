@@ -31,7 +31,7 @@ export function OkrTree() {
       return {
         id: theme.id,
         name: theme.title,
-        color: '#1E40AF', // All theme dots use exec-blue-700
+        color: 'var(--ds-link-pressed, #1e40af)', // All theme dots use exec-blue-700
         progress: avgProgress,
         goals: themeGoals.map(g => ({
           id: g.id,

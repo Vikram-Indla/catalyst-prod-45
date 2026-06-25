@@ -94,13 +94,13 @@ function filterTree(items: WorkItem[], search: string, filters: Filters): WorkIt
 
 /* ── Avatar color palette ── */
 const FILTER_AVATAR_COLORS = [
-  'var(--cp-teal-60, #0D9488)',
+  'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
   'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   'var(--ds-text-success, var(--cp-success, #16A34A))',
   'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-  token('color.background.accent.blue.subtlest', '#0284C7'),
-  'var(--quality-high, #059669)',
+  token('color.background.accent.blue.subtlest', 'var(--ds-link, #0284c7)'),
+  'var(--quality-high, var(--ds-background-success-bold, #059669))',
   token('color.background.accent.red.subtlest', '#BE123C'),
   'var(--ds-background-brand-bold-hovered, #1D4ED8)',
   'var(--ds-background-accent-teal-subtlest, #0F766E)'
@@ -123,18 +123,18 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       style={{
         height: 32, padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`, display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px'),
         fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-        color: active ? token('color.text.brand', 'var(--cp-workstream-catalyst-primary, #2563EB)') : token('color.text.subtle', 'var(--cp-text-secondary)'),
-        background: active ? token('color.background.selected', 'rgba(37,99,235,0.06)') : token('elevation.surface', 'var(--cp-bg-elevated)'),
-        border: `1px solid ${active ? token('color.border.selected', 'rgba(37,99,235,0.3)') : token('color.border', 'var(--cp-border-default)')}`,
+        color: active ? token('color.text.brand', 'var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb))') : token('color.text.subtle', 'var(--cp-text-secondary)'),
+        background: active ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.06))') : token('elevation.surface', 'var(--cp-bg-elevated)'),
+        border: `1px solid ${active ? token('color.border.selected', 'var(--ds-background-information, rgba(37,99,235,0.3))') : token('color.border', 'var(--cp-border-default)')}`,
         borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
-        boxShadow: isOpen ? `0 0 0 3px ${token('color.border.focused', 'rgba(37,99,235,0.08)')}` : 'none',
+        boxShadow: isOpen ? `0 0 0 3px ${token('color.border.focused', 'var(--ds-background-information, rgba(37,99,235,0.08))')}` : 'none',
       }}
     >
       {label}
       {active && (
         <span style={{
-          fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
           borderRadius: 9999, minWidth: 16, height: 16, display: 'inline-flex',
           alignItems: 'center', justifyContent: 'center', padding: '0 4px',
         }}>{values.length}</span>
@@ -158,7 +158,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
 const STATUS_DOT_COLORS: Record<string, string> = {
   'Done': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Closed': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Resolved': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Released': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'In Production': 'var(--ds-text-success, var(--cp-success, #16A34A))',
   'In Development': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Beta': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In QA': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'UAT Ready': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Review': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  'Ready for Production': 'var(--cp-teal-60, #0D9488)', 'Ready for QA': 'var(--cp-teal-60, #0D9488)',
+  'Ready for Production': 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', 'Ready for QA': 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
   'Backlog': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', 'To Do': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', 'Open': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
   'On Hold': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Info': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Information': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Blocked': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
@@ -210,7 +210,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
       <div ref={ref} style={{
         position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: variant === 'assignee' ? 280 : 260,
         background: token('elevation.surface.overlay', 'var(--cp-bg-elevated)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 12,
-        boxShadow: token('elevation.shadow.overlay', 'var(--cp-shadow-popover, 0 12px 40px rgba(0,0,0,0.10))'), zIndex: 100, maxHeight: 360,
+        boxShadow: token('elevation.shadow.overlay', 'var(--cp-shadow-popover, 0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.10)))'), zIndex: 100, maxHeight: 360,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Search */}
@@ -221,7 +221,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
               height: 32, background: token('color.background.neutral.subtle', 'var(--cp-bg-page)'), borderRadius: 6, border: '1px solid transparent',
               transition: 'border-color 80ms',
             }}>
-              <Search size={13} color={token('color.icon.subtle', '#94A3B8')} />
+              <Search size={13} color={token('color.icon.subtle', 'var(--ds-text-disabled, #8590A2)')} />
               <input
                 value={q} onChange={e => setQ(e.target.value)}
                 placeholder="Search..."
@@ -237,8 +237,8 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
 
         {/* Select all / Clear */}
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`, borderBottom: `1px solid ${token('color.border', 'var(--cp-border-default)')}` }}>
-          <button onClick={selectAll} style={{ fontSize: 11, fontWeight: 500, color: token('color.text.brand', '#2563EB'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
-          <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: token('color.text.subtle', '#64748B'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
+          <button onClick={selectAll} style={{ fontSize: 11, fontWeight: 500, color: token('color.text.brand', 'var(--ds-link, #2563eb)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
+          <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
         </div>
 
         {/* Options */}
@@ -252,10 +252,10 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                   display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
                   cursor: 'pointer', fontSize: 13, color: token('color.text', 'var(--cp-text-primary)'), fontFamily: 'var(--cp-font-body)',
                   transition: 'background 80ms', borderRadius: 0,
-                  background: isSelected ? token('color.background.selected', 'rgba(37,99,235,0.04)') : 'transparent',
+                  background: isSelected ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.04))') : 'transparent',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? token('color.background.selected.hovered', 'rgba(37,99,235,0.08)') : token('color.background.neutral.subtle.hovered', 'var(--cp-interact-hover)'))}
-                onMouseLeave={e => (e.currentTarget.style.background = isSelected ? token('color.background.selected', 'rgba(37,99,235,0.04)') : 'transparent')}
+                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? token('color.background.selected.hovered', 'var(--ds-background-information, rgba(37,99,235,0.08))') : token('color.background.neutral.subtle.hovered', 'var(--cp-interact-hover)'))}
+                onMouseLeave={e => (e.currentTarget.style.background = isSelected ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.04))') : 'transparent')}
               >
                 <div style={{
                   width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-disabled, #CBD5E1)'}`,
@@ -263,7 +263,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                   flexShrink: 0, transition: 'all 80ms',
                 }}>
                   {isSelected && (
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.2 7.5L8 3" stroke="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.2 7.5L8 3" stroke="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   )}
                 </div>
                 <input type="checkbox" checked={isSelected}
@@ -283,7 +283,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                         <img src={avatarUrl} alt={opt} loading="lazy" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                       ) : (
                         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
+                          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>{initials}</span>
                         </div>
                       )}
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt}</span>
@@ -307,7 +307,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
 
                 {variant === 'release' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: 4, background: 'var(--cp-teal-60, #0D9488)', flexShrink: 0 }} />
+                    <div style={{ width: 6, height: 6, borderRadius: 4, background: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', flexShrink: 0 }} />
                     <span style={{ fontSize: 12 }}>{opt}</span>
                   </div>
                 )}
@@ -391,7 +391,7 @@ export default function HierarchyPage() {
       <div style={{
         height: 48, padding: `0 ${token('space.300', '24px')}`, borderBottom: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, background: token('elevation.surface', 'var(--cp-bg-elevated)'),
         display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
-        boxShadow: token('elevation.shadow.raised', '0 1px 2px rgba(0,0,0,0.03)'),
+        boxShadow: token('elevation.shadow.raised', '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.03))'),
       }}>
         {/* Search */}
         <div style={{
@@ -399,10 +399,10 @@ export default function HierarchyPage() {
           padding: `0 ${token('space.100', '8px')}`, background: token('color.background.neutral.subtle', 'var(--cp-bg-page)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 6,
           transition: 'border-color 80ms, box-shadow 80ms',
         }}
-          onFocus={e => { e.currentTarget.style.borderColor = token('color.border.focused', '#2563EB'); e.currentTarget.style.boxShadow = `0 0 0 3px ${token('color.border.focused', 'rgba(37,99,235,0.08)')}`; }}
+          onFocus={e => { e.currentTarget.style.borderColor = token('color.border.focused', 'var(--ds-link, #2563eb)'); e.currentTarget.style.boxShadow = `0 0 0 3px ${token('color.border.focused', 'var(--ds-background-information, rgba(37,99,235,0.08))')}`; }}
           onBlur={e => { e.currentTarget.style.borderColor = token('color.border', 'var(--cp-border-default)'); e.currentTarget.style.boxShadow = 'none'; }}
         >
-          <Search size={14} color={token('color.icon.subtle', '#94A3B8')} style={{ flexShrink: 0 }} />
+          <Search size={14} color={token('color.icon.subtle', 'var(--ds-text-disabled, #8590A2)')} style={{ flexShrink: 0 }} />
           <input
             value={searchInput}
             onChange={e => handleSearchChange(e.target.value)}
@@ -424,9 +424,9 @@ export default function HierarchyPage() {
           style={{
             height: 34, padding: `0 ${token('space.150', '12px')}`, display: 'flex', alignItems: 'center', gap: token('space.075', '6px'),
             fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-            color: activeFilterCount > 0 ? token('color.text.brand', '#2563EB') : token('color.text.subtle', '#64748B'),
+            color: activeFilterCount > 0 ? token('color.text.brand', 'var(--ds-link, #2563eb)') : token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
             background: activeFilterCount > 0 ? token('color.background.selected', 'var(--cp-interact-selected)') : token('elevation.surface', 'var(--cp-bg-elevated)'),
-            border: `1px solid ${activeFilterCount > 0 ? token('color.border.selected', '#2563EB') : token('color.border', 'var(--cp-border-default)')}`,
+            border: `1px solid ${activeFilterCount > 0 ? token('color.border.selected', 'var(--ds-link, #2563eb)') : token('color.border', 'var(--cp-border-default)')}`,
             borderRadius: 6, cursor: 'pointer', transition: 'all 80ms ease',
           }}
         >
@@ -434,7 +434,7 @@ export default function HierarchyPage() {
           Filter
           {activeFilterCount > 0 && (
             <span style={{
-              fontSize: 10, fontWeight: 700, background: token('color.background.brand.bold', '#2563EB'), color: token('color.text.inverse', '#ffffff'),
+              fontSize: 10, fontWeight: 700, background: token('color.background.brand.bold', 'var(--ds-link, #2563eb)'), color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'),
               borderRadius: 9999, minWidth: 18, height: 18, display: 'inline-flex',
               alignItems: 'center', justifyContent: 'center', padding: `0 ${token('space.050', '4px')}`,
             }}>{activeFilterCount}</span>
@@ -575,13 +575,13 @@ export default function HierarchyPage() {
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0 }}>Failed to load work items</p>
               <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', margin: 0 }}>There was an error fetching the work items.</p>
-              <button onClick={() => refetch()} style={{ height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: token('color.text.inverse', '#ffffff'), background: token('color.background.brand.bold', '#2563EB'), border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: token('space.075', '6px') }}>
+              <button onClick={() => refetch()} style={{ height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'), background: token('color.background.brand.bold', 'var(--ds-link, #2563eb)'), border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: token('space.075', '6px') }}>
                 <RefreshCw size={14} /> Retry
               </button>
             </div>
           ) : filteredItems.length === 0 ? (
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9))))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Search size={20} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
               </div>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', margin: 0 }}>
@@ -593,7 +593,7 @@ export default function HierarchyPage() {
               {(search || activeFilterCount > 0) && (
                 <button onClick={handleClearAllFilters} style={{
                   height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-                  color: token('color.text.subtle', '#64748B'), background: token('elevation.surface', 'var(--cp-bg-elevated)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 6, cursor: 'pointer',
+                  color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'), background: token('elevation.surface', 'var(--cp-bg-elevated)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 6, cursor: 'pointer',
                 }}>
                   Clear filters
                 </button>

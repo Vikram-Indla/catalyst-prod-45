@@ -231,7 +231,7 @@ function HealthCell({ row }: { row: BacklogItem }) {
             background: 'var(--ds-surface-overlay, #FFFFFF)',
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 6,
-            boxShadow: '0 8px 28px rgba(9,30,66,0.25)',
+            boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
             padding: 16,
             minWidth: 320,
           }}
@@ -301,9 +301,9 @@ function DragHandleCell({ row }: { row: BacklogItem }) {
             width: 16,
             height: 20,
             borderRadius: 3,
-            background: token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'),
+            background: token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'),
             cursor: 'grab',
-            color: token('color.icon.subtle', '#626F86'),
+            color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'),
           }}
         >
           {/* 6-dot grip — no ADS equivalent; inline SVG */}
@@ -326,7 +326,7 @@ function DragHandleCell({ row }: { row: BacklogItem }) {
             width: trRect.width,
             top: dropEdge === 'top' ? trRect.top - 1 : trRect.bottom - 1,
             height: 2,
-            background: token('color.border.brand', '#0C66E4'),
+            background: token('color.border.brand', 'var(--ds-link, #0C66E4)'),
             zIndex: 9999,
             pointerEvents: 'none',
             borderRadius: 1,
@@ -613,7 +613,7 @@ const BANNED_COLUMN_IDS = new Set([
 // token; directed to white by Vikram 2026-05-21.)
 const BG_DEFAULT = 'var(--ds-surface, #FFFFFF)';
 const BG_SOLIDS: Array<{ name: string; value: string }> = [
-  { name: 'Sky',     value: 'var(--ds-surface, #FFFFFF)' }, // was blue (#E9F2FE); updated to white 2026-05-21
+  { name: 'Sky',     value: 'var(--ds-surface, #FFFFFF)' }, // was blue (var(--ds-background-selected, #E9F2FF)); updated to white 2026-05-21
   { name: 'Mint',    value: 'var(--ds-background-accent-green-subtlest, #DCFFF1)' },
   { name: 'Lemon',   value: 'var(--ds-background-accent-yellow-subtlest, #FFF7D6)' },
   { name: 'Peach',   value: 'var(--ds-background-accent-orange-subtlest, #FFE2D5)' },
@@ -632,7 +632,7 @@ const BG_GRADIENTS: Array<{ name: string; value: string }> = [
   { name: 'Sunset',   value: 'linear-gradient(135deg, var(--ds-icon-accent-red, #C9372C), var(--ds-background-accent-magenta-bolder, #E54787))' },
   { name: 'Forest',   value: 'linear-gradient(135deg, var(--ds-icon-accent-green, #1F845A), var(--ds-icon-accent-green, #22A06B))' },
   { name: 'Lavender', value: 'linear-gradient(135deg, var(--ds-icon-accent-purple, #8270DB), var(--ds-icon-accent-purple, #5E4DB2))' },
-  { name: 'Slate',    value: 'linear-gradient(135deg, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)), var(--ds-text-subtlest, #6B6E76))' },
+  { name: 'Slate',    value: 'linear-gradient(135deg, var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F))), var(--ds-text-subtlest, #6B6E76))' },
 ];
 
 interface ProjectBackground {
@@ -2630,7 +2630,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   height: 16,
                   borderRadius: 3,
                   background: bg,
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
                   fontSize: 10,
                   fontWeight: 700,
                 }}
@@ -3593,7 +3593,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     width: 32, height: 32, padding: 0,
     border: 'none', background: 'transparent', borderRadius: 3,
-    color: token('color.text.subtle', '#42526E'), cursor: 'pointer',
+    color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), cursor: 'pointer',
   };
 
   // P1 #8 — Settings (view-options) icon button. Separate from "Manage
@@ -3744,7 +3744,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // chrome) — twice Jira's. Reducing to {x:24, y:16} so the card
       // edge aligns with toolbar/table inset measured from Jira.
       cardPadding={{ x: 24, y: 16 }}
-      cardBorder="1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))"
+      cardBorder="1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))"
       // Apr 27 2026 (jira-compare regression D-001/002/003): chrome-band
       // slot. Renders Projects breadcrumb + project icon + H1 ABOVE the
       // white card.
@@ -3791,7 +3791,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     height: 28,
                     border: 'none',
                     background: 'transparent',
-                    color: token('color.text.subtle', '#6B6E76'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                     borderRadius: 3,
                     cursor: 'pointer',
                     display: 'inline-flex',
@@ -3834,7 +3834,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     height: 28,
                     border: 'none',
                     background: 'transparent',
-                    color: token('color.text.subtle', '#6B6E76'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                     borderRadius: 3,
                     cursor: 'pointer',
                     display: 'inline-flex',
@@ -3908,7 +3908,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         display: askCatyOpen ? 'none' : 'flex',
         gap: 12,
         alignItems: 'center',
-        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
         transition: 'padding 180ms ease',
       }}>
         {/* Apr 27, 2026 — REVERTED toolbar Create button. Jira's list view
@@ -4047,7 +4047,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           height: 32,
           padding: '0 12px',
           marginLeft: 8,
-          color: token('color.text.subtlest', '#626F86'),
+          color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
           fontSize: 12,
           fontWeight: 500,
           whiteSpace: 'nowrap',
@@ -4330,9 +4330,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   width: 56,
                   height: 56,
                   borderRadius: '50%',
-                  background: token('color.background.neutral', '#F1F2F4'),
+                  background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
                   marginBottom: 16,
-                  color: token('color.icon.subtle', '#626F86'),
+                  color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'),
                 }}>
                   <AkSearchIcon label="" size="medium" />
                 </div>
@@ -4340,7 +4340,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   display: 'block',
                   fontSize: 16,
                   fontWeight: 600,
-                  color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                  color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)))'),
                   marginBottom: 8,
                   textAlign: 'center',
                 }}>
@@ -4350,7 +4350,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   display: 'block',
                   fontSize: 14,
                   fontWeight: 400,
-                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))'),
                   textAlign: 'center',
                   marginBottom: 16,
                 }}>
@@ -4369,13 +4369,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       padding: '4px 12px',
                       fontSize: 14,
                       fontWeight: 500,
-                      color: token('color.link', '#0C66E4'),
+                      color: token('color.link', 'var(--ds-link, #0C66E4)'),
                       background: 'transparent',
-                      border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                      border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
                       borderRadius: 3,
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'))}
+                    onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'))}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     Clear filters
@@ -4613,13 +4613,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       width: 24, height: 24, borderRadius: '50%',
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 12, fontWeight: 700,
-                      background: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+                      background: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
                       color: bulkWizardStep >= s ? 'var(--ds-text-inverse, #fff)' : 'var(--ds-text-subtle, #42526E)',
                     }}>{s}</span>
                     <span style={{ fontSize: 12, color: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtlest, #7A869A)', fontWeight: 500 }}>
                       {s === 1 ? 'Choose action' : 'Configure & confirm'}
                     </span>
-                    {s < 2 && <span style={{ flex: 1, height: 1, background: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))' }} />}
+                    {s < 2 && <span style={{ flex: 1, height: 1, background: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))' }} />}
                   </React.Fragment>
                 ))}
               </div>
@@ -4638,7 +4638,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       style={{
                         display: 'flex', alignItems: 'flex-start', gap: 12,
                         padding: '12px 16px', borderRadius: 6, cursor: 'pointer',
-                        border: `2px solid ${bulkWizardAction === opt.id ? 'var(--ds-link, #0C66E4)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'}`,
+                        border: `2px solid ${bulkWizardAction === opt.id ? 'var(--ds-link, #0C66E4)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))'}`,
                         background: bulkWizardAction === opt.id ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface-sunken, #FAFBFC)',
                         transition: 'border-color 80ms, background 80ms',
                       }}
@@ -4653,7 +4653,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       />
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 4 }}>{opt.label}</div>
-                        <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>{opt.description}</div>
+                        <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))' }}>{opt.description}</div>
                       </div>
                     </label>
                   ))}
@@ -4844,8 +4844,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             top: projectMenuAnchor.top,
             left: projectMenuAnchor.left,
             zIndex: 9001,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
             borderRadius: 4,
             boxShadow: 'var(--ds-shadow-overlay, 0 4px 16px rgba(9, 30, 66, 0.16))',
             minWidth: 280,
@@ -4878,7 +4878,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             { id: 'delete', label: 'Delete project', danger: true, onClick: () => { setDeleteConfirmText(''); setDeleteOpen(true); } },
           ].map((item) => {
             if ((item as any).divider) {
-              return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '8px 0' }} />;
+              return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))'), margin: '8px 0' }} />;
             }
             return (
               <button
@@ -4900,8 +4900,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   fontWeight: 400,
                   fontFamily: 'inherit',
                   color: (item as any).danger
-                    ? token('color.text.danger', '#AE2A19')
-                    : token('color.text', '#292A2E'),
+                    ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+                    : token('color.text', 'var(--ds-text, #172B4D)'),
                   cursor: 'pointer',
                 }}
                 onMouseEnter={(e) => {
@@ -4955,7 +4955,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           style={{
             width: 480,
             maxWidth: 'calc(100vw - 48px)',
-            background: token('elevation.surface', '#FFFFFF'),
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
             borderRadius: 8,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex',
@@ -4980,7 +4980,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 fontSize: 20,
                 fontWeight: 653,
                 letterSpacing: '-0.003em',
-                color: token('color.text', '#292A2E'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
             >
               Add people to {pageTitle}
@@ -5000,7 +5000,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 height: 32,
                 border: 'none',
                 background: 'transparent',
-                color: token('color.text.subtle', '#6B6E76'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 cursor: 'pointer',
                 borderRadius: 3,
                 display: 'inline-flex',
@@ -5021,11 +5021,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   display: 'block',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: token('color.text.subtle', '#6B6E76'),
+                  color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                   marginBottom: 4,
                 }}
               >
-                Names or emails <span style={{ color: token('color.text.danger', '#AE2A19') }}>*</span>
+                Names or emails <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span>
               </label>
               <Textfield
                 id="add-people-emails"
@@ -5042,11 +5042,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   display: 'block',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: token('color.text.subtle', '#6B6E76'),
+                  color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                   marginBottom: 4,
                 }}
               >
-                Role <span style={{ color: token('color.text.danger', '#AE2A19') }}>*</span>
+                Role <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span>
               </label>
               <button
                 type="button"
@@ -5063,10 +5063,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   width: '100%',
                   height: 36,
                   padding: '0 12px',
-                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
                   borderRadius: 3,
-                  background: token('elevation.surface', '#FFFFFF'),
-                  color: token('color.text', '#292A2E'),
+                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                  color: token('color.text', 'var(--ds-text, #172B4D)'),
                   fontSize: 14,
                   fontWeight: 400,
                   fontFamily: 'inherit',
@@ -5081,7 +5081,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               style={{
                 margin: 0,
                 fontSize: 12,
-                color: token('color.text.subtlest', '#6B778C'),
+                color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               }}
             >
               Each person you add will get access to this project.
@@ -5095,7 +5095,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               justifyContent: 'flex-end',
               gap: 8,
               padding: '12px 24px 24px',
-              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
             }}
           >
             <Button
@@ -5201,7 +5201,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           style={{
             width: 400,
             maxWidth: 'calc(100vw - 48px)',
-            background: token('elevation.surface', '#FFFFFF'),
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
             borderRadius: 8,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex',
@@ -5225,7 +5225,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 fontSize: 20,
                 fontWeight: 653,
                 letterSpacing: '-0.003em',
-                color: token('color.text', '#292A2E'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
             >
               Link contributing teams
@@ -5237,7 +5237,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               onClick={() => { setLinkedTeamsOpen(false); setLinkedTeamsSearch(''); }}
               style={{
                 width: 32, height: 32, border: 'none', background: 'transparent',
-                color: token('color.text.subtle', '#6B6E76'), cursor: 'pointer',
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), cursor: 'pointer',
                 borderRadius: 3, display: 'inline-flex', alignItems: 'center',
                 justifyContent: 'center',
               }}
@@ -5248,7 +5248,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
           {/* Body — Jira copy adapted: "space" → "project". */}
           <div style={{ padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#292A2E') }}>
+            <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
               Add the teams that work in this project, so everyone knows who to go to for help.
             </p>
             <Textfield
@@ -5258,7 +5258,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               value={linkedTeamsSearch}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLinkedTeamsSearch(e.target.value)}
               elemBeforeInput={
-                <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
+                <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), display: 'flex', alignItems: 'center' }}>
                   <AkSearchIcon label="" size="small" />
                 </span>
               }
@@ -5273,7 +5273,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               display: 'flex',
               justifyContent: 'flex-end',
               gap: 8,
-              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
             }}
           >
             <Button appearance="subtle" onClick={() => { setLinkedTeamsOpen(false); setLinkedTeamsSearch(''); }}>
@@ -5327,7 +5327,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         <div
           style={{
             width: 480, maxWidth: 'calc(100vw - 48px)',
-            background: token('elevation.surface', '#FFFFFF'),
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
             borderRadius: 8,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex', flexDirection: 'column',
@@ -5344,7 +5344,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               style={{
                 margin: 0, fontSize: 20, fontWeight: 653,
                 letterSpacing: '-0.003em',
-                color: token('color.text.warning', '#7F5F01'),
+                color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
               }}
             >
               Archive project?
@@ -5352,7 +5352,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           </div>
 
           <div style={{ padding: '0 24px 16px' }}>
-            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#292A2E'), lineHeight: '20px' }}>
+            <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '20px' }}>
               <strong>{pageTitle}</strong> will be archived. Issues stay accessible from search and links, but the project disappears from the active projects list. You can unarchive it later.
             </p>
           </div>
@@ -5361,7 +5361,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             style={{
               padding: '12px 24px 16px',
               display: 'flex', justifyContent: 'flex-end', gap: 8,
-              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
             }}
           >
             <Button appearance="subtle" onClick={() => setArchiveOpen(false)}>Cancel</Button>
@@ -5413,7 +5413,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         <div
           style={{
             width: 480, maxWidth: 'calc(100vw - 48px)',
-            background: token('elevation.surface', '#FFFFFF'),
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
             borderRadius: 8,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9, 30, 66, 0.25))',
             display: 'flex', flexDirection: 'column',
@@ -5422,7 +5422,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         >
           {/* Header — danger appearance. */}
           <div style={{ padding: '24px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ color: token('color.icon.danger', '#AE2A19'), display: 'inline-flex' }}>
+            <span style={{ color: token('color.icon.danger', 'var(--ds-text-danger, #AE2A19)'), display: 'inline-flex' }}>
               <AkWarningIcon label="" size="medium" />
             </span>
             <h2
@@ -5430,7 +5430,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               style={{
                 margin: 0, fontSize: 20, fontWeight: 653,
                 letterSpacing: '-0.003em',
-                color: token('color.text.danger', '#AE2A19'),
+                color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
               }}
             >
               Delete project?
@@ -5438,7 +5438,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           </div>
 
           <div style={{ padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#292A2E'), lineHeight: '20px' }}>
+            <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '20px' }}>
               This will permanently delete <strong>{pageTitle}</strong> and all of its issues, releases, and sprints. This action cannot be undone.
             </p>
             <div>
@@ -5448,11 +5448,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   display: 'block',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: token('color.text.subtle', '#6B6E76'),
+                  color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                   marginBottom: 4,
                 }}
               >
-                Type <code style={{ background: token('color.background.neutral', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), padding: '0 4px', borderRadius: 3, fontFamily: 'inherit' }}>{projectKey}</code> to confirm
+                Type <code style={{ background: token('color.background.neutral', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))'), padding: '0 4px', borderRadius: 3, fontFamily: 'inherit' }}>{projectKey}</code> to confirm
               </label>
               <Textfield
                 id="delete-project-confirm"
@@ -5468,7 +5468,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             style={{
               padding: '12px 24px 16px',
               display: 'flex', justifyContent: 'flex-end', gap: 8,
-              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
             }}
           >
             <Button appearance="subtle" onClick={() => { setDeleteOpen(false); setDeleteConfirmText(''); }}>Cancel</Button>
@@ -5522,8 +5522,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             zIndex: 9001,
             width: 350,
             maxHeight: 500,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
             borderRadius: 8,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9, 30, 66, 0.18))',
             display: 'flex',
@@ -5541,7 +5541,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 margin: 0,
                 fontSize: 16,
                 fontWeight: 653,
-                color: token('color.text', '#292A2E'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
             >
               Project background
@@ -5552,7 +5552,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               onClick={() => setBgPickerAnchor(null)}
               style={{
                 width: 24, height: 24, border: 'none', background: 'transparent',
-                color: token('color.text.subtle', '#6B6E76'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 cursor: 'pointer', borderRadius: 3, display: 'inline-flex',
                 alignItems: 'center', justifyContent: 'center',
               }}
@@ -5565,7 +5565,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           <div style={{ padding: '8px 16px 12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
             {/* Solid colors section */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B6E76'), marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), marginBottom: 8 }}>
                 Solid colors
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
@@ -5599,8 +5599,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                         borderRadius: 6,
                         background: sw.value,
                         border: isActive
-                          ? `2px solid ${token('color.border.selected', '#0C66E4')}`
-                          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                          ? `2px solid ${token('color.border.selected', 'var(--ds-link, #0C66E4)')}`
+                          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
                         cursor: 'pointer',
                         padding: 0,
                       }}
@@ -5612,7 +5612,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
             {/* Gradients section */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B6E76'), marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), marginBottom: 8 }}>
                 Gradients
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
@@ -5645,8 +5645,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                         borderRadius: 6,
                         background: gr.value,
                         border: isActive
-                          ? `2px solid ${token('color.border.selected', '#0C66E4')}`
-                          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                          ? `2px solid ${token('color.border.selected', 'var(--ds-link, #0C66E4)')}`
+                          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
                         cursor: 'pointer',
                         padding: 0,
                       }}
@@ -5661,7 +5661,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           <div
             style={{
               padding: '8px 16px 12px',
-              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
               display: 'flex',
               justifyContent: 'flex-end',
             }}
@@ -5831,9 +5831,9 @@ function GroupByControl({
           height: 32,
           padding: '0 12px',
           borderRadius: 3,
-          border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-          background: (isOpen || value !== 'none') ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
-          color: (isOpen || value !== 'none') ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
+          border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
+          background: (isOpen || value !== 'none') ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          color: (isOpen || value !== 'none') ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
           fontSize: 13,
           fontWeight: 500,
           fontFamily: 'inherit',
@@ -5860,10 +5860,10 @@ function GroupByControl({
             top: anchor.top,
             left: anchor.left,
             minWidth: 180,
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
             borderRadius: 4,
-            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
             padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
@@ -5891,11 +5891,11 @@ function GroupByControl({
                   border: 'none',
                   outline: 'none',
                   background: active
-                    ? token('color.background.selected', '#E9F2FF')
+                    ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
                     : focused
                       ? token('color.background.neutral.subtle.hovered', '#091E4208')
                       : 'transparent',
-                  color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#292A2E'),
+                  color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
                   fontWeight: active ? 500 : 400,
                   fontSize: 14,
                   fontFamily: 'inherit',
@@ -6399,13 +6399,13 @@ function InlineGroupCreateRow({
             border: 'none',
             borderRadius: 3,
             background: 'transparent',
-            color: token('color.text.subtle', '#42526E'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             fontSize: 12,
             fontFamily: 'inherit',
             cursor: 'pointer',
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <JiraIssueTypeIcon type={issueType} size={20} />
@@ -6424,10 +6424,10 @@ function InlineGroupCreateRow({
               minWidth: 200,
               maxHeight: '60vh',
               overflowY: 'auto',
-              background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
               padding: '8px 0',
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
@@ -6457,7 +6457,7 @@ function InlineGroupCreateRow({
                     border: 'none',
                     outline: 'none',
                     background: active
-                      ? token('color.background.selected', '#E9F2FF')
+                      ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
                       : focused
                         ? token('color.background.neutral.subtle.hovered', '#091E4208')
                         : 'transparent',
@@ -6465,7 +6465,7 @@ function InlineGroupCreateRow({
                     // selected AND hovered/focused states (Jira parity). boxShadow
                     // inset doesn't shift layout, so content alignment is preserved.
                     boxShadow: highlight ? 'inset 3px 0 0 0 var(--ds-border-focused, #0C66E4)' : undefined,
-                    color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#292A2E'),
+                    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
                     fontWeight: active ? 500 : 400,
                     fontSize: 14,
                     fontFamily: 'inherit',
@@ -6497,7 +6497,7 @@ function InlineGroupCreateRow({
           outline: 'none',
           background: 'transparent',
           fontSize: 14,
-          color: token('color.text', '#292A2E'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'),
           fontFamily: 'inherit',
         }}
       />
@@ -6520,20 +6520,20 @@ function InlineGroupCreateRow({
             height: 28,
             padding: 0,
             border: dateMenuOpen
-              ? `1.5px solid ${token('color.border.focused', '#0C66E4')}`
+              ? `1.5px solid ${token('color.border.focused', 'var(--ds-link, #0C66E4)')}`
               : '1.5px solid transparent',
             borderRadius: 4,
             background: dateMenuOpen
-              ? token('color.background.information', '#E9F2FF')
+              ? token('color.background.information', 'var(--ds-background-selected, #E9F2FF)')
               : 'transparent',
             color: dateMenuOpen
-              ? token('color.text.brand', '#0C66E4')
-              : token('color.text.subtle', '#505258'),
+              ? token('color.text.brand', 'var(--ds-link, #0C66E4)')
+              : token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
             cursor: 'pointer',
             flexShrink: 0,
             transition: 'background-color 120ms ease, border-color 120ms ease',
           }}
-          onMouseEnter={(e) => { if (!dateMenuOpen) e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+          onMouseEnter={(e) => { if (!dateMenuOpen) e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
           onMouseLeave={(e) => { if (!dateMenuOpen) e.currentTarget.style.background = 'transparent'; }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -6555,15 +6555,15 @@ function InlineGroupCreateRow({
               left: dateMenuAnchor.left,
               width: 280,
               padding: 12,
-              background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               borderRadius: 4,
-              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
             }}
           >
-            <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text', '#292A2E'), marginBottom: 8 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>
               Due date
             </div>
             <div style={{ position: 'relative', marginBottom: 12 }}>
@@ -6583,13 +6583,13 @@ function InlineGroupCreateRow({
                   padding: '0 32px 0 8px',
                   fontSize: 14,
                   border: dateInputFocused
-                    ? `2px solid ${token('color.border.focused', '#0C66E4')}`
-                    : `1px solid ${token('color.border', '#DFE1E6')}`,
+                    ? `2px solid ${token('color.border.focused', 'var(--ds-link, #0C66E4)')}`
+                    : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                   borderRadius: 4,
                   outline: 'none',
                   fontFamily: 'inherit',
-                  color: token('color.text', '#292A2E'),
-                  background: token('elevation.surface', '#FFFFFF'),
+                  color: token('color.text', 'var(--ds-text, #172B4D)'),
+                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                   boxSizing: 'border-box',
                 }}
               />
@@ -6607,8 +6607,8 @@ function InlineGroupCreateRow({
                     height: 20,
                     border: 'none',
                     borderRadius: '50%',
-                    background: token('color.background.neutral.bold', '#42526E'),
-                    color: token('color.text.inverse', '#FFFFFF'),
+                    background: token('color.background.neutral.bold', 'var(--ds-text-subtle, #42526E)'),
+                    color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -6624,30 +6624,30 @@ function InlineGroupCreateRow({
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto auto 1fr auto auto', alignItems: 'center', gap: 4, marginBottom: 8 }}>
               <button type="button" aria-label="Previous year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() - 1, d.getMonth(), 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >«</button>
               <button type="button" aria-label="Previous month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >‹</button>
-              <span style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: token('color.text', '#292A2E') }}>{monthLabel}</span>
+              <span style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{monthLabel}</span>
               <button type="button" aria-label="Next month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >›</button>
               <button type="button" aria-label="Next year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() + 1, d.getMonth(), 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', '#505258'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >»</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-                <div key={d} style={{ fontSize: 11, fontWeight: 500, textAlign: 'center', padding: '4px 0', color: token('color.text.subtle', '#505258') }}>{d}</div>
+                <div key={d} style={{ fontSize: 11, fontWeight: 500, textAlign: 'center', padding: '4px 0', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>{d}</div>
               ))}
               {dayCells.map((cell) => {
                 const highlight = cell.isSelected || (cell.isToday && !dueDate);
@@ -6660,20 +6660,20 @@ function InlineGroupCreateRow({
                       height: 28,
                       border: 'none',
                       borderBottom: highlight
-                        ? `2px solid ${token('color.border.focused', '#0C66E4')}`
+                        ? `2px solid ${token('color.border.focused', 'var(--ds-link, #0C66E4)')}`
                         : '2px solid transparent',
                       background: 'transparent',
                       cursor: 'pointer',
                       fontSize: 13,
                       fontFamily: 'inherit',
                       color: cell.outside
-                        ? token('color.text.subtlest', '#6B6E76')
+                        ? token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)')
                         : highlight
-                          ? token('color.text.brand', '#0C66E4')
-                          : token('color.text', '#292A2E'),
+                          ? token('color.text.brand', 'var(--ds-link, #0C66E4)')
+                          : token('color.text', 'var(--ds-text, #172B4D)'),
                       padding: 0,
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     {cell.day}
@@ -6714,11 +6714,11 @@ function InlineGroupCreateRow({
                 border: 'none',
                 borderRadius: '50%',
                 background: 'transparent',
-                color: token('color.text.subtle', '#505258'),
+                color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                 cursor: 'pointer',
                 flexShrink: 0,
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#EBECF0'); }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               {currentAssignee ? (
@@ -6740,10 +6740,10 @@ function InlineGroupCreateRow({
                   minWidth: 240,
                   maxHeight: '50vh',
                   overflowY: 'auto',
-                  background: token('elevation.surface.overlay', '#FFFFFF'),
-                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                  background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
                   borderRadius: 4,
-                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
                   padding: 8,
                   zIndex: 9999,
                   fontFamily: 'var(--cp-font-body)',
@@ -6761,7 +6761,7 @@ function InlineGroupCreateRow({
                   placeholder="Search people…"
                   style={{
                     padding: '8px 8px', fontSize: 13,
-                    border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                    border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
                     borderRadius: 3, outline: 'none', fontFamily: 'inherit',
                   }}
                 />
@@ -6775,8 +6775,8 @@ function InlineGroupCreateRow({
                       display: 'flex', alignItems: 'center', gap: 8,
                       width: '100%', padding: '8px 8px',
                       border: 'none', outline: 'none',
-                      background: assigneeIdx === -1 ? token('color.background.selected', '#E9F2FF') : 'transparent',
-                      color: token('color.text', '#292A2E'),
+                      background: assigneeIdx === -1 ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
+                      color: token('color.text', 'var(--ds-text, #172B4D)'),
                       fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
                       cursor: 'pointer', borderRadius: 3,
                     }}
@@ -6785,7 +6785,7 @@ function InlineGroupCreateRow({
                     <span>Unassigned</span>
                   </button>
                   {filteredMembers.length === 0 && assigneeQuery && (
-                    <div style={{ padding: '8px 8px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
+                    <div style={{ padding: '8px 8px', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
                       No matches
                     </div>
                   )}
@@ -6803,12 +6803,12 @@ function InlineGroupCreateRow({
                           display: 'flex', alignItems: 'center', gap: 8,
                           width: '100%', padding: '8px 8px',
                           border: 'none', outline: 'none',
-                          background: isActive ? token('color.background.selected', '#E9F2FF') : 'transparent',
-                          color: token('color.text', '#292A2E'),
+                          background: isActive ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
+                          color: token('color.text', 'var(--ds-text, #172B4D)'),
                           fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
                           cursor: 'pointer', borderRadius: 3,
                         }}
-                        onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+                        onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
                         onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                       >
                         <Avatar size="xsmall" src={m.src} name={m.name} />
@@ -6836,19 +6836,19 @@ function InlineGroupCreateRow({
           border: 'none',
           borderRadius: 4,
           background: canSubmit
-            ? token('color.background.brand.bold', '#0C66E4')
-            : token('color.background.disabled', '#DCDFE4'),
+            ? token('color.background.brand.bold', 'var(--ds-link, #0C66E4)')
+            : token('color.background.disabled', 'var(--ds-border-disabled, #DCDFE4)'),
           color: canSubmit
-            ? token('color.text.inverse', '#FFFFFF')
-            : token('color.text.disabled', '#6B6E76'),
+            ? token('color.text.inverse', 'var(--ds-surface, #FFFFFF)')
+            : token('color.text.disabled', 'var(--ds-text-subtlest, #6B6E76)'),
           fontSize: 14,
           fontWeight: 500,
           fontFamily: 'inherit',
           cursor: canSubmit ? 'pointer' : 'not-allowed',
           flexShrink: 0,
         }}
-        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', '#0055CC'); }}
-        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', '#0C66E4'); }}
+        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', 'var(--ds-link, #0C66E4)'); }}
+        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'); }}
       >
         <span>{isSubmitting ? 'Creating…' : 'Create'}</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -6972,8 +6972,8 @@ function BottomCreateRow({
           position: 'sticky',
           bottom: 0,
           zIndex: 2,
-          borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-          background: token('elevation.surface', '#FFFFFF'),
+          borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
           minWidth: '100%',
           flexShrink: 0,
         }}
@@ -6987,13 +6987,13 @@ function BottomCreateRow({
             display: 'flex', alignItems: 'center', gap: 8,
             width: '100%', height: 40, padding: '0 16px',
             border: 'none', background: 'transparent',
-            color: token('color.text.subtle', '#42526E'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             fontSize: 14, fontWeight: 500, fontFamily: 'inherit',
             cursor: 'pointer', textAlign: 'left',
           }}
           onMouseEnter={(e) => {
             (e.currentTarget as HTMLElement).style.background =
-              token('color.background.neutral.subtle.hovered', '#F4F5F7');
+              token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -7013,8 +7013,8 @@ function BottomCreateRow({
         position: 'sticky',
         bottom: 0,
         zIndex: 2,
-        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-        background: token('elevation.surface', '#FFFFFF'),
+        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         height: 40,
         minWidth: '100%',
         display: 'flex',
@@ -7086,7 +7086,7 @@ function BottomCreateRow({
           flex: 1, height: 28,
           border: 'none', outline: 'none',
           fontSize: 14, lineHeight: '20px',
-          color: token('color.text', '#292A2E'),
+          color: token('color.text', 'var(--ds-text, #172B4D)'),
           fontFamily: 'inherit', background: 'transparent',
           padding: 0, minWidth: 0,
         }}
@@ -7101,7 +7101,7 @@ function BottomCreateRow({
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 24, height: 24, padding: 0, flexShrink: 0,
             border: 'none', background: 'transparent', borderRadius: '50%',
-            color: token('color.text.subtlest', '#6B778C'),
+            color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             cursor: 'default',
           }}
         >
@@ -7192,13 +7192,13 @@ function InlineCreateRow({
           display: 'flex', alignItems: 'center', gap: 8,
           width: '100%', padding: '8px 12px', marginTop: 4,
           border: '1px dashed transparent', borderRadius: 4,
-          background: 'transparent', color: token('color.text.subtlest', '#6B778C'),
+          background: 'transparent', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
           fontSize: 13, fontWeight: 500, textAlign: 'left',
           cursor: 'pointer', fontFamily: 'inherit',
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
-          (e.currentTarget as HTMLElement).style.borderColor = token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))');
+          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+          (e.currentTarget as HTMLElement).style.borderColor = token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))');
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -7215,7 +7215,7 @@ function InlineCreateRow({
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
       padding: '8px 12px', marginTop: 4,
-      border: `1px solid ${token('color.border.focused', '#0C66E4')}`, borderRadius: 4, background: token('elevation.surface', '#FFFFFF'),
+      border: `1px solid ${token('color.border.focused', 'var(--ds-link, #0C66E4)')}`, borderRadius: 4, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
     }}>
       <JiraIssueTypeIcon type={typeFilter === 'epic' ? 'Epic' : typeFilter === 'feature' ? 'Feature' : 'Story'} size={16} />
       <input
@@ -7231,7 +7231,7 @@ function InlineCreateRow({
         placeholder="What needs to be done?"
         style={{
           flex: 1, height: 28, border: 'none', outline: 'none',
-          fontSize: 14, color: token('color.text', '#292A2E'), fontFamily: 'inherit', background: 'transparent',
+          fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), fontFamily: 'inherit', background: 'transparent',
         }}
       />
     </div>
@@ -7315,8 +7315,8 @@ function BulkActionsBar({
           alignItems: 'center',
           gap: 0,
           height: 44,
-          background: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          background: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
           borderRadius: 8,
           boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12))',
           fontFamily: 'var(--cp-font-body)',
@@ -7338,7 +7338,7 @@ function BulkActionsBar({
             height: 44,
             background: 'transparent',
             border: 'none',
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
             cursor: 'pointer',
             transition: 'background 100ms',
           }}
@@ -7355,7 +7355,7 @@ function BulkActionsBar({
             padding: '0 16px',
             fontSize: 14,
             fontWeight: 500,
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
             letterSpacing: '-0.01em',
             whiteSpace: 'nowrap',
             userSelect: 'none',
@@ -7378,7 +7378,7 @@ function BulkActionsBar({
                 margin: '0 8px',
                 background: 'transparent',
                 border: 'none',
-                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
                 fontSize: 14,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -7406,7 +7406,7 @@ function BulkActionsBar({
                 margin: '0 8px',
                 background: 'transparent',
                 border: 'none',
-                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
                 fontSize: 14,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -7425,7 +7425,7 @@ function BulkActionsBar({
         <BulkPopover label="Change status" width={240}>
           {(close) => (
             <>
-              <div style={{ padding: '8px 8px 4px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: token('color.text.subtlest', '#6B778C') }}>Status</div>
+              <div style={{ padding: '8px 8px 4px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>Status</div>
               {statusOptions.map((opt) => (
                 <BulkMenuItem
                   key={opt.value}
@@ -7466,7 +7466,7 @@ function BulkActionsBar({
             padding: '0 16px',
             background: 'transparent',
             border: 'none',
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
             fontSize: 14,
             fontWeight: 500,
             cursor: isBusy ? 'default' : 'pointer',
@@ -7564,7 +7564,7 @@ function BulkPopover({
           padding: '0 16px',
           background: 'transparent',
           border: 'none',
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
           fontSize: 14,
           fontWeight: 500,
           cursor: 'pointer',
@@ -7592,15 +7592,15 @@ function BulkPopover({
             left: anchor.left,
             zIndex: 10000,
             minWidth: width,
-            background: token('elevation.surface', '#FFFFFF'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
             borderRadius: 4,
-            boxShadow: 'var(--ds-shadow-overlay, 0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18))',
+            boxShadow: 'var(--ds-shadow-overlay, 0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18)))',
             padding: 4,
             maxHeight: 360,
             overflowY: 'auto',
             fontFamily: 'inherit',
-            color: token('color.text', '#292A2E'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
           }}
         >
           {children(() => setIsOpen(false))}
@@ -7638,11 +7638,11 @@ function DetailNavIconButton({
         justifyContent: 'center',
         border: 'none',
         background: 'transparent',
-        color: isDisabled ? token('color.text.disabled', '#C1C7D0') : token('color.text.subtle', '#42526E'),
+        color: isDisabled ? token('color.text.disabled', '#C1C7D0') : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
         cursor: isDisabled ? 'default' : 'pointer',
         borderRadius: 3,
       }}
-      onMouseEnter={(e) => { if (!isDisabled) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.hovered', '#EBECF0'); }}
+      onMouseEnter={(e) => { if (!isDisabled) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.hovered', 'var(--ds-border, #DFE1E6)'); }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {children}
@@ -7665,14 +7665,14 @@ function BulkMenuItem({ onClick, children }: { onClick: () => void; children: Re
         padding: '8px 8px',
         border: 'none',
         background: 'transparent',
-        color: token('color.text', '#292A2E'),
+        color: token('color.text', 'var(--ds-text, #172B4D)'),
         fontSize: 14,
         textAlign: 'left',
         cursor: 'pointer',
         fontFamily: 'inherit',
         borderRadius: 3,
       }}
-      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
     >
       {children}
@@ -7717,7 +7717,7 @@ function EditBacklogItemModal({
             </ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#42526E'), marginBottom: 4 }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>
               Title
             </label>
             <Textfield
@@ -7727,7 +7727,7 @@ function EditBacklogItemModal({
               placeholder="Item title"
             />
 
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#42526E'), marginTop: 16, marginBottom: 4 }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginTop: 16, marginBottom: 4 }}>
               Status
             </label>
             <select
@@ -7738,12 +7738,12 @@ function EditBacklogItemModal({
                 width: '100%',
                 height: 36,
                 padding: '0 8px',
-                border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
                 borderRadius: 3,
                 fontSize: 14,
                 fontFamily: 'inherit',
-                background: isJiraSynced ? token('color.background.neutral.subtle.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
-                color: token('color.text', '#292A2E'),
+                background: isJiraSynced ? token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
             >
               <option value="">— Not set —</option>
@@ -7753,7 +7753,7 @@ function EditBacklogItemModal({
             </select>
 
             {isJiraSynced && (
-              <p style={{ marginTop: 12, fontSize: 12, color: token('color.text.subtlest', '#7A869A'), fontStyle: 'italic' }}>
+              <p style={{ marginTop: 12, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontStyle: 'italic' }}>
                 This item is synced from Jira and must be edited there.
               </p>
             )}
@@ -7828,7 +7828,7 @@ function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFilter
   return (
     <>
       <Button ref={triggerRef} appearance="subtle" onClick={openMenu}>
-        <span style={{ color: token('color.text.subtle', '#42526E'), fontSize: 13 }}>
+        <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), fontSize: 13 }}>
           Saved filters ({jqlFilters.length})
         </span>
       </Button>
@@ -7848,8 +7848,8 @@ function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFilter
               top: anchor.top,
               right: anchor.right,
               zIndex: 9001,
-              background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               borderRadius: 4,
               boxShadow: 'var(--ds-shadow-overlay, 0 4px 16px rgba(9, 30, 66, 0.16))',
               minWidth: 240,
@@ -7871,14 +7871,14 @@ function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFilter
                   cursor: 'pointer',
                   padding: '6px 16px',
                   font: 'inherit',
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', 'var(--ds-text, #172B4D)'),
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+                onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <span style={{ display: 'block', fontSize: 14 }}>{f.name}</span>
                 {f.description && (
-                  <span style={{ display: 'block', fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>
+                  <span style={{ display: 'block', fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                     {f.description}
                   </span>
                 )}

@@ -13,16 +13,16 @@ export interface TierConfig {
 
 export const WORK_ITEM_HIERARCHY: Record<string, TierConfig> = {
   // TIER 1 — STRATEGIC (individual cards, 14-day window)
-  'Request':           { tier: 1, label: 'INITIATIVE',          freshnessDays: 14, renderMode: 'individual', color: '#722ED1' },
-  'Business Request':     { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: '#722ED1' },
-  'BRD':                  { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: '#722ED1' },
-  'BRD Task':             { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: '#722ED1' },
+  'Request':           { tier: 1, label: 'INITIATIVE',          freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  'Business Request':     { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  'BRD':                  { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  'BRD Task':             { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
 
   // TIER 2 — PORTFOLIO (individual cards, 14-day window)
   'Epic':                 { tier: 2, label: 'EPIC',                freshnessDays: 14, renderMode: 'individual', color: '#531DAB' },
 
   // TIER 3 — DELIVERY (individual cards, 7-day window)
-  'Story':                { tier: 3, label: 'STORY',               freshnessDays: 7,  renderMode: 'individual', color: '#4C6EF5' },
+  'Story':                { tier: 3, label: 'STORY',               freshnessDays: 7,  renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
 
   // TIER 4 — OPERATIONAL (individual cards, 14-day window — incidents are always urgent)
   'Incident':             { tier: 4, label: 'PRODUCTION INCIDENT', freshnessDays: 14, renderMode: 'individual', color: '#CF1322' },

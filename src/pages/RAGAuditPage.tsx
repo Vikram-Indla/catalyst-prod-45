@@ -14,11 +14,11 @@ interface CheckResult {
 
 const statusColors: Record<string, { bg: string; fg: string; label: string }> = {
   pass: { bg: "var(--cp-lozenge-green-bg, #1B7F37)", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "PASS" },
-  fail: { bg: "#FFEBE6", fg: "#BF2600", label: "FAIL" },
-  warn: { bg: "#FFFAE6", fg: "#974F0C", label: "WARN" },
-  info: { bg: "#0C66E4", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "INFO" },
+  fail: { bg: "var(--ds-background-danger, #FFECEB)", fg: "var(--ds-text-danger, #AE2A19)", label: "FAIL" },
+  warn: { bg: "var(--ds-background-warning, #FFF7D6)", fg: "var(--ds-text-warning, #974F0C)", label: "WARN" },
+  info: { bg: "var(--ds-link, #0C66E4)", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "INFO" },
   pending: { bg: "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))", fg: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))", label: "PENDING" },
-  running: { bg: "#0C66E4", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "RUNNING" },
+  running: { bg: "var(--ds-link, #0C66E4)", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "RUNNING" },
 };
 
 const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -262,7 +262,7 @@ export default function RAGAuditPage() {
   const passCount = (layer: number) => results.filter((r) => r.layer === layer && r.status === "pass").length;
   const totalForLayer = (layer: number) => checks.filter((c) => c.layer === layer).length;
   const totalPass = results.filter((r) => r.status === "pass").length;
-  const summaryBg = totalPass >= 22 ? "var(--cp-lozenge-green-bg, #1B7F37)" : totalPass >= 15 ? "#FFFAE6" : "#FFEBE6";
+  const summaryBg = totalPass >= 22 ? "var(--cp-lozenge-green-bg, #1B7F37)" : totalPass >= 15 ? "var(--ds-background-warning, #FFF7D6)" : "var(--ds-background-danger, #FFECEB)";
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: 'var(--cp-font-heading)' }}>
@@ -273,7 +273,7 @@ export default function RAGAuditPage() {
         onClick={runAllChecks}
         disabled={running}
         style={{
-          height: 50, padding: "0 20px", background: running ? "#93C5FD" : "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))", color: "var(--ds-surface, #FFF)",
+          height: 50, padding: "0 20px", background: running ? "var(--ds-background-information-bold, #0C66E4)" : "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))", color: "var(--ds-surface, #FFF)",
           border: "none", borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: running ? "not-allowed" : "pointer", marginBottom: 24,
         }}
       >

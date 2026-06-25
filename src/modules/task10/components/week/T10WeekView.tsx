@@ -127,7 +127,7 @@ export function T10WeekView() {
             padding: '32px', 
             backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 
             borderRadius: '12px', 
-            border: '1px solid #e2e8f0',
+            border: '1px solid var(--ds-border, #DFE1E6)',
             textAlign: 'center',
             color: 'var(--ds-text-subtlest, #64748b)'
           }}>
@@ -153,7 +153,7 @@ export function T10WeekView() {
               padding: '24px', 
               backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 
               borderRadius: '12px', 
-              border: '2px dashed #e2e8f0',
+              border: '2px dashed var(--ds-border, #DFE1E6)',
               textAlign: 'center',
               color: 'var(--ds-text-subtlest, #94a3b8)'
             }}>

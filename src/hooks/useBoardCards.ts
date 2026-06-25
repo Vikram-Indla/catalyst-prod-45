@@ -61,7 +61,7 @@ export function useBoardCards(boardId: string | undefined) {
 
         // Map priority
         const priorityColors: Record<string, string> = {
-          Critical: '#FF5630', Highest: '#FF5630', High: '#FF7452',
+          Critical: 'var(--ds-background-danger-bold, #C9372C)', Highest: 'var(--ds-background-danger-bold, #C9372C)', High: '#FF7452',
           Medium: 'var(--cp-warning, #D97706)', Low: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))', Lowest: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
         };
         const pName = item.priority ?? '';
@@ -117,7 +117,7 @@ export function useBoardCards(boardId: string | undefined) {
           priority: priorityObj,
           assignee,
           release: releaseObj,
-          epic: item.parent_key ? { id: item.parent_key, key: item.parent_key, title: item.parent_key, color: '#6554C0' } : null,
+          epic: item.parent_key ? { id: item.parent_key, key: item.parent_key, title: item.parent_key, color: 'var(--ds-background-discovery-bold, #6554C0)' } : null,
           labels: labelsList,
           isBlocked: false,
           dueDate: item.due_date ?? null,

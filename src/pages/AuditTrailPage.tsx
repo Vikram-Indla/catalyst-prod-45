@@ -54,14 +54,14 @@ function initials(name: string): string {
 
 function restoreStatus(entry: AuditEntry): { label: string; bg: string; color: string; border: string } {
   if (entry.restored_at) {
-    return { label: 'RESTORED', bg: '#E3FCEF', color: '#006644', border: '#6EE7B7' };
+    return { label: 'RESTORED', bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #006644)', border: 'var(--ds-background-success, #DFFCF0)' };
   }
   const deadline = new Date(entry.restore_deadline);
   if (deadline < new Date()) {
     return { label: 'EXPIRED', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' };
   }
   const daysLeft = Math.max(0, Math.ceil((deadline.getTime() - Date.now()) / 86400_000));
-  return { label: `RESTORABLE \u00B7 ${daysLeft}d left`, bg: '#FFFBEB', color: '#92400E', border: '#FCD34D' };
+  return { label: `RESTORABLE \u00B7 ${daysLeft}d left`, bg: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, #974F0C)', border: 'var(--ds-background-warning, #FFF7D6)' };
 }
 
 export default function AuditTrailPage() {

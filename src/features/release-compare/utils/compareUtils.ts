@@ -8,11 +8,11 @@ import { ComparedRelease, ComparisonInsight, CompareHealthLevel } from '../types
 // Catalyst V5 Colors
 export const CATALYST_COLORS = {
   primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  teal: '#0d9488',
+  teal: 'var(--ds-chart-teal-bold, #0d9488)',
   warning: 'var(--ds-text-warning, #d97706)',
   danger: 'var(--ds-text-danger, #ef4444)',
-  aiPurpleStart: '#8b5cf6',
-  aiPurpleEnd: '#6366f1',
+  aiPurpleStart: 'var(--ds-background-discovery-bold, #8b5cf6)',
+  aiPurpleEnd: 'var(--ds-background-discovery-bold, #6366f1)',
   gray50: 'var(--ds-surface-sunken, #f8fafc)',
   gray100: 'var(--ds-surface-sunken, #f1f5f9)',
   gray200: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
@@ -21,7 +21,7 @@ export const CATALYST_COLORS = {
   gray500: 'var(--ds-text-subtlest, #64748b)',
   gray600: 'var(--ds-text-subtle, #475569)',
   gray700: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-  gray800: '#1e293b',
+  gray800: 'var(--ds-text, #172B4D)',
   gray900: 'var(--ds-text, #0f172a)',
 };
 

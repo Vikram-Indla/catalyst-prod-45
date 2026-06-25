@@ -728,7 +728,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           {/* Navigator (left) — always visible; expands to full width when narrow.
               jira-compare 2026-05-02: bg switched from --cp-bg-sunken
               (slate-100 grey) to white. Vikram probe captured rail bg as
-              rgb(241,245,249) which diverges from Jira's white rail. */}
+              var(--ds-surface-sunken, rgb(241,245,249)) which diverges from Jira's white rail. */}
           <div style={{
             width: isNarrow ? '100%' : panelLayout === 'medium' ? 260 : 360,
             flexShrink: 0,

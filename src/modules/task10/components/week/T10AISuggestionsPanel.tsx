@@ -70,8 +70,8 @@ export function T10AISuggestionsPanel({
                   padding: '2px 8px',
                   fontSize: 11,
                   fontWeight: 600,
-                  background: '#f3e8ff',
-                  color: '#7c3aed',
+                  background: 'var(--ds-background-discovery, #F3F0FF)',
+                  color: 'var(--ds-background-discovery-bold, #7C3AED)',
                   borderRadius: 4
                 }}>
                   <Sparkles size={12} /> Enhanced
@@ -175,7 +175,7 @@ export function T10AISuggestionsPanel({
                       gap: 6, 
                       marginTop: 6,
                       fontSize: 12,
-                      color: '#7c3aed'
+                      color: 'var(--ds-background-discovery-bold, #7C3AED)'
                     }}>
                       <Sparkles size={12} />
                       {suggestion.reason}
@@ -193,7 +193,7 @@ export function T10AISuggestionsPanel({
                   fontWeight: 500,
                   color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                   background: 'var(--ds-background-selected, #eff6ff)',
-                  border: '1px solid #bfdbfe',
+                  border: '1px solid var(--ds-background-information, #E9F2FF)',
                   borderRadius: 6,
                   cursor: slotsAvailable <= 0 ? 'not-allowed' : 'pointer',
                   opacity: slotsAvailable <= 0 ? 0.5 : 1,

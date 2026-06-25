@@ -177,7 +177,7 @@ export function ApplyTemplateModal({
             
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div className="flex items-center gap-2">
-                <TestTube className="w-4 h-4 text-[#0d9488]" />
+                <TestTube className="w-4 h-4 text-[var(--ds-chart-teal-bold, #0d9488)]" />
                 <span className="text-slate-600">
                   {template.matching_tests_count || 0} tests
                 </span>

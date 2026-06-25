@@ -69,7 +69,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
           onClick={onClose}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
-            background: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(15, 23, 42, 0.3)',
+            background: isDark ? 'var(--ds-shadow-raised, rgba(0,0,0,0.5))' : 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.3))',
           }}
         />
       )}
@@ -82,7 +82,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
           transform: open ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
           display: 'flex', flexDirection: 'column',
-          boxShadow: isDark ? '-4px 0 20px rgba(0,0,0,0.3)' : '-4px 0 20px rgba(0,0,0,0.08)',
+          boxShadow: isDark ? '-4px 0 20px var(--ds-shadow-raised, rgba(0,0,0,0.3))' : '-4px 0 20px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
         }}
       >
         {/* Header */}
@@ -90,7 +90,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
           <div className="shrink-0 rounded-full" style={{ width: 12, height: 12, background: theme.color }} />
           <h2 className="truncate flex-1" style={{ fontSize: 16, fontWeight: 700, color: t1 }}>{theme.title}</h2>
           <button onClick={() => onEdit(theme)} style={{ fontSize: 12, color: linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Edit</button>
-          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: isDark ? '#F87171' : 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
+          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: isDark ? 'var(--ds-background-danger, #FFECEB)' : 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
           <button onClick={onClose} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: 'none', background: 'none', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -210,8 +210,8 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
       {theme.ai_health_score != null && (
         <div className="rounded-lg mb-5 overflow-hidden" style={{
           background: isDark
-            ? 'rgba(59, 130, 246, 0.12)'
-            : 'linear-gradient(135deg, #DBEAFE, var(--ds-background-selected, #EFF6FF))',
+            ? 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.12))'
+            : 'linear-gradient(135deg, var(--ds-background-information, #E9F2FF), var(--ds-background-selected, #EFF6FF))',
           border: `1px solid ${'var(--cp-primary-light, #BFDBFE)'}`,
           padding: 16,
         }}>
@@ -231,11 +231,11 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
               { label: 'Alignment', value: Math.round(theme.ai_health_score * 0.2) },
             ].map(f => (
               <div key={f.label} className="rounded-md text-center" style={{
-                background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'rgba(255,255,255,0.6)',
-                border: isDark ? '1px solid #2E2E2E' : 'none',
+                background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-surface, rgba(255,255,255,0.6))',
+                border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : 'none',
                 padding: '6px 0',
               }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : '#1E40AF' }}>{f.value}</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : 'var(--ds-link-pressed, #1e40af)' }}>{f.value}</p>
                 <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{f.label}</p>
               </div>
             ))}
@@ -254,7 +254,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
             : null
         } isDark={isDark} />
         <FieldRow label="BSC Perspective" value={bsc?.label} isDark={isDark} />
-        <FieldRow label="Priority" value={pri ? <span style={{ color: isDark ? '#F87171' : pri.color, fontWeight: 600 }}>{pri.label}</span> : null} isDark={isDark} />
+        <FieldRow label="Priority" value={pri ? <span style={{ color: isDark ? 'var(--ds-background-danger, #FFECEB)' : pri.color, fontWeight: 600 }}>{pri.label}</span> : null} isDark={isDark} />
         <FieldRow label="Budget (SAR)" value={theme.planned_budget > 0 ? formatBudget(theme.planned_budget) : null} isDark={isDark} />
         <FieldRow label="Theme Group" value={theme.theme_group_name || 'None'} isDark={isDark} />
         <FieldRow label="Milestones" value={`${theme.milestone_count ?? 0} / 20`} isDark={isDark} />
@@ -424,7 +424,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
       </div>
 
       {showForm && (
-        <div className="rounded-lg border p-3 mb-3" style={{ borderColor: 'var(--cp-primary-light, #DBEAFE)', background: isDark ? 'rgba(59,130,246,0.06)' : 'var(--bg-1)' }}>
+        <div className="rounded-lg border p-3 mb-3" style={{ borderColor: 'var(--cp-primary-light, #DBEAFE)', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.06))' : 'var(--bg-1)' }}>
           <div className="space-y-2">
             <input style={inputStyle} placeholder="Milestone name *" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} autoFocus />
             <div className="grid grid-cols-3 gap-2">

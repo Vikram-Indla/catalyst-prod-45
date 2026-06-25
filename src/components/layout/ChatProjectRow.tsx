@@ -67,11 +67,11 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                 maxWidth: 320,
                 padding: 12,
                 borderRadius: 6,
-                background: token('elevation.surface.overlay', '#FFFFFF'),
-                boxShadow: token('elevation.shadow.overlay', '0 8px 24px rgba(9,30,66,0.18)'),
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+                boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
+                border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 fontFamily: 'var(--ds-font-family-body)',
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 8,
@@ -82,7 +82,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                   paddingBottom: 8,
                 }}
               >
@@ -92,7 +92,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                     width: 8,
                     height: 8,
                     borderRadius: 2,
-                    background: data?.color ?? token('color.background.brand.bold', '#0052CC'),
+                    background: data?.color ?? token('color.background.brand.bold', 'var(--ds-link, #0052CC)'),
                     flexShrink: 0,
                   }}
                 />
@@ -114,7 +114,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                       fontSize: 11,
                       fontWeight: 500,
                       lineHeight: '14px',
-                      color: token('color.text.subtlest', '#6B778C'),
+                      color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                       fontFamily: 'var(--ds-font-family-code)',
                     }}
                   >
@@ -128,7 +128,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: token('color.text.subtle', '#42526E'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
                   }}
                 >
                   Members ({data?.members.length ?? 0})
@@ -149,7 +149,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                         style={{
                           fontSize: 12,
                           fontWeight: 500,
-                          color: token('color.text.subtle', '#42526E'),
+                          color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
                           padding: '0 4px',
                         }}
                       >
@@ -158,7 +158,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                     ) : null}
                   </div>
                 ) : (
-                  <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+                  <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                     No members yet.
                   </span>
                 )}

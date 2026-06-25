@@ -35,8 +35,8 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
             onMouseEnter={e => {
               e.currentTarget.style.transform = 'translateY(-3px)';
               e.currentTarget.style.boxShadow = isDark
-                ? '0 8px 25px -5px rgba(0,0,0,0.3)'
-                : '0 8px 25px -5px rgba(0,0,0,0.08)';
+                ? '0 8px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.3))'
+                : '0 8px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.08))';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.transform = 'translateY(0)';

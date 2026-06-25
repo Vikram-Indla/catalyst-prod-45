@@ -128,7 +128,7 @@ export function DependencyLines({
           refY="3"
           orient="auto"
         >
-          <polygon points="0 0, 8 3, 0 6" fill="#0d9488" />
+          <polygon points="0 0, 8 3, 0 6" fill="var(--ds-chart-teal-bold, #0d9488)" />
         </marker>
       </defs>
       {paths.map((p) => (
@@ -136,7 +136,7 @@ export function DependencyLines({
           key={p.id}
           d={p.path}
           fill="none"
-          stroke={p.isResolved ? '#0d9488' : 'var(--ds-text-warning, #f59e0b)'}
+          stroke={p.isResolved ? 'var(--ds-chart-teal-bold, #0d9488)' : 'var(--ds-text-warning, #f59e0b)'}
           strokeWidth={2}
           strokeDasharray={p.isResolved ? '4 2' : 'none'}
           markerEnd={p.isResolved ? 'url(#timeline-arrow-resolved)' : 'url(#timeline-arrow)'}

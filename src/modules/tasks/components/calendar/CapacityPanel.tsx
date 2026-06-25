@@ -76,7 +76,7 @@ export function CapacityPanel({
             id,
             name: task?.assigneeName || 'Unknown',
             initials: task?.assigneeInitials || '??',
-            avatarColor: task?.teamColor || '#6366f1',
+            avatarColor: task?.teamColor || 'var(--ds-background-discovery-bold, #6E5DC6)',
           };
         });
 
@@ -107,7 +107,7 @@ export function CapacityPanel({
         id: member.id,
         name: member.name,
         initials: member.initials,
-        avatarColor: member.avatarColor || '#6366f1',
+        avatarColor: member.avatarColor || 'var(--ds-background-discovery-bold, #6E5DC6)',
         dailyCapacity,
         dailyLoad,
       };

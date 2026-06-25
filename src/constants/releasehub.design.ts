@@ -9,9 +9,9 @@ export const RH = {
   sunkenBg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
 
   // Borders
-  borderDefault: 'rgba(15,23,42,0.12)',
-  borderSubtle: 'rgba(15,23,42,0.06)',
-  borderStrong: 'rgba(15,23,42,0.20)',
+  borderDefault: 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+  borderSubtle: 'var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
+  borderStrong: 'var(--ds-shadow-overlay, rgba(15,23,42,0.20))',
 
   // Colors
   primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
@@ -27,7 +27,7 @@ export const RH = {
   // AI = Blue, NOT purple
   ai: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   aiLt: 'var(--ds-background-selected, #EFF6FF)',
-  aiBorder: '#DBEAFE',
+  aiBorder: 'var(--ds-background-information, #E9F2FF)',
 
   // Text
   ink1: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
@@ -53,8 +53,8 @@ export const RH = {
 // GREEN: bg=#E3FCEF text=#006644 → IN_PRODUCTION, RELEASED, DONE, APPROVED, PASS
 
 export const LOZENGE = {
-  grey:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
-  blue:  { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  grey:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
+  blue:  { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   green: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 } as const;
 
@@ -95,25 +95,25 @@ export const CHG_STATUS_ORDER: string[] = ['new', 'in_uat', 'in_beta', 'in_produ
 
 // Risk badges
 export const RISK_BADGE: Record<string, { bg: string; text: string }> = {
-  standard: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
-  low: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
+  standard: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
+  low: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
   high: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   emergency: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
   critical: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
-  medium: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
+  medium: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
 };
 
 // Source badges
 export const SOURCE_BADGE: Record<string, { bg: string; text: string }> = {
-  jira: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
-  catalyst: { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  jira: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
+  catalyst: { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // Deployment result badges (only shown when status=IN_PRODUCTION)
 export const DEPLOY_RESULT_BADGE: Record<string, { bg: string; text: string }> = {
   success: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   rolled_back: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
-  monitoring: { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  monitoring: { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // Sign-off decision lozenges

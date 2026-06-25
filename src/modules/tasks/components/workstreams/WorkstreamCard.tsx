@@ -35,9 +35,9 @@ const COLORS = {
 };
 
 const HEALTH_CONFIG: Record<string, { color: string; bgColor: string; borderColor: string; label: string }> = {
-  'healthy': { color: COLORS.success, bgColor: '#f0fdf4', borderColor: '#bbf7d0', label: 'On Track' },
-  'at-risk': { color: COLORS.warning, bgColor: '#fffbeb', borderColor: '#fde68a', label: 'At Risk' },
-  'critical': { color: COLORS.danger, bgColor: 'var(--ds-background-danger, #fef2f2)', borderColor: '#fecaca', label: 'Critical' },
+  'healthy': { color: COLORS.success, bgColor: 'var(--ds-background-success, #DFFCF0)', borderColor: 'var(--ds-background-success, #DFFCF0)', label: 'On Track' },
+  'at-risk': { color: COLORS.warning, bgColor: 'var(--ds-background-warning, #FFF7D6)', borderColor: 'var(--ds-background-warning, #FFF7D6)', label: 'At Risk' },
+  'critical': { color: COLORS.danger, bgColor: 'var(--ds-background-danger, #fef2f2)', borderColor: 'var(--ds-background-danger, #FFECEB)', label: 'Critical' },
   'locked': { color: COLORS.textMuted, bgColor: 'var(--ds-surface-sunken, #f1f5f9)', borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', label: 'Locked' }
 };
 
@@ -67,7 +67,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         borderRadius: '12px',
         padding: '20px',
         transition: 'all 0.15s ease',
-        boxShadow: isHovered ? '0 4px 12px rgba(0, 0, 0, 0.08)' : 'none',
+        boxShadow: isHovered ? '0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08))' : 'none',
         transform: isHovered ? 'translateY(-2px)' : 'none',
         borderLeftWidth: '4px',
         borderLeftColor: healthConfig.color,
@@ -270,7 +270,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
                 backgroundColor: COLORS.surfaceCard,
                 border: `1px solid ${COLORS.borderDefault}`,
                 borderRadius: '12px',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
+                boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
                 zIndex: 100,
                 padding: '6px',
                 overflow: 'hidden'

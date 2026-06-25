@@ -38,11 +38,11 @@ const CATEGORY_ICON: Record<FilterTemplate['category'], React.ReactNode> = {
 
 /** Accent color swatch per category (ADS tokens) */
 const CATEGORY_COLOR: Record<FilterTemplate['category'], string> = {
-  'my-work':  token('color.icon.brand',    '#0C66E4'),
-  'team':     token('color.icon.success',  '#22A06B'),
-  'priority': token('color.icon.danger',   '#AE2A19'),
-  'dates':    token('color.icon.warning',  '#974F0C'),
-  'quality':  token('color.icon.accent.purple', '#6E5DC6'),
+  'my-work':  token('color.icon.brand',    'var(--ds-link, #0C66E4)'),
+  'team':     token('color.icon.success',  'var(--ds-background-success-bold, #1F845A)'),
+  'priority': token('color.icon.danger',   'var(--ds-text-danger, #AE2A19)'),
+  'dates':    token('color.icon.warning',  'var(--ds-text-warning, #974F0C)'),
+  'quality':  token('color.icon.accent.purple', 'var(--ds-background-discovery-bold, #6E5DC6)'),
 };
 
 type Cat = FilterTemplate['category'] | 'all';

@@ -97,7 +97,7 @@ export function JiraSyncDrawer({
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0, zIndex: 50,
-          background: 'rgba(15,23,42,0.30)',
+          background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.30))',
           opacity: animating ? 1 : 0,
           transition: 'opacity 200ms ease',
         }}
@@ -105,7 +105,7 @@ export function JiraSyncDrawer({
       <div className="bg-[var(--cp-float)]" style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 51,
         width: 480,
-        boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
+        boxShadow: '-8px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
         display: 'flex', flexDirection: 'column',
         fontFamily: 'var(--cp-font-body)',
         transform: animating ? 'translateX(0)' : 'translateX(100%)',

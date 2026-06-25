@@ -19,8 +19,8 @@ export type RiskSeverity = 'critical' | 'high' | 'medium' | 'low';
 export const RISK_COLORS = {
   critical: '#922b21',
   high: '#cb4335',
-  medium: '#f59e0b',
-  low: '#0d9488',
+  medium: 'var(--ds-background-warning-bold, #f59e0b)',
+  low: 'var(--ds-chart-teal-bold, #0d9488)',
 } as const;
 
 /**

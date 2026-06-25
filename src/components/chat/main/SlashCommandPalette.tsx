@@ -231,7 +231,7 @@ export function SlashCommandPalette({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
-        boxShadow: '0 4px 8px rgba(9,30,66,0.15)',
+        boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
         width: 280,
         maxHeight: 320,
         overflowY: 'auto',

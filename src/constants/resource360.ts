@@ -4,10 +4,10 @@ export const HUB_COLORS: Record<string, string> = {
   StrategyHub: 'var(--ds-text, #0EA5E9)',
   ProductHub: 'var(--ds-text-discovery, #8B5CF6)',
   ProjectHub: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  ReleaseHub: 'var(--cp-teal-60, #0D9488)',
+  ReleaseHub: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
   TestHub: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   IncidentHub: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  Tasks: 'var(--quality-high, #059669)',
+  Tasks: 'var(--quality-high, var(--ds-background-success-bold, #059669))',
 };
 
 export const HUB_SHORT: Record<string, string> = {
@@ -47,10 +47,10 @@ export const WIT_STYLES: Record<string, { bg: string; color: string }> = {
   Story: { bg: 'var(--ds-background-selected, #DBEAFE)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
   Subtask: { bg: 'var(--ds-surface, #E0E7FF)', color: 'var(--ds-text-discovery, #3730A3)' },
   Bug: { bg: 'var(--ds-surface, #FEE2E2)', color: 'var(--ds-text-danger, #B91C1C)' },
-  Task: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
+  Task: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' },
   'Test Case': { bg: 'var(--ds-surface, #FEF3C7)', color: 'var(--ds-text-warning, #92400E)' },
   'Test Plan': { bg: 'var(--ds-surface, #FEF3C7)', color: 'var(--ds-text-warning, #92400E)' },
-  Incident: { bg: '#FEE2E2', color: 'var(--ds-text-danger, #991B1B)' },
+  Incident: { bg: 'var(--ds-background-danger, #FFECEB)', color: 'var(--ds-text-danger, #991B1B)' },
   Release: { bg: 'var(--ds-surface, #CCFBF1)', color: 'var(--ds-text-success, #0F766E)' },
   Requirement: { bg: 'var(--ds-surface, #FCE7F3)', color: 'var(--ds-text, #9D174D)' },
 };
@@ -77,19 +77,19 @@ export const R360_TOKENS = {
   danger: 'var(--ds-text-danger, #EF4444)',
   dangerLight: 'var(--ds-background-danger, #FEF2F2)',
   dangerText: 'var(--ds-text-danger, #7F1D1D)',
-  teal: 'var(--cp-teal-60, #0D9488)',
+  teal: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
   tealLight: 'var(--ds-surface, #F0FDFA)',
   tealText: 'var(--ds-text-success, #134E4A)',
-  purple: 'var(--cp-purple-60, #7C3AED)',
+  purple: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))',
   purpleLight: 'var(--ds-surface, #F5F3FF)',
   purpleText: 'var(--ds-text-discovery, #4C1D95)',
   ink1: 'var(--ds-text, #020617)',
-  ink2: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
-  ink3: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+  ink2: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))',
+  ink3: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
   ink4: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-  surface: 'var(--bg-1, #F8FAFC)',
-  card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
+  surface: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))',
+  card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+  border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))',
   borderLt: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
 } as const;
 
@@ -110,9 +110,9 @@ export const R360_PROJECT_COLORS: Record<string, string> = {
   BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  OPS: 'var(--cp-teal-60, #0D9488)',
+  OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
   SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-  LND: 'var(--cp-purple-60, #7C3AED)',
+  LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))',
 };
 
 // Jira issue type icon colors

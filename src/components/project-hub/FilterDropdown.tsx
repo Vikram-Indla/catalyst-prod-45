@@ -45,8 +45,8 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         onClick={() => setOpen(!open)}
         className={`flex items-center gap-1.5 rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] ${
           hasFilters
-            ? dark ? 'bg-[#0D1526] border-[#1E3A5F] text-[#4C9AFF]' : 'bg-[#DEEBFF] border-[#B3D4FF] text-[var(--cp-primary-60, #0052CC)]'
-            : dark ? 'bg-transparent border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text-subtlest,#A1A1A1)]' : 'bg-white border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[#42526E]'
+            ? dark ? 'bg-[var(--ds-text, #172B4D)] border-[var(--ds-text, #172B4D)] text-[var(--ds-background-information-bold, #0C66E4)]' : 'bg-[var(--ds-background-information, #E9F2FF)] border-[var(--ds-background-information, #E9F2FF)] text-[var(--cp-primary-60, #0052CC)]'
+            : dark ? 'bg-transparent border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text-subtlest,#A1A1A1)]' : 'bg-white border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[var(--ds-text-subtle, #42526E)]'
         }`}
         style={{
           height: 32,
@@ -79,7 +79,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
             borderRadius: 8,
             borderWidth: 1,
             borderStyle: 'solid',
-            boxShadow: dark ? '0 2px 8px rgba(0,0,0,0.4)' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
+            boxShadow: dark ? '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.4))' : '0 4px 6px -1px var(--ds-shadow-raised, rgba(0,0,0,.07)), 0 2px 4px -2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
             fontFamily: 'var(--cp-font-body)',
           }}
         >
@@ -105,7 +105,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
           <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
             <button
               onClick={() => onChange({ statuses: [], healths: [] })}
-              style={{ fontSize: 12, color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? 'var(--ds-text-subtlest, #626F86)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Clear all
             </button>
@@ -148,12 +148,12 @@ function FilterSection({
   dark: boolean;
 }) {
   return (
-    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : '#EBECF0'}` }}>
+    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-border, #DFE1E6)'}` }}>
       <div
         style={{
           fontSize: 10,
           fontWeight: 600,
-          color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+          color: dark ? 'var(--ds-text-subtlest, #626F86)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           marginBottom: 6,
@@ -168,7 +168,7 @@ function FilterSection({
             key={opt}
             onClick={() => onToggle(opt)}
             className={`flex items-center gap-2 w-full py-1.5 cursor-pointer rounded px-2 transition-colors ${dark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]'}`}
-            style={{ fontSize: 12, color: dark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : '#42526E', background: 'transparent', border: 'none', fontFamily: 'var(--cp-font-body)', textAlign: 'left' }}
+            style={{ fontSize: 12, color: dark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text-subtle, #42526E)', background: 'transparent', border: 'none', fontFamily: 'var(--cp-font-body)', textAlign: 'left' }}
           >
             <div
               className="flex items-center justify-center rounded flex-shrink-0"
@@ -228,7 +228,7 @@ export function FilterChips({
       {chips.map((c, i) => (
         <span
           key={i}
-          className={`inline-flex items-center gap-1 rounded-full ${dark ? 'bg-[#0D1526] text-[#4C9AFF]' : 'bg-[#DEEBFF] text-[var(--cp-primary-60, #0052CC)]'}`}
+          className={`inline-flex items-center gap-1 rounded-full ${dark ? 'bg-[var(--ds-text, #172B4D)] text-[var(--ds-background-information-bold, #0C66E4)]' : 'bg-[var(--ds-background-information, #E9F2FF)] text-[var(--cp-primary-60, #0052CC)]'}`}
           style={{
             fontSize: 11,
             fontWeight: 500,
@@ -240,13 +240,13 @@ export function FilterChips({
             onClick={c.remove}
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
           >
-            <X size={12} color={dark ? '#4C9AFF' : 'var(--cp-primary-60, #0052CC)'} />
+            <X size={12} color={dark ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--cp-primary-60, #0052CC)'} />
           </button>
         </span>
       ))}
       <button
         onClick={() => onChange({ statuses: [], healths: [] })}
-        style={{ fontSize: 11, color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', background: 'transparent', border: 'none', cursor: 'pointer' }}
+        style={{ fontSize: 11, color: dark ? 'var(--ds-text-subtlest, #626F86)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', background: 'transparent', border: 'none', cursor: 'pointer' }}
       >
         Clear all
       </button>

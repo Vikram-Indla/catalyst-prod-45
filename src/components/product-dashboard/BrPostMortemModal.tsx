@@ -35,7 +35,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(9,30,66,0.54)',
+        background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -46,9 +46,9 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
       <div
         data-testid="postmortem-modal"
         style={{
-          background: token('elevation.surface.overlay', '#FFFFFF'),
+          background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
           borderRadius: 8,
-          boxShadow: token('elevation.shadow.overlay', '0 8px 24px rgba(0,0,0,0.20)'),
+          boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.20))'),
           width: '100%',
           maxWidth: 560,
           maxHeight: '80vh',
@@ -86,7 +86,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              color: token('color.text.subtlest', '#8993A4'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
               fontSize: 18,
               lineHeight: 1,
               padding: 4,
@@ -121,7 +121,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                     height: 14,
                     width: `${w}%`,
                     borderRadius: 4,
-                    background: token('color.background.neutral', '#F4F5F7'),
+                    background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
                   }}
                 />
               ))}
@@ -133,10 +133,10 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
               data-testid="postmortem-error"
               style={{
                 padding: token('space.150', '12px'),
-                background: token('color.background.danger', '#FFECEB'),
+                background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
                 borderRadius: 6,
                 fontSize: 13,
-                color: token('color.text.danger', '#AE2A19'),
+                color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
               }}
             >
               Failed to generate post-mortem. Please try again.
@@ -154,7 +154,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                     margin: '0 0 6px',
                     fontSize: 12,
                     fontWeight: 600,
-                    color: token('color.text.subtlest', '#8993A4'),
+                    color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                     textTransform: 'uppercase',
                     letterSpacing: '0.08em',
                   }}
@@ -172,7 +172,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                     margin: '0 0 6px',
                     fontSize: 12,
                     fontWeight: 600,
-                    color: token('color.text.subtlest', '#8993A4'),
+                    color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                     textTransform: 'uppercase',
                     letterSpacing: '0.08em',
                   }}
@@ -191,7 +191,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                       margin: '0 0 6px',
                       fontSize: 12,
                       fontWeight: 600,
-                      color: token('color.text.subtlest', '#8993A4'),
+                      color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                       textTransform: 'uppercase',
                       letterSpacing: '0.08em',
                     }}

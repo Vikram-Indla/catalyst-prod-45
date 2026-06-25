@@ -36,11 +36,11 @@ function StatusPill({
 
   const catColor = mapping.bucketType === 'column'
     ? (mapping.statusName.toLowerCase().includes('done') || mapping.statusName.toLowerCase().includes('closed') || mapping.statusName.toLowerCase().includes('production') || mapping.statusName.toLowerCase().includes('resolved')
-      ? '#006644' : mapping.statusName.toLowerCase().includes('progress') || mapping.statusName.toLowerCase().includes('dev') || mapping.statusName.toLowerCase().includes('qa') || mapping.statusName.toLowerCase().includes('uat') || mapping.statusName.toLowerCase().includes('design') || mapping.statusName.toLowerCase().includes('beta') || mapping.statusName.toLowerCase().includes('testing') || mapping.statusName.toLowerCase().includes('review')
-        ? '#0747A6' : 'var(--ds-text, #253858)')
+      ? 'var(--ds-text-success, #006644)' : mapping.statusName.toLowerCase().includes('progress') || mapping.statusName.toLowerCase().includes('dev') || mapping.statusName.toLowerCase().includes('qa') || mapping.statusName.toLowerCase().includes('uat') || mapping.statusName.toLowerCase().includes('design') || mapping.statusName.toLowerCase().includes('beta') || mapping.statusName.toLowerCase().includes('testing') || mapping.statusName.toLowerCase().includes('review')
+        ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text, #253858)')
     : 'var(--ds-text, #253858)';
 
-  const catBg = catColor === '#006644' ? '#E3FCEF' : catColor === '#0747A6' ? '#DEEBFF' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
+  const catBg = catColor === 'var(--ds-text-success, #006644)' ? 'var(--ds-background-success, #DFFCF0)' : catColor === 'var(--ds-link-pressed, #0747A6)' ? 'var(--ds-background-information, #E9F2FF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
 
   return (
     <div
@@ -170,7 +170,7 @@ function ColumnCard({
               }}
             />
             <button onClick={commitRename} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-              <Check size={14} color="#36B37E" />
+              <Check size={14} color="var(--ds-background-success-bold, #1F845A)" />
             </button>
             <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
               <X size={14} color={tk.textMuted} />
@@ -339,7 +339,7 @@ function AddColumnBtn({ tk, onAdd }: { tk: any; onAdd: (name: string) => void })
         }}
       />
       <button onClick={submit} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-        <Check size={16} color="#36B37E" />
+        <Check size={16} color="var(--ds-background-success-bold, #1F845A)" />
       </button>
       <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
         <X size={16} color={tk.textMuted} />
@@ -358,7 +358,7 @@ function DeleteConfirm({
     <div style={{
       position: 'fixed', inset: 0, zIndex: 100,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.4)',
+      background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
     }}>
       <div style={{
         background: tk.surfaceBg, border: `1px solid ${tk.border}`,
@@ -387,7 +387,7 @@ function DeleteConfirm({
             onClick={onConfirm}
             style={{
               height: 32, padding: '0 12px', borderRadius: 6,
-              border: 'none', background: '#E5493A', color: 'var(--ds-surface, #fff)',
+              border: 'none', background: 'var(--ds-background-danger-bold, #C9372C)', color: 'var(--ds-surface, #fff)',
               fontSize: 13, fontWeight: 600, cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
             }}
@@ -588,8 +588,8 @@ export default function MapStatusesPage() {
           </span>
           {hasChanges && (
             <span style={{
-              fontSize: 11, fontWeight: 600, color: '#DE350B',
-              background: '#FFEBE6', borderRadius: 3, padding: '2px 8px',
+              fontSize: 11, fontWeight: 600, color: 'var(--ds-background-danger-bold, #C9372C)',
+              background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 3, padding: '2px 8px',
             }}>
               Unsaved changes
             </span>
@@ -597,7 +597,7 @@ export default function MapStatusesPage() {
         </div>
         <div className="flex items-center gap-2">
           {saveError && (
-            <span style={{ fontSize: 12, color: '#DE350B' }}>{saveError}</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-background-danger-bold, #C9372C)' }}>{saveError}</span>
           )}
           <button
             onClick={() => { cancel(); }}

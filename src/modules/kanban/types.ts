@@ -162,7 +162,7 @@ export const COLUMNS_CONFIG: StatusConfig[] = [
   { id: 'implement', label: 'Implement', color: '#a855f7', order: 3 },      // Purple
   { id: 'closed', label: 'Closed', color: '#78716c', order: 4 },            // Stone
   { id: 'rejected', label: 'Rejected', color: 'var(--ds-text-danger, #ef4444)', order: 5 },        // Red
-  { id: 'on_hold', label: 'On-Hold', color: '#f97316', order: 6 },          // Orange
+  { id: 'on_hold', label: 'On-Hold', color: 'var(--ds-background-warning-bold, #f97316)', order: 6 },          // Orange
 ];
 
 // Priority configuration

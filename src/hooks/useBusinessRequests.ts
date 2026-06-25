@@ -5,7 +5,7 @@ import { BusinessRequest, CreateBusinessRequestFormData } from '@/types/business
 import { useToast } from '@/hooks/use-toast';
 import { Json } from '@/integrations/supabase/types';
 
-// Helper to generate MDT-XXX format request key
+// Helper to generate MDT-XXXXX format request key (5-digit zero-padded)
 const generateRequestKey = async (): Promise<string> => {
   // Get all existing request keys to find the max number
   const { data, error } = await typedQuery('business_requests')
@@ -15,8 +15,8 @@ const generateRequestKey = async (): Promise<string> => {
 
   if (error) {
     console.error('Error getting request keys:', error);
-    // Fallback to timestamp-based key to avoid collisions
-    const timestamp = Date.now().toString().slice(-6);
+    // Fallback: use last 5 digits of timestamp to avoid collisions
+    const timestamp = Date.now().toString().slice(-5);
     return `MDT-${timestamp}`;
   }
 
@@ -24,7 +24,7 @@ const generateRequestKey = async (): Promise<string> => {
   let maxNum = 0;
   ((data || []) as any[]).forEach((row: any) => {
     if (row.request_key) {
-      const match = row.request_key.match(/(?:MDT|MIM)-(\d+)/);
+      const match = row.request_key.match(/MDT-(\d+)/);
       if (match) {
         const num = parseInt(match[1], 10);
         if (num > maxNum) maxNum = num;
@@ -32,8 +32,8 @@ const generateRequestKey = async (): Promise<string> => {
     }
   });
 
-  // Generate next sequential number, padded to 3 digits
-  const nextNum = (maxNum + 1).toString().padStart(3, '0');
+  // Generate next sequential number, padded to 5 digits
+  const nextNum = (maxNum + 1).toString().padStart(5, '0');
   return `MDT-${nextNum}`;
 };
 
@@ -218,7 +218,7 @@ export function useCreateBusinessRequest() {
         actorName = profile?.full_name || profile?.email || 'Unknown User';
       }
 
-      // Generate request key in MIM-XXX format
+      // Generate request key in MDT-XXXXX format
       const requestKey = await generateRequestKey();
       
       // Insert only columns that exist in the slimmed 22-column schema.
@@ -490,7 +490,7 @@ export function useDuplicateBusinessRequest() {
       const originalTyped = original as any;
       if (!originalTyped) throw new Error('Request not found');
 
-      // Generate request key in MIM-XXX format
+      // Generate request key in MDT-XXXXX format
       const requestKey = await generateRequestKey();
 
       // Create new request with only title copied, status reset to New Demand (new_request), and scoring reset to unscored

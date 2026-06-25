@@ -103,7 +103,7 @@ export function useAlignmentMapData() {
             title: row.theme_name || '',
             status: row.theme_status || 'draft',
             progress: Number(row.theme_progress) || 0,
-            color: row.theme_color || '#2563EB',
+            color: row.theme_color || 'var(--ds-link, #2563eb)',
           });
         }
 

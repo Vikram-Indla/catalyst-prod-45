@@ -24,7 +24,7 @@ import { ResizableTableHeader, type SortDir } from '@/components/shared/Resizabl
 function BugTypeIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="1" y="1" width="14" height="14" rx="3" fill="#FF5630" />
+      <rect x="1" y="1" width="14" height="14" rx="3" fill="var(--ds-background-danger-bold, #C9372C)" />
       <circle cx="8" cy="8" r="3" fill="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />
     </svg>
   );
@@ -32,9 +32,9 @@ function BugTypeIcon() {
 
 // ── Severity Lozenge (V12 bordered muted — intentional inline hex) ──
 const SEVERITY_MAP: Record<string, { label: string; bg: string; text: string; border: string }> = {
-  critical: { label: 'CRITICAL', bg: '#FFECEC', text: '#AE2A19', border: '#FFBDAD' },
-  high:     { label: 'HIGH',     bg: '#FFF4EC', text: '#974F0C', border: '#FFD2A7' },
-  medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', text: '#42526E', border: 'var(--ds-border-disabled, #C1C7D0)' },
+  critical: { label: 'CRITICAL', bg: '#FFECEC', text: 'var(--ds-text-danger, #AE2A19)', border: '#FFBDAD' },
+  high:     { label: 'HIGH',     bg: '#FFF4EC', text: 'var(--ds-text-warning, #974F0C)', border: '#FFD2A7' },
+  medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', text: 'var(--ds-text-subtle, #42526E)', border: 'var(--ds-border-disabled, #C1C7D0)' },
   low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', text: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
@@ -58,7 +58,7 @@ function PriorityCell({ priority }: { priority: string | null }) {
 }
 
 // ── Avatar colours (deterministic) ──
-const AVATAR_COLOURS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777', 'var(--cp-purple-60, #7C3AED)', 'var(--quality-high, #059669)', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-link, #0C66E4)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-background-accent-magenta-bolder, #BE185D)', 'var(--cp-purple-60, #7C3AED)', 'var(--quality-high, #059669)', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
 
 // ── Age formatter ──
 function getRelativeAge(createdAt: string): string {
@@ -93,8 +93,8 @@ function JiraBadge() {
 // ── Status dot color for parent items ──
 function getStatusDotColor(statusCategory: string | null): string {
   const cat = (statusCategory || '').toLowerCase();
-  if (cat === 'done' || cat === 'closed' || cat === 'resolved') return '#36B37E';
-  if (cat === 'in progress' || cat === 'indeterminate' || cat === 'active') return '#0065FF';
+  if (cat === 'done' || cat === 'closed' || cat === 'resolved') return 'var(--ds-background-success-bold, #1F845A)';
+  if (cat === 'in progress' || cat === 'indeterminate' || cat === 'active') return 'var(--ds-link, #0065FF)';
   return 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
 }
 
@@ -231,12 +231,12 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
                 onClick={() => handleSelect(opt.key)}
                 className={cn(
                   "w-full text-left px-3 py-2.5 border-none cursor-pointer transition-colors block",
-                  isSelected ? "bg-[#DEEBFF]" : "bg-white hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]"
+                  isSelected ? "bg-[var(--ds-background-information, #E9F2FF)]" : "bg-white hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]"
                 )}
               >
                 <div className="flex items-center gap-2">
                   <WorkItemIcon type={opt.type} size={16} />
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: '#42526E' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)' }}>
                     {opt.key}
                   </span>
                 </div>
@@ -272,14 +272,14 @@ function AssigneeCell({ defect, nameAvatarMap }: { defect: Defect; nameAvatarMap
         <img
           src={avatarUrl}
           alt={assigneeName}
-          style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(15,23,42,0.08)' }}
+          style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))' }}
         />
       ) : (
         <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
           {ini}
         </div>
       )}
-      <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {assigneeName}
       </span>
     </div>

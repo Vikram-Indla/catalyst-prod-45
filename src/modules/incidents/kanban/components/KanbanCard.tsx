@@ -89,15 +89,15 @@ function SeverityBadge({ severity }: { severity: string }) {
     switch (severity) {
       case 'SEV1':
         // Dark red background, light red text for dark mode
-        return "bg-[rgba(239,68,68,0.08)] text-[var(--ds-text-danger,#ef4444)] dark:bg-[#7f1d1d] dark:text-[var(--ds-border-danger,#fca5a5)] dark:border dark:border-[var(--ds-text-danger,#991b1b)]";
+        return "bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger,#ef4444)] dark:bg-[var(--ds-text-danger, #AE2A19)] dark:text-[var(--ds-border-danger,#fca5a5)] dark:border dark:border-[var(--ds-text-danger,#991b1b)]";
       case 'SEV2':
         // Amber variant for dark mode
-        return "bg-[rgba(245,158,11,0.08)] text-[var(--ds-text-warning,#d97706)] dark:bg-[#78350f] dark:text-[#fcd34d] dark:border dark:border-[#92400e]";
+        return "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)] dark:bg-[var(--ds-text-warning, #974F0C)] dark:text-[var(--ds-background-warning, #FFF7D6)] dark:border dark:border-[var(--ds-text-warning, #974F0C)]";
       case 'SEV3':
       case 'SEV4':
       default:
         // Gray variant for dark mode
-        return "bg-[#f3f3f3] text-[#737373] dark:bg-[#262626] dark:text-[#a3a3a3] dark:border dark:border-[#404040]";
+        return "bg-[var(--ds-background-neutral-subtle, #F7F8F9)] text-[var(--ds-text-subtlest, #626F86)] dark:bg-[var(--ds-text, #172B4D)] dark:text-[var(--ds-text-disabled, #8590A2)] dark:border dark:border-[var(--ds-text-subtle, #44546F)]";
     }
   };
   
@@ -168,14 +168,14 @@ export const KanbanCard = memo(function KanbanCard({
         "cursor-pointer transition-all group",
         isDragging && "opacity-50",
         // Dark mode compliant backgrounds
-        "bg-white dark:bg-[#262626]",
-        "border border-[#e8e8e8] dark:border-[#333]",
+        "bg-white dark:bg-[var(--ds-text, #172B4D)]",
+        "border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-text, #172B4D)]",
         // Hover state
-        "hover:border-[#d4d4d4] dark:hover:border-[#404040] dark:hover:bg-[#333]",
+        "hover:border-[var(--ds-background-neutral-hovered, #D4D4D4)] dark:hover:border-[var(--ds-text-subtle, #44546F)] dark:hover:bg-[var(--ds-text, #172B4D)]",
         // Shadow
-        "shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)]",
+        "shadow-[0_1px_3px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.05))),0_1px_2px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.03)))]",
         "dark:shadow-none",
-        isDragging && "shadow-[0_4px_12px_rgba(0,0,0,0.15)]",
+        isDragging && "shadow-[0_4px_12px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.15)))]",
         // Left border for severity
         isBreached && "border-l-[3px] border-l-[var(--ds-text-danger,#ef4444)]",
         isAtRisk && !isBreached && "border-l-[3px] border-l-[var(--ds-text-warning,#f59e0b)]"
@@ -193,8 +193,8 @@ export const KanbanCard = memo(function KanbanCard({
           {incident.is_major_incident && (
             <span className={cn(
               "flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold",
-              "bg-[rgba(245,158,11,0.08)] text-[var(--ds-text-warning,#d97706)]",
-              "dark:bg-[#431407] dark:text-[#fdba74] dark:border dark:border-[#7c2d12]"
+              "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)]",
+              "dark:bg-[#431407] dark:text-[var(--ds-background-warning, #FFF7D6)] dark:border dark:border-[#7c2d12]"
             )}>
               <AlertTriangle className="h-2.5 w-2.5" />
               Major
@@ -219,7 +219,7 @@ export const KanbanCard = memo(function KanbanCard({
       </div>
       
       {/* Row 2: Title */}
-      <h4 className="text-sm font-medium leading-snug mb-2.5 text-[var(--ds-surface,#0a0a0a)] dark:text-[#fafafa]">
+      <h4 className="text-sm font-medium leading-snug mb-2.5 text-[var(--ds-surface,#0a0a0a)] dark:text-[var(--ds-surface-sunken, #FAFAFA)]">
         {incident.title}
       </h4>
       
@@ -227,12 +227,12 @@ export const KanbanCard = memo(function KanbanCard({
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
           <SeverityBadge severity={incident.severity} />
-          <span className="text-xs text-[#737373] dark:text-[#a3a3a3]">{age}</span>
+          <span className="text-xs text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">{age}</span>
           {isBreached && (
-            <span className="text-xs font-semibold text-[var(--ds-text-danger,#ef4444)] dark:text-[#f87171]">Breached</span>
+            <span className="text-xs font-semibold text-[var(--ds-text-danger,#ef4444)] dark:text-[var(--ds-background-danger, #FFECEB)]">Breached</span>
           )}
           {isAtRisk && (
-            <span className="text-xs font-semibold text-[var(--ds-text-warning,#f59e0b)] dark:text-[#fbbf24]">At Risk</span>
+            <span className="text-xs font-semibold text-[var(--ds-text-warning,#f59e0b)] dark:text-[var(--ds-background-warning-bold, #E2B203)]">At Risk</span>
           )}
         </div>
         
@@ -240,13 +240,13 @@ export const KanbanCard = memo(function KanbanCard({
         {incident.assignee ? (
           <div className={cn(
             "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold",
-            "bg-[#f3f3f3] text-[#737373]",
-            "dark:bg-[#404040] dark:text-[#d4d4d4]"
+            "bg-[var(--ds-background-neutral-subtle, #F7F8F9)] text-[var(--ds-text-subtlest, #626F86)]",
+            "dark:bg-[var(--ds-text-subtle, #44546F)] dark:text-[var(--ds-background-neutral-hovered, #D4D4D4)]"
           )}>
             {incident.assignee.avatar_initials || incident.assignee.full_name.slice(0, 2).toUpperCase()}
           </div>
         ) : (
-          <span className="italic text-xs text-[#737373] dark:text-[#a3a3a3]">Unassigned</span>
+          <span className="italic text-xs text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]">Unassigned</span>
         )}
       </div>
       

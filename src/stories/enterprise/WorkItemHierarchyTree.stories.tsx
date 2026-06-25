@@ -10,16 +10,16 @@ const node = (
   children: WorkItem[] = [],
 ): WorkItem => ({
   id, key, title,
-  hierarchyLevel: level, hierarchyName: hName, hierarchyColor: hColor, hierarchyColorText: '#FFFFFF',
+  hierarchyLevel: level, hierarchyName: hName, hierarchyColor: hColor, hierarchyColorText: 'var(--ds-surface, #FFFFFF)',
   parentId: null,
   status: {
     id: `st-${statusCat}`, name: statusName,
-    color: statusCat === 'done' ? '#E3FCEF' : statusCat === 'indeterminate' ? '#DEEBFF' : '#DFE1E6',
-    colorText: statusCat === 'done' ? '#006644' : statusCat === 'indeterminate' ? '#0747A6' : '#253858',
+    color: statusCat === 'done' ? 'var(--ds-background-success, #DFFCF0)' : statusCat === 'indeterminate' ? 'var(--ds-background-information, #E9F2FF)' : 'var(--ds-border, #DFE1E6)',
+    colorText: statusCat === 'done' ? 'var(--ds-text-success, #006644)' : statusCat === 'indeterminate' ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text, #253858)',
     isTerminal: statusCat === 'done',
   },
   assignee: { id: 'u1', displayName: 'Nada Alfassam', email: 'nada@example.com' },
-  priority: { name: 'High', color: '#FFEBE6', colorText: '#AE2A19' },
+  priority: { name: 'High', color: 'var(--ds-background-danger, #FFECEB)', colorText: 'var(--ds-text-danger, #AE2A19)' },
   children,
   stats: { totalDescendants: children.length, completedCount: 0 },
   labels: [],
@@ -28,14 +28,14 @@ const node = (
 });
 
 const MOCK: WorkItem[] = [
-  node('1', 'BAU-4466', 'Senaei App – Revamp (UI)', 1, 'Epic', '#8270DB', 'Epic', 'In Progress', 'indeterminate', [
-    node('2', 'BAU-5174', 'Landing Page – DGA modification', 2, 'Feature', '#36B37E', 'Feature', 'In Development', 'indeterminate', [
+  node('1', 'BAU-4466', 'Senaei App – Revamp (UI)', 1, 'Epic', 'var(--ds-background-discovery-bold, #6E5DC6)', 'Epic', 'In Progress', 'indeterminate', [
+    node('2', 'BAU-5174', 'Landing Page – DGA modification', 2, 'Feature', 'var(--ds-background-success-bold, #1F845A)', 'Feature', 'In Development', 'indeterminate', [
       node('3', 'BAU-5957', 'Update product details survey', 3, 'Story', '#4688EC', 'Story', 'Ready for Development', 'new', [
         node('4', 'BAU-5958', 'Add price field validation rule', 4, 'Sub-task', '#4688EC', 'Sub-task', 'In Progress', 'indeterminate'),
       ]),
       node('5', 'BAU-5872', 'Add production-quantity validation', 3, 'Story', '#4688EC', 'Story', 'Done', 'done'),
     ]),
-    node('6', 'BAU-5078', 'Enable Active Directory SSO login', 2, 'Feature', '#36B37E', 'Feature', 'In Development', 'indeterminate'),
+    node('6', 'BAU-5078', 'Enable Active Directory SSO login', 2, 'Feature', 'var(--ds-background-success-bold, #1F845A)', 'Feature', 'In Development', 'indeterminate'),
   ]),
 ];
 

@@ -14,7 +14,7 @@ export function ImproveButton({
   editor,
   onImprove,
   onStop,
-  label = 'Improve description',
+  label = 'Improve',
   isImproving = false,
 }: Props) {
   const isEmpty = editor?.isEmpty ?? true;

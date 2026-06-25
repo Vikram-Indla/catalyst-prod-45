@@ -83,16 +83,16 @@ export interface RoadmapGroup {
 }
 
 export const STATUS_COLORS: Record<ObjectiveStatus, string> = {
-  "on-track": "#0d9488",
-  "at-risk": "#d97706",
-  "blocked": "#dc2626",
-  "pending": "#737373",
+  "on-track": "var(--ds-chart-teal-bold, #0d9488)",
+  "at-risk": "var(--ds-background-warning-bold, #d97706)",
+  "blocked": "var(--ds-background-danger-bold, #dc2626)",
+  "pending": "var(--ds-text-subtlest, #626F86)",
 };
 
 export const MILESTONE_COLORS: Record<MilestoneType, string> = {
-  "strategic": "#d97706",
-  "release": "#0d9488",
-  "decision": "#8b5cf6",
+  "strategic": "var(--ds-background-warning-bold, #d97706)",
+  "release": "var(--ds-chart-teal-bold, #0d9488)",
+  "decision": "var(--ds-background-discovery-bold, #8b5cf6)",
 };
 
 export const LAYOUT = {

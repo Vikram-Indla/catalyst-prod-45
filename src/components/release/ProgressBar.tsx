@@ -8,7 +8,7 @@ interface ProgressBarProps {
 
 function getProgressClasses(value: number): string {
   // Catalyst V5: ≥70% teal, 40-69% orange, <40% red
-  if (value >= 70) return 'bg-[#0d9488]';
+  if (value >= 70) return 'bg-[var(--ds-chart-teal-bold, #0d9488)]';
   if (value >= 40) return 'bg-[var(--ds-text-warning,#d97706)]';
   return 'bg-[var(--ds-text-danger,#ef4444)]';
 }

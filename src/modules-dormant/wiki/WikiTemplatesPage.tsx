@@ -14,13 +14,13 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
   return (
     <div style={{
       padding: '12px 16px', borderRadius: 6, marginBottom: 16,
-      background: isDark ? 'rgba(217,119,6,0.12)' : '#FFFBEB',
+      background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, #FFF7D6)',
       border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
       display: 'flex', alignItems: 'flex-start', gap: 10,
     }}>
       <AlertTriangle size={16} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', flexShrink: 0, marginTop: 2 }} />
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 12, fontWeight: 650, color: isDark ? '#FBBF24' : '#92400E', marginBottom: 4 }}>
+        <div style={{ fontSize: 12, fontWeight: 650, color: isDark ? 'var(--ds-background-warning-bold, #E2B203)' : 'var(--ds-text-warning, #974F0C)', marginBottom: 4 }}>
           Similar article{duplicates.length > 1 ? 's' : ''} found
         </div>
         {duplicates.map((d: any) => (
@@ -28,7 +28,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
             <span style={{
               fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700,
               padding: '1px 5px', borderRadius: 4,
-              background: isDark ? 'rgba(217,119,6,0.2)' : '#FEF3C7',
+              background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.2))' : 'var(--ds-background-warning, #FFF7D6)',
               color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
             }}>{Math.round((d.similarity ?? 0.8) * 100)}%</span>
             <span
@@ -37,7 +37,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
             >{d.title}</span>
           </div>
         ))}
-        <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : '#92400E', marginTop: 4 }}>
+        <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-warning, #974F0C)', marginTop: 4 }}>
           You can proceed or navigate to an existing article instead.
         </div>
       </div>
@@ -65,7 +65,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
           onChange={e => onChange(e.target.value)}
           style={{
             width: '100%', padding: '7px 10px', fontSize: 12, borderRadius: 4,
-            border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,0.12)'}`,
+            border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))'}`,
             background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)',
           }}
@@ -164,7 +164,7 @@ export default function WikiTemplatesPage() {
     navigate(`/wiki/${slug}`);
   };
 
-  const borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
+  const borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))';
   const cardBorderHover = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 
   return (
@@ -194,7 +194,7 @@ export default function WikiTemplatesPage() {
           <button onClick={() => createArticleFromTemplate(pendingTemplate)} style={{
             fontSize: 11, fontWeight: 650, padding: '6px 16px', borderRadius: 4,
             border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
-            background: isDark ? 'rgba(217,119,6,0.12)' : '#FFFBEB',
+            background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, #FFF7D6)',
             color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
             cursor: 'pointer',
           }}>Proceed Anyway</button>
@@ -205,7 +205,7 @@ export default function WikiTemplatesPage() {
       <div style={{
         marginBottom: 20, padding: '14px 16px', borderRadius: 6,
         background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,0.08)'}`,
+        border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.08))'}`,
       }}>
         <button onClick={() => setShowScheduling(!showScheduling)} style={{
           fontSize: 12, fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', background: 'transparent',
@@ -236,7 +236,7 @@ export default function WikiTemplatesPage() {
             {(publishAt || archiveAt) && (
               <button onClick={() => { setPublishAt(''); setArchiveAt(''); }} style={{
                 fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-                border: '1px solid rgba(220,38,38,0.2)', background: isDark ? 'rgba(220,38,38,0.12)' : 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+                border: '1px solid var(--ds-background-danger-bold, rgba(220,38,38,0.2))', background: isDark ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))' : 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                 cursor: 'pointer', alignSelf: 'flex-end', marginBottom: 18,
               }}>Clear Dates</button>
             )}

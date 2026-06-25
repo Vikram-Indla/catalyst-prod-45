@@ -31,12 +31,12 @@ const LABEL_STYLE: React.CSSProperties = {
 
 function statusBadge(status: string) {
   const map: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-    active:      { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'Active' },
-    on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
-    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
-    achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
-    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
-    off_track:   { dot: 'var(--sem-danger)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Off Track' },
+    active:      { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, #1F845A)', label: 'Active' },
+    on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, #1F845A)', label: 'On Track' },
+    completed:   { dot: 'var(--ds-background-discovery-bold, #6E5DC6)', bg: 'rgba(79,70,229,0.08)',  text: 'var(--ds-background-discovery-bold, #4338ca)', label: 'Completed' },
+    achieved:    { dot: 'var(--ds-background-discovery-bold, #6E5DC6)', bg: 'rgba(79,70,229,0.08)',  text: 'var(--ds-background-discovery-bold, #4338ca)', label: 'Achieved' },
+    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, rgba(217,119,6,0.08))',  text: 'var(--ds-background-warning-bold, #b45309)', label: 'At Risk' },
+    off_track:   { dot: 'var(--sem-danger)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.08))',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Off Track' },
     draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
     not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
     cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Cancelled' },
@@ -72,18 +72,18 @@ function computeKRProgress(kr: KeyResult) {
 
 // Fix 4: Avatar colors
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
-  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
-  'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
-  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46' },
-  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E' },
+  'Nada Alfassam':      { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' },
+  'Sitah Alqahtani':    { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)' },
+  'Sulaiman Alessa':    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' },
+  'ibrahim alqusiyer':  { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
   'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
-  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6' },
+  'Izza Ali':           { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)' },
 };
 function getAvatarColors(name: string) {
   if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const palettes = [{ bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' }, { bg: '#E0E7FF', text: '#3730A3' }, { bg: '#FEF3C7', text: '#92400E' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#5B21B6' }];
+  const palettes = [{ bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' }, { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' }, { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)' }, { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)' }];
   return palettes[Math.abs(hash) % palettes.length];
 }
 
@@ -145,13 +145,13 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
 
   // Status dot color
   const statusDotColor = goal ? ({
-    active: 'var(--ds-text-success, var(--cp-success, #16A34A))', on_track: 'var(--ds-text-success, var(--cp-success, #16A34A))', completed: '#4F46E5',
+    active: 'var(--ds-text-success, var(--cp-success, #16A34A))', on_track: 'var(--ds-text-success, var(--cp-success, #16A34A))', completed: 'var(--ds-background-discovery-bold, #6E5DC6)',
     at_risk: 'var(--ds-text-warning, var(--cp-warning, #D97706))', off_track: 'var(--sem-danger)', draft: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
   }[goal.status] || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))') : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 998, background: 'rgba(15,23,42,0.3)', animation: 'gddFadeIn 200ms ease-out' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 998, background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.3))', animation: 'gddFadeIn 200ms ease-out' }} />
       <div
         role="dialog" aria-label={`Goal detail: ${goal?.title || ''}`}
         className="gdd-drawer"
@@ -159,7 +159,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
           position: 'fixed', top: 0, right: 0, bottom: 0,
           width: 520, maxWidth: '100vw', zIndex: 999,
           background: 'var(--cp-float)', borderLeft: '1px solid var(--divider)',
-          boxShadow: '-8px 0 24px rgba(0,0,0,0.08), -2px 0 8px rgba(0,0,0,0.04)',
+          boxShadow: '-8px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.08)), -2px 0 8px var(--ds-shadow-raised, rgba(0,0,0,0.04))',
           display: 'flex', flexDirection: 'column',
           animation: 'gddSlideIn 300ms cubic-bezier(.4,0,.2,1)', overflow: 'hidden',
         }}
@@ -167,7 +167,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         {/* Fix 2: Sticky Header — 56px */}
         <div style={{
           position: 'sticky', top: 0, zIndex: 10,
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: '1px solid var(--divider)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', height: 56,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
@@ -198,7 +198,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: 'var(--sem-danger)', transition: 'background 150ms',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger, #FFECEB)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <Trash2 size={14} />
@@ -219,7 +219,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         {/* Fix 2: Sticky Tab bar */}
         <div style={{
           position: 'sticky', top: 56, zIndex: 10,
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: '1px solid var(--divider)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', display: 'flex', gap: 0,
         }}>
           {TABS.map(tab => (
@@ -362,7 +362,7 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
         <button
           onClick={() => onSave({ title, description: description || undefined, status, priority, theme_id: themeId, start_date: startDate || undefined, target_date: targetDate || undefined, fiscal_quarter: quarter || undefined, bsc_perspective: (bsc as BSCPerspective) || undefined })}
           disabled={isPending}
-          style={{ padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: isPending ? '#93C5FD' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: isPending ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
+          style={{ padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', background: isPending ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: isPending ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
         >
           <Save size={13} /> {isPending ? 'Saving...' : 'Save'}
         </button>
@@ -443,7 +443,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
       )}
 
       {/* AI Health Score — purple branded */}
-      <div style={{ background: '#DBEAFE', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 12, padding: 16 }}>
+      <div style={{ background: 'var(--ds-background-information, #E9F2FF)', border: '1px solid var(--ds-background-information, rgba(37,99,235,0.15))', borderRadius: 12, padding: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
           <Sparkles size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Health Score</span>
@@ -457,7 +457,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
             { label: 'Confidence Trend', value: confPct >= 60 ? '↑ Improving' : confPct >= 40 ? '→ Stable' : '↓ Declining' },
             { label: 'Days to Deadline', value: daysToDeadline != null ? (daysToDeadline > 0 ? `${daysToDeadline}d` : 'Overdue') : '—' },
           ].map(f => (
-            <div key={f.label} style={{ background: 'rgba(37,99,235,0.06)', borderRadius: 6, padding: '8px 10px' }}>
+            <div key={f.label} style={{ background: 'var(--ds-background-information, rgba(37,99,235,0.06))', borderRadius: 6, padding: '8px 10px' }}>
               <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--cp-blue)', opacity: 0.7, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</div>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)' }}>{f.value}</div>
             </div>
@@ -478,7 +478,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><BarChart3 size={36} color="var(--ds-text-disabled, #CBD5E1)" /></div>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No Key Results yet</div>
         <div style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 16 }}>Add measurable key results to track progress toward this goal.</div>
-        <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 6, cursor: 'pointer' }}>
+        <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'var(--ds-background-information, rgba(37,99,235,0.06))', border: '1px solid var(--ds-background-information, rgba(37,99,235,0.2))', borderRadius: 6, cursor: 'pointer' }}>
           <Plus size={13} /> Add Key Result
         </button>
       </div>
@@ -491,7 +491,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         const pctColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--sem-danger)';
         return (
           <div key={kr.id} className="kr-detail-card" style={{
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--divider)', borderRadius: 8,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '1px solid var(--divider)', borderRadius: 8,
             padding: '14px 16px', transition: 'all 150ms',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -507,7 +507,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
               <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{kr.current_value} / {kr.target}{kr.metric_unit ? ` ${kr.metric_unit}` : ''}</span>
               <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>Due: {formatDate(kr.due_date)}</span>
               {onCheckinClick && (
-                <button onClick={() => onCheckinClick(kr.id)} style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Check-in</button>
+                <button onClick={() => onCheckinClick(kr.id)} style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Check-in</button>
               )}
             </div>
           </div>
@@ -517,7 +517,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         <Plus size={13} /> Add Key Result
       </button>
       <style>{`
-        .kr-detail-card:hover { border-color: var(--ds-text-disabled, #CBD5E1); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .kr-detail-card:hover { border-color: var(--ds-text-disabled, #CBD5E1); box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06)); }
       `}</style>
     </div>
   );
@@ -548,7 +548,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
           <div style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 16 }}>Link initiatives from Products that contribute to this goal.</div>
           <button
             onClick={() => setShowSearch(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 6, cursor: 'pointer' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'var(--ds-background-information, rgba(37,99,235,0.06))', border: '1px solid var(--ds-background-information, rgba(37,99,235,0.2))', borderRadius: 6, cursor: 'pointer' }}
           >
             <Plus size={13} /> Link Request
           </button>
@@ -616,7 +616,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
                   key={init.id}
                   onClick={() => { linkMutation.mutate({ goalId, requestId: init.id }); setShowSearch(false); setSearchQuery(''); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', transition: 'background 100ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-primary-light, #EFF6FF)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-primary-light, var(--ds-background-information, #E9F2FF))')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: 'ui-monospace, monospace' }}>{init.initiative_key}</span>
@@ -634,12 +634,12 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       )}
 
       <style>{`
-        .init-card:hover { border-color: var(--ds-text-disabled, #CBD5E1); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .init-card:hover { border-color: var(--ds-text-disabled, #CBD5E1); box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06)); }
         .unlink-btn:hover { color: var(--ds-text-danger, #EF4444) !important; }
         .link-init-btn:hover { border-color: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))); background: var(--ds-surface-sunken, #F8FAFC); }
         /* Rule 3 paired .dark — brand red stays; neutral surfaces flip to ADS dark. */
-        .dark .unlink-btn:hover { color: #F87171 !important; }
-        .dark .init-card:hover { border-color: var(--ds-border-bold, #5C6F82); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .dark .unlink-btn:hover { color: var(--ds-background-danger, #FFECEB) !important; }
+        .dark .init-card:hover { border-color: var(--ds-border-bold, #5C6F82); box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.4)); }
         .dark .link-init-btn:hover { border-color: var(--ds-border-bold, #5C6F82); background: var(--ds-background-neutral-hovered, #2C333A); }
       `}</style>
     </div>
@@ -688,7 +688,7 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
 function ActivityTab({ goal, krs, checkins }: { goal: Goal; krs: KeyResult[]; checkins: KRCheckin[] }) {
   const items = [
     { icon: <Activity size={12} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />, user: 'System', text: 'Goal created', date: goal.created_at || goal.start_date },
-    ...(krs.length > 0 ? [{ icon: <BarChart3 size={12} color="var(--cp-teal-60, #0D9488)" />, user: 'System', text: `${krs.length} Key Results added`, date: goal.created_at }] : []),
+    ...(krs.length > 0 ? [{ icon: <BarChart3 size={12} color="var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))" />, user: 'System', text: `${krs.length} Key Results added`, date: goal.created_at }] : []),
     ...(checkins.length > 0 ? [{ icon: <Clock size={12} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />, user: 'Team', text: `${checkins.length} check-ins recorded`, date: checkins[0]?.created_at }] : []),
   ];
   return (

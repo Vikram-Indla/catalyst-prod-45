@@ -36,7 +36,7 @@ export default function ProjectBoardSettingsPage() {
         name: data.name,
         description: data.description ?? null,
         icon: data.icon ?? '',
-        color: data.color ?? '#0052CC',
+        color: data.color ?? 'var(--ds-link, #0052CC)',
         projectId: data.project_id ?? null,
         isPersonal: data.is_personal ?? false,
         visibility: data.visibility ?? 'project',

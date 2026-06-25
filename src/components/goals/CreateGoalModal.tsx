@@ -101,13 +101,13 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 998, background: 'rgba(15,23,42,0.3)', animation: 'fadeIn 200ms ease-out' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 998, background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.3))', animation: 'fadeIn 200ms ease-out' }} />
 
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 600, maxHeight: '90vh', zIndex: 999,
         background: 'var(--cp-float)', borderRadius: 16,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+        boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
         display: 'flex', flexDirection: 'column',
         animation: 'scaleIn 200ms ease-out',
       }}>
@@ -133,7 +133,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
               value={title} onChange={e => setTitle(e.target.value)}
               placeholder="e.g., Achieve 100% Digital Process Migration"
               style={inputStyle}
-              onFocus={e => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={e => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))'; }}
               onBlur={e => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
@@ -145,7 +145,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
               value={description} onChange={e => setDescription(e.target.value)}
               placeholder="Describe the goal objectives..."
               style={{ ...inputStyle, minHeight: 60, resize: 'vertical', fontFamily: 'inherit' }}
-              onFocus={e => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={e => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))'; }}
               onBlur={e => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
@@ -278,7 +278,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
             disabled={createGoal.isPending}
             style={{
               padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              background: createGoal.isPending ? '#93C5FD' : 'var(--cp-blue)',
+              background: createGoal.isPending ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--cp-blue)',
               border: 'none', borderRadius: 6, cursor: createGoal.isPending ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: 5,
             }}

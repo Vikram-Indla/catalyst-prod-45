@@ -382,7 +382,7 @@ function CalendarGrid({
                 color: !allowed
                   ? 'var(--cv2-text-muted)'
                   : isSel
-                    ? '#FFFFFF'
+                    ? 'var(--ds-surface, #FFFFFF)'
                     : 'var(--cv2-text)',
                 border: isToday && !isSel ? '1px solid var(--cv2-accent)' : 'none',
                 borderRadius: 6,
@@ -467,7 +467,7 @@ function TimeDropdown({
               textAlign: 'left',
               padding: '6px 16px',
               background: sel ? 'var(--cv2-accent)' : 'transparent',
-              color: sel ? '#FFFFFF' : 'var(--cv2-text)',
+              color: sel ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text)',
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
@@ -497,7 +497,7 @@ function PrimaryBtn({ onClick, children }: { onClick: () => void; children: Reac
         height: 36,
         padding: '0 16px',
         background: 'var(--cv2-success)',
-        color: '#FFFFFF',
+        color: 'var(--ds-text-inverse, #FFFFFF)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',

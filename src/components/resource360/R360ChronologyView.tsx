@@ -10,9 +10,9 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
   if (cat === 'done' || cat === 'completed')
     return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: (status || 'DONE').toUpperCase() };
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started')
-    return { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: (status || 'IN PROGRESS').toUpperCase() };
+    return { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: (status || 'IN PROGRESS').toUpperCase() };
   if (cat === 'new' || cat === 'todo')
-    return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
+    return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)', label: (status || 'TO DO').toUpperCase() };
 
   // 2. Fallback: string-match raw status name
   const s = (status || '').toLowerCase();
@@ -24,9 +24,9 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
        'code review', 'in uat', 'uat ready', 're-open', 'in beta', 'in production', 'in design', 'in requirements',
        'ready for development', 'in entity integration', 'technical validation', 'end to end testing',
        'deferred for int', 'awaiting info', 'on hold', 'active'].some(k => s === k))
-    return { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: status.toUpperCase() };
+    return { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: status.toUpperCase() };
   // Grey (default — never "Unknown")
-  return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
+  return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)', label: (status || 'TO DO').toUpperCase() };
 }
 
 function StatusLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
@@ -43,9 +43,9 @@ function StatusLozenge({ status, statusCategory }: { status: string; statusCateg
 }
 
 // Icons
-const BugIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#E5493A"/><circle cx="8" cy="8" r="3" fill="white"/></svg>;
-const TaskIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#4BADE8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const StoryIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#63BA3C"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
+const BugIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="var(--ds-background-danger-bold, #C9372C)"/><circle cx="8" cy="8" r="3" fill="white"/></svg>;
+const TaskIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-information-bold, #1D7AFC)"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const StoryIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
 const EpicIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#904EE2"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
 function JiraIcon({ type }: { type: string }) {
   const t = (type || '').toLowerCase();
@@ -129,7 +129,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
               marginLeft: -32, paddingLeft: 10, marginBottom: 10, userSelect: 'none',
             }}>
               <div style={dotStyle} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: '#020617' }}>{dateLabel}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{dateLabel}</span>
               <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{total} items</span>
               {/* Mini bar */}
               <div style={{ display: 'flex', height: '4px', borderRadius: '4px', overflow: 'hidden', width: '80px', background: 'var(--bg-3)', flexShrink: 0 }}>
@@ -161,7 +161,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                       border: '1px solid var(--divider)', borderRadius: '8px', cursor: 'pointer', position: 'relative',
                       transition: 'border-color .15s, box-shadow .15s',
                     }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(15,23,42,.06)'; }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 1px 4px var(--ds-shadow-overlay, rgba(15,23,42,.06))'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}
                     >
                       {/* 3px ACCENT BAR */}
@@ -181,7 +181,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                           )}
                         </div>
                         <div style={{
-                          fontSize: '14px', fontWeight: 500, color: '#020617', lineHeight: '1.4',
+                          fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: '1.4',
                           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                         } as React.CSSProperties}>
                           {item.title}

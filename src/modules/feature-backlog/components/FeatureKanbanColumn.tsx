@@ -108,12 +108,12 @@ function PragmaticFeatureCard({
           {(item.project_name || item.epic_name) && (
             <div className="flex flex-wrap gap-1.5 mb-2">
               {item.project_name && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[#6b7280]/15 text-[#6b7280] dark:text-[#9ca3af] border-[#6b7280]/25">
+                <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[var(--ds-text-subtlest, #626F86)]/15 text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)] border-[var(--ds-text-subtlest, #626F86)]/25">
                   {item.project_name}
                 </span>
               )}
               {item.epic_name && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[#0d9488]/15 text-[#0d9488] dark:text-[#2dd4bf] border-[#0d9488]/25">
+                <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[var(--ds-chart-teal-bold, #0d9488)]/15 text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-[var(--ds-background-success, #DCFFF1)] border-[var(--ds-chart-teal-bold, #0d9488)]/25">
                   {item.epic_name}
                 </span>
               )}
@@ -145,7 +145,7 @@ function PragmaticFeatureCard({
                 item.priority === 'critical' && 'bg-red-500/15 text-red-500 border-red-500/30',
                 item.priority === 'high' && 'bg-amber-500/15 text-amber-500 border-amber-500/30',
                 item.priority === 'medium' && 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/15 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/30',
-                item.priority === 'low' && 'bg-[#0d9488]/15 text-[#0d9488] border-[#0d9488]/30',
+                item.priority === 'low' && 'bg-[var(--ds-chart-teal-bold, #0d9488)]/15 text-[var(--ds-chart-teal-bold, #0d9488)] border-[var(--ds-chart-teal-bold, #0d9488)]/30',
               )}>
                 {item.priority}
               </span>
@@ -285,7 +285,7 @@ export function FeatureKanbanColumn({
         ref={listRef}
         className={cn(
           'flex-1 overflow-y-auto p-3 flex flex-col gap-2.5',
-          isOver && 'bg-[rgba(37,99,235,0.08)] dark:bg-[rgba(37,99,235,0.1)]'
+          isOver && 'bg-[var(--ds-background-information, rgba(37,99,235,0.08))] dark:bg-[var(--ds-background-information, rgba(37,99,235,0.1))]'
         )}
         style={{ minHeight: 0 }}
       >

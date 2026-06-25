@@ -25,9 +25,9 @@ export type BorderColor = 'light' | 'medium' | 'dark';
 export type BorderSize = 'small' | 'medium' | 'large';
 
 export const BORDER_COLOR_HEX: Record<BorderColor, string> = {
-  light: '#DCDFE4',
-  medium: '#8590A2',
-  dark: '#22272B',
+  light: 'var(--ds-border-disabled, #DCDFE4)',
+  medium: 'var(--ds-text-disabled, #8590A2)',
+  dark: 'var(--ds-surface, #FFFFFF)',
 };
 
 export const BORDER_SIZE_PX: Record<BorderSize, number> = {

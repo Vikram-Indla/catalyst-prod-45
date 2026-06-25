@@ -67,7 +67,7 @@ const STATUS_GROUPS = [
   },
   {
     label: 'In progress',
-    dot: token('color.background.brand.bold', '#0C66E4'),
+    dot: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'),
     statuses: ['IN DEVELOPMENT', 'IN PROGRESS', 'IN REVIEW', 'IN QA', 'IN ENTITY INT.', 'IN UAT', 'IN BETA', 'INTERNAL QA', 'END TO END'],
   },
   {
@@ -247,8 +247,8 @@ export default function GadgetSettingsPanel({
           <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)',
                           display: 'flex', alignItems: 'center', gap: 6 }}>
             Date range
-            <span style={{ fontSize: 9, fontWeight: 653, background: token('color.background.selected', '#E9F2FF'),
-                           color: token('color.text.selected', '#0C66E4'), padding: '0 4px', borderRadius: 2 }}>
+            <span style={{ fontSize: 9, fontWeight: 653, background: token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)'),
+                           color: token('color.text.selected', 'var(--ds-link, #0C66E4)'), padding: '0 4px', borderRadius: 2 }}>
               NEW
             </span>
           </label>
@@ -283,7 +283,7 @@ export default function GadgetSettingsPanel({
 
           {openField === 'date' && (
             <div style={{ background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, #DFE1E6)',
-                          borderRadius: 3, boxShadow: '0 6px 16px rgba(9,30,66,.15)',
+                          borderRadius: 3, boxShadow: '0 6px 16px var(--ds-shadow-raised, rgba(9,30,66,.15))',
                           overflow: 'hidden' }}>
               {/* This period group */}
               <div style={{ borderBottom: '1px solid var(--ds-border, #EBECF0)' }}>
@@ -473,7 +473,7 @@ export default function GadgetSettingsPanel({
               style={{
                 fontSize: 11, fontWeight: 600, textTransform: 'none',
                 letterSpacing: '.5px',
-                color: token('color.text.subtle', '#6B778C'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
                 marginBottom: 8,
               }}
             >
@@ -523,7 +523,7 @@ export default function GadgetSettingsPanel({
               style={{
                 fontSize: 11, fontWeight: 600, textTransform: 'none',
                 letterSpacing: '.5px',
-                color: token('color.text.subtle', '#6B778C'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
                 marginBottom: 6,
               }}
             >
@@ -531,7 +531,7 @@ export default function GadgetSettingsPanel({
             </div>
             <div
               style={{
-                fontSize: 11, color: token('color.text.subtle', '#6B778C'),
+                fontSize: 11, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
                 marginBottom: 8, lineHeight: 1.5,
               }}
             >
@@ -829,7 +829,7 @@ function MultiSelectGeneric({
             background: 'var(--ds-surface, #FFFFFF)',
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,.18)',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.18))',
             maxHeight: 224,
             overflowY: 'auto',
           }}
@@ -993,7 +993,7 @@ function MultiSelectStatus({
             background: 'var(--ds-surface, #FFFFFF)',
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,.18)',
+            boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.18))',
             maxHeight: 280,
             overflowY: 'auto',
           }}
@@ -1525,7 +1525,7 @@ function ColumnsSection({
                 background: 'var(--ds-surface, #FFFFFF)',
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 borderRadius: 4,
-                boxShadow: '0 8px 24px rgba(9,30,66,.18)',
+                boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.18))',
                 maxHeight: 220,
                 display: 'flex',
                 flexDirection: 'column',

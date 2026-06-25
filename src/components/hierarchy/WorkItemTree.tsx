@@ -75,7 +75,7 @@ function priorityToLevel(name?: string): number {
 
 /* ── Assignee avatar ── */
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
+const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))','var(--ds-link, #0C66E4)','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','var(--ds-chart-teal-bolder, #0f766e)'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -107,7 +107,7 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
   const pct = Math.round((stats.completedCount / stats.totalDescendants) * 100);
   const isComplete = pct === 100;
   const fillColor = isComplete ? 'var(--sem-success)' : 'var(--cp-blue)';
-  const textColor = isComplete ? '#15803D' : 'var(--cp-blue)';
+  const textColor = isComplete ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--cp-blue)';
   return (
     <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 2, justifyContent: 'center' }}>
       <div style={{ height: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
@@ -156,7 +156,7 @@ function ActionsMenu({ item, onDelete }: { item: WorkItem; onDelete?: (item: Wor
               color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
               display: 'flex', alignItems: 'center', gap: 8,
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(220, 38, 38, 0.06)')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-danger-bold, rgba(220, 38, 38, 0.06))')}
             onMouseLeave={(e) => (e.currentTarget.style.background = '')}
           >
             <Trash2 size={14} /> Delete
@@ -280,7 +280,7 @@ function TreeRow({
       <ProgressBar stats={item.stats} />
 
       {item.fixVersion && (
-        <span style={{ height: 20, padding: '0 8px', fontSize: 10, fontWeight: 600, color: '#0F766E', background: '#CCFBF1', border: '1px solid rgba(13,148,136,0.2)', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+        <span style={{ height: 20, padding: '0 8px', fontSize: 10, fontWeight: 600, color: 'var(--ds-chart-teal-bolder, #0f766e)', background: 'var(--ds-background-success, #DCFFF1)', border: '1px solid var(--ds-background-success, rgba(13,148,136,0.2))', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
           {item.fixVersion.name}
         </span>
       )}

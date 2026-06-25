@@ -83,7 +83,7 @@ export function ComposerFooter({
           display: 'inline-flex',
           alignItems: 'stretch',
           background: canSend ? 'var(--cv2-accent)' : 'transparent',
-          color: canSend ? '#FFFFFF' : 'var(--cv2-text-muted)',
+          color: canSend ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
           border: canSend ? '1px solid var(--cv2-accent)' : '1px solid var(--cv2-border-strong)',
           borderRadius: 'var(--cv2-radius-sm)',
           overflow: 'hidden',
@@ -114,7 +114,7 @@ export function ComposerFooter({
           aria-hidden="true"
           style={{
             width: 1,
-            background: canSend ? 'rgba(255,255,255,0.25)' : 'var(--cv2-border-strong)',
+            background: canSend ? 'var(--ds-surface, rgba(255,255,255,0.25))' : 'var(--cv2-border-strong)',
           }}
         />
         <button
@@ -256,7 +256,7 @@ function MicFooterBtn({
             border: '1px solid var(--cv2-border-strong)',
             borderRadius: 999,
             padding: '3px 6px',
-            boxShadow: '0 2px 8px rgba(9,30,66,0.14)',
+            boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14))',
             whiteSpace: 'nowrap',
             pointerEvents: 'all',
             zIndex: 10,
@@ -304,7 +304,7 @@ function MicFooterBtn({
           alignItems: 'center',
           justifyContent: 'center',
           background: active ? 'var(--cv2-danger, #E2483D)' : 'transparent',
-          color: active ? '#FFFFFF' : 'var(--cv2-text-subtle)',
+          color: active ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-subtle)',
           border: 'none',
           borderRadius: 'var(--cv2-radius-sm)',
           cursor: 'pointer',

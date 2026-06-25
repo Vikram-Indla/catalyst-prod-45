@@ -37,7 +37,7 @@ export function EvidencePackPage({ itemKey }: EvidencePackPageProps) {
           </Heading>
           <Badge appearance="success">Ready</Badge>
         </Inline>
-        <div style={{ fontSize: '14px', color: '#626F86', marginTop: 8 }}>
+        <div style={{ fontSize: '14px', color: 'var(--ds-icon-subtle, #626F86)', marginTop: 8 }}>
           All evidence has been processed and indexed. Ready for generation.
         </div>
       </div>
@@ -146,15 +146,15 @@ function OverviewSection() {
             key={stat.label}
             style={{
               padding: '12px',
-              backgroundColor: '#F7F8F9',
+              backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
               borderRadius: '4px',
-              border: '1px solid #DFE1E6',
+              border: '1px solid var(--ds-border, #DFE1E6)',
             }}
           >
-            <div style={{ fontSize: '12px', color: '#626F86', marginBottom: 4 }}>
+            <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: 4 }}>
               {stat.label}
             </div>
-            <div style={{ fontSize: '18px', fontWeight: 600, color: '#172B4D' }}>
+            <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
               {stat.value}
             </div>
           </div>
@@ -217,12 +217,12 @@ function DetailedSummarySection() {
               {section.title}
             </Heading>
             {section.content && (
-              <p style={{ margin: 0, color: '#172B4D', fontSize: '14px' }}>
+              <p style={{ margin: 0, color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
                 {section.content}
               </p>
             )}
             {section.items && (
-              <ul style={{ margin: 0, paddingLeft: 20, color: '#172B4D', fontSize: '14px' }}>
+              <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
                 {section.items.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -270,12 +270,12 @@ function CommentsIntelligenceSection() {
   ];
 
   const typeColor: Record<string, string> = {
-    Decision: '#0052CC',
-    'Scope Change': '#974F0C',
-    Clarification: '#216E4E',
-    'Unresolved Question': '#974F0C',
-    Contradiction: '#AE2A19',
-    'Test Clarification': '#5E4DB2',
+    Decision: 'var(--ds-link, #0052CC)',
+    'Scope Change': 'var(--ds-text-warning, #974F0C)',
+    Clarification: 'var(--ds-text-success, #216E4E)',
+    'Unresolved Question': 'var(--ds-text-warning, #974F0C)',
+    Contradiction: 'var(--ds-text-danger, #AE2A19)',
+    'Test Clarification': 'var(--ds-background-discovery-bold, #6E5DC6)',
   };
 
   return (
@@ -289,7 +289,7 @@ function CommentsIntelligenceSection() {
             key={idx}
             style={{
               padding: '12px',
-              backgroundColor: '#F7F8F9',
+              backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
               borderRadius: '4px',
               border: `1px solid ${typeColor[comment.type]}33`,
               borderLeft: `4px solid ${typeColor[comment.type]}`,
@@ -297,9 +297,9 @@ function CommentsIntelligenceSection() {
           >
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
               <Badge appearance="default">{comment.type}</Badge>
-              <span style={{ fontSize: '12px', color: '#626F86' }}>{comment.author}</span>
+              <span style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>{comment.author}</span>
             </div>
-            <div style={{ fontSize: '14px', color: '#172B4D' }}>{comment.text}</div>
+            <div style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>{comment.text}</div>
           </div>
         ))}
       </Stack>
@@ -330,9 +330,9 @@ function DocumentationHealthSection() {
             key={idx}
             style={{
               padding: '12px',
-              backgroundColor: '#F7F8F9',
+              backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
               borderRadius: '4px',
-              border: '1px solid #DFE1E6',
+              border: '1px solid var(--ds-border, #DFE1E6)',
               display: 'flex',
               alignItems: 'center',
               gap: 12,
@@ -341,12 +341,12 @@ function DocumentationHealthSection() {
             <Badge
               appearance={issue.severity === 'P0' ? 'default' : 'default'}
               bgColor={
-                issue.severity === 'P0' ? '#AE2A19' : issue.severity === 'P1' ? '#974F0C' : '#5E4DB2'
+                issue.severity === 'P0' ? 'var(--ds-text-danger, #AE2A19)' : issue.severity === 'P1' ? 'var(--ds-text-warning, #974F0C)' : 'var(--ds-background-discovery-bold, #6E5DC6)'
               }
             >
               {issue.severity}
             </Badge>
-            <span style={{ fontSize: '14px', color: '#172B4D' }}>{issue.issue}</span>
+            <span style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>{issue.issue}</span>
           </div>
         ))}
       </Stack>
@@ -376,9 +376,9 @@ function SourceEvidenceSection() {
             key={idx}
             style={{
               padding: '12px',
-              backgroundColor: source.included ? '#DFFCF0' : '#F7F8F9',
+              backgroundColor: source.included ? 'var(--ds-background-success, #DFFCF0)' : 'var(--ds-surface-sunken, #F7F8F9)',
               borderRadius: '4px',
-              border: `1px solid ${source.included ? '#4BCE97' : '#DFE1E6'}`,
+              border: `1px solid ${source.included ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--ds-border, #DFE1E6)'}`,
               display: 'flex',
               alignItems: 'center',
               gap: 12,
@@ -387,11 +387,11 @@ function SourceEvidenceSection() {
             {source.included && (
               <span>✓</span>
             )}
-            <span style={{ flex: 1, fontSize: '14px', color: '#172B4D' }}>
+            <span style={{ flex: 1, fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>
               {source.name}
             </span>
             {source.lang && <Badge appearance="default">{source.lang}</Badge>}
-            <span style={{ fontSize: '12px', color: '#626F86' }}>{source.type}</span>
+            <span style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>{source.type}</span>
           </div>
         ))}
       </Stack>
@@ -408,18 +408,18 @@ function DeltaHistorySection() {
       <div
         style={{
           padding: '16px',
-          backgroundColor: '#F7F8F9',
+          backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
           borderRadius: '4px',
-          border: '1px solid #DFE1E6',
+          border: '1px solid var(--ds-border, #DFE1E6)',
         }}
       >
         <div style={{ marginBottom: 12 }}>
           <strong>Evidence Pack v1</strong>
-          <span style={{ fontSize: '12px', color: '#626F86', marginLeft: 8 }}>
+          <span style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginLeft: 8 }}>
             (current)
           </span>
         </div>
-        <div style={{ fontSize: '14px', color: '#626F86' }}>
+        <div style={{ fontSize: '14px', color: 'var(--ds-icon-subtle, #626F86)' }}>
           No previous version found. All sources processed for the first time.
         </div>
       </div>
@@ -473,19 +473,19 @@ function GenerateSection({ onGenerateEpics }: { onGenerateEpics: () => void }) {
             key={option.title}
             style={{
               padding: '16px',
-              backgroundColor: '#F7F8F9',
+              backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
               borderRadius: '6px',
-              border: '1px solid #DFE1E6',
+              border: '1px solid var(--ds-border, #DFE1E6)',
               cursor: 'pointer',
               transition: 'all 0.2s',
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.borderColor = '#0052CC';
-              (e.currentTarget as HTMLDivElement).style.backgroundColor = '#DFFCF0';
+              (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--ds-link, #0052CC)';
+              (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-background-success, #DFFCF0)';
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.borderColor = '#DFE1E6';
-              (e.currentTarget as HTMLDivElement).style.backgroundColor = '#F7F8F9';
+              (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--ds-border, #DFE1E6)';
+              (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, #F7F8F9)';
             }}
             onClick={option.title === 'Generate Epics' ? onGenerateEpics : () => {}}
           >
@@ -493,7 +493,7 @@ function GenerateSection({ onGenerateEpics }: { onGenerateEpics: () => void }) {
             <Heading as="h3" level="h600" style={{ marginBottom: 4 }}>
               {option.title}
             </Heading>
-            <p style={{ margin: 0, fontSize: '13px', color: '#626F86' }}>
+            <p style={{ margin: 0, fontSize: '13px', color: 'var(--ds-icon-subtle, #626F86)' }}>
               {option.description}
             </p>
           </div>

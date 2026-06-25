@@ -148,7 +148,7 @@ function SkeletonLine({ width = '100%', height = 12 }: { width?: string | number
         width,
         height,
         borderRadius: 4,
-        background: `linear-gradient(90deg, ${token('color.background.neutral', '#F1F2F4')} 25%, ${token('color.background.neutral.subtle', '#F7F8F9')} 50%, ${token('color.background.neutral', '#F1F2F4')} 75%)`,
+        background: `linear-gradient(90deg, ${token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)')} 25%, ${token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)')} 50%, ${token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)')} 75%)`,
         backgroundSize: '200% 100%',
         animation: 'catalyst-shimmer 1.4s infinite',
       }}
@@ -180,14 +180,14 @@ function RecommendedPanelSkeleton() {
           >
             {/* Header row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 6, background: token('color.background.neutral', '#F1F2F4'), flexShrink: 0 }} />
+              <div style={{ width: 32, height: 32, borderRadius: 6, background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), flexShrink: 0 }} />
               <SkeletonLine width={160} height={14} />
             </div>
             <SkeletonLine width="70%" height={11} />
             {/* Two card rows */}
             {[0, 1].map(j => (
               <div key={j} style={{ display: 'flex', gap: 12, paddingTop: 4 }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', background: token('color.background.neutral', '#F1F2F4'), flexShrink: 0 }} />
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), flexShrink: 0 }} />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <SkeletonLine width="85%" height={12} />
                   <SkeletonLine width="45%" height={10} />
@@ -350,8 +350,8 @@ export default function RecommendedPanel({
                 <>
                   {/* Author name carries weight 600 — Jira screenshot shows it
                       visibly bolder than the "mentioned you on" connector. */}
-                  <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{m.mentionerName}</span>
-                  <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
+                  <span style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), fontWeight: 600 }}>{m.mentionerName}</span>
+                  <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
                   <TicketLinkCard issueKey={m.issueKey} />
                 </>
               ),
@@ -391,8 +391,8 @@ export default function RecommendedPanel({
               phCommentId: c.phCommentId,
               headline: (
                 <>
-                  <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{c.authorName}</span>
-                  <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontWeight: 400 }}>{' '}commented on{' '}</span>
+                  <span style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), fontWeight: 600 }}>{c.authorName}</span>
+                  <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))'), fontWeight: 400 }}>{' '}commented on{' '}</span>
                   <TicketLinkCard issueKey={c.issueKey} />
                 </>
               ),
@@ -501,7 +501,7 @@ function FeedSection({
         border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
         borderRadius: 8,
         padding: 8,
-        background: token('elevation.surface', '#FFFFFF'),
+        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
@@ -518,7 +518,7 @@ function FeedSection({
               lineHeight: '20px',
               fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
               fontWeight: 653,
-              color: token('color.text', '#292A2E'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
               margin: 0,
               letterSpacing: 'normal',
             }}
@@ -531,7 +531,7 @@ function FeedSection({
       <p
         style={{
           font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))'),
           margin: 0,
           marginBlockEnd: 4,
         }}
@@ -586,7 +586,7 @@ function PurpleCategoryTile() {
         // mode, blowing out next to a dark surface. `color.background.accent.purple.subtler`
         // is the closest ADS token to Jira's home-recommended tile in light
         // mode and flips automatically in dark.
-        background: token('color.background.accent.purple.subtle', '#C97CF4'),
+        background: token('color.background.accent.purple.subtle', 'var(--ds-background-discovery-bold, #6E5DC6)'),
         flexShrink: 0,
         color: token('color.icon.accent.purple', 'rgb(41, 42, 46)'),
       }}
@@ -610,7 +610,7 @@ function OrangeCategoryTile() {
         width: 32,
         height: 32,
         borderRadius: 6,
-        background: token('color.background.accent.orange.subtle', '#F5CD47'),
+        background: token('color.background.accent.orange.subtle', 'var(--ds-background-warning-bold, #E2B203)'),
         flexShrink: 0,
         color: token('color.icon.accent.orange', 'rgb(41, 42, 46)'),
       }}
@@ -695,7 +695,7 @@ function FeedCard({
         padding: '8px 4px',
         borderRadius: 4,
         backgroundColor: hover
-          ? token('elevation.surface.hovered', '#F0F1F2')
+          ? token('elevation.surface.hovered', 'var(--ds-background-neutral, #F1F2F4)')
           : 'transparent',
         transition: 'background-color 150ms ease',
         position: 'relative',
@@ -741,13 +741,13 @@ function FeedCard({
             background: 'transparent',
             borderRadius: 3,
             cursor: 'pointer',
-            color: token('color.text.subtle', '#626F86'),
+            color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
             opacity: 1,
             transition: 'background-color 120ms ease, box-shadow 120ms ease',
             padding: 0,
             outline: 'none',
             boxShadow: dismissFocused
-              ? `0 0 0 2px ${token('color.border.focused', '#388BFF')}`
+              ? `0 0 0 2px ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`
               : 'none',
           }}
           onMouseDown={e => e.preventDefault()}
@@ -769,7 +769,7 @@ function FeedCard({
             width: '100%',
             cursor: 'pointer',
             font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text', '#292A2E'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
             textAlign: 'start',
           }}
         >
@@ -781,7 +781,7 @@ function FeedCard({
         <div
           style={{
             font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))'),
             display: 'flex',
             alignItems: 'center',
             gap: 6,
@@ -804,7 +804,7 @@ function FeedCard({
             borderLeft uses color.link token (same blue as @mention chips). */}
         <div
           style={{
-            borderLeft: `3px solid ${token('color.link', '#0052CC')}`,
+            borderLeft: `3px solid ${token('color.link', 'var(--ds-link, #0052CC)')}`,
             paddingLeft: 8,
             marginBlockStart: 4,
           }}
@@ -812,7 +812,7 @@ function FeedCard({
           <div
             style={{
               font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--ds-icon, #44546F))'),
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word',
             }}
@@ -978,10 +978,10 @@ function ReplyComposer({
 
   // Gradient ring colours — ADS tokens so they flip with the theme.
   const gradientColors = [
-    token('color.background.discovery.bold', '#8270DB'),
-    token('color.background.information.bold', '#1D7AFC'),
-    token('color.background.warning.bold', '#E2B203'),
-    token('color.background.discovery.bold', '#8270DB'),
+    token('color.background.discovery.bold', 'var(--ds-background-discovery-bold, #6E5DC6)'),
+    token('color.background.information.bold', 'var(--ds-background-information-bold, #1D7AFC)'),
+    token('color.background.warning.bold', 'var(--ds-background-warning-bold, #E2B203)'),
+    token('color.background.discovery.bold', 'var(--ds-background-discovery-bold, #6E5DC6)'),
   ].join(', ');
 
   return (
@@ -1004,7 +1004,7 @@ function ReplyComposer({
           <span
             style={{
               font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-              color: token('color.text.subtle', '#505258'),
+              color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
             }}
           >
             Replying to {commenterName || 'comment'}
@@ -1059,7 +1059,7 @@ function ReplyComposer({
                 // DOM-probed Jira 2026-05-28: gradient ring gap = 4px (CLAUDE.md lesson).
                 // 2→4 also satisfies the 4px spacing grid.
                 margin: 4,
-                background: token('elevation.surface', '#FFFFFF'),
+                background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                 borderRadius: 6,
                 zIndex: 1,
                 display: 'flex',
@@ -1084,7 +1084,7 @@ function ReplyComposer({
                   alignItems: 'center',
                   gap: 8,
                   padding: '4px 8px 8px',
-                  borderBlockStart: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderBlockStart: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 }}
               >
                 {/* Animated ellipsis + "Generating" label — Jira parity */}
@@ -1092,7 +1092,7 @@ function ReplyComposer({
                   style={{
                     flex: 1,
                     font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                    color: token('color.text.subtlest', '#6B778C'),
+                    color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                     display: 'flex',
                     alignItems: 'center',
                     gap: 1,
@@ -1118,7 +1118,7 @@ function ReplyComposer({
                     padding: '4px 8px',
                     borderRadius: 3,
                     font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                    color: token('color.text.subtle', '#505258'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                   }}
                 >
                   Cancel
@@ -1138,11 +1138,11 @@ function ReplyComposer({
               minWidth: 0,
               border: `1px solid ${
                 focused
-                  ? token('color.border.focused', '#388BFF')
+                  ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)')
                   : token('color.border', 'rgba(11, 18, 14, 0.14)')
               }`,
               borderRadius: 6,
-              background: token('elevation.surface', '#FFFFFF'),
+              background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
               transition: 'border-color 150ms ease',
               display: 'flex',
               flexDirection: 'column',
@@ -1174,7 +1174,7 @@ function ReplyComposer({
                   justifyContent: 'flex-end',
                   gap: 8,
                   padding: '4px 8px 8px 8px',
-                  borderBlockStart: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderBlockStart: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 }}
               >
                 {/* Cancel (idle) / Discard (done) */}
@@ -1192,7 +1192,7 @@ function ReplyComposer({
                     padding: '4px 8px',
                     borderRadius: 3,
                     font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                    color: token('color.text.subtle', '#505258'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                   }}
                 >
                   {suggestionPhase === 'done' ? 'Discard' : 'Cancel'}
@@ -1211,8 +1211,8 @@ function ReplyComposer({
                       padding: '4px 12px',
                       borderRadius: 3,
                       font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                      color: token('color.text.inverse', '#FFFFFF'),
-                      background: token('color.background.brand.bold', '#0C66E4'),
+                      color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+                      background: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'),
                     }}
                   >
                     Insert
@@ -1230,11 +1230,11 @@ function ReplyComposer({
                       borderRadius: 3,
                       font: `500 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                       color: canSubmit
-                        ? token('color.text.inverse', '#FFFFFF')
-                        : token('color.text.disabled', '#B3B9C4'),
+                        ? token('color.text.inverse', 'var(--ds-surface, #FFFFFF)')
+                        : token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'),
                       background: canSubmit
-                        ? token('color.background.brand.bold', '#0C66E4')
-                        : token('color.background.disabled', '#F1F2F4'),
+                        ? token('color.background.brand.bold', 'var(--ds-link, #0C66E4)')
+                        : token('color.background.disabled', 'var(--ds-background-neutral, #F1F2F4)'),
                     }}
                   >
                     {isCreating ? 'Posting…' : 'Reply'}
@@ -1248,9 +1248,9 @@ function ReplyComposer({
                   Left:  [BETA] pill · ℹ︎ icon · "Uses AI. Verify results."
                   Right: Caty logo + "Caty" text (replaces Rovo branding)
                 Font/color/padding from Jira DOM probe 2026-05-28:
-                  footer border-top: 0.556px solid rgba(11,18,14,0.14)
+                  footer border-top: 0.556px solid var(--ds-text, rgba(11,18,14,0.14))
                   footer padding:    4px 12px  ·  height: ~40px
-                  text color:        rgb(41,42,46)  14px/400 */}
+                  text color:        var(--ds-text, rgb(41,42,46))  14px/400 */}
             {suggestionPhase === 'done' && (
               <div
                 style={{
@@ -1267,8 +1267,8 @@ function ReplyComposer({
                   <span
                     style={{
                       font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                      color: token('color.text', '#292A2E'),
-                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      color: token('color.text', 'var(--ds-text, #172B4D)'),
+                      border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                       borderRadius: 2,
                       padding: '0 4px',
                       letterSpacing: '0.04em',
@@ -1278,14 +1278,14 @@ function ReplyComposer({
                   </span>
                   {/* ℹ︎ info icon — inline SVG, no external dep */}
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <circle cx="8" cy="8" r="7.5" stroke={token('color.text.subtlest', '#6B778C')} />
-                    <path d="M8 7v5" stroke={token('color.text.subtlest', '#6B778C')} strokeWidth="1.5" strokeLinecap="round" />
-                    <circle cx="8" cy="5" r="0.75" fill={token('color.text.subtlest', '#6B778C')} />
+                    <circle cx="8" cy="8" r="7.5" stroke={token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)')} />
+                    <path d="M8 7v5" stroke={token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)')} strokeWidth="1.5" strokeLinecap="round" />
+                    <circle cx="8" cy="5" r="0.75" fill={token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)')} />
                   </svg>
                   <span
                     style={{
                       font: `400 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                      color: token('color.text.subtle', '#505258'),
+                      color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                     }}
                   >
                     Uses AI. Verify results.
@@ -1297,7 +1297,7 @@ function ReplyComposer({
                   <span
                     style={{
                       font: `500 13px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                      color: token('color.text.subtle', '#505258'),
+                      color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                     }}
                   >
                     Caty
@@ -1340,13 +1340,13 @@ function ReplyComposer({
 //   the static rainbow border (CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out).
 const ASK_CATY_RAINBOW = `conic-gradient(
   from 0deg,
-  #FF3CAC 0deg,
-  #784BA0 60deg,
-  #2B86C5 120deg,
-  #00C9FF 180deg,
-  #92FE9D 240deg,
-  #FFD700 300deg,
-  #FF3CAC 360deg
+  var(--ds-background-accent-magenta-bolder, #BE185D) 0deg,
+  var(--ds-background-discovery-bold, #6E5DC6) 60deg,
+  var(--ds-link, #0C66E4) 120deg,
+  var(--ds-background-information-bold, #0C66E4) 180deg,
+  var(--ds-background-success, #DFFCF0) 240deg,
+  var(--ds-background-warning-bold, #E2B203) 300deg,
+  var(--ds-background-accent-magenta-bolder, #BE185D) 360deg
 )`;
 
 function SuggestReplyTile({ phase, onSuggest, inline = false }: { phase: 'idle' | 'error' | 'loading'; onSuggest: () => void; inline?: boolean }) {
@@ -1380,9 +1380,9 @@ function SuggestReplyTile({ phase, onSuggest, inline = false }: { phase: 'idle' 
             alignItems: 'center',
             gap: 6,
             font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-            color: token('color.text.warning-inverse', '#7F5F01'),
-            background: token('color.background.warning', '#FFF7D6'),
-            border: `1px solid ${token('color.border.warning', '#B38600')}`,
+            color: token('color.text.warning-inverse', 'var(--ds-text-warning, #974F0C)'),
+            background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
+            border: `1px solid ${token('color.border.warning', 'var(--ds-text-warning, #974F0C)')}`,
             borderRadius: 4,
             padding: '4px 8px',
           }}
@@ -1574,8 +1574,8 @@ function EmojiPickerPopover({
         zIndex: 10000,
         width: 320,
         maxHeight: pos.maxHeight,
-        background: token('elevation.surface.overlay', '#FFFFFF'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderRadius: 8,
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
         display: 'flex',
@@ -1587,7 +1587,7 @@ function EmojiPickerPopover({
       <div
         style={{
           display: 'flex',
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           padding: '4px 4px 0',
           gap: 0,
           flexShrink: 0,
@@ -1608,7 +1608,7 @@ function EmojiPickerPopover({
               fontSize: 16,
               cursor: 'pointer',
               borderBottom: `2px solid ${activeCategory === cat.key && !search
-                ? token('color.border.brand', '#0C66E4')
+                ? token('color.border.brand', 'var(--ds-link, #0C66E4)')
                 : 'transparent'}`,
               transition: 'border-color 120ms ease',
             }}
@@ -1628,17 +1628,17 @@ function EmojiPickerPopover({
           onChange={e => setSearch(e.target.value)}
           style={{
             flex: 1,
-            border: `1px solid ${token('color.border.input', '#8590A2')}`,
+            border: `1px solid ${token('color.border.input', 'var(--ds-text-disabled, #8590A2)')}`,
             borderRadius: 4,
             padding: '4px 8px',
             fontSize: 13,
             outline: 'none',
             fontFamily: 'inherit',
-            color: token('color.text', '#172B4D'),
-            background: token('elevation.surface', '#FFFFFF'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
           }}
-          onFocus={e => (e.target.style.borderColor = token('color.border.focused', '#388BFF'))}
-          onBlur={e => (e.target.style.borderColor = token('color.border.input', '#8590A2'))}
+          onFocus={e => (e.target.style.borderColor = token('color.border.focused', 'var(--ds-border-focused, #388BFF)'))}
+          onBlur={e => (e.target.style.borderColor = token('color.border.input', 'var(--ds-text-disabled, #8590A2)'))}
         />
       </div>
 
@@ -1649,7 +1649,7 @@ function EmojiPickerPopover({
             padding: '4px 8px',
             fontSize: 11,
             fontWeight: 700,
-            color: token('color.text.subtlest', '#6B778C'),
+            color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             letterSpacing: '0.5px',
             flexShrink: 0,
           }}
@@ -1675,7 +1675,7 @@ function EmojiPickerPopover({
               padding: '16px 8px',
               textAlign: 'center',
               fontSize: 13,
-              color: token('color.text.subtlest', '#6B778C'),
+              color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             }}
           >
             No results
@@ -1699,7 +1699,7 @@ function EmojiPickerPopover({
               transition: 'background 100ms ease',
               fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
             }}
-            onMouseEnter={e => ((e.target as HTMLElement).style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
+            onMouseEnter={e => ((e.target as HTMLElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'))}
             onMouseLeave={e => ((e.target as HTMLElement).style.background = 'transparent')}
           >
             {em.char}
@@ -2016,7 +2016,7 @@ function ForYouReplyTree({
               marginBlockStart: 8,
               marginInlineStart: 34,
               font: `500 12px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-              color: token('color.text.subtle', '#505258'),
+              color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
             }}
           >
             Ask Caty…
@@ -2747,7 +2747,7 @@ function LeaveAReplyBox({
                   font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
                   color: replyJustSent
                     ? 'var(--ds-text-success, #1F845A)'
-                    : token('color.text.subtlest', '#6B778C'),
+                    : token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                   transition: 'color 240ms ease',
                 }}
               >
@@ -2859,8 +2859,8 @@ function aiTextToAdfWithMentions(
  */
 function ViewThreadLink({ onActivate }: { onActivate: () => void }) {
   const [hover, setHover] = useState(false);
-  const idleColor = token('color.link', '#1868DB');
-  const hoverColor = token('color.text.information.bolder', '#0055CC');
+  const idleColor = token('color.link', 'var(--ds-link, #1868DB)');
+  const hoverColor = token('color.text.information.bolder', 'var(--ds-link, #0C66E4)');
   return (
     <button
       type="button"
@@ -2960,7 +2960,7 @@ function CatyGeneratingPanel({ onCancel }: { onCancel: () => void }) {
             <span
               style={{
                 font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
               }}
             >
               Generating
@@ -2973,7 +2973,7 @@ function CatyGeneratingPanel({ onCancel }: { onCancel: () => void }) {
                 all: 'unset',
                 cursor: 'pointer',
                 font: `400 14px/20px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
             >
               Cancel
@@ -2996,7 +2996,7 @@ function CatyGeneratingPanel({ onCancel }: { onCancel: () => void }) {
           <span
             style={{
               font: `400 13px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             }}
           >
             Caty
@@ -3208,9 +3208,9 @@ function ReactionStrip({
           justifyContent: 'center',
           width: 32,
           height: 24,
-          border: `1px solid ${pickerOpen ? token('color.border.focused', '#388BFF') : chipBorder}`,
+          border: `1px solid ${pickerOpen ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : chipBorder}`,
           borderRadius: 4,
-          color: token('color.text.subtle', '#626F86'),
+          color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
           background: pickerOpen ? token('color.background.selected', 'rgba(28,85,170,0.06)') : 'transparent',
           transition: 'background-color 120ms ease, border-color 120ms ease',
           opacity: 1,
@@ -3262,7 +3262,7 @@ function ReactionChip({
         minWidth: count > 0 ? 40 : 37,
         height: 24,
         padding: count > 0 ? '0 6px' : 0,
-        border: `1px solid ${isActive ? token('color.border.selected', '#0C66E4') : chipBorder}`,
+        border: `1px solid ${isActive ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : chipBorder}`,
         // Route selected bg through ADS `color.background.selected` so dark
         // mode flips correctly. The previous `rgba(28,85,170,0.06)` literal
         // was tuned for light surfaces only.
@@ -3289,8 +3289,8 @@ function ReactionChip({
             fontSize: 12,
             fontWeight: 400,
             color: isActive
-              ? token('color.text.selected', '#0C66E4')
-              : token('color.text.subtle', '#505258'),
+              ? token('color.text.selected', 'var(--ds-link, #0C66E4)')
+              : token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
             letterSpacing: 0,
           }}
         >
@@ -3334,20 +3334,20 @@ function HeadlineIssueTitle({
       marginBlockStart: 2,
       border: `1px solid ${token('color.border', 'rgba(11, 18, 14, 0.14)')}`,
       borderRadius: 4,
-      backgroundColor: token('elevation.surface', '#FFFFFF'),
+      backgroundColor: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
       padding: '4px 8px',
     }}>
       <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
         <WorkItemIcon type={normalizeIconType(issueType)} size={16} />
       </span>
       {/* KEY is bold and always visible; title truncates so the status pill stays in view. */}
-      <span style={{ fontWeight: 600, color: token('color.link', '#0052CC'), whiteSpace: 'nowrap', flexShrink: 0 }}>
+      <span style={{ fontWeight: 600, color: token('color.link', 'var(--ds-link, #0052CC)'), whiteSpace: 'nowrap', flexShrink: 0 }}>
         {issueKey}
       </span>
       {issueSummary && (
         <span style={{
           fontWeight: 400,
-          color: token('color.link', '#0052CC'),
+          color: token('color.link', 'var(--ds-link, #0052CC)'),
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -3358,9 +3358,9 @@ function HeadlineIssueTitle({
       )}
       {/* Jira parity: status chip after entity title.
           Uses StatusPill (same component as JiraTable backlog) for exact
-          Jira-probed colors: done → #B3DF72, inprogress → #8FB8F6,
-          default → #DDDEE1. 11px/653/uppercase matching backlog/Jira list.
-          jira-compare 2026-05-29: ADS subtle Lozenge resolved to #EFFFD6
+          Jira-probed colors: done → var(--ds-background-success-bold, #6A9A23), inprogress → var(--ds-background-information, #E9F2FF),
+          default → var(--ds-border, #DFE1E6). 11px/653/uppercase matching backlog/Jira list.
+          jira-compare 2026-05-29: ADS subtle Lozenge resolved to var(--ds-background-success, #DFFCF0)
           (too pale, wrong appearance) — replaced with StatusPill. */}
       {issueStatus && (
         <StatusPill appearance={statusToLozenge(issueStatus, issueStatusCategory)}>

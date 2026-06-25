@@ -155,7 +155,7 @@ export default function ResetPassword() {
           aria-label="Catalyst"
           style={{ borderRadius: 12, marginBottom: 12 }}
         >
-          <rect width="512" height="512" rx="129.62" fill="#1868DB" />
+          <rect width="512" height="512" rx="129.62" fill="var(--ds-link, #1868DB)" />
           <g transform="translate(256 256) scale(0.95) translate(-256 -256)">
             <path
               d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z"
@@ -187,7 +187,7 @@ export default function ResetPassword() {
         </span>
       </div>
 
-      <Card className="w-full max-w-md" style={{ boxShadow: '0 1px 3px 0 rgba(0,0,0,0.08), 0 4px 16px 0 rgba(0,0,0,0.06)' }}>
+      <Card className="w-full max-w-md" style={{ boxShadow: '0 1px 3px 0 var(--ds-shadow-raised, rgba(0,0,0,0.08)), 0 4px 16px 0 var(--ds-shadow-raised, rgba(0,0,0,0.06))' }}>
           {pageState === 'loading' && (
             <>
               <CardHeader className="text-center">
