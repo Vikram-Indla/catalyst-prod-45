@@ -22,7 +22,11 @@ export type NotificationTab = 'direct' | 'watching';
 
 export type WorkItemIconType =
   | 'bug' | 'qa bug' | 'story' | 'task' | 'epic' | 'subtask'
-  | 'new_feature' | 'improvement' | 'incident' | 'question';
+  | 'new_feature' | 'improvement' | 'incident' | 'question'
+  // Subtask-family types with distinct icons (Frontend/Backend have their own SVGs)
+  | 'backend' | 'frontend'
+  // Standard types missing from the original narrow union
+  | 'production_incident' | 'change_request' | 'business_gap' | 'feature';
 
 export type StatusType = 'gray' | 'blue' | 'green';
 

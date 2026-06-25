@@ -150,6 +150,13 @@ serve(async (req) => {
       for (const hl of hierarchyLevels) {
         if (hl.jiraTypes.some(t => t.toLowerCase() === issueType.toLowerCase())) return hl.level
       }
+      // Fallback when wh_config.hierarchy_levels is absent (key does not exist in DB).
+      // Matches JIRA_TYPE_HIERARCHY_LEVEL in src/lib/jiraTypeNormalizer.ts.
+      const t = issueType.toLowerCase()
+      if (t === 'epic') return 0
+      if (t === 'feature') return 1
+      const SUBTASK_FAMILY = ['sub-task', 'frontend', 'backend', 'integration']
+      if (SUBTASK_FAMILY.includes(t)) return 3
       return 2
     }
 
@@ -623,12 +630,20 @@ serve(async (req) => {
               const creatorAccountId = issue.fields.reporter?.accountId
               const creatorCatalystId = creatorAccountId ? userMap.get(creatorAccountId) : null
 
-              // Map issue type to Catalyst icon
-              const issueTypeName = (issue.fields.issuetype?.name || '').toLowerCase()
+              // Map issue type to Catalyst icon (matches ISSUE_TYPE_TO_ICON in useDirectFromSync.ts).
+              const issueTypeName = issue.fields.issuetype?.name || ''
+              const issueTypeKey = issueTypeName.toLowerCase()
               let watchIcon = 'task'
-              if (issueTypeName.includes('bug') || issueTypeName.includes('defect')) watchIcon = 'qa bug'
-              else if (issueTypeName.includes('story') || issueTypeName.includes('feature')) watchIcon = 'story'
-              else if (issueTypeName.includes('epic')) watchIcon = 'epic'
+              if (issueTypeKey.includes('bug') || issueTypeKey.includes('defect')) watchIcon = 'bug'
+              else if (issueTypeKey === 'story') watchIcon = 'story'
+              else if (issueTypeKey === 'epic') watchIcon = 'epic'
+              else if (issueTypeKey === 'feature') watchIcon = 'feature'
+              else if (issueTypeKey.includes('incident')) watchIcon = 'incident'
+              else if (issueTypeKey === 'backend') watchIcon = 'backend'
+              else if (issueTypeKey === 'frontend') watchIcon = 'frontend'
+              else if (issueTypeKey === 'integration' || issueTypeKey === 'sub-task') watchIcon = 'subtask'
+              else if (issueTypeKey === 'change request') watchIcon = 'change_request'
+              else if (issueTypeKey === 'business gap') watchIcon = 'business_gap'
 
               const statusCat = (issue.fields.status?.statusCategory?.name || '').toLowerCase()
               const statusType = statusCat === 'done' ? 'green' : statusCat === 'in progress' ? 'blue' : 'gray'

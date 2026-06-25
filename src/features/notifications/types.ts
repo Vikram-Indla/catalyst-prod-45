@@ -12,7 +12,10 @@ export type DirectVerb =
   | 'deleted'
   | 'shredding_warning';
 
-export type DirectWorkItemIconType = 'bug' | 'story' | 'task' | 'epic' | 'incident';
+export type DirectWorkItemIconType =
+  | 'bug' | 'story' | 'task' | 'epic' | 'incident'
+  // Subtask family — subtask/integration share icon; backend/frontend have distinct SVGs
+  | 'subtask' | 'backend' | 'frontend';
 
 export type DirectStatusAppearance = 'default' | 'inprogress' | 'success';
 

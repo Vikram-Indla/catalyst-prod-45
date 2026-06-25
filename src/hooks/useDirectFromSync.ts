@@ -19,14 +19,30 @@ export const NOTIF_LAST_OPENED_KEY = 'catalyst_notif_panel_last_opened';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
+// Canonical Jira issue type → WorkItemIconType (notifications.ts).
+// Frontend and Backend have distinct SVGs; Integration shares the subtask icon.
+// Unknown types fall back to 'task' — never dropped.
+const ISSUE_TYPE_TO_ICON: Readonly<Record<string, WorkItemIconType>> = {
+  // Subtask family
+  'Sub-task':            'subtask',
+  'Frontend':            'frontend',
+  'Backend':             'backend',
+  'Integration':         'subtask',
+  // Standard work item types
+  'Story':               'story',
+  'Task':                'task',
+  'QA Bug':              'bug',
+  'Defect':              'bug',
+  'Epic':                'epic',
+  'Feature':             'feature',
+  'Production Incident': 'incident',
+  'Change Request':      'change_request',
+  'Business Gap':        'business_gap',
+  'API Requirement':     'task',
+} as const;
+
 function mapIconType(issueType: string): WorkItemIconType {
-  const t = (issueType || '').toLowerCase();
-  if (t.includes('bug') || t.includes('defect')) return 'bug';
-  if (t.includes('story')) return 'story';
-  if (t.includes('epic')) return 'epic';
-  if (t.includes('incident')) return 'incident';
-  if (t.includes('sub')) return 'subtask';
-  return 'task';
+  return (ISSUE_TYPE_TO_ICON[issueType] ?? 'task') as WorkItemIconType;
 }
 
 function mapStatusType(cat: string | null): StatusType {
