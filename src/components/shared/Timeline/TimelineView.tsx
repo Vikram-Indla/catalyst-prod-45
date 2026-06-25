@@ -2999,11 +2999,19 @@ export default function TimelineView(props: TimelineViewProps) {
                    user just dropped this bar, the override drives position
                    until the data layer catches up. */
                     const effectiveDates = getEffectiveDates(issue);
-                    const start = parseDate(effectiveDates.startDate);
+                    let start = parseDate(effectiveDates.startDate);
                     const end = parseDate(effectiveDates.dueDate);
                     if (!start && !end) return null;
 
-                    /* Diamond marker — only dueDate present (typical for Business Requests). */
+                    /* Start-less items (only a due date — Business Requests,
+                       incidents) draw a short 7-day bar ending on the due date
+                       instead of a point diamond. */
+                    if (!start && end) {
+                      start = new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    }
+
+                    /* Diamond marker — only dueDate present (now superseded by the
+                       synthesized start above, so this never triggers). */
                     const isPointMarker = !start && !!end;
                     if (isPointMarker) {
                       const center =
