@@ -1845,6 +1845,14 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         display: 'flex',
         flexDirection: 'column',
         minHeight: 120,
+        // 2026-06-25: claim the parent flex column's allocated space so
+        // the inner viewport (flex:1 + overflow-y:auto) has a definite
+        // bound to scroll against. Without flex:1 on this container the
+        // browser resolves it to intrinsic content size which leaves the
+        // viewport at full content height and never fires its scrollbar.
+        // Existing standalone usages (no flex parent) ignore flex:1.
+        flex: 1,
+        minWidth: 0,
       }}
     >
       <div

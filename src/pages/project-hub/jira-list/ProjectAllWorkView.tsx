@@ -327,6 +327,8 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
   const [searchParams, setSearchParams] = useSearchParams();
   const urlFilterId   = searchParams.get('filterId');
   const urlMode       = searchParams.get('mode');
+  const urlJql        = searchParams.get('jql');
+  const urlView       = searchParams.get('view');
   const isCreateMode  = urlMode === 'create-filter';
 
   // Load the saved filter when ?filterId is present
@@ -365,7 +367,9 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
      hook below — selecting "Status" and choosing "In QA" now actually
      filters the rail. */
   const [toolbarQuery, setToolbarQuery] = useState('');
-  const [toolbarView, setToolbarView] = useState<AllWorkView>('split');
+  const [toolbarView, setToolbarView] = useState<AllWorkView>(
+    urlView === 'list' || urlView === 'split' ? (urlView as AllWorkView) : 'split',
+  );
   // toolbarFilters declared above the hook call (before the URL params block)
   const [toolbarAssignees, setToolbarAssignees] = useState<string[]>([]);
   // Open the filter panel by default when entering create-filter mode
@@ -394,6 +398,22 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
       setActiveFilterJql(undefined);
     }
   }, [activeFilter, isProduct, isIncident]);
+
+  // ?jql=<encoded JQL> — apply an ad-hoc JQL filter without needing a
+  // ph_saved_filters row. Used by release detail "View in All work
+  // navigator" to pre-apply `fixVersion = "<release>"`.
+  // We populate BOTH `toolbarFilters` (so the toolbar renders the chip)
+  // AND `activeFilterJql` (so project mode applies the server-side JQL).
+  const appliedJqlRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!urlJql) return;
+    if (appliedJqlRef.current === urlJql) return;
+    appliedJqlRef.current = urlJql;
+    setToolbarFilters(jqlToFilterState(urlJql));
+    if (!isProduct && !isIncident) {
+      setActiveFilterJql(urlJql);
+    }
+  }, [urlJql, isProduct, isIncident]);
 
   /* Shift+F toggles the filter popup, mirroring Jira's "Press Shift + F
      to open and close" hint at the bottom of the popup. Skipped while

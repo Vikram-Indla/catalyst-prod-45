@@ -135,6 +135,16 @@ export interface AtlaskitPageShellProps {
    */
   cardBorder?: string;
   /**
+   * 2026-06-25: when true, force `height: 100%` (instead of the default
+   * `minHeight: 100%`) on the outer shell. Same effect as `hasSideRail`
+   * but exposed as an opt-in for surfaces that own a custom external
+   * toolbar (release navigator). Without this the shell grows past its
+   * parent when content overflows, which breaks every
+   * `max-height: 100%` child (notably JiraTable's scroll viewport).
+   * Default false — no behavioral change for existing consumers.
+   */
+  constrainHeight?: boolean;
+  /**
    * Apr 27, 2026 (jira-compare regression D-001/002/003): when provided,
    * renders a chrome-band region BETWEEN the outer chrome bg and the
    * inner white card. The band sits in the tinted chrome (e.g., #E9F2FE
@@ -164,6 +174,7 @@ export function AtlaskitPageShell({
   cardBorder,
   chromeBand,
   testId,
+  constrainHeight = false,
 }: AtlaskitPageShellProps) {
   const hasHeaderRow = title != null || actions != null;
   const hasSideRail = sideRail != null;
@@ -245,8 +256,8 @@ export function AtlaskitPageShell({
         // height (CatalystShell <main> is fixed to viewport-minus-nav).
         // Standalone (no sideRail) keeps minHeight so non-list surfaces
         // can grow naturally.
-        height: hasSideRail ? '100%' : undefined,
-        minHeight: hasSideRail ? undefined : '100%',
+        height: (hasSideRail || constrainHeight) ? '100%' : undefined,
+        minHeight: (hasSideRail || constrainHeight) ? undefined : '100%',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: ATLASSIAN_SANS_STACK,

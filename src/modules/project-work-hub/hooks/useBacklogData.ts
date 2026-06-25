@@ -103,10 +103,23 @@ export function useRequestLinksByEpicKeys(epicKeys: string[]) {
  * Epic Backlog — pulls from ph_issues where issue_type = 'Epic',
  * project_key resolved from project UUID, filtered to 2026.
  */
-export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[]; forceProjectKey?: string }) {
+export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[]; forceProjectKey?: string; restrictToIssueKeys?: readonly string[]; allItems?: boolean }) {
   const assigneeIds = opts?.assigneeIds ?? [];
   const hasAssigneeOverride = assigneeIds.length > 0;
   const forceProjectKey = opts?.forceProjectKey;
+  // 2026-06-25: when set, swap the project_key filter for an explicit
+  // `.in('issue_key', keys)` filter. Used by ReleaseWorkNavigatorPage
+  // so the canonical Backlog table shows exactly the items linked to a
+  // release via `rh_release_work_items` (the canonical join table) —
+  // matches `useReleaseWorkItems` behavior.
+  // `allItems` = no scope at all (every ph_issues row). Used when the
+  // release navigator's fix-version chip is cleared.
+  const restrictToIssueKeys = opts?.restrictToIssueKeys;
+  // Release scope = caller PROVIDED a restriction list (even an empty
+  // one means "no rows linked, show nothing" — distinct from undefined
+  // which means "no release scope, use project filter").
+  const isReleaseScope = Array.isArray(restrictToIssueKeys);
+  const isAllItems = !!opts?.allItems;
 
   const { data: project } = useProject(projectId);
   // forceProjectKey bypasses the projects-table lookup — used when the
@@ -114,21 +127,39 @@ export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[
   // projectId comes from the products table, not projects).
   const projectKey = forceProjectKey ?? project?.key ?? null;
 
+  const restrictKeySig = restrictToIssueKeys ? [...restrictToIssueKeys].sort().join('|') : '';
   return useQuery({
-    queryKey: hasAssigneeOverride
-      ? ['backlog-epics-inv', assigneeIds.join(',')]
-      : ['backlog-epics', projectId, projectKey],
+    queryKey: isAllItems
+      ? ['backlog-epics-all']
+      : isReleaseScope
+        ? ['backlog-epics-keys', restrictKeySig]
+        : hasAssigneeOverride
+          ? ['backlog-epics-inv', assigneeIds.join(',')]
+          : ['backlog-epics', projectId, projectKey],
     queryFn: async (): Promise<BacklogEpic[]> => {
-      if (!hasAssigneeOverride && !projectKey) return [];
+      if (!isAllItems && !isReleaseScope && !hasAssigneeOverride && !projectKey) return [];
+      // Empty key set = no rows. Don't hit the network.
+      if (isReleaseScope && (restrictToIssueKeys?.length ?? 0) === 0) return [];
       const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, jira_created_at, jira_updated_at, source, labels, sprint_release, sort_order';
       let query = supabase
         .from('ph_issues')
         .select(SELECT)
-        .eq('issue_type', 'Epic')
-        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
-        .is('jira_removed_at', null)
-        .is('archived_at', null);
-      if (hasAssigneeOverride) {
+        .eq('issue_type', 'Epic');
+      // Release / all-items scopes skip the lifecycle filters
+      // (jira_removed_at, archived_at) AND the 2026-date guard so every
+      // linked row surfaces.
+      if (!isReleaseScope && !isAllItems) {
+        query = (query as any)
+          .is('jira_removed_at', null)
+          .is('archived_at', null)
+          .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`);
+      }
+      if (isAllItems) {
+        // No project / release filter — every Epic across every project.
+      } else if (isReleaseScope) {
+        // Canonical release scope: filter to the explicit join-table keys.
+        query = (query as any).in('issue_key', restrictToIssueKeys as string[]);
+      } else if (hasAssigneeOverride) {
         query = (query as any).in('assignee_account_id', assigneeIds);
       } else {
         query = (query as any).eq('project_key', projectKey!);
@@ -170,7 +201,7 @@ export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[
 
       return epics;
     },
-    enabled: hasAssigneeOverride ? true : (!!forceProjectKey || (!!projectId && !!projectKey)),
+    enabled: isAllItems ? true : isReleaseScope ? true : hasAssigneeOverride ? true : (!!forceProjectKey || (!!projectId && !!projectKey)),
   });
 }
 
@@ -192,10 +223,19 @@ export function useFeatureBacklog(projectId: string) {
  * project_key resolved from project UUID, filtered to 2026.
  * Parent epic resolved via parent_key lookup.
  */
-export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string[]; forceProjectKey?: string }) {
+export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string[]; forceProjectKey?: string; restrictToIssueKeys?: readonly string[]; allItems?: boolean }) {
   const assigneeIds = opts?.assigneeIds ?? [];
   const hasAssigneeOverride = assigneeIds.length > 0;
   const forceProjectKey = opts?.forceProjectKey;
+  // 2026-06-25: release-scope = explicit issue_key set sourced from
+  // `rh_release_work_items` (canonical release ↔ work item join table).
+  // `allItems` = no scope at all.
+  const restrictToIssueKeys = opts?.restrictToIssueKeys;
+  // Release scope = caller PROVIDED a restriction list (even an empty
+  // one means "no rows linked, show nothing" — distinct from undefined
+  // which means "no release scope, use project filter").
+  const isReleaseScope = Array.isArray(restrictToIssueKeys);
+  const isAllItems = !!opts?.allItems;
 
   const { data: project } = useProject(projectId);
   // forceProjectKey bypasses the projects-table lookup — used when the
@@ -207,28 +247,53 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
   // (the MDT-* items stored by the Jira sync) so they appear as top-level
   // leaf rows in the backlog. BAU has no 'Business Request' rows, so this
   // filter extension is a no-op for normal project-hub usage.
+  // Release / all-items scopes (cross-project): no type filter at all
+  // (skipNonEpicTypeFilter). The story hook excludes Epic so it does NOT
+  // double-count with useEpicBacklog. Every other type — including
+  // custom or unknown types — lands in the table.
+  const skipNonEpicTypeFilter = isReleaseScope || isAllItems;
   const issueTypeFilter = forceProjectKey
     ? ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident', 'Business Request']
     : ['Story', 'Backend', 'Frontend', 'Sub-task', 'Feature', 'QA Bug', 'Production Incident'];
 
+  const restrictKeySig = restrictToIssueKeys ? [...restrictToIssueKeys].sort().join('|') : '';
   return useQuery({
-    queryKey: hasAssigneeOverride
-      ? ['backlog-stories-inv', assigneeIds.join(',')]
-      : ['backlog-stories-v2', projectId, projectKey],
+    queryKey: isAllItems
+      ? ['backlog-stories-all']
+      : isReleaseScope
+        ? ['backlog-stories-keys', restrictKeySig]
+        : hasAssigneeOverride
+          ? ['backlog-stories-inv', assigneeIds.join(',')]
+          : ['backlog-stories-v2', projectId, projectKey],
     queryFn: async (): Promise<BacklogStory[]> => {
-      if (!hasAssigneeOverride && !projectKey) return [];
+      if (!isAllItems && !isReleaseScope && !hasAssigneeOverride && !projectKey) return [];
+      if (isReleaseScope && (restrictToIssueKeys?.length ?? 0) === 0) return [];
       const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, sprint_release, sort_order';
       const buildQuery = () => {
         let q = supabase
           .from('ph_issues')
-          .select(SELECT)
-          .in('issue_type', issueTypeFilter)
-          .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
-          .is('jira_removed_at', null)
-          .is('archived_at', null);
-        q = hasAssigneeOverride
-          ? (q as any).in('assignee_account_id', assigneeIds)
-          : (q as any).eq('project_key', projectKey!);
+          .select(SELECT);
+        // Release / all-items scopes: drop the type allowlist, 2026-date
+        // guard, and lifecycle filters so every linked row surfaces.
+        if (skipNonEpicTypeFilter) {
+          q = (q as any).neq('issue_type', 'Epic');
+        } else {
+          q = (q as any)
+            .in('issue_type', issueTypeFilter)
+            .is('jira_removed_at', null)
+            .is('archived_at', null)
+            .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`);
+        }
+        if (isAllItems) {
+          // No project / release filter — every row regardless of scope.
+        } else if (isReleaseScope) {
+          // Canonical release scope: filter to the join-table key list.
+          q = (q as any).in('issue_key', restrictToIssueKeys as string[]);
+        } else if (hasAssigneeOverride) {
+          q = (q as any).in('assignee_account_id', assigneeIds);
+        } else {
+          q = (q as any).eq('project_key', projectKey!);
+        }
         return (q as any).order('sort_order', { ascending: true, nullsFirst: false });
       };
       // Paginate in 1000-row pages. PostgREST caps a single response at its
@@ -387,7 +452,7 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
       const uniqueCat = catStories.filter((s) => !(s.story_key && seenKeys.has(s.story_key)));
       return [...jiraStories, ...uniqueCat];
     },
-    enabled: hasAssigneeOverride ? true : (!!forceProjectKey || (!!projectId && !!projectKey)),
+    enabled: isAllItems ? true : isReleaseScope ? true : hasAssigneeOverride ? true : (!!forceProjectKey || (!!projectId && !!projectKey)),
     staleTime: 5 * 60 * 1000,
   });
 }

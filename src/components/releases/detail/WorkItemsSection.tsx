@@ -536,9 +536,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             onClick={() => {
               if (items.length === 0) return;
               setIsMoreMenuOpen(false);
-              const params = new URLSearchParams({ fix_versions: releaseName });
-              if (projectKey) params.set('project', projectKey);
-              navigate(`/work?${params.toString()}`);
+              navigate(`/release-hub/releases-management/${releaseId}/work`);
             }}
             style={{
               ...menuItemStyle(),
