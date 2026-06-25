@@ -96,3 +96,9 @@ CREATE POLICY chat_huddle_participants_update ON public.chat_huddle_participants
 -- Realtime: clients subscribe to chat_huddles changes for the green line.
 ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_huddles;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_huddle_participants;
+
+-- Force PostgREST to reload its schema cache so the new tables are immediately
+-- visible to the REST API. Without this, a fresh apply leaves the API throwing
+-- PGRST205 "Could not find the table in the schema cache" until the next
+-- periodic reload (cost a debugging round on staging 2026-06-25).
+NOTIFY pgrst, 'reload schema';
