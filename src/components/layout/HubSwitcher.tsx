@@ -249,6 +249,16 @@ export function HubSwitcher() {
           overflow: 'visible',
         }}
       >
+        <style>{`
+          [data-hub-switcher-section] [class*="SectionTitle"] {
+            color: var(--ds-text-subtle, #505258) !important;
+          }
+          @media (prefers-color-scheme: dark) {
+            [data-hub-switcher-section] [class*="SectionTitle"] {
+              color: var(--ds-text-subtle, #e0e0e0) !important;
+            }
+          }
+        `}</style>
         <div
           style={{
             display: 'flex',
@@ -274,12 +284,12 @@ export function HubSwitcher() {
               outline: 'none',
               background: 'transparent',
               fontSize: 14,
-              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #f0f0f0)))',
             }}
           />
         </div>
 
-        <MenuGroup>
+        <MenuGroup data-hub-switcher-section>
           {SECTIONS.map(({ key, title }) => {
             const rows = hubsBySection(key);
             if (rows.length === 0) return null;
