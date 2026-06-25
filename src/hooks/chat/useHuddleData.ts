@@ -101,7 +101,17 @@ export function useHuddleActions() {
         .select('user_id, left_at').eq('huddle_id', huddleId).is('left_at', null);
       const live = (parts ?? []) as ParticipantRow[];
       const alreadyIn = live.some((p) => p.user_id === user.id);
-      if (!alreadyIn && live.length >= HUDDLE_CAP) {
+      if (alreadyIn) {
+        // Already a live participant — re-enter without inserting a duplicate row.
+        await enter({
+          conversationId,
+          huddleId: huddleId as string,
+          conversationName: conversation.title,
+          selfId: user.id,
+        });
+        return;
+      }
+      if (live.length >= HUDDLE_CAP) {
         throw new Error('HUDDLE_FULL');
       }
     } else {
@@ -111,7 +121,7 @@ export function useHuddleActions() {
       if (error || !created) throw new Error('HUDDLE_START_FAILED');
       huddleId = (created as HuddleRow).id;
     }
-    // Upsert my participant row (left_at = null = live).
+    // Insert participant row (left_at = null = live). Only reached when not already in.
     await db.from('chat_huddle_participants')
       .insert({ huddle_id: huddleId, user_id: user.id });
     await enter({

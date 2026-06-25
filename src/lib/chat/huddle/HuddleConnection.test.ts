@@ -88,6 +88,21 @@ describe('HuddleConnection', () => {
     expect(lastPC.addIceCandidate).toHaveBeenCalledWith(earlyCandidate);
   });
 
+  it('bounded join loop: duplicate join signal causes at most one offer and one re-announce', async () => {
+    const c = new HuddleConnection({ conversationId: 'cv', selfId: 'aaa', onRemoteStream: () => {}, onConnectionState: () => {} });
+    await c.start();
+    sent.length = 0; // clear the initial join from start()
+    // Deliver the same peer's join signal TWICE (simulates echo / re-announce from remote).
+    signalCb!({ kind: 'join', from: 'zzz' });
+    await Promise.resolve(); await Promise.resolve();
+    signalCb!({ kind: 'join', from: 'zzz' });
+    await Promise.resolve(); await Promise.resolve();
+    // Only ONE offer should have been sent (not two).
+    expect(sent.filter(s => s.kind === 'offer')).toHaveLength(1);
+    // Only ONE re-announce join should have been sent (not two).
+    expect(sent.filter(s => s.kind === 'join')).toHaveLength(1);
+  });
+
   it('close stops tracks, broadcasts leave, closes peer', async () => {
     const c = new HuddleConnection({ conversationId: 'cv', selfId: 'aaa', onRemoteStream: () => {}, onConnectionState: () => {} });
     await c.start();

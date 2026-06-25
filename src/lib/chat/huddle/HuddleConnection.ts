@@ -86,11 +86,12 @@ export class HuddleConnection {
     if (sig.from === this.opts.selfId) return;
     switch (sig.kind) {
       case 'join': {
+        if (this.remoteId === sig.from) break;
         this.remoteId = sig.from;
         // Re-announce so a peer who joined first also learns about us.
-        // Loop-safety relies on the signaling layer's self:false filter; the sig.from === selfId guard above is the backup.
+        // Idempotent: the guard above ensures this fires at most once per remote peer.
         chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'join', from: this.opts.selfId });
-        if (this.amOfferer()) {
+        if (this.amOfferer() && !this.pc) {
           const pc = this.ensurePc();
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
