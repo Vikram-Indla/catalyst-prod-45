@@ -1,5 +1,5 @@
 // src/store/huddleStore.test.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const startMock = vi.fn(async () => {});
 const closeMock = vi.fn();
@@ -10,6 +10,20 @@ vi.mock('@/lib/chat/huddle/HuddleConnection', () => ({
   }),
 }));
 
+// Chainable supabase db mock — compatible with existing tests (they don't call db)
+// and observable by the new leave-persistence test via dbCalls.
+const dbCalls: any[] = [];
+vi.mock('@/integrations/supabase/client', () => {
+  const chain = () => {
+    const c: any = {};
+    c.update = (vals: any) => { dbCalls.push({ op: 'update', vals }); return c; };
+    c.insert = (vals: any) => { dbCalls.push({ op: 'insert', vals }); return c; };
+    c.eq = () => c; c.is = () => c; c.select = () => c; c.maybeSingle = async () => ({ data: null });
+    return c;
+  };
+  return { supabase: { from: () => chain() } };
+});
+
 import { useHuddleStore } from './huddleStore';
 
 beforeEach(() => {
@@ -18,6 +32,8 @@ beforeEach(() => {
   startMock.mockClear(); closeMock.mockClear(); setMuteMock.mockClear();
   useHuddleStore.setState({ active: null });
 });
+
+afterEach(() => { dbCalls.length = 0; });
 
 describe('huddleStore', () => {
   it('enter populates active and starts the connection', async () => {
@@ -42,5 +58,15 @@ describe('huddleStore', () => {
     useHuddleStore.getState().leave();
     expect(useHuddleStore.getState().active).toBeNull();
     expect(closeMock).toHaveBeenCalledOnce();
+  });
+});
+
+describe('huddleStore leave persistence', () => {
+  it('leave marks the participant row left_at', async () => {
+    await useHuddleStore.getState().enter({ conversationId: 'cv', huddleId: 'h1', conversationName: 'x', selfId: 'me' });
+    useHuddleStore.getState().leave();
+    // allow the async DB write to flush
+    await Promise.resolve(); await Promise.resolve();
+    expect(dbCalls.some(c => c.op === 'update' && c.vals.left_at)).toBe(true);
   });
 });

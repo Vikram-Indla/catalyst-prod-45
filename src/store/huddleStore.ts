@@ -1,6 +1,8 @@
 // src/store/huddleStore.ts
 import { create } from 'zustand';
 import { HuddleConnection } from '@/lib/chat/huddle/HuddleConnection';
+import { supabase } from '@/integrations/supabase/client';
+const db = supabase as unknown as { from: (t: string) => any };
 
 export interface ActiveHuddle {
   conversationId: string;
@@ -29,6 +31,8 @@ interface HuddleStore {
 // store state (they are not serializable and must survive re-renders).
 let connection: HuddleConnection | null = null;
 let remoteAudioEl: HTMLAudioElement | null = null;
+let selfIdRef: string | null = null;
+let huddleIdRef: string | null = null;
 
 function attachRemote(stream: MediaStream) {
   if (typeof document === 'undefined') return;
@@ -49,6 +53,23 @@ function detachRemote() {
   }
 }
 
+async function markLeft(huddleId: string | null, userId: string | null) {
+  if (!huddleId || !userId) return;
+  try {
+    await db.from('chat_huddle_participants')
+      .update({ left_at: new Date().toISOString(), is_connected: false })
+      .eq('huddle_id', huddleId).eq('user_id', userId);
+    // If no live participants remain, end the huddle.
+    const { data: live } = await db.from('chat_huddle_participants')
+      .select('id').eq('huddle_id', huddleId).is('left_at', null);
+    if (!live || (live as unknown[]).length === 0) {
+      await db.from('chat_huddles')
+        .update({ status: 'ended', ended_at: new Date().toISOString() })
+        .eq('id', huddleId);
+    }
+  } catch { /* best-effort */ }
+}
+
 export const useHuddleStore = create<HuddleStore>((set, get) => ({
   active: null,
 
@@ -61,6 +82,8 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
       onRemoteStream: attachRemote,
       onConnectionState: (s) => get()._setConnectionState(s),
     });
+    selfIdRef = selfId;
+    huddleIdRef = huddleId;
     set({
       active: { conversationId, huddleId, conversationName, micMuted: false, connectionState: 'new' },
     });
@@ -71,6 +94,9 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     connection?.close();
     connection = null;
     detachRemote();
+    void markLeft(huddleIdRef, selfIdRef);
+    selfIdRef = null;
+    huddleIdRef = null;
     set({ active: null });
   },
 
@@ -88,3 +114,13 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     set({ active: { ...a, connectionState: s } });
   },
 }));
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    const a = useHuddleStore.getState().active;
+    if (a) {
+      // synchronous best-effort: stop tracks + fire the leave signal/DB write
+      useHuddleStore.getState().leave();
+    }
+  });
+}
