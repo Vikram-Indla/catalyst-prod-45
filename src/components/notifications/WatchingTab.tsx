@@ -49,15 +49,21 @@ function mapVerb(notificationType: string): DirectVerb {
 function mapIconType(iconType: WorkItemIconType): DirectWorkItemIconType {
   switch (iconType) {
     case 'bug':
-    case 'qa bug':    return 'bug';
-    case 'story':     return 'story';
-    case 'task':      return 'task';
-    case 'epic':      return 'epic';
-    case 'incident':  return 'incident';
-    case 'subtask':   return 'task';
-    case 'new_feature': return 'story';
-    case 'improvement': return 'task';
-    default:          return 'task';
+    case 'qa bug':              return 'bug';
+    case 'story':
+    case 'new_feature':
+    case 'feature':             return 'story';
+    case 'task':
+    case 'improvement':
+    case 'change_request':
+    case 'business_gap':        return 'task';
+    case 'epic':                return 'epic';
+    case 'incident':
+    case 'production_incident': return 'incident';
+    case 'backend':             return 'backend';
+    case 'frontend':            return 'frontend';
+    case 'subtask':             return 'subtask';
+    default:                    return 'task';
   }
 }
 

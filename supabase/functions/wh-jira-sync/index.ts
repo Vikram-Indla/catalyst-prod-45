@@ -627,8 +627,10 @@ serve(async (req) => {
             for (const issue of issues) {
               const assigneeAccountId = issue.fields.assignee?.accountId
               const assigneeCatalystId = assigneeAccountId ? userMap.get(assigneeAccountId) : null
-              const creatorAccountId = issue.fields.reporter?.accountId
-              const creatorCatalystId = creatorAccountId ? userMap.get(creatorAccountId) : null
+              // Reporter is NOT the assignment actor. Store for context only.
+              // reporterCatalystId is used only to skip the reporter from watching rows.
+              const reporterAccountId = issue.fields.reporter?.accountId
+              const reporterCatalystId = reporterAccountId ? userMap.get(reporterAccountId) : null
 
               // Map issue type to Catalyst icon (matches ISSUE_TYPE_TO_ICON in useDirectFromSync.ts).
               const issueTypeName = issue.fields.issuetype?.name || ''
@@ -648,12 +650,24 @@ serve(async (req) => {
               const statusCat = (issue.fields.status?.statusCategory?.name || '').toLowerCase()
               const statusType = statusCat === 'done' ? 'green' : statusCat === 'in progress' ? 'blue' : 'gray'
 
+              // Reporter context stored separately — never in actor fields.
+              // resolveActorIdentity sees is_jira_sync=true + no actor → Case C: "Jira Sync" system actor.
+              const reporterMeta = {
+                is_jira_sync: true,
+                actor_display_name: null,
+                actor_avatar_url: null,
+                actor_jira_account_id: null,
+                reporter_display_name: issue.fields.reporter?.displayName || null,
+                reporter_account_id: issue.fields.reporter?.accountId || null,
+                reporter_avatar_url: issue.fields.reporter?.avatarUrls?.['48x48'] || null,
+              }
+
               // Direct notification for assignee — only if not already in DB
               const directKey = `${issue.id}::${assigneeCatalystId}`
               if (assigneeCatalystId && !existingDirectSet.has(directKey)) {
                 watchingNotifRows.push({
                   recipient_user_id: assigneeCatalystId,
-                  actor_user_id: creatorCatalystId || null,
+                  actor_user_id: null,   // no real actor at bulk-sync time
                   notification_type: 'assigned',
                   entity_id: issue.id,
                   entity_type: 'issue',
@@ -664,21 +678,17 @@ serve(async (req) => {
                   status: issue.fields.status?.name || 'To Do',
                   status_type: statusType,
                   tab: 'direct',
-                  metadata: {
-                    actor_display_name: issue.fields.reporter?.displayName || null,
-                    actor_avatar_url: issue.fields.reporter?.avatarUrls?.['48x48'] || null,
-                    actor_jira_account_id: issue.fields.reporter?.accountId || null,
-                  },
+                  metadata: reporterMeta,
                 })
               }
 
               // Watching notification for all other mapped team members
               for (const catalystId of allCatalystIds) {
                 if (catalystId === assigneeCatalystId) continue  // already got direct
-                if (catalystId === creatorCatalystId) continue   // they created it
+                if (catalystId === reporterCatalystId) continue  // skip reporter (already aware)
                 watchingNotifRows.push({
                   recipient_user_id: catalystId,
-                  actor_user_id: creatorCatalystId || null,
+                  actor_user_id: null,   // no real actor at bulk-sync time
                   notification_type: 'assigned',
                   entity_id: issue.id,
                   entity_type: 'issue',
@@ -689,11 +699,7 @@ serve(async (req) => {
                   status: issue.fields.status?.name || 'To Do',
                   status_type: statusType,
                   tab: 'watching',
-                  metadata: {
-                    actor_display_name: issue.fields.reporter?.displayName || null,
-                    actor_avatar_url: issue.fields.reporter?.avatarUrls?.['48x48'] || null,
-                    actor_jira_account_id: issue.fields.reporter?.accountId || null,
-                  },
+                  metadata: reporterMeta,
                 })
               }
             }
