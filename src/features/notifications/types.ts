@@ -35,6 +35,9 @@ export interface DirectTarget {
   statusLabel: string;
   statusAppearance: DirectStatusAppearance;
   iconType: DirectWorkItemIconType;
+  /** Exact Jira issue type name (e.g. "Frontend", "Integration", "Sub-task").
+   *  When present, used for the sentence display label instead of the icon-type fallback. */
+  issueTypeName?: string | null;
 }
 
 export interface DirectAggregation {

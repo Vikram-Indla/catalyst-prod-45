@@ -107,6 +107,7 @@ function mapNotification(
       statusLabel: n.status,
       statusAppearance: mapStatusAppearance(n.status_type),
       iconType: mapIconType(n.entity_icon_type),
+      issueTypeName: (meta?.issue_type_name as string | null | undefined) ?? null,
     },
     thread: hasThread
       ? {

@@ -155,11 +155,13 @@ export function useDirectFromSync(unreadOnly: boolean) {
           status_type: mapStatusType(issue.status_category),
           tab: 'direct' as const,
           // Embed actor name from the event notification (bypasses pagination limit).
-          // is_jira_sync: true → DirectNotificationRow knows this is a sync item.
+          // is_jira_sync: true → resolveActorIdentity Layer 4 → "Jira Sync" system actor.
+          // issue_type_name: exact Jira type (e.g. "Frontend") for sentence display.
           metadata: {
             is_jira_sync: true,
             actor_display_name: actor?.name ?? null,
             actor_avatar_url: actor?.avatarUrl ?? null,
+            issue_type_name: issue.issue_type ?? null,
           } as unknown as Notification['metadata'],
           entity_deleted: false,
           is_dismissed: false,
