@@ -26,7 +26,7 @@ export function useNotificationsQuery(
     queryFn: async ({ pageParam }: { pageParam: string | null }) => {
       let query = supabase
         .from('notifications')
-        .select('*')
+        .select('*, actor:actor_user_id(id, full_name, initials, avatar_url, color)')
         .eq('recipient_user_id', userId!)
       .eq('entity_deleted', false)
       .eq('is_dismissed', false)
