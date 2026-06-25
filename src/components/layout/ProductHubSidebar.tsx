@@ -5,6 +5,7 @@
 
 import {
   Settings,
+  Link2,
 } from '@/lib/atlaskit-icons';
 import { getProductAvatarUrl } from '@/components/icons';
 import { ContextSwitcher } from './ContextSwitcher';
@@ -66,6 +67,7 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
           { id: 'allwork',   title: 'Work',      path: `${base}/allwork`,   icon: NavWorkIcon,      exact: false },
           { id: 'filters',   title: 'Filters',   path: `${base}/filters`,   icon: NavFiltersIcon,   exact: false },
           { id: 'timeline',  title: 'Timeline',  path: `${base}/timeline`,  icon: NavTimelineIcon,  exact: false },
+          { id: 'dependencies', title: 'Dependencies', path: `${base}/dependencies`, icon: Link2, exact: false },
           /* 2026-06-15: Standups sidebar item retired. Reachable from the
              board's kebab menu → "Standup history". */
         ],
