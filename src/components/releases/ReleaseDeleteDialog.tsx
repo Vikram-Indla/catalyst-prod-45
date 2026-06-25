@@ -49,7 +49,7 @@ export function ReleaseDeleteDialog({ isOpen, release, onClose, onSuccess }: Pro
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={onClose} width="small">
+        <Modal onClose={onClose} width={867}>
           <ModalHeader hasCloseButton>
             <ModalTitle>Delete release</ModalTitle>
           </ModalHeader>

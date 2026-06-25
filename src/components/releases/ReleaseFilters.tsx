@@ -19,6 +19,7 @@ import { createPortal } from 'react-dom';
 import { Checkbox } from '@atlaskit/checkbox';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import Tooltip from '@atlaskit/tooltip';
 
 // ───────────────────────── shared pill + portal ─────────────────────────
@@ -339,7 +340,7 @@ export function StatusFilter({
   useDismiss(open, () => setOpen(false), triggerRef, popupRef);
 
   const allSelected = value.length === STATUS_ORDER.length;
-  const active = open;
+  const active = open || value.length > 0;
 
   const toggle = (v: StatusValue) => {
     if (value.includes(v)) onChange(value.filter((x) => x !== v));
@@ -368,9 +369,10 @@ export function StatusFilter({
           aria-haspopup="listbox"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          style={pillStyle(active, true)}
+          style={pillStyle(active)}
         >
           <span>{triggerLabel}</span>
+          <AkChevronDownIcon label="" size="small" />
         </button>
       </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={200}>
@@ -415,7 +417,7 @@ export function ProductFilter({
   const pos = useAnchoredPopup(open, triggerRef);
   useDismiss(open, () => { setOpen(false); setQuery(''); }, triggerRef, popupRef);
 
-  const active = open;
+  const active = open || value.length > 0;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -453,9 +455,10 @@ export function ProductFilter({
           aria-haspopup="listbox"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          style={pillStyle(active, true)}
+          style={pillStyle(active)}
         >
           <span>{triggerLabel}</span>
+          <AkChevronDownIcon label="" size="small" />
         </button>
       </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={280}>
@@ -533,7 +536,7 @@ export function GroupFilter({
   const pos = useAnchoredPopup(open, triggerRef);
   useDismiss(open, () => setOpen(false), triggerRef, popupRef);
 
-  const active = open;
+  const active = open || value !== 'none';
   const current = GROUP_OPTIONS.find((o) => o.value === value);
   const triggerLabel = value === 'none' ? 'Group' : `Group: ${current?.label ?? ''}`;
   const tooltipContent = value === 'none'
@@ -549,9 +552,10 @@ export function GroupFilter({
           aria-haspopup="listbox"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          style={pillStyle(active, true)}
+          style={pillStyle(active)}
         >
           <span>{triggerLabel}</span>
+          <AkChevronDownIcon label="" size="small" />
         </button>
       </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={200}>

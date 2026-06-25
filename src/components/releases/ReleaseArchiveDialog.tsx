@@ -43,7 +43,7 @@ export function ReleaseArchiveDialog({ isOpen, release, onClose, onSuccess }: Pr
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={onClose} width="small">
+        <Modal onClose={onClose} width={867}>
           <ModalHeader hasCloseButton>
             <ModalTitle>Archive release</ModalTitle>
           </ModalHeader>

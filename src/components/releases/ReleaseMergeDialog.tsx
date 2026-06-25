@@ -87,7 +87,7 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Prop
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={handleClose} width="medium">
+        <Modal onClose={handleClose} width={867}>
           <ModalHeader hasCloseButton>
             <ModalTitle>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>

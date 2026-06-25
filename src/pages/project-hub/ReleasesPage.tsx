@@ -1,7 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
 import TextField from '@atlaskit/textfield';
+import AkFilterIcon from '@atlaskit/icon/core/filter';
+import { ToolbarMenuButton } from '@/components/shared/JiraTable';
 import { useQuery } from '@tanstack/react-query';
 import { catalystFlag } from '@/lib/catalystFlag';
 import { supabase } from '@/integrations/supabase/client';
@@ -80,20 +82,27 @@ export function ReleasesPage() {
   });
 
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<StatusValue[]>(['unreleased']);
+  const [statusFilter, setStatusFilter] = useState<StatusValue[]>([]);
   const [productFilter, setProductFilter] = useState<string[]>([]);
   const [groupBy, setGroupBy] = useState<GroupValue>('none');
+  const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
-  // Products = ph_projects (releases live under projects in this schema)
+  // Products only — releases belong to products, not projects (projects use sprints).
+  // Intersect ph_projects (FK source for releases.project_id) with products.code.
   const { data: productsRaw } = useQuery({
-    queryKey: ['ph-projects-for-release-filter'],
+    queryKey: ['products-for-release-filter'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_projects')
-        .select('id, key, name')
-        .order('name');
-      if (error) throw new Error(error.message);
-      return (data ?? []) as Array<{ id: string; key: string; name: string }>;
+      const [{ data: projects, error: pErr }, { data: prods, error: prErr }] = await Promise.all([
+        supabase.from('ph_projects').select('id, key, name').order('name'),
+        (supabase as any).from('products').select('code').eq('is_active', true),
+      ]);
+      if (pErr) throw new Error(pErr.message);
+      if (prErr) throw new Error(prErr.message);
+      const productCodes = new Set((prods ?? []).map((p: any) => p.code));
+      return (projects ?? []).filter((p: any) => productCodes.has(p.key)) as Array<{
+        id: string; key: string; name: string;
+      }>;
     },
     staleTime: 5 * 60_000,
   });
@@ -157,15 +166,21 @@ export function ReleasesPage() {
       });
   }, [rawReleases, sprintNamesById]);
 
+  const productProjectIds = useMemo(
+    () => new Set((productsRaw ?? []).map((p) => p.id)),
+    [productsRaw],
+  );
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return releases.filter((r) => {
+      const isProductRelease = productProjectIds.has(r.project_id);
       const matchesSearch = r.name.toLowerCase().includes(q);
       const matchesStatus = statusFilter.length === 0 || statusFilter.includes(r.status);
       const matchesProduct = productFilter.length === 0 || productFilter.includes(r.project_id);
-      return matchesSearch && matchesStatus && matchesProduct;
+      return isProductRelease && matchesSearch && matchesStatus && matchesProduct;
     });
-  }, [releases, search, statusFilter, productFilter]);
+  }, [releases, productProjectIds, search, statusFilter, productFilter]);
 
   const grouped = useMemo(() => {
     if (groupBy === 'none') return null;
@@ -255,6 +270,103 @@ export function ReleasesPage() {
     navigate(`/release-hub/releases-management/${releaseId}`);
   };
 
+  const groupIdsKey = useMemo(() => (grouped ?? []).map((g) => g.id).join('|'), [grouped]);
+  useEffect(() => {
+    const ids = (grouped ?? []).map((g) => g.id);
+    setCollapsedGroups(new Set(ids.slice(1)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupIdsKey]);
+
+  const toggleGroup = useCallback((id: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toolbarIconButtonStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 32,
+    height: 32,
+    border: 'none',
+    background: 'transparent',
+    borderRadius: 3,
+    color: 'var(--ds-text-subtle, #42526E)',
+    cursor: 'pointer',
+  };
+
+  const ALL_STATUSES: StatusValue[] = ['released', 'unreleased', 'archived'];
+  const isStatusVisible = (s: StatusValue) =>
+    statusFilter.length === 0 || statusFilter.includes(s);
+  const toggleStatusVisibility = (s: StatusValue) => {
+    const current = statusFilter.length === 0 ? ALL_STATUSES : statusFilter;
+    const next = current.includes(s) ? current.filter((x) => x !== s) : [...current, s];
+    setStatusFilter(next.length === ALL_STATUSES.length ? [] : next);
+  };
+
+  const toolbarViewOptionsButton = (
+    <ToolbarMenuButton
+      icon={<AkFilterIcon label="" size="small" />}
+      ariaLabel="View options"
+      tooltipContent="View options"
+      buttonStyle={toolbarIconButtonStyle}
+      groups={[
+        {
+          items: [
+            {
+              id: 'toggle-released',
+              label: isStatusVisible('released') ? 'Hide released' : 'Show released',
+              onClick: () => toggleStatusVisibility('released'),
+            },
+            {
+              id: 'toggle-unreleased',
+              label: isStatusVisible('unreleased') ? 'Hide unreleased' : 'Show unreleased',
+              onClick: () => toggleStatusVisibility('unreleased'),
+            },
+            {
+              id: 'toggle-archived',
+              label: isStatusVisible('archived') ? 'Hide archived' : 'Show archived',
+              onClick: () => toggleStatusVisibility('archived'),
+            },
+          ],
+        },
+        {
+          items: [
+            {
+              id: 'expand-all',
+              label: 'Expand all groups',
+              onClick: () => setCollapsedGroups(new Set()),
+            },
+            {
+              id: 'collapse-all',
+              label: 'Collapse all groups',
+              onClick: () =>
+                setCollapsedGroups(grouped ? new Set(grouped.map((g) => g.id)) : new Set()),
+            },
+          ],
+        },
+        {
+          items: [
+            {
+              id: 'density-compact',
+              label: density === 'compact' ? '✓ Compact' : 'Compact',
+              onClick: () => setDensity('compact'),
+            },
+            {
+              id: 'density-comfortable',
+              label: density === 'comfortable' ? '✓ Comfortable' : 'Comfortable',
+              onClick: () => setDensity('comfortable'),
+            },
+          ],
+        },
+      ]}
+    />
+  );
+
   const projectId = projectRow?.id || releases[0]?.project_id || '';
 
   if (isLoading) return <div style={{ padding: '24px' }}>Loading releases…</div>;
@@ -282,7 +394,7 @@ export function ReleasesPage() {
           Releases
         </h1>
         <span style={{ fontSize: '14px', color: 'var(--ds-text-subtle, #505258)' }}>
-          This space has {releases.length} releases
+          This space has {releases.filter((r) => productProjectIds.has(r.project_id)).length} releases
         </span>
       </div>
 
@@ -311,6 +423,7 @@ export function ReleasesPage() {
           onChange={setProductFilter}
         />
         <GroupFilter value={groupBy} onChange={setGroupBy} />
+        {toolbarViewOptionsButton}
         <div style={{ flex: 1 }} />
         <Button
           appearance="subtle"
@@ -336,6 +449,9 @@ export function ReleasesPage() {
           onMerge={(r) => { setMergingRelease(r); setIsMergeDialogOpen(true); }}
           onEdit={(r) => { setEditingRelease(r); setIsCreateModalOpen(true); }}
           onDelete={(r) => { setDeletingRelease(r); setIsDeleteDialogOpen(true); }}
+          collapsedGroups={collapsedGroups}
+          onToggleGroup={toggleGroup}
+          density={density}
         />
       ) : (
         <div

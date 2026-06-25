@@ -158,7 +158,7 @@ export function ReleaseEditModal({
         />
       )}
 
-      <Modal isOpen={isOpen} onClose={handleClose} width={480}>
+      <Modal isOpen={isOpen} onClose={handleClose} width={867}>
         <ModalHeader>
           <ModalTitle>Edit release</ModalTitle>
         </ModalHeader>
