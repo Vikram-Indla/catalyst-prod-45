@@ -26,10 +26,12 @@ export interface UserWithRole {
   user_id: string;
   role_id: string;
   business_lines: string[];
+  created_at?: string;
   user: {
     id: string;
     email: string;
     full_name: string | null;
+    department_name: string | null;
   } | null;
   has_overrides: boolean;
 }
@@ -158,11 +160,21 @@ export function useUsersWithRole(roleId: string | null) {
       const userIds = userRoles.map(ur => ur.user_id);
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, email, full_name')
+        .select('id, email, full_name, department_id')
         .eq('approval_status', 'APPROVED')
         .in('id', userIds);
 
       if (profilesError) throw profilesError;
+
+      const deptIds = [...new Set((profiles || []).map(p => p.department_id).filter(Boolean))] as string[];
+      let deptMap: Record<string, string> = {};
+      if (deptIds.length > 0) {
+        const { data: depts } = await supabase
+          .from('capacity_departments')
+          .select('id, name')
+          .in('id', deptIds);
+        deptMap = (depts || []).reduce((acc, d) => { acc[d.id] = d.name; return acc; }, {} as Record<string, string>);
+      }
 
       const { data: overrides, error: overridesError } = await supabase
         .from('user_permission_overrides')
@@ -175,9 +187,9 @@ export function useUsersWithRole(roleId: string | null) {
 
       const overrideUserIds = new Set((overrides || []).map(o => o.user_id));
       const profileMap = (profiles || []).reduce((acc, p) => {
-        acc[p.id] = p;
+        acc[p.id] = { ...p, department_name: p.department_id ? (deptMap[p.department_id] ?? null) : null };
         return acc;
-      }, {} as Record<string, typeof profiles[0]>);
+      }, {} as Record<string, typeof profiles[0] & { department_name: string | null }>);
 
       return userRoles.map(ur => ({
         ...ur,
@@ -497,7 +509,7 @@ export function useAssignUserToRole() {
     mutationFn: async ({ userId, roleId }: { userId: string; roleId: string }) => {
       const { error } = await supabase
         .from('user_product_roles')
-        .insert({ user_id: userId, role_id: roleId, business_lines: [], has_overrides: false });
+        .insert({ user_id: userId, role_id: roleId, business_lines: [] });
       if (error) throw error;
     },
     onSuccess: (_, v) => {

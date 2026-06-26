@@ -59,7 +59,7 @@ const T = {
 /** Quick actions — all paths registered in REGISTERED_ADMIN_ROUTES. */
 const quickActions = [
   { label: 'Invite user',     icon: PersonAddIcon,   path: '/admin/access' },
-  { label: 'Create role',     icon: ShieldIcon,      path: '/admin/roles-permissions' },
+  { label: 'Create role',     icon: ShieldIcon,      path: '/admin/roles' },
   { label: 'Sync logs',       icon: ChartTrendIcon,  path: '/admin/workhub/sync-logs' },
   { label: 'Jira connection', icon: LinkIcon,        path: '/admin/workhub/jira-connection' },
 ];
@@ -129,7 +129,7 @@ export default function AdminOverview() {
       title: 'Security',
       description: 'Security settings and policies',
       icon: ShieldIcon,
-      path: '/admin/roles-permissions',
+      path: '/admin/roles',
       count: metrics.securityPoliciesCount,
       countLabel: 'policies',
     },

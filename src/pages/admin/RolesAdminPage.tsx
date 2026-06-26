@@ -6,10 +6,10 @@ import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { RbacRolesTable } from '@/components/admin/rbac/RbacRolesTable';
 import { RbacUsersTable } from '@/components/admin/rbac/RbacUsersTable';
-import { RbacAssignmentsTable } from '@/components/admin/rbac/RbacAssignmentsTable';
 import { PermissionsMatrix } from '@/components/admin/rbac/PermissionsMatrix';
 import { CreateEditRoleModal } from '@/components/admin/rbac/CreateEditRoleModal';
 import { AssignUsersModal } from '@/components/admin/rbac/AssignUsersModal';
+import { UserOverridesModal } from '@/components/admin/rbac/UserOverridesModal';
 import {
   useProductRoles,
   useUsersWithRole,
@@ -43,6 +43,7 @@ export default function RolesAdminPage() {
   const [editingRole, setEditingRole] = useState<ProductRole | null>(null);
   const [assignOpen, setAssignOpen] = useState(false);
   const [assignRole, setAssignRole] = useState<ProductRole | null>(null);
+  const [overrideUserId, setOverrideUserId] = useState<string | null>(null);
 
   function openCreate() {
     setEditingRole(null);
@@ -127,19 +128,16 @@ export default function RolesAdminPage() {
                 <Tabs id="role-detail-tabs" onChange={() => {}}>
                   <TabList>
                     <Tab>Users</Tab>
-                    <Tab>Assignments</Tab>
                     <Tab>Permissions matrix</Tab>
                   </TabList>
 
                   <TabPanel>
                     <div style={{ paddingTop: 20 }}>
-                      <RbacUsersTable users={usersData} isLoading={usersLoading} />
-                    </div>
-                  </TabPanel>
-
-                  <TabPanel>
-                    <div style={{ paddingTop: 20 }}>
-                      <RbacAssignmentsTable users={usersData} isLoading={usersLoading} />
+                      <RbacUsersTable
+                        users={usersData}
+                        isLoading={usersLoading}
+                        onOverrideClick={(userId) => setOverrideUserId(userId)}
+                      />
                     </div>
                   </TabPanel>
 
@@ -172,6 +170,13 @@ export default function RolesAdminPage() {
         isOpen={assignOpen}
         onClose={() => setAssignOpen(false)}
         role={assignRole}
+      />
+
+      <UserOverridesModal
+        isOpen={!!overrideUserId}
+        onClose={() => setOverrideUserId(null)}
+        userId={overrideUserId}
+        roleId={selectedRoleId}
       />
     </AdminGuard>
   );

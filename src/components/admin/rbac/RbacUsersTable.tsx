@@ -11,6 +11,7 @@ import { UserWithRole } from '@/hooks/useProductRoles';
 interface RbacUsersTableProps {
   users: UserWithRole[];
   isLoading?: boolean;
+  onOverrideClick?: (userId: string) => void;
 }
 
 const T = {
@@ -19,53 +20,81 @@ const T = {
   subtlest: 'var(--ds-text-subtlest, #626F86)',
 };
 
-const COLUMNS: Column<UserWithRole>[] = [
-  {
-    id: 'user',
-    label: 'User',
-    flex: true,
-    alwaysVisible: true,
-    cell: ({ row }) => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-        <CatalystAvatar
-          name={row.user?.full_name ?? row.user?.email ?? '?'}
-          size="small"
-        />
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {row.user?.full_name ?? '—'}
-          </div>
-          <div style={{ fontSize: 12, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {row.user?.email ?? '—'}
+function formatDate(iso: string | undefined | null): string {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch {
+    return '—';
+  }
+}
+
+function buildColumns(onOverrideClick?: (userId: string) => void): Column<UserWithRole>[] {
+  return [
+    {
+      id: 'user',
+      label: 'User',
+      flex: true,
+      alwaysVisible: true,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <CatalystAvatar
+            name={row.user?.full_name ?? row.user?.email ?? '?'}
+            size="small"
+          />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {row.user?.full_name ?? '—'}
+            </div>
+            <div style={{ fontSize: 12, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {row.user?.email ?? '—'}
+            </div>
           </div>
         </div>
-      </div>
-    ),
-  },
-  {
-    id: 'business_lines',
-    label: 'Business lines',
-    width: 22,
-    cell: ({ row }) => {
-      const lines = row.business_lines ?? [];
-      return lines.length > 0
-        ? <span style={{ fontSize: 13, color: T.subtle }}>{lines.join(', ')}</span>
-        : <span style={{ fontSize: 13, color: T.subtlest }}>—</span>;
+      ),
     },
-  },
-  {
-    id: 'overrides',
-    label: 'Overrides',
-    width: 14,
-    cell: ({ row }) => (
-      row.has_overrides
-        ? <Lozenge appearance="inprogress">Custom</Lozenge>
-        : <span style={{ fontSize: 13, color: T.subtlest }}>—</span>
-    ),
-  },
-];
+    {
+      id: 'department',
+      label: 'Department',
+      width: 22,
+      cell: ({ row }) => {
+        const dept = row.user?.department_name;
+        return dept
+          ? <span style={{ fontSize: 13, color: T.subtle }}>{dept}</span>
+          : <span style={{ fontSize: 13, color: T.subtlest }}>—</span>;
+      },
+    },
+    {
+      id: 'assigned_on',
+      label: 'Assigned',
+      width: 16,
+      cell: ({ row }) => (
+        <span style={{ fontSize: 13, color: T.subtlest }}>{formatDate((row as UserWithRole & { created_at?: string }).created_at)}</span>
+      ),
+    },
+    {
+      id: 'overrides',
+      label: 'Overrides',
+      width: 14,
+      cell: ({ row }) => {
+        if (!row.has_overrides) return <span style={{ fontSize: 13, color: T.subtlest }}>—</span>;
+        return onOverrideClick ? (
+          <button
+            onClick={() => onOverrideClick(row.user_id)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            title="View / edit overrides"
+          >
+            <Lozenge appearance="inprogress">Custom</Lozenge>
+          </button>
+        ) : (
+          <Lozenge appearance="inprogress">Custom</Lozenge>
+        );
+      },
+    },
+  ];
+}
 
-export function RbacUsersTable({ users, isLoading }: RbacUsersTableProps) {
+export function RbacUsersTable({ users, isLoading, onOverrideClick }: RbacUsersTableProps) {
   const [search, setSearch] = React.useState('');
 
   const filtered = React.useMemo(() => {
@@ -76,6 +105,8 @@ export function RbacUsersTable({ users, isLoading }: RbacUsersTableProps) {
       (u.user?.email ?? '').toLowerCase().includes(q),
     );
   }, [users, search]);
+
+  const columns = React.useMemo(() => buildColumns(onOverrideClick), [onOverrideClick]);
 
   if (isLoading) {
     return (
@@ -101,7 +132,7 @@ export function RbacUsersTable({ users, isLoading }: RbacUsersTableProps) {
       </div>
 
       <JiraTable<UserWithRole>
-        columns={COLUMNS}
+        columns={columns}
         data={filtered}
         getRowId={(u) => u.id}
         density="comfortable"
