@@ -23,13 +23,18 @@ interface EnterArgs {
   selfId: string;
 }
 
+export type ScreenWindowMode = 'normal' | 'minimized' | 'maximized';
+
 interface HuddleStore {
   active: ActiveHuddle | null;
+  /** Screen-share window display mode. */
+  screenWindow: ScreenWindowMode;
   enter: (args: EnterArgs) => Promise<void>;
   leave: () => void;
   toggleMute: () => void;
   startScreen: () => Promise<void>;
   stopScreen: () => Promise<void>;
+  setScreenWindow: (m: ScreenWindowMode) => void;
   _setConnectionState: (s: RTCPeerConnectionState) => void;
 }
 
@@ -92,6 +97,8 @@ async function markLeft(huddleId: string | null, userId: string | null) {
 
 export const useHuddleStore = create<HuddleStore>((set, get) => ({
   active: null,
+  screenWindow: 'normal',
+  setScreenWindow: (m) => set({ screenWindow: m }),
 
   enter: async ({ conversationId, huddleId, conversationName, selfId }) => {
     // Tear down any existing call first (one huddle at a time).
@@ -104,7 +111,8 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
       onRemoteScreen: (stream) => {
         remoteScreenStream = stream;
         const a = get().active;
-        if (a) set({ active: { ...a, remoteSharing: !!stream } });
+        // When a remote share arrives, pop the window open (normal) so it's seen.
+        if (a) set({ active: { ...a, remoteSharing: !!stream }, ...(stream ? { screenWindow: 'normal' as ScreenWindowMode } : {}) });
       },
       onLocalScreenEnded: () => {
         localScreenStream = null;
@@ -116,6 +124,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     huddleIdRef = huddleId;
     set({
       active: { conversationId, huddleId, conversationName, micMuted: false, connectionState: 'new', screenSharing: false, remoteSharing: false },
+      screenWindow: 'normal',
     });
     await connection.start();
   },
@@ -129,7 +138,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     void markLeft(huddleIdRef, selfIdRef);
     selfIdRef = null;
     huddleIdRef = null;
-    set({ active: null });
+    set({ active: null, screenWindow: 'normal' });
   },
 
   toggleMute: () => {
@@ -145,7 +154,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     try {
       localScreenStream = await connection.startScreenShare();
       const a = get().active;
-      if (a) set({ active: { ...a, screenSharing: true } });
+      if (a) set({ active: { ...a, screenSharing: true }, screenWindow: 'normal' });
     } catch { /* user cancelled the screen picker — no-op */ }
   },
 

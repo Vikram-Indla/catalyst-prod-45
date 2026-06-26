@@ -32,6 +32,8 @@ export function HuddleFab() {
   const toggleMute = useHuddleStore((s) => s.toggleMute);
   const startScreen = useHuddleStore((s) => s.startScreen);
   const stopScreen = useHuddleStore((s) => s.stopScreen);
+  const screenWindow = useHuddleStore((s) => s.screenWindow);
+  const setScreenWindow = useHuddleStore((s) => s.setScreenWindow);
   const navigate = useNavigate();
 
   const [hovered, setHovered] = useState(false);
@@ -45,6 +47,7 @@ export function HuddleFab() {
   const connecting = !!active && active.connectionState !== 'connected';
   const muted = !!active?.micMuted;
   const sharing = !!active?.screenSharing;
+  const screenMinimized = !!active && (active.screenSharing || active.remoteSharing) && screenWindow === 'minimized';
 
   // call duration timer (resets each huddle)
   useEffect(() => {
@@ -219,6 +222,19 @@ export function HuddleFab() {
             />
           ))}
         </span>
+      )}
+
+      {/* restore chip — shown (even collapsed) when the screen window is minimized */}
+      {screenMinimized && (
+        <button
+          type="button"
+          data-huddle-btn
+          onClick={() => setScreenWindow('normal')}
+          title="Show shared screen"
+          style={{ ...iconBtnStyle('var(--ds-background-selected, #E9F2FE)', 'var(--ds-text-selected, #0C66E4)'), marginRight: hovered ? 0 : 4 }}
+        >
+          <ScreenIcon />
+        </button>
       )}
 
       {/* meta + actions — only when hovered */}
