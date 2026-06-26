@@ -246,8 +246,8 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
               {statusMismatch && (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
-                  background: '#FFF3CD', borderRadius: 4, marginBottom: 8,
-                  fontSize: 12, color: '#856404',
+                  background: 'var(--ds-background-warning, #FFF3CD)', borderRadius: 4, marginBottom: 8,
+                  fontSize: 12, color: 'var(--ds-text-warning, #856404)',
                 }}>
                   <AlertTriangle size={14} />
                   <span>"{issue.status}" not found in {selectedProject.key}. Mapped to "{selectedStatus}".</span>

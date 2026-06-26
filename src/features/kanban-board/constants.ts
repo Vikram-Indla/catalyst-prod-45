@@ -128,10 +128,10 @@ export interface PriorityConfig {
 export const PRIORITY_CONFIG: Record<string, PriorityConfig> = {
   highest: { shape: 'up', color: 'var(--ds-background-danger-bold, #C9372C)', label: 'Highest' },
   critical: { shape: 'up', color: 'var(--ds-background-danger-bold, #C9372C)', label: 'Critical' },
-  high: { shape: 'up', color: '#E2483D', label: 'High' },
-  medium: { shape: 'equal', color: '#D97008', label: 'Medium' },
-  low: { shape: 'down', color: '#388F4B', label: 'Low' },
-  lowest: { shape: 'down', color: '#357DE8', label: 'Lowest' },
+  high: { shape: 'up', color: 'var(--ds-background-danger-bold, #E2483D)', label: 'High' },
+  medium: { shape: 'equal', color: 'var(--ds-background-warning-bold, #D97008)', label: 'Medium' },
+  low: { shape: 'down', color: 'var(--ds-background-success-bold, #388F4B)', label: 'Low' },
+  lowest: { shape: 'down', color: 'var(--ds-link, #357DE8)', label: 'Lowest' },
 };
 
 export const DEFAULT_VISIBLE_FIELDS = {

@@ -34,11 +34,11 @@ export const WORK_ITEM_HIERARCHY: Record<string, TierConfig> = {
   'QA Bug':               { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold, #FA541C)' },
 
   // TIER 6 — EXECUTION (collapsed, 3-day window)
-  'Sub-task':             { tier: 6, label: 'SUB-TASK',            freshnessDays: 3,  renderMode: 'collapsed',  color: '#8B8FA3' },
-  'Task':                 { tier: 6, label: 'TASK',                freshnessDays: 3,  renderMode: 'collapsed',  color: '#13C2C2' },
+  'Sub-task':             { tier: 6, label: 'SUB-TASK',            freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-text-subtlest, #8B8FA3)' },
+  'Task':                 { tier: 6, label: 'TASK',                freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-chart-teal-bold, #13C2C2)' },
 };
 
-const DEFAULT_TIER: TierConfig = { tier: 6, label: 'ITEM', freshnessDays: 3, renderMode: 'collapsed', color: '#8B8FA3' };
+const DEFAULT_TIER: TierConfig = { tier: 6, label: 'ITEM', freshnessDays: 3, renderMode: 'collapsed', color: 'var(--ds-text-subtlest, #8B8FA3)' };
 
 export function getTierConfig(type: string | null | undefined): TierConfig {
   if (!type) return DEFAULT_TIER;

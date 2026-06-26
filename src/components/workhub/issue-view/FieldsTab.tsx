@@ -15,7 +15,7 @@ interface Props {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-text-danger, #EF4444)', High: 'var(--ds-background-warning-bold, #E2B203)', Medium: 'var(--ds-text-brand, #3B82F6)', Low: 'var(--ds-text-success, #22C55E)', Lowest: '#8C8F96',
+  Highest: 'var(--ds-text-danger, #EF4444)', High: 'var(--ds-background-warning-bold, #E2B203)', Medium: 'var(--ds-text-brand, #3B82F6)', Low: 'var(--ds-text-success, #22C55E)', Lowest: 'var(--ds-text-subtlest, #8C8F96)',
 };
 const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 
@@ -80,7 +80,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
     return <div className="awEmpty" style={{ padding: 40 }}>No data available</div>;
   }
 
-  const pc = PRIORITY_COLORS[item.priority] ?? '#8C8F96';
+  const pc = PRIORITY_COLORS[item.priority] ?? 'var(--ds-text-subtlest, #8C8F96)';
 
   return (
     <div style={{ padding: '10px 0' }}>

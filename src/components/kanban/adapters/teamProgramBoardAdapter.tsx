@@ -160,7 +160,7 @@ function cardToCanonicalIssue({ card, columnName }: CardContext): CanonicalBoard
    ═══════════════════════════════════════════════════════════════════════ */
 
 const CARD_TYPE_ICON: Record<CardType, { Icon: typeof Bookmark; color: string }> = {
-  Epic:       { Icon: Zap,         color: '#904EE2' },
+  Epic:       { Icon: Zap,         color: 'var(--ds-background-discovery-bold, #904EE2)' },
   Feature:    { Icon: Layers,      color: 'var(--ds-background-success-bold, #1F845A)' },
   Story:      { Icon: Bookmark,    color: 'var(--ds-background-success-bold, #1F845A)' },
   Task:       { Icon: CheckSquare, color: 'var(--ds-background-information-bold, #1D7AFC)' },

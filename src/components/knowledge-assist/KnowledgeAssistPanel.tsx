@@ -190,14 +190,14 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
-              <RefreshCw size={15} strokeWidth={2} color="#8B8FA3" />
+              <RefreshCw size={15} strokeWidth={2} color="var(--ds-icon-subtle, #8B8FA3)" />
             </button>
             <button onClick={onClose} aria-label="Close" className="ka-icon-btn"
               style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--divider)', background: 'var(--bg-app)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
-              <X size={15} strokeWidth={2} color="#8B8FA3" />
+              <X size={15} strokeWidth={2} color="var(--ds-icon-subtle, #8B8FA3)" />
             </button>
           </div>
         </div>
@@ -284,7 +284,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             >
-              <Mic size={18} strokeWidth={2} color={isListening ? '#CF1322' : '#8B8FA3'} />
+              <Mic size={18} strokeWidth={2} color={isListening ? '#CF1322' : 'var(--ds-icon-subtle, #8B8FA3)'} />
             </button>
             <textarea
               ref={textareaRef}
@@ -315,7 +315,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 transition: 'background 80ms',
               }}
             >
-              <Send size={18} strokeWidth={2} color={input.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : '#8B8FA3'} />
+              <Send size={18} strokeWidth={2} color={input.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-icon-subtle, #8B8FA3)'} />
             </button>
           </div>
         </div>

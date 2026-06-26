@@ -134,7 +134,7 @@ const STATUS_COLORS: Record<string, string> = {
 const TYPE_COLORS: Record<string, string> = {
   'Epic': 'var(--ds-link-pressed, #1e40af)',
   'Story': 'var(--ds-text-success, #216E4E)',
-  'Sub-task': '#312e81',
+  'Sub-task': 'var(--ds-background-discovery, #312e81)',
   'Bug': 'var(--ds-text-danger, #dc2626)',
   'Task': 'var(--ds-chart-teal-bold, #0d9488)',
 };

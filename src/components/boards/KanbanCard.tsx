@@ -12,7 +12,7 @@ interface Props {
 
 const PRIORITY_COLORS: Record<string, string> = {
   critical: 'var(--ds-background-danger-bold, #C9372C)',
-  high: '#FF7452',
+  high: 'var(--ds-background-danger-bold, #FF7452)',
   medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   low: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
 };

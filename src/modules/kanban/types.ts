@@ -159,8 +159,8 @@ export const COLUMNS_CONFIG: StatusConfig[] = [
   { id: 'new_request', label: 'New Request', color: 'var(--ds-text-brand, #3b82f6)', order: 0 },  // Blue
   { id: 'analyse', label: 'Analyse', color: 'var(--ds-text-warning, #f59e0b)', order: 1 },          // Amber
   { id: 'approved', label: 'Approved', color: 'var(--ds-text-success, #22c55e)', order: 2 },        // Green
-  { id: 'implement', label: 'Implement', color: '#a855f7', order: 3 },      // Purple
-  { id: 'closed', label: 'Closed', color: '#78716c', order: 4 },            // Stone
+  { id: 'implement', label: 'Implement', color: 'var(--ds-background-discovery-bold, #a855f7)', order: 3 },      // Purple
+  { id: 'closed', label: 'Closed', color: 'var(--ds-text-subtlest, #78716c)', order: 4 },            // Stone
   { id: 'rejected', label: 'Rejected', color: 'var(--ds-text-danger, #ef4444)', order: 5 },        // Red
   { id: 'on_hold', label: 'On-Hold', color: 'var(--ds-background-warning-bold, #f97316)', order: 6 },          // Orange
 ];
