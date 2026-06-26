@@ -160,6 +160,16 @@ export class HuddleConnection {
     if (this.pc) await this.sendOffer(this.pc);
   }
 
+  /** After a renegotiation, surface or clear the remote screen based on whether
+   *  a live remote video track exists — reliable across browsers. */
+  private reconcileRemoteScreen(): void {
+    if (!this.pc || typeof this.pc.getReceivers !== 'function') return;
+    const recv = this.pc.getReceivers().find(
+      (r) => r.track?.kind === 'video' && r.track.readyState === 'live',
+    );
+    this.opts.onRemoteScreen?.(recv ? new MediaStream([recv.track]) : null);
+  }
+
   private drainCandidates(): void {
     for (const c of this.pendingCandidates) {
       void this.pc?.addIceCandidate(c).catch(() => { /* stale candidate */ });
@@ -195,6 +205,10 @@ export class HuddleConnection {
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
         chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'answer', from: this.opts.selfId, sdp: answer });
+        // Reconcile remote screen after (re)negotiation: surface the live video
+        // track if present, or clear it when the sharer removed their track.
+        // This is deterministic and doesn't depend on track mute/ended events.
+        this.reconcileRemoteScreen();
         break;
       }
       case 'answer': {
