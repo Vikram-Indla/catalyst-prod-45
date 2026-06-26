@@ -80,8 +80,12 @@ Deno.serve(async (req) => {
         const catalystJiraIds = new Set(jiraIdToProfileId.keys())
         const { data: phIssues } = await supabase.from('ph_issues').select('id, issue_key, issue_type, summary, status, status_category, assignee_account_id').in('assignee_account_id', [...catalystJiraIds]).is('deleted_at', null).order('jira_updated_at', { ascending: false })
         if (phIssues && phIssues.length > 0) {
-          const profileIds = [...new Set(phIssues.map((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id)).filter(Boolean) as string[])]
-          const { data: existingRows } = await supabase.from('notifications').select('entity_id, recipient_user_id').in('recipient_user_id', profileIds).eq('tab', 'direct')
+          const candidateEntityIds = phIssues
+            .filter((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id))
+            .map((pi: any) => pi.id as string)
+          // Query by entity_id (not recipient_user_id) — avoids the 1000-row default page cap
+          // that truncates results when total direct-tab rows exceed 1000 across all profiles.
+          const { data: existingRows } = await supabase.from('notifications').select('entity_id, recipient_user_id').in('entity_id', candidateEntityIds).eq('tab', 'direct').limit(candidateEntityIds.length + 1)
           const hasAnyRow = new Set<string>((existingRows ?? []).map((r: any) => `${r.entity_id}::${r.recipient_user_id}`))
           const ICON_MAP: Record<string, string> = { 'Sub-task': 'subtask', 'Frontend': 'frontend', 'Backend': 'backend', 'Integration': 'subtask', 'Story': 'story', 'Task': 'task', 'QA Bug': 'bug', 'Defect': 'bug', 'Epic': 'epic', 'Feature': 'feature', 'Production Incident': 'incident', 'Change Request': 'change_request', 'Business Gap': 'business_gap', 'API Requirement': 'task' }
           const toBackfill = phIssues.filter((pi: any) => { const profileId = jiraIdToProfileId.get(pi.assignee_account_id); return profileId && !hasAnyRow.has(`${pi.id}::${profileId}`) }).slice(0, 100)
@@ -852,16 +856,17 @@ Deno.serve(async (req) => {
       if (phIssues && phIssues.length > 0) {
           // Check which (entity_id, recipient_user_id) pairs already have a direct notification row.
           // Query by recipient_user_id (40 items max) NOT entity_id (1515 items) — avoids PostgREST URL limit.
-          const profileIds = [...new Set(
-            phIssues
-              .map((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id))
-              .filter(Boolean) as string[]
-          )]
+          const candidateEntityIds = phIssues
+            .filter((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id))
+            .map((pi: any) => pi.id as string)
+          // Query by entity_id (not recipient_user_id) — avoids the 1000-row default page cap
+          // that truncates results when total direct-tab rows exceed 1000 across all profiles.
           const { data: existingRows } = await supabase
             .from('notifications')
             .select('entity_id, recipient_user_id')
-            .in('recipient_user_id', profileIds)
+            .in('entity_id', candidateEntityIds)
             .eq('tab', 'direct')
+            .limit(candidateEntityIds.length + 1)
 
           const hasAnyRow = new Set<string>(
             (existingRows ?? []).map((r: any) => `${r.entity_id}::${r.recipient_user_id}`)
