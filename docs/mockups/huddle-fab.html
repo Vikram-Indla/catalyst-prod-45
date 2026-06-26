@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Huddle FAB — mockup</title>
+<style>
+  :root{
+    --ds-surface:#FFFFFF; --ds-surface-overlay:#FFFFFF; --ds-surface-sunken:#F7F8F9;
+    --ds-text:#172B4D; --ds-text-subtle:#42526E; --ds-text-subtlest:#6B778C;
+    --ds-border:#DFE1E6; --ds-icon-success:#22A06B; --ds-border-success:#4BCE97;
+    --ds-bg-success:#DCFFF1; --ds-danger:#C9372C; --ds-danger-bg:#FFECEB;
+    --ds-link:#0C66E4; --shadow:0 8px 28px rgba(9,30,66,.18), 0 2px 6px rgba(9,30,66,.12);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);background:#F4F5F7;color:var(--ds-text);min-height:100vh}
+  .page{max-width:980px;margin:0 auto;padding:32px 24px 160px}
+  h1{font-size:22px;font-weight:700;margin:0 0 4px}
+  .sub{color:var(--ds-text-subtle);font-size:14px;margin:0 0 28px}
+  .controls-bar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 28px}
+  .controls-bar button{font-family:var(--font);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;
+    border:1px solid var(--ds-border);background:var(--ds-surface);color:var(--ds-text);cursor:pointer}
+  .controls-bar button.on{background:var(--ds-bg-success);border-color:var(--ds-border-success);color:#216E4E}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .card{background:var(--ds-surface);border:1px solid var(--ds-border);border-radius:14px;padding:24px;position:relative;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+  .card h3{position:absolute;top:14px;left:16px;margin:0;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ds-text-subtlest)}
+  .hint{font-size:12px;color:var(--ds-text-subtlest);text-align:center}
+
+  /* ============ THE FAB ============ */
+  .fab-wrap{position:relative;display:inline-flex;align-items:center}
+  .fab{
+    display:inline-flex;align-items:center;gap:0;
+    height:56px;padding:0 8px;border-radius:999px;
+    background:var(--ds-surface-overlay);border:1.5px solid var(--ds-border-success);
+    box-shadow:var(--shadow);cursor:pointer;overflow:hidden;
+    transition:padding .18s ease, box-shadow .18s ease;
+  }
+  .fab:hover{box-shadow:0 12px 34px rgba(9,30,66,.24)}
+
+  /* avatar with live green ring that pulses when speaking */
+  .avatar{position:relative;width:40px;height:40px;border-radius:50%;flex:0 0 auto;
+    background:#8C9BB5 center/cover no-repeat;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:15px}
+  .avatar::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2.5px solid var(--ds-icon-success);opacity:.0;transition:opacity .15s}
+  .fab.speaking .avatar::after{opacity:1;animation:ring 1s ease-in-out infinite}
+  @keyframes ring{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.12);opacity:.35}}
+
+  /* equalizer — the "signal up/down when there is sound" */
+  .eq{display:flex;align-items:center;gap:3px;height:24px;margin:0 10px 0 12px;flex:0 0 auto}
+  .eq span{width:3px;height:5px;border-radius:2px;background:var(--ds-icon-success);transition:height .2s}
+  .fab.speaking .eq span{animation:bounce .8s ease-in-out infinite}
+  .fab.speaking .eq span:nth-child(1){animation-delay:0s}
+  .fab.speaking .eq span:nth-child(2){animation-delay:.15s}
+  .fab.speaking .eq span:nth-child(3){animation-delay:.3s}
+  .fab.speaking .eq span:nth-child(4){animation-delay:.45s}
+  .fab.speaking .eq span:nth-child(5){animation-delay:.2s}
+  @keyframes bounce{0%,100%{height:5px}50%{height:20px}}
+  .fab.muted .eq span{background:var(--ds-text-subtlest);height:5px!important;animation:none}
+
+  /* label (name + timer) — hidden by default, shows on hover */
+  .meta{display:flex;flex-direction:column;justify-content:center;max-width:0;opacity:0;overflow:hidden;
+    transition:max-width .2s ease, opacity .15s ease, margin .2s ease;white-space:nowrap;margin:0}
+  .fab:hover .meta{max-width:140px;opacity:1;margin-right:6px}
+  .meta .name{font-size:13px;font-weight:700;color:var(--ds-text)}
+  .meta .time{font-size:11px;color:var(--ds-text-subtlest);font-variant-numeric:tabular-nums}
+
+  /* hover controls: mute + red leave */
+  .actions{display:flex;align-items:center;gap:6px;max-width:0;opacity:0;overflow:hidden;
+    transition:max-width .2s ease, opacity .15s ease}
+  .fab:hover .actions{max-width:120px;opacity:1}
+  .iconbtn{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    background:var(--ds-surface-sunken);color:var(--ds-text);flex:0 0 auto;transition:background .12s,transform .08s}
+  .iconbtn:hover{background:#EBECF0}
+  .iconbtn:active{transform:scale(.92)}
+  .iconbtn.muted{background:#FFF7D6}
+  .iconbtn.leave{background:var(--ds-danger);color:#fff}
+  .iconbtn.leave:hover{background:#AE2A19}
+  .iconbtn svg{width:18px;height:18px}
+
+  /* connecting state */
+  .fab.connecting{border-color:var(--ds-border)}
+  .spinner{width:18px;height:18px;border:2.5px solid var(--ds-border);border-top-color:var(--ds-link);border-radius:50%;
+    margin:0 12px;animation:spin .7s linear infinite;flex:0 0 auto}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .fab .eq, .fab.connecting .spinner{display:flex}
+  .fab.connecting .eq{display:none}
+  .fab:not(.connecting) .spinner{display:none}
+
+  /* ============ INCOMING CALL ============ */
+  .incoming{display:flex;align-items:center;gap:0;background:var(--ds-surface-overlay);
+    border:1.5px solid var(--ds-border-success);border-radius:999px;padding:10px;box-shadow:var(--shadow);
+    transition:gap .18s ease,border-radius .18s ease;cursor:pointer}
+  /* collapsed by default → only the pulsing avatar shows; hover (or .expanded) reveals the rest */
+  .incoming .ic-meta,.incoming .ic-actions{max-width:0;opacity:0;overflow:hidden;
+    transition:max-width .22s ease,opacity .15s ease,margin .2s ease}
+  .incoming:hover,.incoming.expanded{gap:14px;border-radius:16px;padding:12px 14px}
+  .incoming:hover .ic-meta,.incoming.expanded .ic-meta{max-width:160px;opacity:1}
+  .incoming:hover .ic-actions,.incoming.expanded .ic-actions{max-width:130px;opacity:1}
+  .ic-avatar{position:relative;width:48px;height:48px;border-radius:50%;flex:0 0 auto;background:#6B5BD2;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:17px}
+  .ic-avatar::before,.ic-avatar::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--ds-icon-success);animation:ripple 1.6s ease-out infinite}
+  .ic-avatar::after{animation-delay:.8s}
+  @keyframes ripple{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.9);opacity:0}}
+  .ic-meta{flex:1 1 auto;min-width:0}
+  .ic-name{font-size:15px;font-weight:700;color:var(--ds-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ic-sub{font-size:12px;color:var(--ds-text-subtlest);display:flex;align-items:center;gap:6px}
+  .ic-sub .dot{width:6px;height:6px;border-radius:50%;background:var(--ds-icon-success);animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:.2}}
+  .ic-actions{display:flex;gap:10px;flex:0 0 auto}
+  .ic-btn{width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;transition:transform .08s,filter .12s}
+  .ic-btn:active{transform:scale(.9)}
+  .ic-btn svg{width:22px;height:22px}
+  .ic-accept{background:var(--ds-icon-success)}
+  .ic-accept:hover{filter:brightness(1.08)}
+  .ic-accept{animation:wiggle 1.2s ease-in-out infinite}
+  @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+  .ic-decline{background:var(--ds-danger)}
+  .ic-decline:hover{filter:brightness(1.08)}
+  .floating-incoming{position:fixed;top:84px;right:24px;z-index:60;touch-action:none}
+  .floating-incoming .incoming{cursor:grab}
+  .floating-incoming .incoming.dragging{cursor:grabbing;box-shadow:0 18px 44px rgba(9,30,66,.32)}
+
+  .live-note{position:fixed;bottom:24px;left:24px;font-size:12px;color:var(--ds-text-subtlest);background:#fff;border:1px solid var(--ds-border);border-radius:8px;padding:8px 12px;box-shadow:var(--shadow)}
+
+  /* the real floating FAB — default top-right, slightly below the header. Draggable anywhere. */
+  .floating{position:fixed;top:84px;right:24px;z-index:50;touch-action:none}
+  .floating .fab{cursor:grab}
+  .floating .fab.dragging{cursor:grabbing;box-shadow:0 18px 44px rgba(9,30,66,.32)}
+  /* drag-handle dots appear on hover so it's clear it can be moved */
+  .grip{display:flex;flex-direction:column;gap:2px;padding:0 4px 0 6px;max-width:0;opacity:0;overflow:hidden;transition:max-width .2s,opacity .15s}
+  .floating .fab:hover .grip{max-width:16px;opacity:1}
+  .grip i{width:3px;height:3px;border-radius:50%;background:var(--ds-text-subtlest)}
+  .grip i:nth-child(odd){margin-left:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Huddle call — FAB concept</h1>
+  <p class="sub">Header strip ki jagah ek floating button. Sound aane pe equalizer signal hilta hai · hover pe Mute + red Leave dikhte hain · neeche-daayें asli position.</p>
+
+  <div class="controls-bar">
+    <button id="t-speak">🔊 Toggle speaking (sound)</button>
+    <button id="t-connect">⏳ Toggle connecting</button>
+    <button id="t-mute">🎙️ Toggle mute</button>
+    <button id="t-incoming">📞 Simulate incoming call</button>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Idle (in call)</h3>
+      <div class="fab-wrap">
+        <div class="fab" id="demoIdle">
+          <div class="avatar">SA</div>
+          <div class="spinner"></div>
+          <div class="eq"><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="meta"><span class="name">Sikander Ahmad</span><span class="time">02:14</span></div>
+          <div class="actions">
+            <button class="iconbtn mute-btn" title="Mute"></button>
+            <button class="iconbtn leave" title="Leave">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15.5c-2.5.8-5.2 1.2-9 1.2s-6.5-.4-9-1.2v-3c0-.6.4-1.1 1-1.3 1-.3 2-.5 3-.6.6-.1 1.1.3 1.2.9l.3 1.6c2.1.4 4.3.4 6.4 0l.3-1.6c.1-.6.6-1 1.2-.9 1 .1 2 .3 3 .6.6.2 1 .7 1 1.3v3z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Hover karo → name/timer + Mute + Leave reveal.</p>
+    </div>
+
+    <div class="card">
+      <h3>Speaking (sound active)</h3>
+      <div class="fab-wrap">
+        <div class="fab speaking" id="demoSpeak">
+          <div class="avatar">SA</div>
+          <div class="spinner"></div>
+          <div class="eq"><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="meta"><span class="name">Sikander Ahmad</span><span class="time">02:14</span></div>
+          <div class="actions">
+            <button class="iconbtn mute-btn" title="Mute"></button>
+            <button class="iconbtn leave" title="Leave">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15.5c-2.5.8-5.2 1.2-9 1.2s-6.5-.4-9-1.2v-3c0-.6.4-1.1 1-1.3 1-.3 2-.5 3-.6.6-.1 1.1.3 1.2.9l.3 1.6c2.1.4 4.3.4 6.4 0l.3-1.6c.1-.6.6-1 1.2-.9 1 .1 2 .3 3 .6.6.2 1 .7 1 1.3v3z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Green ring pulse + bars up/down jab aawaz ho.</p>
+    </div>
+
+    <div class="card">
+      <h3>Connecting</h3>
+      <div class="fab-wrap">
+        <div class="fab connecting">
+          <div class="avatar">SA</div>
+          <div class="spinner"></div>
+          <div class="eq"><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="meta"><span class="name">Connecting…</span><span class="time">—</span></div>
+        </div>
+      </div>
+      <p class="hint">Spinner jab tak peer connect na ho.</p>
+    </div>
+
+    <div class="card">
+      <h3>Muted</h3>
+      <div class="fab-wrap">
+        <div class="fab muted">
+          <div class="avatar">SA</div>
+          <div class="spinner"></div>
+          <div class="eq"><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="meta"><span class="name">Sikander Ahmad</span><span class="time">02:40</span></div>
+          <div class="actions">
+            <button class="iconbtn mute-btn muted" title="Unmute"></button>
+            <button class="iconbtn leave" title="Leave">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15.5c-2.5.8-5.2 1.2-9 1.2s-6.5-.4-9-1.2v-3c0-.6.4-1.1 1-1.3 1-.3 2-.5 3-.6.6-.1 1.1.3 1.2.9l.3 1.6c2.1.4 4.3.4 6.4 0l.3-1.6c.1-.6.6-1 1.2-.9 1 .1 2 .3 3 .6.6.2 1 .7 1 1.3v3z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Bars grey + flat. Mic icon slashed.</p>
+    </div>
+
+    <div class="card" style="grid-column:1 / -1">
+      <h3>Incoming call (ringing) — expanded</h3>
+      <div class="incoming expanded">
+        <div class="ic-avatar">VA</div>
+        <div class="ic-meta">
+          <div class="ic-name">Vikram</div>
+          <div class="ic-sub"><span class="dot"></span> Incoming huddle…</div>
+        </div>
+        <div class="ic-actions">
+          <button class="ic-btn ic-decline" title="Decline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15.5c-2.5.8-5.2 1.2-9 1.2s-6.5-.4-9-1.2v-3c0-.6.4-1.1 1-1.3 1-.3 2-.5 3-.6.6-.1 1.1.3 1.2.9l.3 1.6c2.1.4 4.3.4 6.4 0l.3-1.6c.1-.6.6-1 1.2-.9 1 .1 2 .3 3 .6.6.2 1 .7 1 1.3v3z"/><path d="M3 3l18 18" stroke-width="0"/></svg>
+          </button>
+          <button class="ic-btn ic-accept" title="Accept">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L7.6 9.8a16 16 0 0 0 6 6l1.4-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+          </button>
+        </div>
+      </div>
+      <p class="hint">Decline (red, phone-down) · Accept (green, ringing). Accept → active FAB.</p>
+    </div>
+  </div>
+
+  <!-- real floating position, bottom-right -->
+  <div class="floating">
+    <div class="fab speaking" id="liveFab">
+      <div class="grip"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="avatar">SA</div>
+      <div class="spinner"></div>
+      <div class="eq"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="meta"><span class="name">Sikander Ahmad</span><span class="time" id="liveTimer">00:00</span></div>
+      <div class="actions">
+        <button class="iconbtn mute-btn" title="Mute"></button>
+        <button class="iconbtn leave" title="Leave">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15.5c-2.5.8-5.2 1.2-9 1.2s-6.5-.4-9-1.2v-3c0-.6.4-1.1 1-1.3 1-.3 2-.5 3-.6.6-.1 1.1.3 1.2.9l.3 1.6c2.1.4 4.3.4 6.4 0l.3-1.6c.1-.6.6-1 1.2-.9 1 .1 2 .3 3 .6.6.2 1 .7 1 1.3v3z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- floating incoming-call widget (hidden until simulated) -->
+  <div class="floating-incoming" id="floatIncoming" style="display:none">
+    <div class="incoming">
+      <div class="ic-avatar">VA</div>
+      <div class="ic-meta">
+        <div class="ic-name">Vikram</div>
+        <div class="ic-sub"><span class="dot"></span> Incoming huddle…</div>
+      </div>
+      <div class="ic-actions">
+        <button class="ic-btn ic-decline" id="icDecline" title="Decline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15.5c-2.5.8-5.2 1.2-9 1.2s-6.5-.4-9-1.2v-3c0-.6.4-1.1 1-1.3 1-.3 2-.5 3-.6.6-.1 1.1.3 1.2.9l.3 1.6c2.1.4 4.3.4 6.4 0l.3-1.6c.1-.6.6-1 1.2-.9 1 .1 2 .3 3 .6.6.2 1 .7 1 1.3v3z"/></svg>
+        </button>
+        <button class="ic-btn ic-accept" id="icAccept" title="Accept">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L7.6 9.8a16 16 0 0 0 6 6l1.4-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="live-note">↗ Default top-right (header se thoda neeche). FAB ko pakad ke kahin bhi <b>drag</b> karo · hover pe Mute + Leave.</div>
+</div>
+
+<script>
+  // mic icon (drawn in JS so all mute buttons share it)
+  const micSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+  const micOffSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9v2a3 3 0 0 0 5 2M15 11V6a3 3 0 0 0-6 0M5 11a7 7 0 0 0 11 5M12 18v3M3 3l18 18"/></svg>';
+  document.querySelectorAll('.mute-btn').forEach(b=>{ b.innerHTML = b.classList.contains('muted')?micOffSvg:micSvg; });
+
+  const fabs = ['demoIdle','demoSpeak','liveFab'].map(id=>document.getElementById(id));
+  document.getElementById('t-speak').addEventListener('click',e=>{
+    e.target.classList.toggle('on');
+    document.querySelectorAll('.fab').forEach(f=>{ if(!f.classList.contains('connecting')&&!f.classList.contains('muted')) f.classList.toggle('speaking'); });
+  });
+  document.getElementById('t-connect').addEventListener('click',e=>{
+    e.target.classList.toggle('on');
+    const f=document.getElementById('liveFab'); f.classList.toggle('connecting'); f.classList.remove('speaking');
+  });
+  document.getElementById('t-mute').addEventListener('click',e=>{
+    e.target.classList.toggle('on');
+    document.querySelectorAll('#liveFab,.fab').forEach(()=>{});
+    const f=document.getElementById('liveFab');
+    const muted=f.classList.toggle('muted'); if(muted) f.classList.remove('speaking');
+    const mb=f.querySelector('.mute-btn'); mb.classList.toggle('muted',muted); mb.innerHTML=muted?micOffSvg:micSvg; mb.title=muted?'Unmute':'Mute';
+  });
+
+  // live timer
+  let s=0; setInterval(()=>{ s++; const m=String(Math.floor(s/60)).padStart(2,'0'),ss=String(s%60).padStart(2,'0'); const el=document.getElementById('liveTimer'); if(el) el.textContent=m+':'+ss; },1000);
+
+  // ===== reusable draggable (used by both the active FAB and the ringing widget) =====
+  function makeDraggable(handle, container, excludeSel){
+    let drag=null;
+    function snapAnchor(){
+      // Anchor to the NEAREST horizontal edge so hover-expansion grows INWARD.
+      const r=container.getBoundingClientRect(), center=r.left+r.width/2;
+      if(center>window.innerWidth/2){ container.style.right=Math.max(8,window.innerWidth-r.right)+'px'; container.style.left='auto'; }
+      else{ container.style.left=Math.max(8,r.left)+'px'; container.style.right='auto'; }
+      container.style.top=Math.max(8,r.top)+'px';
+    }
+    handle.addEventListener('pointerdown',e=>{
+      if(excludeSel && e.target.closest(excludeSel)) return;   // don't drag from buttons
+      const r=container.getBoundingClientRect();
+      drag={sx:e.clientX,sy:e.clientY,ox:r.left,oy:r.top,moved:false};
+      try{handle.setPointerCapture(e.pointerId)}catch(_){}
+    });
+    handle.addEventListener('pointermove',e=>{
+      if(!drag) return;
+      const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
+      if(!drag.moved && Math.hypot(dx,dy)<4) return;
+      drag.moved=true; handle.classList.add('dragging');
+      const w=container.offsetWidth, h=container.offsetHeight;
+      container.style.left=Math.max(8,Math.min(window.innerWidth-w-8, drag.ox+dx))+'px';
+      container.style.top =Math.max(8,Math.min(window.innerHeight-h-8, drag.oy+dy))+'px';
+      container.style.right='auto';
+    });
+    function endDrag(){ if(drag&&drag.moved){ snapAnchor(); handle.addEventListener('click',sw=>{sw.stopPropagation();sw.preventDefault();},{once:true,capture:true}); } drag=null; handle.classList.remove('dragging'); }
+    handle.addEventListener('pointerup',endDrag);
+    handle.addEventListener('pointercancel',endDrag);
+  }
+  const floating=document.querySelector('.floating');
+  const liveFab=document.getElementById('liveFab');
+  makeDraggable(liveFab, floating, '.iconbtn');
+  // ringing widget: draggable too, but not from Accept/Decline
+  makeDraggable(document.querySelector('#floatIncoming .incoming'), document.getElementById('floatIncoming'), '.ic-btn');
+
+  // ===== incoming call simulate =====
+  const floatIncoming=document.getElementById('floatIncoming');
+  document.getElementById('t-incoming').addEventListener('click',e=>{
+    e.target.classList.add('on');
+    floating.style.display='none';           // hide active fab
+    floatIncoming.style.display='block';     // show ringing
+  });
+  document.getElementById('icAccept').addEventListener('click',()=>{
+    floatIncoming.style.display='none';
+    floating.style.display='block';          // → active call FAB
+    document.getElementById('t-incoming').classList.remove('on');
+    const f=document.getElementById('liveFab'); f.classList.remove('connecting'); f.classList.add('speaking');
+  });
+  document.getElementById('icDecline').addEventListener('click',()=>{
+    floatIncoming.style.display='none';
+    document.getElementById('t-incoming').classList.remove('on');
+  });
+
+  // leave buttons → just visually collapse for demo
+  document.querySelectorAll('.iconbtn.leave').forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation(); const fab=b.closest('.fab'); fab.style.transition='opacity .2s,transform .2s'; fab.style.opacity='0'; fab.style.transform='scale(.8)'; setTimeout(()=>{fab.style.opacity='1';fab.style.transform='none';},800);}));
+</script>
+</body>
+</html>
