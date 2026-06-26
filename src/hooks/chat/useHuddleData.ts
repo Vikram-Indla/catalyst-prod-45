@@ -51,7 +51,9 @@ export function useActiveHuddleIds(): Set<string> {
 export function useActiveHuddle(conversationId: string | null) {
   const qc = useQueryClient();
   const instanceId = useId();
-  const key = ['chat', 'huddle', conversationId];
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+  const key = ['chat', 'huddle', conversationId, userId];
   const { data, refetch } = useQuery({
     queryKey: key,
     enabled: !!conversationId,
@@ -69,7 +71,15 @@ export function useActiveHuddle(conversationId: string | null) {
         nameMap = Object.fromEntries(((profs ?? []) as { id: string; full_name: string | null }[]).map((r) => [r.id, r.full_name ?? '']));
       }
       const participants = ids.map((uid) => ({ userId: uid, name: nameMap[uid] || '' }));
-      return { id: (hud as HuddleRow).id, participants, isFull: participants.length >= HUDDLE_CAP };
+      return {
+        id: (hud as HuddleRow).id,
+        participants,
+        isFull: participants.length >= HUDDLE_CAP,
+        // Am I (the current user) already a live participant? Then I can always
+        // reclaim my slot ("Rejoin") even if the huddle reads as full — e.g. a
+        // stale row left after an unclean disconnect.
+        iAmParticipant: !!userId && ids.includes(userId),
+      };
     },
   });
   useEffect(() => {

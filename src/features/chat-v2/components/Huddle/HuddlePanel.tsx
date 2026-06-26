@@ -63,11 +63,11 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
         ) : (
           <button
             type="button"
-            disabled={huddle.isFull}
+            disabled={huddle.isFull && !huddle.iAmParticipant}
             onClick={() => { void startOrJoin(conversation); }}
             style={btnStyle()}
           >
-            {huddle.isFull ? 'Huddle in progress (full)' : 'Join huddle'}
+            {huddle.iAmParticipant ? 'Rejoin huddle' : huddle.isFull ? 'Huddle in progress (full)' : 'Join huddle'}
           </button>
         )}
       </div>
