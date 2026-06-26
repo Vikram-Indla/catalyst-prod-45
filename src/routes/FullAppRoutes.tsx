@@ -64,6 +64,10 @@ const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").
 const ReleaseDetailPageLazy = lazy(() => import("../pages/release-hub/ReleaseDetailPage").then(m => ({ default: m.ReleaseDetailPage })));
 const ReleaseWorkNavigatorPageLazy = lazy(() => import("../pages/release-hub/ReleaseWorkNavigatorPage").then(m => ({ default: m.ReleaseWorkNavigatorPage })));
 const DependenciesPageLazy = lazy(() => import("../pages/project-hub/DependenciesPage"));
+// 2026-06-26: Sprints — project-hub clone of release-hub releases-management.
+const SprintsPageLazy = lazy(() => import("../pages/project-hub/SprintsPage").then(m => ({ default: m.SprintsPage })));
+const SprintDetailPageLazy = lazy(() => import("../pages/project-hub/SprintDetailPage").then(m => ({ default: m.SprintDetailPage })));
+const SprintWorkNavigatorPageLazy = lazy(() => import("../pages/project-hub/SprintWorkNavigatorPage").then(m => ({ default: m.SprintWorkNavigatorPage })));
 
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
@@ -1019,6 +1023,10 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/timeline" element={<S><ProjectHubTimelinePage /></S>} />
         <Route path="/project-hub/:key/releases" element={<S><ReleasesPageLazy /></S>} />
         <Route path="/project-hub/:key/dependencies" element={<S><DependenciesPageLazy /></S>} />
+        {/* 2026-06-26: Sprints (project-hub clone of release-hub releases-management). */}
+        <Route path="/project-hub/:key/sprints" element={<S><SprintsPageLazy /></S>} />
+        <Route path="/project-hub/:key/sprints/:sprintId" element={<S><SprintDetailPageLazy /></S>} />
+        <Route path="/project-hub/:key/sprints/:sprintId/work" element={<S><SprintWorkNavigatorPageLazy /></S>} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
         <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />

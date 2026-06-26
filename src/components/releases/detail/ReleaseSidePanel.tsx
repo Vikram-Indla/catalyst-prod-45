@@ -26,6 +26,7 @@ import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useApprovedProfiles, useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
 import type { Release, ReleaseStatus } from '@/types/phase3-releases';
+import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 const BORDER = 'var(--ds-border, #DFE1E6)';
 const BLUE = 'var(--ds-border-selected, #1868DB)';
@@ -55,17 +56,21 @@ interface Props {
   projectId: string;
   projectKey: string | null;
   description: string | null | undefined;
+  /** 2026-06-26: entity-hub config. Defaults to RELEASE_CONFIG (existing
+   *  release-hub behaviour). Sprint surface passes SPRINT_CONFIG so writes
+   *  hit ph_jira_sprints and queries scope correctly. */
+  config?: EntityConfig;
 }
 
 export function ReleaseSidePanel(props: Props) {
-  const { releaseId, releaseName, projectId, projectKey } = props;
+  const { releaseId, releaseName, projectId, projectKey, config = RELEASE_CONFIG } = props;
   const queryClient = useQueryClient();
   const uiStatus = fromDBStatus(props.status);
+  const table = config.table;
 
   const refetch = () => {
-    queryClient.invalidateQueries({ queryKey: ['ph-release', releaseId] });
-    queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
-    queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+    queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix, 'one', releaseId] });
+    queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
   };
 
   // Contributors: derive from assignees of items linked to this release.
@@ -141,6 +146,7 @@ export function ReleaseSidePanel(props: Props) {
           releaseDate={props.releaseDate}
           description={props.description}
           onChanged={refetch}
+          config={config}
         />
 
         <div style={{ display: 'flex', gap: 16 }}>
@@ -148,8 +154,8 @@ export function ReleaseSidePanel(props: Props) {
             label="Start date"
             value={props.startDate}
             onSave={async (v) => {
-              const { error } = await supabase
-                .from('ph_releases')
+              const { error } = await (supabase as any)
+                .from(table)
                 .update({ start_date: v || null })
                 .eq('id', releaseId);
               if (error) throw new Error(error.message);
@@ -161,8 +167,8 @@ export function ReleaseSidePanel(props: Props) {
             label="Release date"
             value={props.releaseDate}
             onSave={async (v) => {
-              const { error } = await supabase
-                .from('ph_releases')
+              const { error } = await (supabase as any)
+                .from(table)
                 .update({ release_date: v || null, target_date: v || null })
                 .eq('id', releaseId);
               if (error) throw new Error(error.message);
@@ -177,8 +183,8 @@ export function ReleaseSidePanel(props: Props) {
             projectId={projectId}
             onChange={async (nextId) => {
               if (!nextId || nextId === projectId) return;
-              const { error } = await supabase
-                .from('ph_releases')
+              const { error } = await (supabase as any)
+                .from(table)
                 .update({ project_id: nextId })
                 .eq('id', releaseId);
               if (error) {
@@ -195,8 +201,8 @@ export function ReleaseSidePanel(props: Props) {
         <DescriptionField
           value={props.description ?? ''}
           onSave={async (next) => {
-            const { error } = await supabase
-              .from('ph_releases')
+            const { error } = await (supabase as any)
+              .from(table)
               .update({ description: next || null })
               .eq('id', releaseId);
             if (error) throw new Error(error.message);
@@ -206,7 +212,9 @@ export function ReleaseSidePanel(props: Props) {
         />
       </div>
 
-      <ApproversCard releaseId={releaseId} />
+      {/* ApproversCard is config-aware (ph_release_approvers vs
+          ph_sprint_approvers, FK column, profile embed alias). */}
+      <ApproversCard releaseId={releaseId} config={config} />
     </div>
   );
 }
@@ -230,14 +238,15 @@ const STATUS_BORDER: Record<ApproverStatus, string> = {
 
 interface ApproverRow {
   id: string;
-  release_id: string;
+  release_id?: string;
+  sprint_id?: string;
   user_id: string;
   status: ApproverStatus;
   description: string | null;
   profile: { id: string; full_name: string | null; avatar_url: string | null } | null;
 }
 
-function ApproversCard({ releaseId }: { releaseId: string }) {
+function ApproversCard({ releaseId, config = RELEASE_CONFIG }: { releaseId: string; config?: EntityConfig }) {
   const queryClient = useQueryClient();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerPos, setPickerPos] = useState<{ top: number; left: number; width: number } | null>(null);
@@ -245,15 +254,16 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
   const plusRef = useRef<HTMLButtonElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
-  const queryKey = ['ph-release-approvers', releaseId];
+  const { table: approverTable, fkColumn, profileFkAlias } = config.approvers;
+  const queryKey = [`${config.queryKeyPrefix}-approvers`, releaseId];
 
   const { data: rows = [] } = useQuery<ApproverRow[]>({
     queryKey,
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from('ph_release_approvers')
-        .select('id, release_id, user_id, status, description, profile:profiles!ph_release_approvers_user_id_fkey(id, full_name, avatar_url)')
-        .eq('release_id', releaseId)
+        .from(approverTable)
+        .select(`id, ${fkColumn}, user_id, status, description, profile:${profileFkAlias}(id, full_name, avatar_url)`)
+        .eq(fkColumn, releaseId)
         .order('created_at', { ascending: true });
       if (error) throw new Error(error.message);
       return (data ?? []) as ApproverRow[];
@@ -279,9 +289,9 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
     mutationFn: async (userId: string) => {
       const { data: auth } = await supabase.auth.getUser();
       const { error } = await (supabase as any)
-        .from('ph_release_approvers')
+        .from(approverTable)
         .insert({
-          release_id: releaseId,
+          [fkColumn]: releaseId,
           user_id: userId,
           status: 'pending',
           added_by: auth.user?.id ?? null,
@@ -298,7 +308,7 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
   const removeApprover = useMutation({
     mutationFn: async (rowId: string) => {
       const { error } = await (supabase as any)
-        .from('ph_release_approvers')
+        .from(approverTable)
         .delete()
         .eq('id', rowId);
       if (error) throw new Error(error.message);
@@ -313,7 +323,7 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
   const updateDescription = useMutation({
     mutationFn: async ({ rowId, description }: { rowId: string; description: string }) => {
       const { error } = await (supabase as any)
-        .from('ph_release_approvers')
+        .from(approverTable)
         .update({ description })
         .eq('id', rowId);
       if (error) throw new Error(error.message);
@@ -816,6 +826,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
 
 function StatusDropdown({
   releaseId, releaseName, projectId, projectKey, uiStatus, startDate, releaseDate, description, onChanged,
+  config = RELEASE_CONFIG,
 }: {
   releaseId: string;
   releaseName: string;
@@ -826,6 +837,7 @@ function StatusDropdown({
   releaseDate: string | null | undefined;
   description: string | null | undefined;
   onChanged: () => void;
+  config?: EntityConfig;
 }) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
@@ -874,8 +886,8 @@ function StatusDropdown({
   }, [open]);
 
   const setStatusDirect = async (next: DBStatus) => {
-    const { error } = await supabase
-      .from('ph_releases')
+    const { error } = await (supabase as any)
+      .from(config.table)
       .update({ status: next, ...(next === 'released' ? {} : { actual_date: null }) })
       .eq('id', releaseId);
     if (error) {
@@ -886,7 +898,8 @@ function StatusDropdown({
     catalystFlag.success(`Status updated to ${next === 'planning' ? 'Unreleased' : next.replace('_', ' ')}.`);
   };
 
-  // Build menu items per current status
+  // Build menu items per current status. Both release + sprint use the
+  // confirmation modals — they're config-aware (write to config.table).
   const menuItems: Array<{ key: string; label: string; onSelect: () => void }> = [];
   if (uiStatus === 'released') {
     menuItems.push({ key: 'archive', label: 'Archive', onSelect: () => { setOpen(false); setShowArchiveModal(true); } });
@@ -894,7 +907,6 @@ function StatusDropdown({
     menuItems.push({ key: 'release', label: 'Release', onSelect: () => { setOpen(false); setShowReleaseModal(true); } });
     menuItems.push({ key: 'archive', label: 'Archive', onSelect: () => { setOpen(false); setShowArchiveModal(true); } });
   } else {
-    // archived
     menuItems.push({ key: 'release', label: 'Release', onSelect: () => { setOpen(false); setShowReleaseModal(true); } });
     menuItems.push({ key: 'unreleased', label: 'Unreleased', onSelect: () => { setOpen(false); setStatusDirect('planning'); } });
   }
@@ -994,6 +1006,7 @@ function StatusDropdown({
           projectKey={projectKey}
           onClose={() => setShowReleaseModal(false)}
           onSuccess={() => { setShowReleaseModal(false); onChanged(); }}
+          config={config}
         />
       )}
       {showArchiveModal && projectKey && (
@@ -1003,6 +1016,7 @@ function StatusDropdown({
           projectKey={projectKey}
           onClose={() => setShowArchiveModal(false)}
           onSuccess={() => { setShowArchiveModal(false); onChanged(); }}
+          config={config}
         />
       )}
     </>

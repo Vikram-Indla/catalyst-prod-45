@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Release } from '@/types/phase3-releases';
 import { catalystFlag } from '@/lib/catalystFlag';
+import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 interface Props {
   isOpen: boolean;
@@ -15,28 +16,28 @@ interface Props {
   projectKey: string;
   onClose: () => void;
   onSuccess?: () => void;
+  /** 2026-06-26: entity-hub config (defaults to RELEASE_CONFIG). */
+  config?: EntityConfig;
 }
 
-export function ReleaseArchiveDialog({ isOpen, release, onClose, onSuccess }: Props) {
+export function ReleaseArchiveDialog({ isOpen, release, onClose, onSuccess, config = RELEASE_CONFIG }: Props) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from('ph_releases')
+      const { error } = await (supabase as any)
+        .from(config.table)
         .update({ status: 'archived' })
         .eq('id', release.id);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
-      queryClient.invalidateQueries({ queryKey: ['releases', release.project_id] });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
       onSuccess?.();
       onClose();
     },
     onError: (err: any) => {
-      catalystFlag.error(err?.message || 'Failed to archive release');
+      catalystFlag.error(err?.message || `Failed to archive ${config.label.lowerSingular}`);
     },
   });
 
@@ -45,7 +46,7 @@ export function ReleaseArchiveDialog({ isOpen, release, onClose, onSuccess }: Pr
       {isOpen && (
         <Modal onClose={onClose} width={867}>
           <ModalHeader hasCloseButton>
-            <ModalTitle>Archive release</ModalTitle>
+            <ModalTitle>Archive {config.label.lowerSingular}</ModalTitle>
           </ModalHeader>
           <ModalBody>
             <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>

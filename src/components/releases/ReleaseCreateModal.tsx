@@ -130,6 +130,18 @@ export function ReleaseCreateModal({
     [productsRaw],
   );
 
+  // 2026-06-26: auto-pick when exactly 1 product available; otherwise leave
+  // empty so the user picks explicitly. Only runs in create mode (edit mode
+  // keeps the existing release's product_id).
+  useEffect(() => {
+    if (isEdit) return;
+    if (!isOpen) return;
+    if (formData.product_id) return;
+    if (productOptions.length === 1) {
+      setFormData((p) => ({ ...p, product_id: productOptions[0].id }));
+    }
+  }, [isEdit, isOpen, productOptions, formData.product_id]);
+
   const validate = (): boolean => {
     const next: Record<string, string> = {};
     const trimmedName = formData.name.trim();

@@ -23,6 +23,7 @@ import { Release } from '@/types/phase3-releases';
 import { catalystFlag } from '@/lib/catalystFlag';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { ProductSelect, type ProductOption } from './ReleaseFilters';
+import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 interface Props {
   isOpen: boolean;
@@ -30,6 +31,8 @@ interface Props {
   projectKey: string;
   onClose: () => void;
   onSuccess?: (release: Release) => void;
+  /** 2026-06-26: entity-hub config (defaults to RELEASE_CONFIG). */
+  config?: EntityConfig;
 }
 
 type Action = 'move' | 'ignore' | null;
@@ -54,7 +57,7 @@ const radioRow: React.CSSProperties = {
 
 const todayIso = () => new Date().toISOString().split('T')[0];
 
-export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess }: Props) {
+export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, config = RELEASE_CONFIG }: Props) {
   const [action, setAction] = useState<Action>('move');
   const [targetId, setTargetId] = useState<string | null>(null);
   const [releaseDate, setReleaseDate] = useState<string>(release.release_date || todayIso());
@@ -96,10 +99,10 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess }
 
   // Other non-archived, non-released targets in the same project — for "Move to" picker
   const { data: candidates } = useQuery({
-    queryKey: ['ph-releases-for-release-confirm', release.project_id, release.id],
+    queryKey: [config.queryKeyPrefix, 'release-confirm-candidates', release.project_id, release.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_releases')
+      const { data, error } = await (supabase as any)
+        .from(config.table)
         .select('id, name, title, status, project_id')
         .eq('project_id', release.project_id)
         .neq('id', release.id)
@@ -126,8 +129,8 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess }
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from('ph_releases')
+      const { error } = await (supabase as any)
+        .from(config.table)
         .update({
           status: 'released',
           actual_date: releaseDate,
@@ -138,13 +141,12 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess }
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
       onSuccess?.(release);
       onClose();
     },
     onError: (err: any) => {
-      catalystFlag.error(err?.message || 'Failed to release');
+      catalystFlag.error(err?.message || `Failed to release ${config.label.lowerSingular}`);
     },
   });
 
@@ -165,7 +167,7 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess }
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
-                This release contains{' '}
+                This {config.label.lowerSingular} contains{' '}
                 <span style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500 }}>
                   {unresolvedCount} unresolved work item{unresolvedCount === 1 ? '' : 's'}
                 </span>
@@ -194,8 +196,8 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess }
                         options={options}
                         value={targetId}
                         onChange={setTargetId}
-                        placeholder="Select version"
-                        searchPlaceholder="Search releases"
+                        placeholder={`Select ${config.label.lowerSingular}`}
+                        searchPlaceholder={`Search ${config.label.lowerPlural}`}
                         disabled={action !== 'move'}
                       />
                     </div>

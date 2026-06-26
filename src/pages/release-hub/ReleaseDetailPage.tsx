@@ -30,6 +30,7 @@ import { useCatyReleaseSummarize } from '@/components/releases/detail/summarize/
 import { useReleaseSummaryStream } from '@/components/releases/detail/summarize/useReleaseSummaryStream';
 import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
+import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 const BORDER = 'var(--ds-border, #DFE1E6)';
 const TEXT = 'var(--ds-text, #292A2E)';
@@ -50,8 +51,25 @@ interface ReleaseRow {
   section_description_adf: any | null;
 }
 
-export function ReleaseDetailPage() {
-  const { releaseId } = useParams<{ releaseId: string }>();
+interface ReleaseDetailPageProps {
+  /** 2026-06-26: entity-hub config. Defaults to RELEASE_CONFIG so existing
+   *  release-hub usages stay unchanged. Sprint surface mounts this component
+   *  with SPRINT_CONFIG (table=ph_jira_sprints, query keys + labels swap). */
+  config?: EntityConfig;
+  /** When provided, overrides the URL `:releaseId` param. Used by SprintDetailPage
+   *  which mounts on `/project-hub/:key/sprints/:sprintId`. */
+  entityIdOverride?: string;
+  /** Override the "Back to list" breadcrumb href. Defaults to config.baseUrl. */
+  listHrefOverride?: string;
+}
+
+export function ReleaseDetailPage({
+  config = RELEASE_CONFIG,
+  entityIdOverride,
+  listHrefOverride,
+}: ReleaseDetailPageProps = {}) {
+  const params = useParams<{ releaseId?: string; sprintId?: string }>();
+  const releaseId = entityIdOverride ?? params.releaseId ?? params.sprintId;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -61,11 +79,11 @@ export function ReleaseDetailPage() {
   const [selectedItem, setSelectedItem] = useState<{ issueKey: string; issueType: string | null } | null>(null);
 
   const { data: release, isLoading } = useQuery<ReleaseRow>({
-    queryKey: ['ph-release', releaseId],
+    queryKey: [config.queryKeyPrefix, 'one', releaseId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_releases')
-        .select('id, name, title, description, status, project_id, start_date, release_date, target_date, section_name, section_description_adf' as any)
+      const { data, error } = await (supabase as any)
+        .from(config.table)
+        .select('id, name, title, description, status, project_id, start_date, release_date, target_date, section_name, section_description_adf')
         .eq('id', releaseId!)
         .single();
       if (error) throw new Error(error.message);
@@ -93,21 +111,21 @@ export function ReleaseDetailPage() {
       const oldName = (release?.name || release?.title || '').trim();
       const newName = name.trim();
 
-      // Rewrite linked ph_issues so work items stay attached after rename.
-      // Items link via sprint_release[].name match — without this step they
-      // appear detached because the old name no longer matches.
       if (oldName && oldName !== newName) {
-        const { data: rows, error: rErr } = await supabase
+        // Both release + sprint linkage live in ph_issues.sprint_release
+        // JSONB (the canonical Jira payload). sprint_name text column is
+        // wiped by jira-sync — never write to it.
+        const { data: rows, error: rErr } = await (supabase as any)
           .from('ph_issues')
           .select('id, sprint_release')
-          .contains('sprint_release', JSON.stringify([{ name: oldName }]) as any);
+          .contains('sprint_release', JSON.stringify([{ name: oldName }]));
         if (rErr) throw new Error(rErr.message);
         for (const row of rows ?? []) {
           const arr: any[] = Array.isArray((row as any).sprint_release) ? (row as any).sprint_release : [];
           const next = arr.map((el: any) =>
             el && el.name === oldName ? { ...el, name: newName } : el,
           );
-          const { error: uErr } = await supabase
+          const { error: uErr } = await (supabase as any)
             .from('ph_issues')
             .update({ sprint_release: next })
             .eq('id', (row as any).id);
@@ -115,17 +133,17 @@ export function ReleaseDetailPage() {
         }
       }
 
-      const { error } = await supabase
-        .from('ph_releases')
+      const { error } = await (supabase as any)
+        .from(config.table)
         .update({ name: newName, title: newName })
         .eq('id', releaseId!);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ph-release', releaseId] });
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix, 'one', releaseId] });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
       queryClient.invalidateQueries({ queryKey: ['ph_release_items'] });
-      catalystFlag.success('Release name updated.');
+      catalystFlag.success(`${config.label.singular} name updated.`);
     },
     onError: (e: any) => catalystFlag.error(e?.message || 'Failed to update'),
   });
@@ -143,25 +161,25 @@ export function ReleaseDetailPage() {
   }, [release?.section_description_adf]);
 
   const saveSectionDescriptionAdf = async (adf: AdfDoc) => {
-    const { error } = await supabase
-      .from('ph_releases')
-      .update({ section_description_adf: adf } as any)
+    const { error } = await (supabase as any)
+      .from(config.table)
+      .update({ section_description_adf: adf })
       .eq('id', releaseId!);
     if (error) throw new Error(error.message);
-    queryClient.invalidateQueries({ queryKey: ['ph-release', releaseId] });
+    queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix, 'one', releaseId] });
     catalystFlag.success('Section description updated.');
   };
 
   const saveSectionName = useMutation({
     mutationFn: async (name: string) => {
-      const { error } = await supabase
-        .from('ph_releases')
-        .update({ section_name: name } as any)
+      const { error } = await (supabase as any)
+        .from(config.table)
+        .update({ section_name: name })
         .eq('id', releaseId!);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ph-release', releaseId] });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix, 'one', releaseId] });
     },
     onError: (e: any) => catalystFlag.error(e?.message || 'Failed to update section name'),
   });
@@ -218,7 +236,7 @@ export function ReleaseDetailPage() {
     summaryStatus !== 'idle';
 
   if (isLoading || !release) {
-    return <div style={{ padding: 24 }}>Loading release…</div>;
+    return <div style={{ padding: 24 }}>Loading {config.label.lowerSingular}…</div>;
   }
 
   const handleSummarize = () => {
@@ -232,14 +250,18 @@ export function ReleaseDetailPage() {
   return (
     <div style={{ display: 'flex', alignItems: 'stretch', height: '100%', minHeight: 0, overflow: 'hidden', paddingRight: sidebarCollapsed ? 20 : 0 }}>
       <div style={{ flex: 1, minWidth: 0, height: '100%', overflowY: 'auto', padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Breadcrumb — canonical TicketBreadcrumbs (matches /project-hub/:key/backlog/:issueKey) */}
+      {/* Breadcrumb — canonical TicketBreadcrumbs. itemType + projectHref
+          come from EntityConfig so sprint surface reads "Sprint / Iteration"
+          and links back to /project-hub/:key/sprints. */}
       {project && (
         <TicketBreadcrumbs
           projectKey={project.key}
           projectName={project.name}
-          itemType="Release"
+          itemType={config.kind === 'sprint' ? 'Sprint / Iteration' : 'Release'}
           itemKey={title}
-          projectHref="/release-hub/releases-management"
+          projectHref={listHrefOverride ?? (config.kind === 'sprint'
+            ? `/project-hub/${project.key}/sprints`
+            : '/release-hub/releases-management')}
         />
       )}
 
@@ -344,9 +366,11 @@ export function ReleaseDetailPage() {
         >
           Give feedback
         </Button>
-        <Button appearance="default" onClick={handleSummarize}>
-          ✦ Summarize Release
-        </Button>
+        {config.kind === 'release' && (
+          <Button appearance="default" onClick={handleSummarize}>
+            ✦ Summarize Release
+          </Button>
+        )}
       </div>
 
       {/* Editable section name — persists to ph_releases.section_name.
@@ -376,7 +400,7 @@ export function ReleaseDetailPage() {
         />
       </EditableSectionName>
 
-      {showSummaryCard && (
+      {config.kind === 'release' && showSummaryCard && (
         <ReleaseSummaryCard
           status={summaryStatus}
           text={summaryText}
@@ -397,6 +421,7 @@ export function ReleaseDetailPage() {
         projectId={release.project_id}
         projectKey={project?.key ?? null}
         onOpenItem={(it) => setSelectedItem(it)}
+        config={config}
       />
 
       <ShareFeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
@@ -470,6 +495,7 @@ export function ReleaseDetailPage() {
               projectId={release.project_id}
               projectKey={project?.key ?? null}
               description={release.description}
+              config={config}
             />
           </div>
         )

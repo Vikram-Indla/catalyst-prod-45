@@ -472,9 +472,13 @@ function CatalystShellContent() {
   // Release detail (/release-hub/releases-management/:releaseId) needs an
   // independently-scrolling right rail — same fullpage flex chain so the
   // page wrapper does NOT scroll; left main + right rail scroll on their own.
-  const isReleaseDetailRoute = /\/release-hub\/releases-management\/[^/]+/.test(
-    location.pathname,
-  );
+  // 2026-06-26: sprint detail (/project-hub/:key/sprints/:sprintId) mounts
+  // the same canonical ReleaseDetailPage via SPRINT_CONFIG and needs the
+  // same flex chain — name kept (isReleaseDetailRoute) because the layout
+  // contract is identical regardless of entity kind.
+  const isReleaseDetailRoute =
+    /\/release-hub\/releases-management\/[^/]+/.test(location.pathname) ||
+    /\/project-hub\/[^/]+\/sprints\/[^/]+/.test(location.pathname);
 
   // Parse issue key from /issue/:issueKey for tab-title binding
   const fullPageIssueKey = isIssueFullPageRoute
@@ -570,6 +574,8 @@ function CatalystShellContent() {
     /^\/project-hub\/[^/]+\/allwork\/[^/]+/.test(location.pathname) ||
     /^\/release-hub\/releases-management\/[^/]+$/.test(location.pathname) ||
     /^\/release-hub\/releases-management\/[^/]+\/work$/.test(location.pathname) ||
+    /^\/project-hub\/[^/]+\/sprints\/[^/]+$/.test(location.pathname) ||
+    /^\/project-hub\/[^/]+\/sprints\/[^/]+\/work$/.test(location.pathname) ||
     location.pathname.startsWith("/browse/"); // full-screen issue view
 
   // Hub routes that explicitly opt out of the Jira blue canvas — pure white

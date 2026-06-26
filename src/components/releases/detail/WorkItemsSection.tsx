@@ -62,12 +62,18 @@ interface Issue {
   sprint_release: any;
 }
 
+import type { EntityConfig } from '@/lib/entity-hub/config';
+
 interface Props {
   releaseId: string;
   releaseName: string;
   projectId: string;
   projectKey: string | null;
   onOpenItem?: (item: { issueKey: string; issueType: string | null }) => void;
+  /** 2026-06-26: entity-hub config. Defaults to RELEASE_CONFIG so existing
+   *  release-hub usages stay unchanged. When config.kind === 'sprint' the
+   *  ph_issues filter switches from sprint_release JSONB to sprint_name text. */
+  config?: EntityConfig;
 }
 
 type DisplayKey = 'priority' | 'status' | 'assignee' | 'featureFlag';
@@ -110,7 +116,8 @@ function AssigneeAvatar({
   );
 }
 
-export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey, onOpenItem }: Props) {
+export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey, onOpenItem, config }: Props) {
+  const entityKind = config?.kind ?? 'release';
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -144,12 +151,42 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
   }, []);
 
   const { data: items = [], isLoading, error } = useQuery<Issue[]>({
-    queryKey: ['ph_release_items', releaseId, releaseName],
+    queryKey: ['ph_entity_items', entityKind, releaseId, releaseName],
     queryFn: async () => {
       const target = (releaseName || '').trim();
       if (!target) return [];
 
       const select = 'id, issue_key, summary, issue_type, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, jira_created_at, sprint_release';
+
+      if (entityKind === 'sprint') {
+        // Sprint filter: ph_issues.sprint_release JSONB contains entry
+        // matching the sprint name. We do NOT use ph_issues.sprint_name
+        // (text) — jira-sync overwrites it on every sync, so it's not a
+        // reliable link (proven 2026-06-26: backfill of 710 rows reverted
+        // to 2 within minutes). sprint_release JSONB is the canonical Jira
+        // payload that persists across syncs.
+        const containsResult = await supabase
+          .from('ph_issues')
+          .select(select)
+          .contains('sprint_release', JSON.stringify([{ name: target }]) as any)
+          .limit(2000);
+        if ((containsResult.data?.length ?? 0) > 0) {
+          return containsResult.data as Issue[];
+        }
+        // Fallback: scan + filter client-side (handles JSON shape variants).
+        const fb = await supabase
+          .from('ph_issues')
+          .select(select)
+          .not('sprint_release', 'is', null)
+          .limit(5000);
+        if (!fb.data) return [];
+        return fb.data.filter((row: any) => {
+          const arr = row.sprint_release;
+          return Array.isArray(arr) && arr.some((el: any) => el && el.name === target);
+        }) as Issue[];
+      }
+
+      // Release filter: ph_issues.sprint_release JSONB contains entry with matching name.
       const containsResult = await supabase
         .from('ph_issues')
         .select(select)
@@ -192,19 +229,28 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
     (i.assignee_display_name?.trim() || i.assignee_account_id?.trim() || '__unassigned__');
 
   const assigneeOptions = useMemo(() => {
-    const seen = new Map<string, { accountId: string | null }>();
-    const out: { id: string; label: string; accountId: string | null }[] = [];
+    const seen = new Set<string>();
+    // 2026-06-26: Unassigned is ALWAYS the first option, regardless of whether
+    // any current item is unassigned — it is a structural filter bucket, not a
+    // user. Real assignees follow, deduped, sorted by label.
+    const out: { id: string; label: string; accountId: string | null }[] = [
+      { id: '__unassigned__', label: 'Unassigned', accountId: null },
+    ];
+    seen.add('__unassigned__');
     items.forEach((i) => {
       const k = assigneeKey(i);
+      if (k === '__unassigned__') return;
       if (seen.has(k)) return;
-      seen.set(k, { accountId: i.assignee_account_id });
+      seen.add(k);
       out.push({
         id: k,
-        label: k === '__unassigned__' ? 'Unassigned' : (i.assignee_display_name || k),
+        label: i.assignee_display_name || k,
         accountId: i.assignee_account_id,
       });
     });
-    return out;
+    const [unassigned, ...rest] = out;
+    rest.sort((a, b) => a.label.localeCompare(b.label));
+    return [unassigned, ...rest];
   }, [items]);
 
   // Filter pipeline
@@ -536,7 +582,10 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             onClick={() => {
               if (items.length === 0) return;
               setIsMoreMenuOpen(false);
-              navigate(`/release-hub/releases-management/${releaseId}/work`);
+              const href = config
+                ? config.buildWorkHref(releaseId, { projectKey: projectKey ?? undefined })
+                : `/release-hub/releases-management/${releaseId}/work`;
+              navigate(href);
             }}
             style={{
               ...menuItemStyle(),
@@ -808,7 +857,7 @@ function CheckboxFilterPill({
                   {('avatar' in opt) && (
                     <AssigneeAvatar
                       accountId={opt.id === '__unassigned__' ? null : ((opt as any).avatar || null)}
-                      name={opt.label}
+                      name={opt.id === '__unassigned__' ? null : opt.label}
                     />
                   )}
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label}</span>

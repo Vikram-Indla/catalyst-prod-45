@@ -37,6 +37,7 @@ import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/se
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 const BORDER = 'var(--ds-border, #DFE1E6)';
 const TEXT = 'var(--ds-text, #292A2E)';
@@ -101,9 +102,9 @@ interface ReleaseContext {
   phProjectId: string;
 }
 
-async function loadReleaseContext(releaseId: string): Promise<ReleaseContext | null> {
-  const { data: rel } = await supabase
-    .from('ph_releases')
+async function loadReleaseContext(releaseId: string, table: string): Promise<ReleaseContext | null> {
+  const { data: rel } = await (supabase as any)
+    .from(table)
     .select('id, name, title, project_id')
     .eq('id', releaseId)
     .single();
@@ -140,8 +141,20 @@ const EMPTY_STATE: FilterState = {
   jql: '',
 };
 
-export function ReleaseWorkNavigatorPage() {
-  const { releaseId } = useParams<{ releaseId: string }>();
+interface ReleaseWorkNavigatorPageProps {
+  /** 2026-06-26: entity-hub config. Defaults to RELEASE_CONFIG. Sprint surface
+   *  mounts with SPRINT_CONFIG (table=ph_jira_sprints, linked-keys by sprint_name). */
+  config?: EntityConfig;
+  /** Override the URL :releaseId param (used by SprintWorkNavigatorPage's :sprintId). */
+  entityIdOverride?: string;
+}
+
+export function ReleaseWorkNavigatorPage({
+  config = RELEASE_CONFIG,
+  entityIdOverride,
+}: ReleaseWorkNavigatorPageProps = {}) {
+  const params = useParams<{ releaseId?: string; sprintId?: string }>();
+  const releaseId = entityIdOverride ?? params.releaseId ?? params.sprintId;
   const [searchParams, setSearchParams] = useSearchParams();
   // Chip state lives in React. URL is a downstream projection only —
   // this kills the race between "pre-fill fix from release" and
@@ -149,8 +162,8 @@ export function ReleaseWorkNavigatorPage() {
   const [state, setState] = useState<FilterState>(() => decodeFilters(searchParams));
 
   const { data: ctx, isLoading: ctxLoading } = useQuery({
-    queryKey: ['release-work-nav-ctx', releaseId],
-    queryFn: () => loadReleaseContext(releaseId!),
+    queryKey: [config.queryKeyPrefix, 'work-nav-ctx', releaseId],
+    queryFn: () => loadReleaseContext(releaseId!, config.table),
     enabled: !!releaseId,
     staleTime: 5 * 60_000,
   });
@@ -162,13 +175,42 @@ export function ReleaseWorkNavigatorPage() {
   // 2. If 0 rows, fall back to scanning 5000 rows with `sprint_release`
   //    non-null and filtering client-side (handles JSON shape variants).
   // See src/components/releases/detail/WorkItemsSection.tsx:146-173.
-  const { data: releaseLinkedKeys } = useQuery({
-    queryKey: ['release-work-nav-linked-keys', releaseId, ctx?.releaseName],
+  const { data: releaseLinkedKeys, isFetching: linkedKeysFetching } = useQuery({
+    queryKey: [config.queryKeyPrefix, 'work-nav-linked-keys', releaseId, ctx?.releaseName],
     enabled: !!releaseId && !!ctx?.releaseName,
     staleTime: 60_000,
     queryFn: async (): Promise<string[]> => {
       const target = (ctx?.releaseName || '').trim();
       if (!target) return [];
+
+      if (config.kind === 'sprint') {
+        // Sprint link: ph_issues.sprint_release JSONB (canonical Jira source).
+        // sprint_name text column is unreliable — jira-sync overwrites it
+        // each cycle (proven 2026-06-26).
+        const containsResult = await supabase
+          .from('ph_issues')
+          .select('issue_key')
+          .contains('sprint_release', JSON.stringify([{ name: target }]))
+          .limit(2000);
+        if ((containsResult.data?.length ?? 0) > 0) {
+          return (containsResult.data ?? []).map((r: any) => r.issue_key as string).filter(Boolean);
+        }
+        const fb = await supabase
+          .from('ph_issues')
+          .select('issue_key, sprint_release')
+          .not('sprint_release', 'is', null)
+          .limit(5000);
+        if (!fb.data) return [];
+        return fb.data
+          .filter((row: any) => {
+            const arr = row.sprint_release;
+            return Array.isArray(arr) && arr.some((el: any) => el && el.name === target);
+          })
+          .map((r: any) => r.issue_key as string)
+          .filter(Boolean);
+      }
+
+      // Release link: sprint_release JSONB contains entry with matching name.
       const containsResult = await supabase
         .from('ph_issues')
         .select('issue_key')
@@ -240,13 +282,13 @@ export function ReleaseWorkNavigatorPage() {
   // Toolbar option sources — pulled from a lightweight ph_issues scope so
   // the chips show real values without depending on BacklogPage's hooks.
   const { data: allVersions = [] } = useQuery({
-    queryKey: ['release-work-nav-versions'],
+    queryKey: [config.queryKeyPrefix, 'work-nav-versions'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('ph_releases')
+      const { data } = await (supabase as any)
+        .from(config.table)
         .select('id, name, title')
         .order('name');
-      return (data ?? []).map((r: any) => (r.name || r.title || '') as string).filter(Boolean);
+      return ((data ?? []) as any[]).map((r) => (r.name || r.title || '') as string).filter(Boolean);
     },
     staleTime: 5 * 60_000,
   });
@@ -319,7 +361,7 @@ export function ReleaseWorkNavigatorPage() {
   if (ctxLoading || !ctx) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 240 }}>
-        <Spinner size="large" label="Loading release" />
+        <Spinner size="large" label={`Loading ${config.label.lowerSingular}`} />
       </div>
     );
   }
@@ -436,6 +478,23 @@ export function ReleaseWorkNavigatorPage() {
       </div>
     </div>
   );
+
+  // 2026-06-26: prevent initial-empty flash. When state.fixVersion is set
+  // (pre-fill from seed effect) BUT releaseLinkedKeys hasn't resolved yet,
+  // releaseLinkedKeys is undefined → previously we passed `[]` which made
+  // BacklogPage filter to zero rows for one render. Now we wait for the
+  // query to resolve before mounting BacklogPage with a restricted set.
+  const linkedKeysReady = !state.fixVersion || (releaseLinkedKeys !== undefined && !linkedKeysFetching);
+  if (!linkedKeysReady) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+        {toolbar}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Spinner size="large" label={`Loading ${config.label.lowerSingular} items`} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <BacklogPage

@@ -25,6 +25,29 @@ const TEXT_SUBTLE = 'var(--ds-text-subtle, #505258)';
 const TEXT_SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
 const DANGER = 'var(--ds-text-danger, #AE2A19)';
 
+// 2026-06-26: hover underline on release title link. Inline style cannot
+// express :hover, so inject a one-time stylesheet at module load. HMR-safe:
+// updates textContent if the style tag already exists (CLAUDE.md 2026-06-11).
+const RELEASES_TABLE_STYLE_ID = 'releases-table-title-link-css';
+const RELEASES_TABLE_CSS = `
+  .releases-table-title-link:hover {
+    text-decoration: underline !important;
+    text-decoration-color: var(--ds-link, #0052CC) !important;
+    text-underline-offset: 2px;
+  }
+`;
+if (typeof document !== 'undefined') {
+  const existing = document.getElementById(RELEASES_TABLE_STYLE_ID);
+  if (existing) {
+    existing.textContent = RELEASES_TABLE_CSS;
+  } else {
+    const el = document.createElement('style');
+    el.id = RELEASES_TABLE_STYLE_ID;
+    el.textContent = RELEASES_TABLE_CSS;
+    document.head.appendChild(el);
+  }
+}
+
 // ─── Status pill ──────────────────────────────────────────────────────────
 
 const STATUS_BORDER: Record<ReleaseStatus, string> = {
@@ -290,6 +313,13 @@ export interface ReleasesTableProps {
   collapsedGroups?: Set<string>;
   onToggleGroup?: (id: string) => void;
   density?: 'compact' | 'comfortable';
+  /** 2026-06-26: entity-name column header. Defaults to "Release"; sprint
+   *  surface passes "Sprint / Iteration". */
+  entityLabel?: string;
+  /** 2026-06-26: hide the middle "Sprint / Iteration" column (which lists
+   *  sprint_names per release). Sprint surface IS the sprint, so the column
+   *  is redundant and is hidden via this flag. */
+  hideSprintsColumn?: boolean;
 }
 
 const thStyle: React.CSSProperties = {
@@ -324,6 +354,7 @@ function formatDate(iso?: string) {
 
 function ReleaseRow({
   r, calculateProgress, onOpenDetail, onRelease, onArchive, onMerge, onEdit, onDelete, density,
+  hideSprintsColumn,
 }: {
   r: CellRelease;
 } & Omit<ReleasesTableProps, 'rows' | 'groups'>) {
@@ -336,6 +367,7 @@ function ReleaseRow({
         <a
           href="#"
           onClick={(e) => { e.preventDefault(); onOpenDetail(r.id); }}
+          className="releases-table-title-link"
           style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500, textDecoration: 'none' }}
         >
           {r.name}
@@ -347,11 +379,13 @@ function ReleaseRow({
       <td style={td}>
         <ProgressBar progress={calculateProgress(r)} />
       </td>
-      <td style={{ ...td, color: TEXT_SUBTLE, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {r.sprint_names && r.sprint_names.length > 0 ? (
-          <span title={r.sprint_names.join(', ')}>{r.sprint_names.join(', ')}</span>
-        ) : null}
-      </td>
+      {!hideSprintsColumn && (
+        <td style={{ ...td, color: TEXT_SUBTLE, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {r.sprint_names && r.sprint_names.length > 0 ? (
+            <span title={r.sprint_names.join(', ')}>{r.sprint_names.join(', ')}</span>
+          ) : null}
+        </td>
+      )}
       <td style={{ ...td, color: TEXT_SUBTLE }}>{formatDate(r.start_date)}</td>
       <td style={{ ...td, color: isOverdue ? DANGER : TEXT_SUBTLE }}>
         {formatDate(r.release_date)}
@@ -386,8 +420,11 @@ export function ReleasesTable({
   collapsedGroups: collapsedGroupsProp,
   onToggleGroup: onToggleGroupProp,
   density = 'comfortable',
+  entityLabel = 'Release',
+  hideSprintsColumn = false,
 }: ReleasesTableProps) {
-  const rowProps = { calculateProgress, onOpenDetail, onRelease, onArchive, onMerge, onEdit, onDelete, density };
+  const rowProps = { calculateProgress, onOpenDetail, onRelease, onArchive, onMerge, onEdit, onDelete, density, hideSprintsColumn };
+  const colSpan = hideSprintsColumn ? 7 : 8;
 
   const groupIdsKey = useMemo(() => (groups ?? []).map((g) => g.id).join('|'), [groups]);
   const [internalCollapsed, setInternalCollapsed] = useState<Set<string>>(() => {
@@ -427,21 +464,21 @@ export function ReleasesTable({
         }}
       >
         <colgroup>
-          <col style={{ width: '18%' }} />
+          <col style={{ width: hideSprintsColumn ? '24%' : '18%' }} />
           <col style={{ width: '10%' }} />
           <col style={{ width: '15%' }} />
-          <col style={{ width: '14%' }} />
+          {!hideSprintsColumn && <col style={{ width: '14%' }} />}
           <col style={{ width: '11%' }} />
           <col style={{ width: '11%' }} />
-          <col style={{ width: '15%' }} />
+          <col style={{ width: hideSprintsColumn ? '23%' : '15%' }} />
           <col style={{ width: '6%' }} />
         </colgroup>
         <thead>
           <tr>
-            <th style={thStyle}>Release</th>
+            <th style={thStyle}>{entityLabel}</th>
             <th style={thStyle}>Status</th>
             <th style={thStyle}>Progress</th>
-            <th style={thStyle}>Sprint / Iteration</th>
+            {!hideSprintsColumn && <th style={thStyle}>Sprint / Iteration</th>}
             <th style={thStyle}>Start date</th>
             <th style={thStyle}>Release date</th>
             <th style={thStyle}>Description</th>
@@ -456,7 +493,7 @@ export function ReleasesTable({
                   <React.Fragment key={g.id}>
                     <tr>
                       <td
-                        colSpan={8}
+                        colSpan={colSpan}
                         style={{
                           padding: '14px 8px 6px',
                           background: 'transparent',

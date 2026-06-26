@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Release } from '@/types/phase3-releases';
 import { catalystFlag } from '@/lib/catalystFlag';
 import { ProductSelect, type ProductOption } from './ReleaseFilters';
+import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 interface Props {
   isOpen: boolean;
@@ -28,17 +29,19 @@ interface Props {
   projectKey: string;
   onClose: () => void;
   onSuccess?: (release: Release) => void;
+  /** 2026-06-26: entity-hub config (defaults to RELEASE_CONFIG). */
+  config?: EntityConfig;
 }
 
-export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Props) {
+export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config = RELEASE_CONFIG }: Props) {
   const [targetId, setTargetId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: candidates } = useQuery({
-    queryKey: ['ph-releases-for-merge', release.project_id, release.id],
+    queryKey: [config.queryKeyPrefix, 'merge-candidates', release.project_id, release.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_releases')
+      const { data, error } = await (supabase as any)
+        .from(config.table)
         .select('id, name, title, status, project_id')
         .eq('project_id', release.project_id)
         .neq('id', release.id)
@@ -58,24 +61,23 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Prop
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!targetId) throw new Error('Pick a target release');
+      if (!targetId) throw new Error(`Pick a target ${config.label.lowerSingular}`);
       // Phase 1: archive the source. Backend merge of work items TBD.
-      const { error } = await supabase
-        .from('ph_releases')
+      const { error } = await (supabase as any)
+        .from(config.table)
         .update({ status: 'archived' })
         .eq('id', release.id);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
       const target = options.find((o) => o.id === targetId);
       catalystFlag.success(`Merged "${release.name}" into "${target?.name ?? 'target'}".`);
       onSuccess?.(release);
       handleClose();
     },
     onError: (err: any) => {
-      catalystFlag.error(err?.message || 'Failed to merge release');
+      catalystFlag.error(err?.message || `Failed to merge ${config.label.lowerSingular}`);
     },
   });
 
@@ -105,7 +107,7 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Prop
                 <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 2 }}>*</span>
               </div>
               <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
-                You can merge this release into another in your space. You can't undo this.
+                You can merge this {config.label.lowerSingular} into another in your space. You can't undo this.
               </p>
               <div>
                 <label
@@ -124,8 +126,8 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Prop
                   options={options}
                   value={targetId}
                   onChange={setTargetId}
-                  placeholder="Select version"
-                  searchPlaceholder="Search releases"
+                  placeholder={`Select ${config.label.lowerSingular}`}
+                  searchPlaceholder={`Search ${config.label.lowerPlural}`}
                 />
               </div>
             </div>

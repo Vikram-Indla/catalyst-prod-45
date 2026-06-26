@@ -13,6 +13,7 @@ import {
   LayoutGrid,
   Settings,
   Link2,
+  Zap,
 } from '@/lib/atlaskit-icons';
 import {
   NavDashboardIcon,
@@ -128,6 +129,10 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             { id: 'filters', title: 'Filters', path: `${base}/filters`, icon: NavFiltersIcon, exact: false },
             { id: 'timeline', title: 'Timeline', path: `${base}/timeline`, icon: NavTimelineIcon, exact: false },
             { id: 'dependencies', title: 'Dependencies', path: `${base}/dependencies`, icon: Link2, exact: false },
+            /* 2026-06-26: Sprints — project-hub clone of release-hub releases-management.
+               Sits below Dependencies per Vikram directive. Uses Zap icon
+               (no dedicated sprint glyph in atlaskit-icons yet). */
+            { id: 'sprints', title: 'Sprints', path: `${base}/sprints`, icon: Zap, exact: false },
             /* 2026-06-15: Standups sidebar item retired. The history is now
                reachable from the board's kebab menu → "Standup history"
                (which navigates to /:hub/:key/standups). */

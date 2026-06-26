@@ -404,11 +404,15 @@ export function ProductFilter({
   value,
   onChange,
   placeholder = 'Search products',
+  label = 'Product',
 }: {
   options: ProductOption[];
   value: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
+  /** 2026-06-26: label override so the same component renders as "Project"
+   *  on the sprints surface (entity-hub adapter pattern). */
+  label?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -438,13 +442,13 @@ export function ProductFilter({
   );
 
   const triggerLabel = useMemo(() => {
-    if (value.length === 0) return 'Product';
+    if (value.length === 0) return label;
     return selectedNames.join(', ');
-  }, [value.length, selectedNames]);
+  }, [value.length, selectedNames, label]);
 
   const tooltipContent = value.length === 0
-    ? 'Filter by product'
-    : `Product: ${selectedNames.join(', ')}`;
+    ? `Filter by ${label.toLowerCase()}`
+    : `${label}: ${selectedNames.join(', ')}`;
 
   return (
     <>

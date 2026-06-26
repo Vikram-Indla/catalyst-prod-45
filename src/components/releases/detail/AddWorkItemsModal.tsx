@@ -166,12 +166,23 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
       return updatedCount;
     },
     onSuccess: async (updatedCount) => {
+      // 2026-06-26: WorkItemsSection's list query was renamed
+      // 'ph_release_items' → 'ph_entity_items' (config-aware for sprints).
+      // Also invalidate work-nav linked-keys queries for both release +
+      // sprint surfaces so the navigator picks the new items up too.
       await queryClient.refetchQueries({
         predicate: (q) =>
           Array.isArray(q.queryKey) &&
-          (q.queryKey[0] === 'ph_release_items' || q.queryKey[0] === 'ph_release_contributors'),
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'
+            || (typeof q.queryKey[0] === 'string'
+                && (q.queryKey[0] as string).startsWith('projecthub-')
+                && q.queryKey[1] === 'work-nav-linked-keys')),
       });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       catalystFlag.success(`Added ${updatedCount} work item${updatedCount === 1 ? '' : 's'} to "${release.name}".`);
       onSuccess?.();
       onClose();
