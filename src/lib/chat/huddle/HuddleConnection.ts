@@ -27,6 +27,13 @@ export class HuddleConnection {
   private pendingCandidates: RTCIceCandidateInit[] = [];
   /** Set to true after the first successful setRemoteDescription so buffered candidates can be flushed. */
   private remoteDescSet = false;
+  /** Periodic "join" announcer. The Supabase broadcast channel subscribes
+   *  asynchronously, so a single join sent right after subscribe() is dropped
+   *  (channel not joined yet) — and if BOTH peers drop their first join, neither
+   *  ever learns about the other and negotiation deadlocks (endless "connecting").
+   *  Re-announcing until the handshake starts guarantees eventual delivery. */
+  private joinTimer: ReturnType<typeof setInterval> | null = null;
+  private joinAttempts = 0;
 
   constructor(private opts: HuddleConnectionOpts) {}
 
@@ -35,8 +42,25 @@ export class HuddleConnection {
     this.unsub = chatRealtime.subscribeHuddleSignal(this.opts.conversationId, (sig) =>
       this.onSignal(sig),
     );
-    // Announce presence; an already-present peer will react and negotiation begins.
+    // Announce presence immediately, then keep re-announcing (~every 1.5s, capped)
+    // until the connection starts — the first send often lands before the channel
+    // has finished subscribing and is silently dropped.
+    this.announceJoin();
+    this.joinTimer = setInterval(() => {
+      this.joinAttempts += 1;
+      if (this.joinAttempts > 14) { this.stopAnnounce(); return; } // ~21s cap
+      const st = this.pc?.connectionState;
+      if (st === 'connecting' || st === 'connected' || st === 'completed') { this.stopAnnounce(); return; }
+      this.announceJoin();
+    }, 1500);
+  }
+
+  private announceJoin(): void {
     chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'join', from: this.opts.selfId });
+  }
+
+  private stopAnnounce(): void {
+    if (this.joinTimer) { clearInterval(this.joinTimer); this.joinTimer = null; }
   }
 
   setMicMuted(muted: boolean): void {
@@ -46,6 +70,7 @@ export class HuddleConnection {
   }
 
   close(): void {
+    this.stopAnnounce();
     chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'leave', from: this.opts.selfId });
     this.localStream?.getTracks().forEach((t) => t.stop());
     this.localStream = null;
@@ -73,7 +98,11 @@ export class HuddleConnection {
         });
       }
     };
-    pc.onconnectionstatechange = () => this.opts.onConnectionState(pc.connectionState);
+    pc.onconnectionstatechange = () => {
+      const st = pc.connectionState;
+      if (st === 'connecting' || st === 'connected' || st === 'completed') this.stopAnnounce();
+      this.opts.onConnectionState(st);
+    };
     this.pc = pc;
     return pc;
   }
