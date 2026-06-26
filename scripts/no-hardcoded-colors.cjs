@@ -7,7 +7,7 @@
  * that are NOT inside src/index.css (where token definitions live).
  * 
  * Usage:
- *   node scripts/no-hardcoded-colors.js
+ *   node scripts/no-hardcoded-colors.cjs
  * 
  * Exit codes:
  *   0 - No violations found
@@ -24,7 +24,7 @@ const SCAN_EXTENSIONS = ['.ts', '.tsx', '.css', '.scss'];
 // Files to exclude (token definition files and ring-fenced modules)
 const EXCLUDED_FILES = [
   'src/index.css',
-  'scripts/no-hardcoded-colors.js',
+  'scripts/no-hardcoded-colors.cjs',
   // Task10 module - ring-fenced CSS with isolated design tokens
   'src/modules/task10/styles/task10.css',
   'src/modules/task10/styles/task10-v2.css',
@@ -108,11 +108,49 @@ function isInComment(line, match, lineIndex, lines) {
   return false;
 }
 
+// Returns true if the match at `matchIndex` sits inside an unclosed
+// `var(...)` or `token(...)` call — i.e. the color is a *fallback* argument
+// (`var(--ds-x, #hex)` or `token('color.x', '#hex')`). These are the canonical
+// ADS patterns and are compliant, regardless of how long the token name is.
+function isInsideFallbackCall(line, matchIndex) {
+  const before = line.slice(0, matchIndex);
+  // Match a `var(`/`token(` opener not preceded by an identifier char, so it
+  // fires inside Tailwind arbitraries (`shadow-[..._var(--ds-x, ...)]`) but not
+  // inside a longer word (e.g. `mytoken(`).
+  const openerRegex = /(?<![a-zA-Z0-9])(?:var|token)\s*\(/gi;
+  let lastOpenerEnd = -1;
+  let m;
+  while ((m = openerRegex.exec(before)) !== null) {
+    lastOpenerEnd = m.index + m[0].length;
+  }
+  if (lastOpenerEnd === -1) {
+    return false;
+  }
+  // The call must still be open at the match position: walk the parens between
+  // the opener and the match; if depth returns to 0 the call closed first.
+  let depth = 1;
+  for (let i = lastOpenerEnd; i < before.length; i++) {
+    const ch = before[i];
+    if (ch === '(') depth++;
+    else if (ch === ')') depth--;
+    if (depth === 0) return false;
+  }
+  return depth > 0;
+}
+
 function isAllowedUsage(line, match) {
   // Check if the match is part of an allowed pattern (CSS variable usage)
   const matchIndex = line.indexOf(match);
+
+  // Hex/rgb fallback inside a var()/token() call is ADS-compliant — allow it
+  // regardless of token-name length (the fixed-width context window below
+  // misses long token names, e.g. `var(--ds-very-long-name, #hex)`).
+  if (isInsideFallbackCall(line, matchIndex)) {
+    return true;
+  }
+
   const context = line.slice(Math.max(0, matchIndex - 20), matchIndex + match.length + 20);
-  
+
   return ALLOWED_PATTERNS.some(pattern => pattern.test(context));
 }
 
