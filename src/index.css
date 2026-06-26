@@ -6070,53 +6070,16 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: none !important;
 }
 
-/* DARK SURFACE COHERENCE (2026-06-16, revised 2026-06-18 by Vikram) —
-   ONE uniform dark tone for the whole viewport. The 2026-06-16 pass snapped
-   surfaces onto a TWO-tier ramp (base var(--ds-surface-sunken, #F7F8F9) + raised var(--ds-surface, #FFFFFF)), but that left
-   a two-tone seam that resolved inconsistently per page (Work var(--ds-surface, #FFFFFF)-dominant,
-   Timeline var(--ds-surface-sunken, #F7F8F9)-dominant) and made the header search field read darker than
-   the header. Vikram's directive: the dominating grayish var(--ds-surface, #FFFFFF) is the single
-   tone — collapse the base surface AND every Catalyst page-canvas alias onto it.
-
-   Color is uniform across EVERY tier — base, sunken, raised AND overlay all
-   land on var(--ds-surface, #FFFFFF). ADS elevation is preserved structurally (box-shadow on
-   floating UI, borders/dividers on panels) — depth comes from shadow + 1px
-   separators, NOT from a tonal background step. This is the highest-specificity
-   dark selector in the app (html + class), so it is the single source of truth
-   — it beats the lower-specificity .dark / [data-theme="dark"] token blocks.
-   Light untouched. */
+/* DARK SURFACE COHERENCE (2026-06-16, revised 2026-06-18; ramp 2026-06-24; ADS-13 cleanup 2026-06-27) —
+   Dark-mode surface ramp for the whole viewport, mapped to ADS Jira-parity tones
+   (#1D2125 canvas, #22272B raised, #282E33 elevated/overlay, #161A1D sunken). Elevation
+   reads from the tonal step PLUS shadow + 1px separators. This is the highest-specificity
+   dark selector in the app (html + class), so it is the single source of truth — it beats
+   the lower-specificity .dark / [data-theme="dark"] token blocks. Light untouched.
+   (2026-06-27 ADS-13: removed a dead self-referential white-fallback block that this ramp
+   already overrode by source order — render unchanged, footgun removed.) */
 html.dark,
 html[data-color-mode="dark"] {
-  /* ADS ramp — every tier (sunken/base/raised/overlay) collapses to one tone;
-     elevation stays via shadow + borders, never a color step. */
-  --ds-surface: var(--ds-surface, #ffffff) !important;
-  --ds-surface-raised: var(--ds-surface, #ffffff) !important;
-  --ds-surface-sunken: var(--ds-surface, #ffffff) !important;
-  --ds-surface-overlay: var(--ds-surface, #ffffff) !important;
-  --cp-bg-overlay: var(--ds-surface, #ffffff) !important;
-  --cp-float: var(--ds-surface, #ffffff) !important;
-
-  /* Catalyst --cp page/canvas tier */
-  --cp-bg: var(--ds-surface, #ffffff) !important;
-  --cp-bg-page: var(--ds-surface, #ffffff) !important;
-  --cp-bg-hub-page: var(--ds-surface, #ffffff) !important;
-  --cp-bg-canvas: var(--ds-surface, #ffffff) !important;
-  --cp-bg-sunken: var(--ds-surface, #ffffff) !important;
-
-  /* Legacy --surface-* / --bg-* tier (older Catalyst components + inputs) */
-  --surface-page: var(--ds-surface, #ffffff) !important;
-  --surface-bg: var(--ds-surface, #ffffff) !important;
-  --surface-subtle: var(--ds-surface, #ffffff) !important;
-  --bg: var(--ds-surface, #ffffff) !important;
-  --bg-0: var(--ds-surface, #ffffff) !important;
-  --bg-1: var(--ds-surface, #ffffff) !important;
-  --bg-app: var(--ds-surface, #ffffff) !important;
-  --bg-workspace: var(--ds-surface, #ffffff) !important;
-  --bg-sidebar: var(--ds-surface, #ffffff) !important;
-  --bg-cream: var(--ds-surface, #ffffff) !important;
-  --industry-bg-page: var(--ds-surface, #ffffff) !important;
-  --table-section-bg: var(--ds-surface, #ffffff) !important;
-  --table-toolbar-bg: var(--ds-surface, #ffffff) !important;
   /* ADS dark surface ramp — Jira parity (2026-06-24 fix: was using white fallback).
      #1D2125 = page canvas (background.neutral)
      #22272B = raised (surface / sidebar / header)

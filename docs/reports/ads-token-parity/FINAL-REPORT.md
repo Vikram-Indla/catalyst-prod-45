@@ -178,3 +178,13 @@ The `scripts/no-hardcoded-colors.js` count is **~85% already-compliant noise**. 
 
 ## Ready for Claude Design Re-Scan
 **YES** — for the surfaces enumerated in the provided maps. Every map-named bare-hex target that was still bare is now `var(--ds-*, #fallback)`-wrapped; build is green; no behavior change. Remaining work for full app-wide zero is the untargeted long-tail (not in scope of the provided maps) plus the external `@catylast/tokens` `definitions.ts` swap.
+
+---
+
+## Status update — 2026-06-27 (post-report)
+Additive note; the body above is the historical record of the PR2–PR6 sweep branch.
+
+- **Scanner recommendation #1 SHIPPED.** "Fix `isAllowedUsage` to allowlist `token('…',#hex)` and detect `var(--…,#hex)`" landed as **PR #287 `83bde822e`** ("make color scanner runnable + drop ~85% false positives"). Reported count drops 3789 → ~574 true bare-hex, as predicted.
+- **ADS-13 dark-chrome — now in progress, separate branch.** This report marked ADS-13 "out of scope / tracked separately"; that work is now active on branch **`fix/dark-chrome-ads13`**. Slice 1 = **Finding 1** (delete the dead Group A white-fallback footgun + rewrite the now-false top comment in the `html.dark` rule of `src/index.css`). Verified render-identical (A⊆B by cascade), build exit 0, live DOM probe confirms dark overlay `#282e33` stays above base `#22272b`. **Findings 3 (332 overlay-fallback occurrences) and 4 (nav-text scope) deferred to their own slices.**
+- **PR7–PR9 long-tail still BLOCKED** on Claude Design hex→token mappings (265 unmapped). No mappings self-invented.
+- Feature-folder working notes: `features/CAT-ADS-TOKEN-PARITY-20260626-004/` (00/01/02/03/06/07/08/09/11 + sessions).
