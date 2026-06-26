@@ -30,6 +30,8 @@ export function HuddleFab() {
   const active = useHuddleStore((s) => s.active);
   const leave = useHuddleStore((s) => s.leave);
   const toggleMute = useHuddleStore((s) => s.toggleMute);
+  const startScreen = useHuddleStore((s) => s.startScreen);
+  const stopScreen = useHuddleStore((s) => s.stopScreen);
   const navigate = useNavigate();
 
   const [hovered, setHovered] = useState(false);
@@ -42,6 +44,7 @@ export function HuddleFab() {
 
   const connecting = !!active && active.connectionState !== 'connected';
   const muted = !!active?.micMuted;
+  const sharing = !!active?.screenSharing;
 
   // call duration timer (resets each huddle)
   useEffect(() => {
@@ -247,6 +250,18 @@ export function HuddleFab() {
             >
               {muted ? <MicOffIcon /> : <MicIcon />}
             </button>
+            {!connecting && (
+              <button
+                type="button"
+                data-huddle-btn
+                onClick={() => { void (sharing ? stopScreen() : startScreen()); }}
+                aria-pressed={sharing}
+                title={sharing ? 'Stop sharing screen' : 'Share screen'}
+                style={iconBtnStyle(sharing ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)', sharing ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)')}
+              >
+                <ScreenIcon />
+              </button>
+            )}
             <button
               type="button"
               data-huddle-btn
@@ -279,6 +294,11 @@ const MicIcon = () => (
 const MicOffIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9 9v2a3 3 0 0 0 5 2M15 11V6a3 3 0 0 0-6 0M5 11a7 7 0 0 0 11 5M12 18v3M3 3l18 18" />
+  </svg>
+);
+const ScreenIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" />
   </svg>
 );
 const PhoneDownIcon = () => (

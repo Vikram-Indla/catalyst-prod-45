@@ -10,6 +10,10 @@ export interface ActiveHuddle {
   conversationName: string;
   micMuted: boolean;
   connectionState: RTCPeerConnectionState;
+  /** Am I currently sharing my screen? */
+  screenSharing: boolean;
+  /** Is the remote peer sharing their screen? */
+  remoteSharing: boolean;
 }
 
 interface EnterArgs {
@@ -24,6 +28,8 @@ interface HuddleStore {
   enter: (args: EnterArgs) => Promise<void>;
   leave: () => void;
   toggleMute: () => void;
+  startScreen: () => Promise<void>;
+  stopScreen: () => Promise<void>;
   _setConnectionState: (s: RTCPeerConnectionState) => void;
 }
 
@@ -32,6 +38,8 @@ interface HuddleStore {
 let connection: HuddleConnection | null = null;
 let remoteAudioEl: HTMLAudioElement | null = null;
 let remoteStream: MediaStream | null = null;
+let localScreenStream: MediaStream | null = null;
+let remoteScreenStream: MediaStream | null = null;
 let selfIdRef: string | null = null;
 let huddleIdRef: string | null = null;
 
@@ -40,6 +48,9 @@ let huddleIdRef: string | null = null;
 export function getHuddleRemoteStream(): MediaStream | null {
   return remoteStream;
 }
+/** Screen-share streams (module refs — change outside React). */
+export function getHuddleLocalScreen(): MediaStream | null { return localScreenStream; }
+export function getHuddleRemoteScreen(): MediaStream | null { return remoteScreenStream; }
 
 function attachRemote(stream: MediaStream) {
   remoteStream = stream;
@@ -90,11 +101,21 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
       selfId,
       onRemoteStream: attachRemote,
       onConnectionState: (s) => get()._setConnectionState(s),
+      onRemoteScreen: (stream) => {
+        remoteScreenStream = stream;
+        const a = get().active;
+        if (a) set({ active: { ...a, remoteSharing: !!stream } });
+      },
+      onLocalScreenEnded: () => {
+        localScreenStream = null;
+        const a = get().active;
+        if (a) set({ active: { ...a, screenSharing: false } });
+      },
     });
     selfIdRef = selfId;
     huddleIdRef = huddleId;
     set({
-      active: { conversationId, huddleId, conversationName, micMuted: false, connectionState: 'new' },
+      active: { conversationId, huddleId, conversationName, micMuted: false, connectionState: 'new', screenSharing: false, remoteSharing: false },
     });
     await connection.start();
   },
@@ -103,6 +124,8 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     connection?.close();
     connection = null;
     detachRemote();
+    localScreenStream = null;
+    remoteScreenStream = null;
     void markLeft(huddleIdRef, selfIdRef);
     selfIdRef = null;
     huddleIdRef = null;
@@ -115,6 +138,22 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     const next = !a.micMuted;
     connection?.setMicMuted(next);
     set({ active: { ...a, micMuted: next } });
+  },
+
+  startScreen: async () => {
+    if (!connection) return;
+    try {
+      localScreenStream = await connection.startScreenShare();
+      const a = get().active;
+      if (a) set({ active: { ...a, screenSharing: true } });
+    } catch { /* user cancelled the screen picker — no-op */ }
+  },
+
+  stopScreen: async () => {
+    await connection?.stopScreenShare();
+    localScreenStream = null;
+    const a = get().active;
+    if (a) set({ active: { ...a, screenSharing: false } });
   },
 
   _setConnectionState: (s) => {

@@ -1,11 +1,12 @@
 /**
- * HuddleConnection — a single 2-person, audio-only WebRTC peer connection plus
- * its signaling glue. Separate concern from voice-flow/AudioCaptureService
- * (dictation): this drives a live call, not a recording.
+ * HuddleConnection — a single 2-person WebRTC connection (audio + optional
+ * screen share) plus its signaling glue. Separate concern from
+ * voice-flow/AudioCaptureService (dictation): this drives a live call.
  *
- * Offer-role tiebreak: when both peers are present, the one with the
- * lexicographically smaller user id creates the offer, so the two sides never
- * offer simultaneously (glare avoidance).
+ * Offer-role tiebreak: the lexicographically smaller user id makes the initial
+ * offer (glare avoidance). Mid-call renegotiation (screen share add/remove)
+ * uses perfect-negotiation collision handling so either side can renegotiate
+ * safely.
  */
 import { chatRealtime } from '../ChatRealtimeManager';
 import type { HuddleSignal } from './signaling';
@@ -16,22 +17,23 @@ interface HuddleConnectionOpts {
   selfId: string;
   onRemoteStream: (stream: MediaStream) => void;
   onConnectionState: (state: RTCPeerConnectionState) => void;
+  /** Remote peer's screen-share video stream (null when they stop). */
+  onRemoteScreen?: (stream: MediaStream | null) => void;
+  /** Our own screen share ended (e.g. user hit the browser "Stop sharing"). */
+  onLocalScreenEnded?: () => void;
 }
 
 export class HuddleConnection {
   private pc: RTCPeerConnection | null = null;
   private localStream: MediaStream | null = null;
+  private screenStream: MediaStream | null = null;
+  private screenSender: RTCRtpSender | null = null;
   private unsub: (() => void) | null = null;
   private remoteId: string | null = null;
-  /** ICE candidates received before setRemoteDescription was called are buffered here and drained immediately after. */
   private pendingCandidates: RTCIceCandidateInit[] = [];
-  /** Set to true after the first successful setRemoteDescription so buffered candidates can be flushed. */
   private remoteDescSet = false;
-  /** Periodic "join" announcer. The Supabase broadcast channel subscribes
-   *  asynchronously, so a single join sent right after subscribe() is dropped
-   *  (channel not joined yet) — and if BOTH peers drop their first join, neither
-   *  ever learns about the other and negotiation deadlocks (endless "connecting").
-   *  Re-announcing until the handshake starts guarantees eventual delivery. */
+  /** True while we are creating/applying our own offer — used by perfect-negotiation collision detection. */
+  private makingOffer = false;
   private joinTimer: ReturnType<typeof setInterval> | null = null;
   private joinAttempts = 0;
 
@@ -42,13 +44,10 @@ export class HuddleConnection {
     this.unsub = chatRealtime.subscribeHuddleSignal(this.opts.conversationId, (sig) =>
       this.onSignal(sig),
     );
-    // Announce presence immediately, then keep re-announcing (~every 1.5s, capped)
-    // until the connection starts — the first send often lands before the channel
-    // has finished subscribing and is silently dropped.
     this.announceJoin();
     this.joinTimer = setInterval(() => {
       this.joinAttempts += 1;
-      if (this.joinAttempts > 14) { this.stopAnnounce(); return; } // ~21s cap
+      if (this.joinAttempts > 14) { this.stopAnnounce(); return; }
       const st = this.pc?.connectionState;
       if (st === 'connecting' || st === 'connected' || st === 'completed') { this.stopAnnounce(); return; }
       this.announceJoin();
@@ -58,15 +57,42 @@ export class HuddleConnection {
   private announceJoin(): void {
     chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'join', from: this.opts.selfId });
   }
-
   private stopAnnounce(): void {
     if (this.joinTimer) { clearInterval(this.joinTimer); this.joinTimer = null; }
   }
 
   setMicMuted(muted: boolean): void {
-    this.localStream?.getAudioTracks().forEach((t) => {
-      t.enabled = !muted;
-    });
+    this.localStream?.getAudioTracks().forEach((t) => { t.enabled = !muted; });
+  }
+
+  isScreenSharing(): boolean {
+    return !!this.screenStream;
+  }
+
+  /** Start sharing the screen — adds a video track and renegotiates. */
+  async startScreenShare(): Promise<MediaStream> {
+    const pc = this.ensurePc();
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+    this.screenStream = stream;
+    const track = stream.getVideoTracks()[0];
+    this.screenSender = pc.addTrack(track, stream);
+    // User clicking the browser's native "Stop sharing" bar.
+    track.onended = () => { void this.stopScreenShare(); };
+    await this.renegotiate();
+    return stream;
+  }
+
+  /** Stop sharing the screen — removes the track and renegotiates. */
+  async stopScreenShare(): Promise<void> {
+    const had = !!this.screenStream;
+    this.screenStream?.getTracks().forEach((t) => t.stop());
+    this.screenStream = null;
+    if (this.screenSender && this.pc) {
+      try { this.pc.removeTrack(this.screenSender); } catch { /* ignore */ }
+      this.screenSender = null;
+      await this.renegotiate();
+    }
+    if (had) this.opts.onLocalScreenEnded?.();
   }
 
   close(): void {
@@ -74,6 +100,9 @@ export class HuddleConnection {
     chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'leave', from: this.opts.selfId });
     this.localStream?.getTracks().forEach((t) => t.stop());
     this.localStream = null;
+    this.screenStream?.getTracks().forEach((t) => t.stop());
+    this.screenStream = null;
+    this.screenSender = null;
     this.pc?.close();
     this.pc = null;
     this.unsub?.();
@@ -83,18 +112,22 @@ export class HuddleConnection {
   private ensurePc(): RTCPeerConnection {
     if (this.pc) return this.pc;
     const pc = new RTCPeerConnection({ iceServers: getIceServers() });
-    // addTrack is skipped when localStream is null (start() is the only intended caller and always sets it first).
     this.localStream?.getTracks().forEach((t) => pc.addTrack(t, this.localStream as MediaStream));
     pc.ontrack = (e) => {
-      const [stream] = e.streams;
-      if (stream) this.opts.onRemoteStream(stream);
+      if (e.track.kind === 'video') {
+        const s = new MediaStream([e.track]);
+        this.opts.onRemoteScreen?.(s);
+        e.track.onended = () => this.opts.onRemoteScreen?.(null);
+        e.track.onmute = () => this.opts.onRemoteScreen?.(null);
+      } else {
+        const [stream] = e.streams;
+        this.opts.onRemoteStream(stream || new MediaStream([e.track]));
+      }
     };
     pc.onicecandidate = (e) => {
       if (e.candidate) {
         chatRealtime.sendHuddleSignal(this.opts.conversationId, {
-          kind: 'ice-candidate',
-          from: this.opts.selfId,
-          candidate: e.candidate.toJSON(),
+          kind: 'ice-candidate', from: this.opts.selfId, candidate: e.candidate.toJSON(),
         });
       }
     };
@@ -111,56 +144,79 @@ export class HuddleConnection {
     return this.remoteId !== null && this.opts.selfId < this.remoteId;
   }
 
+  /** Create + send an offer (initial or renegotiation). Guards makingOffer. */
+  private async sendOffer(pc: RTCPeerConnection): Promise<void> {
+    try {
+      this.makingOffer = true;
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'offer', from: this.opts.selfId, sdp: offer });
+    } finally {
+      this.makingOffer = false;
+    }
+  }
+
+  private async renegotiate(): Promise<void> {
+    if (this.pc) await this.sendOffer(this.pc);
+  }
+
+  private drainCandidates(): void {
+    for (const c of this.pendingCandidates) {
+      void this.pc?.addIceCandidate(c).catch(() => { /* stale candidate */ });
+    }
+    this.pendingCandidates = [];
+  }
+
   private async onSignal(sig: HuddleSignal): Promise<void> {
     if (sig.from === this.opts.selfId) return;
     switch (sig.kind) {
       case 'join': {
         if (this.remoteId === sig.from) break;
         this.remoteId = sig.from;
-        // Re-announce so a peer who joined first also learns about us.
-        // Idempotent: the guard above ensures this fires at most once per remote peer.
         chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'join', from: this.opts.selfId });
         if (this.amOfferer() && !this.pc) {
-          const pc = this.ensurePc();
-          const offer = await pc.createOffer();
-          await pc.setLocalDescription(offer);
-          chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'offer', from: this.opts.selfId, sdp: offer });
+          await this.sendOffer(this.ensurePc());
         }
         break;
       }
       case 'offer': {
         this.remoteId = sig.from;
         const pc = this.ensurePc();
+        // Perfect-negotiation collision handling (matters for mid-call screen-share renegotiation).
+        const polite = this.opts.selfId > sig.from;
+        const collision = this.makingOffer || (pc.signalingState ?? 'stable') !== 'stable';
+        if (collision && !polite) break;                 // impolite peer ignores the colliding offer
+        if (collision && polite) {
+          try { await pc.setLocalDescription({ type: 'rollback' } as RTCLocalSessionDescriptionInit); } catch { /* ignore */ }
+        }
         await pc.setRemoteDescription(sig.sdp);
         this.remoteDescSet = true;
-        for (const c of this.pendingCandidates) {
-          try { await this.pc?.addIceCandidate(c); } catch { /* stale candidate */ }
-        }
-        this.pendingCandidates = [];
+        this.drainCandidates();
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
         chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'answer', from: this.opts.selfId, sdp: answer });
         break;
       }
       case 'answer': {
-        await this.pc?.setRemoteDescription(sig.sdp);
-        this.remoteDescSet = true;
-        for (const c of this.pendingCandidates) {
-          try { await this.pc?.addIceCandidate(c); } catch { /* stale candidate */ }
+        // Only apply an answer when we actually have a pending local offer.
+        if (this.pc && (this.pc.signalingState ?? 'have-local-offer') === 'have-local-offer') {
+          await this.pc.setRemoteDescription(sig.sdp);
+          this.remoteDescSet = true;
+          this.drainCandidates();
         }
-        this.pendingCandidates = [];
         break;
       }
+
       case 'ice-candidate': {
         if (this.pc && this.remoteDescSet) {
           try { await this.pc.addIceCandidate(sig.candidate); } catch { /* stale candidate */ }
         } else {
-          // Buffer early candidates — remote description not yet set; drain happens after setRemoteDescription.
           this.pendingCandidates.push(sig.candidate);
         }
         break;
       }
       case 'leave': {
+        this.opts.onRemoteScreen?.(null);
         this.opts.onConnectionState('disconnected');
         break;
       }
