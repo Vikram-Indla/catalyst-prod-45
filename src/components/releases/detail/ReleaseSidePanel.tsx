@@ -25,6 +25,9 @@ import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmat
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { useApprovedProfiles, useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
+// 2026-06-26: kept from incoming branch — used by user-picker render
+// at line 817 to derive a deterministic avatar URL from display name.
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { Release, ReleaseStatus } from '@/types/phase3-releases';
 import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
