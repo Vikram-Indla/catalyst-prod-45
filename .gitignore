@@ -1,3 +1,6 @@
+# Feature Builder (untracked, like AutoResearch results.tsv)
+experiment-log.tsv
+
 # Logs
 logs
 *.log

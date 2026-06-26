@@ -6,7 +6,6 @@ import {
   MOCK_ROLE_PERMISSIONS,
   distinctModules,
   RbacRole,
-  RbacPermission,
 } from '@/lib/rbac-mock';
 
 /**
@@ -26,21 +25,11 @@ const T = {
   border:    'var(--ds-border, #DCDFE4)',
   surface:   'var(--ds-surface, #FFFFFF)',
   selected:  'var(--ds-background-selected, #E9F2FE)',
-  brand:     'var(--ds-icon-brand, #0C66E4)',
   headerBg:  'var(--ds-background-neutral, #F1F2F4)',
   sectionBg: 'var(--ds-surface-sunken, #F7F8F9)',
 };
 
-const ACTION_COLORS: Record<RbacPermission['action'], string> = {
-  view:    'var(--ds-text-subtle, #44546F)',
-  create:  'var(--ds-text-information, #0055CC)',
-  edit:    'var(--ds-text-warning, #7A4317)',
-  delete:  'var(--ds-text-danger, #AE2A19)',
-  approve: 'var(--ds-text-success, #216E4E)',
-  admin:   'var(--ds-text-brand, #0C66E4)',
-};
-
-const ACTION_LABELS: Record<RbacPermission['action'], string> = {
+const ACTION_LABELS: Record<string, string> = {
   view: 'View', create: 'Create', edit: 'Edit',
   delete: 'Delete', approve: 'Approve', admin: 'Admin',
 };
@@ -113,7 +102,7 @@ export function PermissionsMatrix({ roles = MOCK_ROLES.filter(r => r.isActive) }
                 scope="col"
                 style={{
                   textAlign: 'center',
-                  padding: '8px 4px',
+                  padding: '8px 10px',
                   fontSize: 12,
                   fontWeight: 653,
                   color: T.text,
@@ -171,13 +160,12 @@ export function PermissionsMatrix({ roles = MOCK_ROLES.filter(r => r.isActive) }
                         zIndex: 1,
                       }}
                     >
-                      {/* Only show resource name when it changes */}
                       {pi === 0 || perms[pi - 1].resource !== perm.resource
                         ? perm.resource
                         : ''}
                     </td>
 
-                    {/* Action badge */}
+                    {/* Action label — muted, no rainbow colors */}
                     <td
                       style={{
                         padding: '7px 12px',
@@ -185,12 +173,12 @@ export function PermissionsMatrix({ roles = MOCK_ROLES.filter(r => r.isActive) }
                         background: T.surface,
                       }}
                     >
-                      <span style={{ fontSize: 11, fontWeight: 600, color: ACTION_COLORS[perm.action] }}>
-                        {ACTION_LABELS[perm.action]}
+                      <span style={{ fontSize: 11, fontWeight: 600, color: T.subtle }}>
+                        {ACTION_LABELS[perm.action] ?? perm.action}
                       </span>
                     </td>
 
-                    {/* Role cells */}
+                    {/* Role cells — no green background, muted check icon */}
                     {roles.map(role => {
                       const has = (MOCK_ROLE_PERMISSIONS[role.id] ?? []).includes(perm.id);
                       return (
@@ -200,12 +188,12 @@ export function PermissionsMatrix({ roles = MOCK_ROLES.filter(r => r.isActive) }
                             textAlign: 'center',
                             padding: '7px 4px',
                             borderBottom: pi < perms.length - 1 ? `1px solid ${T.border}` : undefined,
-                            background: has ? 'var(--ds-background-success-hovered, rgba(34,154,84,0.08))' : T.surface,
+                            background: T.surface,
                           }}
                           aria-label={`${role.name}: ${perm.action} ${perm.resource} — ${has ? 'granted' : 'not granted'}`}
                         >
                           {has ? (
-                            <span style={{ color: T.brand, display: 'inline-flex', justifyContent: 'center' }}>
+                            <span style={{ color: T.subtle, display: 'inline-flex', justifyContent: 'center' }}>
                               <CheckCircleIcon label="" size="small" />
                             </span>
                           ) : (
