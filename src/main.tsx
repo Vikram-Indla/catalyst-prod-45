@@ -5,6 +5,10 @@ import "./index.css";
 import "./styles/catalyst-typography.css";
 import "./styles/catalyst-theme.css";
 import "./tokens/jira-parity-overrides.css";
+// ADS token parity (feature/ads-token-parity-sweep) — imported LAST so these are
+// the final word on every --ds-* value. Chart tokens AFTER parity (depends on it).
+import "./styles/catalyst-ads-parity.css";
+import "./styles/catalyst-ads-chart-tokens.css";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Stale-chunk safeguard

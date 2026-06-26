@@ -44,9 +44,9 @@ export function ArchiveConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Prop
         <div className="flex items-center gap-3" style={{ marginBottom: 16 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8,
-            background: '#FFF3E0', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--ds-background-warning, #FFF3E0)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Archive size={18} color="#E65100" />
+            <Archive size={18} color="var(--ds-background-warning-bold, #E65100)" />
           </div>
           <div>
             <div style={{ fontSize: 15, fontWeight: 600, color: tk.textPrimary }}>Archive work item?</div>
@@ -63,7 +63,7 @@ export function ArchiveConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Prop
           }}>Cancel</button>
           <button onClick={onConfirm} style={{
             padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-            border: 'none', background: '#E65100', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
+            border: 'none', background: 'var(--ds-background-warning-bold, #E65100)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
           }}>Archive</button>
         </div>
       </div>

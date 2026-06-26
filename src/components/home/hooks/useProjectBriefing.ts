@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { UserContext } from './useUserContext';
 import { getTierConfig, isWithinFreshness, sortByHierarchy, findCommonTitlePattern } from '../workItemHierarchy';
+import { WORKSTREAM_COLORS } from '@/constants/workstreamColors';
 
 export interface BriefingItem {
   itemKey: string;
@@ -54,10 +55,7 @@ export interface WeekNarrative {
   topAchievement: string | null;
 }
 
-const PROJECT_COLORS: Record<string, string> = {
-  BAU: 'var(--ds-background-discovery-bold, #6E5DC6)', SIMP: '#FA8C16', MDT: '#52C41A', MWR: '#13C2C2',
-  IRP: '#EB2F96', ICP: 'var(--ds-background-discovery-bold, #6E5DC6)', IP: '#36CFC9', TAH: '#2F54EB',
-};
+const PROJECT_COLORS = WORKSTREAM_COLORS;
 
 function getSaudiWeekStart(): string {
   const now = new Date();

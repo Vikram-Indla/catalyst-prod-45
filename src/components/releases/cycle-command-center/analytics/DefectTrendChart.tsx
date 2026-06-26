@@ -19,7 +19,7 @@ const SEVERITY_COLORS = {
   blocker: 'var(--ds-text-danger, #dc2626)',  // Red-600
   critical: 'var(--ds-background-warning-bold, #E2B203)', // Orange-600
   major: 'var(--ds-text-warning, #d97706)',    // Amber-600
-  minor: '#65a30d',    // Lime-600
+  minor: 'var(--ds-chart-lime-bold, #65a30d)',    // Lime-600
 };
 
 export function DefectTrendChart({ cycleId, days = 14 }: DefectTrendChartProps) {

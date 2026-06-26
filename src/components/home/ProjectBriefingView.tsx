@@ -10,16 +10,14 @@ import { useProjectBriefing } from './hooks/useProjectBriefing';
 import { useUserContext } from './hooks/useUserContext';
 import { getPresetsForRole } from './PersonalizedQueryProcessor';
 import { Skeleton } from '@/components/ui/skeleton';
+import { WORKSTREAM_COLORS } from '@/constants/workstreamColors';
 
 // Font tokens removed — using ADS tokens instead
 // inter → var(--ds-font-family-body)
 // mono → var(--ds-font-family-code)
 // sora → var(--ds-font-family-body)
 
-const PROJECT_COLORS: Record<string, string> = {
-  BAU: 'var(--ds-background-discovery-bold, #6E5DC6)', SIMP: '#FA8C16', MDT: '#52C41A', MWR: '#13C2C2',
-  IRP: '#EB2F96', ICP: 'var(--ds-background-discovery-bold, #6E5DC6)', IP: '#36CFC9', TAH: '#2F54EB',
-};
+const PROJECT_COLORS = WORKSTREAM_COLORS;
 
 // ═══ GREETING ═══
 function Greeting({ userCtx }: { userCtx: UserContext }) {
