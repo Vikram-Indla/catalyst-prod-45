@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Textfield from '@atlaskit/textfield';
 import SearchIcon from '@atlaskit/icon/core/search';
-import AdminGuard from '@/components/admin/AdminGuard';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import { RbacSchemaBanner } from '@/components/admin/rbac/RbacSchemaBanner';
 import { PermissionsMatrix } from '@/components/admin/rbac/PermissionsMatrix';
 import {
