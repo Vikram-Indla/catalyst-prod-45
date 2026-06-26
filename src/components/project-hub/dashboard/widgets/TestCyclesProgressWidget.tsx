@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * TestCyclesProgressWidget — TestHub canonical cycles widget.
  *

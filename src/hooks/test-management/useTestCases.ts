@@ -39,7 +39,7 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         .select(`
           *,
           folder:tm_folders(id, name),
-          priority_ref:tm_case_priorities(name, color, level)
+          priority_ref:tm_case_priorities(name, color, sort_order)
         `, { count: 'exact' })
         .eq('project_id', projectId)
         .order('updated_at', { ascending: false });
@@ -88,10 +88,9 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         }
       }
 
-      // Default: exclude archived cases unless caller explicitly opts in
-      if (!filters?.showArchived) {
-        query = query.eq('archived', false);
-      }
+      // NOTE: tm_test_cases has no `archived` column on the canonical schema.
+      // Archive is modeled via status lifecycle (see CAT-TESTHUB-ENGINE Phase 1).
+      // Previously `.eq('archived', false)` here broke the case list on every surface.
 
       const page = filters?.page || 1;
       const perPage = filters?.per_page || 25;

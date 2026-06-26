@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * TestCasesOverviewWidget — TestHub canonical KPI widget.
  *
@@ -64,7 +63,7 @@ function KpiTile({ label, value, color }: { label: string; value: number; color:
       padding: 12,
     }}>
       <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>{label}</div>
-      <div style={{ fontSize: 22, fontWeight: 653, color }}>{value}</div>
+      <div style={{ fontSize: 22, fontWeight: 600, color }}>{value}</div>
     </div>
   );
 }

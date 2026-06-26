@@ -10,11 +10,16 @@ import {
 } from '@/hooks/test-management/useFolders';
 import {
   useTestCases,
+  useCreateTestCase,
   useDeleteTestCase,
   useBulkArchiveTestCases,
   useBulkCopyTestCases,
 } from '@/hooks/test-management/useTestCases';
 import { supabase } from '@/integrations/supabase/client';
+import { CatyIconCTA } from '@/components/ui/CatyIconCTA';
+import { AIGenerateTestCasesDialog } from '@/components/releases/test-cases/AIGenerateTestCasesDialog';
+import type { GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
+import { catalystToast } from '@/lib/catalystToast';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable/types';
@@ -506,12 +511,41 @@ export default function RepositoryPage() {
   const [folderModalParentId, setFolderModalParentId] = useState<string | null>(null);
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [copyModalOpen, setCopyModalOpen] = useState(false);
+  const [aiDialogOpen, setAIDialogOpen] = useState(false);
 
   const createFolder = useCreateFolder();
   const { data: allFolders = [] } = useFolderTree(projectId);
   const archiveCases = useBulkArchiveTestCases();
   const copyCases = useBulkCopyTestCases();
   const deleteCase = useDeleteTestCase();
+  const createCase = useCreateTestCase({ silent: true });
+
+  const handleAIGeneratedTestCases = useCallback((generatedTestCases: GeneratedTestCase[]) => {
+    if (!projectId) {
+      catalystToast.error('No project selected.');
+      return;
+    }
+    Promise.all(
+      generatedTestCases.map(tc =>
+        createCase.mutateAsync({
+          project_id: projectId,
+          title: tc.title,
+          objective: tc.summary,
+          preconditions: tc.preconditions?.join('\n'),
+          status: 'DRAFT',
+          is_ai_generated: true,
+          folder_id: selectedFolderId !== 'unfiled' ? (selectedFolderId ?? undefined) : undefined,
+          steps: tc.steps.map(step => ({
+            action: step.action,
+            expected_result: step.expectedResult,
+            test_data: step.testData,
+          })),
+        }),
+      ),
+    )
+      .then(results => catalystToast.success(`Created ${results.length} AI-generated cases`))
+      .catch(() => catalystToast.error('Failed to create some AI-generated cases'));
+  }, [projectId, selectedFolderId, createCase]);
 
   const filters: CaseFilters = {
     folder_id: selectedFolderId === 'unfiled' ? 'unfiled' : (selectedFolderId ?? undefined),
@@ -750,6 +784,11 @@ export default function RepositoryPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 'auto' }}>
+              <CatyIconCTA
+                tooltip="Generate test cases with Caty"
+                onClick={() => setAIDialogOpen(true)}
+                size={20}
+              />
               <button
                 onClick={() => { setSelectMode(s => !s); setSelectedIds(new Set()); }}
                 style={{
@@ -841,6 +880,12 @@ export default function RepositoryPage() {
           saving={copyCases.isPending}
         />
       )}
+
+      <AIGenerateTestCasesDialog
+        open={aiDialogOpen}
+        onOpenChange={setAIDialogOpen}
+        onTestCasesGenerated={handleAIGeneratedTestCases}
+      />
     </>
   );
 }

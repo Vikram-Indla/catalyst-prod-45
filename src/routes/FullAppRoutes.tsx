@@ -169,6 +169,7 @@ const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailP
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
 const TestHubReportsPage = lazy(() => import("../pages/testhub/reports/ReportsPage"));
 const TestHubReportDetailPage = lazy(() => import("../pages/testhub/reports/ReportDetailPage"));
+const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
 
 // Wiki module — DEPRECATED 2026-06-25
 // All wiki routes removed; modules-dormant/wiki remains in codebase for historical reference.
@@ -670,6 +671,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub/sets" element={<S><TestHubSetsPage /></S>} />
         <Route path="/testhub/sets/:id" element={<S><TestHubSetDetailPage /></S>} />
         <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
+        <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
         <Route path="/testhub/reports" element={<S><TestHubReportsPage /></S>} />
         <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
         {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.

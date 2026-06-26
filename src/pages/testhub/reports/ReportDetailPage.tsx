@@ -1,5 +1,4 @@
-// @ts-nocheck
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';

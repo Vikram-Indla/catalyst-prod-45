@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -25,35 +24,28 @@ interface KpiData {
 // ── report tile catalogue ─────────────────────────────────────────────────────
 
 const REPORT_TILES: ReportTile[] = [
-  // Execution group
-  { slug: 'execution-overview', label: 'Execution Overview', description: 'Status breakdown and overall progress across all runs.', group: 'Execution' },
-  { slug: 'execution-summary', label: 'Execution Summary', description: 'Per-cycle summary: total, passed, failed, blocked, pass rate.', group: 'Execution' },
-  { slug: 'execution-burndown', label: 'Execution Burndown', description: 'Cumulative runs executed over time by date.', group: 'Execution' },
-  { slug: 'execution-burnup', label: 'Execution Burnup', description: 'Cumulative passed runs over time by date.', group: 'Execution' },
-  { slug: 'execution-distribution', label: 'Execution Distribution', description: 'Count of runs broken down by status.', group: 'Execution' },
-  { slug: 'execution-history', label: 'Execution History', description: 'Full history of runs with case, executor and result.', group: 'Execution' },
-  // Case group
-  { slug: 'case-distribution', label: 'Case Distribution', description: 'Test cases grouped by current status.', group: 'Cases' },
-  { slug: 'case-usage', label: 'Case Usage', description: 'How many cycles each test case appears in.', group: 'Cases' },
-  // Defect group
-  { slug: 'defect-summary', label: 'Defect Summary', description: 'Defects grouped by severity and status.', group: 'Defects' },
-  { slug: 'defect-impact', label: 'Defect Impact', description: 'Defects linked to test cases — severity and case mapping.', group: 'Defects' },
-  { slug: 'defect-trend', label: 'Defect Trend', description: 'Defect creation rate over time by date.', group: 'Defects' },
-  // Multi-cycle group
-  { slug: 'multi-cycle-comparison', label: 'Multi-Cycle Comparison', description: 'Side-by-side pass rate comparison across cycles.', group: 'Multi-Cycle' },
-  { slug: 'multi-cycle-summary', label: 'Multi-Cycle Summary', description: 'One-row-per-cycle aggregated metrics.', group: 'Multi-Cycle' },
-  { slug: 'multi-cycle-detail', label: 'Multi-Cycle Detail', description: 'Per-case results across every cycle.', group: 'Multi-Cycle' },
-  { slug: 'multi-cycle-distribution', label: 'Multi-Cycle Distribution', description: 'Status distribution pivot: status × cycle.', group: 'Multi-Cycle' },
-  // Project group
-  { slug: 'project-overview', label: 'Project Overview', description: 'Top-level counts: cases, cycles, runs, pass rate.', group: 'Project' },
-  { slug: 'project-metrics', label: 'Project Metrics', description: 'Velocity and defect rate metrics over time.', group: 'Project' },
-  { slug: 'project-activity', label: 'Project Activity', description: 'Recent test activity: date, action, user, entity.', group: 'Project' },
-  // Traceability group
-  { slug: 'traceability-summary', label: 'Traceability Summary', description: 'Jira issues with linked test case counts.', group: 'Traceability' },
-  { slug: 'traceability-detail', label: 'Traceability Detail', description: 'Per-case detail: Jira issue → test case → status.', group: 'Traceability' },
-  // Other
-  { slug: 'run-distribution', label: 'Run Distribution', description: 'Runs broken down by executor: total, passed, failed.', group: 'Other' },
-  { slug: 'user-activity', label: 'User Activity', description: 'Activity per user: runs executed and pass rate.', group: 'Other' },
+  { slug: 'execution-overview',       label: 'Execution Overview',       description: 'Status breakdown and overall progress across all runs.',            group: 'Execution' },
+  { slug: 'execution-summary',        label: 'Execution Summary',        description: 'Per-cycle summary: total, passed, failed, blocked, pass rate.',      group: 'Execution' },
+  { slug: 'execution-burndown',       label: 'Execution Burndown',       description: 'Cumulative runs executed over time by date.',                        group: 'Execution' },
+  { slug: 'execution-burnup',         label: 'Execution Burnup',         description: 'Cumulative passed runs over time by date.',                          group: 'Execution' },
+  { slug: 'execution-distribution',   label: 'Execution Distribution',   description: 'Count of runs broken down by status.',                               group: 'Execution' },
+  { slug: 'execution-history',        label: 'Execution History',        description: 'Full history of runs with case, executor and result.',               group: 'Execution' },
+  { slug: 'case-distribution',        label: 'Case Distribution',        description: 'Test cases grouped by current status.',                              group: 'Cases' },
+  { slug: 'case-usage',               label: 'Case Usage',               description: 'How many cycles each test case appears in.',                         group: 'Cases' },
+  { slug: 'defect-summary',           label: 'Defect Summary',           description: 'Defects grouped by severity and status.',                            group: 'Defects' },
+  { slug: 'defect-impact',            label: 'Defect Impact',            description: 'Defects linked to test cases — severity and case mapping.',          group: 'Defects' },
+  { slug: 'defect-trend',             label: 'Defect Trend',             description: 'Defect creation rate over time by date.',                            group: 'Defects' },
+  { slug: 'multi-cycle-comparison',   label: 'Multi-Cycle Comparison',   description: 'Side-by-side pass rate comparison across cycles.',                   group: 'Multi-Cycle' },
+  { slug: 'multi-cycle-summary',      label: 'Multi-Cycle Summary',      description: 'One-row-per-cycle aggregated metrics.',                              group: 'Multi-Cycle' },
+  { slug: 'multi-cycle-detail',       label: 'Multi-Cycle Detail',       description: 'Per-case results across every cycle.',                               group: 'Multi-Cycle' },
+  { slug: 'multi-cycle-distribution', label: 'Multi-Cycle Distribution', description: 'Status distribution pivot: status × cycle.',                        group: 'Multi-Cycle' },
+  { slug: 'project-overview',         label: 'Project Overview',         description: 'Top-level counts: cases, cycles, runs, pass rate.',                  group: 'Project' },
+  { slug: 'project-metrics',          label: 'Project Metrics',          description: 'Velocity and defect rate metrics over time.',                        group: 'Project' },
+  { slug: 'project-activity',         label: 'Project Activity',         description: 'Recent test activity: date, action, user, entity.',                  group: 'Project' },
+  { slug: 'traceability-summary',     label: 'Traceability Summary',     description: 'Jira issues with linked test case counts.',                          group: 'Traceability' },
+  { slug: 'traceability-detail',      label: 'Traceability Detail',      description: 'Per-case detail: Jira issue → test case → status.',                  group: 'Traceability' },
+  { slug: 'run-distribution',         label: 'Run Distribution',         description: 'Runs broken down by executor: total, passed, failed.',               group: 'Other' },
+  { slug: 'user-activity',            label: 'User Activity',            description: 'Activity per user: runs executed and pass rate.',                    group: 'Other' },
 ];
 
 const GROUP_ORDER = ['Execution', 'Cases', 'Defects', 'Multi-Cycle', 'Project', 'Traceability', 'Other'];
@@ -84,28 +76,19 @@ function useKpiData(projectId: string | undefined) {
     staleTime: 60 * 1000,
     queryFn: async (): Promise<KpiData> => {
       const [casesRes, cyclesRes, runsRes] = await Promise.all([
-        supabase
-          .from('tm_test_cases')
-          .select('id', { count: 'exact', head: true })
-          .eq('project_id', projectId!),
-        supabase
-          .from('tm_test_cycles')
-          .select('id', { count: 'exact', head: true })
-          .eq('project_id', projectId!),
-        supabase
-          .from('tm_test_runs')
-          .select('id, status, tm_test_cycles!inner(project_id)')
-          .eq('tm_test_cycles.project_id', projectId!),
+        supabase.from('tm_test_cases').select('id', { count: 'exact', head: true }).eq('project_id', projectId!),
+        supabase.from('tm_test_cycles').select('id', { count: 'exact', head: true }).eq('project_id', projectId!),
+        supabase.from('tm_test_runs').select('id, status, tm_test_cycles!inner(project_id)').eq('tm_test_cycles.project_id', projectId!),
       ]);
-
-      const totalCases = casesRes.count ?? 0;
-      const totalCycles = cyclesRes.count ?? 0;
       const runs = runsRes.data ?? [];
       const totalRuns = runs.length;
-      const passedRuns = runs.filter((r: any) => r.status === 'passed').length;
-      const passRate = totalRuns > 0 ? Math.round((passedRuns / totalRuns) * 100) : 0;
-
-      return { totalCases, totalCycles, totalRuns, passRate };
+      const passedRuns = (runs as Array<{ status: string }>).filter(r => r.status === 'passed').length;
+      return {
+        totalCases: casesRes.count ?? 0,
+        totalCycles: cyclesRes.count ?? 0,
+        totalRuns,
+        passRate: totalRuns > 0 ? Math.round((passedRuns / totalRuns) * 100) : 0,
+      };
     },
   });
 }
@@ -137,9 +120,8 @@ function KpiCard({ label, value }: { label: string; value: number | string }) {
   );
 }
 
-function ReportTileCard({ tile }: { tile: ReportTile }) {
+function ReportTileCard({ tile, projectKey }: { tile: ReportTile; projectKey: string }) {
   const navigate = useNavigate();
-
   return (
     <button
       type="button"
@@ -175,65 +157,39 @@ function ReportTileCard({ tile }: { tile: ReportTile }) {
 // ── main page ─────────────────────────────────────────────────────────────────
 
 export default function ReportsPage() {
-  const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
+  const { projectKey = 'TESTHUB' } = useParams<{ projectKey: string }>();
   const projectId = useActiveProject();
   const { data: kpi, isLoading: kpiLoading } = useKpiData(projectId);
 
-  // Group tiles
   const groupedTiles = GROUP_ORDER.map(group => ({
     group,
     tiles: REPORT_TILES.filter(t => t.group === group),
   }));
 
   return (
-    <div
-      style={{
-        fontFamily: 'var(--ds-font-family-body)',
-        minHeight: '100vh',
-        background: 'var(--ds-surface-sunken, #F7F8F9)',
-        display: 'flex',
-        flexDirection: 'column',
-        paddingTop: 16,
-      }}
-    >
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', minHeight: '100vh', background: 'var(--ds-surface-sunken, #F7F8F9)', display: 'flex', flexDirection: 'column', paddingTop: 16 }}>
       <ProjectPageHeader hubType="test" />
 
       <div style={{ flex: 1, padding: '24px 24px 48px', maxWidth: 1200, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
-
-        {/* KPI row */}
         {kpiLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
-            <Spinner size="medium" />
-          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}><Spinner size="medium" /></div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
-            <KpiCard label="Total Cases" value={kpi?.totalCases ?? 0} />
+            <KpiCard label="Total Cases"  value={kpi?.totalCases  ?? 0} />
             <KpiCard label="Total Cycles" value={kpi?.totalCycles ?? 0} />
-            <KpiCard label="Total Runs" value={kpi?.totalRuns ?? 0} />
-            <KpiCard label="Pass Rate" value={`${kpi?.passRate ?? 0}%`} />
+            <KpiCard label="Total Runs"   value={kpi?.totalRuns   ?? 0} />
+            <KpiCard label="Pass Rate"    value={`${kpi?.passRate ?? 0}%`} />
           </div>
         )}
 
-        {/* Report tile groups */}
         {groupedTiles.map(({ group, tiles }) => (
           <div key={group} style={{ marginBottom: 32 }}>
-            <h2 style={{
-              fontSize: 13,
-              fontWeight: 600,
-              color: 'var(--ds-text-subtlest, #6B778C)',
-              marginBottom: 12,
-              marginTop: 0,
-              letterSpacing: '0.04em',
-            }}>
+            <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 12, marginTop: 0, letterSpacing: '0.04em' }}>
               {group}
             </h2>
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 12,
-            }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
               {tiles.map(tile => (
-                <ReportTileCard key={tile.slug} tile={tile} />
+                <ReportTileCard key={tile.slug} tile={tile} projectKey={projectKey} />
               ))}
             </div>
           </div>
