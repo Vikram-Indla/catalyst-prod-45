@@ -19,7 +19,7 @@ import { Menu } from "@/lib/atlaskit-icons";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import { useNavBreakpoint } from "@/hooks/useNavBreakpoint";
 import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
-import { HuddleHeaderStrip } from "./HuddleHeaderStrip";
+import { HuddleFab } from "./HuddleFab";
 
 /**
  * lazyWithRetry — defends against Vite stale-chunk errors after deploys/HMR.
@@ -860,7 +860,7 @@ function CatalystShellContent() {
           </button>
         )}
       </div>
-      <HuddleHeaderStrip />
+      <HuddleFab />
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">
