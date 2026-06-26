@@ -3,6 +3,7 @@
  * GUARDRAIL: Always renders CircleUser face icon when no photo (never bare initials).
  */
 import { CircleUser } from '@/lib/atlaskit-icons';
+import { isBannedAvatarSrc } from '@/components/shared/CatalystAvatar';
 
 interface AvatarChipProps {
   name: string;
@@ -12,10 +13,11 @@ interface AvatarChipProps {
 }
 
 export function AvatarChip({ name, color = 'var(--cp-blue)', size = 28, avatarUrl }: AvatarChipProps) {
-  if (avatarUrl) {
+  const safeAvatarUrl = isBannedAvatarSrc(avatarUrl) ? undefined : avatarUrl;
+  if (safeAvatarUrl) {
     return (
       <img
-        src={avatarUrl}
+        src={safeAvatarUrl}
         alt={name}
         style={{
           width: `${size}px`,

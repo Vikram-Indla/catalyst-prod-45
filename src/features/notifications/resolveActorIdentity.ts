@@ -10,6 +10,7 @@
  *   4. is_jira_sync = true, no actor  → system actor "Jira Sync"
  *   5. nothing  → unknown (caller renders grey placeholder)
  */
+import { isBannedAvatarSrc } from '@/components/shared/CatalystAvatar';
 
 export type ActorSource =
   | 'notification_actor_user_id'
@@ -89,7 +90,7 @@ export function resolveActorIdentity(
     return {
       actorType: 'user',
       displayName: metaActorName,
-      avatarUrl: p?.avatarUrl ?? metaActorAvatar ?? null,
+      avatarUrl: p?.avatarUrl ?? (isBannedAvatarSrc(metaActorAvatar) ? null : (metaActorAvatar ?? null)),
       initials: buildInitials(metaActorName),
       source: 'notification_metadata_actor',
     };
