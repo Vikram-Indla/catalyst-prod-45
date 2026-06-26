@@ -18,6 +18,7 @@
  */
 
 import Avatar, { type AvatarProps } from '@atlaskit/avatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export type CatalystAvatarSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
 
@@ -90,13 +91,15 @@ export default function CatalystAvatar({
   borderColor,
 }: Props) {
   // Path 1: real image URL → Atlaskit Avatar (handles presence, fallback on load error).
-  // Banned external hosts (§19) are dropped so initials render instead.
-  const safeSrc = isBannedAvatarSrc(src) ? null : src;
-  if (safeSrc) {
+  // Resolution order: caller-supplied src (if not banned) → bundled photo by name → null.
+  // Self-resolving from name means callers never need to import resolveAvatarUrl separately.
+  const resolvedSrc = isBannedAvatarSrc(src) ? resolveAvatarUrl(name ?? null)
+                    : (src ?? resolveAvatarUrl(name ?? null));
+  if (resolvedSrc) {
     return (
       <Avatar
         name={name ?? ''}
-        src={safeSrc}
+        src={resolvedSrc}
         size={size}
         appearance={appearance}
         presence={presence}
