@@ -154,5 +154,27 @@ Top residual offender files (for Claude Design to map next): `modules/project-wo
 2. Contrast-probe + visual regression require a browser; run at QA acceptance (light + dark).
 3. Scanner residual (3789) is the documented long-tail, not a regression. Scanner cannot reach 0 under the fallback-preserving wrap pattern.
 
+## PR7–PR9 long-tail investigation (this session, post-PR2–PR6)
+Attempted a deterministic, reference-driven (`references/ads-token-map.md`) exact-match auto-wrap of the long-tail. **Result: aborted + reverted (RED FLAG), correctly.**
+
+- Built a guarded wrapper: wraps only whole-quoted-hex literals (`'#hex'`) with an exact canonical mapping; no spacing/Tailwind/gradient edits.
+- Whole-`src` candidates: **247 wraps / 40 files**. Applied, then spot-check exposed a defect: **205 of 247 were the hex fallback INSIDE `token('color.x', '#hex')` calls** — which is the *canonical ADS helper pattern, already compliant*. Wrapping them (`token('color.x', 'var(--ds-x, #hex)')`) is wrong.
+- Per the contract's one-correction-loop rule → **`git restore` all 40 files. Working tree clean.** Zero PR7–PR9 changes shipped.
+- Only **24 / 247** candidates were genuinely bare (outside `token()`/`var()`), scattered — not worth a second automated pass without per-hex review.
+
+### Critical scanner finding (reframes the residual count)
+The `scripts/no-hardcoded-colors.js` count is **~85% already-compliant noise**. Of 3794 flagged lines:
+
+| Category | Lines | Status |
+|---|---:|---|
+| Inside `token('…', #hex)` (ADS helper) | 568 | ✅ compliant — scanner false-positive |
+| Inside `var(--…, #hex)` (already wrapped) | 2652 | ✅ compliant — scanner false-positive (hex >20 chars from `var(--`) |
+| **Approx TRUE bare-hex** | **~574** | the real long-tail |
+
+**Recommendations for Claude Design / next session:**
+1. Fix the scanner's `isAllowedUsage` to allowlist `token('…', #hex)` and to detect `var(--…, #hex)` regardless of token-name length — this alone drops the reported count from 3789 → ~574.
+2. The real ~574 bare-hex tail is dominated by: Tailwind arbitraries (`bg-[#hex]/opacity` — not var-wrappable), `rgba()`, and **265 distinct hexes with no entry in `references/ads-token-map.md`** (e.g. `#904ee2`, workstream `#fa8c16`/`#52c41a`/`#eb2f96`, `#091e420f`). These need **new hex→token mappings from Claude Design** before any sweep — self-inventing them is forbidden.
+3. PR7 (Release) bare-hex are mostly Tailwind arbitraries in drawers/overlays → need a Tailwind-class→ADS strategy, not hex wrapping.
+
 ## Ready for Claude Design Re-Scan
 **YES** — for the surfaces enumerated in the provided maps. Every map-named bare-hex target that was still bare is now `var(--ds-*, #fallback)`-wrapped; build is green; no behavior change. Remaining work for full app-wide zero is the untargeted long-tail (not in scope of the provided maps) plus the external `@catylast/tokens` `definitions.ts` swap.
