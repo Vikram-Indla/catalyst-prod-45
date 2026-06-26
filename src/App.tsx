@@ -46,6 +46,7 @@ const DeactivatedPage = lazy(() => import("./pages/DeactivatedPage"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
+const ReleaseManagementPage = lazy(() => import("./pages/jira-clone/ReleaseManagementPage"));
 const IssueFullPage = lazy(() => import("./pages/IssueFullPage"));
 const ChatDockMountLazy = lazy(() => import("./components/chat/ChatDockMount"));
 import { VoiceFlowProvider } from './features/voice-flow';
@@ -268,6 +269,7 @@ function App() {
                   {/* AI Cleanup route */}
                   <Route path="/cleanup" element={<S><CleanupPage /></S>} />
                   <Route path="/audit-trail" element={<S><AuditTrailPage /></S>} />
+                  <Route path="/catalyst/testpage" element={<S><ReleaseManagementPage /></S>} />
 
                   {/* Universal issue resolver — Jira-parity /browse/:key canonical */}
                   <Route path="/browse/:issueKey" element={<S><IssueFullPage /></S>} />

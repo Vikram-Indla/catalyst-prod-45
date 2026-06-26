@@ -564,7 +564,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
           /* ─ Link result pane ─ */
           <>
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ padding: 12, background: '#F3F9FF', borderRadius: 8, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <div style={{ padding: 12, background: 'var(--ds-background-information, #F3F9FF)', borderRadius: 8, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 24, flexShrink: 0 }}>✅</span>
                 <div>
                   <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Access created for {email}</p>
@@ -1402,7 +1402,7 @@ function AvatarCell({ userId, name, avatarUrl, hasOverride, uploadedBy, override
           background: 'rgba(0,0,0,0.45)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <span style={{ color: '#fff', fontSize: 9, fontWeight: 600, textAlign: 'center', lineHeight: 1.2 }}>
+          <span style={{ color: 'var(--ds-text-inverse, #fff)', fontSize: 9, fontWeight: 600, textAlign: 'center', lineHeight: 1.2 }}>
             {hasOverride ? '✎' : '+'}
           </span>
         </div>
@@ -1413,7 +1413,7 @@ function AvatarCell({ userId, name, avatarUrl, hasOverride, uploadedBy, override
           style={{
             position: 'absolute', top: -4, right: -4, width: 14, height: 14,
             borderRadius: '50%', border: 'none', background: 'var(--ds-text-danger, #AE2A19)',
-            color: '#fff', fontSize: 8, fontWeight: 700, cursor: 'pointer',
+            color: 'var(--ds-text-inverse, #fff)', fontSize: 8, fontWeight: 700, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
           }}
           title="Remove custom photo"

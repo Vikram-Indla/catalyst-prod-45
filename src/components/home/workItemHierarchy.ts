@@ -19,19 +19,19 @@ export const WORK_ITEM_HIERARCHY: Record<string, TierConfig> = {
   'BRD Task':             { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
 
   // TIER 2 — PORTFOLIO (individual cards, 14-day window)
-  'Epic':                 { tier: 2, label: 'EPIC',                freshnessDays: 14, renderMode: 'individual', color: '#531DAB' },
+  'Epic':                 { tier: 2, label: 'EPIC',                freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #531DAB)' },
 
   // TIER 3 — DELIVERY (individual cards, 7-day window)
   'Story':                { tier: 3, label: 'STORY',               freshnessDays: 7,  renderMode: 'individual', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
 
   // TIER 4 — OPERATIONAL (individual cards, 14-day window — incidents are always urgent)
-  'Incident':             { tier: 4, label: 'PRODUCTION INCIDENT', freshnessDays: 14, renderMode: 'individual', color: '#CF1322' },
-  'Production Incident':  { tier: 4, label: 'PRODUCTION INCIDENT', freshnessDays: 14, renderMode: 'individual', color: '#CF1322' },
+  'Incident':             { tier: 4, label: 'PRODUCTION INCIDENT', freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-danger-bold, #CF1322)' },
+  'Production Incident':  { tier: 4, label: 'PRODUCTION INCIDENT', freshnessDays: 14, renderMode: 'individual', color: 'var(--ds-background-danger-bold, #CF1322)' },
 
   // TIER 5 — QUALITY (collapsed, 3-day window)
-  'Bug':                  { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: '#FA541C' },
-  'Defect':               { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: '#FA541C' },
-  'QA Bug':               { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: '#FA541C' },
+  'Bug':                  { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold, #FA541C)' },
+  'Defect':               { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold, #FA541C)' },
+  'QA Bug':               { tier: 5, label: 'DEFECT',              freshnessDays: 3,  renderMode: 'collapsed',  color: 'var(--ds-background-danger-bold, #FA541C)' },
 
   // TIER 6 — EXECUTION (collapsed, 3-day window)
   'Sub-task':             { tier: 6, label: 'SUB-TASK',            freshnessDays: 3,  renderMode: 'collapsed',  color: '#8B8FA3' },

@@ -42,7 +42,7 @@ import {
 
 // ── Dark palette matching Jira Workflow Builder ─────────────────────────────
 const DARK = {
-  canvas: '#1A1C1E',
+  canvas: 'var(--ds-surface-sunken, #1A1C1E)',
   surface: 'var(--ds-surface, #FFFFFF)',
   surfaceHover: 'var(--ds-background-neutral, #F1F2F4)',
   border: '#3B4349',

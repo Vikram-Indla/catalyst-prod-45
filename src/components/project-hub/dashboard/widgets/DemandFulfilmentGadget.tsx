@@ -162,7 +162,7 @@ const workingDaysBetween = (target: Date, today: Date): number => {
 type RagState = 'overdue' | 'risk' | 'ontrack' | 'none';
 
 const ragColors: Record<RagState, { dot: string; bg: string; fg: string; border: string; bar: string }> = {
-  overdue: { dot: 'var(--ds-background-danger-bold, #C9372C)', bg: 'var(--ds-background-danger, #FFECEB)', fg: 'var(--ds-text-danger, #AE2A19)', border: '#FFB8AC', bar: 'var(--ds-background-danger-bold, #C9372C)' },
+  overdue: { dot: 'var(--ds-background-danger-bold, #C9372C)', bg: 'var(--ds-background-danger, #FFECEB)', fg: 'var(--ds-text-danger, #AE2A19)', border: 'var(--ds-border, #FFB8AC)', bar: 'var(--ds-background-danger-bold, #C9372C)' },
   risk:    { dot: 'var(--ds-background-warning-bold, #E2B203)', bg: 'var(--ds-background-warning, #FFF7D6)', fg: 'var(--ds-text-accent-yellow, #7F5F01)', border: 'var(--ds-background-warning-bold, #E2B203)', bar: 'var(--ds-background-warning-bold, #E2B203)' },
   ontrack: { dot: 'var(--ds-background-success-bold, #1F845A)', bg: 'var(--ds-background-success, #DFFCF0)', fg: 'var(--ds-text-accent-green, #216E4E)', border: 'var(--ds-background-success-bold, #1F845A)', bar: 'var(--ds-background-success-bold, #1F845A)' },
   none:    { dot: 'var(--ds-text-disabled, #8590A2)', bg: 'var(--ds-surface-sunken, #F4F5F7)', fg: 'var(--ds-text-subtlest, #6B778C)', border: 'var(--ds-border, #DFE1E6)', bar: 'var(--ds-text-disabled, #8590A2)' },

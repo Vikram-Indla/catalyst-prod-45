@@ -50,7 +50,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
         <div className="flex items-center gap-3" style={{ marginBottom: 16 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8,
-            background: '#FFEBEE', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--ds-background-danger, #FFEBEE)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <Trash2 size={18} color="#D32F2F" />
           </div>
@@ -91,7 +91,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             style={{
               padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
               border: 'none', background: canDelete ? '#D32F2F' : 'var(--ds-border, #DFE1E6)',
-              color: canDelete ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : '#9E9E9E', cursor: canDelete ? 'pointer' : 'not-allowed',
+              color: canDelete ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-disabled, #9E9E9E)', cursor: canDelete ? 'pointer' : 'not-allowed',
               opacity: canDelete ? 1 : 0.6,
             }}
           >Delete</button>

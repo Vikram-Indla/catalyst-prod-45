@@ -3,16 +3,14 @@
  */
 import React from 'react';
 import type { QueryResult } from './PersonalizedQueryProcessor';
+import { WORKSTREAM_COLORS } from '@/constants/workstreamColors';
 
 // Font tokens removed — using ADS tokens instead
 // inter → var(--ds-font-family-body)
 // mono → var(--ds-font-family-code)
 // sora → var(--ds-font-family-body)
 
-const PROJECT_COLORS: Record<string, string> = {
-  BAU: 'var(--ds-background-discovery-bold, #6E5DC6)', SIMP: '#FA8C16', MDT: '#52C41A', ICP: 'var(--ds-background-discovery-bold, #6E5DC6)',
-  IP: '#13C2C2', IRP: '#EB2F96', MWR: '#FAAD14', TAH: '#1890FF',
-};
+const PROJECT_COLORS = WORKSTREAM_COLORS;
 
 const STATUS_MAP: Record<string, { bg: string; color: string }> = {
   'to do': { bg: 'var(--cp-lz-gy-bg)', color: 'var(--cp-lz-gy-t)' },

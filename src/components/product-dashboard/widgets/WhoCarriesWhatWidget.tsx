@@ -45,7 +45,7 @@ function WorkloadRow({
     ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
     : isMedium
     ? '#F5A623'
-    : '#8A7CFF';
+    : 'var(--ds-chart-purple-bold, #8A7CFF)';
 
   return (
     <div

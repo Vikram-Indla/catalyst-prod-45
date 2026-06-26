@@ -50,7 +50,7 @@ const KPI_CARDS: KPICardDef[] = [
     label: 'Due This Week',
     getValue: k => k.due_this_week,
     icon: Clock,
-    iconBg: '#fefce8',
+    iconBg: 'var(--ds-chart-yellow-subtle, #fefce8)',
     iconColor: 'var(--sem-warning)',
     getValueColor: k => k.due_this_week > 0 ? 'var(--sem-warning)' : undefined,
     path: '/projecthub/workitems',

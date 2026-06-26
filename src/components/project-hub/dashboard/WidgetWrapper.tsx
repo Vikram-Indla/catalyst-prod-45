@@ -52,7 +52,7 @@ const HIGHLIGHT_COLORS: Record<string, string> = {
   red: 'var(--ds-background-danger-bold, #C9372C)',
   orange: 'var(--ds-background-warning-bold, #E2B203)',
   green: 'var(--ds-text-success, #006644)',
-  teal: '#00B8D9',
+  teal: 'var(--ds-chart-teal-bold, #00B8D9)',
   purple: 'var(--ds-background-discovery-bold, #6554C0)',
   grey: 'var(--ds-text-subtlest, #6B778C)',
   white: 'transparent',
