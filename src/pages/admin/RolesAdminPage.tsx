@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@atlaskit/button/new';
-import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
@@ -108,16 +107,14 @@ export default function RolesAdminPage() {
                       </p>
                     )}
                   </div>
-                  <Tooltip content="User reassignment coming soon" position="top">
-                    <Button
-                      appearance="primary"
-                      spacing="compact"
-                      iconBefore={PeopleGroupIcon}
-                      isDisabled
-                    >
-                      Assign users
-                    </Button>
-                  </Tooltip>
+                  <Button
+                    appearance="primary"
+                    spacing="compact"
+                    iconBefore={PeopleGroupIcon}
+                    onClick={() => openAssign(selectedRole.id)}
+                  >
+                    Assign users
+                  </Button>
                 </div>
 
                 {/* @atlaskit/tabs */}

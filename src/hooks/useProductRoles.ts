@@ -475,3 +475,53 @@ export function useUpdateRolePermissions() {
     }
   });
 }
+
+export function useAllProfiles() {
+  return useQuery({
+    queryKey: ['all-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email, full_name')
+        .eq('approval_status', 'APPROVED')
+        .order('full_name');
+      if (error) throw error;
+      return data as { id: string; email: string; full_name: string | null }[];
+    }
+  });
+}
+
+export function useAssignUserToRole() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ userId, roleId }: { userId: string; roleId: string }) => {
+      const { error } = await supabase
+        .from('user_product_roles')
+        .insert({ user_id: userId, role_id: roleId, business_lines: [], has_overrides: false });
+      if (error) throw error;
+    },
+    onSuccess: (_, v) => {
+      queryClient.invalidateQueries({ queryKey: ['users-with-role', v.roleId] });
+      queryClient.invalidateQueries({ queryKey: ['product-roles'] });
+    },
+    onError: (e) => catalystToast.error('Failed to assign user: ' + (e as Error).message),
+  });
+}
+
+export function useRemoveUserFromRole() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ userRoleId, roleId }: { userRoleId: string; roleId: string }) => {
+      const { error } = await supabase
+        .from('user_product_roles')
+        .delete()
+        .eq('id', userRoleId);
+      if (error) throw error;
+    },
+    onSuccess: (_, v) => {
+      queryClient.invalidateQueries({ queryKey: ['users-with-role', v.roleId] });
+      queryClient.invalidateQueries({ queryKey: ['product-roles'] });
+    },
+    onError: (e) => catalystToast.error('Failed to remove user: ' + (e as Error).message),
+  });
+}
