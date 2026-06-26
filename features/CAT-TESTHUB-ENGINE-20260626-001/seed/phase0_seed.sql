@@ -1,0 +1,8 @@
+-- CAT-TESTHUB-ENGINE-20260626-001 · Phase 0 curated-minimal seed (staging cyij)
+-- Applied 2026-06-26 via Supabase MCP execute_sql.
+-- Wipe (content only; keeps tm_projects + tm_case_priorities + tm_case_types):
+--   DO block deletes all tm_* content tables that exist (see session 002 log).
+-- Reseed: project DEMO (...0001) · 6 folders (nested) · 10 cases · 28 steps.
+-- Result: folders=6, cases=10, steps=28.
+-- NOTE: this is the Phase-0 foundation set; Sets/Cycles/Runs/Defects/Traceability
+-- seed is added by their respective phases. Full SQL recorded in session log 002.
