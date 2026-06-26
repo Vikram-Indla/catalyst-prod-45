@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useProjects } from '@/hooks/test-management/useProjects';
+import { WorkItemTypeIcon } from '@/components/icons';
 import {
   useFolderTree,
   useFoldersWithCounts,
@@ -682,13 +683,15 @@ export default function RepositoryPage() {
       width: 8,
       alwaysVisible: true,
       cell: ({ row }) => (
-        <span style={{
-          fontFamily: 'var(--ds-font-family-code, monospace)',
-          color: 'var(--ds-text-subtlest)',
-          fontSize: 12,
-          whiteSpace: 'nowrap',
-        }}>
-          {row.key ?? '—'}
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+          <WorkItemTypeIcon type="test-case" size={14} />
+          <span style={{
+            fontFamily: 'var(--ds-font-family-code, monospace)',
+            color: 'var(--ds-text-subtlest)',
+            fontSize: 12,
+          }}>
+            {row.key ?? '—'}
+          </span>
         </span>
       ),
     },

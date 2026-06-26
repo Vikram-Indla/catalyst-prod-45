@@ -6,7 +6,8 @@
 - **Phase:** Phase 1 (Repository proper) — **Slice 1a COMPLETE & PROVEN LIVE**, awaiting sign-off.
 - **1a done:** archived column+filter, is_latest de-dup, edit folder-trap fix, delete-confirm dialog, create write-path proven (TC-0001). D8 archive decision applied.
 - **1b done:** folder rollup count badges (incl subfolders) + folder delete-confirm dialog (proven live, Cancel keeps 6 folders). Move/drag-reorder DEFERRED.
-- **Remaining Phase 1:** 1c (Classic/BDD toggle, CaseDrawer→CatalystViewBase per D4, native case SVG icon, version-list display, case_key format reconcile) + deferred folder Move/drag.
+- **1c partial:** native test-case SVG icon in key cell (proven live, DOM 11 icons). REMAINING 1c: Classic/BDD toggle, **CaseDrawer→CatalystViewBase (D4)** [biggest — needs CatalystViewBase slot-API probe; relocates footer that collides with CATY overlay], version-list display, case_key format (TC-0001 vs TC-001). + deferred folder Move/drag.
+- **Resume hint for next session:** probe `src/components/catalyst-detail-views/shared/CatalystViewBase.tsx` slot/prop API, then migrate `CaseDrawer.tsx` (form state + 3 mutations carry over unchanged).
 - **Open UX flag:** CATY floating assistant overlaps CaseDrawer "Create case" submit (clicks hit CATY). See 08.
 - **Active slice:** none (1a sign-off gate).
 - **Execution authorization:** GRANTED for Phase 0 ("proceed"). Phase 1 needs the P0 sign-off first.

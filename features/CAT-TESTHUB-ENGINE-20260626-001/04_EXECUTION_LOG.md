@@ -22,3 +22,5 @@ Format: date · phase/slice · what changed (files) · validation run · result 
 | 2026-06-26 | P1b · folder counts | RepositoryPage: buildCountedTree rollup + badge; FolderTreeView→useFoldersWithCounts | live: Authentication 6 / Checkout 3 / Reporting 1 | rollup incl subfolders | (uncommitted) |
 | 2026-06-26 | P1b · folder delete confirm | RepositoryPage FolderNode: ADS warning ModalDialog w/ impact text | live: Cancel → 6 folders intact | guards folder delete | (uncommitted) |
 | 2026-06-26 | P1b · Move folder | DEFERRED (useMoveFolder unwired); drag-reorder deferred | — | later increment | — |
+| 2026-06-26 | P1c · native case icon | RepositoryPage key cell: `<WorkItemTypeIcon type="test-case">` (registry svg already present) | live DOM: 11 icons, 14px, loaded; zoom shows green flask glyph | native SVG icon shipped | (uncommitted) |
+| 2026-06-26 | P1c · remaining | BDD toggle, CaseDrawer→CatalystViewBase (D4), version-list, case_key format | — | DEFERRED to focused pass | — |
