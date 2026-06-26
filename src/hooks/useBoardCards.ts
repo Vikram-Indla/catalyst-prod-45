@@ -61,7 +61,7 @@ export function useBoardCards(boardId: string | undefined) {
 
         // Map priority
         const priorityColors: Record<string, string> = {
-          Critical: 'var(--ds-background-danger-bold, #C9372C)', Highest: 'var(--ds-background-danger-bold, #C9372C)', High: '#FF7452',
+          Critical: 'var(--ds-background-danger-bold, #C9372C)', Highest: 'var(--ds-background-danger-bold, #C9372C)', High: 'var(--ds-background-danger-bold, #FF7452)',
           Medium: 'var(--cp-warning, #D97706)', Low: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))', Lowest: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
         };
         const pName = item.priority ?? '';
