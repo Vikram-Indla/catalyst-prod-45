@@ -19,3 +19,6 @@ Format: date · phase/slice · what changed (files) · validation run · result 
 | 2026-06-26 | P1a · CaseDrawer folder-trap | edit now preserves existingCase.folder_id (was overwriting with sidebar folder) | code (surgical) | data-integrity fix | (uncommitted) |
 | 2026-06-26 | P1a · delete confirm | RepositoryPage: trash → ADS danger ModalDialog (was instant hard-delete) | live: Cancel → count stays 10 | guards accidental delete | (uncommitted) |
 | 2026-06-26 | P1a · create proof | (browser) created TC-0001 via drawer → row in cyij (draft, latest) | live | write path PROVEN | — |
+| 2026-06-26 | P1b · folder counts | RepositoryPage: buildCountedTree rollup + badge; FolderTreeView→useFoldersWithCounts | live: Authentication 6 / Checkout 3 / Reporting 1 | rollup incl subfolders | (uncommitted) |
+| 2026-06-26 | P1b · folder delete confirm | RepositoryPage FolderNode: ADS warning ModalDialog w/ impact text | live: Cancel → 6 folders intact | guards folder delete | (uncommitted) |
+| 2026-06-26 | P1b · Move folder | DEFERRED (useMoveFolder unwired); drag-reorder deferred | — | later increment | — |

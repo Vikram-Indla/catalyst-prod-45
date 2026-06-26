@@ -5,7 +5,8 @@
 ## CURRENT STATE
 - **Phase:** Phase 1 (Repository proper) — **Slice 1a COMPLETE & PROVEN LIVE**, awaiting sign-off.
 - **1a done:** archived column+filter, is_latest de-dup, edit folder-trap fix, delete-confirm dialog, create write-path proven (TC-0001). D8 archive decision applied.
-- **Remaining Phase 1:** 1b folders (case_count rollup badge, wire Move, delete-confirm + child-block), 1c (Classic/BDD toggle, CaseDrawer→CatalystViewBase per D4, native case SVG icon, version-list display, case_key format reconcile).
+- **1b done:** folder rollup count badges (incl subfolders) + folder delete-confirm dialog (proven live, Cancel keeps 6 folders). Move/drag-reorder DEFERRED.
+- **Remaining Phase 1:** 1c (Classic/BDD toggle, CaseDrawer→CatalystViewBase per D4, native case SVG icon, version-list display, case_key format reconcile) + deferred folder Move/drag.
 - **Open UX flag:** CATY floating assistant overlaps CaseDrawer "Create case" submit (clicks hit CATY). See 08.
 - **Active slice:** none (1a sign-off gate).
 - **Execution authorization:** GRANTED for Phase 0 ("proceed"). Phase 1 needs the P0 sign-off first.

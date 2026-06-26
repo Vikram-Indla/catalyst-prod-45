@@ -1,9 +1,10 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import {
   useFolderTree,
+  useFoldersWithCounts,
   useCreateFolder,
   useUpdateFolder,
   useDeleteFolder,
@@ -288,12 +289,14 @@ function FolderNode({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [renaming, setRenaming] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const updateFolder = useUpdateFolder();
   const deleteFolder = useDeleteFolder();
 
   const hasChildren = (folder.children?.length ?? 0) > 0;
   const isSelected = selectedId === folder.id;
+  const rollupCount = (folder as TMFolder & { rollupCount?: number }).rollupCount ?? folder.case_count ?? 0;
 
   const handleRename = (name: string) => {
     if (!projectId) return;
@@ -347,6 +350,19 @@ function FolderNode({
           {folder.name}
         </span>
 
+        {rollupCount > 0 && (
+          <span
+            style={{
+              flexShrink: 0, fontSize: 11, fontWeight: 600, minWidth: 18, textAlign: 'center',
+              padding: '0 6px', borderRadius: 10, marginRight: 2,
+              background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtle)',
+            }}
+            title={`${rollupCount} case${rollupCount === 1 ? '' : 's'} (incl. subfolders)`}
+          >
+            {rollupCount}
+          </span>
+        )}
+
         <span onClick={e => e.stopPropagation()}>
           <DropdownMenu
             trigger={({ triggerRef, ...props }) => (
@@ -371,7 +387,7 @@ function FolderNode({
             <DropdownItemGroup>
               <DropdownItem onClick={() => onNewSubfolder(folder.id)}>New subfolder</DropdownItem>
               <DropdownItem onClick={() => setRenaming(true)}>Rename</DropdownItem>
-              <DropdownItem onClick={handleDelete}>Delete</DropdownItem>
+              <DropdownItem onClick={() => setConfirmingDelete(true)}>Delete</DropdownItem>
             </DropdownItemGroup>
           </DropdownMenu>
         </span>
@@ -384,6 +400,37 @@ function FolderNode({
           saving={updateFolder.isPending}
           onSave={handleRename}
         />
+      )}
+
+      {confirmingDelete && (
+        <ModalDialog onClose={() => setConfirmingDelete(false)}>
+          <ModalHeader>
+            <ModalTitle appearance="warning">Delete folder?</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+              <strong>{folder.name}</strong> will be deleted.
+              {rollupCount > 0 && ` Its ${rollupCount} case${rollupCount === 1 ? '' : 's'}`}
+              {rollupCount > 0 && hasChildren ? ' and subfolders' : hasChildren ? ' Subfolders' : ''}
+              {(rollupCount > 0 || hasChildren) ? ' will move to the parent folder.' : ''}
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <button
+              onClick={() => setConfirmingDelete(false)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 12px', fontWeight: 500, color: 'var(--ds-text-subtle)' }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => { handleDelete(); setConfirmingDelete(false); }}
+              disabled={deleteFolder.isPending}
+              style={{ background: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 3, cursor: 'pointer', padding: '6px 14px', fontWeight: 600 }}
+            >
+              {deleteFolder.isPending ? 'Deleting…' : 'Delete'}
+            </button>
+          </ModalFooter>
+        </ModalDialog>
       )}
 
       {expanded && hasChildren && (folder.children ?? []).map(child => (
@@ -403,6 +450,27 @@ function FolderNode({
 
 // ── Folder tree view ──────────────────────────────────────────────────────────
 
+// Build a tree from flat folders (each carrying direct case_count) and annotate
+// every node with rollupCount = own cases + all descendants' cases.
+type CountedFolder = TMFolder & { rollupCount: number; children: CountedFolder[] };
+function buildCountedTree(flat: TMFolder[]): CountedFolder[] {
+  const map = new Map<string, CountedFolder>();
+  flat.forEach(f => map.set(f.id, { ...f, children: [], rollupCount: f.case_count ?? 0 }));
+  const roots: CountedFolder[] = [];
+  flat.forEach(f => {
+    const node = map.get(f.id)!;
+    const parent = f.parent_id ? map.get(f.parent_id) : null;
+    if (parent) parent.children.push(node);
+    else roots.push(node);
+  });
+  const sum = (n: CountedFolder): number => {
+    n.rollupCount = (n.case_count ?? 0) + n.children.reduce((acc, c) => acc + sum(c), 0);
+    return n.rollupCount;
+  };
+  roots.forEach(sum);
+  return roots;
+}
+
 function FolderTreeView({
   projectId, selectedId, onSelect, onNewSubfolder,
 }: {
@@ -411,7 +479,8 @@ function FolderTreeView({
   onSelect: (id: string) => void;
   onNewSubfolder: (parentId: string) => void;
 }) {
-  const { data: tree = [], isLoading } = useFolderTree(projectId);
+  const { data: flat = [], isLoading } = useFoldersWithCounts(projectId);
+  const tree = useMemo(() => buildCountedTree(flat), [flat]);
   if (isLoading) return <div style={{ padding: 8 }}><Spinner size="small" /></div>;
   if (tree.length === 0) return null;
   return (
