@@ -7,7 +7,7 @@
  * RLS already scopes chat_huddles to the caller's conversations, so a plain
  * status='active' select only returns relevant huddles.
  */
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -16,6 +16,18 @@ import { useHuddleActions } from '@/hooks/chat/useHuddleData';
 import type { ChatConversation } from '@/types/chat';
 
 const db = supabase as unknown as { from: (t: string) => any };
+
+// Declined huddles — module-level + localStorage so a decline survives
+// re-renders, remounts AND page refresh (Slack-like: once declined, never
+// re-rings for that same huddle). A NEW huddle (new id) rings again.
+const DECLINED_KEY = 'huddle-declined-ids';
+const declined: Set<string> = (() => {
+  try { return new Set<string>(JSON.parse(localStorage.getItem(DECLINED_KEY) || '[]')); }
+  catch { return new Set<string>(); }
+})();
+function persistDeclined() {
+  try { localStorage.setItem(DECLINED_KEY, JSON.stringify([...declined].slice(-200))); } catch { /* ignore */ }
+}
 
 interface HuddleRow { id: string; conversation_id: string; started_by: string }
 interface PartRow { huddle_id: string }
@@ -38,8 +50,6 @@ export function useIncomingHuddle(): {
   const instanceId = useId();
   const activeInCall = useHuddleStore((s) => s.active?.huddleId ?? null);
   const { startOrJoin } = useHuddleActions();
-  const dismissed = useRef<Set<string>>(new Set());
-  const [, force] = useState(0);
 
   const { data } = useQuery<IncomingHuddle | null>({
     queryKey: ['chat', 'huddle', 'incoming', userId],
@@ -50,12 +60,13 @@ export function useIncomingHuddle(): {
         .select('id, conversation_id, started_by').eq('status', 'active');
       const rows = (huds ?? []) as HuddleRow[];
       if (!rows.length) return null;
-      // huddles I'm a live participant of — exclude (I'm already in / I started+joined)
+      // huddles I've EVER joined (live or already left) — exclude so a call I'm
+      // in, or one I already left, never re-rings me (Slack behaviour).
       const { data: mine } = await db.from('chat_huddle_participants')
-        .select('huddle_id').eq('user_id', userId).is('left_at', null);
+        .select('huddle_id').eq('user_id', userId);
       const inIds = new Set(((mine ?? []) as PartRow[]).map((p) => p.huddle_id));
       const candidate = rows.find(
-        (h) => h.started_by !== userId && !inIds.has(h.id) && !dismissed.current.has(h.id),
+        (h) => h.started_by !== userId && !inIds.has(h.id) && !declined.has(h.id),
       );
       if (!candidate) return null;
       const [{ data: caller }, { data: conv }] = await Promise.all([
@@ -89,9 +100,8 @@ export function useIncomingHuddle(): {
   const incoming = !activeInCall && data ? data : null;
 
   const decline = useCallback(() => {
-    if (data) dismissed.current.add(data.huddleId);
+    if (data) { declined.add(data.huddleId); persistDeclined(); }
     qc.invalidateQueries({ queryKey: ['chat', 'huddle', 'incoming', userId] });
-    force((n) => n + 1);
   }, [data, qc, userId]);
 
   const accept = useCallback(() => {
