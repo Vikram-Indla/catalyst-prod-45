@@ -119,10 +119,6 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
         const a = get().active;
         if (a) set({ active: { ...a, screenSharing: false } });
       },
-      onPeerLeft: () => {
-        // Other participant hung up — tear down locally (releases mic, clears FAB).
-        get().leave();
-      },
     });
     selfIdRef = selfId;
     huddleIdRef = huddleId;

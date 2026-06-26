@@ -236,11 +236,11 @@ export class HuddleConnection {
       }
       case 'leave': {
         if (sig.from !== this.remoteId && this.remoteId !== null) break; // ignore strays
+        // The other person left. Clear their screen if they were sharing, mark
+        // the connection disconnected — but do NOT tear down our own call: you
+        // stay in the huddle (mic on) until YOU leave (phone-call behaviour).
         this.opts.onRemoteScreen?.(null);
         this.opts.onConnectionState('disconnected');
-        // 2-person call: the other person hung up → end locally so the mic is
-        // released and the FAB clears (no lingering recording indicator).
-        this.opts.onPeerLeft?.();
         break;
       }
     }

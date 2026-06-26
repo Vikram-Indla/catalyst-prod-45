@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Avatar from '@atlaskit/avatar';
 import Spinner from '@atlaskit/spinner';
 import { useHuddleStore, getHuddleRemoteStream } from '@/store/huddleStore';
+import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
 
 /**
  * HuddleFab — draggable floating call widget (replaces the old header strip).
@@ -34,6 +35,8 @@ export function HuddleFab() {
   const stopScreen = useHuddleStore((s) => s.stopScreen);
   const screenWindow = useHuddleStore((s) => s.screenWindow);
   const setScreenWindow = useHuddleStore((s) => s.setScreenWindow);
+  const { huddle } = useActiveHuddle(active?.conversationId ?? null);
+  const participants = huddle?.participants ?? [];
   const navigate = useNavigate();
 
   const [hovered, setHovered] = useState(false);
@@ -198,14 +201,25 @@ export function HuddleFab() {
         userSelect: 'none',
       }}
     >
-      {/* avatar */}
-      <span style={{ position: 'relative', flex: '0 0 auto', display: 'inline-flex', borderRadius: '50%' }}>
-        <Avatar size="medium" />
-        {!connecting && (
-          <span aria-hidden style={{
-            position: 'absolute', insetInlineStart: -3, insetBlockStart: -3, insetInlineEnd: -3, insetBlockEnd: -3,
-            borderRadius: '50%', border: `2px solid ${green}`, pointerEvents: 'none',
-          }} />
+      {/* participant avatars (stacked) — falls back to one generic avatar */}
+      <span style={{ position: 'relative', flex: '0 0 auto', display: 'inline-flex', alignItems: 'center' }}>
+        {participants.length > 0 ? (
+          participants.map((p, i) => (
+            <span key={p.userId} title={p.name || undefined}
+              style={{ marginLeft: i === 0 ? 0 : -10, borderRadius: '50%', boxShadow: '0 0 0 2px var(--ds-surface-overlay, #FFFFFF)' }}>
+              <Avatar size="medium" name={p.name || undefined} src={p.avatarUrl || undefined} />
+            </span>
+          ))
+        ) : (
+          <span style={{ position: 'relative', display: 'inline-flex', borderRadius: '50%' }}>
+            <Avatar size="medium" />
+            {!connecting && (
+              <span aria-hidden style={{
+                position: 'absolute', insetInlineStart: -3, insetBlockStart: -3, insetInlineEnd: -3, insetBlockEnd: -3,
+                borderRadius: '50%', border: `2px solid ${green}`, pointerEvents: 'none',
+              }} />
+            )}
+          </span>
         )}
       </span>
 

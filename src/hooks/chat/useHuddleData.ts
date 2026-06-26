@@ -66,11 +66,14 @@ export function useActiveHuddle(conversationId: string | null) {
         .select('huddle_id, user_id, left_at').eq('huddle_id', (hud as HuddleRow).id).is('left_at', null);
       const ids = ((parts ?? []) as ParticipantRow[]).map((p) => p.user_id);
       let nameMap: Record<string, string> = {};
+      let avatarMap: Record<string, string> = {};
       if (ids.length) {
-        const { data: profs } = await db.from('profiles').select('id, full_name').in('id', ids);
-        nameMap = Object.fromEntries(((profs ?? []) as { id: string; full_name: string | null }[]).map((r) => [r.id, r.full_name ?? '']));
+        const { data: profs } = await db.from('profiles').select('id, full_name, avatar_url').in('id', ids);
+        const rows = (profs ?? []) as { id: string; full_name: string | null; avatar_url: string | null }[];
+        nameMap = Object.fromEntries(rows.map((r) => [r.id, r.full_name ?? '']));
+        avatarMap = Object.fromEntries(rows.map((r) => [r.id, r.avatar_url ?? '']));
       }
-      const participants = ids.map((uid) => ({ userId: uid, name: nameMap[uid] || '' }));
+      const participants = ids.map((uid) => ({ userId: uid, name: nameMap[uid] || '', avatarUrl: avatarMap[uid] || '' }));
       return {
         id: (hud as HuddleRow).id,
         participants,
