@@ -80,17 +80,22 @@ Deno.serve(async (req) => {
         const catalystJiraIds = new Set(jiraIdToProfileId.keys())
         const { data: phIssues } = await supabase.from('ph_issues').select('id, issue_key, issue_type, summary, status, status_category, assignee_account_id').in('assignee_account_id', [...catalystJiraIds]).is('deleted_at', null).order('jira_updated_at', { ascending: false })
         if (phIssues && phIssues.length > 0) {
-          const candidateEntityIds = phIssues
-            .filter((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id))
-            .map((pi: any) => pi.id as string)
-          // Query by entity_id (not recipient_user_id) — avoids the 1000-row default page cap
-          // that truncates results when total direct-tab rows exceed 1000 across all profiles.
-          const { data: existingRows } = await supabase.from('notifications').select('entity_id, recipient_user_id').in('entity_id', candidateEntityIds).eq('tab', 'direct').limit(candidateEntityIds.length + 1)
-          const hasAnyRow = new Set<string>((existingRows ?? []).map((r: any) => `${r.entity_id}::${r.recipient_user_id}`))
+          // Scan candidates in chunks of 50 to avoid PostgREST max-rows=1000 cap.
+          // Querying all 1515+ entity_ids at once returns up to 1000 rows; newest rows land
+          // at positions 1001+ and are missed, causing the same issues to be re-inserted forever.
+          const CHUNK = 50
+          const allCandidates = phIssues.filter((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id))
+          const toBackfill: any[] = []
+          for (let i = 0; i < allCandidates.length && toBackfill.length < 100; i += CHUNK) {
+            const chunk = allCandidates.slice(i, i + CHUNK)
+            const { data: chunkRows } = await supabase.from('notifications').select('entity_id, recipient_user_id').in('entity_id', chunk.map((pi: any) => pi.id)).eq('tab', 'direct').limit(CHUNK * 10)
+            const hasRow = new Set<string>((chunkRows ?? []).map((r: any) => `${r.entity_id}::${r.recipient_user_id}`))
+            const fresh = chunk.filter((pi: any) => { const profileId = jiraIdToProfileId.get(pi.assignee_account_id); return profileId && !hasRow.has(`${pi.id}::${profileId}`) })
+            toBackfill.push(...fresh)
+          }
           const ICON_MAP: Record<string, string> = { 'Sub-task': 'subtask', 'Frontend': 'frontend', 'Backend': 'backend', 'Integration': 'subtask', 'Story': 'story', 'Task': 'task', 'QA Bug': 'bug', 'Defect': 'bug', 'Epic': 'epic', 'Feature': 'feature', 'Production Incident': 'incident', 'Change Request': 'change_request', 'Business Gap': 'business_gap', 'API Requirement': 'task' }
-          const toBackfill = phIssues.filter((pi: any) => { const profileId = jiraIdToProfileId.get(pi.assignee_account_id); return profileId && !hasAnyRow.has(`${pi.id}::${profileId}`) }).slice(0, 100)
-          actorBackfillCandidates = toBackfill.length
-          for (const pi of toBackfill) {
+          actorBackfillCandidates = batchToProcess.length
+          for (const pi of batchToProcess) {
             const profileId = jiraIdToProfileId.get(pi.assignee_account_id)
             if (!profileId) continue
             try {
@@ -856,21 +861,19 @@ Deno.serve(async (req) => {
       if (phIssues && phIssues.length > 0) {
           // Check which (entity_id, recipient_user_id) pairs already have a direct notification row.
           // Query by recipient_user_id (40 items max) NOT entity_id (1515 items) — avoids PostgREST URL limit.
-          const candidateEntityIds = phIssues
-            .filter((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id))
-            .map((pi: any) => pi.id as string)
-          // Query by entity_id (not recipient_user_id) — avoids the 1000-row default page cap
-          // that truncates results when total direct-tab rows exceed 1000 across all profiles.
-          const { data: existingRows } = await supabase
-            .from('notifications')
-            .select('entity_id, recipient_user_id')
-            .in('entity_id', candidateEntityIds)
-            .eq('tab', 'direct')
-            .limit(candidateEntityIds.length + 1)
-
-          const hasAnyRow = new Set<string>(
-            (existingRows ?? []).map((r: any) => `${r.entity_id}::${r.recipient_user_id}`)
-          )
+          // Scan candidates in chunks of 50 to avoid PostgREST max-rows=1000 cap.
+          // Querying all 1515+ entity_ids at once returns up to 1000 rows; newest rows land
+          // at positions 1001+ and are missed, causing the same issues to be re-inserted forever.
+          const CHUNK_13_5 = 50
+          const allCandidates_13_5 = phIssues.filter((pi: any) => jiraIdToProfileId.get(pi.assignee_account_id))
+          const toBackfill_13_5: any[] = []
+          for (let i = 0; i < allCandidates_13_5.length && toBackfill_13_5.length < 100; i += CHUNK_13_5) {
+            const chunk = allCandidates_13_5.slice(i, i + CHUNK_13_5)
+            const { data: chunkRows } = await supabase.from('notifications').select('entity_id, recipient_user_id').in('entity_id', chunk.map((pi: any) => pi.id)).eq('tab', 'direct').limit(CHUNK_13_5 * 10)
+            const hasRow = new Set<string>((chunkRows ?? []).map((r: any) => `${r.entity_id}::${r.recipient_user_id}`))
+            const fresh = chunk.filter((pi: any) => { const profileId = jiraIdToProfileId.get(pi.assignee_account_id); return profileId && !hasRow.has(`${pi.id}::${profileId}`) })
+            toBackfill_13_5.push(...fresh)
+          }
 
           // Icon type map — mirrors useDirectFromSync client-side map
           const ICON_MAP: Record<string, string> = {
@@ -881,14 +884,7 @@ Deno.serve(async (req) => {
             'Business Gap': 'business_gap', 'API Requirement': 'task',
           }
 
-          // Build backfill list, cap at 100 changelog calls per sync run
-          const toBackfill = phIssues
-            .filter((pi: any) => {
-              const profileId = jiraIdToProfileId.get(pi.assignee_account_id)
-              return profileId && !hasAnyRow.has(`${pi.id}::${profileId}`)
-            })
-            .slice(0, 100)
-
+          const toBackfill = toBackfill_13_5.slice(0, 100)
           actorBackfillCandidates = toBackfill.length
           console.log(`[actor-backfill] ${phIssues.length} assigned issues, ${toBackfill.length} need backfill`)
 
