@@ -168,7 +168,7 @@ export function AssignUsersModal({ isOpen, onClose, role }: AssignUsersModalProp
                     <CatalystAvatar
                       name={profile.full_name ?? profile.email}
                       src={resolveAvatarUrl(profile.full_name ?? profile.email)}
-                      size="xsmall"
+                      size="medium"
                     />
                     <div style={{ minWidth: 0, flex: 1 }}>
                       <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
