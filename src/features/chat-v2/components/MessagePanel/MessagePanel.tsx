@@ -27,6 +27,9 @@ import type { ScheduledMessage } from '../../hooks/useMyScheduledMessages';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { useActiveHuddleIds, useHuddleActions } from '@/hooks/chat/useHuddleData';
+import { catalystToast } from '@/lib/catalystToast';
+import { HuddlePanel } from '../Huddle/HuddlePanel';
 import type { ChatConversation, ChatMessage } from '@/types/chat';
 import type { ForwardRecipient } from '../Forward/ForwardModal';
 
@@ -57,6 +60,23 @@ interface MessagePanelProps {
 
 export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpMessageId, onSummarize, onOpenForwardSource, onForwardCompleted, editScheduledMessage, onDismissEditScheduled, onSeeAllScheduled }: MessagePanelProps) {
   const { user } = useAuth();
+  const activeHuddleIds = useActiveHuddleIds();
+  const { startOrJoin } = useHuddleActions();
+  const onStartHuddle = async () => {
+    try { await startOrJoin(conversation); }
+    catch (e) {
+      console.error('[huddle] start failed:', e);
+      const msg = e instanceof Error ? e.message : String(e);
+      const full = msg === 'HUDDLE_FULL';
+      const mic = e instanceof DOMException || /getUserMedia|NotAllowed|NotFound|Permission|microphone/i.test(msg);
+      catalystToast.error(
+        full ? 'Huddle is full' : 'Could not start huddle',
+        full ? 'A huddle allows 2 people.'
+          : mic ? 'Microphone blocked — allow mic access and try again.'
+          : msg,
+      );
+    }
+  };
   const { messages, isLoading, sendMessage } = useMessages(conversation.id);
   const { toggleReaction, editMessage, deleteMessage } = useChatMessageActions(conversation.id);
   const { data: pins } = useConversationPins(conversation.id);
@@ -493,6 +513,8 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
             starred: !conversation.isStarred,
           });
         }}
+        onStartHuddle={() => { void onStartHuddle(); }}
+        huddleActive={activeHuddleIds.has(conversation.id)}
       />
       {activeTab === 'messages' &&
         (conversation.kind === 'channel' || conversation.kind === 'custom_channel') &&
@@ -538,6 +560,8 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
           onRequestDelete={handleRequestDelete}
         />
       ) : (
+      <>
+      <HuddlePanel conversation={conversation} />
       <MessageList
         messages={messages}
         loading={isLoading}
@@ -561,6 +585,7 @@ export function MessagePanel({ conversation, onOpenThread, onClose, initialJumpM
         onMarkUnread={handleMarkUnread}
         onOpenForwardSource={onOpenForwardSource}
       />
+      </>
       )}
       {activeTab === 'messages' && (
       <Composer

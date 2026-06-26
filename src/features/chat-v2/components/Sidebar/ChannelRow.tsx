@@ -1,14 +1,15 @@
 import React from 'react';
-import { HashIcon, LockIcon } from '../shared/Icon';
+import { HashIcon, LockIcon, HeadphonesIcon } from '../shared/Icon';
 import type { ChatConversation } from '@/types/chat';
 
 interface ChannelRowProps {
   conversation: ChatConversation;
   isActive: boolean;
   onClick: () => void;
+  hasHuddle?: boolean;
 }
 
-export function ChannelRow({ conversation, isActive, onClick }: ChannelRowProps) {
+export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false }: ChannelRowProps) {
   const { title, unreadCount, isPrivate } = conversation;
   const hasUnread = unreadCount > 0;
   return (
@@ -36,6 +37,7 @@ export function ChannelRow({ conversation, isActive, onClick }: ChannelRowProps)
         fontSize: 14,
         fontWeight: hasUnread || isActive ? 700 : 400,
         lineHeight: '24px',
+        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success, #22A06B)' } : null),
       }}
       onMouseEnter={e => {
         if (!isActive) {
@@ -65,6 +67,11 @@ export function ChannelRow({ conversation, isActive, onClick }: ChannelRowProps)
       >
         {title}
       </span>
+      {hasHuddle && (
+        <span aria-label="Active huddle" title="Active huddle" style={{ marginLeft: 4, color: 'var(--ds-icon-success, #22A06B)', display: 'inline-flex', flex: '0 0 auto' }}>
+          <HeadphonesIcon size={12} />
+        </span>
+      )}
       {hasUnread && (
         <span
           aria-label={`${unreadCount} unread`}

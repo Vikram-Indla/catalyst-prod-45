@@ -2,6 +2,7 @@ import React from 'react';
 import { PresenceAvatar } from '../shared/PresenceAvatar';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { HeadphonesIcon } from '../shared/Icon';
 import type { ChatConversation } from '@/types/chat';
 import { formatRowTimestamp } from '../../lib/formatTimestamp';
 
@@ -10,6 +11,7 @@ interface ConversationRowProps {
   isActive: boolean;
   onClick: () => void;
   presence?: 'online' | 'offline' | 'away' | null;
+  hasHuddle?: boolean;
 }
 
 export function ConversationRow({
@@ -17,6 +19,7 @@ export function ConversationRow({
   isActive,
   onClick,
   presence = null,
+  hasHuddle = false,
 }: ConversationRowProps) {
   const { title, lastMessageAt, unreadCount, kind, memberCount, projectKey, ticketType } = conversation;
   const hasUnread = unreadCount > 0;
@@ -64,6 +67,7 @@ export function ConversationRow({
         cursor: 'pointer',
         transition: 'background var(--cv2-transition-fast)',
         position: 'relative',
+        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success, #22A06B)' } : null),
       }}
       onMouseEnter={e => {
         if (!isActive) {
@@ -92,6 +96,11 @@ export function ConversationRow({
       >
         {title}
       </span>
+      {hasHuddle && (
+        <span aria-label="Active huddle" title="Active huddle" style={{ marginLeft: 4, color: 'var(--ds-icon-success, #22A06B)', display: 'inline-flex', flex: '0 0 auto' }}>
+          <HeadphonesIcon size={12} />
+        </span>
+      )}
       {hasUnread && (
         <span
           aria-label={`${unreadCount} unread`}

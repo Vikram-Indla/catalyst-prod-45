@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useActiveHuddleIds } from '@/hooks/chat/useHuddleData';
 import { SidebarHeader } from './SidebarHeader';
 import { SidebarSearch } from './SidebarSearch';
 import { ConversationRow } from './ConversationRow';
@@ -53,6 +54,7 @@ export function Sidebar({
   const [search, setSearch] = useState('');
   const [unreadsOnly, setUnreadsOnly] = useState(false);
   const scheduledCount = useMyScheduledCount();
+  const huddleIds = useActiveHuddleIds();
   const isDraftsActive = activeView === 'drafts';
 
   const { starred, channels, projects, dms } = useMemo(() => {
@@ -150,6 +152,7 @@ export function Sidebar({
                     conversation={c}
                     isActive={c.id === activeConversationId}
                     onClick={() => onSelectConversation(c.id)}
+                    hasHuddle={huddleIds.has(c.id)}
                   />
                 </li>
               ))}
@@ -223,6 +226,7 @@ export function Sidebar({
                       conversation={c}
                       isActive={c.id === activeConversationId}
                       onClick={() => onSelectConversation(c.id)}
+                      hasHuddle={huddleIds.has(c.id)}
                     />
                   ) : (
                     <ConversationRow
@@ -230,6 +234,7 @@ export function Sidebar({
                       isActive={c.id === activeConversationId}
                       onClick={() => onSelectConversation(c.id)}
                       presence={null}
+                      hasHuddle={huddleIds.has(c.id)}
                     />
                   )}
                 </li>
@@ -254,6 +259,7 @@ export function Sidebar({
                 conversation={c}
                 isActive={c.id === activeConversationId}
                 onClick={() => onSelectConversation(c.id)}
+                hasHuddle={huddleIds.has(c.id)}
               />
             ))
           )}
@@ -277,6 +283,7 @@ export function Sidebar({
                     isActive={c.id === activeConversationId}
                     onClick={() => onSelectConversation(c.id)}
                     presence={null}
+                    hasHuddle={huddleIds.has(c.id)}
                   />
                 </li>
               ))}
@@ -311,6 +318,7 @@ export function Sidebar({
                     isActive={c.id === activeConversationId}
                     onClick={() => onSelectConversation(c.id)}
                     presence={null}
+                    hasHuddle={huddleIds.has(c.id)}
                   />
                 </li>
               ))}
