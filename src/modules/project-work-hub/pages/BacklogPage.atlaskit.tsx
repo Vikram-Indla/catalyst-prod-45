@@ -709,13 +709,46 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds, initialOpenItemId }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[];
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl, dataSource, allowedColumnIds, initialOpenItemId, hideChrome, customChromeBand, restrictToIssueKeys, allItems }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string; dataSource?: BacklogDataSource; allowedColumnIds?: readonly string[];
   /* 2026-06-17: when set, BacklogPage opens the right side-panel for
      the matching row on first render. Used by the canonical
      "Open in full page" button on TaskCatalystView so the landing URL
      `/tasks/list?openTask=<id>` lands with the panel already open
      instead of an empty list page. */
   initialOpenItemId?: string;
+  /* 2026-06-25: when true, suppress the chromeBand (project header) AND
+     the in-card toolbar row (search / filter / avatars / group-by /
+     view options / more actions). Used by ReleaseWorkNavigatorPage so
+     its custom toolbar is the only toolbar — the canonical table still
+     mounts unchanged below, driven by URL params (?q= for search,
+     ?jql= for filters). Toolbar state is sync'd to those params by the
+     caller. Defaults to false — every existing consumer (project hub,
+     product hub, incidents, testhub, tasks list) renders the canonical
+     chrome unchanged. */
+  hideChrome?: boolean;
+  /* 2026-06-25: caller-supplied chromeBand. When provided AND hideChrome
+     is true, replaces the project header. Used by ReleaseWorkNavigatorPage
+     to render its custom toolbar IN the chromeBand slot so BacklogPage
+     remains the sole flex child of CatalystShell's bounded main slot —
+     same layout chain as the BAU backlog route. Mounting a toolbar
+     above BacklogPage in a sibling wrapper breaks JiraTable's
+     internal-viewport scroll. */
+  customChromeBand?: React.ReactNode;
+  /* 2026-06-25: release-scope mode. When set, useStoryBacklog +
+     useEpicBacklog swap their project_key filter for an explicit
+     `.in('issue_key', restrictToIssueKeys)` filter. The caller is
+     responsible for sourcing the keys (canonical source =
+     rh_release_work_items via useReleaseWorkItems). Used by
+     ReleaseWorkNavigatorPage so the canonical Backlog renders exactly
+     the items linked to a release through the join table, regardless
+     of which project owns each row. */
+  restrictToIssueKeys?: readonly string[];
+  /* 2026-06-25: "no scope at all" mode. When true, drops project_key +
+     sprint_release + the 2026-date guard from the underlying hooks so
+     the table widens to every ph_issues row regardless of project or
+     release. Used by ReleaseWorkNavigatorPage when the fix-version
+     chip is cleared. */
+  allItems?: boolean;
 }) {
   // Optional adapter — when present, BacklogPage reads rows + status vocab
   // from the adapter (e.g. business_requests for product hub) and routes all
@@ -890,6 +923,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const backlogOpts = {
     ...(assigneeIds?.length ? { assigneeIds } : {}),
     forceProjectKey: projectKey || undefined,
+    ...(restrictToIssueKeys ? { restrictToIssueKeys } : {}),
+    ...(allItems ? { allItems: true } : {}),
   };
   const {
     data: stories = [],
@@ -1022,6 +1057,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     () => (searchParams.get('type') as BacklogType | 'all') || 'all',
   );
   const [search, setSearch] = useState(() => searchParams.get('q') || '');
+  // 2026-06-25: when `hideChrome` is set (release navigator), the caller's
+  // custom toolbar owns the search input and writes to ?q=. Subscribe so
+  // BacklogPage's filtered rows update in lockstep with the URL.
+  React.useEffect(() => {
+    if (!hideChrome) return;
+    const q = searchParams.get('q') || '';
+    setSearch((prev) => (prev === q ? prev : q));
+  }, [hideChrome, searchParams]);
   const [filterValue, setFilterValue] = useState<JiraFilterValue>(emptyFilterValue);
   const [canonicalFilter, setCanonicalFilter] = useState<CanonicalFilterValue>(emptyCanonicalFilterValue);
 
@@ -1165,7 +1208,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // 2026-05-12 Jira parity: "Show hierarchy" toggle in toolbar ⋯ menu.
   // When ON: parent rows show > chevron and children render indented inline.
   // When OFF: flat row rendering (current behaviour). Defaults ON to match Jira.
-  const [showHierarchy, setShowHierarchy] = useState<boolean>(true);
+  // 2026-06-25: when `restrictToIssueKeys` is set (release navigator),
+  // hierarchy defaults OFF so every restricted row renders flat. Otherwise
+  // children get hidden under collapsed parents and the table looks like
+  // "6 of 7" even though the data is complete.
+  const [showHierarchy, setShowHierarchy] = useState<boolean>(() => !restrictToIssueKeys);
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
   const [columnOrder, setColumnOrder] = useState<string[] | null>(null);
   // Column width persistence — survives page reload (Jira saves widths per project).
@@ -1201,6 +1248,22 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       recordFilterUsage.mutate(urlSavedFilter.id);
     }
   }, [urlSavedFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ?jql=<encoded JQL> — apply an ad-hoc JQL filter without needing a
+  // ph_saved_filters row. Used by "View in All work navigator" from the
+  // release detail page to pre-apply `fixVersion = "<release>"`.
+  const urlJql = searchParams.get('jql');
+  const appliedUrlJqlRef = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    // 2026-06-25: treat empty / null urlJql as "clear" rather than no-op,
+    // so callers that own the filter state (release navigator) can clear
+    // the filter by dropping the param from the URL. Without this, a
+    // cleared chip left the prior filterValue stuck in place.
+    const next = urlJql ?? '';
+    if (appliedUrlJqlRef.current === next) return;
+    appliedUrlJqlRef.current = next;
+    setFilterValue(next ? jqlToJiraFilterValue(next) : emptyFilterValue);
+  }, [urlJql]);
 
   // Apr 27 2026 (jira-compare regression iter 3 — Add people modal).
   // Catalyst's Add people CTA in the chrome band opens this modal,
@@ -1692,8 +1755,21 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         progress: (s as any).progress ?? null,
       });
     });
+    // 2026-06-25: in restrict mode, drop every row whose key is NOT in
+    // the explicit allow-list. BacklogPage's composition pulls parent
+    // epics (synthesizeEpicRow) and initiatives in addition to the
+    // hook results — for release navigator we want EXACTLY the items
+    // the caller asked for. Without this, the user sees BAU-22, IRP-85
+    // etc. as extra parents that aren't linked to the release.
+    if (restrictToIssueKeys && restrictToIssueKeys.length > 0) {
+      const allow = new Set<string>(restrictToIssueKeys as readonly string[]);
+      return out.filter((it) => it.key != null && allow.has(it.key));
+    }
+    if (restrictToIssueKeys && restrictToIssueKeys.length === 0) {
+      return [];
+    }
     return out;
-  }, [effectiveEpics, effectiveStories, initiativesByKey, parentTypeMap]);
+  }, [effectiveEpics, effectiveStories, initiativesByKey, parentTypeMap, restrictToIssueKeys]);
 
   // ── Three-level tree: Request → Epic → Story.
   //   - Items with parent_id go into childrenOf[parent_id].
@@ -3733,6 +3809,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // the chrome band, not inside the table card). The `title` prop is
       // intentionally NOT passed; passing it would double-render the H1.
       flush
+      // 2026-06-26: when caller owns the chrome (release navigator's
+      // customChromeBand), clamp shell to parent height. Without this the
+      // shell uses `minHeight: 100%` and grows past parent when the
+      // external toolbar + table content exceed the viewport — which
+      // breaks JiraTable's `max-height: 100%` scroll viewport. See
+      // AtlaskitPageShell.constrainHeight docstring.
+      constrainHeight={hideChrome}
       // 2026-05-21: chromeBg resolves from projects.settings.background
       // (project background picker). Falls back to BG_DEFAULT which is
       // now var(--ds-surface, #FFFFFF) — plain white matching AllWork.
@@ -3752,7 +3835,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // + Share + Automation + Give feedback from the right cluster. Only
       // Enter full screen remains (the invite-people icon next to the H1
       // still opens the Add people modal).
-      chromeBand={
+      chromeBand={hideChrome ? (customChromeBand ?? null) : (
         <>
         {/* jira-compare catalog item 1 cascade (2026-05-02): single
             canonical ProjectHeaderChip — replaces the legacy
@@ -3864,7 +3947,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           pageChromeRightCtas={{}}
         />}
         </>
-      }
+      )}
     >
       {/* Toolbar: search + filter + type chips inline + count + maximize.
           Apr 27, 2026 (L48 + L51): type chips inline; bottom padding
@@ -3905,7 +3988,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         padding: panelItem ? `32px ${panelWidth + 24}px 32px 24px` : '32px 24px 32px',
         overflow: 'hidden',
         marginBottom: 4,
-        display: askCatyOpen ? 'none' : 'flex',
+        // 2026-06-25: `hideChrome` (release navigator) suppresses this row
+        // entirely so the caller's custom toolbar is the only one visible.
+        display: (askCatyOpen || hideChrome) ? 'none' : 'flex',
         gap: 12,
         alignItems: 'center',
         borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
@@ -4085,7 +4170,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             // panel is open keeps the table's right edge visible.
             flex: 1,
             minWidth: 0,
-            paddingRight: panelItem ? panelWidth : 0,
+            paddingRight: panelItem ? panelWidth : 24,
             transition: 'padding-right 180ms ease, width 150ms ease, flex-basis 150ms ease',
             // Apr 27, 2026: page-level overflow was eating the table's own
             // .jira-table-viewport scroll. Switching to overflow:hidden +

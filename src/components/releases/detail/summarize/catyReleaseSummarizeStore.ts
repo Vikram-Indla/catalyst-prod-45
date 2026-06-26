@@ -32,10 +32,13 @@ function writeAutoToStorage(next: boolean) {
 }
 
 export interface CatyReleaseSummarizePayload {
-  /** ph_releases.id — matched against the active release detail page. */
+  /** ph_releases.id OR ph_jira_sprints.id — matched against the active detail page. */
   releaseId: string;
-  /** Release display name — prompt context. */
+  /** Release/Sprint display name — prompt context. */
   releaseName: string | null;
+  /** 2026-06-26: entity kind for the edge function. Defaults to 'release'
+   *  so existing callers stay unchanged. */
+  entityKind?: 'release' | 'sprint';
 }
 
 export type ReleaseSummarizeStatus =

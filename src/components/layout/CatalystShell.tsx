@@ -475,6 +475,17 @@ function CatalystShellContent() {
   // a scroll container — same fullpage flex chain as allwork/backlog.
   const isChatRoute = location.pathname.startsWith("/chat");
 
+  // Release detail (/release-hub/releases-management/:releaseId) needs an
+  // independently-scrolling right rail — same fullpage flex chain so the
+  // page wrapper does NOT scroll; left main + right rail scroll on their own.
+  // 2026-06-26: sprint detail (/project-hub/:key/sprints/:sprintId) mounts
+  // the same canonical ReleaseDetailPage via SPRINT_CONFIG and needs the
+  // same flex chain — name kept (isReleaseDetailRoute) because the layout
+  // contract is identical regardless of entity kind.
+  const isReleaseDetailRoute =
+    /\/release-hub\/releases-management\/[^/]+/.test(location.pathname) ||
+    /\/project-hub\/[^/]+\/sprints\/[^/]+/.test(location.pathname);
+
   // Parse issue key from /issue/:issueKey for tab-title binding
   const fullPageIssueKey = isIssueFullPageRoute
     ? location.pathname.split("/")[2] || null
@@ -568,6 +579,9 @@ function CatalystShellContent() {
     /^\/(project|product)-hub\/[^/]+\/backlog/.test(location.pathname) ||
     /^\/project-hub\/[^/]+\/allwork\/[^/]+/.test(location.pathname) ||
     /^\/release-hub\/releases-management\/[^/]+$/.test(location.pathname) ||
+    /^\/release-hub\/releases-management\/[^/]+\/work$/.test(location.pathname) ||
+    /^\/project-hub\/[^/]+\/sprints\/[^/]+$/.test(location.pathname) ||
+    /^\/project-hub\/[^/]+\/sprints\/[^/]+\/work$/.test(location.pathname) ||
     location.pathname.startsWith("/browse/"); // full-screen issue view
 
   // Hub routes that explicitly opt out of the Jira blue canvas — pure white
@@ -933,10 +947,10 @@ function CatalystShellContent() {
             <AnnouncementBanner />
           </Suspense>
           <div
-            className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
+            className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute || isReleaseDetailRoute ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
           >
             <div
-              className={`w-full max-w-full ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute ? "flex-1 min-h-0 flex flex-col overflow-hidden" : ""}`}
+              className={`w-full max-w-full ${isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute || isChatRoute || isReleaseDetailRoute ? "flex-1 min-h-0 flex flex-col overflow-hidden" : ""}`}
             >
               {shouldWrapHubSurface ? (
                 /* jira-compare 2026-05-05 cycle 2 — D-4 fix · drop the LEFT

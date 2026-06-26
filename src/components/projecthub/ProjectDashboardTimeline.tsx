@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { format, startOfDay, addDays, differenceInDays, isBefore, isAfter } from 'date-fns';
+import { format as dfnsFormat, startOfDay, addDays, differenceInDays, isBefore, isAfter } from 'date-fns';
+
+// 2026-06-26: safe wrapper around date-fns format(). Invalid Date silently
+// throws "Invalid time value" inside date-fns; this wrapper returns '—'
+// instead so a single bad sprint row doesn't kill the whole timeline.
+const format = (d: Date | number | null | undefined, fmt: string): string => {
+  if (d == null) return '—';
+  const t = d instanceof Date ? d.getTime() : Number(d);
+  if (!Number.isFinite(t)) return '—';
+  try { return dfnsFormat(d as any, fmt); } catch { return '—'; }
+};
 import { useNavigate } from 'react-router-dom';
 import { Rocket, ChevronDown, Check } from 'lucide-react';
 import { useProjectTimeline, SprintMilestone } from '@/hooks/useProjectTimeline';
@@ -93,7 +103,14 @@ function formatDateRange(start: Date | null, end: Date | null): string {
 }
 
 function buildItems(raw: SprintMilestone[], today: Date): SprintTimelineItem[] {
-  const sorted = [...raw].sort(
+  // 2026-06-26: drop rows with missing/invalid releaseDate up front so
+  // downstream Date math never sees Invalid Date.
+  const valid = raw.filter((s) => {
+    if (!s.releaseDate) return false;
+    const t = new Date(s.releaseDate).getTime();
+    return Number.isFinite(t);
+  });
+  const sorted = [...valid].sort(
     (a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime()
   );
   const withStatus = sorted.map((s, i) => {
@@ -366,8 +383,21 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
 
   const rangeItems = [...shownCompleted, ...current, ...upcoming];
   const eff        = rangeItems.length > 0 ? rangeItems : items;
-  const rangeStart = addDays(eff[0].startDate ?? addDays(today, -14), -7);
-  const rangeEnd   = addDays(eff[eff.length - 1].endDate ?? addDays(today, 14), 14);
+  // 2026-06-26: guard empty-eff (no sprints) + invalid dates. Before the
+  // fix `eff[0].startDate` crashed when eff was empty, and addDays on an
+  // Invalid Date silently produced Invalid Date which then threw
+  // "Invalid time value" inside format() further below.
+  const safe = (d: Date | null | undefined, fallback: Date): Date => {
+    if (!d) return fallback;
+    const t = d instanceof Date ? d : new Date(d as any);
+    return Number.isNaN(t.getTime()) ? fallback : t;
+  };
+  const fallbackStart = addDays(today, -30);
+  const fallbackEnd   = addDays(today, 30);
+  const firstStart = eff.length > 0 ? safe(eff[0]?.startDate, fallbackStart) : fallbackStart;
+  const lastEnd    = eff.length > 0 ? safe(eff[eff.length - 1]?.endDate, fallbackEnd) : fallbackEnd;
+  const rangeStart = addDays(firstStart, -7);
+  const rangeEnd   = addDays(lastEnd, 14);
   const totalDays  = Math.max(1, differenceInDays(rangeEnd, rangeStart));
   const todayRatio = Math.max(0, Math.min(1, differenceInDays(today, rangeStart) / totalDays));
 

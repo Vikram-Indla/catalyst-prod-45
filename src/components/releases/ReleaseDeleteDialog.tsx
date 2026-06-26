@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Release } from '@/types/phase3-releases';
 import { catalystFlag } from '@/lib/catalystFlag';
+import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 interface Props {
   isOpen: boolean;
@@ -16,11 +17,13 @@ interface Props {
   projectKey: string;
   onClose: () => void;
   onSuccess?: () => void;
+  /** 2026-06-26: entity-hub config (defaults to RELEASE_CONFIG). */
+  config?: EntityConfig;
 }
 
 const CONFIRM_WORD = 'delete';
 
-export function ReleaseDeleteDialog({ isOpen, release, onClose, onSuccess }: Props) {
+export function ReleaseDeleteDialog({ isOpen, release, onClose, onSuccess, config = RELEASE_CONFIG }: Props) {
   const [typed, setTyped] = useState('');
   const queryClient = useQueryClient();
 
@@ -30,17 +33,16 @@ export function ReleaseDeleteDialog({ isOpen, release, onClose, onSuccess }: Pro
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('ph_releases').delete().eq('id', release.id);
+      const { error } = await (supabase as any).from(config.table).delete().eq('id', release.id);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
       onSuccess?.();
       onClose();
     },
     onError: (err: any) => {
-      catalystFlag.error(err?.message || 'Failed to delete release');
+      catalystFlag.error(err?.message || `Failed to delete ${config.label.lowerSingular}`);
     },
   });
 
@@ -49,9 +51,9 @@ export function ReleaseDeleteDialog({ isOpen, release, onClose, onSuccess }: Pro
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={onClose} width="small">
+        <Modal onClose={onClose} width={867}>
           <ModalHeader hasCloseButton>
-            <ModalTitle>Delete release</ModalTitle>
+            <ModalTitle>Delete {config.label.lowerSingular}</ModalTitle>
           </ModalHeader>
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

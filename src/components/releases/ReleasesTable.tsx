@@ -10,9 +10,10 @@
  *   - More actions: ⋯ icon, blue hover + blue open state, portal menu
  *     (Release / Archive / Merge / Edit / Delete).
  */
-import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import MoreIcon from '@atlaskit/icon/glyph/more';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { Release, ReleaseStatus, ReleaseProgress } from '@/types/phase3-releases';
 
 const BLUE_BORDER = 'var(--ds-border-selected, #1868DB)';
@@ -23,6 +24,29 @@ const TEXT = 'var(--ds-text, #292A2E)';
 const TEXT_SUBTLE = 'var(--ds-text-subtle, #505258)';
 const TEXT_SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
 const DANGER = 'var(--ds-text-danger, #AE2A19)';
+
+// 2026-06-26: hover underline on release title link. Inline style cannot
+// express :hover, so inject a one-time stylesheet at module load. HMR-safe:
+// updates textContent if the style tag already exists (CLAUDE.md 2026-06-11).
+const RELEASES_TABLE_STYLE_ID = 'releases-table-title-link-css';
+const RELEASES_TABLE_CSS = `
+  .releases-table-title-link:hover {
+    text-decoration: underline !important;
+    text-decoration-color: var(--ds-link, #0052CC) !important;
+    text-underline-offset: 2px;
+  }
+`;
+if (typeof document !== 'undefined') {
+  const existing = document.getElementById(RELEASES_TABLE_STYLE_ID);
+  if (existing) {
+    existing.textContent = RELEASES_TABLE_CSS;
+  } else {
+    const el = document.createElement('style');
+    el.id = RELEASES_TABLE_STYLE_ID;
+    el.textContent = RELEASES_TABLE_CSS;
+    document.head.appendChild(el);
+  }
+}
 
 // ─── Status pill ──────────────────────────────────────────────────────────
 
@@ -286,6 +310,16 @@ export interface ReleasesTableProps {
   onMerge: (r: CellRelease) => void;
   onEdit: (r: CellRelease) => void;
   onDelete: (r: CellRelease) => void;
+  collapsedGroups?: Set<string>;
+  onToggleGroup?: (id: string) => void;
+  density?: 'compact' | 'comfortable';
+  /** 2026-06-26: entity-name column header. Defaults to "Release"; sprint
+   *  surface passes "Sprint / Iteration". */
+  entityLabel?: string;
+  /** 2026-06-26: hide the middle "Sprint / Iteration" column (which lists
+   *  sprint_names per release). Sprint surface IS the sprint, so the column
+   *  is redundant and is hidden via this flag. */
+  hideSprintsColumn?: boolean;
 }
 
 const thStyle: React.CSSProperties = {
@@ -308,48 +342,58 @@ const tdStyle: React.CSSProperties = {
   verticalAlign: 'middle',
 };
 
+const tdStyleCompact: React.CSSProperties = {
+  ...tdStyle,
+  padding: '6px 8px',
+};
+
 function formatDate(iso?: string) {
   if (!iso) return '';
   return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 function ReleaseRow({
-  r, calculateProgress, onOpenDetail, onRelease, onArchive, onMerge, onEdit, onDelete,
+  r, calculateProgress, onOpenDetail, onRelease, onArchive, onMerge, onEdit, onDelete, density,
+  hideSprintsColumn,
 }: {
   r: CellRelease;
 } & Omit<ReleasesTableProps, 'rows' | 'groups'>) {
   const isOverdue =
     r.status === 'unreleased' && r.release_date && new Date(r.release_date) < new Date();
+  const td = density === 'compact' ? tdStyleCompact : tdStyle;
   return (
     <tr>
-      <td style={tdStyle}>
+      <td style={td}>
         <a
           href="#"
           onClick={(e) => { e.preventDefault(); onOpenDetail(r.id); }}
+          className="releases-table-title-link"
           style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500, textDecoration: 'none' }}
         >
           {r.name}
         </a>
       </td>
-      <td style={tdStyle}>
+      <td style={td}>
         <StatusPill status={r.status} />
       </td>
-      <td style={tdStyle}>
+      <td style={td}>
         <ProgressBar progress={calculateProgress(r)} />
       </td>
-      <td style={{ ...tdStyle, color: TEXT_SUBTLE, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {r.sprint_names && r.sprint_names.length > 0 ? (
-          <span title={r.sprint_names.join(', ')}>{r.sprint_names.join(', ')}</span>
-        ) : null}
-      </td>
-      <td style={{ ...tdStyle, color: TEXT_SUBTLE }}>{formatDate(r.start_date)}</td>
-      <td style={{ ...tdStyle, color: isOverdue ? DANGER : TEXT_SUBTLE }}>
+      {!hideSprintsColumn && (
+        <td style={{ ...td, color: TEXT_SUBTLE, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {r.sprint_names && r.sprint_names.length > 0 ? (
+            <span title={r.sprint_names.join(', ')}>{r.sprint_names.join(', ')}</span>
+          ) : null}
+        </td>
+      )}
+      <td style={{ ...td, color: TEXT_SUBTLE }}>{formatDate(r.start_date)}</td>
+      <td style={{ ...td, color: isOverdue ? DANGER : TEXT_SUBTLE }}>
         {formatDate(r.release_date)}
       </td>
-      <td style={{ ...tdStyle, color: TEXT_SUBTLE, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <td style={{ ...td, color: TEXT_SUBTLE, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {r.description || ''}
       </td>
-      <td style={{ ...tdStyle, textAlign: 'right' }}>
+      <td style={{ ...td, textAlign: 'right' }}>
         <ActionsMenu
           release={r}
           onRelease={onRelease}
@@ -373,8 +417,41 @@ export function ReleasesTable({
   onMerge,
   onEdit,
   onDelete,
+  collapsedGroups: collapsedGroupsProp,
+  onToggleGroup: onToggleGroupProp,
+  density = 'comfortable',
+  entityLabel = 'Release',
+  hideSprintsColumn = false,
 }: ReleasesTableProps) {
-  const rowProps = { calculateProgress, onOpenDetail, onRelease, onArchive, onMerge, onEdit, onDelete };
+  const rowProps = { calculateProgress, onOpenDetail, onRelease, onArchive, onMerge, onEdit, onDelete, density, hideSprintsColumn };
+  const colSpan = hideSprintsColumn ? 7 : 8;
+
+  const groupIdsKey = useMemo(() => (groups ?? []).map((g) => g.id).join('|'), [groups]);
+  const [internalCollapsed, setInternalCollapsed] = useState<Set<string>>(() => {
+    const ids = (groups ?? []).map((g) => g.id);
+    return new Set(ids.slice(1));
+  });
+  useEffect(() => {
+    if (collapsedGroupsProp) return;
+    const ids = (groups ?? []).map((g) => g.id);
+    setInternalCollapsed(new Set(ids.slice(1)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupIdsKey]);
+
+  const collapsedGroups = collapsedGroupsProp ?? internalCollapsed;
+
+  const toggleGroup = useCallback((id: string) => {
+    if (onToggleGroupProp) {
+      onToggleGroupProp(id);
+      return;
+    }
+    setInternalCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, [onToggleGroupProp]);
 
   return (
     <div style={{ borderBottom: `1px solid ${GRAY_BORDER}`, width: '100%' }}>
@@ -387,21 +464,21 @@ export function ReleasesTable({
         }}
       >
         <colgroup>
-          <col style={{ width: '18%' }} />
+          <col style={{ width: hideSprintsColumn ? '24%' : '18%' }} />
           <col style={{ width: '10%' }} />
           <col style={{ width: '15%' }} />
-          <col style={{ width: '14%' }} />
+          {!hideSprintsColumn && <col style={{ width: '14%' }} />}
           <col style={{ width: '11%' }} />
           <col style={{ width: '11%' }} />
-          <col style={{ width: '15%' }} />
+          <col style={{ width: hideSprintsColumn ? '23%' : '15%' }} />
           <col style={{ width: '6%' }} />
         </colgroup>
         <thead>
           <tr>
-            <th style={thStyle}>Release</th>
+            <th style={thStyle}>{entityLabel}</th>
             <th style={thStyle}>Status</th>
             <th style={thStyle}>Progress</th>
-            <th style={thStyle}>Sprint / Iteration</th>
+            {!hideSprintsColumn && <th style={thStyle}>Sprint / Iteration</th>}
             <th style={thStyle}>Start date</th>
             <th style={thStyle}>Release date</th>
             <th style={thStyle}>Description</th>
@@ -410,28 +487,85 @@ export function ReleasesTable({
         </thead>
         <tbody>
           {groups
-            ? groups.map((g) => (
-                <React.Fragment key={g.id}>
-                  <tr>
-                    <td
-                      colSpan={8}
-                      style={{
-                        padding: '14px 16px 6px',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: TEXT_SUBTLE,
-                        textTransform: 'uppercase',
-                        letterSpacing: 0.4,
-                      }}
-                    >
-                      {g.label}
-                    </td>
-                  </tr>
-                  {g.rows.map((r) => (
-                    <ReleaseRow key={r.id} r={r} {...rowProps} />
-                  ))}
-                </React.Fragment>
-              ))
+            ? groups.map((g) => {
+                const collapsed = collapsedGroups.has(g.id);
+                return (
+                  <React.Fragment key={g.id}>
+                    <tr>
+                      <td
+                        colSpan={colSpan}
+                        style={{
+                          padding: '14px 8px 6px',
+                          background: 'transparent',
+                        }}
+                      >
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          aria-expanded={!collapsed}
+                          onClick={() => toggleGroup(g.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              toggleGroup(g.id);
+                            }
+                          }}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            marginLeft: -5,
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          <span
+                            aria-hidden="true"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 24,
+                              height: 24,
+                              color: TEXT_SUBTLE,
+                              transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                              transition: 'transform 200ms ease',
+                              flexShrink: 0,
+                            }}
+                          >
+                            <ChevronDownIcon label="" size="medium" />
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              fontWeight: 600,
+                              color: TEXT_SUBTLE,
+                              textTransform: 'uppercase',
+                              letterSpacing: 0.4,
+                            }}
+                          >
+                            {g.label}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              fontWeight: 500,
+                              color: TEXT_SUBTLEST,
+                            }}
+                          >
+                            {g.rows.length}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                    {!collapsed &&
+                      g.rows.map((r) => (
+                        <ReleaseRow key={r.id} r={r} {...rowProps} />
+                      ))}
+                  </React.Fragment>
+                );
+              })
             : (rows ?? []).map((r) => <ReleaseRow key={r.id} r={r} {...rowProps} />)}
         </tbody>
       </table>

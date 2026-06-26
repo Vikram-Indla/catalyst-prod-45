@@ -20,6 +20,13 @@
   isolation: isolate;
   background: transparent;
   margin: 0 0 16px;
+  /* 2026-06-26: prevent flex parents (ReleaseDetailPage left column is
+     display:flex column with gap) from shrinking the card below its
+     intrinsic height — that's what was clipping the bottom border during
+     streaming and cutting off content on long summaries. min-height:auto
+     restores the natural flex-min so content fully expands. */
+  flex-shrink: 0;
+  min-height: auto;
 }
 
 /* Animated gradient ring (streaming) */

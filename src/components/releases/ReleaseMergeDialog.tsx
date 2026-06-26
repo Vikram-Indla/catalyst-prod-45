@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Release } from '@/types/phase3-releases';
 import { catalystFlag } from '@/lib/catalystFlag';
 import { ProductSelect, type ProductOption } from './ReleaseFilters';
+import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 interface Props {
   isOpen: boolean;
@@ -28,17 +29,19 @@ interface Props {
   projectKey: string;
   onClose: () => void;
   onSuccess?: (release: Release) => void;
+  /** 2026-06-26: entity-hub config (defaults to RELEASE_CONFIG). */
+  config?: EntityConfig;
 }
 
-export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Props) {
+export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config = RELEASE_CONFIG }: Props) {
   const [targetId, setTargetId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: candidates } = useQuery({
-    queryKey: ['ph-releases-for-merge', release.project_id, release.id],
+    queryKey: [config.queryKeyPrefix, 'merge-candidates', release.project_id, release.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_releases')
+      const { data, error } = await (supabase as any)
+        .from(config.table)
         .select('id, name, title, status, project_id')
         .eq('project_id', release.project_id)
         .neq('id', release.id)
@@ -58,24 +61,72 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Prop
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!targetId) throw new Error('Pick a target release');
-      // Phase 1: archive the source. Backend merge of work items TBD.
-      const { error } = await supabase
-        .from('ph_releases')
+      if (!targetId) throw new Error(`Pick a target ${config.label.lowerSingular}`);
+      const sourceName = release.name ?? '';
+      const target = options.find((o) => o.id === targetId);
+      const targetName = target?.name ?? null;
+      if (!targetName) throw new Error('Target name resolution failed');
+
+      // 2026-06-26: Phase 2b — re-point every ph_issues.sprint_release
+      // entry from source -> target (regardless of status_category, unlike
+      // the Release-confirmation modal which only moves unresolved items).
+      // Idempotent: duplicates dropped via Set on names.
+      if (sourceName) {
+        const { data: rows, error: scanErr } = await supabase
+          .from('ph_issues')
+          .select('id, sprint_release')
+          .not('sprint_release', 'is', null);
+        if (scanErr) throw new Error(scanErr.message);
+
+        for (const row of rows ?? []) {
+          const arr: any[] = Array.isArray((row as any).sprint_release) ? (row as any).sprint_release : [];
+          const hasSource = arr.some((el: any) => el && el.name === sourceName);
+          if (!hasSource) continue;
+          const next: any[] = [];
+          const seenNames = new Set<string>();
+          for (const el of arr) {
+            const name = el?.name === sourceName ? targetName : el?.name;
+            if (!name || seenNames.has(name)) continue;
+            seenNames.add(name);
+            next.push(el?.name === sourceName ? { id: '', name: targetName, releaseDate: '' } : el);
+          }
+          if (!seenNames.has(targetName)) {
+            next.push({ id: '', name: targetName, releaseDate: '' });
+          }
+          const { error: upErr } = await supabase
+            .from('ph_issues')
+            .update({ sprint_release: next })
+            .eq('id', (row as any).id);
+          if (upErr) throw new Error(upErr.message);
+        }
+      }
+
+      // Now archive the source entity.
+      const { error } = await (supabase as any)
+        .from(config.table)
         .update({ status: 'archived' })
         .eq('id', release.id);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
+      queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
+      queryClient.refetchQueries({
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'),
+      });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       const target = options.find((o) => o.id === targetId);
       catalystFlag.success(`Merged "${release.name}" into "${target?.name ?? 'target'}".`);
       onSuccess?.(release);
       handleClose();
     },
     onError: (err: any) => {
-      catalystFlag.error(err?.message || 'Failed to merge release');
+      catalystFlag.error(err?.message || `Failed to merge ${config.label.lowerSingular}`);
     },
   });
 
@@ -87,7 +138,7 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Prop
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={handleClose} width="medium">
+        <Modal onClose={handleClose} width={867}>
           <ModalHeader hasCloseButton>
             <ModalTitle>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -105,7 +156,7 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Prop
                 <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 2 }}>*</span>
               </div>
               <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
-                You can merge this release into another in your space. You can't undo this.
+                You can merge this {config.label.lowerSingular} into another in your space. You can't undo this.
               </p>
               <div>
                 <label
@@ -124,8 +175,8 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess }: Prop
                   options={options}
                   value={targetId}
                   onChange={setTargetId}
-                  placeholder="Select version"
-                  searchPlaceholder="Search releases"
+                  placeholder={`Select ${config.label.lowerSingular}`}
+                  searchPlaceholder={`Search ${config.label.lowerPlural}`}
                 />
               </div>
             </div>

@@ -1299,10 +1299,10 @@ export function useTimeInStatusMatrix(
       let statusColumns: TimeInStatusMatrixResult['statusColumns'] = [];
       try {
         // Get statuses for this work item type from ph_workflow_* tables
+        // 2026-06-26: ph_workflow_statuses has no `archived_at` column.
         const { data: typeStatuses } = await typedQuery('ph_workflow_type_statuses' as any)
           .select('position, ph_workflow_statuses!inner(name, category)')
           .eq('work_item_type', issueType)
-          .is('ph_workflow_statuses.archived_at', null)
           .order('position', { ascending: true });
         if (typeStatuses && (typeStatuses as any[]).length > 0) {
           statusColumns = ((typeStatuses as any) ?? []).map((ts: any) => ({

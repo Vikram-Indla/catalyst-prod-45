@@ -53,10 +53,12 @@ export function useProjects() {
     queryKey: ['create-story-projects'],
     queryFn: async () => {
       // Primary: projects table (UUID id, Jira-synced avatar_url).
+      // 2026-06-26: column is `archived_at` (timestamp), not `is_archived`.
+      // `color` doesn't exist on projects either — selected only from ph_projects below.
       const { data, error } = await supabase
         .from('projects')
-        .select('id, key, name, avatar_url, color')
-        .eq('is_archived', false)
+        .select('id, key, name, avatar_url')
+        .is('archived_at', null)
         .order('name');
       if (error) throw error;
       const rows = data ?? [];
@@ -64,8 +66,7 @@ export function useProjects() {
       // Secondary: ph_projects for Lucide icon + color (fallback for non-Jira projects).
       const { data: phRows } = await supabase
         .from('ph_projects')
-        .select('key, icon, color')
-        .eq('is_archived', false);
+        .select('key, icon, color');
 
       const phByKey = new Map(
         (phRows ?? []).map((r: any) => [r.key?.toUpperCase(), r])
@@ -126,7 +127,7 @@ export function useProjectReleases(projectId: string) {
   });
 }
 
-// Fetch sprints linked to a release
+// Fetch sprints linked to a release (legacy — kept for back-compat).
 export function useReleaseSprints(releaseId: string | null) {
   return useQuery({
     queryKey: ['release-sprints', releaseId],
@@ -144,6 +145,29 @@ export function useReleaseSprints(releaseId: string | null) {
     },
     enabled: !!releaseId,
     staleTime: 1 * 60 * 1000,
+  });
+}
+
+// 2026-06-26 (revised): ALL sprints from ph_jira_sprints — no project
+// filter. Vikram directive: dropdown should always render every sprint
+// (past/current/future) with searchable picker. Caller no longer needs
+// to gate on project selection.
+export function useProjectSprints(_projectId?: string) {
+  return useQuery({
+    queryKey: ['create-story-sprints-all'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('ph_jira_sprints')
+        .select('id, name, status, release_date, project_id')
+        .order('release_date', { ascending: false, nullsFirst: false })
+        .order('name');
+      if (error) {
+        console.error('[useProjectSprints] Supabase error:', error.message);
+        return [];
+      }
+      return (data ?? []) as Array<{ id: string; name: string; status: string; release_date: string | null; project_id: string }>;
+    },
+    staleTime: 2 * 60 * 1000,
   });
 }
 
@@ -176,11 +200,12 @@ export function useWorkflowStatuses(workType: string, _projectId?: string) {
       if (!workType) return [];
 
       // Load statuses for this work item type from ph_workflow_* tables
+      // 2026-06-26: ph_workflow_statuses has no `archived_at` column —
+      // dropped the filter + selection of that field.
       const { data: typeStatuses, error } = await supabase
         .from('ph_workflow_type_statuses')
-        .select('position, is_initial, ph_workflow_statuses!inner(name, category, archived_at)')
+        .select('position, is_initial, ph_workflow_statuses!inner(name, category)')
         .eq('work_item_type', workType)
-        .is('ph_workflow_statuses.archived_at', null)
         .order('position');
 
       if (error) {

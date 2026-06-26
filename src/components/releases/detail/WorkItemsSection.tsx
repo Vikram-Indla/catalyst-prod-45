@@ -23,9 +23,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import CanonicalPriorityIcon from '@/components/shared/PriorityIcon';
-import { useCatalystAvatarProfile } from '@/components/catalyst-detail-views/shared/hooks/useCatalystAvatarProfile';
+import { useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { resolveAvatarUrl } from '@/lib/avatars';
+import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
@@ -47,6 +47,28 @@ const TEXT = 'var(--ds-text, #292A2E)';
 const SUBTLE = 'var(--ds-text-subtle, #505258)';
 const SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
 
+// 2026-06-26: hover background on every menu-item button inside the row
+// 3-dot action menu (Move to / View all versions / Remove from version).
+// Inline styles can't express :hover, so inject a one-time stylesheet.
+// HMR-safe: updates textContent if the style tag exists (CLAUDE.md 2026-06-11).
+const WIS_MENU_STYLE_ID = 'wis-row-menu-item-css';
+const WIS_MENU_CSS = `
+  .wis-row-menu-item:hover {
+    background: var(--ds-background-neutral-subtle-hovered, #F1F2F4) !important;
+  }
+`;
+if (typeof document !== 'undefined') {
+  const existing = document.getElementById(WIS_MENU_STYLE_ID);
+  if (existing) {
+    existing.textContent = WIS_MENU_CSS;
+  } else {
+    const el = document.createElement('style');
+    el.id = WIS_MENU_STYLE_ID;
+    el.textContent = WIS_MENU_CSS;
+    document.head.appendChild(el);
+  }
+}
+
 interface Issue {
   id: string;
   issue_key: string;
@@ -62,12 +84,18 @@ interface Issue {
   sprint_release: any;
 }
 
+import type { EntityConfig } from '@/lib/entity-hub/config';
+
 interface Props {
   releaseId: string;
   releaseName: string;
   projectId: string;
   projectKey: string | null;
   onOpenItem?: (item: { issueKey: string; issueType: string | null }) => void;
+  /** 2026-06-26: entity-hub config. Defaults to RELEASE_CONFIG so existing
+   *  release-hub usages stay unchanged. When config.kind === 'sprint' the
+   *  ph_issues filter switches from sprint_release JSONB to sprint_name text. */
+  config?: EntityConfig;
 }
 
 type DisplayKey = 'priority' | 'status' | 'assignee' | 'featureFlag';
@@ -96,20 +124,22 @@ function priorityIcon(priority: string | null) {
 function AssigneeAvatar({
   accountId, name, size = 'small',
 }: { accountId: string | null; name: string | null; size?: 'xsmall' | 'small' | 'medium' | 'large' }) {
-  const { data: profile } = useCatalystAvatarProfile(accountId);
+  const byJiraId = useApprovedProfilesByJiraId();
+  const profile = accountId ? byJiraId.get(accountId) : undefined;
   if (!accountId && !name) {
     return <CatalystAvatar size={size} />;
   }
   return (
     <CatalystAvatar
       size={size}
-      name={name || undefined}
-      src={resolveAvatarUrl(name) ?? profile?.avatar_url ?? undefined}
+      name={profile?.name || name || undefined}
+      src={profile?.avatarUrl || undefined}
     />
   );
 }
 
-export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey, onOpenItem }: Props) {
+export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey, onOpenItem, config }: Props) {
+  const entityKind = config?.kind ?? 'release';
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -143,12 +173,42 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
   }, []);
 
   const { data: items = [], isLoading, error } = useQuery<Issue[]>({
-    queryKey: ['ph_release_items', releaseId, releaseName],
+    queryKey: ['ph_entity_items', entityKind, releaseId, releaseName],
     queryFn: async () => {
       const target = (releaseName || '').trim();
       if (!target) return [];
 
       const select = 'id, issue_key, summary, issue_type, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, jira_created_at, sprint_release';
+
+      if (entityKind === 'sprint') {
+        // Sprint filter: ph_issues.sprint_release JSONB contains entry
+        // matching the sprint name. We do NOT use ph_issues.sprint_name
+        // (text) — jira-sync overwrites it on every sync, so it's not a
+        // reliable link (proven 2026-06-26: backfill of 710 rows reverted
+        // to 2 within minutes). sprint_release JSONB is the canonical Jira
+        // payload that persists across syncs.
+        const containsResult = await supabase
+          .from('ph_issues')
+          .select(select)
+          .contains('sprint_release', JSON.stringify([{ name: target }]) as any)
+          .limit(2000);
+        if ((containsResult.data?.length ?? 0) > 0) {
+          return containsResult.data as Issue[];
+        }
+        // Fallback: scan + filter client-side (handles JSON shape variants).
+        const fb = await supabase
+          .from('ph_issues')
+          .select(select)
+          .not('sprint_release', 'is', null)
+          .limit(5000);
+        if (!fb.data) return [];
+        return fb.data.filter((row: any) => {
+          const arr = row.sprint_release;
+          return Array.isArray(arr) && arr.some((el: any) => el && el.name === target);
+        }) as Issue[];
+      }
+
+      // Release filter: ph_issues.sprint_release JSONB contains entry with matching name.
       const containsResult = await supabase
         .from('ph_issues')
         .select(select)
@@ -191,19 +251,28 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
     (i.assignee_display_name?.trim() || i.assignee_account_id?.trim() || '__unassigned__');
 
   const assigneeOptions = useMemo(() => {
-    const seen = new Map<string, { accountId: string | null }>();
-    const out: { id: string; label: string; accountId: string | null }[] = [];
+    const seen = new Set<string>();
+    // 2026-06-26: Unassigned is ALWAYS the first option, regardless of whether
+    // any current item is unassigned — it is a structural filter bucket, not a
+    // user. Real assignees follow, deduped, sorted by label.
+    const out: { id: string; label: string; accountId: string | null }[] = [
+      { id: '__unassigned__', label: 'Unassigned', accountId: null },
+    ];
+    seen.add('__unassigned__');
     items.forEach((i) => {
       const k = assigneeKey(i);
+      if (k === '__unassigned__') return;
       if (seen.has(k)) return;
-      seen.set(k, { accountId: i.assignee_account_id });
+      seen.add(k);
       out.push({
         id: k,
-        label: k === '__unassigned__' ? 'Unassigned' : (i.assignee_display_name || k),
+        label: i.assignee_display_name || k,
         accountId: i.assignee_account_id,
       });
     });
-    return out;
+    const [unassigned, ...rest] = out;
+    rest.sort((a, b) => a.label.localeCompare(b.label));
+    return [unassigned, ...rest];
   }, [items]);
 
   // Filter pipeline
@@ -311,8 +380,18 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ph_release_items', releaseId, releaseName] });
+      // 2026-06-26: invalidate both legacy + new entity-aware query keys
+      // so both release + sprint surfaces refresh after a remove.
+      queryClient.refetchQueries({
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'),
+      });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       catalystFlag.success('Removed from version.');
     },
     onError: (e: any) => catalystFlag.error(e?.message || 'Failed to remove'),
@@ -323,14 +402,6 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
       <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Section header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <button
-            type="button"
-            onClick={() => setCollapsed((v) => !v)}
-            aria-label={collapsed ? 'Expand' : 'Collapse'}
-            style={{ all: 'unset', cursor: 'pointer', display: 'inline-flex', color: SUBTLE }}
-          >
-            {collapsed ? <ChevronRightIcon label="" /> : <ChevronDownIcon label="" />}
-          </button>
           <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: TEXT }}>Work items</h2>
           <span
             style={{
@@ -348,6 +419,14 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
           >
             {items.length}
           </span>
+          <button
+            type="button"
+            onClick={() => setCollapsed((v) => !v)}
+            aria-label={collapsed ? 'Expand' : 'Collapse'}
+            style={{ all: 'unset', cursor: 'pointer', display: 'inline-flex', color: SUBTLE }}
+          >
+            {collapsed ? <ChevronRightIcon label="" /> : <ChevronDownIcon label="" />}
+          </button>
           <div style={{ flex: 1 }} />
           <button
             type="button"
@@ -472,6 +551,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                   projectId={projectId}
                   isLast={!hasMore && idx === visibleItems.length - 1}
                   onRemove={() => removeMutation.mutate(it.id)}
+                  config={config}
                   onOpen={() => onOpenItem?.({ issueKey: it.issue_key, issueType: it.issue_type })}
                 />
               ))}
@@ -534,9 +614,10 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             onClick={() => {
               if (items.length === 0) return;
               setIsMoreMenuOpen(false);
-              const params = new URLSearchParams({ fix_versions: releaseName });
-              if (projectKey) params.set('project', projectKey);
-              navigate(`/work?${params.toString()}`);
+              const href = config
+                ? config.buildWorkHref(releaseId, { projectKey: projectKey ?? undefined })
+                : `/release-hub/releases-management/${releaseId}/work`;
+              navigate(href);
             }}
             style={{
               ...menuItemStyle(),
@@ -562,7 +643,6 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             ['priority', 'Priority'],
             ['status', 'Work item status'],
             ['assignee', 'Assignee'],
-            ['featureFlag', 'Feature flag status'],
           ] as Array<[DisplayKey, string]>).map(([key, label]) => (
             <DisplayCheckRow
               key={key}
@@ -648,10 +728,13 @@ function menuItemStyle(): React.CSSProperties {
 function DisplayCheckRow({
   checked, label, onToggle,
 }: { checked: boolean; label: string; onToggle: () => void }) {
+  const [hover, setHover] = useState(false);
   return (
     <button
       type="button"
       onClick={onToggle}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       role="menuitemcheckbox"
       aria-checked={checked}
       style={{
@@ -663,9 +746,15 @@ function DisplayCheckRow({
         boxSizing: 'border-box',
         padding: '6px 12px',
         cursor: 'pointer',
-        background: checked ? BLUE_BG : 'transparent',
-        color: checked ? BLUE_TEXT : TEXT,
-        fontWeight: checked ? 600 : 400,
+        background: checked
+          ? 'var(--ds-background-selected, #E9F2FE)'
+          : hover
+            ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'
+            : 'transparent',
+        color: checked
+          ? 'var(--ds-text-selected, #0C66E4)'
+          : 'var(--ds-text-subtle, #505258)',
+        fontWeight: 400,
         fontSize: 14,
       }}
     >
@@ -800,7 +889,7 @@ function CheckboxFilterPill({
                   {('avatar' in opt) && (
                     <AssigneeAvatar
                       accountId={opt.id === '__unassigned__' ? null : ((opt as any).avatar || null)}
-                      name={opt.label}
+                      name={opt.id === '__unassigned__' ? null : opt.label}
                     />
                   )}
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.label}</span>
@@ -942,7 +1031,7 @@ function pillBtn(active: boolean): React.CSSProperties {
 // ─── Single work-item row ───────────────────────────────────────────────────
 
 function WorkItemRow({
-  item, display, releaseName, projectId, isLast, onRemove, onOpen,
+  item, display, releaseName, projectId, isLast, onRemove, onOpen, config,
 }: {
   item: Issue;
   display: Record<DisplayKey, boolean>;
@@ -951,7 +1040,9 @@ function WorkItemRow({
   isLast: boolean;
   onRemove: () => void;
   onOpen?: () => void;
+  config?: EntityConfig;
 }) {
+  const entityTable = config?.table ?? 'ph_releases';
   const [hover, setHover] = useState(false);
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
@@ -959,22 +1050,64 @@ function WorkItemRow({
   const tRef = useRef<HTMLButtonElement>(null);
   const pRef = useRef<HTMLDivElement>(null);
 
-  // Pull top 4 sibling releases for the Move-to submenu
+  // Pull top sibling releases for the Move-to submenu.
+  // Order by name (release_date column does not exist on ph_releases — that
+  // wrong ORDER BY silently returned 0 rows, so the menu showed empty).
+  // Fetch 5 then drop the current release client-side, slice to 4.
   const { data: siblings } = useQuery({
-    queryKey: ['siblings-for-move', projectId, item.id],
+    queryKey: ['siblings-for-move', entityTable, projectId, item.id, releaseName],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_releases')
+      const { data, error } = await (supabase as any)
+        .from(entityTable)
         .select('id, name, title, status')
         .eq('project_id', projectId)
         .neq('status', 'archived')
-        .order('release_date', { ascending: false })
-        .limit(4);
+        .order('name')
+        .limit(5);
       if (error) throw new Error(error.message);
-      return (data ?? []).filter((r: any) => (r.name || r.title) !== releaseName);
+      return (data ?? [])
+        .filter((r: any) => (r.name || r.title) !== releaseName)
+        .slice(0, 4);
     },
     enabled: open,
     staleTime: 30_000,
+  });
+
+  const queryClient = useQueryClient();
+  const moveMutation = useMutation({
+    mutationFn: async (target: { id: string; name: string | null; title: string | null }) => {
+      const { data: row, error: readErr } = await supabase
+        .from('ph_issues')
+        .select('sprint_release')
+        .eq('id', item.id)
+        .single();
+      if (readErr) throw new Error(readErr.message);
+      const current: any[] = Array.isArray((row as any)?.sprint_release) ? (row as any).sprint_release : [];
+      const filtered = current.filter((el) => el && el.name !== releaseName);
+      const next = [...filtered, { id: '', name: target.name || target.title, releaseDate: '' }];
+      const { error: upErr } = await supabase
+        .from('ph_issues')
+        .update({ sprint_release: next })
+        .eq('id', item.id);
+      if (upErr) throw new Error(upErr.message);
+    },
+    onSuccess: () => {
+      // 2026-06-26: refetch both legacy + new entity-aware list queries so
+      // the moved item disappears from the source list and the destination
+      // list picks it up if mounted.
+      queryClient.refetchQueries({
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'),
+      });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
+      catalystFlag.success('Work item moved.');
+    },
+    onError: (e: any) => catalystFlag.error(e?.message || 'Failed to move'),
   });
 
   useEffect(() => {
@@ -1022,32 +1155,45 @@ function WorkItemRow({
         <a
           href="#"
           onClick={(e) => { e.preventDefault(); onOpen?.(); }}
-          style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500, fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap', cursor: 'pointer', flexShrink: 0 }}
+          style={{
+            color: 'var(--ds-link, #0C66E4)',
+            fontWeight: 400,
+            fontSize: 14,
+            fontFamily: 'inherit',
+            lineHeight: 1,
+            letterSpacing: 0,
+            textDecoration: 'underline',
+            whiteSpace: 'nowrap',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
         >
           {item.issue_key}
         </a>
-        <span style={{ flex: 1, minWidth: 0, color: TEXT, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{
+          flex: 1,
+          minWidth: 0,
+          color: 'var(--ds-text, #292A2E)',
+          fontSize: 14,
+          fontWeight: 400,
+          fontFamily: 'inherit',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
           {item.summary}
         </span>
         {display.priority && (
           <span style={{ display: 'inline-flex' }}>{priorityIcon(item.priority)}</span>
         )}
         {display.status && (
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              padding: '2px 8px',
-              borderRadius: 3,
-              background: statusStyle.bg,
-              color: statusStyle.color,
-              letterSpacing: 0.4,
-              whiteSpace: 'nowrap',
-              border: `1px solid ${BORDER}`,
-            }}
-          >
-            {(item.status || statusKey || 'todo').toUpperCase()}
-          </span>
+          <CatalystStatusPill
+            status={item.status || statusKey || 'Backlog'}
+            statusCategory={item.status_category as any}
+            issueType={item.issue_type as any}
+            interactive={false}
+            compact
+          />
         )}
         {display.assignee && (
           <span style={{ display: 'inline-flex' }}>
@@ -1080,27 +1226,34 @@ function WorkItemRow({
             padding: '6px 0',
           }}
         >
-          <div style={{ padding: '4px 12px', fontSize: 12, fontWeight: 700, color: SUBTLE }}>Move to</div>
-          {(siblings ?? []).slice(0, 4).map((s: any) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => { setOpen(false); /* fire move */ }}
-              style={menuItemStyle()}
-            >
-              {s.name || s.title}
-            </button>
-          ))}
+          {(siblings ?? []).length > 0 && (
+            <>
+              <div style={{ padding: '4px 12px', fontSize: 12, fontWeight: 700, color: SUBTLE }}>Move to</div>
+              {(siblings ?? []).map((s: any) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className="wis-row-menu-item"
+                  onClick={() => { setOpen(false); moveMutation.mutate(s); }}
+                  style={menuItemStyle()}
+                >
+                  {s.name || s.title}
+                </button>
+              ))}
+              <button
+                type="button"
+                className="wis-row-menu-item"
+                onClick={() => { setOpen(false); setIsMoveModalOpen(true); }}
+                style={menuItemStyle()}
+              >
+                View all versions
+              </button>
+              <div style={{ height: 1, background: BORDER, margin: '6px 0' }} />
+            </>
+          )}
           <button
             type="button"
-            onClick={() => { setOpen(false); setIsMoveModalOpen(true); }}
-            style={menuItemStyle()}
-          >
-            View all versions
-          </button>
-          <div style={{ height: 1, background: BORDER, margin: '6px 0' }} />
-          <button
-            type="button"
+            className="wis-row-menu-item"
             onClick={() => { setOpen(false); onRemove(); }}
             style={menuItemStyle()}
           >
@@ -1115,6 +1268,7 @@ function WorkItemRow({
         workItemId={item.id}
         currentReleaseName={releaseName}
         projectId={projectId}
+        entityTable={entityTable}
         onClose={() => setIsMoveModalOpen(false)}
       />
     </>
@@ -1210,7 +1364,6 @@ function ProgressSection({ items }: { items: Issue[] }) {
             <ProgressStatRow color={PROGRESS_DONE} label="Done" count={counts.done} />
             <ProgressStatRow color={PROGRESS_WIP} label="In progress" count={counts.inProgress} />
             <ProgressStatRow color={PROGRESS_TODO} label="To do" count={counts.toDo} />
-            <ProgressStatRow color={PROGRESS_WARN} label="Warning" count={counts.warning} />
           </ul>
         )}
       </div>

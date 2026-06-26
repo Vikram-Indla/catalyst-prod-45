@@ -17,6 +17,8 @@ export interface CreateWorkItemInput {
   due_date?: string | null;
   start_date?: string | null;
   release_id?: string | null;
+  /** 2026-06-26: sprint replaces release in project-scope create. */
+  sprint_id?: string | null;
   department?: string | null;
   team?: string | null;
   environment?: string | null;
@@ -38,6 +40,7 @@ export interface UpdateWorkItemInput {
   due_date?: string | null;
   start_date?: string | null;
   release_id?: string | null;
+  sprint_id?: string | null;
   department?: string | null;
   team?: string | null;
   environment?: string | null;

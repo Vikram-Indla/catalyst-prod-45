@@ -62,9 +62,14 @@ const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailP
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
 const ReleaseDetailPageLazy = lazy(() => import("../pages/release-hub/ReleaseDetailPage").then(m => ({ default: m.ReleaseDetailPage })));
+const ReleaseWorkNavigatorPageLazy = lazy(() => import("../pages/release-hub/ReleaseWorkNavigatorPage").then(m => ({ default: m.ReleaseWorkNavigatorPage })));
 const DependenciesPageLazy = lazy(() => import("../pages/project-hub/DependenciesPage"));
 const ProductDependenciesPageLazy = lazy(() => import("../pages/product-hub/ProductDependenciesPage"));
 const IncidentHubDependenciesPageLazy = lazy(() => import("../pages/incidenthub/IncidentHubDependenciesPage"));
+// 2026-06-26: Sprints — project-hub clone of release-hub releases-management.
+const SprintsPageLazy = lazy(() => import("../pages/project-hub/SprintsPage").then(m => ({ default: m.SprintsPage })));
+const SprintDetailPageLazy = lazy(() => import("../pages/project-hub/SprintDetailPage").then(m => ({ default: m.SprintDetailPage })));
+const SprintWorkNavigatorPageLazy = lazy(() => import("../pages/project-hub/SprintWorkNavigatorPage").then(m => ({ default: m.SprintWorkNavigatorPage })));
 
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
@@ -733,6 +738,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/calendar" element={<S><ReleaseCalendarPage /></S>} />
         <Route path="/release-hub/releases-management" element={<S><ReleasesPageLazy /></S>} />
         <Route path="/release-hub/releases-management/:releaseId" element={<S><ReleaseDetailPageLazy /></S>} />
+        <Route path="/release-hub/releases-management/:releaseId/work" element={<S><ReleaseWorkNavigatorPageLazy /></S>} />
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
         <Route path="/release-hub/changes/:changeId" element={<S><ChangeDetailPage /></S>} />
         <Route path="/release-hub/sop-templates" element={<S><SopTemplatesPage /></S>} />
@@ -1028,6 +1034,10 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/timeline" element={<S><ProjectHubTimelinePage /></S>} />
         <Route path="/project-hub/:key/releases" element={<S><ReleasesPageLazy /></S>} />
         <Route path="/project-hub/:key/dependencies" element={<S><DependenciesPageLazy /></S>} />
+        {/* 2026-06-26: Sprints (project-hub clone of release-hub releases-management). */}
+        <Route path="/project-hub/:key/sprints" element={<S><SprintsPageLazy /></S>} />
+        <Route path="/project-hub/:key/sprints/:sprintId" element={<S><SprintDetailPageLazy /></S>} />
+        <Route path="/project-hub/:key/sprints/:sprintId/work" element={<S><SprintWorkNavigatorPageLazy /></S>} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
         <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
         <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />

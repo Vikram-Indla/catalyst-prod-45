@@ -93,6 +93,7 @@ export function useReleaseSummaryStream({ mountedForReleaseId }: Options) {
             improve_type: 'summarize_release_v2',
             stream: true,
             release_id: payload.releaseId,
+            entity_kind: payload.entityKind ?? 'release',
           }),
         });
 

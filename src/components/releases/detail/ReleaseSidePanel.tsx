@@ -24,9 +24,12 @@ import { catalystFlag } from '@/lib/catalystFlag';
 import { ReleaseConfirmationModal } from '@/components/releases/ReleaseConfirmationModal';
 import { ReleaseArchiveDialog } from '@/components/releases/ReleaseArchiveDialog';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { useCatalystAvatarProfile } from '@/components/catalyst-detail-views/shared/hooks/useCatalystAvatarProfile';
+import { useApprovedProfiles, useApprovedProfilesByJiraId } from '@/hooks/useApprovedProfiles';
+// 2026-06-26: kept from incoming branch — used by user-picker render
+// at line 817 to derive a deterministic avatar URL from display name.
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { Release, ReleaseStatus } from '@/types/phase3-releases';
+import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
 const BORDER = 'var(--ds-border, #DFE1E6)';
 const BLUE = 'var(--ds-border-selected, #1868DB)';
@@ -56,17 +59,21 @@ interface Props {
   projectId: string;
   projectKey: string | null;
   description: string | null | undefined;
+  /** 2026-06-26: entity-hub config. Defaults to RELEASE_CONFIG (existing
+   *  release-hub behaviour). Sprint surface passes SPRINT_CONFIG so writes
+   *  hit ph_jira_sprints and queries scope correctly. */
+  config?: EntityConfig;
 }
 
 export function ReleaseSidePanel(props: Props) {
-  const { releaseId, releaseName, projectId, projectKey } = props;
+  const { releaseId, releaseName, projectId, projectKey, config = RELEASE_CONFIG } = props;
   const queryClient = useQueryClient();
   const uiStatus = fromDBStatus(props.status);
+  const table = config.table;
 
   const refetch = () => {
-    queryClient.invalidateQueries({ queryKey: ['ph-release', releaseId] });
-    queryClient.invalidateQueries({ queryKey: ['projecthub', 'releases'] });
-    queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+    queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix, 'one', releaseId] });
+    queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
   };
 
   // Contributors: derive from assignees of items linked to this release.
@@ -76,14 +83,28 @@ export function ReleaseSidePanel(props: Props) {
   const { data: items = [] } = useQuery({
     queryKey: ['ph_release_contributors', releaseId, releaseName],
     queryFn: async () => {
-      const { data } = await supabase
+      const target = (releaseName || '').trim();
+      if (!target) return [];
+      // Mirror WorkItemsSection: .contains() first, fallback to fetch+filter.
+      // This guarantees identical row set vs the visible work items table.
+      const select = 'assignee_account_id, assignee_display_name, sprint_release';
+      const containsResult = await supabase
         .from('ph_issues')
-        .select('assignee_account_id, assignee_display_name, sprint_release')
-        .not('sprint_release', 'is', null)
+        .select(select)
+        .contains('sprint_release', JSON.stringify([{ name: target }]) as any)
         .limit(2000);
-      return (data ?? []).filter((row: any) => {
+      if ((containsResult.data?.length ?? 0) > 0) {
+        return containsResult.data ?? [];
+      }
+      const fb = await supabase
+        .from('ph_issues')
+        .select(select)
+        .not('sprint_release', 'is', null)
+        .limit(5000);
+      if (!fb.data) return [];
+      return fb.data.filter((row: any) => {
         const arr = row.sprint_release;
-        return Array.isArray(arr) && arr.some((el: any) => el && el.name === releaseName);
+        return Array.isArray(arr) && arr.some((el: any) => el && el.name === target);
       });
     },
     enabled: !!releaseName,
@@ -94,10 +115,13 @@ export function ReleaseSidePanel(props: Props) {
     const seen = new Set<string>();
     const out: { accountId: string | null; name: string | null }[] = [];
     items.forEach((it: any) => {
-      const key = (it.assignee_display_name || it.assignee_account_id || '').trim();
-      if (!key || seen.has(key)) return;
+      const accountId = (it.assignee_account_id || '').trim();
+      const name = (it.assignee_display_name || '').trim();
+      if (!accountId && !name) return;
+      const key = accountId || `name:${name.toLowerCase()}`;
+      if (seen.has(key)) return;
       seen.add(key);
-      out.push({ accountId: it.assignee_account_id ?? null, name: it.assignee_display_name ?? null });
+      out.push({ accountId: accountId || null, name: name || null });
     });
     return out;
   }, [items]);
@@ -125,6 +149,7 @@ export function ReleaseSidePanel(props: Props) {
           releaseDate={props.releaseDate}
           description={props.description}
           onChanged={refetch}
+          config={config}
         />
 
         <div style={{ display: 'flex', gap: 16 }}>
@@ -132,8 +157,8 @@ export function ReleaseSidePanel(props: Props) {
             label="Start date"
             value={props.startDate}
             onSave={async (v) => {
-              const { error } = await supabase
-                .from('ph_releases')
+              const { error } = await (supabase as any)
+                .from(table)
                 .update({ start_date: v || null })
                 .eq('id', releaseId);
               if (error) throw new Error(error.message);
@@ -145,8 +170,8 @@ export function ReleaseSidePanel(props: Props) {
             label="Release date"
             value={props.releaseDate}
             onSave={async (v) => {
-              const { error } = await supabase
-                .from('ph_releases')
+              const { error } = await (supabase as any)
+                .from(table)
                 .update({ release_date: v || null, target_date: v || null })
                 .eq('id', releaseId);
               if (error) throw new Error(error.message);
@@ -161,8 +186,8 @@ export function ReleaseSidePanel(props: Props) {
             projectId={projectId}
             onChange={async (nextId) => {
               if (!nextId || nextId === projectId) return;
-              const { error } = await supabase
-                .from('ph_releases')
+              const { error } = await (supabase as any)
+                .from(table)
                 .update({ project_id: nextId })
                 .eq('id', releaseId);
               if (error) {
@@ -179,8 +204,8 @@ export function ReleaseSidePanel(props: Props) {
         <DescriptionField
           value={props.description ?? ''}
           onSave={async (next) => {
-            const { error } = await supabase
-              .from('ph_releases')
+            const { error } = await (supabase as any)
+              .from(table)
               .update({ description: next || null })
               .eq('id', releaseId);
             if (error) throw new Error(error.message);
@@ -190,7 +215,9 @@ export function ReleaseSidePanel(props: Props) {
         />
       </div>
 
-      <ApproversCard releaseId={releaseId} />
+      {/* ApproversCard is config-aware (ph_release_approvers vs
+          ph_sprint_approvers, FK column, profile embed alias). */}
+      <ApproversCard releaseId={releaseId} config={config} />
     </div>
   );
 }
@@ -214,14 +241,15 @@ const STATUS_BORDER: Record<ApproverStatus, string> = {
 
 interface ApproverRow {
   id: string;
-  release_id: string;
+  release_id?: string;
+  sprint_id?: string;
   user_id: string;
   status: ApproverStatus;
   description: string | null;
   profile: { id: string; full_name: string | null; avatar_url: string | null } | null;
 }
 
-function ApproversCard({ releaseId }: { releaseId: string }) {
+function ApproversCard({ releaseId, config = RELEASE_CONFIG }: { releaseId: string; config?: EntityConfig }) {
   const queryClient = useQueryClient();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerPos, setPickerPos] = useState<{ top: number; left: number; width: number } | null>(null);
@@ -229,15 +257,16 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
   const plusRef = useRef<HTMLButtonElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
-  const queryKey = ['ph-release-approvers', releaseId];
+  const { table: approverTable, fkColumn, profileFkAlias } = config.approvers;
+  const queryKey = [`${config.queryKeyPrefix}-approvers`, releaseId];
 
   const { data: rows = [] } = useQuery<ApproverRow[]>({
     queryKey,
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from('ph_release_approvers')
-        .select('id, release_id, user_id, status, description, profile:profiles!ph_release_approvers_user_id_fkey(id, full_name, avatar_url)')
-        .eq('release_id', releaseId)
+        .from(approverTable)
+        .select(`id, ${fkColumn}, user_id, status, description, profile:${profileFkAlias}(id, full_name, avatar_url)`)
+        .eq(fkColumn, releaseId)
         .order('created_at', { ascending: true });
       if (error) throw new Error(error.message);
       return (data ?? []) as ApproverRow[];
@@ -263,9 +292,9 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
     mutationFn: async (userId: string) => {
       const { data: auth } = await supabase.auth.getUser();
       const { error } = await (supabase as any)
-        .from('ph_release_approvers')
+        .from(approverTable)
         .insert({
-          release_id: releaseId,
+          [fkColumn]: releaseId,
           user_id: userId,
           status: 'pending',
           added_by: auth.user?.id ?? null,
@@ -282,7 +311,7 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
   const removeApprover = useMutation({
     mutationFn: async (rowId: string) => {
       const { error } = await (supabase as any)
-        .from('ph_release_approvers')
+        .from(approverTable)
         .delete()
         .eq('id', rowId);
       if (error) throw new Error(error.message);
@@ -297,7 +326,7 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
   const updateDescription = useMutation({
     mutationFn: async ({ rowId, description }: { rowId: string; description: string }) => {
       const { error } = await (supabase as any)
-        .from('ph_release_approvers')
+        .from(approverTable)
         .update({ description })
         .eq('id', rowId);
       if (error) throw new Error(error.message);
@@ -313,7 +342,12 @@ function ApproversCard({ releaseId }: { releaseId: string }) {
     if (!pickerOpen || !plusRef.current) return;
     const update = () => {
       const r = plusRef.current!.getBoundingClientRect();
-      setPickerPos({ top: r.bottom + 6, left: r.right - 280, width: 280 });
+      const w = 280;
+      const spaceRight = window.innerWidth - r.left;
+      const openLeft = spaceRight < w + 16;
+      const rawLeft = openLeft ? r.right - w : r.left;
+      const left = Math.max(8, Math.min(rawLeft, window.innerWidth - w - 8));
+      setPickerPos({ top: r.bottom + 6, left, width: w });
     };
     update();
     window.addEventListener('scroll', update, true);
@@ -445,7 +479,11 @@ function ApproverRow({
   onRemove: () => void;
   onDescriptionSave: (next: string) => void;
 }) {
-  const { data: profile } = useCatalystAvatarProfile(approver.userId);
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const profile = useMemo(
+    () => approvedProfiles.find((p) => p.id === approver.userId),
+    [approvedProfiles, approver.userId],
+  );
   const [hover, setHover] = useState(false);
 
   return (
@@ -463,7 +501,7 @@ function ApproverRow({
           background: hover || expanded ? HOVER_BG : 'transparent',
         }}
       >
-        <CatalystAvatar size="small" name={approver.name} src={resolveAvatarUrl(approver.name) ?? profile?.avatar_url ?? approver.avatarUrl ?? undefined} />
+        <CatalystAvatar size="small" name={profile?.name || approver.name} src={profile?.avatarUrl || approver.avatarUrl || undefined} />
         <span style={{ flex: 1, fontSize: 14, color: LINK, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {approver.name}
         </span>
@@ -639,20 +677,25 @@ function ApproverExpandPanel({
 
       <div style={{ height: 1, background: BORDER, margin: '12px 0 8px' }} />
 
+      {/* 2026-06-26: full-width clickable row. Text left-aligned, hover bg
+          spans entire row so any click on the row removes the approver. */}
       <button
         type="button"
         onClick={onRemove}
         style={{
           all: 'unset',
           cursor: 'pointer',
-          display: 'inline-flex',
+          display: 'flex',
           alignItems: 'center',
-          padding: '4px 6px',
+          justifyContent: 'flex-start',
+          width: 'calc(100% + 12px)',
+          boxSizing: 'border-box',
+          padding: '6px 6px',
           margin: '0 -6px',
           borderRadius: 3,
           fontSize: 14,
           color: TEXT,
-          alignSelf: 'flex-start',
+          textAlign: 'left',
         }}
         onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = HOVER_BG; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -678,18 +721,16 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['approver-picker-users'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url')
-        .order('full_name');
-      if (error) throw new Error(error.message);
-      return (data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null }>;
-    },
-    staleTime: 5 * 60_000,
-  });
+  const { data: approvedProfiles = [] } = useApprovedProfiles();
+  const users = useMemo(
+    () =>
+      approvedProfiles.map((p) => ({
+        id: p.id,
+        full_name: p.name,
+        avatar_url: p.avatarUrl ?? null,
+      })),
+    [approvedProfiles],
+  );
 
   const filtered = useMemo(() => {
     const available = users.filter((u) => !selectedIds.has(u.id));
@@ -793,6 +834,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
 
 function StatusDropdown({
   releaseId, releaseName, projectId, projectKey, uiStatus, startDate, releaseDate, description, onChanged,
+  config = RELEASE_CONFIG,
 }: {
   releaseId: string;
   releaseName: string;
@@ -803,6 +845,7 @@ function StatusDropdown({
   releaseDate: string | null | undefined;
   description: string | null | undefined;
   onChanged: () => void;
+  config?: EntityConfig;
 }) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
@@ -815,7 +858,12 @@ function StatusDropdown({
     if (!open || !triggerRef.current) return;
     const update = () => {
       const r = triggerRef.current!.getBoundingClientRect();
-      setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+      const w = Math.max(r.width, 220);
+      const spaceRight = window.innerWidth - r.left;
+      const openLeft = spaceRight < w + 16;
+      const rawLeft = openLeft ? r.right - w : r.left;
+      const left = Math.max(8, Math.min(rawLeft, window.innerWidth - w - 8));
+      setPos({ top: r.bottom + 4, left, width: w });
     };
     update();
     window.addEventListener('scroll', update, true);
@@ -846,8 +894,8 @@ function StatusDropdown({
   }, [open]);
 
   const setStatusDirect = async (next: DBStatus) => {
-    const { error } = await supabase
-      .from('ph_releases')
+    const { error } = await (supabase as any)
+      .from(config.table)
       .update({ status: next, ...(next === 'released' ? {} : { actual_date: null }) })
       .eq('id', releaseId);
     if (error) {
@@ -858,7 +906,8 @@ function StatusDropdown({
     catalystFlag.success(`Status updated to ${next === 'planning' ? 'Unreleased' : next.replace('_', ' ')}.`);
   };
 
-  // Build menu items per current status
+  // Build menu items per current status. Both release + sprint use the
+  // confirmation modals — they're config-aware (write to config.table).
   const menuItems: Array<{ key: string; label: string; onSelect: () => void }> = [];
   if (uiStatus === 'released') {
     menuItems.push({ key: 'archive', label: 'Archive', onSelect: () => { setOpen(false); setShowArchiveModal(true); } });
@@ -866,7 +915,6 @@ function StatusDropdown({
     menuItems.push({ key: 'release', label: 'Release', onSelect: () => { setOpen(false); setShowReleaseModal(true); } });
     menuItems.push({ key: 'archive', label: 'Archive', onSelect: () => { setOpen(false); setShowArchiveModal(true); } });
   } else {
-    // archived
     menuItems.push({ key: 'release', label: 'Release', onSelect: () => { setOpen(false); setShowReleaseModal(true); } });
     menuItems.push({ key: 'unreleased', label: 'Unreleased', onSelect: () => { setOpen(false); setStatusDirect('planning'); } });
   }
@@ -966,6 +1014,7 @@ function StatusDropdown({
           projectKey={projectKey}
           onClose={() => setShowReleaseModal(false)}
           onSuccess={() => { setShowReleaseModal(false); onChanged(); }}
+          config={config}
         />
       )}
       {showArchiveModal && projectKey && (
@@ -975,6 +1024,7 @@ function StatusDropdown({
           projectKey={projectKey}
           onClose={() => setShowArchiveModal(false)}
           onSuccess={() => { setShowArchiveModal(false); onChanged(); }}
+          config={config}
         />
       )}
     </>
@@ -1070,7 +1120,12 @@ function ProjectField({
     if (!open || !triggerRef.current) return;
     const update = () => {
       const r = triggerRef.current!.getBoundingClientRect();
-      setPos({ top: r.bottom + 4, left: r.left, width: Math.max(r.width, 240) });
+      const w = Math.max(r.width, 240);
+      const spaceRight = window.innerWidth - r.left;
+      const openLeft = spaceRight < w + 16;
+      const rawLeft = openLeft ? r.right - w : r.left;
+      const left = Math.max(8, Math.min(rawLeft, window.innerWidth - w - 8));
+      setPos({ top: r.bottom + 4, left, width: w });
     };
     update();
     window.addEventListener('scroll', update, true);
@@ -1224,7 +1279,7 @@ function ContributorsField({
         <span style={{ fontSize: 14, color: SUBTLEST }}>—</span>
       ) : (
         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-          {contributors.slice(0, 5).map((c, i) => (
+          {contributors.slice(0, 3).map((c, i) => (
             <span
               key={`${c.accountId || c.name || i}`}
               style={{
@@ -1238,8 +1293,24 @@ function ContributorsField({
               <ContribAvatar accountId={c.accountId} name={c.name} />
             </span>
           ))}
-          {contributors.length > 5 && (
-            <span style={{ marginLeft: 6, fontSize: 12, color: SUBTLE }}>+{contributors.length - 5}</span>
+          {contributors.length > 3 && (
+            <span
+              style={{
+                marginLeft: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                color: TEXT,
+                background: 'var(--ds-background-neutral, #F1F2F4)',
+                padding: '1px 8px',
+                borderRadius: 3,
+                minWidth: 18,
+                textAlign: 'center',
+                lineHeight: '18px',
+                display: 'inline-block',
+              }}
+            >
+              +{contributors.length - 3}
+            </span>
           )}
         </div>
       )}
@@ -1248,12 +1319,13 @@ function ContributorsField({
 }
 
 function ContribAvatar({ accountId, name }: { accountId: string | null; name: string | null }) {
-  const { data: profile } = useCatalystAvatarProfile(accountId);
+  const byJiraId = useApprovedProfilesByJiraId();
+  const profile = accountId ? byJiraId.get(accountId) : undefined;
   return (
     <CatalystAvatar
       size="small"
-      name={name || undefined}
-      src={resolveAvatarUrl(name) ?? profile?.avatar_url ?? undefined}
+      name={profile?.name || name || undefined}
+      src={profile?.avatarUrl || undefined}
     />
   );
 }

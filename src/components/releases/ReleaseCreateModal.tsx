@@ -105,16 +105,21 @@ export function ReleaseCreateModal({
   const updateMutation = useUpdateRelease(editingRelease?.id ?? '');
   const pending = isEdit ? updateMutation.isPending : createMutation.isPending;
 
-  // Products = ph_projects
+  // Products only — releases belong to products, not projects (projects use sprints).
+  // Intersect ph_projects (FK source for releases.project_id) with products.code.
   const { data: productsRaw } = useQuery({
-    queryKey: ['ph-projects-for-release-create'],
+    queryKey: ['products-for-release-create'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_projects')
-        .select('id, key, name')
-        .order('name');
-      if (error) throw new Error(error.message);
-      return (data ?? []) as Array<{ id: string; key: string; name: string }>;
+      const [{ data: projects, error: pErr }, { data: prods, error: prErr }] = await Promise.all([
+        supabase.from('ph_projects').select('id, key, name').order('name'),
+        (supabase as any).from('products').select('code').eq('is_active', true),
+      ]);
+      if (pErr) throw new Error(pErr.message);
+      if (prErr) throw new Error(prErr.message);
+      const productCodes = new Set((prods ?? []).map((p: any) => p.code));
+      return (projects ?? []).filter((p: any) => productCodes.has(p.key)) as Array<{
+        id: string; key: string; name: string;
+      }>;
     },
     staleTime: 5 * 60_000,
     enabled: isOpen,
@@ -124,6 +129,18 @@ export function ReleaseCreateModal({
     () => (productsRaw ?? []).map((p) => ({ id: p.id, name: p.name, tag: p.key })),
     [productsRaw],
   );
+
+  // 2026-06-26: auto-pick when exactly 1 product available; otherwise leave
+  // empty so the user picks explicitly. Only runs in create mode (edit mode
+  // keeps the existing release's product_id).
+  useEffect(() => {
+    if (isEdit) return;
+    if (!isOpen) return;
+    if (formData.product_id) return;
+    if (productOptions.length === 1) {
+      setFormData((p) => ({ ...p, product_id: productOptions[0].id }));
+    }
+  }, [isEdit, isOpen, productOptions, formData.product_id]);
 
   const validate = (): boolean => {
     const next: Record<string, string> = {};
@@ -201,7 +218,7 @@ export function ReleaseCreateModal({
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={handleClose} width="small">
+        <Modal onClose={handleClose} width={867}>
           <ModalHeader hasCloseButton>
             <ModalTitle>{title}</ModalTitle>
           </ModalHeader>

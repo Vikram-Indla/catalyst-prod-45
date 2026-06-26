@@ -57,7 +57,7 @@ export function KeyDetailsFieldRow({
     const el = rowRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
-      setIsNarrow(entry.contentRect.width < 420);
+      setIsNarrow(entry.contentRect.width < 600);
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -67,7 +67,7 @@ export function KeyDetailsFieldRow({
       {/* 2026-06-22 Vikram: widened label column (120→320) + gap
           (space.250→space.800) for maximum breathing room in wide views.
           Narrow containers (panel mode) shrink label to 120px via ResizeObserver. */}
-      <Inline space="space.800" alignBlock={alignBlock}>
+      <Inline space={isNarrow ? 'space.200' : 'space.800'} alignBlock={alignBlock}>
         <span style={{
           fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
           minWidth: isNarrow ? 120 : 320, flexShrink: 0,
@@ -232,7 +232,7 @@ export function CatalystKeyDetails({
           height (rich-text, images, code blocks), so a fixed cap would
           clip. Display toggle replaces the height animation. */}
       <div style={{ display: collapsed ? 'none' : 'block' }}>
-        <div style={{ paddingLeft: 20 }}>
+        <div style={{ padding: 0 }}>
           {showParent && (
             <FieldRow label="Parent" alignBlock="center">
               {issue && (
@@ -271,7 +271,7 @@ export function CatalystKeyDetails({
             marginTop separates it from the last Key-details row above
             (2026-06-21 Vikram). */}
         {afterBody && (
-          <div style={{ marginTop: 16 }}>{afterBody}</div>
+          <div style={{ marginTop: 16, marginLeft: -20 }}>{afterBody}</div>
         )}
       </div>
     </div>

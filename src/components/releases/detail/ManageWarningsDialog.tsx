@@ -139,7 +139,7 @@ export function ManageWarningsDialog({ isOpen, onClose }: Props) {
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={onClose} width="medium">
+        <Modal onClose={onClose} width={867}>
           <ModalHeader hasCloseButton>
             <ModalTitle>Manage warnings</ModalTitle>
           </ModalHeader>

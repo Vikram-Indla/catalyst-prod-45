@@ -87,6 +87,7 @@ import {
   useTeamMembers,
   useProjectReleases,
   useReleaseSprints,
+  useProjectSprints,
   useCreateStoryMutation,
   useWorkflowStatuses,
 } from './useCreateStory';
@@ -408,7 +409,12 @@ export function CreateStoryModal({
   const { data: projects = [] } = useProjects();
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [], isLoading: releasesLoading, error: releasesError } = useProjectReleases(form.projectId);
-  const { data: sprints = [], isLoading: sprintsLoading } = useReleaseSprints(form.releaseId);
+  // 2026-06-26: project-scope create uses sprints directly from
+  // ph_jira_sprints (filtered by project_id), NOT sprints nested under a
+  // release. The legacy useReleaseSprints call is kept above for back-compat
+  // but the rendered Sprint dropdown now reads from sprintsByProject.
+  const { data: sprintsByProject = [], isLoading: sprintsLoading } = useProjectSprints(form.projectId);
+  const sprints = sprintsByProject;
 
   const createMutation = useCreateStoryMutation();
 
@@ -973,66 +979,37 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Sprint/Iteration (Release) ────────────────────────── */}
-              <Field name="sprintRelease" label="Release">
-                {({ fieldProps }) => (
-                  <Select<IconOption>
-                    {...fieldProps}
-                    inputId="cs-sprintrelease"
-                    options={releaseOptions}
-                    value={
-                      releaseOptions.find(
-                        (o) => o.value === (form.releaseId ?? ''),
-                      ) ?? null
-                    }
-                    onChange={(opt) => {
-                      updateField(
-                        'releaseId',
-                        (opt as IconOption)?.value || null,
-                      );
-                      // Reset sprints when release changes
-                      updateField('sprintReleases', []);
-                    }}
-                    isClearable
-                    placeholder="Select release"
-                  />
-                )}
-              </Field>
-
-              {/* ── Sprints (multi-select, filtered by release) ────── */}
-              {form.releaseId && (
-                <Field name="sprints" label="Sprints">
+              {/* ── Sprint ─────────────────────────────────────────────
+                  2026-06-26 (revised): always render dropdown with ALL
+                  sprints (past + current + future). Searchable + multi-
+                  select. No empty-state placeholder; an empty options
+                  list still shows the picker so user knows the field
+                  exists. */}
+              {workType !== 'Business Request' && (
+                <Field name="sprints" label="Sprint">
                   {({ fieldProps }) => (
-                    <>
-                      {sprintsLoading ? (
-                        <Spinner size="small" />
-                      ) : sprintOptions.length > 0 ? (
-                        <Select<IconOption, true>
-                          {...fieldProps}
-                          inputId="cs-sprints"
-                          isMulti
-                          options={sprintOptions}
-                          value={
-                            (form.sprintReleases ?? []).map(
-                              (id) =>
-                                sprintOptions.find((o) => o.value === id) ??
-                                null,
-                            ).filter(Boolean) as IconOption[]
-                          }
-                          onChange={(vals) =>
-                            updateField(
-                              'sprintReleases',
-                              (vals ?? []).map((o) => o.value),
-                            )
-                          }
-                          placeholder="Select sprints"
-                        />
-                      ) : (
-                        <Box xcss={{ color: 'color.text.subtlest', fontSize: '12px' }}>
-                          No sprints available for this release
-                        </Box>
-                      )}
-                    </>
+                    <Select<IconOption, true>
+                      {...fieldProps}
+                      inputId="cs-sprints"
+                      isMulti
+                      isSearchable
+                      isLoading={sprintsLoading}
+                      options={sprintOptions}
+                      value={
+                        (form.sprintReleases ?? []).map(
+                          (id) =>
+                            sprintOptions.find((o) => o.value === id) ??
+                            null,
+                        ).filter(Boolean) as IconOption[]
+                      }
+                      onChange={(vals) =>
+                        updateField(
+                          'sprintReleases',
+                          (vals ?? []).map((o) => o.value),
+                        )
+                      }
+                      placeholder="Search sprints"
+                    />
                   )}
                 </Field>
               )}

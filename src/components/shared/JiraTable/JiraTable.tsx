@@ -1845,6 +1845,18 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         display: 'flex',
         flexDirection: 'column',
         minHeight: 120,
+        // 2026-06-26: was `flex: 1` (stretched grid to fill parent → blank
+        // space appeared below short row sets). Switched to
+        // `flex: 0 1 auto, maxHeight: 100%` so the grid sizes to its
+        // intrinsic content when small (no white-space below the last
+        // row) but caps at the parent's bound when content overflows —
+        // giving the inner viewport (flex:1 + overflow-y:auto) a definite
+        // bound to scroll against in the overflow case. Preserves the
+        // 2026-06-25 fix (viewport scrolls when content exceeds parent)
+        // while removing the cosmetic empty area in short-list states.
+        flex: '0 1 auto',
+        maxHeight: '100%',
+        minWidth: 0,
       }}
     >
       <div

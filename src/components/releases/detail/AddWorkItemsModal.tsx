@@ -97,23 +97,42 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
 
   useEffect(() => { if (open) searchRef.current?.focus(); }, [open]);
 
-  const { data: items = [] } = useQuery<WorkItem[]>({
-    queryKey: ['add-work-items-search', release.id, query],
+  // 2026-06-26: scope dropdown to the parent project. Before, the query
+  // returned the global top 20 ph_issues — every release + every sprint
+  // showed the same 20 items. Resolve project_id -> project_key once,
+  // then filter ph_issues by project_key.
+  const { data: parentProjectKey = null } = useQuery({
+    queryKey: ['add-work-items-project-key', release.project_id],
     queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_projects')
+        .select('key')
+        .eq('id', release.project_id)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return (data?.key as string | undefined) ?? null;
+    },
+    enabled: !!release.project_id,
+    staleTime: 5 * 60_000,
+  });
+
+  const { data: items = [] } = useQuery<WorkItem[]>({
+    queryKey: ['add-work-items-search', release.id, parentProjectKey, query],
+    queryFn: async () => {
+      if (!parentProjectKey) return [];
       const q = query.trim();
-      const builder = supabase
+      let builder = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, issue_type, project_key')
+        .eq('project_key', parentProjectKey)
         .order('jira_created_at', { ascending: false })
-        .limit(20);
-      const filtered = q
-        ? builder.or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`)
-        : builder;
-      const { data, error } = await filtered;
+        .limit(50);
+      if (q) builder = builder.or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`);
+      const { data, error } = await builder;
       if (error) throw new Error(error.message);
       return (data ?? []) as WorkItem[];
     },
-    enabled: isOpen && open,
+    enabled: isOpen && open && !!parentProjectKey,
     staleTime: 15_000,
   });
 
@@ -166,10 +185,23 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
       return updatedCount;
     },
     onSuccess: async (updatedCount) => {
+      // 2026-06-26: WorkItemsSection's list query was renamed
+      // 'ph_release_items' → 'ph_entity_items' (config-aware for sprints).
+      // Also invalidate work-nav linked-keys queries for both release +
+      // sprint surfaces so the navigator picks the new items up too.
       await queryClient.refetchQueries({
-        predicate: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === 'ph_release_items',
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'
+            || (typeof q.queryKey[0] === 'string'
+                && (q.queryKey[0] as string).startsWith('projecthub-')
+                && q.queryKey[1] === 'work-nav-linked-keys')),
       });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       catalystFlag.success(`Added ${updatedCount} work item${updatedCount === 1 ? '' : 's'} to "${release.name}".`);
       onSuccess?.();
       onClose();
@@ -181,7 +213,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
     <>
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={onClose} width="small" shouldCloseOnOverlayClick={false}>
+        <Modal onClose={onClose} width={867} shouldCloseOnOverlayClick={false}>
           <ModalHeader hasCloseButton>
             <ModalTitle>Add work items to this version</ModalTitle>
           </ModalHeader>
@@ -327,21 +359,38 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                   gap: 8,
                   width: '100%',
                   boxSizing: 'border-box',
-                  padding: '6px 12px',
+                  padding: '8px 12px',
                   cursor: 'pointer',
-                  fontSize: 13,
-                  color: TEXT,
+                  fontFamily: 'inherit',
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 <span style={{ flex: '0 0 16px', display: 'inline-flex' }}>
-                  <JiraIssueTypeIcon type={it.issue_type as any} size={14} />
+                  <JiraIssueTypeIcon type={it.issue_type as any} size={16} />
                 </span>
-                <span style={{ flex: '0 0 80px', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <span style={{
+                  flex: '0 0 80px',
+                  fontSize: 14,
+                  fontWeight: 400,
+                  color: 'var(--ds-link, #0C66E4)',
+                  textDecoration: 'underline',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}>
                   {it.issue_key}
                 </span>
-                <span style={{ flex: 1, minWidth: 0, color: SUBTLE, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{
+                  flex: 1,
+                  minWidth: 0,
+                  fontSize: 14,
+                  fontWeight: 400,
+                  color: 'var(--ds-text, #292A2E)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}>
                   {it.summary}
                 </span>
               </button>

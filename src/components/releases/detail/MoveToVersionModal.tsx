@@ -16,12 +16,15 @@ interface Props {
   workItemId: string;
   currentReleaseName: string;
   projectId: string;
+  /** 2026-06-26: entity table for the picker (ph_releases | ph_jira_sprints).
+   *  Defaults to ph_releases for backward compatibility. */
+  entityTable?: 'ph_releases' | 'ph_jira_sprints';
   onClose: () => void;
   onSuccess?: () => void;
 }
 
 export function MoveToVersionModal({
-  isOpen, workItemId, currentReleaseName, projectId, onClose, onSuccess,
+  isOpen, workItemId, currentReleaseName, projectId, entityTable = 'ph_releases', onClose, onSuccess,
 }: Props) {
   const [targetId, setTargetId] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -29,10 +32,10 @@ export function MoveToVersionModal({
   useEffect(() => { if (!isOpen) setTargetId(null); }, [isOpen]);
 
   const { data: rows } = useQuery({
-    queryKey: ['ph-releases-for-move', projectId],
+    queryKey: ['entity-for-move', entityTable, projectId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_releases')
+      const { data, error } = await (supabase as any)
+        .from(entityTable)
         .select('id, name, title, status')
         .eq('project_id', projectId)
         .neq('status', 'archived')
@@ -45,8 +48,11 @@ export function MoveToVersionModal({
   });
 
   const options: ProductOption[] = useMemo(
-    () => (rows ?? []).map((r) => ({ id: r.id, name: r.name || r.title || r.id })),
-    [rows],
+    () =>
+      (rows ?? [])
+        .filter((r) => (r.name || r.title) !== currentReleaseName)
+        .map((r) => ({ id: r.id, name: r.name || r.title || r.id })),
+    [rows, currentReleaseName],
   );
 
   const mutation = useMutation({
@@ -69,8 +75,18 @@ export function MoveToVersionModal({
       if (upErr) throw new Error(upErr.message);
     },
     onSuccess: () => {
+      // 2026-06-26: refetch both legacy + new entity-aware list caches so
+      // both source + dest WorkItemsSection lists pick up the change.
+      queryClient.refetchQueries({
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'),
+      });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
-      queryClient.invalidateQueries({ queryKey: ['ph_release_items'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       catalystFlag.success('Work item moved.');
       onSuccess?.();
       onClose();
@@ -81,7 +97,7 @@ export function MoveToVersionModal({
   return (
     <ModalTransition>
       {isOpen && (
-        <Modal onClose={onClose} width="small">
+        <Modal onClose={onClose} width={867}>
           <ModalHeader hasCloseButton>
             <ModalTitle>Move to version</ModalTitle>
           </ModalHeader>

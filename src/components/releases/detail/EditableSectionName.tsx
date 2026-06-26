@@ -82,10 +82,10 @@ export function EditableSectionName({
               style={{
                 flex: 1,
                 maxWidth: 320,
-                height: 28,
+                height: 32,
                 padding: '0 8px',
-                fontSize: 14,
-                fontWeight: 600,
+                fontSize: 16,
+                fontWeight: 700,
                 color: TEXT,
                 border: `1px solid ${BLUE}`,
                 borderRadius: 3,
@@ -118,7 +118,7 @@ export function EditableSectionName({
           </>
         ) : (
           <>
-            <span style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: TEXT }}>
               {name || 'Give this section a name'}
             </span>
             <button
@@ -141,7 +141,12 @@ export function EditableSectionName({
         )}
       </div>
       {!collapsed && (
-        <div style={{ marginLeft: -20 }}>{children}</div>
+        <div>
+          <style>{`
+            .release-section-flush > div { padding-left: 0 !important; }
+          `}</style>
+          <div className="release-section-flush">{children}</div>
+        </div>
       )}
     </div>
   );

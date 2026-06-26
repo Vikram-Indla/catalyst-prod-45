@@ -19,6 +19,7 @@ import { createPortal } from 'react-dom';
 import { Checkbox } from '@atlaskit/checkbox';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import Tooltip from '@atlaskit/tooltip';
 
 // ───────────────────────── shared pill + portal ─────────────────────────
@@ -339,7 +340,7 @@ export function StatusFilter({
   useDismiss(open, () => setOpen(false), triggerRef, popupRef);
 
   const allSelected = value.length === STATUS_ORDER.length;
-  const active = open;
+  const active = open || value.length > 0;
 
   const toggle = (v: StatusValue) => {
     if (value.includes(v)) onChange(value.filter((x) => x !== v));
@@ -368,9 +369,10 @@ export function StatusFilter({
           aria-haspopup="listbox"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          style={pillStyle(active, true)}
+          style={pillStyle(active)}
         >
           <span>{triggerLabel}</span>
+          <AkChevronDownIcon label="" size="small" />
         </button>
       </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={200}>
@@ -402,11 +404,15 @@ export function ProductFilter({
   value,
   onChange,
   placeholder = 'Search products',
+  label = 'Product',
 }: {
   options: ProductOption[];
   value: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
+  /** 2026-06-26: label override so the same component renders as "Project"
+   *  on the sprints surface (entity-hub adapter pattern). */
+  label?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -415,7 +421,7 @@ export function ProductFilter({
   const pos = useAnchoredPopup(open, triggerRef);
   useDismiss(open, () => { setOpen(false); setQuery(''); }, triggerRef, popupRef);
 
-  const active = open;
+  const active = open || value.length > 0;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -436,13 +442,13 @@ export function ProductFilter({
   );
 
   const triggerLabel = useMemo(() => {
-    if (value.length === 0) return 'Product';
+    if (value.length === 0) return label;
     return selectedNames.join(', ');
-  }, [value.length, selectedNames]);
+  }, [value.length, selectedNames, label]);
 
   const tooltipContent = value.length === 0
-    ? 'Filter by product'
-    : `Product: ${selectedNames.join(', ')}`;
+    ? `Filter by ${label.toLowerCase()}`
+    : `${label}: ${selectedNames.join(', ')}`;
 
   return (
     <>
@@ -453,9 +459,10 @@ export function ProductFilter({
           aria-haspopup="listbox"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          style={pillStyle(active, true)}
+          style={pillStyle(active)}
         >
           <span>{triggerLabel}</span>
+          <AkChevronDownIcon label="" size="small" />
         </button>
       </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={280}>
@@ -533,7 +540,7 @@ export function GroupFilter({
   const pos = useAnchoredPopup(open, triggerRef);
   useDismiss(open, () => setOpen(false), triggerRef, popupRef);
 
-  const active = open;
+  const active = open || value !== 'none';
   const current = GROUP_OPTIONS.find((o) => o.value === value);
   const triggerLabel = value === 'none' ? 'Group' : `Group: ${current?.label ?? ''}`;
   const tooltipContent = value === 'none'
@@ -549,9 +556,10 @@ export function GroupFilter({
           aria-haspopup="listbox"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          style={pillStyle(active, true)}
+          style={pillStyle(active)}
         >
           <span>{triggerLabel}</span>
+          <AkChevronDownIcon label="" size="small" />
         </button>
       </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={200}>
