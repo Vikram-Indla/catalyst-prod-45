@@ -163,11 +163,14 @@ export class HuddleConnection {
   /** After a renegotiation, surface or clear the remote screen based on whether
    *  a live remote video track exists — reliable across browsers. */
   private reconcileRemoteScreen(): void {
-    if (!this.pc || typeof this.pc.getReceivers !== 'function') return;
-    const recv = this.pc.getReceivers().find(
-      (r) => r.track?.kind === 'video' && r.track.readyState === 'live',
-    );
-    this.opts.onRemoteScreen?.(recv ? new MediaStream([recv.track]) : null);
+    if (!this.pc || typeof this.pc.getTransceivers !== 'function') return;
+    // A video transceiver whose negotiated direction lets us RECEIVE = the peer
+    // is actively sharing. After they removeTrack + renegotiate, currentDirection
+    // flips to 'inactive'/'sendonly' even though the track object may linger 'live'
+    // — so direction is the reliable signal, not readyState.
+    const vt = this.pc.getTransceivers().find((t) => t.receiver?.track?.kind === 'video');
+    const receiving = !!vt && (vt.currentDirection === 'sendrecv' || vt.currentDirection === 'recvonly');
+    this.opts.onRemoteScreen?.(receiving && vt!.receiver.track ? new MediaStream([vt!.receiver.track]) : null);
   }
 
   private drainCandidates(): void {
