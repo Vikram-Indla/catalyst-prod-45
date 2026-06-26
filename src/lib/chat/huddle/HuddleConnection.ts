@@ -21,6 +21,8 @@ interface HuddleConnectionOpts {
   onRemoteScreen?: (stream: MediaStream | null) => void;
   /** Our own screen share ended (e.g. user hit the browser "Stop sharing"). */
   onLocalScreenEnded?: () => void;
+  /** The other participant left — in a 2-person call this ends the call. */
+  onPeerLeft?: () => void;
 }
 
 export class HuddleConnection {
@@ -233,8 +235,12 @@ export class HuddleConnection {
         break;
       }
       case 'leave': {
+        if (sig.from !== this.remoteId && this.remoteId !== null) break; // ignore strays
         this.opts.onRemoteScreen?.(null);
         this.opts.onConnectionState('disconnected');
+        // 2-person call: the other person hung up → end locally so the mic is
+        // released and the FAB clears (no lingering recording indicator).
+        this.opts.onPeerLeft?.();
         break;
       }
     }
