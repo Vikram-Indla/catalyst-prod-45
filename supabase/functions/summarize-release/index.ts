@@ -77,8 +77,11 @@ async function logGovernance(params: {
   }
 }
 
-/** Fetch the release row + linked work items via service role. */
-async function fetchReleaseContext(releaseId: string): Promise<{
+/** Fetch the release/sprint row + linked work items via service role. */
+async function fetchReleaseContext(
+  releaseId: string,
+  entityKind: "release" | "sprint" = "release",
+): Promise<{
   release: ReleaseRow | null;
   items: IssueRow[];
 }> {
@@ -87,8 +90,13 @@ async function fetchReleaseContext(releaseId: string): Promise<{
   if (!url || !service) return { release: null, items: [] };
   const sb = createClient(url, service, { auth: { persistSession: false } });
 
+  // 2026-06-26: Phase 3 — entity-aware table swap. Sprint surface reads
+  // from ph_jira_sprints; release surface keeps ph_releases. Both link to
+  // ph_issues via the same sprint_release JSONB name match.
+  const entityTable = entityKind === "sprint" ? "ph_jira_sprints" : "ph_releases";
+
   const { data: release } = await sb
-    .from("ph_releases")
+    .from(entityTable)
     .select(
       "id, name, title, description, status, start_date, release_date, target_date",
     )
@@ -166,31 +174,38 @@ function buildItemsBlock(items: IssueRow[]): string {
     .join("\n\n");
 }
 
-function buildPrompt(opts: { release: ReleaseRow; items: IssueRow[]; counts: ReturnType<typeof countProgress> }): string {
-  const { release, items, counts } = opts;
-  const name = release.name || release.title || "(untitled release)";
+function buildPrompt(opts: {
+  release: ReleaseRow;
+  items: IssueRow[];
+  counts: ReturnType<typeof countProgress>;
+  entityKind: "release" | "sprint";
+}): string {
+  const { release, items, counts, entityKind } = opts;
+  const noun = entityKind === "sprint" ? "sprint" : "release";
+  const Noun = entityKind === "sprint" ? "Sprint" : "Release";
+  const name = release.name || release.title || `(untitled ${noun})`;
   const startDate = release.start_date || "—";
   const releaseDate = release.release_date || release.target_date || "—";
   const status = release.status || "—";
   const desc = (release.description || "").trim();
   const pct = counts.total > 0 ? Math.round((counts.done / counts.total) * 100) : 0;
 
-  return `Summarize this release for a project lead. Output Markdown — short paragraphs and bullet points only. No headings, no code fences, no preamble.
+  return `Summarize this ${noun} for a project lead. Output Markdown — short paragraphs and bullet points only. No headings, no code fences, no preamble.
 
-Release name: ${name}
+${Noun} name: ${name}
 Status: ${status}
 Start date: ${startDate}
-Release date: ${releaseDate}
+${Noun} date: ${releaseDate}
 Progress: ${counts.done}/${counts.total} done (${pct}%) · ${counts.inProgress} in progress · ${counts.toDo} to do
 ${desc ? `Description: ${desc.slice(0, 1000)}` : ""}
 
-Work items in this release (most recent first, max 80 shown):
+Work items in this ${noun} (most recent first, max 80 shown):
 ${buildItemsBlock(items)}
 
-Tone: Release-management voice. Lead with one short paragraph describing the release state (what it is, where it stands against the dates, headline progress number). Follow with bullet points covering:
+Tone: ${entityKind === "sprint" ? "Sprint-delivery" : "Release-management"} voice. Lead with one short paragraph describing the ${noun} state (what it is, where it stands against the dates, headline progress number). Follow with bullet points covering:
 - Major in-flight workstreams (group by parent/epic when meaningful)
 - Open blockers, high-priority items, or items with no assignee
-- What needs attention before release date
+- What needs attention before ${noun} date
 
 Be specific — name keys, owners, and items. Begin immediately with the situation paragraph. No preamble.`;
 }
@@ -204,6 +219,9 @@ serve(async (req) => {
     const body = await req.json();
     const improve_type: string | undefined = body.improve_type;
     const releaseId: string | undefined = body.release_id;
+    const entityKindRaw: string | undefined = body.entity_kind;
+    const entityKind: "release" | "sprint" =
+      entityKindRaw === "sprint" ? "sprint" : "release";
 
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) {
@@ -220,7 +238,7 @@ serve(async (req) => {
       );
     }
 
-    const { release, items } = await fetchReleaseContext(releaseId);
+    const { release, items } = await fetchReleaseContext(releaseId, entityKind);
     if (!release) {
       return new Response(
         JSON.stringify({ error: "release_not_found" }),
@@ -233,7 +251,7 @@ serve(async (req) => {
     // Branch: summarize_release_v2 (STREAMING — NDJSON)
     // ─────────────────────────────────────────────────────────────
     if (improve_type === "summarize_release_v2" && body.stream === true) {
-      const prompt = buildPrompt({ release, items, counts });
+      const prompt = buildPrompt({ release, items, counts, entityKind });
       const upstreamAbort = new AbortController();
 
       const aiResp = await fetch(AI_GATEWAY_URL, {
@@ -393,7 +411,7 @@ serve(async (req) => {
     // Branch: summarize_release (LEGACY non-streaming)
     // ─────────────────────────────────────────────────────────────
     if (improve_type === "summarize_release") {
-      const prompt = buildPrompt({ release, items, counts });
+      const prompt = buildPrompt({ release, items, counts, entityKind });
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {

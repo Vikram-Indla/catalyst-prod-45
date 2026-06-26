@@ -135,11 +135,32 @@ export function TicketBreadcrumbs({
 
   // Crumb 2 — current issue (terminal). Jira-parity: clicking the key
   // navigates to the full-page issue view (/browse/:issueKey).
+  // 2026-06-26: Sprint / Release entities are NOT Jira issue types — render
+  // a small inline glyph (zap for sprint, package for release) instead of
+  // routing through the JiraIssueTypeIcon registry (which would fall
+  // through to the default story icon).
+  const isSprintCrumb = itemType === 'Sprint / Iteration' || itemType === 'Sprint';
+  const isReleaseCrumb = itemType === 'Release';
+  const sprintGlyph = (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ds-icon-warning, #B38600)' }}>
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor" />
+    </svg>
+  );
+  const releaseGlyph = (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ds-icon-information, #1868DB)' }}>
+      <path d="M16.5 9.4 7.55 4.24M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+      <line x1="12" y1="22.08" x2="12" y2="12"/>
+    </svg>
+  );
+
   items.push({
     key: 'current',
     text: (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
-        <IssueIcon type={itemType} size={14} />
+        {isSprintCrumb ? sprintGlyph
+          : isReleaseCrumb ? releaseGlyph
+          : <IssueIcon type={itemType} size={14} />}
         <span>{itemKey ?? '—'}</span>
       </span>
     ),

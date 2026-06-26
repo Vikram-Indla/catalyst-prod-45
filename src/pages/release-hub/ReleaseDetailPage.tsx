@@ -244,6 +244,7 @@ export function ReleaseDetailPage({
     startSummary({
       releaseId: release.id,
       releaseName: release.name || release.title || null,
+      entityKind: config.kind,
     });
   };
 
@@ -366,11 +367,9 @@ export function ReleaseDetailPage({
         >
           Give feedback
         </Button>
-        {config.kind === 'release' && (
-          <Button appearance="default" onClick={handleSummarize}>
-            ✦ Summarize Release
-          </Button>
-        )}
+        <Button appearance="default" onClick={handleSummarize}>
+          ✦ Summarize {config.label.singular}
+        </Button>
       </div>
 
       {/* Editable section name — persists to ph_releases.section_name.
@@ -400,7 +399,7 @@ export function ReleaseDetailPage({
         />
       </EditableSectionName>
 
-      {config.kind === 'release' && showSummaryCard && (
+      {showSummaryCard && (
         <ReleaseSummaryCard
           status={summaryStatus}
           text={summaryText}
@@ -411,6 +410,7 @@ export function ReleaseDetailPage({
           onToggleAuto={setSummaryAuto}
           onFeedback={(vote) => setFeedbackVote(vote)}
           selectedVote={feedbackVote}
+          entityLabel={config.label.singular}
         />
       )}
 

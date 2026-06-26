@@ -28,6 +28,8 @@ export interface ReleaseSummaryCardProps {
   onToggleAuto: (next: boolean) => void;
   onFeedback?: (vote: 'up' | 'down') => void;
   selectedVote?: 'up' | 'down' | null;
+  /** 2026-06-26: card header label noun ("Release"/"Sprint"). */
+  entityLabel?: string;
 }
 
 export function ReleaseSummaryCard({
@@ -40,6 +42,7 @@ export function ReleaseSummaryCard({
   onToggleAuto,
   onFeedback,
   selectedVote,
+  entityLabel = 'Release',
 }: ReleaseSummaryCardProps) {
   const isStreaming = status === 'fetching' || status === 'streaming';
   const isDone = status === 'done';
@@ -71,7 +74,7 @@ export function ReleaseSummaryCard({
       <div className="csc-surface">
         <header className="csc-header">
           <SparklesIcon size="small" label="" primaryColor="var(--ds-icon, #44546F)" />
-          <span className="csc-header__title">Release summary</span>
+          <span className="csc-header__title">{entityLabel} summary</span>
           <span className="csc-header__lock">
             <LockIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #6b6e76)" />
             Only visible to you
