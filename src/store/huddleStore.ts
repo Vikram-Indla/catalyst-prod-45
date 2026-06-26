@@ -31,10 +31,18 @@ interface HuddleStore {
 // store state (they are not serializable and must survive re-renders).
 let connection: HuddleConnection | null = null;
 let remoteAudioEl: HTMLAudioElement | null = null;
+let remoteStream: MediaStream | null = null;
 let selfIdRef: string | null = null;
 let huddleIdRef: string | null = null;
 
+/** Live remote MediaStream — used by HuddleFab to drive the audio-level equalizer.
+ *  Kept as a module ref (not store state) since it changes outside React. */
+export function getHuddleRemoteStream(): MediaStream | null {
+  return remoteStream;
+}
+
 function attachRemote(stream: MediaStream) {
+  remoteStream = stream;
   if (typeof document === 'undefined') return;
   if (!remoteAudioEl) {
     remoteAudioEl = document.createElement('audio');
@@ -46,6 +54,7 @@ function attachRemote(stream: MediaStream) {
 }
 
 function detachRemote() {
+  remoteStream = null;
   if (remoteAudioEl) {
     remoteAudioEl.srcObject = null;
     remoteAudioEl.remove();
