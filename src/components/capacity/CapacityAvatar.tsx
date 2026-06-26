@@ -7,6 +7,7 @@
 import { CircleUser } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
+import { isBannedAvatarSrc } from '@/components/shared/CatalystAvatar';
 
 interface CapacityAvatarProps {
   initials: string;
@@ -48,6 +49,7 @@ export function CapacityAvatar({
   showTooltip = true,
 }: CapacityAvatarProps) {
   const styles = sizeStyles[size];
+  const safeAvatarUrl = isBannedAvatarSrc(avatarUrl) ? null : avatarUrl;
 
   const avatarContent = (
     <div 
@@ -66,14 +68,14 @@ export function CapacityAvatar({
           styles.avatar
         )}
         style={{
-          backgroundColor: avatarUrl ? 'transparent' : 'var(--cp-blue-wash)',
+          backgroundColor: safeAvatarUrl ? 'transparent' : 'var(--cp-blue-wash)',
           color: 'var(--cp-blue)',
           border: '2px solid var(--ds-background-information-bold, #0C66E4)',
           boxShadow: '0 1px 3px var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))',
         }}
       >
-        {avatarUrl ? (
-          <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" />
+        {safeAvatarUrl ? (
+          <img src={safeAvatarUrl} alt={initials} className="w-full h-full object-cover" />
         ) : (
           <CircleUser className="w-[60%] h-[60%]" color="var(--cp-blue)" strokeWidth={1.5} />
         )}

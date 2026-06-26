@@ -53,10 +53,12 @@ export function useProjects() {
     queryKey: ['create-story-projects'],
     queryFn: async () => {
       // Primary: projects table (UUID id, Jira-synced avatar_url).
+      // 2026-06-26: column is `archived_at` (timestamp), not `is_archived`.
+      // `color` doesn't exist on projects either — selected only from ph_projects below.
       const { data, error } = await supabase
         .from('projects')
-        .select('id, key, name, avatar_url, color')
-        .eq('is_archived', false)
+        .select('id, key, name, avatar_url')
+        .is('archived_at', null)
         .order('name');
       if (error) throw error;
       const rows = data ?? [];
@@ -64,8 +66,7 @@ export function useProjects() {
       // Secondary: ph_projects for Lucide icon + color (fallback for non-Jira projects).
       const { data: phRows } = await supabase
         .from('ph_projects')
-        .select('key, icon, color')
-        .eq('is_archived', false);
+        .select('key, icon, color');
 
       const phByKey = new Map(
         (phRows ?? []).map((r: any) => [r.key?.toUpperCase(), r])
@@ -200,11 +201,12 @@ export function useWorkflowStatuses(workType: string, _projectId?: string) {
       if (!workType) return [];
 
       // Load statuses for this work item type from ph_workflow_* tables
+      // 2026-06-26: ph_workflow_statuses has no `archived_at` column —
+      // dropped the filter + selection of that field.
       const { data: typeStatuses, error } = await supabase
         .from('ph_workflow_type_statuses')
-        .select('position, is_initial, ph_workflow_statuses!inner(name, category, archived_at)')
+        .select('position, is_initial, ph_workflow_statuses!inner(name, category)')
         .eq('work_item_type', workType)
-        .is('ph_workflow_statuses.archived_at', null)
         .order('position');
 
       if (error) {

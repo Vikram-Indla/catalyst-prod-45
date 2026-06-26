@@ -159,7 +159,6 @@ export function ActivityRow({
       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
         <PresenceAvatar
           name={item.authorName}
-          avatarUrl={item.authorAvatarUrl}
           size={32}
         />
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -341,7 +340,6 @@ function DenseRow({
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
         <PresenceAvatar
           name={item.authorName}
-          avatarUrl={item.authorAvatarUrl}
           size={28}
         />
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -441,7 +439,6 @@ function SingleLineRow({
     >
       <PresenceAvatar
         name={item.authorName}
-        avatarUrl={item.authorAvatarUrl}
         size={32}
       />
       <span

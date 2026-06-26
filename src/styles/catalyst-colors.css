@@ -4,6 +4,12 @@
  */
 
 :root {
+  /* Locate-in-timeline accents (Vikram 2026-06-25). #964AC0 is not an ADS token,
+     so it lives here as a Catalyst token. */
+  --cat-locate-accent: #964AC0;         /* located row title pill + emphasis */
+  --cat-locate-accent-subtle: #E4D2F2;  /* ancestor chevron background square */
+  --cat-locate-bar: #F5803E;            /* orange left rail on located + ancestor rows */
+
   /* ============= CATALYST V5 PRIMARY COLORS ============= */
   --cp-color-teal: var(--ds-chart-teal-bold, #0d9488);
   --cp-color-teal-hover: var(--ds-chart-teal-bolder, #0f766e);

@@ -64,6 +64,8 @@ const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").
 const ReleaseDetailPageLazy = lazy(() => import("../pages/release-hub/ReleaseDetailPage").then(m => ({ default: m.ReleaseDetailPage })));
 const ReleaseWorkNavigatorPageLazy = lazy(() => import("../pages/release-hub/ReleaseWorkNavigatorPage").then(m => ({ default: m.ReleaseWorkNavigatorPage })));
 const DependenciesPageLazy = lazy(() => import("../pages/project-hub/DependenciesPage"));
+const ProductDependenciesPageLazy = lazy(() => import("../pages/product-hub/ProductDependenciesPage"));
+const IncidentHubDependenciesPageLazy = lazy(() => import("../pages/incidenthub/IncidentHubDependenciesPage"));
 // 2026-06-26: Sprints — project-hub clone of release-hub releases-management.
 const SprintsPageLazy = lazy(() => import("../pages/project-hub/SprintsPage").then(m => ({ default: m.SprintsPage })));
 const SprintDetailPageLazy = lazy(() => import("../pages/project-hub/SprintDetailPage").then(m => ({ default: m.SprintDetailPage })));
@@ -145,6 +147,10 @@ const TestAdminCaseTypesPage    = lazy(() => import("../pages/admin/test/TestCas
 const TestAdminCaseStatusesPage = lazy(() => import("../pages/admin/test/TestCaseStatusesPage"));
 const TestAdminRunStatusesPage  = lazy(() => import("../pages/admin/test/TestRunStatusesPage"));
 const TestAdminPermissionsPage  = lazy(() => import("../pages/admin/test/TestPermissionsPage"));
+
+// RBAC Admin — mock-safe mode (schema not yet deployed)
+const RolesAdminPageLazy       = lazy(() => import("../pages/admin/RolesAdminPage"));
+const PermissionsAdminPageLazy = lazy(() => import("../pages/admin/PermissionsAdminPage"));
 
 // TestHub
 const TestHubDashboardPage = lazy(() => import("../pages/testhub/DashboardPage"));
@@ -516,6 +522,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/roadmaps/:id" element={<MG k="producthub" t="ProductHub"><S><FilterRoadmapPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/timeline/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductTimelineDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePage /></S></MG>} />
+        <Route path="/product-hub/:key/dependencies" element={<MG k="producthub" t="ProductHub"><S><ProductDependenciesPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
@@ -695,6 +702,7 @@ export default function FullAppRoutes() {
             issue_type='Production Incident'). Same Gantt chrome as
             /project-hub/:key/timeline and /product-hub/:key/timeline. */}
         <Route path="/incident-hub/timeline" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubTimelinePage /></S></MG>} />
+        <Route path="/incident-hub/dependencies" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDependenciesPageLazy /></S></MG>} />
         {/* 2026-06-17: Dashboard tab — canonical ProjectDashboardPage with
             mode='incident'. Same 11-widget grid as project + product hubs,
             with the 5 widgets that don't apply (Epic Progress, Scope
@@ -948,6 +956,9 @@ export default function FullAppRoutes() {
           <Route path="test/case-statuses" element={<S><TestAdminCaseStatusesPage /></S>} />
           <Route path="test/run-statuses"  element={<S><TestAdminRunStatusesPage /></S>} />
           <Route path="test/permissions"   element={<S><TestAdminPermissionsPage /></S>} />
+          {/* RBAC Admin — mock-safe mode; RBAC_SCHEMA_DEPLOYED=false */}
+          <Route path="roles"       element={<S><RolesAdminPageLazy /></S>} />
+          <Route path="permissions" element={<S><PermissionsAdminPageLazy /></S>} />
         </Route>
 
         {/* /ads-validator — design governance audit viewer; aliased to canonical admin governance page */}

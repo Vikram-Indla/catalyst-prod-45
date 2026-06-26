@@ -3,6 +3,8 @@ import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@a
 import Button from '@atlaskit/button/new';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -198,31 +200,13 @@ export function NewConversationModal({ onClose, onCreated }: Props) {
                     textAlign: 'left',
                   }}
                 >
-                  {p.avatar_url ? (
-                    <img
-                      src={p.avatar_url}
-                      alt=""
-                      style={{ width: 28, height: 28, borderRadius: '50%', flex: 'none' }}
+                  <div style={{ flex: 'none' }}>
+                    <CatalystAvatar
+                      size="small"
+                      name={p.full_name || p.email || '?'}
+                      src={resolveAvatarUrl(p.full_name) ?? undefined}
                     />
-                  ) : (
-                    <div
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: '50%',
-                        background: 'var(--ds-background-neutral, #F1F2F4)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: 'var(--ds-text-subtle, #42526E)',
-                        flex: 'none',
-                      }}
-                    >
-                      {(p.full_name ?? p.email ?? '?').charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                  </div>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                       {p.full_name ?? p.email ?? 'Unknown'}

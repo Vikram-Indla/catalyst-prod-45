@@ -24,6 +24,7 @@
  */
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { resolveAvatarUrl as resolveBundledAvatar } from '@/lib/avatars';
 
 // "Active" releases = not archived/released/shipped
 const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
@@ -134,7 +135,7 @@ async function getAvatarMap(): Promise<Map<string, string | null>> {
 
       for (const r of resources || []) {
         if (r.name && r.profile_id) {
-          const url = profileAvatars.get(r.profile_id) || null;
+          const url = resolveBundledAvatar(r.name ?? null) ?? profileAvatars.get(r.profile_id) ?? null;
           avatarMap.set(r.name.toLowerCase(), url);
         }
       }
@@ -1298,10 +1299,10 @@ export function useTimeInStatusMatrix(
       let statusColumns: TimeInStatusMatrixResult['statusColumns'] = [];
       try {
         // Get statuses for this work item type from ph_workflow_* tables
+        // 2026-06-26: ph_workflow_statuses has no `archived_at` column.
         const { data: typeStatuses } = await typedQuery('ph_workflow_type_statuses' as any)
           .select('position, ph_workflow_statuses!inner(name, category)')
           .eq('work_item_type', issueType)
-          .is('ph_workflow_statuses.archived_at', null)
           .order('position', { ascending: true });
         if (typeStatuses && (typeStatuses as any[]).length > 0) {
           statusColumns = ((typeStatuses as any) ?? []).map((ts: any) => ({

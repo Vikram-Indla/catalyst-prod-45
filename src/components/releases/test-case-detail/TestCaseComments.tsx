@@ -6,6 +6,8 @@ import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { resolveAvatarUrl } from '@/lib/avatars';
+import { isBannedAvatarSrc } from '@/components/shared/CatalystAvatar';
 import { ActivityPanel } from '@/components/catalyst-ds';
 import type { CdsComment, CdsUser, CdsQuickReply } from '@/components/catalyst-ds';
 
@@ -29,7 +31,10 @@ export function TestCaseComments({ testCaseId }: TestCaseCommentsProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
       const { data: profile } = await supabase.from('profiles').select('id, full_name, avatar_url').eq('id', user.id).single();
-      if (profile) setCurrentUser({ id: profile.id, name: profile.full_name || 'You', avatarUrl: profile.avatar_url });
+      if (profile) {
+        const name = profile.full_name || 'You';
+        setCurrentUser({ id: profile.id, name, avatarUrl: resolveAvatarUrl(name) ?? (isBannedAvatarSrc(profile.avatar_url) ? null : profile.avatar_url) });
+      }
       return user;
     },
   });
@@ -65,7 +70,7 @@ export function TestCaseComments({ testCaseId }: TestCaseCommentsProps) {
 
   const comments: CdsComment[] = rawComments.map((r: any) => ({
     id: r.id,
-    author: { id: r.author_id || 'unknown', name: r.author?.full_name || 'Unknown', avatarUrl: r.author?.avatar_url || null },
+    author: { id: r.author_id || 'unknown', name: r.author?.full_name || 'Unknown', avatarUrl: resolveAvatarUrl(r.author?.full_name) ?? (isBannedAvatarSrc(r.author?.avatar_url) ? null : (r.author?.avatar_url ?? null)) },
     content: r.content || '', createdAt: r.created_at, isEdited: r.updated_at && r.updated_at !== r.created_at,
   }));
 

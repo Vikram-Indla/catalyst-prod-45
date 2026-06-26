@@ -33,6 +33,8 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/users-access',
     children: [
       { label: 'Access', path: '/admin/access' },
+      { label: 'Roles', path: '/admin/roles' },
+      { label: 'Permissions', path: '/admin/permissions' },
       { label: 'Departments', path: '/admin/capacity-departments' },
     ],
   },
@@ -97,6 +99,8 @@ export const adminPockets: AdminNavPocket[] = [
 export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/capacity-departments',
   '/admin/access',
+  '/admin/roles',
+  '/admin/permissions',
   '/admin/icons',
   '/admin/avatars',
   '/admin/workflows',

@@ -13,6 +13,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { validateReleaseTransition, validateChangeTransition } from '@/lib/release-ops/lifecycle';
 import { catalystToast } from '@/lib/catalystToast';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 // ── Query Key Family ─────────────────────────────────────────────
 const KEYS = {
@@ -116,7 +117,7 @@ export const useReleasesList = () =>
       const managerIds = [...new Set(releases.map((r) => r.release_manager_id).filter(Boolean))];
       if (managerIds.length > 0) {
         const { data: profs } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', managerIds);
-        (profs ?? []).forEach((p: any) => { managerMap[p.id] = { name: p.full_name, avatarUrl: p.avatar_url ?? null }; });
+        (profs ?? []).forEach((p: any) => { managerMap[p.id] = { name: p.full_name, avatarUrl: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null }; });
       }
 
       // Release sign-off progress (approved/total per release). Degrades to null
@@ -366,7 +367,7 @@ export const usePendingApprovals = () =>
           .from('profiles')
           .select('id, full_name, avatar_url')
           .in('id', approverIds);
-        (profs ?? []).forEach((p: any) => { profileMap[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }; });
+        (profs ?? []).forEach((p: any) => { profileMap[p.id] = { full_name: p.full_name, avatar_url: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null }; });
       }
 
       const nameOf = (id: string | null) => (id ? (profileMap[id]?.full_name ?? null) : null);
@@ -717,7 +718,7 @@ export const useNotifySubscribers = (itemType: 'release' | 'change', itemId: str
       const profileMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
       if (ids.length > 0) {
         const { data: profs } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', ids);
-        (profs ?? []).forEach((p: any) => { profileMap[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }; });
+        (profs ?? []).forEach((p: any) => { profileMap[p.id] = { full_name: p.full_name, avatar_url: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null }; });
       }
       return rows.map((s: any) => ({ id: s.id, userId: s.user_id, name: profileMap[s.user_id]?.full_name ?? null, avatarUrl: profileMap[s.user_id]?.avatar_url ?? null }));
     },
@@ -886,7 +887,7 @@ export const useChangesList = () =>
       const mgrIds = [...new Set(changes.map((c) => c.change_manager_id).filter(Boolean))] as string[];
       if (mgrIds.length > 0) {
         const { data: profs } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', mgrIds);
-        (profs ?? []).forEach((p: any) => { mgrMap[p.id] = { name: p.full_name, avatarUrl: p.avatar_url ?? null }; });
+        (profs ?? []).forEach((p: any) => { mgrMap[p.id] = { name: p.full_name, avatarUrl: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null }; });
       }
 
       return changes.map((c) => ({

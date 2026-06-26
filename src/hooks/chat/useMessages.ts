@@ -15,6 +15,7 @@ import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { chatRealtime } from '@/lib/chat/ChatRealtimeManager';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { ChatMessage, ChatReaction } from '@/types/chat';
 
 const PAGE_SIZE = 50;
@@ -189,7 +190,7 @@ async function fetchPage(
         parentId: m.parent_id ?? null,
         authorId: m.author_id,
         authorName: author?.full_name ?? '',
-        authorAvatarUrl: author?.avatar_url ?? null,
+        authorAvatarUrl: resolveAvatarUrl(author?.full_name ?? null) ?? author?.avatar_url ?? null,
         bodyText: m.body_text ?? '',
         bodyAdf: m.body_adf ?? null,
         createdAt: m.created_at,

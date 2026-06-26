@@ -23,23 +23,31 @@ const T = {
   iconBrand:     'var(--ds-icon-brand, #0C66E4)',
 };
 
+interface SidebarIconProps {
+  label: string;
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
+  color?: string;
+}
+
 interface NavItem {
   label: string;
   path: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<SidebarIconProps>;
   id: string;
 }
 
 interface CollapsibleSection {
   id: string;
   label: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<SidebarIconProps>;
   items: NavItem[];
 }
 
 const navItems: NavItem[] = [
-  { id: 'overview', label: 'Overview', path: '/admin/overview', icon: HomeIcon },
-  { id: 'users-access', label: 'Users & Access', path: '/admin/access', icon: ShieldIcon },
+  { id: 'overview',      label: 'Overview',       path: '/admin/overview',     icon: HomeIcon       },
+  { id: 'users-access',  label: 'Users & Access', path: '/admin/access',       icon: ShieldIcon     },
+  { id: 'roles',         label: 'Roles',          path: '/admin/roles',        icon: ShieldIcon      },
+  { id: 'permissions',   label: 'Permissions',    path: '/admin/permissions',  icon: SettingsIcon    },
 ];
 
 const collapsibleSections: CollapsibleSection[] = [

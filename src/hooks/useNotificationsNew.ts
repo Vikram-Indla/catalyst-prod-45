@@ -134,3 +134,25 @@ export function useSnoozeNotification() {
     },
   });
 }
+
+export function useActorProfiles(actorUserIds: (string | null)[] | undefined) {
+  return useQuery({
+    queryKey: ['actor-profiles', actorUserIds?.sort()],
+    queryFn: async () => {
+      if (!actorUserIds || actorUserIds.length === 0) return {};
+      const uniqueIds = Array.from(new Set(actorUserIds.filter((id): id is string => !!id)));
+      if (uniqueIds.length === 0) return {};
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, initials, color')
+        .in('id', uniqueIds);
+      if (error) throw error;
+      return (data ?? []).reduce((acc, profile) => {
+        acc[profile.id] = profile;
+        return acc;
+      }, {} as Record<string, any>);
+    },
+    enabled: !!(actorUserIds && actorUserIds.length > 0),
+    staleTime: 5 * 60 * 1000,
+  });
+}

@@ -814,7 +814,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
                 onMouseEnter={(e) => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = HOVER_BG; }}
                 onMouseLeave={(e) => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
-                <CatalystAvatar size="small" name={u.full_name || undefined} src={u.avatar_url || undefined} />
+                <CatalystAvatar size="small" name={u.full_name || undefined} src={resolveAvatarUrl(u.full_name) ?? u.avatar_url ?? undefined} />
                 <span style={{ fontSize: 14, color: TEXT, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {u.full_name || 'Unknown'}
                 </span>

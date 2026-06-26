@@ -150,6 +150,13 @@ serve(async (req) => {
       for (const hl of hierarchyLevels) {
         if (hl.jiraTypes.some(t => t.toLowerCase() === issueType.toLowerCase())) return hl.level
       }
+      // Fallback when wh_config.hierarchy_levels is absent (key does not exist in DB).
+      // Matches JIRA_TYPE_HIERARCHY_LEVEL in src/lib/jiraTypeNormalizer.ts.
+      const t = issueType.toLowerCase()
+      if (t === 'epic') return 0
+      if (t === 'feature') return 1
+      const SUBTASK_FAMILY = ['sub-task', 'frontend', 'backend', 'integration']
+      if (SUBTASK_FAMILY.includes(t)) return 3
       return 2
     }
 
@@ -620,25 +627,47 @@ serve(async (req) => {
             for (const issue of issues) {
               const assigneeAccountId = issue.fields.assignee?.accountId
               const assigneeCatalystId = assigneeAccountId ? userMap.get(assigneeAccountId) : null
-              const creatorAccountId = issue.fields.reporter?.accountId
-              const creatorCatalystId = creatorAccountId ? userMap.get(creatorAccountId) : null
+              // Reporter is NOT the assignment actor. Store for context only.
+              // reporterCatalystId is used only to skip the reporter from watching rows.
+              const reporterAccountId = issue.fields.reporter?.accountId
+              const reporterCatalystId = reporterAccountId ? userMap.get(reporterAccountId) : null
 
-              // Map issue type to Catalyst icon
-              const issueTypeName = (issue.fields.issuetype?.name || '').toLowerCase()
+              // Map issue type to Catalyst icon (matches ISSUE_TYPE_TO_ICON in useDirectFromSync.ts).
+              const issueTypeName = issue.fields.issuetype?.name || ''
+              const issueTypeKey = issueTypeName.toLowerCase()
               let watchIcon = 'task'
-              if (issueTypeName.includes('bug') || issueTypeName.includes('defect')) watchIcon = 'qa bug'
-              else if (issueTypeName.includes('story') || issueTypeName.includes('feature')) watchIcon = 'story'
-              else if (issueTypeName.includes('epic')) watchIcon = 'epic'
+              if (issueTypeKey.includes('bug') || issueTypeKey.includes('defect')) watchIcon = 'bug'
+              else if (issueTypeKey === 'story') watchIcon = 'story'
+              else if (issueTypeKey === 'epic') watchIcon = 'epic'
+              else if (issueTypeKey === 'feature') watchIcon = 'feature'
+              else if (issueTypeKey.includes('incident')) watchIcon = 'incident'
+              else if (issueTypeKey === 'backend') watchIcon = 'backend'
+              else if (issueTypeKey === 'frontend') watchIcon = 'frontend'
+              else if (issueTypeKey === 'integration' || issueTypeKey === 'sub-task') watchIcon = 'subtask'
+              else if (issueTypeKey === 'change request') watchIcon = 'change_request'
+              else if (issueTypeKey === 'business gap') watchIcon = 'business_gap'
 
               const statusCat = (issue.fields.status?.statusCategory?.name || '').toLowerCase()
               const statusType = statusCat === 'done' ? 'green' : statusCat === 'in progress' ? 'blue' : 'gray'
+
+              // Reporter context stored separately — never in actor fields.
+              // resolveActorIdentity sees is_jira_sync=true + no actor → Case C: "Jira Sync" system actor.
+              const reporterMeta = {
+                is_jira_sync: true,
+                actor_display_name: null,
+                actor_avatar_url: null,
+                actor_jira_account_id: null,
+                reporter_display_name: issue.fields.reporter?.displayName || null,
+                reporter_account_id: issue.fields.reporter?.accountId || null,
+                reporter_avatar_url: issue.fields.reporter?.avatarUrls?.['48x48'] || null,
+              }
 
               // Direct notification for assignee — only if not already in DB
               const directKey = `${issue.id}::${assigneeCatalystId}`
               if (assigneeCatalystId && !existingDirectSet.has(directKey)) {
                 watchingNotifRows.push({
                   recipient_user_id: assigneeCatalystId,
-                  actor_user_id: creatorCatalystId || null,
+                  actor_user_id: null,   // no real actor at bulk-sync time
                   notification_type: 'assigned',
                   entity_id: issue.id,
                   entity_type: 'issue',
@@ -649,20 +678,17 @@ serve(async (req) => {
                   status: issue.fields.status?.name || 'To Do',
                   status_type: statusType,
                   tab: 'direct',
-                  metadata: {
-                    actor_display_name: issue.fields.reporter?.displayName || null,
-                    actor_avatar_url: issue.fields.reporter?.avatarUrls?.['48x48'] || null,
-                  },
+                  metadata: reporterMeta,
                 })
               }
 
               // Watching notification for all other mapped team members
               for (const catalystId of allCatalystIds) {
                 if (catalystId === assigneeCatalystId) continue  // already got direct
-                if (catalystId === creatorCatalystId) continue   // they created it
+                if (catalystId === reporterCatalystId) continue  // skip reporter (already aware)
                 watchingNotifRows.push({
                   recipient_user_id: catalystId,
-                  actor_user_id: creatorCatalystId || null,
+                  actor_user_id: null,   // no real actor at bulk-sync time
                   notification_type: 'assigned',
                   entity_id: issue.id,
                   entity_type: 'issue',
@@ -673,7 +699,7 @@ serve(async (req) => {
                   status: issue.fields.status?.name || 'To Do',
                   status_type: statusType,
                   tab: 'watching',
-                  metadata: {},
+                  metadata: reporterMeta,
                 })
               }
             }

@@ -38,12 +38,50 @@ export function formatRelativeTime(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-export function getVerbText(verb: string, actorName: string | null): string {
+// Display labels for DirectWorkItemIconType fallback (when no issueTypeName available).
+// Values are capitalized display strings, not internal keys.
+function iconTypeToLabel(iconType?: string): string {
+  switch (iconType) {
+    case 'story':    return 'Story';
+    case 'bug':      return 'Bug';
+    case 'epic':     return 'Epic';
+    case 'incident': return 'Incident';
+    case 'subtask':  return 'Sub-task';
+    case 'task':     return 'Task';
+    case 'backend':  return 'Backend';
+    case 'frontend': return 'Frontend';
+    default:         return 'work item';
+  }
+}
+
+function article(word: string): string {
+  return /^[aeiou]/i.test(word) ? 'an' : 'a';
+}
+
+/**
+ * Builds the verb sentence for a notification row.
+ * @param issueTypeName  Exact Jira type name (e.g. "Frontend", "Integration", "Sub-task").
+ *                       When present, used as display label with correct article.
+ *                       When absent, falls back to iconTypeToLabel(iconType).
+ */
+export function getVerbText(
+  verb: string,
+  actorName: string | null,
+  iconType?: string,
+  issueTypeName?: string | null,
+): string {
+  const displayType = issueTypeName?.trim() || iconTypeToLabel(iconType);
+  const art = article(displayType);
+
   if (!actorName) {
-    return verb === 'assigned' ? 'You were assigned to' : 'System update on';
+    switch (verb) {
+      case 'assigned':       return `${art.charAt(0).toUpperCase() + art.slice(1)} ${displayType} was assigned to you`;
+      case 'status_changed': return 'Status updated on';
+      default:               return 'Update on';
+    }
   }
   switch (verb) {
-    case 'assigned':      return `${actorName} assigned you to`;
+    case 'assigned':      return `${actorName} assigned ${art} ${displayType} to you`;
     case 'mentioned':     return `${actorName} mentioned you in`;
     case 'commented':     return `${actorName} commented on`;
     case 'updated':       return `${actorName} updated`;

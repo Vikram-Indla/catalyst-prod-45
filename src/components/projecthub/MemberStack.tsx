@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import AvatarGroup from '@atlaskit/avatar-group';
+import { resolveAvatarUrl } from '@/lib/avatars';
+import { isBannedAvatarSrc } from '@/components/shared/CatalystAvatar';
 
 interface MemberStackProps {
   memberIds: string[] | null;
@@ -96,7 +98,7 @@ export function MemberStack({
     return {
       key: id,
       name: profile?.full_name || 'Unknown',
-      src: profile?.avatar_url || undefined,
+      src: resolveAvatarUrl(profile?.full_name) ?? (isBannedAvatarSrc(profile?.avatar_url) ? undefined : (profile?.avatar_url || undefined)),
       // appearance / presence / status omitted — Atlaskit defaults are correct.
     };
   });

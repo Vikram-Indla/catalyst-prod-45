@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@atlaskit/button/standard-button';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Spinner from '@atlaskit/spinner';
 import { supabase } from '@/integrations/supabase/client';
 import { useCreateTestCase, useUpdateTestCase, useCreateCaseVersion } from '@/hooks/test-management/useTestCases';
@@ -353,73 +353,47 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
       </div>
 
       {/* Create new version modal */}
-      {versionModalOpen && isEdit && existingCase && createPortal(
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 9999,
-          background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <div style={{
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
-            borderRadius: 8, width: 420, padding: 24,
-            boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
-            fontFamily: 'var(--ds-font-family-body)',
-          }}>
-            <h2 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
-              Create new version
-            </h2>
-            <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+      {versionModalOpen && isEdit && existingCase && (
+        <ModalDialog onClose={() => setVersionModalOpen(false)} width="small">
+          <ModalHeader>
+            <ModalTitle>Create new version</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle)', fontFamily: 'var(--ds-font-family-body)' }}>
               A copy of this case will be created as version {(existingCase.current_version ?? existingCase.version ?? 1) + 1}.
               The current version will be marked as superseded.
             </p>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginBottom: 20 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={replaceInSets}
                 onChange={e => setReplaceInSets(e.target.checked)}
                 style={{ width: 16, height: 16 }}
               />
-              <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ fontSize: 13, color: 'var(--ds-text)', fontFamily: 'var(--ds-font-family-body)' }}>
                 Replace in all test sets
               </span>
             </label>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-              <button
-                onClick={() => setVersionModalOpen(false)}
-                style={{
-                  padding: '6px 14px', fontSize: 13, fontWeight: 500, borderRadius: 4,
-                  border: '2px solid var(--ds-border, #DFE1E6)',
-                  background: 'var(--ds-surface, #FFFFFF)',
-                  color: 'var(--ds-text, #172B4D)', cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                disabled={createVersion.isPending}
-                onClick={() => {
-                  createVersion.mutate(
-                    { case_id: existingCase.id, project_id: projectId, replace_in_sets: replaceInSets },
-                    { onSuccess: () => { setVersionModalOpen(false); onClose(); } }
-                  );
-                }}
-                style={{
-                  padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
-                  border: 'none',
-                  background: createVersion.isPending ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-background-brand-bold, #0052CC)',
-                  color: createVersion.isPending ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text-inverse, #FFFFFF)',
-                  cursor: createVersion.isPending ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {createVersion.isPending ? 'Creating…' : 'Create version'}
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setVersionModalOpen(false)}>Cancel</Button>
+            <Button
+              appearance="primary"
+              isDisabled={createVersion.isPending}
+              onClick={() => {
+                createVersion.mutate(
+                  { case_id: existingCase.id, project_id: projectId, replace_in_sets: replaceInSets },
+                  { onSuccess: () => { setVersionModalOpen(false); onClose(); } }
+                );
+              }}
+            >
+              {createVersion.isPending ? 'Creating…' : 'Create version'}
+            </Button>
+          </ModalFooter>
+        </ModalDialog>
       )}
     </div>
   );
 
-  return createPortal(panel, document.body);
+  return panel;
 }

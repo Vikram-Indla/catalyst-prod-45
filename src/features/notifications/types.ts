@@ -12,7 +12,10 @@ export type DirectVerb =
   | 'deleted'
   | 'shredding_warning';
 
-export type DirectWorkItemIconType = 'bug' | 'story' | 'task' | 'epic' | 'incident';
+export type DirectWorkItemIconType =
+  | 'bug' | 'story' | 'task' | 'epic' | 'incident'
+  // Subtask family — subtask/integration share icon; backend/frontend have distinct SVGs
+  | 'subtask' | 'backend' | 'frontend';
 
 export type DirectStatusAppearance = 'default' | 'inprogress' | 'success';
 
@@ -20,6 +23,9 @@ export interface DirectActor {
   id: string;
   displayName: string;
   avatarUrl?: string | null;
+  /** 'user' = known person, 'system' = Jira Sync/automated, 'unknown' = no data */
+  actorType: 'user' | 'system' | 'unknown';
+  initials: string;
 }
 
 export interface DirectTarget {
@@ -29,6 +35,9 @@ export interface DirectTarget {
   statusLabel: string;
   statusAppearance: DirectStatusAppearance;
   iconType: DirectWorkItemIconType;
+  /** Exact Jira issue type name (e.g. "Frontend", "Integration", "Sub-task").
+   *  When present, used for the sentence display label instead of the icon-type fallback. */
+  issueTypeName?: string | null;
 }
 
 export interface DirectAggregation {

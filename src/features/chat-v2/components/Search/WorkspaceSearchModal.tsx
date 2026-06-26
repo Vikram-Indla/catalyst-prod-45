@@ -357,7 +357,7 @@ function PeopleRow({
         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = primary ? 'var(--cv2-bg-row-hover)' : 'transparent'; }}
       >
-        <PresenceAvatar name={hit.name} avatarUrl={hit.avatarUrl} size={20} />
+        <PresenceAvatar name={hit.name} size={20} />
         <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: 'var(--cv2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <HighlightedText text={hit.name} query={query} bold />
           {hit.subName && hit.subName !== hit.name && (
@@ -401,7 +401,7 @@ function MessageRow({
           fontFamily: 'inherit',
         }}
       >
-        <PresenceAvatar name={hit.authorName} avatarUrl={hit.authorAvatarUrl} size={22} />
+        <PresenceAvatar name={hit.authorName} size={22} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0 }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cv2-text-strong)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

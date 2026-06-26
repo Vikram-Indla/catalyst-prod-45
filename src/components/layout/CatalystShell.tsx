@@ -461,6 +461,12 @@ function CatalystShellContent() {
   const isProjectHubBacklogRoute = /\/(project|product)-hub\/[^/]+\/backlog/.test(
     location.pathname,
   );
+  // Dependencies is a full-bleed React Flow canvas — drop the LEFT/RIGHT frame
+  // padding (like AllWork) so the canvas runs edge-to-edge with no side gutters
+  // (Vikram 2026-06-25). Top/bottom keep 24px.
+  const isProjectHubDependenciesRoute = /\/(?:project-hub\/[^/]+|product-hub\/[^/]+|incident-hub)\/dependencies(?:\/|$|\?)/.test(
+    location.pathname,
+  );
 
   // Check if on full-screen issue view (/browse/:issueKey)
   const isIssueFullPageRoute = location.pathname.startsWith("/browse/");
@@ -957,9 +963,11 @@ function CatalystShellContent() {
                 <HubSurface
                   panelPadding={0}
                   framePadding={
-                    isProjectHubAllWorkRoute || isIssueFullPageRoute
-                      ? "24px 0 24px 0"
-                      : 24
+                    isProjectHubDependenciesRoute
+                      ? "24px 0 0 0"
+                      : isProjectHubAllWorkRoute || isIssueFullPageRoute
+                        ? "24px 0 24px 0"
+                        : 24
                   }
                 >
                   <Outlet />

@@ -1,15 +1,17 @@
-import { useState, useCallback } from 'react';
-import type React from 'react';
-import CatalystAvatar from '@/components/shared/CatalystAvatar';
-import { resolveAvatarUrl } from '@/lib/avatars';
-import { Box, xcss } from '@atlaskit/primitives';
-import { token } from '@atlaskit/tokens';
-import type { DirectNotification } from '../types';
-import DirectWorkItemIcon from './DirectWorkItemIcon';
-import { formatRelativeTime, getVerbText } from '../utils/date';
-import { Star } from '@/lib/atlaskit-icons';
-import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
-import { workItemStarType } from '@/lib/starType';
+import { useState, useCallback } from "react";
+import type React from "react";
+import { useNavigate } from "react-router-dom";
+import CatalystAvatar from "@/components/shared/CatalystAvatar";
+import { resolveAvatarUrl } from "@/lib/avatars";
+import PersonCircleIcon from "@atlaskit/icon/glyph/person-circle";
+import { Box, xcss } from "@atlaskit/primitives";
+import { token } from "@atlaskit/tokens";
+import type { DirectNotification } from "../types";
+import DirectWorkItemIcon from "./DirectWorkItemIcon";
+import { formatRelativeTime, getVerbText } from "../utils/date";
+import { Star } from "@/lib/atlaskit-icons";
+import { useStarredItemIds, useToggleStar } from "@/hooks/home/useStarredItems";
+import { workItemStarType } from "@/lib/starType";
 
 interface Props {
   notification: DirectNotification;
@@ -21,30 +23,37 @@ interface Props {
 const CONTENT_STYLE: React.CSSProperties = { flex: 1, minWidth: 0 };
 
 const entityRowXcss = xcss({
-  display: 'flex',
-  alignItems: 'flex-start',
-  gap: 'space.075',
-  marginBlockStart: 'space.050',
+  display: "flex",
+  alignItems: "flex-start",
+  gap: "space.075",
+  marginBlockStart: "space.050",
 });
 
 const metaRowXcss = xcss({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 'space.075',
-  marginBlockStart: 'space.050',
+  display: "flex",
+  alignItems: "center",
+  gap: "space.075",
+  marginBlockStart: "space.050",
 });
 
 // ─── Emoji reaction emojis (canonical Jira set) ──────────────────────────────
-const REACTION_EMOJIS = ['👍', '👏', '🔥', '❤️', '😊'];
+const REACTION_EMOJIS = ["👍", "👏", "🔥", "❤️", "😊"];
 
-export default function DirectNotificationRow({ notification, isRead, onMarkRead, isDark }: Props) {
+export default function DirectNotificationRow({
+  notification,
+  isRead,
+  onMarkRead,
+  isDark,
+}: Props) {
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
-  const actorName = notification.actor?.displayName ?? null;
-  const verbText  = getVerbText(notification.verb, actorName);
-  const relTime   = formatRelativeTime(notification.createdAt);
   const { target, aggregation, thread } = notification;
+  const actorName = notification.actor?.displayName ?? null;
+  const avatarDisplayName = actorName;
+  const verbText  = getVerbText(notification.verb, actorName, target.iconType, target.issueTypeName);
+  const relTime   = formatRelativeTime(notification.createdAt);
 
   // Hover-revealed star → unified user_starred_items store. The row is a
   // <button>, so the star is a role="button" span (a nested <button> would be
@@ -52,37 +61,84 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const { data: starredIds } = useStarredItemIds();
   const toggleStar = useToggleStar();
   const isStarred = !!target.key && (starredIds?.has(target.key) ?? false);
-  const handleToggleStar = useCallback((e: React.MouseEvent | React.KeyboardEvent) => {
-    e.stopPropagation();
-    if (!target.key) return;
-    toggleStar.mutate({ itemId: target.key, itemType: workItemStarType(target.iconType), isCurrentlyStarred: isStarred });
-  }, [target.key, target.iconType, isStarred, toggleStar]);
-  const STAR_GOLD = 'var(--ds-icon-accent-yellow, #FFAB00)';
+  const handleToggleStar = useCallback(
+    (e: React.MouseEvent | React.KeyboardEvent) => {
+      e.stopPropagation();
+      if (!target.key) return;
+      toggleStar.mutate({
+        itemId: target.key,
+        itemType: workItemStarType(target.iconType),
+        isCurrentlyStarred: isStarred,
+      });
+    },
+    [target.key, target.iconType, isStarred, toggleStar]
+  );
+  const STAR_GOLD = "var(--ds-icon-accent-yellow, #FFAB00)";
 
-  const hoverBg  = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))');
-  const pressBg  = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
-  const rowBg    = pressed ? pressBg : hovered ? hoverBg : 'transparent';
+  const idleBg = isDark
+    ? "var(--ds-surface, #1A1A1A)"
+    : "var(--ds-surface-overlay, #FFFFFF)";
+  const hoverBg = isDark
+    ? "var(--ds-surface-overlay, #1F1F1F)"
+    : token(
+        "color.background.neutral.hovered",
+        "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))"
+      );
+  const pressBg = isDark
+    ? "var(--ds-border, var(--cp-ink-1, #292929))"
+    : token("color.background.neutral.pressed", "rgba(9,30,66,0.10)");
+  const rowBg = pressed ? pressBg : hovered ? hoverBg : idleBg;
 
-  const text1    = isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : token('color.text', '#292A2E');
-  const text2    = isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : token('color.text.subtle',    '#626F86');
-  const text3    = isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : token('color.text.subtlest',  '#8590A2');
-  const linkClr  = isDark ? '#6698FF' : token('color.link',           'var(--ds-link, #0C66E4)');
-  const dotColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+  const text1 = isDark
+    ? "var(--ds-text, var(--cp-bg-neutral, #EDEDED))"
+    : token("color.text", "#292A2E");
+  const text2 = isDark
+    ? "var(--ds-text-subtlest, #A1A1A1)"
+    : token("color.text.subtle", "#626F86");
+  const text3 = isDark
+    ? "var(--ds-text-subtlest, var(--cp-text-secondary, #878787))"
+    : token("color.text.subtlest", "#8590A2");
+  const linkClr = isDark
+    ? "#6698FF"
+    : token("color.link", "var(--ds-link, #0C66E4)");
+  const dotColor =
+    "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))";
 
-  const threadBorderColor = isDark ? 'var(--ds-surface, rgba(255,255,255,0.10))' : 'var(--ds-text, rgba(11,18,14,0.14))';
-  const threadBg          = 'transparent';
+  const threadBorderColor = isDark
+    ? "var(--ds-surface, rgba(255,255,255,0.10))"
+    : "var(--ds-text, rgba(11,18,14,0.14))";
+  const threadBg = "transparent";
 
   const handleClick = useCallback(() => {
     if (!isRead) onMarkRead(notification.id);
-  }, [isRead, notification.id, onMarkRead]);
+    const projectKey = notification.target.key.split("-")[0];
+    if (notification.target.iconType === "incident") {
+      navigate(`/incident-hub/view/${notification.target.key}`);
+    } else {
+      navigate(`/project-hub/${projectKey}/allwork/${notification.target.key}`);
+    }
+  }, [
+    isRead,
+    notification.id,
+    onMarkRead,
+    notification.target.key,
+    notification.target.iconType,
+    navigate,
+  ]);
 
-  const handleMarkReadBtn = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    onMarkRead(notification.id);
-  }, [notification.id, onMarkRead]);
+  const handleMarkReadBtn = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onMarkRead(notification.id);
+    },
+    [notification.id, onMarkRead]
+  );
 
-  // Build avatar src — prefer real avatar_url, fall back to undefined (shows initials)
-  const avatarSrc = resolveAvatarUrl(actorName) ?? notification.actor?.avatarUrl ?? undefined;
+  // Build avatar src — priority: notification.actor.avatarUrl > bundled photo > undefined.
+  // Only used when notification.actor is non-null (actor=null rows render a person-circle placeholder).
+  const avatarSrc = notification.actor?.avatarUrl
+    ?? resolveAvatarUrl(avatarDisplayName)
+    ?? undefined;
 
   return (
     <button
@@ -90,73 +146,164 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
       aria-label={`Notification: ${verbText} ${target.title}`}
       onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { setHovered(false); setPressed(false); }}
+      onMouseLeave={() => {
+        setHovered(false);
+        setPressed(false);
+      }}
       onMouseDown={() => setPressed(true)}
       onMouseUp={() => setPressed(false)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); }
-        if ((e.key === 'r' || e.key === 'R') && !isRead) onMarkRead(notification.id);
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+        if ((e.key === "r" || e.key === "R") && !isRead)
+          onMarkRead(notification.id);
       }}
       style={{
-        display: 'flex',
-        width: '100%',
-        padding: '8px 16px 10px',
+        display: "flex",
+        width: "100%",
+        padding: "8px 16px",
         background: rowBg,
-        border: 'none',
-        cursor: 'pointer',
-        textAlign: 'left',
-        transition: 'background-color 150ms ease',
-        outline: 'none',
+        border: "none",
+        borderBottom: `1px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, #DFE1E6)'}`,
+        borderRadius: 0,
+        boxShadow: "none",
+        cursor: "pointer",
+        textAlign: "left",
+        transition: "background 100ms ease",
+        outline: "none",
         gap: 10,
-        alignItems: 'flex-start',
-        opacity: isRead ? 0.85 : 1,
+        alignItems: "flex-start",
+        opacity: isRead ? 0.8 : 1,
+        marginBottom: 0,
       }}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
     >
-      {/* Avatar — face photo when available, deterministic initials otherwise.
-          CatalystAvatar wraps Atlaskit Avatar so the row never shows the
-          faceless silhouette when we have a name. */}
+      {/* Avatar slot:
+          - 'user': CatalystAvatar with initials/photo
+          - 'system': muted circle with sync icon (Jira-assigned)
+          - null/unknown: grey person-circle placeholder */}
       <div style={{ flexShrink: 0, marginTop: 2 }}>
-        <CatalystAvatar
-          name={actorName}
-          src={avatarSrc}
-          size="large"
-          appearance="circle"
-        />
+        {notification.actor?.actorType === 'user' ? (
+          <CatalystAvatar
+            name={avatarDisplayName}
+            src={avatarSrc}
+            size="large"
+            appearance="circle"
+          />
+        ) : notification.actor?.actorType === 'system' ? (
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: isDark
+                ? 'var(--ds-surface-overlay, #2A2A2A)'
+                : 'var(--ds-background-neutral, #F1F2F4)',
+              border: `1.5px dashed ${isDark ? 'var(--ds-border, #444)' : 'var(--ds-border, #B3BAC5)'}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+            title="Jira Sync"
+          >
+            {/* Sync icon */}
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <path
+                d="M2.5 9a6.5 6.5 0 0 1 11.1-4.6M15.5 9a6.5 6.5 0 0 1-11.1 4.6"
+                stroke={isDark ? 'var(--ds-icon-subtle, #8696A7)' : 'var(--ds-icon-subtle, #626F86)'}
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+              <polyline
+                points="13.5,4 15.5,4.4 15.1,6.4"
+                stroke={isDark ? 'var(--ds-icon-subtle, #8696A7)' : 'var(--ds-icon-subtle, #626F86)'}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <polyline
+                points="4.5,14 2.5,13.6 2.9,11.6"
+                stroke={isDark ? 'var(--ds-icon-subtle, #8696A7)' : 'var(--ds-icon-subtle, #626F86)'}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+        ) : (
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: 'var(--ds-background-neutral, #F1F2F4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <PersonCircleIcon
+              label=""
+              size="medium"
+              primaryColor={isDark
+                ? 'var(--ds-icon-subtle, #8696A7)'
+                : 'var(--ds-icon-subtle, #626F86)'}
+            />
+          </div>
+        )}
       </div>
 
       {/* Text content */}
       <Box style={CONTENT_STYLE}>
         {/* Verb + timestamp row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 8,
+          }}
+        >
           <span
             style={{
-              fontFamily: 'var(--cp-font-body)',
+              fontFamily: "var(--cp-font-body)",
               fontSize: 14,
-              lineHeight: '20px',
+              lineHeight: "20px",
               color: text1,
               flex: 1,
               minWidth: 0,
             }}
           >
-            {actorName && (
+            {actorName && notification.actor?.actorType === 'user' && (
               <span style={{ fontWeight: 600 }}>{actorName} </span>
             )}
+            {actorName && notification.actor?.actorType === 'system' && (
+              <span style={{ fontWeight: 400, fontStyle: 'italic', color: text3 }}>{actorName} </span>
+            )}
             <span style={{ fontWeight: 500 }}>
-              {actorName
-                ? verbText.replace(`${actorName} `, '')
-                : verbText}
+              {actorName ? verbText.replace(`${actorName} `, "") : verbText}
             </span>
           </span>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              flexShrink: 0,
+            }}
+          >
             <span
               style={{
-                fontFamily: 'var(--cp-font-body)',
+                fontFamily: "var(--cp-font-body)",
                 fontSize: 14,
                 color: text3,
-                whiteSpace: 'nowrap',
+                whiteSpace: "nowrap",
               }}
             >
               {relTime}
@@ -169,7 +316,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
                 style={{
                   width: 8,
                   height: 8,
-                  borderRadius: '50%',
+                  borderRadius: "50%",
                   backgroundColor: dotColor,
                   flexShrink: 0,
                 }}
@@ -184,19 +331,31 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
                 style={{
                   width: 20,
                   height: 20,
-                  borderRadius: '50%',
+                  borderRadius: "50%",
                   border: `1.5px solid ${text3}`,
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  background: "transparent",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   padding: 0,
                   flexShrink: 0,
                 }}
               >
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                  <path d="M1.5 5L4 7.5L8.5 2.5" stroke={text2} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M1.5 5L4 7.5L8.5 2.5"
+                    stroke={text2}
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             )}
@@ -205,14 +364,14 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
 
         {/* Work item icon + title */}
         <Box xcss={entityRowXcss}>
-          <div style={{ flexShrink: 0, display: 'flex' }}>
+          <div style={{ flexShrink: 0, display: "flex" }}>
             <DirectWorkItemIcon type={target.iconType} />
           </div>
           <span
             style={{
-              fontFamily: 'var(--cp-font-body)',
+              fontFamily: "var(--cp-font-body)",
               fontSize: 14,
-              lineHeight: '20px',
+              lineHeight: "20px",
               color: text1,
               flex: 1,
               minWidth: 0,
@@ -226,7 +385,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
         <Box xcss={metaRowXcss}>
           <span
             style={{
-              fontFamily: 'var(--cp-font-body)',
+              fontFamily: "var(--cp-font-body)",
               fontSize: 14,
               fontWeight: 400,
               color: linkClr,
@@ -235,11 +394,20 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           >
             {target.key}
           </span>
-          <span style={{ color: text3, fontSize: 14, lineHeight: '20px', flexShrink: 0 }}>•</span>
+          <span
+            style={{
+              color: text3,
+              fontSize: 14,
+              lineHeight: "20px",
+              flexShrink: 0,
+            }}
+          >
+            •
+          </span>
           {/* Plain grey status text — sentence case, matching Jira */}
           <span
             style={{
-              fontFamily: 'var(--cp-font-body)',
+              fontFamily: "var(--cp-font-body)",
               fontSize: 14,
               fontWeight: 400,
               color: text2,
@@ -255,20 +423,26 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             <span
               role="button"
               tabIndex={0}
-              aria-label={isStarred ? 'Remove from starred' : 'Add to starred'}
+              aria-label={isStarred ? "Remove from starred" : "Add to starred"}
               onClick={handleToggleStar}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleToggleStar(e); }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") handleToggleStar(e);
+              }}
               style={{
-                marginLeft: 'auto',
-                display: 'inline-flex',
-                alignItems: 'center',
-                cursor: 'pointer',
+                marginLeft: "auto",
+                display: "inline-flex",
+                alignItems: "center",
+                cursor: "pointer",
                 flexShrink: 0,
                 opacity: isStarred || hovered ? 1 : 0,
-                transition: 'opacity 120ms ease',
+                transition: "opacity 120ms ease",
               }}
             >
-              <Star size={16} color={STAR_GOLD} fill={isStarred ? STAR_GOLD : 'none'} />
+              <Star
+                size={16}
+                color={STAR_GOLD}
+                fill={isStarred ? STAR_GOLD : "none"}
+              />
             </span>
           )}
         </Box>
@@ -278,7 +452,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           <div
             style={{
               marginTop: 8,
-              padding: '8px 10px',
+              padding: "8px 10px",
               borderRadius: 4,
               border: `1px solid ${threadBorderColor}`,
               background: threadBg,
@@ -289,14 +463,14 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               <p
                 style={{
                   margin: 0,
-                  fontFamily: 'var(--cp-font-body)',
+                  fontFamily: "var(--cp-font-body)",
                   fontSize: 14,
-                  lineHeight: '20px',
+                  lineHeight: "20px",
                   color: text1,
-                  overflow: 'hidden',
-                  display: '-webkit-box',
+                  overflow: "hidden",
+                  display: "-webkit-box",
                   WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical' as const,
+                  WebkitBoxOrient: "vertical" as const,
                 }}
               >
                 {thread.commentPreview}
@@ -305,11 +479,11 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               <p
                 style={{
                   margin: 0,
-                  fontFamily: 'var(--cp-font-body)',
+                  fontFamily: "var(--cp-font-body)",
                   fontSize: 14,
-                  lineHeight: '20px',
+                  lineHeight: "20px",
                   color: text3,
-                  fontStyle: 'italic',
+                  fontStyle: "italic",
                 }}
               >
                 View the full thread for context
@@ -319,38 +493,41 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             {/* Reactions + Reply + View thread */}
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
                 gap: 4,
                 marginTop: 6,
               }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Emoji reactions */}
-              {REACTION_EMOJIS.map(emoji => {
+              {REACTION_EMOJIS.map((emoji) => {
                 const count = thread.reactions[emoji] ?? 0;
                 return (
                   <button
                     key={emoji}
                     type="button"
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
+                      display: "flex",
+                      alignItems: "center",
                       gap: 2,
-                      padding: '2px 5px',
+                      padding: "2px 5px",
                       borderRadius: 10,
                       border: `1px solid ${threadBorderColor}`,
-                      background: count > 0
-                        ? ('var(--cp-interact-selected, rgba(37,99,235,0.06))')
-                        : 'transparent',
-                      cursor: 'pointer',
-                      fontFamily: 'var(--cp-font-body)',
+                      background:
+                        count > 0
+                          ? "var(--cp-interact-selected, rgba(37,99,235,0.06))"
+                          : "transparent",
+                      cursor: "pointer",
+                      fontFamily: "var(--cp-font-body)",
                       fontSize: 11,
                       color: text2,
-                      lineHeight: '16px',
+                      lineHeight: "16px",
                     }}
                     title={`React with ${emoji}`}
-                    aria-label={`${emoji} reaction${count > 0 ? `, ${count}` : ''}`}
+                    aria-label={`${emoji} reaction${
+                      count > 0 ? `, ${count}` : ""
+                    }`}
                   >
                     <span style={{ fontSize: 12, lineHeight: 1 }}>{emoji}</span>
                     {count > 0 && (
@@ -364,15 +541,15 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               <button
                 type="button"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   width: 22,
                   height: 22,
                   borderRadius: 10,
                   border: `1px solid ${threadBorderColor}`,
-                  background: 'transparent',
-                  cursor: 'pointer',
+                  background: "transparent",
+                  cursor: "pointer",
                   color: text3,
                   fontSize: 13,
                   lineHeight: 1,
@@ -381,11 +558,28 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
                 title="Add reaction"
                 aria-label="Add reaction"
               >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2"/>
-                  <path d="M4 7c.5.8 1.5 1.3 2 1.3s1.5-.5 2-1.3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                  <circle cx="4.5" cy="4.5" r=".7" fill="currentColor"/>
-                  <circle cx="7.5" cy="4.5" r=".7" fill="currentColor"/>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="6"
+                    cy="6"
+                    r="5"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                  />
+                  <path
+                    d="M4 7c.5.8 1.5 1.3 2 1.3s1.5-.5 2-1.3"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                  <circle cx="4.5" cy="4.5" r=".7" fill="currentColor" />
+                  <circle cx="7.5" cy="4.5" r=".7" fill="currentColor" />
                 </svg>
               </button>
 
@@ -396,15 +590,15 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               <button
                 type="button"
                 style={{
-                  fontFamily: 'var(--cp-font-body)',
+                  fontFamily: "var(--cp-font-body)",
                   fontSize: 12,
                   fontWeight: 500,
                   color: linkClr,
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '0 4px',
-                  lineHeight: '16px',
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "0 4px",
+                  lineHeight: "16px",
                 }}
               >
                 Reply
@@ -414,23 +608,35 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               <button
                 type="button"
                 style={{
-                  fontFamily: 'var(--cp-font-body)',
+                  fontFamily: "var(--cp-font-body)",
                   fontSize: 12,
                   fontWeight: 500,
                   color: linkClr,
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '0 4px',
-                  lineHeight: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "0 4px",
+                  lineHeight: "16px",
+                  display: "flex",
+                  alignItems: "center",
                   gap: 3,
                 }}
               >
                 View thread
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                  <path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             </div>
@@ -439,17 +645,33 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
 
         {/* Aggregation row (multiple updates from same person) */}
         {aggregation && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
-            <CatalystAvatar name={aggregation.actor.displayName} size="xsmall" appearance="circle" src={resolveAvatarUrl(aggregation.actor.displayName) ?? aggregation.actor.avatarUrl} />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              marginTop: 6,
+            }}
+          >
+            <CatalystAvatar
+              name={aggregation.actor.displayName}
+              size="xsmall"
+              appearance="circle"
+              src={
+                resolveAvatarUrl(aggregation.actor.displayName) ??
+                aggregation.actor.avatarUrl
+              }
+            />
             <span
               style={{
-                fontFamily: 'var(--cp-font-body)',
+                fontFamily: "var(--cp-font-body)",
                 fontSize: 14,
                 fontWeight: 400,
                 color: linkClr,
               }}
             >
-              +{aggregation.count} update{aggregation.count !== 1 ? 's' : ''} from {aggregation.actor.displayName}
+              +{aggregation.count} update{aggregation.count !== 1 ? "s" : ""}{" "}
+              from {aggregation.actor.displayName}
             </span>
           </div>
         )}

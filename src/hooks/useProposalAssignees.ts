@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { AssigneeChoice } from '@/components/shared/JiraTable';
 
 export function useProposalAssignees() {
@@ -13,7 +14,7 @@ export function useProposalAssignees() {
       return (data ?? []).map((p) => ({
         id: p.id as string,
         name: (p.full_name as string | null) ?? 'Unknown',
-        avatarUrl: (p as any).avatar_url as string | null,
+        avatarUrl: resolveAvatarUrl((p.full_name as string | null) ?? null) ?? (p as any).avatar_url ?? null,
       }));
     },
     staleTime: 5 * 60 * 1000,

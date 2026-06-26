@@ -6,6 +6,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export interface ProjectHoverMember {
   user_id: string;
@@ -53,7 +54,7 @@ export function useProjectHoverData(projectKey: string | null | undefined, enabl
         members = ((profiles ?? []) as any[]).map((p) => ({
           user_id: p.id,
           full_name: p.full_name ?? null,
-          avatar_url: p.avatar_url ?? null,
+          avatar_url: resolveAvatarUrl(p.full_name ?? null) ?? p.avatar_url ?? null,
         }));
       }
 

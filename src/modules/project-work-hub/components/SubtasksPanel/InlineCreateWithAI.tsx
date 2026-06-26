@@ -47,6 +47,8 @@ export interface InlineCreateWithAIProps {
   placeholder?: string;
   /** Forwarded to the underlying input so parents can refocus it programmatically. */
   inputRef?: React.RefObject<HTMLInputElement | null>;
+  /** Hide the bottom "Cancel" link (timeline inline-create dismisses via Escape / blur). */
+  hideCancel?: boolean;
 }
 
 type HighlightKind = 'suggestion' | 'existing';
@@ -65,6 +67,7 @@ export function InlineCreateWithAI({
   onCancel,
   placeholder = 'What needs to be done?',
   inputRef: externalInputRef,
+  hideCancel = false,
 }: InlineCreateWithAIProps) {
   const [draft, setDraft] = useState('');
   const [showPanel, setShowPanel] = useState(false);
@@ -327,15 +330,17 @@ export function InlineCreateWithAI({
         document.body
       )}
 
-      <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="sp-create-cancel"
-        >
-          Cancel
-        </button>
-      </div>
+      {!hideCancel && (
+        <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="sp-create-cancel"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
     </div>
   );
 }
