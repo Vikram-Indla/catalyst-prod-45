@@ -1,22 +1,12 @@
 import React from 'react';
-import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
-import {
-  MOCK_ROLES,
-  MOCK_PERMISSIONS,
-  MOCK_ROLE_PERMISSIONS,
-  distinctModules,
-  RbacRole,
-} from '@/lib/rbac-mock';
+import Spinner from '@atlaskit/spinner';
+import { PERMISSION_GROUPS, ProductRole, RolePermission } from '@/hooks/useProductRoles';
 
-/**
- * PermissionsMatrix — read-only visual grid showing which roles hold
- * which permissions. Represents the future normalized RBAC schema:
- *   rbac_role_module_permissions + rbac_role_action_permissions
- *
- * Rows  = permissions grouped by module
- * Cols  = roles
- * Cell  = ✓ if the role has that permission
- */
+interface PermissionsMatrixProps {
+  roles: ProductRole[];
+  permissions: RolePermission[];
+  isLoading?: boolean;
+}
 
 const T = {
   text:      'var(--ds-text, #172B4D)',
@@ -24,94 +14,76 @@ const T = {
   subtlest:  'var(--ds-text-subtlest, #626F86)',
   border:    'var(--ds-border, #DCDFE4)',
   surface:   'var(--ds-surface, #FFFFFF)',
-  selected:  'var(--ds-background-selected, #E9F2FE)',
   headerBg:  'var(--ds-background-neutral, #F1F2F4)',
-  sectionBg: 'var(--ds-surface-sunken, #F7F8F9)',
 };
 
-const ACTION_LABELS: Record<string, string> = {
-  view: 'View', create: 'Create', edit: 'Edit',
-  delete: 'Delete', approve: 'Approve', admin: 'Admin',
-};
-
-interface PermissionsMatrixProps {
-  /** Subset of roles to display; defaults to all active roles */
-  roles?: RbacRole[];
+function LevelCell({ level }: { level: string | undefined }) {
+  switch (level) {
+    case 'Full':
+      return <span title="Full" style={{ color: 'var(--ds-icon-brand, #0C66E4)', fontSize: 18, lineHeight: 1 }}>●</span>;
+    case 'View only':
+      return <span title="View only" style={{ color: T.subtle, fontSize: 16, lineHeight: 1 }}>◑</span>;
+    case 'Own only':
+      return <span title="Own only" style={{ color: T.subtle, fontSize: 16, lineHeight: 1 }}>◐</span>;
+    case 'None':
+    default:
+      return <span style={{ color: T.subtlest, fontSize: 13 }}>—</span>;
+  }
 }
 
-export function PermissionsMatrix({ roles = MOCK_ROLES.filter(r => r.isActive) }: PermissionsMatrixProps) {
-  const modules = distinctModules();
-  const colWidth = Math.max(80, Math.floor(600 / roles.length));
+export function PermissionsMatrix({ roles, permissions, isLoading }: PermissionsMatrixProps) {
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+        <Spinner size="medium" />
+      </div>
+    );
+  }
+
+  if (roles.length === 0) {
+    return (
+      <div style={{ padding: '40px 0', textAlign: 'center', color: T.subtle, fontSize: 14 }}>
+        No roles to display.
+      </div>
+    );
+  }
+
+  const permMap = React.useMemo(() => {
+    const map: Record<string, Record<string, string>> = {};
+    for (const p of permissions) {
+      if (!map[p.role_id]) map[p.role_id] = {};
+      map[p.role_id][p.permission_group] = p.permission_level;
+    }
+    return map;
+  }, [permissions]);
+
+  const colWidth = Math.max(100, Math.floor(640 / Math.max(roles.length, 1)));
 
   return (
     <div style={{ overflowX: 'auto' }}>
       <table
         role="grid"
         aria-label="Role permissions matrix"
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          fontSize: 13,
-          tableLayout: 'fixed',
-        }}
+        style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}
       >
-        {/* Column widths */}
         <colgroup>
-          <col style={{ width: 200 }} />
-          <col style={{ width: 120 }} />
+          <col style={{ width: 220 }} />
           {roles.map(r => <col key={r.id} style={{ width: colWidth }} />)}
         </colgroup>
 
-        {/* Header row — role names */}
         <thead>
           <tr>
             <th
               scope="col"
-              style={{
-                textAlign: 'left',
-                padding: '8px 12px',
-                fontSize: 12,
-                fontWeight: 653,
-                color: T.subtle,
-                background: T.headerBg,
-                borderBottom: `2px solid ${T.border}`,
-                position: 'sticky',
-                left: 0,
-                zIndex: 1,
-              }}
+              style={{ textAlign: 'left', padding: '8px 12px', fontSize: 12, fontWeight: 600, color: T.subtle, background: T.headerBg, borderBottom: `2px solid ${T.border}`, position: 'sticky', left: 0, zIndex: 1 }}
             >
-              Module / Resource
-            </th>
-            <th
-              scope="col"
-              style={{
-                textAlign: 'left',
-                padding: '8px 12px',
-                fontSize: 12,
-                fontWeight: 653,
-                color: T.subtle,
-                background: T.headerBg,
-                borderBottom: `2px solid ${T.border}`,
-              }}
-            >
-              Action
+              Permission group
             </th>
             {roles.map(role => (
               <th
                 key={role.id}
                 scope="col"
-                style={{
-                  textAlign: 'center',
-                  padding: '8px 10px',
-                  fontSize: 12,
-                  fontWeight: 653,
-                  color: T.text,
-                  background: T.headerBg,
-                  borderBottom: `2px solid ${T.border}`,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
+                style={{ textAlign: 'center', padding: '8px 10px', fontSize: 12, fontWeight: 600, color: T.text, background: T.headerBg, borderBottom: `2px solid ${T.border}`, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
               >
                 {role.name}
               </th>
@@ -120,100 +92,33 @@ export function PermissionsMatrix({ roles = MOCK_ROLES.filter(r => r.isActive) }
         </thead>
 
         <tbody>
-          {modules.map((mod, mi) => {
-            const perms = MOCK_PERMISSIONS.filter(p => p.module === mod);
-
-            return (
-              <React.Fragment key={mod}>
-                {/* Module section header */}
-                <tr>
-                  <td
-                    colSpan={2 + roles.length}
-                    style={{
-                      padding: '8px 12px 4px',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: T.subtle,
-                      background: T.sectionBg,
-                      borderTop: mi > 0 ? `2px solid ${T.border}` : undefined,
-                      letterSpacing: '0.06em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {mod}
-                  </td>
-                </tr>
-
-                {/* Permission rows */}
-                {perms.map((perm, pi) => (
-                  <tr key={perm.id}>
-                    {/* Resource */}
-                    <td
-                      style={{
-                        padding: '7px 12px',
-                        borderBottom: pi < perms.length - 1 ? `1px solid ${T.border}` : undefined,
-                        color: T.text,
-                        fontWeight: pi === 0 || perms[pi - 1].resource !== perm.resource ? 500 : 400,
-                        background: T.surface,
-                        position: 'sticky',
-                        left: 0,
-                        zIndex: 1,
-                      }}
-                    >
-                      {pi === 0 || perms[pi - 1].resource !== perm.resource
-                        ? perm.resource
-                        : ''}
-                    </td>
-
-                    {/* Action label — muted, no rainbow colors */}
-                    <td
-                      style={{
-                        padding: '7px 12px',
-                        borderBottom: pi < perms.length - 1 ? `1px solid ${T.border}` : undefined,
-                        background: T.surface,
-                      }}
-                    >
-                      <span style={{ fontSize: 11, fontWeight: 600, color: T.subtle }}>
-                        {ACTION_LABELS[perm.action] ?? perm.action}
-                      </span>
-                    </td>
-
-                    {/* Role cells — no green background, muted check icon */}
-                    {roles.map(role => {
-                      const has = (MOCK_ROLE_PERMISSIONS[role.id] ?? []).includes(perm.id);
-                      return (
-                        <td
-                          key={role.id}
-                          style={{
-                            textAlign: 'center',
-                            padding: '7px 4px',
-                            borderBottom: pi < perms.length - 1 ? `1px solid ${T.border}` : undefined,
-                            background: T.surface,
-                          }}
-                          aria-label={`${role.name}: ${perm.action} ${perm.resource} — ${has ? 'granted' : 'not granted'}`}
-                        >
-                          {has ? (
-                            <span style={{ color: T.subtle, display: 'inline-flex', justifyContent: 'center' }}>
-                              <CheckCircleIcon label="" size="small" />
-                            </span>
-                          ) : (
-                            <span style={{ color: T.border, fontSize: 16 }}>·</span>
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </React.Fragment>
-            );
-          })}
+          {PERMISSION_GROUPS.map((group, gi) => (
+            <tr key={group}>
+              <td
+                style={{ padding: '9px 12px', borderBottom: `1px solid ${T.border}`, color: T.text, fontWeight: 500, background: T.surface, position: 'sticky', left: 0, zIndex: 1 }}
+              >
+                {group}
+              </td>
+              {roles.map(role => (
+                <td
+                  key={role.id}
+                  style={{ textAlign: 'center', padding: '9px 4px', borderBottom: `1px solid ${T.border}`, background: T.surface }}
+                  aria-label={`${role.name}: ${group} — ${permMap[role.id]?.[group] ?? 'None'}`}
+                >
+                  <LevelCell level={permMap[role.id]?.[group]} />
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
 
-      <p style={{ fontSize: 12, color: T.subtlest, marginTop: 8 }}>
-        Read-only — mock data representing the future normalized RBAC schema.
-        Write access enabled after schema deployment.
-      </p>
+      <div style={{ display: 'flex', gap: 20, marginTop: 12, fontSize: 12, color: T.subtlest }}>
+        <span><span style={{ color: 'var(--ds-icon-brand, #0C66E4)' }}>●</span> Full</span>
+        <span><span style={{ color: T.subtle }}>◑</span> View only</span>
+        <span><span style={{ color: T.subtle }}>◐</span> Own only</span>
+        <span>— None</span>
+      </div>
     </div>
   );
 }

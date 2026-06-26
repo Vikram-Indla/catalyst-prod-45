@@ -12,17 +12,15 @@ import Textfield from '@atlaskit/textfield';
 import Tooltip from '@atlaskit/tooltip';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CheckboxIcon from '@atlaskit/icon/core/checkbox-checked';
-import EmptyState from '@atlaskit/empty-state';
-import { RbacRole, RbacUser, RBAC_SCHEMA_DEPLOYED, usersForRole } from '@/lib/rbac-mock';
+import Spinner from '@atlaskit/spinner';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { ProductRole, useUsersWithRole } from '@/hooks/useProductRoles';
 
 interface AssignUsersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  role: RbacRole | null;
-  allUsers: RbacUser[];
+  role: ProductRole | null;
 }
-
-const SAVE_DISABLED_REASON = 'Assign actions unavailable — RBAC schema not deployed';
 
 const T = {
   text:     'var(--ds-text, #172B4D)',
@@ -34,33 +32,31 @@ const T = {
   brand:    'var(--ds-icon-brand, #0C66E4)',
 };
 
-function initials(name: string): string {
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-}
-
-export function AssignUsersModal({ isOpen, onClose, role, allUsers }: AssignUsersModalProps) {
+export function AssignUsersModal({ isOpen, onClose, role }: AssignUsersModalProps) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
+  const { data: currentUsers = [], isLoading } = useUsersWithRole(isOpen ? role?.id ?? null : null);
+
   React.useEffect(() => {
-    if (!isOpen || !role) return;
+    if (!isOpen) return;
     setSearch('');
-    // Pre-select current role members
-    const current = usersForRole(role.id).map(u => u.id);
-    setSelected(new Set(current));
-  }, [isOpen, role]);
+    setSelected(new Set(currentUsers.map(u => u.user_id)));
+  }, [isOpen, currentUsers]);
 
   const filtered = React.useMemo(() => {
     const q = search.trim().toLowerCase();
-    return allUsers.filter(u =>
-      !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+    return currentUsers.filter(u =>
+      !q ||
+      (u.user?.full_name ?? '').toLowerCase().includes(q) ||
+      (u.user?.email ?? '').toLowerCase().includes(q),
     );
-  }, [allUsers, search]);
+  }, [currentUsers, search]);
 
-  function toggleUser(id: string) {
+  function toggleUser(userId: string) {
     setSelected(prev => {
       const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); } else { next.add(id); }
+      if (next.has(userId)) { next.delete(userId); } else { next.add(userId); }
       return next;
     });
   }
@@ -73,19 +69,11 @@ export function AssignUsersModal({ isOpen, onClose, role, allUsers }: AssignUser
         <DialogHeader>
           <DialogTitle>Assign users — {role.name}</DialogTitle>
           <DialogDescription>
-            Select users to assign to this role. Changes are preview-only in mock-safe mode.
+            Current members of this role. Reassignment available in a future release.
           </DialogDescription>
         </DialogHeader>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 0' }}>
-          {/* Mock-safe callout */}
-          {!RBAC_SCHEMA_DEPLOYED && (
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', background: 'var(--ds-background-neutral, #F1F2F4)', border: '1px solid var(--ds-border, #DCDFE4)', padding: '8px 12px', borderRadius: 3 }}>
-              RBAC schema is not deployed. Writes are disabled in preview mode.
-            </p>
-          )}
-
-          {/* Search */}
           <Textfield
             placeholder="Search users…"
             value={search}
@@ -97,64 +85,43 @@ export function AssignUsersModal({ isOpen, onClose, role, allUsers }: AssignUser
             }
           />
 
-          {/* User list */}
           <div style={{ maxHeight: 320, overflowY: 'auto', border: `1px solid ${T.border}`, borderRadius: 4 }}>
-            {filtered.length === 0 ? (
-              <div style={{ padding: '24px 0' }}>
-                <EmptyState header="No users found" description="Try a different search term." />
+            {isLoading ? (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}>
+                <Spinner size="medium" />
+              </div>
+            ) : filtered.length === 0 ? (
+              <div style={{ padding: '32px 16px', textAlign: 'center', color: T.subtle, fontSize: 14 }}>
+                {search ? 'No users match your search.' : 'No users assigned to this role.'}
               </div>
             ) : (
               filtered.map(user => {
-                const isSelected = selected.has(user.id);
+                const isChecked = selected.has(user.user_id);
                 return (
                   <div
                     key={user.id}
-                    onClick={() => toggleUser(user.id)}
                     role="checkbox"
-                    aria-checked={isSelected}
+                    aria-checked={isChecked}
+                    onClick={() => toggleUser(user.user_id)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: '9px 12px',
-                      borderBottom: `1px solid ${T.border}`,
-                      cursor: 'pointer',
-                      background: isSelected ? T.selected : T.surface,
-                      transition: 'background 0.1s',
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
+                      borderBottom: `1px solid ${T.border}`, cursor: 'pointer',
+                      background: isChecked ? T.selected : T.surface, transition: 'background 0.1s',
                     }}
                   >
-                    {/* Check indicator */}
-                    <span style={{ color: isSelected ? T.brand : T.border, display: 'flex', flexShrink: 0 }}>
+                    <span style={{ color: isChecked ? T.brand : T.border, display: 'flex', flexShrink: 0 }}>
                       <CheckboxIcon label="" size="small" />
                     </span>
-
-                    {/* Avatar */}
-                    <div
-                      aria-hidden="true"
-                      style={{
-                        width: 26,
-                        height: 26,
-                        borderRadius: '50%',
-                        background: 'var(--ds-background-brand-bold, #0C66E4)',
-                        color: '#fff',
-                        fontSize: 10,
-                        fontWeight: 653,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {initials(user.name)}
-                    </div>
-
-                    {/* Name + email */}
+                    <CatalystAvatar
+                      name={user.user?.full_name ?? user.user?.email ?? '?'}
+                      size="xsmall"
+                    />
                     <div style={{ minWidth: 0 }}>
                       <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {user.name}
+                        {user.user?.full_name ?? '—'}
                       </p>
                       <p style={{ margin: 0, fontSize: 12, color: T.subtlest, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {user.email}
+                        {user.user?.email ?? '—'}
                       </p>
                     </div>
                   </div>
@@ -164,20 +131,16 @@ export function AssignUsersModal({ isOpen, onClose, role, allUsers }: AssignUser
           </div>
 
           <p style={{ margin: 0, fontSize: 12, color: T.subtlest }}>
-            {selected.size} user{selected.size !== 1 ? 's' : ''} selected
+            {selected.size} user{selected.size !== 1 ? 's' : ''} in this role
           </p>
         </div>
 
         <DialogFooter>
           <Button appearance="default" onClick={onClose}>
-            Cancel
+            Close
           </Button>
-          <Tooltip content={RBAC_SCHEMA_DEPLOYED ? undefined : SAVE_DISABLED_REASON} position="top">
-            <Button
-              appearance="primary"
-              isDisabled={!RBAC_SCHEMA_DEPLOYED}
-              onClick={RBAC_SCHEMA_DEPLOYED ? onClose : undefined}
-            >
+          <Tooltip content="User reassignment coming soon" position="top">
+            <Button appearance="primary" isDisabled>
               Save assignments
             </Button>
           </Tooltip>

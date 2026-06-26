@@ -1,10 +1,13 @@
 import React from 'react';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
-import { RbacAssignment, userById, roleById } from '@/lib/rbac-mock';
+import Spinner from '@atlaskit/spinner';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { UserWithRole } from '@/hooks/useProductRoles';
 
 interface RbacAssignmentsTableProps {
-  assignments: RbacAssignment[];
+  users: UserWithRole[];
+  isLoading?: boolean;
 }
 
 const T = {
@@ -13,126 +16,83 @@ const T = {
   subtlest: 'var(--ds-text-subtlest, #626F86)',
 };
 
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
-
-function formatDate(iso: string | undefined): string {
+function formatDate(iso: string | undefined | null): string {
   if (!iso) return '—';
   try {
     return new Date(iso).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
+      day: 'numeric', month: 'short', year: 'numeric',
     });
   } catch {
-    return iso;
+    return '—';
   }
 }
 
-const COLUMNS: Column<RbacAssignment>[] = [
+type UserWithRoleAndDate = UserWithRole & { created_at?: string };
+
+const COLUMNS: Column<UserWithRoleAndDate>[] = [
   {
     id: 'user',
     label: 'User',
     flex: true,
     alwaysVisible: true,
-    cell: ({ row }) => {
-      const user = userById(row.userId);
-      return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-          <div
-            aria-hidden="true"
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: 'var(--ds-background-brand-bold, #0C66E4)',
-              color: '#fff',
-              fontSize: 12,
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            {user ? initials(user.name) : '?'}
-          </div>
-          <span
-            style={{
-              fontSize: 14,
-              fontWeight: 500,
-              color: T.text,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {user?.name ?? row.userId}
-          </span>
-        </div>
-      );
-    },
-  },
-  {
-    id: 'role',
-    label: 'Role',
-    width: 20,
-    cell: ({ row }) => {
-      const role = roleById(row.roleId);
-      return (
-        <span style={{ fontSize: 13, color: T.subtle }}>{role?.name ?? row.roleId}</span>
-      );
-    },
-  },
-  {
-    id: 'assignedBy',
-    label: 'Assigned by',
-    width: 18,
-    cell: ({ row }) => {
-      const byUser =
-        row.assignedBy === 'system' ? null
-        : row.assignedBy ? userById(row.assignedBy)
-        : null;
-      const label =
-        byUser?.name ?? (row.assignedBy === 'system' ? 'System' : row.assignedBy ?? '—');
-      return <span style={{ fontSize: 13, color: T.subtle }}>{label}</span>;
-    },
-  },
-  {
-    id: 'date',
-    label: 'Date',
-    width: 14,
     cell: ({ row }) => (
-      <span style={{ fontSize: 13, color: T.subtlest }}>{formatDate(row.assignedAt)}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+        <CatalystAvatar
+          name={row.user?.full_name ?? row.user?.email ?? '?'}
+          size="small"
+        />
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {row.user?.full_name ?? '—'}
+          </div>
+          <div style={{ fontSize: 12, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {row.user?.email ?? '—'}
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'business_lines',
+    label: 'Business lines',
+    width: 22,
+    cell: ({ row }) => {
+      const lines = row.business_lines ?? [];
+      return lines.length > 0
+        ? <span style={{ fontSize: 13, color: T.subtle }}>{lines.join(', ')}</span>
+        : <span style={{ fontSize: 13, color: T.subtlest }}>—</span>;
+    },
+  },
+  {
+    id: 'assigned_on',
+    label: 'Assigned on',
+    width: 16,
+    cell: ({ row }) => (
+      <span style={{ fontSize: 13, color: T.subtlest }}>{formatDate(row.created_at)}</span>
     ),
   },
 ];
 
-export function RbacAssignmentsTable({ assignments }: RbacAssignmentsTableProps) {
+export function RbacAssignmentsTable({ users, isLoading }: RbacAssignmentsTableProps) {
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+        <Spinner size="medium" />
+      </div>
+    );
+  }
+
   return (
-    <JiraTable<RbacAssignment>
+    <JiraTable<UserWithRoleAndDate>
       columns={COLUMNS}
-      data={assignments}
-      getRowId={(a) => a.id}
+      data={users as UserWithRoleAndDate[]}
+      getRowId={(u) => u.id}
       density="comfortable"
       ariaLabel="Role assignments"
       showRowCount={false}
       emptyView={
-        <div
-          style={{
-            padding: '40px 16px',
-            textAlign: 'center',
-            color: 'var(--ds-text-subtle, #44546F)',
-            fontSize: 14,
-          }}
-        >
-          No assignments for this role.
+        <div style={{ padding: '40px 16px', textAlign: 'center', color: T.subtle, fontSize: 14 }}>
+          No users assigned to this role.
         </div>
       }
     />
