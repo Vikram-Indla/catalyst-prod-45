@@ -126,7 +126,7 @@ export function useProjectReleases(projectId: string) {
   });
 }
 
-// Fetch sprints linked to a release
+// Fetch sprints linked to a release (legacy — kept for back-compat).
 export function useReleaseSprints(releaseId: string | null) {
   return useQuery({
     queryKey: ['release-sprints', releaseId],
@@ -144,6 +144,30 @@ export function useReleaseSprints(releaseId: string | null) {
     },
     enabled: !!releaseId,
     staleTime: 1 * 60 * 1000,
+  });
+}
+
+// 2026-06-26: Sprints directly from ph_jira_sprints scoped by project.
+// Replaces the old release→sprint dependency in project-scope create flows.
+export function useProjectSprints(projectId: string) {
+  return useQuery({
+    queryKey: ['create-story-sprints', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      const { data, error } = await (supabase as any)
+        .from('ph_jira_sprints')
+        .select('id, name, status, release_date')
+        .eq('project_id', projectId)
+        .order('release_date', { ascending: false, nullsFirst: false })
+        .order('name');
+      if (error) {
+        console.error('[useProjectSprints] Supabase error:', error.message);
+        return [];
+      }
+      return (data ?? []) as Array<{ id: string; name: string; status: string; release_date: string | null }>;
+    },
+    enabled: !!projectId,
+    staleTime: 2 * 60 * 1000,
   });
 }
 

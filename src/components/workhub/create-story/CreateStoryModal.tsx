@@ -87,6 +87,7 @@ import {
   useTeamMembers,
   useProjectReleases,
   useReleaseSprints,
+  useProjectSprints,
   useCreateStoryMutation,
   useWorkflowStatuses,
 } from './useCreateStory';
@@ -408,7 +409,12 @@ export function CreateStoryModal({
   const { data: projects = [] } = useProjects();
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [], isLoading: releasesLoading, error: releasesError } = useProjectReleases(form.projectId);
-  const { data: sprints = [], isLoading: sprintsLoading } = useReleaseSprints(form.releaseId);
+  // 2026-06-26: project-scope create uses sprints directly from
+  // ph_jira_sprints (filtered by project_id), NOT sprints nested under a
+  // release. The legacy useReleaseSprints call is kept above for back-compat
+  // but the rendered Sprint dropdown now reads from sprintsByProject.
+  const { data: sprintsByProject = [], isLoading: sprintsLoading } = useProjectSprints(form.projectId);
+  const sprints = sprintsByProject;
 
   const createMutation = useCreateStoryMutation();
 
@@ -973,35 +979,13 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Sprint/Iteration (Release) ────────────────────────── */}
-              <Field name="sprintRelease" label="Release">
-                {({ fieldProps }) => (
-                  <Select<IconOption>
-                    {...fieldProps}
-                    inputId="cs-sprintrelease"
-                    options={releaseOptions}
-                    value={
-                      releaseOptions.find(
-                        (o) => o.value === (form.releaseId ?? ''),
-                      ) ?? null
-                    }
-                    onChange={(opt) => {
-                      updateField(
-                        'releaseId',
-                        (opt as IconOption)?.value || null,
-                      );
-                      // Reset sprints when release changes
-                      updateField('sprintReleases', []);
-                    }}
-                    isClearable
-                    placeholder="Select release"
-                  />
-                )}
-              </Field>
-
-              {/* ── Sprints (multi-select, filtered by release) ────── */}
-              {form.releaseId && (
-                <Field name="sprints" label="Sprints">
+              {/* ── Sprint ─────────────────────────────────────────────
+                  2026-06-26: Release dropdown removed. Project-scope
+                  create now picks a Sprint directly from ph_jira_sprints
+                  (filtered by the chosen project). Multi-select kept so
+                  one work item can land in multiple sprints when needed. */}
+              {form.projectId && (
+                <Field name="sprints" label="Sprint">
                   {({ fieldProps }) => (
                     <>
                       {sprintsLoading ? (
@@ -1025,11 +1009,11 @@ export function CreateStoryModal({
                               (vals ?? []).map((o) => o.value),
                             )
                           }
-                          placeholder="Select sprints"
+                          placeholder="Select sprint"
                         />
                       ) : (
                         <Box xcss={{ color: 'color.text.subtlest', fontSize: '12px' }}>
-                          No sprints available for this release
+                          No sprints in this project yet
                         </Box>
                       )}
                     </>

@@ -119,7 +119,13 @@ const THRESHOLD_OPTIONS = [
 ];
 
 const quarterRange = (q: string): { start: string; end: string; label: string } => {
-  const [qPart, yPart] = q.split('-');
+  // 2026-06-26: defensive parse — malformed/missing `q` throws
+  // "Invalid time value" at the .toISOString() calls below. Fall back to
+  // the current quarter so the dashboard widget renders something safe.
+  const safeQ = typeof q === 'string' && /^Q[1-4]-\d{4}$/.test(q)
+    ? q
+    : `Q${Math.floor(new Date().getMonth() / 3) + 1}-${new Date().getFullYear()}`;
+  const [qPart, yPart] = safeQ.split('-');
   const year = parseInt(yPart, 10);
   const idx = parseInt(qPart.replace('Q', ''), 10);
   const startMonth = (idx - 1) * 3;
@@ -127,6 +133,10 @@ const quarterRange = (q: string): { start: string; end: string; label: string } 
   const end = new Date(Date.UTC(year, startMonth + 3, 0));
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const label = `${months[startMonth]}–${months[startMonth + 2]}`;
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    const fallback = new Date().toISOString().slice(0, 10);
+    return { start: fallback, end: fallback, label };
+  }
   return {
     start: start.toISOString().slice(0, 10),
     end: end.toISOString().slice(0, 10),
@@ -163,6 +173,9 @@ const computeRag = (targetDate: string | null, threshold: number): { state: RagS
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const target = parseISO(targetDate);
+  // 2026-06-26: parseISO returns Invalid Date on malformed strings →
+  // workingDaysBetween → eachDayOfInterval throws "Invalid time value".
+  if (Number.isNaN(target.getTime())) return { state: 'none', daysLeft: null };
   const days = workingDaysBetween(target, today);
   if (days < 0) return { state: 'overdue', daysLeft: days };
   if (days <= threshold) return { state: 'risk', daysLeft: days };
@@ -1839,7 +1852,12 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
     }
     if (settings.scope_type === 'custom') {
       if (!settings.date_from || !settings.date_to) return 'Custom · pick a date range';
-      return `Custom · ${format(parseISO(settings.date_from), 'dd MMM')} → ${format(parseISO(settings.date_to), 'dd MMM yyyy')}`;
+      const dFrom = parseISO(settings.date_from);
+      const dTo = parseISO(settings.date_to);
+      if (Number.isNaN(dFrom.getTime()) || Number.isNaN(dTo.getTime())) {
+        return 'Custom · invalid date range';
+      }
+      return `Custom · ${format(dFrom, 'dd MMM')} → ${format(dTo, 'dd MMM yyyy')}`;
     }
     return 'All active demands · no date filter';
   })();
@@ -2209,7 +2227,11 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
         {row.title}
       </span>
       <span style={{ ...LABEL, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)') }}>
-        {row.deliveredAt ? format(new Date(row.deliveredAt), 'dd MMM yyyy') : '—'}
+        {(() => {
+          if (!row.deliveredAt) return '—';
+          const d = new Date(row.deliveredAt);
+          return Number.isNaN(d.getTime()) ? '—' : format(d, 'dd MMM yyyy');
+        })()}
       </span>
       <span style={{ ...LABEL, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)') }}>
         {row.total} {row.total === 1 ? 'story' : 'stories'}

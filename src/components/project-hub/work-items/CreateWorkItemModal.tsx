@@ -13,6 +13,7 @@ interface ProfileOption { id: string; full_name: string; avatar_url: string | nu
 interface ParentOption { id: string; item_key: string; title: string; summary: string; }
 interface LabelOption { id: string; name: string; color: string; }
 interface ReleaseOption { id: string; name: string; status: string; }
+interface SprintOption { id: string; name: string; status: string; }
 
 interface CreateWorkItemModalProps {
   open: boolean;
@@ -52,6 +53,9 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
   const [dueDate, setDueDate] = useState('');
   const [parentId, setParentId] = useState<string | null>(null);
   const [releaseId, setReleaseId] = useState<string | null>(null);
+  // 2026-06-26: sprint replaces release in project-scope create flow.
+  // release_id stays in DB for back-compat but is no longer written here.
+  const [sprintId, setSprintId] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [createAnother, setCreateAnother] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -61,6 +65,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
   const [assigneeOpen, setAssigneeOpen] = useState(false);
   const [parentOpen, setParentOpen] = useState(false);
   const [releaseOpen, setReleaseOpen] = useState(false);
+  const [sprintOpen, setSprintOpen] = useState(false);
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [assigneeSearch, setAssigneeSearch] = useState('');
   const [parentSearch, setParentSearch] = useState('');
@@ -129,6 +134,19 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
     enabled: !!projectId,
   });
 
+  // 2026-06-26: project-scope create now picks SPRINT instead of release.
+  const { data: sprints = [] } = useQuery<SprintOption[]>({
+    queryKey: ['ph-sprints-for-create', projectId],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('ph_jira_sprints').select('id, name, status')
+        .eq('project_id', projectId).order('release_date');
+      if (error) throw error;
+      return (data || []) as SprintOption[];
+    },
+    enabled: !!projectId,
+  });
+
   // ─── Defaults ────────────────────────────────────────────
   useEffect(() => {
     if (open && workTypes.length > 0 && !selectedType) {
@@ -160,12 +178,12 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
 
   const closeDropdowns = () => {
     setPriorityOpen(false); setAssigneeOpen(false);
-    setParentOpen(false); setReleaseOpen(false); setLabelsOpen(false);
+    setParentOpen(false); setReleaseOpen(false); setSprintOpen(false); setLabelsOpen(false);
   };
 
   const resetForm = (keepTypeAndPriority = false) => {
     setTitle(''); setAssigneeId(null); setDueDate('');
-    setParentId(null); setReleaseId(null); setSelectedLabels([]);
+    setParentId(null); setReleaseId(null); setSprintId(null); setSelectedLabels([]);
     setAssigneeSearch(''); setParentSearch('');
     if (!keepTypeAndPriority) {
       const story = workTypes.find(t => t.name === 'Story');
@@ -192,7 +210,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
         assignee_id: assigneeId,
         parent_id: parentId,
         due_date: dueDate || null,
-        release_id: releaseId,
+        sprint_id: sprintId,
         label_ids: selectedLabels.length > 0 ? selectedLabels : undefined,
       });
 
@@ -226,6 +244,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
   const selectedAssignee = profiles.find(p => p.id === assigneeId);
   const selectedParent = parentItems.find(p => p.id === parentId);
   const selectedRelease = releases.find(r => r.id === releaseId);
+  const selectedSprint = sprints.find(s => s.id === sprintId);
   const pri = PRIORITIES.find(p => p.value === priority);
 
   return (
@@ -450,7 +469,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
             )}
           </div>
 
-          {/* Due date + Release */}
+          {/* Due date + Sprint */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Due Date</label>
@@ -466,39 +485,39 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               </div>
             </div>
 
-            {/* Release */}
+            {/* Sprint (2026-06-26: replaced Release in project-scope create) */}
             <div className="relative">
-              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Release</label>
+              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Sprint</label>
               <button
-                onClick={e => { e.stopPropagation(); closeDropdowns(); setReleaseOpen(!releaseOpen); }}
+                onClick={e => { e.stopPropagation(); closeDropdowns(); setSprintOpen(!sprintOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] transition-colors"
-                style={{ height: 50, borderColor: 'var(--divider)', color: selectedRelease ? 'var(--fg-2)' : 'var(--fg-4)' }}
+                style={{ height: 50, borderColor: 'var(--divider)', color: selectedSprint ? 'var(--fg-2)' : 'var(--fg-4)' }}
               >
                 <span className="truncate">
-                  {selectedRelease ? selectedRelease.name : 'None'}
+                  {selectedSprint ? selectedSprint.name : 'None'}
                 </span>
                 <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] shrink-0" />
               </button>
-              {releaseOpen && (
+              {sprintOpen && (
                 <FixedDropdown maxHeight={200} onClick={e => e.stopPropagation()}>
                   <button
                     className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
                     style={{ color: 'var(--fg-4)' }}
-                    onClick={() => { setReleaseId(null); setReleaseOpen(false); }}
+                    onClick={() => { setSprintId(null); setSprintOpen(false); }}
                   >
                     None
                   </button>
-                  {releases.map(r => (
+                  {sprints.map(s => (
                     <button
-                      key={r.id}
+                      key={s.id}
                       className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-left"
                       style={{ color: 'var(--fg-2)' }}
-                      onClick={() => { setReleaseId(r.id); setReleaseOpen(false); }}
+                      onClick={() => { setSprintId(s.id); setSprintOpen(false); }}
                     >
                       <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[var(--sem-success-bg)]" style={{ color: 'var(--sem-success)' }}>
-                        {r.status === 'released' ? '✓' : r.status === 'in_progress' ? '►' : '○'}
+                        {s.status === 'released' ? '✓' : s.status === 'in_progress' ? '►' : '○'}
                       </span>
-                      {r.name}
+                      {s.name}
                     </button>
                   ))}
                 </FixedDropdown>
