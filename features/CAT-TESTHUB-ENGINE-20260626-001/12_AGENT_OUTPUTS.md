@@ -11,3 +11,8 @@ Index of parallel-agent runs + resumable IDs. Full synthesis lives in 02_CANONIC
 | Canonical components | JiraTable, CatalystViewBase, icon registry, pickers, admin wiring | ae0cd7a0b3fe593df |
 
 Add new agent runs per phase below.
+
+## Phase 1c (2026-06-26)
+| Agent | Scope | Resumable ID |
+|---|---|---|
+| CatalystViewBase API probe | slot/router API, TaskCatalystView template, test-case integration spec → wrote 03b_CATALYSTVIEWBASE_MIGRATION_SPEC.md | a604bfddbe55b9755 |
