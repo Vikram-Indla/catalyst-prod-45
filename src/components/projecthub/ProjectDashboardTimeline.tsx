@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { format, startOfDay, addDays, differenceInDays, isBefore, isAfter } from 'date-fns';
+import { format as dfnsFormat, startOfDay, addDays, differenceInDays, isBefore, isAfter } from 'date-fns';
+
+// 2026-06-26: safe wrapper around date-fns format(). Invalid Date silently
+// throws "Invalid time value" inside date-fns; this wrapper returns '—'
+// instead so a single bad sprint row doesn't kill the whole timeline.
+const format = (d: Date | number | null | undefined, fmt: string): string => {
+  if (d == null) return '—';
+  const t = d instanceof Date ? d.getTime() : Number(d);
+  if (!Number.isFinite(t)) return '—';
+  try { return dfnsFormat(d as any, fmt); } catch { return '—'; }
+};
 import { useNavigate } from 'react-router-dom';
 import { Rocket, ChevronDown, Check } from 'lucide-react';
 import { useProjectTimeline, SprintMilestone } from '@/hooks/useProjectTimeline';
@@ -93,7 +103,14 @@ function formatDateRange(start: Date | null, end: Date | null): string {
 }
 
 function buildItems(raw: SprintMilestone[], today: Date): SprintTimelineItem[] {
-  const sorted = [...raw].sort(
+  // 2026-06-26: drop rows with missing/invalid releaseDate up front so
+  // downstream Date math never sees Invalid Date.
+  const valid = raw.filter((s) => {
+    if (!s.releaseDate) return false;
+    const t = new Date(s.releaseDate).getTime();
+    return Number.isFinite(t);
+  });
+  const sorted = [...valid].sort(
     (a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime()
   );
   const withStatus = sorted.map((s, i) => {

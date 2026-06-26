@@ -148,26 +148,25 @@ export function useReleaseSprints(releaseId: string | null) {
   });
 }
 
-// 2026-06-26: Sprints directly from ph_jira_sprints scoped by project.
-// Replaces the old release→sprint dependency in project-scope create flows.
-export function useProjectSprints(projectId: string) {
+// 2026-06-26 (revised): ALL sprints from ph_jira_sprints — no project
+// filter. Vikram directive: dropdown should always render every sprint
+// (past/current/future) with searchable picker. Caller no longer needs
+// to gate on project selection.
+export function useProjectSprints(_projectId?: string) {
   return useQuery({
-    queryKey: ['create-story-sprints', projectId],
+    queryKey: ['create-story-sprints-all'],
     queryFn: async () => {
-      if (!projectId) return [];
       const { data, error } = await (supabase as any)
         .from('ph_jira_sprints')
-        .select('id, name, status, release_date')
-        .eq('project_id', projectId)
+        .select('id, name, status, release_date, project_id')
         .order('release_date', { ascending: false, nullsFirst: false })
         .order('name');
       if (error) {
         console.error('[useProjectSprints] Supabase error:', error.message);
         return [];
       }
-      return (data ?? []) as Array<{ id: string; name: string; status: string; release_date: string | null }>;
+      return (data ?? []) as Array<{ id: string; name: string; status: string; release_date: string | null; project_id: string }>;
     },
-    enabled: !!projectId,
     staleTime: 2 * 60 * 1000,
   });
 }

@@ -980,43 +980,36 @@ export function CreateStoryModal({
               </Field>
 
               {/* ── Sprint ─────────────────────────────────────────────
-                  2026-06-26: Release dropdown removed. Project-scope
-                  create now picks a Sprint directly from ph_jira_sprints
-                  (filtered by the chosen project). Multi-select kept so
-                  one work item can land in multiple sprints when needed. */}
-              {form.projectId && (
+                  2026-06-26 (revised): always render dropdown with ALL
+                  sprints (past + current + future). Searchable + multi-
+                  select. No empty-state placeholder; an empty options
+                  list still shows the picker so user knows the field
+                  exists. */}
+              {workType !== 'Business Request' && (
                 <Field name="sprints" label="Sprint">
                   {({ fieldProps }) => (
-                    <>
-                      {sprintsLoading ? (
-                        <Spinner size="small" />
-                      ) : sprintOptions.length > 0 ? (
-                        <Select<IconOption, true>
-                          {...fieldProps}
-                          inputId="cs-sprints"
-                          isMulti
-                          options={sprintOptions}
-                          value={
-                            (form.sprintReleases ?? []).map(
-                              (id) =>
-                                sprintOptions.find((o) => o.value === id) ??
-                                null,
-                            ).filter(Boolean) as IconOption[]
-                          }
-                          onChange={(vals) =>
-                            updateField(
-                              'sprintReleases',
-                              (vals ?? []).map((o) => o.value),
-                            )
-                          }
-                          placeholder="Select sprint"
-                        />
-                      ) : (
-                        <Box xcss={{ color: 'color.text.subtlest', fontSize: '12px' }}>
-                          No sprints in this project yet
-                        </Box>
-                      )}
-                    </>
+                    <Select<IconOption, true>
+                      {...fieldProps}
+                      inputId="cs-sprints"
+                      isMulti
+                      isSearchable
+                      isLoading={sprintsLoading}
+                      options={sprintOptions}
+                      value={
+                        (form.sprintReleases ?? []).map(
+                          (id) =>
+                            sprintOptions.find((o) => o.value === id) ??
+                            null,
+                        ).filter(Boolean) as IconOption[]
+                      }
+                      onChange={(vals) =>
+                        updateField(
+                          'sprintReleases',
+                          (vals ?? []).map((o) => o.value),
+                        )
+                      }
+                      placeholder="Search sprints"
+                    />
                   )}
                 </Field>
               )}

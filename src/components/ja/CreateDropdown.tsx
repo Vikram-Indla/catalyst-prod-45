@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import Button from "@atlaskit/button/new";
 import AddIcon from "@atlaskit/icon/core/add";
 import { CreateStoryModal } from "@/components/workhub/create-story";
@@ -29,7 +29,18 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
   const [taskOpen, setTaskOpen] = useState(false);
   const [pendingWorkType, setPendingWorkType] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
+  const params = useParams<{ key?: string }>();
   const isProductHubBacklog = /^\/product-hub\/[^/]+\/backlog/.test(pathname);
+
+  // 2026-06-26: derive project context from the URL so the modal auto-selects
+  // the current project. Without this, opening Create from
+  // /project-hub/BAU/dashboard leaves the project picker empty → the Sprint
+  // dropdown (gated on form.projectId) stays hidden.
+  const projectKeyFromUrl = useMemo<string | undefined>(() => {
+    if (params.key) return params.key;
+    const m = pathname.match(/^\/(?:project|product)-hub\/([^/]+)/);
+    return m ? m[1] : undefined;
+  }, [params.key, pathname]);
 
   return (
     <>
@@ -46,6 +57,7 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
         onClose={() => { setStoryOpen(false); setPendingWorkType(undefined); }}
         onOpenBusinessRequest={() => { setStoryOpen(false); setBrOpen(true); }}
         onOpenTask={() => { setStoryOpen(false); setTaskOpen(true); }}
+        projectKey={projectKeyFromUrl}
         workTypes={isProductHubBacklog ? ['Business Request'] : undefined}
         defaultWorkType={pendingWorkType ?? (isProductHubBacklog ? 'Business Request' : 'Story')}
       />

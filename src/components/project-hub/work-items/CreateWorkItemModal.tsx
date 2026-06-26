@@ -66,6 +66,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
   const [parentOpen, setParentOpen] = useState(false);
   const [releaseOpen, setReleaseOpen] = useState(false);
   const [sprintOpen, setSprintOpen] = useState(false);
+  const [sprintSearch, setSprintSearch] = useState('');
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [assigneeSearch, setAssigneeSearch] = useState('');
   const [parentSearch, setParentSearch] = useState('');
@@ -134,17 +135,19 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
     enabled: !!projectId,
   });
 
-  // 2026-06-26: project-scope create now picks SPRINT instead of release.
+  // 2026-06-26 (revised): ALL sprints, not project-filtered. Vikram
+  // directive — dropdown always shows every sprint (past/current/future)
+  // and is searchable.
   const { data: sprints = [] } = useQuery<SprintOption[]>({
-    queryKey: ['ph-sprints-for-create', projectId],
+    queryKey: ['ph-sprints-for-create-all'],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from('ph_jira_sprints').select('id, name, status')
-        .eq('project_id', projectId).order('release_date');
+        .order('release_date', { ascending: false, nullsFirst: false })
+        .order('name');
       if (error) throw error;
       return (data || []) as SprintOption[];
     },
-    enabled: !!projectId,
   });
 
   // ─── Defaults ────────────────────────────────────────────
@@ -499,20 +502,33 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                 <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] shrink-0" />
               </button>
               {sprintOpen && (
-                <FixedDropdown maxHeight={200} onClick={e => e.stopPropagation()}>
+                <FixedDropdown maxHeight={260} onClick={e => e.stopPropagation()}>
+                  <div className="p-1.5 border-b" style={{ borderColor: 'var(--divider)' }}>
+                    <input
+                      autoFocus
+                      type="text"
+                      value={sprintSearch}
+                      onChange={(e) => setSprintSearch(e.currentTarget.value)}
+                      placeholder="Search sprints"
+                      className="w-full px-2 py-1 text-[11px] border rounded outline-none"
+                      style={{ borderColor: 'var(--divider)', color: 'var(--fg-2)', background: 'var(--ds-surface, #FFFFFF)' }}
+                    />
+                  </div>
                   <button
                     className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
                     style={{ color: 'var(--fg-4)' }}
-                    onClick={() => { setSprintId(null); setSprintOpen(false); }}
+                    onClick={() => { setSprintId(null); setSprintOpen(false); setSprintSearch(''); }}
                   >
                     None
                   </button>
-                  {sprints.map(s => (
+                  {sprints
+                    .filter(s => !sprintSearch.trim() || s.name.toLowerCase().includes(sprintSearch.trim().toLowerCase()))
+                    .map(s => (
                     <button
                       key={s.id}
                       className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-left"
                       style={{ color: 'var(--fg-2)' }}
-                      onClick={() => { setSprintId(s.id); setSprintOpen(false); }}
+                      onClick={() => { setSprintId(s.id); setSprintOpen(false); setSprintSearch(''); }}
                     >
                       <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[var(--sem-success-bg)]" style={{ color: 'var(--sem-success)' }}>
                         {s.status === 'released' ? '✓' : s.status === 'in_progress' ? '►' : '○'}
