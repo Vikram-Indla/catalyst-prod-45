@@ -341,6 +341,7 @@ Run [`docs/ways-of-working/CATALYST_SELF_TEST.md`](docs/ways-of-working/CATALYST
 
 | Doc | Purpose |
 |---|---|
+| [`CATALYST_ONBOARDING.md`](docs/ways-of-working/CATALYST_ONBOARDING.md) | **Start here on a fresh clone** — one-time setup + how to run `activate feature` |
 | [`CATALYST_OPERATING_SYSTEM.md`](docs/ways-of-working/CATALYST_OPERATING_SYSTEM.md) | Full operating system — TRIAD roles, delivery loop, drift control |
 | [`CATALYST_PARALLEL_AGENTS.md`](docs/ways-of-working/CATALYST_PARALLEL_AGENTS.md) | Agent definitions, inputs, outputs, failure criteria |
 | [`CATALYST_CANONICAL_COMPONENTS.md`](docs/ways-of-working/CATALYST_CANONICAL_COMPONENTS.md) | Canonical-first rules, JiraTable rule, proof of unsuitability |
