@@ -36,6 +36,7 @@ export const adminPockets: AdminNavPocket[] = [
       { label: 'Roles', path: '/admin/roles' },
       { label: 'Permissions', path: '/admin/permissions' },
       { label: 'Departments', path: '/admin/capacity-departments' },
+      { label: 'AI Assistant', path: '/admin/ai-assistant' },
     ],
   },
   {
@@ -110,6 +111,7 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/connections/notion',
   '/admin/connections/vercel',
   '/admin/ai-governance/translations',
+  '/admin/ai-assistant',
 ]);
 
 /** Returns all leaf navigation paths (children only; section-level paths excluded). */

@@ -18,7 +18,7 @@ export interface RolePermission {
   id: string;
   role_id: string;
   permission_group: string;
-  permission_level: 'Full' | 'View only' | 'Own only' | 'None';
+  permission_level: 'Allow' | 'Deny';
 }
 
 export interface UserWithRole {

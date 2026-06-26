@@ -44,10 +44,11 @@ interface CollapsibleSection {
 }
 
 const navItems: NavItem[] = [
-  { id: 'overview',      label: 'Overview',       path: '/admin/overview',     icon: HomeIcon       },
-  { id: 'users-access',  label: 'Users & Access', path: '/admin/access',       icon: ShieldIcon     },
-  { id: 'roles',         label: 'Roles',          path: '/admin/roles',        icon: ShieldIcon      },
-  { id: 'permissions',   label: 'Permissions',    path: '/admin/permissions',  icon: SettingsIcon    },
+  { id: 'overview',      label: 'Overview',       path: '/admin/overview',      icon: HomeIcon       },
+  { id: 'users-access',  label: 'Users & Access', path: '/admin/access',        icon: ShieldIcon     },
+  { id: 'roles',         label: 'Roles',          path: '/admin/roles',         icon: ShieldIcon      },
+  { id: 'permissions',   label: 'Permissions',    path: '/admin/permissions',   icon: SettingsIcon    },
+  { id: 'ai-assistant',  label: 'AI Assistant',   path: '/admin/ai-assistant',  icon: StarIcon        },
 ];
 
 const collapsibleSections: CollapsibleSection[] = [

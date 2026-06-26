@@ -1,10 +1,9 @@
-// @ts-nocheck
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Textfield from '@atlaskit/textfield';
 import Button from '@atlaskit/button/new';
-import { Lozenge } from '@/components/ads';
+import Lozenge from '@atlaskit/lozenge';
 import {
   Dialog,
   DialogContent,
@@ -580,7 +579,7 @@ export default function UserAccessPage() {
                                   roleId: opt.value === 'none' ? null : opt.value,
                                 });
                               }}
-                              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, fontSize: 14 }) }}
+                              styles={{ control: (base: object) => ({ ...base, minHeight: 32, height: 32, fontSize: 14 }) }}
                             />
                           );
                         })()
@@ -643,7 +642,7 @@ export default function UserAccessPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p style={{ fontSize: 14 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+            <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #44546F)' }}>
               This will create a new Catalyst login. The user will receive a password reset email to set their own password.
             </p>
           </div>
@@ -678,7 +677,7 @@ export default function UserAccessPage() {
           <div className="py-4 space-y-3">
             {bulkProgress ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <p style={{ fontSize: 14 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #44546F)' }}>
                   Creating accounts… {bulkProgress.done} / {bulkProgress.total}
                 </p>
                 <div className="w-full rounded-full h-2" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
@@ -697,7 +696,7 @@ export default function UserAccessPage() {
               </div>
             ) : (
               <>
-                <p style={{ fontSize: 14 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #44546F)' }}>
                   Each user will receive a password reset email to set their own password on first login.
                 </p>
                 <div className="max-h-32 overflow-y-auto text-xs rounded p-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
