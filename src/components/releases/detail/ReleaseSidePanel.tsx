@@ -674,20 +674,25 @@ function ApproverExpandPanel({
 
       <div style={{ height: 1, background: BORDER, margin: '12px 0 8px' }} />
 
+      {/* 2026-06-26: full-width clickable row. Text left-aligned, hover bg
+          spans entire row so any click on the row removes the approver. */}
       <button
         type="button"
         onClick={onRemove}
         style={{
           all: 'unset',
           cursor: 'pointer',
-          display: 'inline-flex',
+          display: 'flex',
           alignItems: 'center',
-          padding: '4px 6px',
+          justifyContent: 'flex-start',
+          width: 'calc(100% + 12px)',
+          boxSizing: 'border-box',
+          padding: '6px 6px',
           margin: '0 -6px',
           borderRadius: 3,
           fontSize: 14,
           color: TEXT,
-          alignSelf: 'flex-start',
+          textAlign: 'left',
         }}
         onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = HOVER_BG; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}

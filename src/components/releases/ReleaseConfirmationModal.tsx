@@ -129,6 +129,49 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
 
   const mutation = useMutation({
     mutationFn: async () => {
+      const sourceName = release.name ?? '';
+
+      // 2026-06-26: Phase 2b — when user picks "Move unresolved work items to
+      // <target>", actually re-point each unresolved issue's sprint_release
+      // JSONB entry from source -> target (idempotent: skip if entry with
+      // target name already exists). When "Ignore" is picked, leave items
+      // untouched. This is required for both release + sprint surfaces.
+      if (hasUnresolved && action === 'move' && targetId && sourceName) {
+        const target = options.find((o) => o.id === targetId);
+        const targetName = target?.name ?? null;
+        if (!targetName) throw new Error('Target name resolution failed');
+
+        const { data: rows, error: scanErr } = await supabase
+          .from('ph_issues')
+          .select('id, status_category, sprint_release')
+          .not('sprint_release', 'is', null);
+        if (scanErr) throw new Error(scanErr.message);
+
+        for (const row of rows ?? []) {
+          const arr: any[] = Array.isArray((row as any).sprint_release) ? (row as any).sprint_release : [];
+          const hasSource = arr.some((el: any) => el && el.name === sourceName);
+          const sc = String((row as any).status_category ?? '').toLowerCase();
+          if (!hasSource || sc === 'done') continue;
+          // Replace source entry with target (idempotent — drop duplicates).
+          const next: any[] = [];
+          const seenNames = new Set<string>();
+          for (const el of arr) {
+            const name = el?.name === sourceName ? targetName : el?.name;
+            if (!name || seenNames.has(name)) continue;
+            seenNames.add(name);
+            next.push(el?.name === sourceName ? { id: '', name: targetName, releaseDate: '' } : el);
+          }
+          if (!seenNames.has(targetName)) {
+            next.push({ id: '', name: targetName, releaseDate: '' });
+          }
+          const { error: upErr } = await supabase
+            .from('ph_issues')
+            .update({ sprint_release: next })
+            .eq('id', (row as any).id);
+          if (upErr) throw new Error(upErr.message);
+        }
+      }
+
       const { error } = await (supabase as any)
         .from(config.table)
         .update({
@@ -142,6 +185,18 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
+      // Refetch all work-item list caches so source list empties +
+      // target list picks the moved items up.
+      queryClient.refetchQueries({
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'),
+      });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       onSuccess?.(release);
       onClose();
     },

@@ -97,23 +97,42 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
 
   useEffect(() => { if (open) searchRef.current?.focus(); }, [open]);
 
-  const { data: items = [] } = useQuery<WorkItem[]>({
-    queryKey: ['add-work-items-search', release.id, query],
+  // 2026-06-26: scope dropdown to the parent project. Before, the query
+  // returned the global top 20 ph_issues — every release + every sprint
+  // showed the same 20 items. Resolve project_id -> project_key once,
+  // then filter ph_issues by project_key.
+  const { data: parentProjectKey = null } = useQuery({
+    queryKey: ['add-work-items-project-key', release.project_id],
     queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_projects')
+        .select('key')
+        .eq('id', release.project_id)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return (data?.key as string | undefined) ?? null;
+    },
+    enabled: !!release.project_id,
+    staleTime: 5 * 60_000,
+  });
+
+  const { data: items = [] } = useQuery<WorkItem[]>({
+    queryKey: ['add-work-items-search', release.id, parentProjectKey, query],
+    queryFn: async () => {
+      if (!parentProjectKey) return [];
       const q = query.trim();
-      const builder = supabase
+      let builder = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, issue_type, project_key')
+        .eq('project_key', parentProjectKey)
         .order('jira_created_at', { ascending: false })
-        .limit(20);
-      const filtered = q
-        ? builder.or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`)
-        : builder;
-      const { data, error } = await filtered;
+        .limit(50);
+      if (q) builder = builder.or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`);
+      const { data, error } = await builder;
       if (error) throw new Error(error.message);
       return (data ?? []) as WorkItem[];
     },
-    enabled: isOpen && open,
+    enabled: isOpen && open && !!parentProjectKey,
     staleTime: 15_000,
   });
 

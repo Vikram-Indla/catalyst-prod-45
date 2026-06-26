@@ -47,6 +47,28 @@ const TEXT = 'var(--ds-text, #292A2E)';
 const SUBTLE = 'var(--ds-text-subtle, #505258)';
 const SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
 
+// 2026-06-26: hover background on every menu-item button inside the row
+// 3-dot action menu (Move to / View all versions / Remove from version).
+// Inline styles can't express :hover, so inject a one-time stylesheet.
+// HMR-safe: updates textContent if the style tag exists (CLAUDE.md 2026-06-11).
+const WIS_MENU_STYLE_ID = 'wis-row-menu-item-css';
+const WIS_MENU_CSS = `
+  .wis-row-menu-item:hover {
+    background: var(--ds-background-neutral-subtle-hovered, #F1F2F4) !important;
+  }
+`;
+if (typeof document !== 'undefined') {
+  const existing = document.getElementById(WIS_MENU_STYLE_ID);
+  if (existing) {
+    existing.textContent = WIS_MENU_CSS;
+  } else {
+    const el = document.createElement('style');
+    el.id = WIS_MENU_STYLE_ID;
+    el.textContent = WIS_MENU_CSS;
+    document.head.appendChild(el);
+  }
+}
+
 interface Issue {
   id: string;
   issue_key: string;
@@ -358,9 +380,18 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ph_release_items', releaseId, releaseName] });
-      queryClient.invalidateQueries({ queryKey: ['ph_release_contributors', releaseId, releaseName] });
+      // 2026-06-26: invalidate both legacy + new entity-aware query keys
+      // so both release + sprint surfaces refresh after a remove.
+      queryClient.refetchQueries({
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'),
+      });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       catalystFlag.success('Removed from version.');
     },
     onError: (e: any) => catalystFlag.error(e?.message || 'Failed to remove'),
@@ -520,6 +551,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                   projectId={projectId}
                   isLast={!hasMore && idx === visibleItems.length - 1}
                   onRemove={() => removeMutation.mutate(it.id)}
+                  config={config}
                   onOpen={() => onOpenItem?.({ issueKey: it.issue_key, issueType: it.issue_type })}
                 />
               ))}
@@ -999,7 +1031,7 @@ function pillBtn(active: boolean): React.CSSProperties {
 // ─── Single work-item row ───────────────────────────────────────────────────
 
 function WorkItemRow({
-  item, display, releaseName, projectId, isLast, onRemove, onOpen,
+  item, display, releaseName, projectId, isLast, onRemove, onOpen, config,
 }: {
   item: Issue;
   display: Record<DisplayKey, boolean>;
@@ -1008,7 +1040,9 @@ function WorkItemRow({
   isLast: boolean;
   onRemove: () => void;
   onOpen?: () => void;
+  config?: EntityConfig;
 }) {
+  const entityTable = config?.table ?? 'ph_releases';
   const [hover, setHover] = useState(false);
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
@@ -1021,10 +1055,10 @@ function WorkItemRow({
   // wrong ORDER BY silently returned 0 rows, so the menu showed empty).
   // Fetch 5 then drop the current release client-side, slice to 4.
   const { data: siblings } = useQuery({
-    queryKey: ['siblings-for-move', projectId, item.id, releaseName],
+    queryKey: ['siblings-for-move', entityTable, projectId, item.id, releaseName],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_releases')
+      const { data, error } = await (supabase as any)
+        .from(entityTable)
         .select('id, name, title, status')
         .eq('project_id', projectId)
         .neq('status', 'archived')
@@ -1058,9 +1092,19 @@ function WorkItemRow({
       if (upErr) throw new Error(upErr.message);
     },
     onSuccess: () => {
+      // 2026-06-26: refetch both legacy + new entity-aware list queries so
+      // the moved item disappears from the source list and the destination
+      // list picks it up if mounted.
+      queryClient.refetchQueries({
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'),
+      });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
-      queryClient.invalidateQueries({ queryKey: ['ph_release_items'] });
-      queryClient.invalidateQueries({ queryKey: ['ph_release_contributors'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       catalystFlag.success('Work item moved.');
     },
     onError: (e: any) => catalystFlag.error(e?.message || 'Failed to move'),
@@ -1189,6 +1233,7 @@ function WorkItemRow({
                 <button
                   key={s.id}
                   type="button"
+                  className="wis-row-menu-item"
                   onClick={() => { setOpen(false); moveMutation.mutate(s); }}
                   style={menuItemStyle()}
                 >
@@ -1197,6 +1242,7 @@ function WorkItemRow({
               ))}
               <button
                 type="button"
+                className="wis-row-menu-item"
                 onClick={() => { setOpen(false); setIsMoveModalOpen(true); }}
                 style={menuItemStyle()}
               >
@@ -1207,6 +1253,7 @@ function WorkItemRow({
           )}
           <button
             type="button"
+            className="wis-row-menu-item"
             onClick={() => { setOpen(false); onRemove(); }}
             style={menuItemStyle()}
           >
@@ -1221,6 +1268,7 @@ function WorkItemRow({
         workItemId={item.id}
         currentReleaseName={releaseName}
         projectId={projectId}
+        entityTable={entityTable}
         onClose={() => setIsMoveModalOpen(false)}
       />
     </>

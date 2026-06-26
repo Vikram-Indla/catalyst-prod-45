@@ -62,7 +62,46 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config
   const mutation = useMutation({
     mutationFn: async () => {
       if (!targetId) throw new Error(`Pick a target ${config.label.lowerSingular}`);
-      // Phase 1: archive the source. Backend merge of work items TBD.
+      const sourceName = release.name ?? '';
+      const target = options.find((o) => o.id === targetId);
+      const targetName = target?.name ?? null;
+      if (!targetName) throw new Error('Target name resolution failed');
+
+      // 2026-06-26: Phase 2b — re-point every ph_issues.sprint_release
+      // entry from source -> target (regardless of status_category, unlike
+      // the Release-confirmation modal which only moves unresolved items).
+      // Idempotent: duplicates dropped via Set on names.
+      if (sourceName) {
+        const { data: rows, error: scanErr } = await supabase
+          .from('ph_issues')
+          .select('id, sprint_release')
+          .not('sprint_release', 'is', null);
+        if (scanErr) throw new Error(scanErr.message);
+
+        for (const row of rows ?? []) {
+          const arr: any[] = Array.isArray((row as any).sprint_release) ? (row as any).sprint_release : [];
+          const hasSource = arr.some((el: any) => el && el.name === sourceName);
+          if (!hasSource) continue;
+          const next: any[] = [];
+          const seenNames = new Set<string>();
+          for (const el of arr) {
+            const name = el?.name === sourceName ? targetName : el?.name;
+            if (!name || seenNames.has(name)) continue;
+            seenNames.add(name);
+            next.push(el?.name === sourceName ? { id: '', name: targetName, releaseDate: '' } : el);
+          }
+          if (!seenNames.has(targetName)) {
+            next.push({ id: '', name: targetName, releaseDate: '' });
+          }
+          const { error: upErr } = await supabase
+            .from('ph_issues')
+            .update({ sprint_release: next })
+            .eq('id', (row as any).id);
+          if (upErr) throw new Error(upErr.message);
+        }
+      }
+
+      // Now archive the source entity.
       const { error } = await (supabase as any)
         .from(config.table)
         .update({ status: 'archived' })
@@ -71,6 +110,16 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [config.queryKeyPrefix] });
+      queryClient.refetchQueries({
+        predicate: (q) =>
+          Array.isArray(q.queryKey) &&
+          (q.queryKey[0] === 'ph_release_items'
+            || q.queryKey[0] === 'ph_entity_items'
+            || q.queryKey[0] === 'ph_release_contributors'),
+      });
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'release-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-sprints'] });
+      queryClient.invalidateQueries({ queryKey: ['projecthub-releases'] });
       const target = options.find((o) => o.id === targetId);
       catalystFlag.success(`Merged "${release.name}" into "${target?.name ?? 'target'}".`);
       onSuccess?.(release);
