@@ -1,4 +1,6 @@
 import React from 'react';
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
 import { RbacAssignment, userById, roleById } from '@/lib/rbac-mock';
 
 interface RbacAssignmentsTableProps {
@@ -6,85 +8,133 @@ interface RbacAssignmentsTableProps {
 }
 
 const T = {
-  text:      'var(--ds-text, #172B4D)',
-  subtle:    'var(--ds-text-subtle, #44546F)',
-  subtlest:  'var(--ds-text-subtlest, #626F86)',
-  border:    'var(--ds-border, #DCDFE4)',
-  surface:   'var(--ds-surface, #FFFFFF)',
-  hover:     'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
-  headerBg:  'var(--ds-background-neutral, #F1F2F4)',
+  text:     'var(--ds-text, #172B4D)',
+  subtle:   'var(--ds-text-subtle, #44546F)',
+  subtlest: 'var(--ds-text-subtlest, #626F86)',
 };
+
+function initials(name: string): string {
+  return name
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
 
 function formatDate(iso: string | undefined): string {
   if (!iso) return '—';
   try {
-    return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    return new Date(iso).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
   } catch {
     return iso;
   }
 }
 
+const COLUMNS: Column<RbacAssignment>[] = [
+  {
+    id: 'user',
+    label: 'User',
+    flex: true,
+    alwaysVisible: true,
+    cell: ({ row }) => {
+      const user = userById(row.userId);
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <div
+            aria-hidden="true"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              background: 'var(--ds-background-brand-bold, #0C66E4)',
+              color: '#fff',
+              fontSize: 12,
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            {user ? initials(user.name) : '?'}
+          </div>
+          <span
+            style={{
+              fontSize: 14,
+              fontWeight: 500,
+              color: T.text,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {user?.name ?? row.userId}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    id: 'role',
+    label: 'Role',
+    width: 20,
+    cell: ({ row }) => {
+      const role = roleById(row.roleId);
+      return (
+        <span style={{ fontSize: 13, color: T.subtle }}>{role?.name ?? row.roleId}</span>
+      );
+    },
+  },
+  {
+    id: 'assignedBy',
+    label: 'Assigned by',
+    width: 18,
+    cell: ({ row }) => {
+      const byUser =
+        row.assignedBy === 'system' ? null
+        : row.assignedBy ? userById(row.assignedBy)
+        : null;
+      const label =
+        byUser?.name ?? (row.assignedBy === 'system' ? 'System' : row.assignedBy ?? '—');
+      return <span style={{ fontSize: 13, color: T.subtle }}>{label}</span>;
+    },
+  },
+  {
+    id: 'date',
+    label: 'Date',
+    width: 14,
+    cell: ({ row }) => (
+      <span style={{ fontSize: 13, color: T.subtlest }}>{formatDate(row.assignedAt)}</span>
+    ),
+  },
+];
+
 export function RbacAssignmentsTable({ assignments }: RbacAssignmentsTableProps) {
   return (
-    <div style={{ border: `1px solid ${T.border}`, borderRadius: 4, overflow: 'hidden' }}>
-      {/* Column headings */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '2fr 1.5fr 1.5fr 1fr',
-          padding: '6px 16px',
-          background: T.headerBg,
-          borderBottom: `1px solid ${T.border}`,
-        }}
-      >
-        {['User', 'Role', 'Assigned by', 'Date'].map(h => (
-          <span key={h} style={{ fontSize: 12, fontWeight: 653, color: T.subtle }}>
-            {h}
-          </span>
-        ))}
-      </div>
-
-      {assignments.map(a => {
-        const user = userById(a.userId);
-        const role = roleById(a.roleId);
-        const assignedByUser = a.assignedBy === 'system' ? null : (a.assignedBy ? userById(a.assignedBy) : null);
-
-        return (
-          <div
-            key={a.id}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 1.5fr 1.5fr 1fr',
-              alignItems: 'center',
-              padding: '10px 16px',
-              borderBottom: `1px solid ${T.border}`,
-              background: T.surface,
-              transition: 'background 0.1s',
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = T.hover; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = T.surface; }}
-          >
-            <span style={{ fontSize: 14, color: T.text }}>
-              {user?.name ?? a.userId}
-            </span>
-            <span style={{ fontSize: 13, color: T.subtle }}>
-              {role?.name ?? a.roleId}
-            </span>
-            <span style={{ fontSize: 13, color: T.subtle }}>
-              {assignedByUser?.name ?? (a.assignedBy === 'system' ? 'System' : a.assignedBy ?? '—')}
-            </span>
-            <span style={{ fontSize: 13, color: T.subtlest }}>
-              {formatDate(a.assignedAt)}
-            </span>
-          </div>
-        );
-      })}
-
-      {assignments.length === 0 && (
-        <div style={{ padding: '32px 16px', textAlign: 'center', color: T.subtle, fontSize: 14 }}>
-          No role assignments yet.
+    <JiraTable<RbacAssignment>
+      columns={COLUMNS}
+      data={assignments}
+      getRowId={(a) => a.id}
+      density="comfortable"
+      ariaLabel="Role assignments"
+      showRowCount={false}
+      emptyView={
+        <div
+          style={{
+            padding: '40px 16px',
+            textAlign: 'center',
+            color: 'var(--ds-text-subtle, #44546F)',
+            fontSize: 14,
+          }}
+        >
+          No assignments for this role.
         </div>
-      )}
-    </div>
+      }
+    />
   );
 }

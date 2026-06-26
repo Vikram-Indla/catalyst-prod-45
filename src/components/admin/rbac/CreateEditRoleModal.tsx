@@ -67,8 +67,8 @@ export function CreateEditRoleModal({ isOpen, onClose, role }: CreateEditRoleMod
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '12px 0' }}>
           {/* Schema not-deployed callout inside modal */}
           {!RBAC_SCHEMA_DEPLOYED && (
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text-warning, #974F0C)', background: 'var(--ds-background-warning, #FFF7D6)', padding: '8px 12px', borderRadius: 3 }}>
-              Mock-safe mode — this form is for UI preview only. Saving is disabled.
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', background: 'var(--ds-background-neutral, #F1F2F4)', border: '1px solid var(--ds-border, #DCDFE4)', padding: '8px 12px', borderRadius: 3 }}>
+              RBAC schema is not deployed. Writes are disabled in preview mode.
             </p>
           )}
 

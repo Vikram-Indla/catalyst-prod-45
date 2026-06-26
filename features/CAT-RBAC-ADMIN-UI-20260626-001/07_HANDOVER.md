@@ -1,39 +1,44 @@
 # Handover — CAT-RBAC-ADMIN-UI-20260626-001
 
-**Status:** Rollback complete. Rebuild not yet started.
-**Date:** 2026-06-26
+**Status:** Slice 1 COMPLETE — visual acceptance PASSED  
+**Date:** 2026-06-26  
+**Session:** 004
 
-## Rollback Event
+---
 
-Decision: failed RBAC rescue rollback approved.
-Reason: visual build rejected; screens considered dead.
-Rollback scope: seven current-session RBAC rescue files only.
-Pre-existing diffs left untouched.
-Next action: rebuild Plan Lock from canonical access-management pattern.
+## Current State
 
-## Files Reverted to HEAD
+Slice 1 `/admin/roles` enterprise two-panel layout is fully implemented and visually accepted. Do NOT commit (Vikram's instruction). No regressions detected.
 
-- `src/components/admin/rbac/RbacRolesTable.tsx`
-- `src/components/admin/rbac/RbacUsersTable.tsx`
-- `src/components/admin/rbac/RbacAssignmentsTable.tsx`
-- `src/pages/admin/PermissionsAdminPage.tsx`
-- `src/pages/admin/RolesAdminPage.tsx`
-- `src/components/admin/rbac/CreateEditRoleModal.tsx`
-- `src/components/admin/rbac/AssignUsersModal.tsx`
+## Files Modified (Slice 1)
 
-## Files NOT Touched (pre-existing diffs remain)
+| File | Status |
+|---|---|
+| `src/pages/admin/RolesAdminPage.tsx` | Rewritten — two-panel layout, ARIA tab strip |
+| `src/components/admin/rbac/RbacRolesTable.tsx` | Rewritten — sidebar card selector |
+| `src/components/admin/rbac/RbacUsersTable.tsx` | Rewritten — JiraTable + search |
+| `src/components/admin/rbac/RbacAssignmentsTable.tsx` | Rewritten — JiraTable |
+| `src/components/admin/rbac/CreateEditRoleModal.tsx` | Neutral callout (ADS tokens) |
+| `src/components/admin/rbac/AssignUsersModal.tsx` | Neutral callout (ADS tokens) |
 
-- `CLAUDE.md`
-- `.gitignore`
-- `src/components/admin/admin-nav.ts`
-- `src/components/admin/rbac/PermissionsMatrix.tsx`
+## Pre-existing Diffs (untouched)
+
+- `src/components/admin/rbac/PermissionsMatrix.tsx` — pre-existing neutral treatment in place
 - `src/components/admin/rbac/RbacSchemaBanner.tsx`
+- `src/components/admin/admin-nav.ts`
 
-## Evidence Archive
+## Screenshot Signoff
 
-- Patch: `~/catalyst/features/CAT-RBAC-ADMIN-UI-20260626-001/archive/RBAC_UI_FAILED_PATCH_20260626_1200.patch`
-- Failure report: `~/catalyst/features/CAT-RBAC-ADMIN-UI-20260626-001/failure-reports/RBAC_UI_FAILED_VISUAL_BUILD_20260626_1200.md`
+All 7 required screenshots captured. See `sessions/004_implementation.md` for IDs and details.
 
-## Next Step
+## Security Gates
 
-Rebuild Plan Lock — canonical access-management pattern (Jira People & Access reference). Do not start until Plan Lock approved.
+- `RBAC_SCHEMA_DEPLOYED = false` — gate wired throughout
+- No migrations, no SQL, no Supabase calls, no rbac_* queries
+- No bare hex, no Tailwind color utilities
+
+## Next Step (Slice 2 — new timebox)
+
+`PermissionsAdminPage.tsx` improvements. Includes fixing pre-existing `AdminGuard` default import bug.
+
+Do not start Slice 2 without new Plan Lock slice or Vikram approval.

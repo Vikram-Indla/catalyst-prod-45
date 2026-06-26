@@ -80,8 +80,8 @@ export function AssignUsersModal({ isOpen, onClose, role, allUsers }: AssignUser
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 0' }}>
           {/* Mock-safe callout */}
           {!RBAC_SCHEMA_DEPLOYED && (
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text-warning, #974F0C)', background: 'var(--ds-background-warning, #FFF7D6)', padding: '8px 12px', borderRadius: 3 }}>
-              Mock-safe mode — selections shown for preview only. Saving disabled.
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', background: 'var(--ds-background-neutral, #F1F2F4)', border: '1px solid var(--ds-border, #DCDFE4)', padding: '8px 12px', borderRadius: 3 }}>
+              RBAC schema is not deployed. Writes are disabled in preview mode.
             </p>
           )}
 
