@@ -76,14 +76,19 @@ const COLUMNS: Column<ActionRow>[] = [
       ),
   },
   {
-    id: 'deny_count',
+    id: 'deny',
     label: 'Roles with Deny',
-    width: 20,
-    cell: ({ row }) => (
-      <span style={{ fontSize: 12, color: T.subtlest }}>
-        {row.denyRoles.length > 0 ? `${row.denyRoles.length} role${row.denyRoles.length > 1 ? 's' : ''}` : '—'}
-      </span>
-    ),
+    width: 40,
+    cell: ({ row }) =>
+      row.denyRoles.length === 0 ? (
+        <span style={{ fontSize: 12, color: T.subtlest }}>None</span>
+      ) : (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+          {row.denyRoles.map(r => (
+            <Lozenge key={r} appearance="removed">{r}</Lozenge>
+          ))}
+        </div>
+      ),
   },
 ];
 
@@ -102,7 +107,8 @@ export default function PermissionsAdminPage() {
     return rows.filter(r =>
       r.label.toLowerCase().includes(q) ||
       r.module.toLowerCase().includes(q) ||
-      r.allowRoles.some(n => n.toLowerCase().includes(q)),
+      r.allowRoles.some(n => n.toLowerCase().includes(q)) ||
+      r.denyRoles.some(n => n.toLowerCase().includes(q)),
     );
   }, [rows, search]);
 
