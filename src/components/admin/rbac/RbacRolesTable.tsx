@@ -108,7 +108,7 @@ export function RbacRolesTable({
                   <span style={{ fontSize: 11, color: T.subtlest }}>
                     {role.user_count ?? 0} users
                   </span>
-                  <Lozenge appearance={role.is_active ? 'success' : 'default'}>
+                  <Lozenge appearance={role.is_active ? 'inprogress' : 'default'}>
                     {role.is_active ? 'Active' : 'Inactive'}
                   </Lozenge>
                 </div>

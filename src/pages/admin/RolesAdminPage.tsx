@@ -94,7 +94,13 @@ export default function RolesAdminPage() {
                 <Spinner size="large" />
               </div>
             ) : selectedRole ? (
-              <>
+              <div style={{
+                background: 'var(--ds-surface, #FFFFFF)',
+                border: `1px solid var(--ds-border, #DCDFE4)`,
+                borderRadius: 4,
+                padding: '20px 24px',
+                boxShadow: 'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31))',
+              }}>
                 {/* Role heading + Assign button */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                   <div>
@@ -146,7 +152,7 @@ export default function RolesAdminPage() {
                     </div>
                   </TabPanel>
                 </Tabs>
-              </>
+              </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, color: T.subtle, fontSize: 14 }}>
                 Select a role to view details.

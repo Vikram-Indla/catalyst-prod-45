@@ -17,6 +17,14 @@ interface PermissionsMatrixProps {
 
 const CYCLE: PermissionLevel[] = ['None', 'Full', 'View only', 'Own only'];
 
+const CATEGORY_GROUPS: { label: string; groups: string[] }[] = [
+  { label: 'Planning',         groups: ['Capacity Planner', 'Budget Planner'] },
+  { label: 'Work & Delivery',  groups: ['Industry Backlog', 'Work Manager', 'Dependency Board'] },
+  { label: 'Operations',       groups: ['Release Dashboard', 'Incident Room'] },
+  { label: 'Quality',          groups: ['Defects', 'Test Management'] },
+  { label: 'Insights & Admin', groups: ['Reports & Analytics', 'Settings & Admin'] },
+];
+
 function cycleLevel(current: PermissionLevel | undefined): PermissionLevel {
   const idx = CYCLE.indexOf(current ?? 'None');
   return CYCLE[(idx + 1) % CYCLE.length];
@@ -164,32 +172,55 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
           </thead>
 
           <tbody>
-            {PERMISSION_GROUPS.map(group => (
-              <tr key={group}>
-                <td
-                  style={{ padding: '9px 12px', borderBottom: `1px solid ${T.border}`, color: T.text, fontWeight: 500, background: T.surface, position: 'sticky', left: 0, zIndex: 1 }}
-                >
-                  {group}
-                </td>
-                {roles.map(role => {
-                  const level = editable
-                    ? (localLevels[group] as PermissionLevel | undefined)
-                    : permMap[role.id]?.[group];
-                  return (
+            {CATEGORY_GROUPS.map(category => (
+              <React.Fragment key={category.label}>
+                <tr>
+                  <td
+                    colSpan={roles.length + 1}
+                    style={{
+                      padding: '10px 12px 4px',
+                      background: T.headerBg,
+                      color: T.subtlest,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.07em',
+                      borderBottom: `1px solid ${T.border}`,
+                      position: 'sticky',
+                      left: 0,
+                    }}
+                  >
+                    {category.label}
+                  </td>
+                </tr>
+                {category.groups.map(group => (
+                  <tr key={group}>
                     <td
-                      key={role.id}
-                      style={{ textAlign: 'center', padding: '9px 4px', borderBottom: `1px solid ${T.border}`, background: T.surface }}
-                      aria-label={`${role.name}: ${group} — ${level ?? 'None'}`}
+                      style={{ padding: '9px 12px 9px 20px', borderBottom: `1px solid ${T.border}`, color: T.text, fontWeight: 500, background: T.surface, position: 'sticky', left: 0, zIndex: 1 }}
                     >
-                      {editable ? (
-                        <EditableCell level={level} onClick={() => handleCellClick(group)} />
-                      ) : (
-                        <LevelIcon level={level} />
-                      )}
+                      {group}
                     </td>
-                  );
-                })}
-              </tr>
+                    {roles.map(role => {
+                      const level = editable
+                        ? (localLevels[group] as PermissionLevel | undefined)
+                        : permMap[role.id]?.[group];
+                      return (
+                        <td
+                          key={role.id}
+                          style={{ textAlign: 'center', padding: '9px 4px', borderBottom: `1px solid ${T.border}`, background: T.surface }}
+                          aria-label={`${role.name}: ${group} — ${level ?? 'None'}`}
+                        >
+                          {editable ? (
+                            <EditableCell level={level} onClick={() => handleCellClick(group)} />
+                          ) : (
+                            <LevelIcon level={level} />
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </React.Fragment>
             ))}
           </tbody>
         </table>
