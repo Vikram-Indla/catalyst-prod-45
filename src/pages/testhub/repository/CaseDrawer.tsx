@@ -115,7 +115,9 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
         type_id: typeId || undefined,
         objective: description || undefined,
         preconditions: preconditions || undefined,
-        folder_id: folderId ?? undefined,
+        // Preserve the case's OWN folder on edit. Previously used the prop
+        // folderId (= selected sidebar folder), silently moving the case.
+        folder_id: existingCase.folder_id ?? undefined,
         steps: stepsPayload,
       });
     } else {

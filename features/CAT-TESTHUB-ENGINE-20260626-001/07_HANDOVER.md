@@ -3,8 +3,11 @@
 > A cold session must be able to resume from THIS FILE ALONE (+ the read-order in 00). Keep it current.
 
 ## CURRENT STATE
-- **Phase:** Phase 0 (Foundation reset) — **COMPLETE & PROVEN LIVE**, awaiting Vikram sign-off to start Phase 1.
-- **Active slice:** P0 done (Repository renders 6 folders + 10 cases live; Defects route resolves; 0 console errors).
+- **Phase:** Phase 1 (Repository proper) — **Slice 1a COMPLETE & PROVEN LIVE**, awaiting sign-off.
+- **1a done:** archived column+filter, is_latest de-dup, edit folder-trap fix, delete-confirm dialog, create write-path proven (TC-0001). D8 archive decision applied.
+- **Remaining Phase 1:** 1b folders (case_count rollup badge, wire Move, delete-confirm + child-block), 1c (Classic/BDD toggle, CaseDrawer→CatalystViewBase per D4, native case SVG icon, version-list display, case_key format reconcile).
+- **Open UX flag:** CATY floating assistant overlaps CaseDrawer "Create case" submit (clicks hit CATY). See 08.
+- **Active slice:** none (1a sign-off gate).
 - **Execution authorization:** GRANTED for Phase 0 ("proceed"). Phase 1 needs the P0 sign-off first.
 - **Branch:** main. **DB:** staging cyij (verified via fingerprint + `projects list` linked).
 - **Context health:** GREEN.
@@ -27,7 +30,7 @@
 - Run-table name fragmentation → consolidate in Phase 4.
 - `/testhub/defects/:id` detail + repoint defects adapter ph_issues → Phase 5.
 - Stub hooks in `src/hooks/test-management/index.ts` may shadow real ones — verify imports in Phase 1.
-- Uncommitted: route edit + migration file. Commit only on Vikram's word (not yet).
+- COMMITTED `519e39a18` (pushed origin/main): useTestCases fix + drop-trigger migration + artifacts + seed. FullAppRoutes NOT touched (defects route pre-existed at :674).
 
 ## KEY PINS
 - Acceptance PDFs: `/Users/vikramindla/Downloads/Catalyst/Catalyst Tests`
@@ -36,5 +39,6 @@
 - Seed-wipe DO-block + delete order: 02 §B / seed file.
 
 ## CONTEXT-HEALTH LOG (newest on top)
+- 2026-06-26 — P0 COMMITTED 519e39a18 + pushed. GREEN. Next: await Phase 1 GO.
 - 2026-06-26 — P0 executed (migration+wipe+reseed+route). GREEN. Next: user sign-in → screenshot → P0 sign-off → Phase 1.
 - 2026-06-26 — Discovery + Plan Lock. GREEN.

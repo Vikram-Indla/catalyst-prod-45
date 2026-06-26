@@ -511,6 +511,7 @@ export default function RepositoryPage() {
   const [folderModalParentId, setFolderModalParentId] = useState<string | null>(null);
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [copyModalOpen, setCopyModalOpen] = useState(false);
+  const [caseToDelete, setCaseToDelete] = useState<{ id: string; case_key?: string; title?: string } | null>(null);
   const [aiDialogOpen, setAIDialogOpen] = useState(false);
 
   const createFolder = useCreateFolder();
@@ -670,7 +671,7 @@ export default function RepositoryPage() {
         <button
           onClick={e => {
             e.stopPropagation();
-            if (projectId) deleteCase.mutate({ id: row.id, project_id: projectId });
+            setCaseToDelete({ id: row.id, case_key: row.case_key, title: row.title });
           }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
@@ -869,6 +870,39 @@ export default function RepositoryPage() {
           onClose={() => setArchiveModalOpen(false)}
           saving={archiveCases.isPending}
         />
+      )}
+
+      {caseToDelete && (
+        <ModalDialog onClose={() => setCaseToDelete(null)}>
+          <ModalHeader>
+            <ModalTitle appearance="danger">Delete test case?</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ margin: 0, color: 'var(--ds-text)' }}>
+              {caseToDelete.case_key ? `${caseToDelete.case_key} · ` : ''}
+              <strong>{caseToDelete.title ?? 'This case'}</strong> and its steps will be permanently
+              deleted. This cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <button
+              onClick={() => setCaseToDelete(null)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 12px', fontWeight: 500, color: 'var(--ds-text-subtle)' }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (projectId && caseToDelete) deleteCase.mutate({ id: caseToDelete.id, project_id: projectId });
+                setCaseToDelete(null);
+              }}
+              disabled={deleteCase.isPending}
+              style={{ background: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 3, cursor: 'pointer', padding: '6px 14px', fontWeight: 600 }}
+            >
+              {deleteCase.isPending ? 'Deleting…' : 'Delete'}
+            </button>
+          </ModalFooter>
+        </ModalDialog>
       )}
 
       {copyModalOpen && (
