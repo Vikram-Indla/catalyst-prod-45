@@ -125,6 +125,19 @@ All replacements preserve the original hex as the `var(--token, #hex)` fallback 
 - **Net −36 scanner hits.**
 - **IMPORTANT — scanner-zero is not achievable or intended with the maps' wrap pattern.** The scanner flags hex even inside `var(--ds-token, #hex)` fallbacks when the token name pushes the hex >20 chars from `var(--` (its `isAllowedUsage` window), and the wrap pattern deliberately KEEPS the hex as fallback. The ~3789 residual is the documented untargeted long-tail (the maps enumerate specific offenders, not all scanner hits) — reported honestly for Claude Design's second gap scan, NOT over-swept (over-sweep = inventing mappings = forbidden).
 
+### Residual long-tail bucketed by map scope (post-sweep)
+The scanner has no `--scope` flag (always scans `src`); buckets below are computed from the post-sweep file list. **None of these residual hits are named in the provided PR2–PR6 maps** — they need new `hex→token` mappings from Claude Design before any further sweep (self-inventing mappings is forbidden).
+
+| Scope | Residual hits | Files |
+|---|---:|---:|
+| PR2/3 — `home` + `filters` + `workhub` | 147 | 36 |
+| PR4 — `kanban` + `boards` + `resource360` + `features/kanban-board` + `modules/kanban` | 212 | 50 |
+| PR5 — `product-dashboard` + `project-hub` + dashboard widgets | 359 | 63 |
+| PR6 — `pages/admin` | 77 | 25 |
+| **Whole `src` total** | **3789** | 911 |
+
+Top residual offender files (for Claude Design to map next): `modules/project-work-hub/.../EditableFields.tsx` (52), `shared/Timeline/TimelineView.tsx` (41), `releasehub/ReleaseDrawer.tsx` (40), `pages/jira-clone/ReleaseManagementPage.tsx` (37), `capacity/timeline/Timeline.module.css` (35). Note: counts include hex inside `var(--ds-…, #hex)` fallbacks (scanner limitation), so they overstate true bare-hex.
+
 ## Contrast / Dark Mode Result
 - WIDE-lane parity CSS (light+dark `--ds-*`, surfaces lift by elevation, legible DarkNeutral text) present & imported.
 - Automated contrast-probe could not run headless (browser-only). **Requires in-browser run (light + dark) at QA acceptance.**
