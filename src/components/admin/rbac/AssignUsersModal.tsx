@@ -13,6 +13,7 @@ import Spinner from '@atlaskit/spinner';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CheckboxIcon from '@atlaskit/icon/core/checkbox-checked';
 import CatalystAvatar from '@/components/shared/CatalystAvatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { catalystToast } from '@/lib/catalystToast';
 import {
   ProductRole,
@@ -166,6 +167,7 @@ export function AssignUsersModal({ isOpen, onClose, role }: AssignUsersModalProp
                     </span>
                     <CatalystAvatar
                       name={profile.full_name ?? profile.email}
+                      src={resolveAvatarUrl(profile.full_name ?? profile.email)}
                       size="xsmall"
                     />
                     <div style={{ minWidth: 0, flex: 1 }}>
