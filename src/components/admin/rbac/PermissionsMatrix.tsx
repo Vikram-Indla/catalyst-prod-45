@@ -15,18 +15,65 @@ interface PermissionsMatrixProps {
   isLoading?: boolean;
 }
 
-const CYCLE: PermissionLevel[] = ['None', 'Full', 'View only', 'Own only'];
+const CYCLE: PermissionLevel[] = ['Deny', 'Allow'];
 
 const CATEGORY_GROUPS: { label: string; groups: string[] }[] = [
-  { label: 'Planning',         groups: ['Capacity Planner', 'Budget Planner'] },
-  { label: 'Work & Delivery',  groups: ['Industry Backlog', 'Work Manager', 'Dependency Board'] },
-  { label: 'Operations',       groups: ['Release Dashboard', 'Incident Room'] },
-  { label: 'Quality',          groups: ['Defects', 'Test Management'] },
-  { label: 'Insights & Admin', groups: ['Reports & Analytics', 'Settings & Admin'] },
+  {
+    label: 'Project',
+    groups: [
+      'Project: Create',
+      'Project: Delete',
+      'Project: Archive',
+      'Project: Rename',
+      'Project: Manage Members',
+      'Project: Change Lead',
+      'Project: Edit Settings',
+      'Project: Export Data',
+      'Project: View All Projects',
+      'Project: Change Icon',
+    ],
+  },
+  {
+    label: 'Product — Stories',
+    groups: [
+      'Product: Create Story',
+      'Product: Delete Story',
+      'Product: Edit Story',
+      'Product: Rename Story',
+      'Product: Assign Story',
+      'Product: Change Story Status',
+      'Product: Change Story Priority',
+      'Product: Move Story to Sprint',
+      'Product: Clone Story',
+    ],
+  },
+  {
+    label: 'Product — Epics & Sprints',
+    groups: [
+      'Product: Create Epic',
+      'Product: Delete Epic',
+      'Product: Edit Epic',
+      'Product: Create Sprint',
+      'Product: Start Sprint',
+      'Product: Close Sprint',
+      'Product: Delete Sprint',
+    ],
+  },
+  {
+    label: 'Product — Board & General',
+    groups: [
+      'Product: View Backlog',
+      'Product: Manage Board',
+      'Product: Add Comment',
+      'Product: Delete Comment',
+      'Product: Link Issues',
+      'Product: Export Stories',
+    ],
+  },
 ];
 
 function cycleLevel(current: PermissionLevel | undefined): PermissionLevel {
-  const idx = CYCLE.indexOf(current ?? 'None');
+  const idx = CYCLE.indexOf(current ?? 'Deny');
   return CYCLE[(idx + 1) % CYCLE.length];
 }
 
@@ -38,29 +85,41 @@ const T = {
   surface:  'var(--ds-surface, #FFFFFF)',
   headerBg: 'var(--ds-background-neutral, #F1F2F4)',
   selected: 'var(--ds-background-selected, #E9F2FE)',
+  allow:    'var(--ds-icon-success, #22A06B)',
 };
 
 function LevelIcon({ level }: { level: PermissionLevel | undefined }) {
-  switch (level) {
-    case 'Full':      return <span title="Full" style={{ color: 'var(--ds-icon-brand, #0C66E4)', fontSize: 18, lineHeight: 1 }}>●</span>;
-    case 'View only': return <span title="View only" style={{ color: T.subtle, fontSize: 16, lineHeight: 1 }}>◑</span>;
-    case 'Own only':  return <span title="Own only" style={{ color: T.subtle, fontSize: 16, lineHeight: 1 }}>◐</span>;
-    default:          return <span style={{ color: T.subtlest, fontSize: 13 }}>—</span>;
+  if (level === 'Allow') {
+    return (
+      <span title="Allow" style={{ color: T.allow, fontSize: 18, lineHeight: 1, fontWeight: 700 }}>✓</span>
+    );
   }
+  return <span style={{ color: T.subtlest, fontSize: 13 }}>—</span>;
 }
 
 function EditableCell({ level, onClick }: { level: PermissionLevel | undefined; onClick: () => void }) {
+  const isAllow = level === 'Allow';
   return (
     <button
       onClick={onClick}
-      title={`${level ?? 'None'} — click to change`}
+      title={`${level ?? 'Deny'} — click to toggle`}
       style={{
-        background: 'none', border: 'none', cursor: 'pointer',
-        padding: '4px 8px', borderRadius: 4,
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        background: isAllow ? 'var(--ds-background-success, #DFFCF0)' : 'none',
+        border: 'none',
+        cursor: 'pointer',
+        padding: '4px 8px',
+        borderRadius: 4,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'background 0.1s',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = T.selected; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
+      onMouseEnter={e => {
+        if (!isAllow) (e.currentTarget as HTMLElement).style.background = T.selected;
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.background = isAllow ? 'var(--ds-background-success, #DFFCF0)' : 'none';
+      }}
     >
       <LevelIcon level={level} />
     </button>
@@ -77,7 +136,7 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
   React.useEffect(() => {
     const map: Record<string, PermissionLevel> = {};
     for (const p of permissions) {
-      map[p.permission_group] = p.permission_level;
+      map[p.permission_group] = p.permission_level as PermissionLevel;
     }
     setLocalLevels(map);
     setIsDirty(false);
@@ -87,7 +146,7 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
     const map: Record<string, Record<string, PermissionLevel>> = {};
     for (const p of permissions) {
       if (!map[p.role_id]) map[p.role_id] = {};
-      map[p.role_id][p.permission_group] = p.permission_level;
+      map[p.role_id][p.permission_group] = p.permission_level as PermissionLevel;
     }
     return map;
   }, [permissions]);
@@ -100,7 +159,7 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
   async function handleSave() {
     if (!editable || !roles[0]) return;
     try {
-      await updatePerms.mutateAsync({ roleId: roles[0].id, permissions: localLevels });
+      await updatePerms.mutateAsync({ roleId: roles[0].id, permissions: localLevels as Record<string, PermissionLevel> });
       setIsDirty(false);
     } catch {
       // toast fired by mutation onError
@@ -147,7 +206,7 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
           style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}
         >
           <colgroup>
-            <col style={{ width: 220 }} />
+            <col style={{ width: 260 }} />
             {roles.map(r => <col key={r.id} style={{ width: colWidth }} />)}
           </colgroup>
 
@@ -157,7 +216,7 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
                 scope="col"
                 style={{ textAlign: 'left', padding: '8px 12px', fontSize: 12, fontWeight: 600, color: T.subtle, background: T.headerBg, borderBottom: `2px solid ${T.border}`, position: 'sticky', left: 0, zIndex: 1 }}
               >
-                Permission group
+                Action
               </th>
               {roles.map(role => (
                 <th
@@ -193,33 +252,36 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
                     {category.label}
                   </td>
                 </tr>
-                {category.groups.map(group => (
-                  <tr key={group}>
-                    <td
-                      style={{ padding: '9px 12px 9px 20px', borderBottom: `1px solid ${T.border}`, color: T.text, fontWeight: 500, background: T.surface, position: 'sticky', left: 0, zIndex: 1 }}
-                    >
-                      {group}
-                    </td>
-                    {roles.map(role => {
-                      const level = editable
-                        ? (localLevels[group] as PermissionLevel | undefined)
-                        : permMap[role.id]?.[group];
-                      return (
-                        <td
-                          key={role.id}
-                          style={{ textAlign: 'center', padding: '9px 4px', borderBottom: `1px solid ${T.border}`, background: T.surface }}
-                          aria-label={`${role.name}: ${group} — ${level ?? 'None'}`}
-                        >
-                          {editable ? (
-                            <EditableCell level={level} onClick={() => handleCellClick(group)} />
-                          ) : (
-                            <LevelIcon level={level} />
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
+                {category.groups.map(group => {
+                  const label = group.replace(/^(Project|Product): /, '');
+                  return (
+                    <tr key={group}>
+                      <td
+                        style={{ padding: '9px 12px 9px 20px', borderBottom: `1px solid ${T.border}`, color: T.text, fontWeight: 400, background: T.surface, position: 'sticky', left: 0, zIndex: 1 }}
+                      >
+                        {label}
+                      </td>
+                      {roles.map(role => {
+                        const level = editable
+                          ? (localLevels[group] as PermissionLevel | undefined)
+                          : permMap[role.id]?.[group];
+                        return (
+                          <td
+                            key={role.id}
+                            style={{ textAlign: 'center', padding: '9px 4px', borderBottom: `1px solid ${T.border}`, background: T.surface }}
+                            aria-label={`${role.name}: ${group} — ${level ?? 'Deny'}`}
+                          >
+                            {editable ? (
+                              <EditableCell level={level} onClick={() => handleCellClick(group)} />
+                            ) : (
+                              <LevelIcon level={level} />
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </React.Fragment>
             ))}
           </tbody>
@@ -227,11 +289,9 @@ export function PermissionsMatrix({ roles, permissions, isLoading }: Permissions
       </div>
 
       <div style={{ display: 'flex', gap: 20, marginTop: 12, fontSize: 12, color: T.subtlest, flexWrap: 'wrap' }}>
-        <span><span style={{ color: 'var(--ds-icon-brand, #0C66E4)' }}>●</span> Full</span>
-        <span><span style={{ color: T.subtle }}>◑</span> View only</span>
-        <span><span style={{ color: T.subtle }}>◐</span> Own only</span>
-        <span>— None</span>
-        {editable && <span style={{ color: T.subtle, marginLeft: 4 }}>· Click any cell to change</span>}
+        <span><span style={{ color: T.allow, fontWeight: 700 }}>✓</span> Allow</span>
+        <span>— Deny</span>
+        {editable && <span style={{ color: T.subtle, marginLeft: 4 }}>· Click any cell to toggle</span>}
       </div>
     </div>
   );

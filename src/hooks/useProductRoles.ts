@@ -44,39 +44,53 @@ export interface UserPermissionOverride {
   module: string;
 }
 
-// Module-level access control
+// Action-level permissions — Project + Product modules (v1)
 export const PERMISSION_GROUPS = [
-  'Capacity Planner',
-  'Budget Planner',
-  'Industry Backlog',
-  'Work Manager',
-  'Release Dashboard',
-  'Incident Room',
-  'Dependency Board',
-  'Defects',
-  'Test Management',
-  'Reports & Analytics',
-  'Settings & Admin',
+  // Project module
+  'Project: Create',
+  'Project: Delete',
+  'Project: Archive',
+  'Project: Rename',
+  'Project: Manage Members',
+  'Project: Change Lead',
+  'Project: Edit Settings',
+  'Project: Export Data',
+  'Project: View All Projects',
+  'Project: Change Icon',
+  // Product module — Stories
+  'Product: Create Story',
+  'Product: Delete Story',
+  'Product: Edit Story',
+  'Product: Rename Story',
+  'Product: Assign Story',
+  'Product: Change Story Status',
+  'Product: Change Story Priority',
+  'Product: Move Story to Sprint',
+  'Product: Clone Story',
+  // Product module — Epics & Sprints
+  'Product: Create Epic',
+  'Product: Delete Epic',
+  'Product: Edit Epic',
+  'Product: Create Sprint',
+  'Product: Start Sprint',
+  'Product: Close Sprint',
+  'Product: Delete Sprint',
+  // Product module — Board & General
+  'Product: View Backlog',
+  'Product: Manage Board',
+  'Product: Add Comment',
+  'Product: Delete Comment',
+  'Product: Link Issues',
+  'Product: Export Stories',
 ] as const;
 
 export type PermissionGroup = typeof PERMISSION_GROUPS[number];
-export type PermissionLevel = 'Full' | 'View only' | 'Own only' | 'None';
+export type PermissionLevel = 'Allow' | 'Deny';
 
-// Default permissions for new roles
-const DEFAULT_PERMISSIONS: Record<PermissionGroup, PermissionLevel> = {
-  // Default: all roles get View access to all modules, except Budget Planner and Settings & Admin
-  'Capacity Planner': 'View only',
-  'Budget Planner': 'None',
-  'Industry Backlog': 'View only',
-  'Work Manager': 'View only',
-  'Release Dashboard': 'View only',
-  'Incident Room': 'View only',
-  'Dependency Board': 'View only',
-  'Defects': 'View only',
-  'Test Management': 'View only',
-  'Reports & Analytics': 'View only',
-  'Settings & Admin': 'None',
-};
+// Default permissions for new roles — all Deny until admin explicitly grants
+const DEFAULT_PERMISSIONS: Record<PermissionGroup, PermissionLevel> = Object.fromEntries(
+  PERMISSION_GROUPS.map(g => [g, 'Deny'])
+) as Record<PermissionGroup, PermissionLevel>;
 
 export function useProductRoles() {
   const { data: roles, isLoading, error, refetch } = useQuery({
@@ -347,7 +361,7 @@ export function useCreateRole() {
       const permissionInserts = PERMISSION_GROUPS.map(group => ({
         role_id: role.id,
         permission_group: group,
-        permission_level: permsToUse[group] || 'None'
+        permission_level: permsToUse[group] || 'Deny'
       }));
 
       const { error: permsError } = await supabase
