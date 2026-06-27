@@ -33,7 +33,6 @@ export function HuddleScreenView() {
   const setMode = useHuddleStore((s) => s.setScreenWindow);
   const stopScreen = useHuddleStore((s) => s.stopScreen);
   const markerPen = useHuddleStore((s) => s.markerPen);
-  const setMarkerPen = useHuddleStore((s) => s.setMarkerPen);
 
   const remoteSharing = !!active?.remoteSharing;
   const localSharing = !!active?.screenSharing;
@@ -239,12 +238,6 @@ export function HuddleScreenView() {
         {title}
       </span>
       <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-        <button type="button" data-huddle-btn aria-pressed={markerPen}
-          title={markerPen ? 'Disable drawing' : 'Draw on shared screen'}
-          onClick={() => setMarkerPen(!markerPen)}
-          style={{ ...winBtn, background: markerPen ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)', color: markerPen ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)' }}>
-          <PenGlyph />
-        </button>
         {localSharing && (
           <button type="button" data-huddle-btn onClick={() => { void stopScreen(); }}
             style={{ border: 'none', cursor: 'pointer', borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600,
@@ -302,9 +295,6 @@ const winBtn: React.CSSProperties = {
   background: 'var(--ds-surface-sunken, #F7F8F9)', color: 'var(--ds-text, #172B4D)',
 };
 
-const PenGlyph = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.586 7.586" /><circle cx="11" cy="11" r="2" /></svg>
-);
 const MinIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M5 12h14" /></svg>
 );
