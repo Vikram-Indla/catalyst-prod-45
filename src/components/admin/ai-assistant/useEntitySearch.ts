@@ -26,7 +26,7 @@ export function useEntitySearch(text: string): EntitySuggestion[] {
           .from('profiles')
           .select('full_name, email, user_product_roles(product_roles(name))')
           .or(`full_name.ilike.%${q}%,email.ilike.%${q}%`)
-          .eq('approval_status', 'APPROVED')
+          .neq('approval_status', 'DISABLED')
           .limit(4),
         supabase
           .from('product_roles')
