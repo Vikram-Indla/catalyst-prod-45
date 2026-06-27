@@ -51,7 +51,9 @@ export function useActiveHuddleIds(): Set<string> {
 export function useActiveHuddle(conversationId: string | null) {
   const qc = useQueryClient();
   const instanceId = useId();
-  const key = ['chat', 'huddle', conversationId];
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+  const key = ['chat', 'huddle', conversationId, userId];
   const { data, refetch } = useQuery({
     queryKey: key,
     enabled: !!conversationId,
@@ -64,12 +66,23 @@ export function useActiveHuddle(conversationId: string | null) {
         .select('huddle_id, user_id, left_at').eq('huddle_id', (hud as HuddleRow).id).is('left_at', null);
       const ids = ((parts ?? []) as ParticipantRow[]).map((p) => p.user_id);
       let nameMap: Record<string, string> = {};
+      let avatarMap: Record<string, string> = {};
       if (ids.length) {
-        const { data: profs } = await db.from('profiles').select('id, full_name').in('id', ids);
-        nameMap = Object.fromEntries(((profs ?? []) as { id: string; full_name: string | null }[]).map((r) => [r.id, r.full_name ?? '']));
+        const { data: profs } = await db.from('profiles').select('id, full_name, avatar_url').in('id', ids);
+        const rows = (profs ?? []) as { id: string; full_name: string | null; avatar_url: string | null }[];
+        nameMap = Object.fromEntries(rows.map((r) => [r.id, r.full_name ?? '']));
+        avatarMap = Object.fromEntries(rows.map((r) => [r.id, r.avatar_url ?? '']));
       }
-      const participants = ids.map((uid) => ({ userId: uid, name: nameMap[uid] || '' }));
-      return { id: (hud as HuddleRow).id, participants, isFull: participants.length >= HUDDLE_CAP };
+      const participants = ids.map((uid) => ({ userId: uid, name: nameMap[uid] || '', avatarUrl: avatarMap[uid] || '' }));
+      return {
+        id: (hud as HuddleRow).id,
+        participants,
+        isFull: participants.length >= HUDDLE_CAP,
+        // Am I (the current user) already a live participant? Then I can always
+        // reclaim my slot ("Rejoin") even if the huddle reads as full — e.g. a
+        // stale row left after an unclean disconnect.
+        iAmParticipant: !!userId && ids.includes(userId),
+      };
     },
   });
   useEffect(() => {
