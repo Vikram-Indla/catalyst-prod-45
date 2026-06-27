@@ -324,9 +324,9 @@ function KPICard({
       valueColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
     },
     success: {
-      iconBg: 'rgba(38,166,154,0.15)',
-      iconColor: '#26A69A',
-      valueColor: '#26A69A',
+      iconBg: 'var(--ds-background-success-bold, rgba(38,166,154,0.15))',
+      iconColor: 'var(--ds-text-success, #26A69A)',
+      valueColor: 'var(--ds-text-success, #26A69A)',
     },
     info: {
       iconBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',
