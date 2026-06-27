@@ -6079,54 +6079,93 @@ input[type="range"]::-moz-range-thumb {
    (2026-06-27 ADS-13: removed a dead self-referential white-fallback block that this ramp
    already overrode by source order — render unchanged, footgun removed.) */
 html.dark,
-html[data-color-mode="dark"] {
-  /* ADS dark surface ramp — Jira parity (2026-06-24 fix: was using white fallback).
-     #1D2125 = page canvas (background.neutral)
-     #22272B = raised (surface / sidebar / header)
-     #282E33 = elevated cards/overlays
-     #161A1D = sunken/inset */
-  --ds-surface: #22272b !important;
-  --ds-surface-raised: #282e33 !important;
-  --ds-surface-sunken: #161a1d !important;
-  --ds-surface-overlay: #282e33 !important;
-  --cp-bg-overlay: #282e33 !important;
-  --cp-float: #282e33 !important;
+html[data-color-mode="dark"],
+[data-theme="dark"] {
+  /* ── ADS dark elevation ramp — single source of truth.
+     page #1D2125 → raised #22272B → overlay #282E33 → sunken #161A1D.
+     Do NOT reintroduce a second !important --ds-surface* block after this. */
+  --ds-surface:          #1D2125 !important;
+  --ds-surface-raised:   #22272B !important;
+  --ds-surface-overlay:  #282E33 !important;
+  --ds-surface-sunken:   #161A1D !important;
+  --ds-surface-pressed:  #2C333A !important;
+  --ds-surface-hovered:  #22272B !important;
 
-  /* Catalyst --cp page/canvas tier */
-  --cp-bg: #1d2125 !important;
-  --cp-bg-page: #1d2125 !important;
-  --cp-bg-hub-page: #1d2125 !important;
-  --cp-bg-canvas: #1d2125 !important;
-  --cp-bg-sunken: #161a1d !important;
-  --cp-bg-elevated: #22272b !important;
+  /* Text — DarkNeutral ramp (legible inactive labels = buried-text fix) */
+  --ds-text:           #C7D1DB !important;
+  --ds-text-subtle:    #9FADBC !important;
+  --ds-text-subtlest:  #8C9BAB !important;
+  --ds-text-disabled:  #738496 !important;
+  --ds-text-inverse:   #1D2125 !important;
+  --ds-text-brand:     #579DFF !important;
+  --ds-link:           #579DFF !important;
 
-  /* Legacy --surface-* / --bg-* tier (older Catalyst components + inputs) */
-  --surface-page: #1d2125 !important;
-  --surface-bg: #1d2125 !important;
-  --surface-subtle: #161a1d !important;
-  --bg: #1d2125 !important;
-  --bg-0: #1d2125 !important;
-  --bg-1: #22272b !important;
-  --bg-app: #1d2125 !important;
-  --bg-workspace: #1d2125 !important;
-  --bg-sidebar: #22272b !important;
-  --bg-cream: #22272b !important;
-  --industry-bg-page: #1d2125 !important;
-  --table-section-bg: #1d2125 !important;
-  --table-toolbar-bg: #22272b !important;
+  /* Icons */
+  --ds-icon:          #9FADBC !important;
+  --ds-icon-subtle:   #8C9BAB !important;
+  --ds-icon-disabled: #738496 !important;
 
-  /* shadcn HSL tier — page surfaces (#22272B ≈ hsl(210 13% 15%)) */
-  --background: 210 13% 15% !important;
-  --card: 210 13% 15% !important;
-  --secondary: 210 13% 15% !important;
-  --muted: 210 13% 15% !important;
+  /* Borders — alpha; they read on raised/sunken/overlay */
+  --ds-border:         rgba(166,189,219,0.16) !important;
+  --ds-border-subtle:  rgba(166,189,219,0.08) !important;
+  --ds-border-bold:    #738496 !important;
+  --ds-border-focused: #388BFF !important;
+
+  /* Elevation shadows (deep; the alpha border does the separating) */
+  --ds-shadow-raised:  0 1px 1px rgba(3,4,5,0.50), 0 0 1px rgba(3,4,5,0.60) !important;
+  --ds-shadow-overlay: 0 8px 12px rgba(3,4,5,0.36), 0 0 1px rgba(3,4,5,0.50) !important;
+
+  /* Catalyst legacy --cp / --bg surface aliases → ADS ramp */
+  --cp-bg:            #1D2125 !important;
+  --cp-bg-page:       #1D2125 !important;
+  --cp-bg-hub-page:   #1D2125 !important;
+  --cp-bg-canvas:     #1D2125 !important;
+  --cp-bg-sunken:     #161A1D !important;
+  --cp-bg-elevated:   #22272B !important;   /* raised: sidebar/header/cards */
+  --cp-bg-overlay:    #282E33 !important;   /* overlay: popovers/flyouts/menus */
+  --cp-float:         #282E33 !important;
+  --surface-page:     #1D2125 !important;
+  --surface-bg:       #1D2125 !important;
+  --surface-subtle:   #161A1D !important;
+  --bg:               #1D2125 !important;
+  --bg-0:             #1D2125 !important;
+  --bg-1:             #22272B !important;
+  --bg-app:           #1D2125 !important;
+  --bg-workspace:     #1D2125 !important;
+  --bg-sidebar:       #22272B !important;
+  --bg-cream:         #22272B !important;
+  --industry-bg-page: #1D2125 !important;
+  --table-section-bg: #1D2125 !important;
+  --table-toolbar-bg: #22272B !important;
+
+  /* Catalyst legacy text aliases → DarkNeutral */
+  --cp-text-primary:    #C7D1DB !important;
+  --cp-text-secondary:  #9FADBC !important;
+  --cp-text-inverse:    #1D2125 !important;
+  --nav-text-secondary: #9FADBC !important;
+  --nav-text-tertiary:  #8C9BAB !important;
+  --nav-section-label:  #8C9BAB !important;
+
+  /* shadcn HSL tier → ADS ramp (themes every Radix menu: profile, notifications…) */
+  --background:         210 12% 13% !important;   /* #1D2125 */
+  --foreground:         210 22% 81% !important;   /* #C7D1DB */
+  --card:               213 13% 15% !important;   /* #22272B */
+  --card-foreground:    210 22% 81% !important;
+  --popover:            210 12% 18% !important;   /* #282E33 overlay */
+  --popover-foreground: 210 22% 81% !important;   /* #C7D1DB */
+  --secondary:          213 13% 15% !important;
+  --muted:              213 13% 15% !important;
+  --muted-foreground:   210 14% 68% !important;   /* #9FADBC */
+  --accent:             213 13% 21% !important;   /* #2C333A hover */
+  --accent-foreground:  210 22% 81% !important;
+  --border:             213 14% 24% !important;
+  --input:              213 14% 24% !important;
 }
 .dark body,
 [data-theme="dark"] body {
-  /* 2026-06-18 (Vikram): uniform shell — body matches the elevated #22272B
-     tone used across header/sidebar/canvas so edges/scroll gutter never expose
-     a darker band. Light body stays white (separate rule). */
-  background: var(--cp-bg-elevated, var(--ds-surface, #ffffff)) !important;
+  /* ADS page tone (#1D2125) so raised chrome (sidebar/header/cards #22272B) lifts.
+     (2026-06-27 ADS parity Task 02 — was --cp-bg-elevated/uniform shell.) */
+  background: var(--cp-bg, var(--ds-surface, #ffffff)) !important;
 }
 
 /* 2026-06-18 (Vikram): For You feed type-icon tile. Light keeps the grey

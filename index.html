@@ -94,11 +94,11 @@
       (function() {
         var t = localStorage.getItem('catalyst-theme');
         var isDark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        if (isDark) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+        var mode = isDark ? 'dark' : 'light';
+        var de = document.documentElement;
+        de.classList.toggle('dark', isDark);
+        de.setAttribute('data-theme', mode);        // un-deads [data-theme="dark"] CSS
+        de.setAttribute('data-color-mode', mode);   // aligns Atlaskit token scope
       })();
     </script>
 
