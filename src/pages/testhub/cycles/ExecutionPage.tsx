@@ -330,12 +330,12 @@ function StepRunner({
       const isTerminal = runStatus !== 'NOT_RUN' && runStatus !== 'IN_PROGRESS';
 
       // Insert run record
+      // tm_test_runs keys on cycle_scope_id (NOT NULL) — case + cycle are
+      // derived via tm_cycle_scope. There is no cycle_id/scope_id/case_id column.
       const { data: run, error: runError } = await supabase
         .from('tm_test_runs')
         .insert({
-          cycle_id: cycleId,
-          scope_id: scope.id,
-          case_id: scope.case_id,
+          cycle_scope_id: scope.id,
           run_number: 1,
           status: dbStatus,
           executed_by: user.id,
@@ -352,8 +352,8 @@ function StepRunner({
       // Insert step results
       if (run && stepStates.length > 0) {
         const stepResults = stepStates.map((ss, i) => ({
-          run_id: run.id,
-          step_id: ss.stepId,
+          test_run_id: run.id,
+          test_step_id: ss.stepId,
           step_number: i + 1,
           status: ss.status.toLowerCase(),
           actual_result: ss.actualResult || null,

@@ -13,10 +13,12 @@
   - **Phase 2 OPEN FLAG (raise before sign-off):** "version-pinned" membership NOT schema-supported (tm_set_cases has no version col). tm_cycle_sets table missing (Phase 3). 5 other tm_* FK outliers → projects (later).
 - **Phase 3a (Cycles: CRUD + scope) — DONE & PROVEN (2026-06-27):** CyclesPage/CycleDetailPage/ExecutionPage pre-existed + render fine. Proven live: CYC-001 "Regression Cycle Q3" created (cycle_key app-gen, status enum lowercase, project_id→tm_projects ✓); 3 cases persist in tm_cycle_scope; counters correct after D12. **D12:** dropped 3 redundant increment counter triggers on tm_cycle_scope (were double-counting with the recompute triggers → total 4 vs real 3); kept recompute (sync_cycle_scope_counters + cycle_scope_stats); backfilled. Proven: insert→4, delete→3.
   - **Phase 3 OPEN FLAGS:** (1) app status filters use UPPERCASE 'PLANNED'/'IN_PROGRESS' but enum is lowercase → "Add to cycle" matches 0 cycles (SetDetailPage:427; check CyclesPage) — NOT fixed. (2) sets-to-cycle: tm_cycle_sets table missing on cyij. (3) Phase 3b (assignees day-bucket plan) not started — tm_cycle_scope.assigned_to exists, untested.
-- **Active slice:** none (sign-off gate; Phases 1, 2, 3a done).
-- **Execution authorization:** Phases 1/2/3a done this session. Next: Phase 3b (assignees) or Phase 4 (Execution — KEY) or 1c leftovers, on sign-off.
-- **Branch:** main. **DB:** staging cyij. Migrations via MCP: 20260627120000 (D9), 130000 (D10), 140000 (D11), 150000 (D12).
-- **Context health:** GREEN.
+- **Phase 4a (Execution: run + step results + percolation + counters) — DONE & PROVEN (2026-06-27):** ExecutionPage handleSave had wrong columns (tm_test_runs: cycle_id/scope_id/case_id → real cycle_scope_id; tm_step_results: run_id/step_id → real test_run_id/test_step_id) — fixed. **D13:** 2 tm_cycle_scope audit triggers read dead test_cases.test_key (+ status_change used OLD/NEW.status vs current_status) → every scope UPDATE 400'd; the audit table's own test_case_id FK also pointed at dead test_cases. Fixed both fns (mig 160000) + repointed FK (mig 170000). Full chain PROVEN: steps[pass,pass,fail]→run 'failed'→scope 'failed'→cycle failed_count=1→audit row. tsc+build clean.
+  - **Phase 4a NOTE:** percolate trigger is AFTER UPDATE OF status only (not INSERT); app compensates with manual status sets — fine. **Remaining Phase 4:** 4b (evidence attach, effort timer, defect-from-exec), 4c (cycle rollups/multi-run "Add Run" — run_number hardcoded 1).
+- **Active slice:** none (sign-off gate; Phases 1, 2, 3a, 4a done).
+- **Execution authorization:** Phases 1/2/3a/4a + enum-fix done this session. Next: Phase 4b/4c, Phase 3b (assignees), or Phase 5 (Defects), on sign-off.
+- **Branch:** main. **DB:** staging cyij. Migrations via MCP: 120000 (D9), 130000 (D10), 140000 (D11), 150000 (D12), 160000+170000 (D13).
+- **Context health:** GREEN (long session — consider fresh session for next phase).
 
 ## WHAT'S DONE IN P0
 - Verified MCP/CLI both target cyij; migrations go via **MCP apply_migration** (config.toml=prod, so NEVER `supabase db push`).
