@@ -24,8 +24,11 @@ export type StatusAppearance =
   | 'moved'
   | 'new';
 
-/** Always dark — Jira NIN DOM probe rgb(41,42,46). */
-export const STATUS_TEXT = 'var(--ds-text, #172B4D)';
+/** Always dark — Jira NIN DOM probe rgb(41,42,46).
+ *  MUST be a FIXED dark hex, NOT var(--ds-text): the pill backgrounds below are
+ *  theme-INDEPENDENT light pastels, but var(--ds-text) flips to light in dark
+ *  mode → light text on a light pill = ~1.3:1 contrast (invisible). 2026-06-27. */
+export const STATUS_TEXT = '#292A2E';
 
 /** Canonical Jira-probed medium-pastel backgrounds per status category. */
 export const STATUS_BG: Record<StatusAppearance, string> = {
@@ -34,7 +37,9 @@ export const STATUS_BG: Record<StatusAppearance, string> = {
   moved:      '#F3D664', // moved/warning — medium warm yellow
   new:        '#B8ACF6', // new/discovery — medium lavender
   removed:    '#FD9891', // cancelled/rejected — medium coral red
-  default:    'var(--ds-border, #DFE1E6)', // todo/backlog — light grey
+  default:    '#DFE1E6', // todo/backlog — light grey. FIXED (not var(--ds-border)):
+  // text is fixed-dark, so the bg must stay light in dark mode too, else the
+  // todo/on-hold pill becomes dark-text-on-dark (var(--ds-border) flips dark). 2026-06-27.
 };
 
 /** Resolve a status-pill background from an appearance string (canonical). */
