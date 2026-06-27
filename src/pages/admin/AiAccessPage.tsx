@@ -24,7 +24,7 @@ export default function AiAccessPage() {
   return (
     <AdminGuard>
       <style>{CSS}</style>
-      <div style={{ padding: '20px 32px 48px', minHeight: '100%', background: T.surfaceSunken }}>
+      <div style={{ padding: '20px 32px 48px', minHeight: '100%' }}>
         {/* breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: T.subtlest, marginBottom: 8 }}>
           <span style={{ color: T.link, cursor: 'pointer' }}>Administration</span>
@@ -72,7 +72,7 @@ const CSS = `
 .cc-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
 @media (min-width: 1180px) {
   .cc-grid { grid-template-columns: minmax(0,1fr) 340px; }
-  .cc-grid > .cc-rail { position: sticky; top: 24px; }
+  .cc-grid > .cc-rail { position: sticky; top: 24px; width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cc-grid [style*="cc-spin"], .cc-grid [style*="cc-bar"] { animation: none !important; }
