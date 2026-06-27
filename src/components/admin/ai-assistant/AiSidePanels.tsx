@@ -96,21 +96,21 @@ export function AiRecentActivity() {
           .from('user_product_roles')
           .select('created_at, user_id, role_id')
           .order('created_at', { ascending: false })
-          .limit(6),
+          .limit(50),
         supabase
           .from('login_audit_log')
           .select('email, created_at')
           .eq('success', false)
           .gte('created_at', cutoff7d)
           .order('created_at', { ascending: false })
-          .limit(30),
+          .limit(500),
         supabase
           .from('user_invitations')
           .select('email, full_name, created_at')
           .is('accepted_at', null)
           .lt('created_at', cutoff24h)
           .order('created_at', { ascending: false })
-          .limit(15),
+          .limit(100),
       ]);
 
       // Resolve profile + role names for role assignments
@@ -166,7 +166,7 @@ export function AiRecentActivity() {
         })),
       ];
 
-      return items.sort((a, b) => b.sortKey.localeCompare(a.sortKey)).slice(0, 12);
+      return items.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
     },
     staleTime: 0,
     refetchInterval: 30000,
@@ -179,7 +179,7 @@ export function AiRecentActivity() {
         {isLoading && <span style={{ fontSize: 11, color: T.subtlest }}>Loading…</span>}
         <a href="/admin/access" style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: T.link, textDecoration: 'none', cursor: 'pointer' }}>View all</a>
       </div>
-      <div style={{ padding: '4px 6px 8px' }}>
+      <div style={{ padding: '4px 6px 8px', maxHeight: 460, overflowY: 'auto' }}>
         {!isLoading && rows.length === 0 && (
           <div style={{ padding: '16px 8px', textAlign: 'center', fontSize: 12, color: T.subtlest }}>No recent activity.</div>
         )}
