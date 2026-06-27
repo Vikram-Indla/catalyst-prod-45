@@ -169,6 +169,34 @@ export class HuddleConnection {
     return this.remoteId !== null && this.opts.selfId < this.remoteId;
   }
 
+  /** The peer's connection is gone (ICE dropped or closed). Used to detect a
+   *  rejoin after the other side dropped, so we rebuild + renegotiate rather
+   *  than ignore the duplicate join. */
+  private peerDead(): boolean {
+    const st = this.pc?.connectionState;
+    return st === 'disconnected' || st === 'failed' || st === 'closed';
+  }
+
+  /** Tear down the stale RTCPeerConnection and build a fresh one, re-adding our
+   *  local audio (via ensurePc) AND any in-progress screen share. Used when the
+   *  peer rejoins after a drop — their new pc has no prior SDP/ICE state, so
+   *  reusing our old pc would never reconnect. */
+  private rebuildPc(): RTCPeerConnection {
+    try { this.pc?.close(); } catch { /* ignore */ }
+    this.pc = null;
+    this.remoteDescSet = false;
+    this.pendingCandidates = [];
+    this.makingOffer = false;
+    this.markerChannel = null;
+    this.screenSender = null;
+    const pc = this.ensurePc();
+    if (this.screenStream) {
+      const track = this.screenStream.getVideoTracks()[0];
+      if (track) { try { this.screenSender = pc.addTrack(track, this.screenStream); } catch { /* ignore */ } }
+    }
+    return pc;
+  }
+
   /** Create + send an offer (initial or renegotiation). Guards makingOffer. */
   private async sendOffer(pc: RTCPeerConnection): Promise<void> {
     try {
@@ -209,11 +237,16 @@ export class HuddleConnection {
     if (sig.from === this.opts.selfId) return;
     switch (sig.kind) {
       case 'join': {
-        if (this.remoteId === sig.from) break;
+        // A repeated join from the same peer is normally the periodic
+        // re-announce — ignore it. EXCEPT when our connection to them is dead:
+        // that means they dropped and are rejoining with a fresh pc, so we must
+        // rebuild and re-offer (otherwise they hang on "Connecting…").
+        const rejoin = this.remoteId === sig.from && this.peerDead();
+        if (this.remoteId === sig.from && !rejoin) break;
         this.remoteId = sig.from;
         chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'join', from: this.opts.selfId });
-        if (this.amOfferer() && !this.pc) {
-          const pc = this.ensurePc();
+        if (this.amOfferer() && (!this.pc || rejoin)) {
+          const pc = rejoin ? this.rebuildPc() : this.ensurePc();
           // Offerer creates the marker data channel (must exist before the offer).
           if (typeof pc.createDataChannel === 'function') {
             this.markerChannel = pc.createDataChannel('huddle-markers');
@@ -225,6 +258,10 @@ export class HuddleConnection {
       }
       case 'offer': {
         this.remoteId = sig.from;
+        // Answerer side of a rejoin: our old pc is dead, so rebuild before
+        // applying the fresh offer (re-adds our audio + any screen share).
+        const rebuilt = this.peerDead();
+        if (rebuilt) this.rebuildPc();
         const pc = this.ensurePc();
         // Perfect-negotiation collision handling (matters for mid-call screen-share renegotiation).
         const polite = this.opts.selfId > sig.from;
@@ -243,6 +280,10 @@ export class HuddleConnection {
         // track if present, or clear it when the sharer removed their track.
         // This is deterministic and doesn't depend on track mute/ended events.
         this.reconcileRemoteScreen();
+        // Rejoin recovery: if WE are sharing, the offer we just answered had no
+        // video m-line (the rejoiner wasn't sharing), so our screen track can't
+        // ride this answer. Renegotiate (send our own offer) to add it.
+        if (rebuilt && this.screenStream) void this.renegotiate();
         break;
       }
       case 'answer': {

@@ -12,6 +12,14 @@ import type { ChatConversation } from '@/types/chat';
 
 const db = supabase as unknown as { from: (t: string) => any };
 const HUDDLE_CAP = 2;
+// A participant heartbeats every ~5s (huddleStore). Treat a row whose
+// last_seen_at is older than this as gone, so an uncleanly-dropped huddle
+// (both sides crashed/closed) stops showing a phantom "Rejoin" within ~25s.
+export const HUDDLE_STALE_MS = 25_000;
+/** ISO cutoff for "still live" — last_seen_at must be newer than this. */
+export function liveCutoff(): string {
+  return new Date(Date.now() - HUDDLE_STALE_MS).toISOString();
+}
 
 interface HuddleRow { id: string; conversation_id: string; status: string }
 interface ParticipantRow { huddle_id: string; user_id: string; left_at: string | null }
@@ -83,14 +91,23 @@ export function useActiveHuddle(conversationId: string | null) {
   const { data, refetch } = useQuery({
     queryKey: key,
     enabled: !!conversationId,
+    // Re-evaluate staleness even when no DB change fires (both peers dropped →
+    // no more heartbeats → without polling the cached huddle would linger).
+    refetchInterval: 10_000,
     queryFn: async () => {
       if (!conversationId) return null;
       const { data: hud } = await db.from('chat_huddles')
         .select('id').eq('conversation_id', conversationId).eq('status', 'active').maybeSingle();
       if (!hud) return null;
       const { data: parts } = await db.from('chat_huddle_participants')
-        .select('huddle_id, user_id, left_at').eq('huddle_id', (hud as HuddleRow).id).is('left_at', null);
+        .select('huddle_id, user_id, left_at')
+        .eq('huddle_id', (hud as HuddleRow).id)
+        .is('left_at', null)
+        .gt('last_seen_at', liveCutoff());
       const ids = ((parts ?? []) as ParticipantRow[]).map((p) => p.user_id);
+      // No fresh participants → the huddle is effectively dead (everyone
+      // dropped). Report no huddle so the strip / Rejoin button disappears.
+      if (ids.length === 0) return null;
       let nameMap: Record<string, string> = {};
       let avatarMap: Record<string, string> = {};
       if (ids.length) {
@@ -140,9 +157,11 @@ export function useHuddleActions() {
       .select('id').eq('conversation_id', conversationId).eq('status', 'active').maybeSingle();
     if (existing) {
       huddleId = (existing as HuddleRow).id;
-      // cap-2 check on live participants
+      // cap-2 check on live participants (fresh heartbeat only — a stale row
+      // from a dropped peer must not block a rejoin)
       const { data: parts } = await db.from('chat_huddle_participants')
-        .select('user_id, left_at').eq('huddle_id', huddleId).is('left_at', null);
+        .select('user_id, left_at').eq('huddle_id', huddleId).is('left_at', null)
+        .gt('last_seen_at', liveCutoff());
       const live = (parts ?? []) as ParticipantRow[];
       const alreadyIn = live.some((p) => p.user_id === user.id);
       if (alreadyIn) {

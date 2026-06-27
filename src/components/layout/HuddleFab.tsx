@@ -50,6 +50,7 @@ export function HuddleFab() {
   const connecting = !!active && active.connectionState !== 'connected';
   const muted = !!active?.micMuted;
   const sharing = !!active?.screenSharing;
+  const remoteSharing = !!active?.remoteSharing;
   const screenActive = !!active && (active.screenSharing || active.remoteSharing);
   const screenMinimized = screenActive && screenWindow === 'minimized';
 
@@ -175,6 +176,38 @@ export function HuddleFab() {
   const ss = String(seconds % 60).padStart(2, '0');
   const green = 'var(--ds-icon-success, #22A06B)';
 
+  // Screen-share toggle — disabled while the remote peer is sharing (only one
+  // screen at a time). Reused in both the collapsed strip and expanded panel.
+  const screenShareBtn = !connecting ? (
+    <button
+      type="button"
+      data-huddle-btn
+      disabled={remoteSharing}
+      onClick={() => { if (!remoteSharing) void (sharing ? stopScreen() : startScreen()); }}
+      aria-pressed={sharing}
+      title={remoteSharing ? 'Other participant is sharing' : sharing ? 'Stop sharing screen' : 'Share screen'}
+      style={{
+        ...iconBtnStyle(sharing ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)', sharing ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)'),
+        opacity: remoteSharing ? 0.45 : 1,
+        cursor: remoteSharing ? 'not-allowed' : 'pointer',
+      }}
+    >
+      <ScreenIcon />
+    </button>
+  ) : null;
+
+  const declineBtn = (
+    <button
+      type="button"
+      data-huddle-btn
+      onClick={leave}
+      title="Leave huddle"
+      style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', '#FFFFFF')}
+    >
+      <PhoneDownIcon />
+    </button>
+  );
+
   return (
     <div
       ref={wrapRef}
@@ -227,10 +260,13 @@ export function HuddleFab() {
         )}
       </span>
 
-      {/* connecting spinner OR live waveform (CatyPulseIcon-style, green) */}
-      {connecting ? (
+      {/* connecting spinner (both states) */}
+      {connecting && (
         <span style={{ margin: '0 10px', display: 'inline-flex' }}><Spinner size="small" /></span>
-      ) : (
+      )}
+
+      {/* live waveform — only when expanded (collapsed strip shows quick actions instead) */}
+      {!connecting && expanded && (
         <span style={{ display: 'inline-flex', alignItems: 'center', height: 24, margin: '0 8px 0 12px' }}>
           <svg width={40} height={24} viewBox="0 0 40 24" fill="none" aria-hidden style={{ overflow: 'visible' }}>
             <path
@@ -256,6 +292,14 @@ export function HuddleFab() {
         >
           <ScreenIcon />
         </button>
+      )}
+
+      {/* collapsed strip quick actions — screen share + decline (no waveform) */}
+      {!expanded && (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
+          {screenShareBtn}
+          {declineBtn}
+        </span>
       )}
 
       {/* meta + actions — only when expanded */}
@@ -287,27 +331,8 @@ export function HuddleFab() {
             >
               {muted ? <MicOffIcon /> : <MicIcon />}
             </button>
-            {!connecting && (
-              <button
-                type="button"
-                data-huddle-btn
-                onClick={() => { void (sharing ? stopScreen() : startScreen()); }}
-                aria-pressed={sharing}
-                title={sharing ? 'Stop sharing screen' : 'Share screen'}
-                style={iconBtnStyle(sharing ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)', sharing ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)')}
-              >
-                <ScreenIcon />
-              </button>
-            )}
-            <button
-              type="button"
-              data-huddle-btn
-              onClick={leave}
-              title="Leave huddle"
-              style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', '#FFFFFF')}
-            >
-              <PhoneDownIcon />
-            </button>
+            {screenShareBtn}
+            {declineBtn}
           </span>
         </>
       )}

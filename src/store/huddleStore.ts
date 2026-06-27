@@ -57,6 +57,18 @@ let localScreenStream: MediaStream | null = null;
 let remoteScreenStream: MediaStream | null = null;
 let selfIdRef: string | null = null;
 let huddleIdRef: string | null = null;
+let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+
+/** Bump my participant row so the huddle reads as live. A dropped client stops
+ *  beating → its row goes stale → the UI stops showing a phantom "Rejoin". */
+async function beat(huddleId: string | null, userId: string | null) {
+  if (!huddleId || !userId) return;
+  try {
+    await db.from('chat_huddle_participants')
+      .update({ is_connected: true })
+      .eq('huddle_id', huddleId).eq('user_id', userId).is('left_at', null);
+  } catch { /* best-effort */ }
+}
 
 /** Live remote MediaStream — used by HuddleFab to drive the audio-level equalizer.
  *  Kept as a module ref (not store state) since it changes outside React. */
@@ -167,9 +179,15 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     });
     await connection.start();
     void setOnCall(selfId, huddleId);
+    // heartbeat: keep my participant row fresh so the huddle reads as live;
+    // stopping (drop/leave) lets it go stale and clears the phantom Rejoin.
+    if (heartbeatTimer) clearInterval(heartbeatTimer);
+    void beat(huddleId, selfId);
+    heartbeatTimer = setInterval(() => void beat(huddleId, selfId), 5000);
   },
 
   leave: () => {
+    if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
     connection?.close();
     connection = null;
     detachRemote();
