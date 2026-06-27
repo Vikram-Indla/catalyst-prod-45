@@ -42,6 +42,9 @@ import {
 } from '@/lib/atlaskit-icons';
 import type { TMFolder, TMTestCase, CaseStatus, TMCasePriority, CaseFilters } from '@/types/test-management';
 import { CaseDrawer } from './CaseDrawer';
+// D4 (2026-06-27) — view/edit a case via the canonical CatalystViewBase shell
+// (entityKind='test_case'). Create still uses CaseDrawer (coexist).
+import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 
 // ── Folder modal (ADS modal-dialog) ──────────────────────────────────────────
 
@@ -573,6 +576,8 @@ export default function RepositoryPage() {
   const [search, setSearch] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingCase, setEditingCase] = useState<TMTestCase | null>(null);
+  // D4: row-click opens the case in the canonical detail panel (not CaseDrawer).
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
 
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -903,8 +908,7 @@ export default function RepositoryPage() {
               getRowId={row => row.id}
               onRowClick={row => {
                 if (selectMode) return;
-                setEditingCase(row);
-                setDrawerOpen(true);
+                setSelectedCaseId(row.id);
               }}
               selectable={selectMode}
               selection={selectedIds}
@@ -921,6 +925,18 @@ export default function RepositoryPage() {
             folderId={activeFolderId}
             existingCase={editingCase}
             onClose={() => { setDrawerOpen(false); setEditingCase(null); }}
+          />
+        )}
+
+        {/* D4: canonical detail panel for view/edit (coexists with CaseDrawer). */}
+        {selectedCaseId && (
+          <CatalystDetailRouter
+            entityKind="test_case"
+            itemId={selectedCaseId}
+            isOpen={!!selectedCaseId}
+            panelMode
+            projectKey={projectKey}
+            onClose={() => setSelectedCaseId(null)}
           />
         )}
       </div>

@@ -28,6 +28,11 @@ const CatalystViewIdea = lazy(() => import('./idea/CatalystViewIdea'));
 // entityKind='task'. See CLAUDE.md REUSE-FIRST + ADOPT-CANONICAL for the
 // rationale (no fork of CatalystViewTask).
 const TaskCatalystView = lazy(() => import('./task-catalyst/TaskCatalystView'));
+// D4 (2026-06-27, CAT-TESTHUB-ENGINE-20260626-001) — Test Hub canonical detail
+// view. Reads from tm_test_cases — NOT ph_issues. Routed when callers pass
+// entityKind='test_case'. Coexists with CaseDrawer (create path). Same
+// REUSE-FIRST pattern as TaskCatalystView (no fork of a CatalystView* type).
+const CatalystViewTestCase = lazy(() => import('./test-case/CatalystViewTestCase'));
 
 /** Normalize various issue_type strings to a canonical CatalystItemType */
 function resolveItemType(raw: string | undefined | null): 'story' | 'epic' | 'feature' | 'defect' | 'incident' | 'task' | 'business_request' | 'subtask' | 'idea' | null {
@@ -67,6 +72,30 @@ export default function CatalystDetailRouter({
     return (
       <Suspense fallback={null}>
         <TaskCatalystView
+          isOpen={isOpen}
+          onClose={onClose}
+          itemId={itemId}
+          projectId={projectId}
+          projectKey={projectKey}
+          onOpenItem={onOpenItem}
+          panelMode={panelMode}
+          fullPageMode={fullPageMode}
+          onTogglePanelMode={onTogglePanelMode}
+          navigationItems={navigationItems}
+          onNavigate={onNavigate}
+          hideSidebar={hideSidebar}
+        />
+      </Suspense>
+    );
+  }
+
+  // D4 (2026-06-27) — short-circuit for Test Hub. tm_test_cases is a separate
+  // table keyed by UUID; no itemType lookup needed (route is unambiguous).
+  if (entityKind === 'test_case') {
+    if (!isOpen) return null;
+    return (
+      <Suspense fallback={null}>
+        <CatalystViewTestCase
           isOpen={isOpen}
           onClose={onClose}
           itemId={itemId}

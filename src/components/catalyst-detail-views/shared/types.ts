@@ -62,6 +62,10 @@ export interface CatalystDetailRouterProps extends CatalystViewBaseProps {
    * Added 2026-06-16 (Task 1.5d) to allow Tasks Hub to mount the canonical
    * CatalystDetailPanel chrome WITHOUT forking CatalystViewTask, per
    * CLAUDE.md REUSE-FIRST + ADOPT-CANONICAL.
+   *
+   * - 'test_case': itemId is a tm_test_cases.id (UUID). Routes through
+   *   CatalystViewTestCase (Test Hub). Added 2026-06-27 (D4,
+   *   CAT-TESTHUB-ENGINE-20260626-001) — same coexist pattern as tasks.
    */
-  entityKind?: 'ph_issue' | 'task';
+  entityKind?: 'ph_issue' | 'task' | 'test_case';
 }
