@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 
+export type { RiskLevel, AssistantStatus } from '@/components/admin/ai-assistant/aiAdminAssistant.types';
+
 export interface CommandStep {
   id: string;
   label: string;
@@ -14,6 +16,16 @@ export interface CommandPlan {
   summary: string;
   steps: CommandStep[];
   warnings: string[];
+  // Extended fields populated by server when available
+  plan_id?: string;
+  risk_level?: 'Low' | 'Medium' | 'High' | 'Critical';
+  intent?: string;
+  confidence?: number;
+  entities?: { label: string; value: string }[];
+  current_state?: string[];
+  preserve?: string[];
+  impacted_tables?: string[];
+  missing_info?: string[];
 }
 
 export interface StepResult {

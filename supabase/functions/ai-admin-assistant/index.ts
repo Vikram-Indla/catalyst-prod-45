@@ -234,10 +234,14 @@ async function executeStep(
         body: JSON.stringify({
           email: p.email,
           full_name: p.full_name ?? null,
-          role: 'developer',
-          module_access: { home: true, product_hub: true },
+          // system_role must be a valid app_role enum value: admin | program_manager | team_lead | user
+          // product role assignment (if requested) is a SEPARATE assign_product_role step
+          role: (p.system_role as string) ?? 'user',
+          module_access: (p.module_access as Record<string, boolean>) ?? { home: true, product_hub: true },
           purpose: 'invite',
-          delivery_channel: 'email',
+          delivery_channel: (p.delivery_channel as string) ?? 'email',
+          phone: (p.phone as string) ?? undefined,
+          department_id: (p.department_id as string) ?? undefined,
         }),
       })
       const body = await resp.json()
@@ -252,19 +256,26 @@ async function executeStep(
       const role = await resolveRoleByName(supabase, p.role_name as string)
       if (!role) return { ok: false, error: `Role not found: ${p.role_name}` }
 
-      // Get existing role for rollback
+      // Check if this exact assignment already exists (idempotent)
       const { data: existing } = await supabase
         .from('user_product_roles')
-        .select('role_id')
+        .select('id, role_id')
         .eq('user_id', user.id)
+        .eq('role_id', role.id)
         .maybeSingle()
 
-      // Delete old, insert new
-      await supabase.from('user_product_roles').delete().eq('user_id', user.id)
-      const { error } = await supabase.from('user_product_roles').insert({ user_id: user.id, role_id: role.id })
+      if (existing) {
+        // Already assigned — treat as success, nothing to roll back
+        return { ok: true, rollback_state: {} }
+      }
+
+      // ADD the role without removing existing roles (preserve multi-role state)
+      const { error } = await supabase
+        .from('user_product_roles')
+        .insert({ user_id: user.id, role_id: role.id })
       if (error) return { ok: false, error: error.message }
 
-      return { ok: true, rollback_state: { user_id: user.id, prev_role_id: existing?.role_id ?? null } }
+      return { ok: true, rollback_state: { user_id: user.id, added_role_id: role.id } }
     }
 
     case 'remove_from_role': {
@@ -403,14 +414,21 @@ async function rollbackStep(
 ): Promise<void> {
   try {
     switch (step.action_type) {
-      case 'assign_product_role':
+      case 'assign_product_role': {
+        // Rollback: remove only the row we added (not all rows for user)
+        const { user_id, added_role_id } = rollbackState
+        if (!user_id || !added_role_id) return
+        await supabase.from('user_product_roles')
+          .delete()
+          .eq('user_id', user_id)
+          .eq('role_id', added_role_id)
+        break
+      }
       case 'remove_from_role': {
+        // Rollback: re-insert the row we deleted
         const { user_id, prev_role_id } = rollbackState
-        if (!user_id) return
-        await supabase.from('user_product_roles').delete().eq('user_id', user_id)
-        if (prev_role_id) {
-          await supabase.from('user_product_roles').insert({ user_id, role_id: prev_role_id })
-        }
+        if (!user_id || !prev_role_id) return
+        await supabase.from('user_product_roles').insert({ user_id, role_id: prev_role_id })
         break
       }
       case 'create_role': {
