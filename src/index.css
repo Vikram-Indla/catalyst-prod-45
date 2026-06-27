@@ -6650,14 +6650,12 @@ html.dark .cp-feed-type-tile,
 .dark [role="dialog"][aria-label="Notifications"],
 .dark [role="dialog"][aria-label="Notifications"],
 [data-theme="dark"] [role="dialog"][aria-label="Notifications"] {
-  /* 2026-06-18 (Vikram): overlay panels must match the main-viewport reference
-     (var(--ds-surface, #FFFFFF)), not the separate near-black --cp-ink-1 (var(--ds-text, #172B4D)) scheme. */
-  background: var(--cp-bg-elevated, var(--ds-surface, #ffffff)) !important;
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
-  border-color: var(
-    --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
-  ) !important;
+  /* 2026-06-27 ADS parity (Task 04): the notifications flyout is a floating panel
+     → ADS overlay surface (#282E33 dark) + readable text + ADS border. Was raised
+     tone (--cp-bg-elevated) with a bg token wrongly used as text color. */
+  background: var(--ds-surface-overlay, var(--cp-bg-overlay, #ffffff)) !important;
+  color: var(--ds-text, #CECFD2) !important;
+  border-color: var(--ds-border, rgba(9,30,66,0.14)) !important;
 }
 
 .dark [role="dialog"][aria-label="Notifications"] *,

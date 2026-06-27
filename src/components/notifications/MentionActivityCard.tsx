@@ -218,7 +218,7 @@ export default function MentionActivityCard({
   const actorAvatarUrl = actor?.avatarUrl ?? undefined;
 
   // Token-based colors
-  const cardBg        = isDark ? 'var(--ds-surface-overlay, #1F2738)' : token('color.background.card', '#FFFFFF');
+  const cardBg        = isDark ? 'var(--ds-surface-raised, #22272B)' : token('color.background.card', '#FFFFFF');
   const cardBorder    = isDark ? 'var(--ds-border, #2C3E50)'          : token('color.border', '#DFE1E6');
   const primaryText   = isDark ? 'var(--ds-text, #E6EDFA)'            : token('color.text', '#172B4D');
   const subtleText    = isDark ? 'var(--ds-text-subtle, #8C9CB5)'     : token('color.text.subtle', '#42526E');
