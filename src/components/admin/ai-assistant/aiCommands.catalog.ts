@@ -6,14 +6,14 @@ import type { Command, CommandGroup, CommandView } from './aiAdminConsole.types'
 
 export const COMMANDS: Command[] = [
   // Users
-  { cat: 'Users', title: 'Invite a new user', desc: 'Send an invite to an email address', example: 'Invite j.khan@salam.sa as Product Owner', risk: 'Low', slug: 'invite user', keywords: 'invite add email product owner' },
-  { cat: 'Users', title: 'Create an account', desc: 'Add a person directly, no invite', example: 'Add Priya Sharma, priya@salam.sa', risk: 'Low', slug: 'add user', keywords: 'create account person add' },
+  { cat: ‘Users’, title: ‘Invite a new user’, desc: ‘Send an invite to an email address’, example: ‘Invite j.khan@mim.gov.sa as Product Owner’, risk: ‘Low’, slug: ‘invite user’, keywords: ‘invite add email product owner’ },
+  { cat: ‘Users’, title: ‘Create an account’, desc: ‘Add a person directly, no invite’, example: ‘Add Priya Sharma, priya@mim.gov.sa’, risk: ‘Low’, slug: ‘add user’, keywords: ‘create account person add’ },
   { cat: ‘Users’, title: ‘Rename a user’, desc: ‘Change a person’s display name’, example: ‘Rename Vikram Indla to Vikram’, risk: ‘Low’, slug: ‘rename user’, keywords: ‘rename change name’ },
-  { cat: ‘Users’, title: ‘Update a user email’, desc: ‘Change the email on an account’, example: ‘Change email for Sikander Ahmad to new@example.com’, risk: ‘Medium’, slug: ‘update email’, keywords: ‘email change address update’ },
+  { cat: ‘Users’, title: ‘Update a user email’, desc: ‘Change the email on an account’, example: ‘Change email for Sikander Ahmad to s.ahmad@mim.gov.sa’, risk: ‘Medium’, slug: ‘update email’, keywords: ‘email change address update’ },
   { cat: ‘Users’, title: ‘Deactivate a user’, desc: ‘Suspend access without deleting’, example: ‘Deactivate Sikander Ahmad’, risk: ‘Medium’, slug: ‘deactivate user’, keywords: ‘disable suspend off deactivate’ },
   { cat: ‘Users’, title: ‘Delete a user’, desc: ‘Permanently remove an account’, example: ‘Delete user Adnan Ali’, risk: ‘High’, slug: ‘delete user’, keywords: ‘remove delete destroy’ },
   { cat: ‘Users’, title: ‘Send a password reset link’, desc: ‘Email a secure reset link’, example: ‘Reset password for Vikram Indla’, risk: ‘Low’, slug: ‘reset password’, keywords: ‘reset password forgot’ },
-  { cat: ‘Users’, title: ‘Resend an invitation’, desc: ‘Send the invite email again’, example: ‘Resend invite to j.khan@salam.sa’, risk: ‘Low’, slug: ‘resend invite’, keywords: ‘resend invite again’ },
+  { cat: ‘Users’, title: ‘Resend an invitation’, desc: ‘Send the invite email again’, example: ‘Resend invite to j.khan@mim.gov.sa’, risk: ‘Low’, slug: ‘resend invite’, keywords: ‘resend invite again’ },
   { cat: ‘Users’, title: ‘Look up a user’, desc: ‘View a person’s roles and details’, example: ‘Look up Vikram Indla’, risk: ‘Low’, slug: ‘lookup user’, keywords: ‘lookup find profile search view’ },
   // Roles
   { cat: 'Roles', title: 'Assign a product role', desc: 'Give a person a role', example: 'Make Vikram a Product Owner', risk: 'Low', slug: 'assign role', keywords: 'assign add role product owner make' },
