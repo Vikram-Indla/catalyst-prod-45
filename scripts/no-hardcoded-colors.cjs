@@ -159,6 +159,17 @@ function scanFile(filePath) {
   const lines = content.split('\n');
   
   lines.forEach((line, lineIndex) => {
+    // Escape hatches for intentional, documented exceptions (e.g. Jira-parity
+    // bypass hexes with no ADS-token equivalent):
+    //   `// ads-scanner:ignore-line`       on the same line
+    //   `// ads-scanner:ignore-next-line`  on the line above
+    if (/ads-scanner:ignore-line/.test(line)) {
+      return;
+    }
+    if (lineIndex > 0 && /ads-scanner:ignore-next-line/.test(lines[lineIndex - 1])) {
+      return;
+    }
+
     COLOR_PATTERNS.forEach(pattern => {
       const matches = line.match(pattern);
       if (matches) {

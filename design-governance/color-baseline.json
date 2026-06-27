@@ -1,0 +1,7 @@
+{
+  "hardcodedColors": 709,
+  "capturedOn": "2026-06-27",
+  "scanner": "scripts/no-hardcoded-colors.cjs",
+  "feature": "CAT-ADS-COMPLIANCE-20260627-001",
+  "note": "Fail-on-increase baseline. The gate (scripts/ads-color-gate.cjs) fails only when the live count EXCEEDS this number, so the existing debt does not block commits while remediation proceeds. When a slice reduces the count, lower this number via `node scripts/ads-color-gate.cjs --update` and commit it — the ratchet only tightens."
+}

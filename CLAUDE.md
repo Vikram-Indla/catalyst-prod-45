@@ -212,6 +212,23 @@ No custom `<table>`, CSS grid table, or flex table unless explicitly approved af
 - canonical Catalyst component-owned colors
 - approved AI CTA rainbow only where already canonical (`AIIntelligenceButton`, `CatyRainbowCTA`)
 
+### Enforcement (CAT-ADS-COMPLIANCE-20260627-001)
+
+A **ratchet gate** blocks NEW hard-coded colors at commit time and in CI, without blocking the pre-existing debt:
+
+- `npm run lint:colors` — list every hard-coded color (`scripts/no-hardcoded-colors.cjs`).
+- `npm run lint:colors:gate` — fail only if the count exceeds the committed baseline in `design-governance/color-baseline.json`. Runs in `.husky/pre-commit` (blocking) and in `ci.yml`.
+- `npm run audit:ads` — full design-governance audit (tokens, typography, spacing, fonts).
+
+When a slice reduces the count, ratchet the baseline down: `node scripts/ads-color-gate.cjs --update`, then commit `color-baseline.json`. The baseline only ever moves down.
+
+**Escape hatch** (intentional, documented exceptions only — e.g. a Jira-parity hex with no ADS-token equivalent):
+```css
+/* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed YYYY-MM-DD) */
+color: #ff991f;
+```
+or `/* ads-scanner:ignore-line */` on the same line. Do not use to hide real violations.
+
 ---
 
 ## SCREENSHOT SIGNOFF MANDATORY
