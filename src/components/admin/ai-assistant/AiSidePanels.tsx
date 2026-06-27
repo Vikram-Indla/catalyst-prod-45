@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { T, AVATAR } from './tokens';
 import { Icon, ICONS, catIcon } from './icons';
 import { RiskLozenge, ResultLozenge, BulkTag } from './RiskLozenge';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 
 type Console = ReturnType<typeof import('./useAiCommandConsole').useAiCommandConsole>;
 
@@ -200,9 +201,13 @@ export function AiRecentActivity() {
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 8px', borderRadius: 6 }}
               onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <span style={{ width: 28, height: 28, borderRadius: '50%', background: avatarBgColor, color: T.inverse, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: isFailedLogin || isPendingInvite ? 14 : 10, flex: '0 0 auto' }}>
-                {avatarText}
-              </span>
+              {isFailedLogin || isPendingInvite ? (
+                <span style={{ width: 28, height: 28, borderRadius: '50%', background: avatarBgColor, color: T.inverse, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14, flex: '0 0 auto' }}>
+                  {avatarText}
+                </span>
+              ) : (
+                <CatalystAvatar name={a.name} size="small" />
+              )}
               <span style={{ minWidth: 0, flex: 1 }}>
                 <span style={{ display: 'block', fontSize: 13, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
                 <span style={{ display: 'block', fontSize: 12, color: isFailedLogin ? T.textDanger : isPendingInvite ? T.textWarning : T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action}</span>
