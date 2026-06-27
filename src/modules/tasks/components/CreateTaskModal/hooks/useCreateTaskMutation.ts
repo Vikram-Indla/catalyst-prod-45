@@ -2,16 +2,14 @@
  * Create Task Mutation Hook
  * Handles task creation with optimistic updates.
  *
- * 2026-06-17 (Vikram): tasks are identified by the `key` column (PLN-N base
- * trigger). Read & write only `key`.
+ * 2026-06-17 (Vikram): tasks are identified by the `key` column. Read & write
+ * only `key`.
  *
- * CAT-TASKS-20260627-001 Slice 7:
- *  - DEFECT-004: derive the task key from the selected workstream's
- *    `key_prefix` (e.g. JKT-1) instead of the global PLN-N. Client-side so it
- *    needs no DB migration; the DB trigger only assigns PLN-N when key is null,
- *    so passing a computed key takes precedence. Falls back to the trigger
- *    (PLN-N) when the workstream has no usable prefix OR a key collision occurs
- *    — so create never fails and existing keys are never overwritten.
+ * CAT-TASKS-20260627-001 Slice 9A:
+ *  - Uniform `TSK-` prefix across the whole module. The DB trigger
+ *    (`generate_task_key`) is the SINGLE SOURCE OF TRUTH: we insert with NO key
+ *    and use the row the DB returns. Computing a key client-side previously
+ *    caused navigated-key vs stored-key drift → task-detail "Issue not found".
  *  - DEFECT-003: surface a Catalyst/ADS success flag on create (the platform
  *    `catalystToast.success` wrapper is suppressed; `showFlag` renders the
  *    canonical @atlaskit/flag directly).
@@ -26,44 +24,28 @@ import type { TaskPriority } from '../../../types';
 export interface CreateTaskInput {
   title: string;
   description?: string;
+  /** Rich-text ADF (Slice 9B canonical-modal parity). Stored in tasks.description_adf. */
+  description_adf?: unknown;
   workstream_id: string;
   assignee_id?: string;
+  reporter_id?: string;
+  labels?: string[];
   priority: TaskPriority;
   due_date?: string;
-  start_date: string;
+  /** Optional — dates are set in the detail view, not the canonical create modal. */
+  start_date?: string;
   status_id?: string;
+  /**
+   * Optional work item to link as the task's parent. A task may link to ANY
+   * work item type EXCEPT sub-task (enforced by the task_work_item_links CHECK).
+   * The work_item_type is resolved server-side from ph_issues.
+   */
+  parent_work_item_key?: string;
 }
 
 interface CreateTaskResult {
   id: string;
   key: string;
-}
-
-/**
- * Compute the next `PREFIX-N` key for a workstream (DEFECT-004). Returns null
- * when the workstream has no usable key_prefix → caller lets the DB trigger
- * assign PLN-N.
- */
-async function computeWorkstreamKey(workstreamId: string | undefined): Promise<string | null> {
-  if (!workstreamId) return null;
-  const { data: ws } = await supabase
-    .from('task_workstreams')
-    .select('key_prefix')
-    .eq('id', workstreamId)
-    .single();
-  const prefix = ((ws as { key_prefix?: string | null } | null)?.key_prefix ?? '').trim().toUpperCase();
-  if (!prefix) return null;
-
-  const { data: existing } = await supabase
-    .from('tasks')
-    .select('key')
-    .ilike('key', `${prefix}-%`);
-  let maxN = 0;
-  (existing ?? []).forEach((r: { key: string | null }) => {
-    const m = /-(\d+)$/.exec(r.key ?? '');
-    if (m) maxN = Math.max(maxN, parseInt(m[1], 10));
-  });
-  return `${prefix}-${maxN + 1}`;
 }
 
 export function useCreateTaskMutation() {
@@ -84,43 +66,64 @@ export function useCreateTaskMutation() {
         statusId = backlogStatus?.id || undefined;
       }
 
-      const computedKey = await computeWorkstreamKey(input.workstream_id);
-
-      const baseBody: Record<string, unknown> = {
-        title: input.title,
-        description: input.description || null,
-        workstream_id: input.workstream_id || null,
-        assignee_id: input.assignee_id || null,
-        priority: input.priority,
-        due_date: input.due_date || null,
-        start_date: input.start_date,
-        status_id: statusId || null,
-        created_by: user?.id || null,
-      };
-
-      const insertTask = (withKey: string | null) =>
-        supabase
-          .from('tasks')
-          .insert((withKey ? { ...baseBody, key: withKey } : baseBody) as never)
-          .select('id, key')
-          .single();
-
-      let { data, error } = await insertTask(computedKey);
-      // DEFECT-004 safety: on a key collision, fall back to the DB trigger key
-      // so create always succeeds and no existing key is touched.
-      if (error && computedKey && /duplicate|unique|23505/i.test(error.message)) {
-        ({ data, error } = await insertTask(null));
-      }
+      // Insert with NO key — the DB trigger assigns the uniform TSK-N and we
+      // navigate/optimistically-update using the key it returns. Single source
+      // of truth; no client-side key computation (which caused detail drift).
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert({
+          title: input.title,
+          description: input.description || null,
+          description_adf: input.description_adf ?? null,
+          workstream_id: input.workstream_id || null,
+          assignee_id: input.assignee_id || null,
+          reporter_id: input.reporter_id || null,
+          labels: input.labels?.length ? input.labels : null,
+          priority: input.priority,
+          due_date: input.due_date || null,
+          start_date: input.start_date ?? null,
+          status_id: statusId || null,
+          created_by: user?.id || null,
+        } as never)
+        .select('id, key')
+        .single();
 
       if (error) {
         console.error('Error creating task:', error);
         throw new Error(error.message);
       }
 
-      return {
+      const created = {
         id: (data as { id: string }).id,
         key: (data as { key: string | null }).key ?? '',
       };
+
+      // Optional parent link → task_work_item_links. Resolve the work item's
+      // type from ph_issues (the table's CHECK forbids linking a sub-task).
+      if (input.parent_work_item_key) {
+        const { data: wi } = await supabase
+          .from('ph_issues')
+          .select('issue_type')
+          .eq('issue_key', input.parent_work_item_key)
+          .maybeSingle();
+        const workItemType = (wi as { issue_type?: string } | null)?.issue_type ?? null;
+        if (workItemType && workItemType.toLowerCase() !== 'sub-task') {
+          const { error: linkErr } = await supabase
+            .from('task_work_item_links')
+            .insert({
+              task_id: created.id,
+              work_item_key: input.parent_work_item_key,
+              work_item_type: workItemType,
+              link_type: 'relates',
+              created_by: user?.id || null,
+            } as never);
+          if (linkErr) {
+            console.warn('[useCreateTask] parent link failed:', linkErr.message);
+          }
+        }
+      }
+
+      return created;
     },
     onSuccess: (result) => {
       // Refresh every task surface (overview / board / list / timeline / calendar).

@@ -46,7 +46,7 @@ const mapPriority = (dbPriority: string | null): TaskPriority => {
 const transformPlannerTask = (row: any): PlannerTask => ({
   id: row.id,
   // Use task_key first (proper sequential key), then fallback to key, then generate from UUID
-  key: row.task_key || row.key || `PLN-${row.id.slice(0, 4).toUpperCase()}`,
+  key: row.task_key || row.key || `TSK-${row.id.slice(0, 4).toUpperCase()}`,
   title: row.title || 'Untitled',
   description: row.description || '',
   // Canonical: carry the real task_statuses.slug so custom/admin statuses
@@ -320,13 +320,10 @@ export function useDuplicatePlannerTask() {
       const defaultStatusId = statuses?.[0]?.id;
       if (!defaultStatusId) throw new Error('No statuses found');
 
-      const newKey = `PLN-${Date.now()}`;
-      
+      // Key is assigned by the DB trigger (uniform TSK-N) — single source of truth.
       const { data, error } = await supabase
         .from('tasks')
         .insert([{
-          key: newKey,
-          task_key: newKey,
           title: `${task.title} (Copy)`,
           description: task.description || null,
           status_id: defaultStatusId,

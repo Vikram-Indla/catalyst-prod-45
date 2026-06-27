@@ -4,7 +4,6 @@ import Button from "@atlaskit/button/new";
 import AddIcon from "@atlaskit/icon/core/add";
 import { CreateStoryModal } from "@/components/workhub/create-story";
 import { CreateBusinessRequestModal } from "@/components/business-requests/CreateBusinessRequestModal";
-import { CreateTaskModal } from "@/modules/tasks/components/CreateTaskModal";
 
 /**
  * "+ Create" button — opens the Jira-style CreateStoryModal directly.
@@ -26,15 +25,14 @@ interface CreateDropdownProps {
 export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
   const [storyOpen, setStoryOpen] = useState(false);
   const [brOpen, setBrOpen] = useState(false);
-  const [taskOpen, setTaskOpen] = useState(false);
   const [pendingWorkType, setPendingWorkType] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
   const params = useParams<{ key?: string }>();
   const isProductHubBacklog = /^\/product-hub\/[^/]+\/backlog/.test(pathname);
-  // CAT-TASKS-20260627-001 (Slice 1, amendment A3): inside the Tasks module the
-  // "+ Create" button opens the dedicated Create Task flow directly — never
-  // Story, and without requiring a manual work-type change. Scoped strictly to
-  // /tasks/* so Story / Business Request defaults are untouched everywhere else.
+  // CAT-TASKS-20260627-001 (Slice 9B): inside the Tasks module the "+ Create"
+  // button opens the canonical create modal defaulted to 'Task' (workstream +
+  // tasks table). The user can still switch to other work types. Scoped strictly
+  // to /tasks/* so Story / Business Request defaults are untouched elsewhere.
   const isTasksModule = /^\/tasks(\/|$)/.test(pathname);
 
   // 2026-06-26: derive project context from the URL so the modal auto-selects
@@ -52,7 +50,7 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
       <Button
         appearance="primary"
         iconBefore={() => <AddIcon label="" />}
-        onClick={() => (isTasksModule ? setTaskOpen(true) : setStoryOpen(true))}
+        onClick={() => setStoryOpen(true)}
       >
         {iconOnly ? "" : "Create"}
       </Button>
@@ -61,21 +59,18 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
         open={storyOpen}
         onClose={() => { setStoryOpen(false); setPendingWorkType(undefined); }}
         onOpenBusinessRequest={() => { setStoryOpen(false); setBrOpen(true); }}
-        onOpenTask={() => { setStoryOpen(false); setTaskOpen(true); }}
         projectKey={projectKeyFromUrl}
         workTypes={isProductHubBacklog ? ['Business Request'] : undefined}
-        defaultWorkType={pendingWorkType ?? (isProductHubBacklog ? 'Business Request' : 'Story')}
+        defaultWorkType={
+          pendingWorkType ??
+          (isProductHubBacklog ? 'Business Request' : isTasksModule ? 'Task' : 'Story')
+        }
       />
 
       <CreateBusinessRequestModal
         isOpen={brOpen}
         onClose={() => setBrOpen(false)}
         onWorkTypeChange={(type) => { setBrOpen(false); setPendingWorkType(type); setStoryOpen(true); }}
-      />
-
-      <CreateTaskModal
-        open={taskOpen}
-        onOpenChange={setTaskOpen}
       />
     </>
   );
