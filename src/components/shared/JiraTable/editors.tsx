@@ -899,9 +899,9 @@ export function makeAssigneeEditCell<T>({
 //   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=var(--cp-warning, #D97706),
 //   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
 const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: '#E5484D', label: 'Critical'  },
-  highest:   { icon: <AkPriorityHighestIcon  label="" size="small" />, color: '#E5484D', label: 'Highest'   },
-  high:      { icon: <AkPriorityHighIcon     label="" size="small" />, color: '#E2730D', label: 'High'      },
+  critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: 'var(--ds-text-danger, #E5484D)', label: 'Critical'  },
+  highest:   { icon: <AkPriorityHighestIcon  label="" size="small" />, color: 'var(--ds-text-danger, #E5484D)', label: 'Highest'   },
+  high:      { icon: <AkPriorityHighIcon     label="" size="small" />, color: 'var(--ds-text-warning, #E2730D)', label: 'High'      },
   medium:    { icon: <AkPriorityMediumIcon   label="" size="small" />, color: 'var(--cp-warning, #D97706)', label: 'Medium'    },
   low:       { icon: <AkPriorityLowIcon      label="" size="small" />, color: 'var(--ds-link, #0065FF)', label: 'Low'       },
   lowest:    { icon: <AkPriorityLowestIcon   label="" size="small" />, color: 'var(--ds-text-subtlest, #626F86)', label: 'Lowest'    },
