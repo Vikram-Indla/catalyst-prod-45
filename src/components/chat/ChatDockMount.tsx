@@ -58,6 +58,13 @@ export default function ChatDockMount() {
     if (timerRef.current !== null) clearTimeout(timerRef.current);
   }, []);
 
+  // Close the dock when an incoming huddle call rings (so the ring isn't hidden).
+  useEffect(() => {
+    const onIncoming = () => setCollapsed(true);
+    window.addEventListener('huddle:incoming-ring', onIncoming);
+    return () => window.removeEventListener('huddle:incoming-ring', onIncoming);
+  }, []);
+
   // Open dock: shell appears synchronously on this tick, heavy content mounts
   // ~50ms later so shell paints first.
   // Uses both rAF (visible tabs) and setTimeout fallback (hidden/CDP tabs — rAF

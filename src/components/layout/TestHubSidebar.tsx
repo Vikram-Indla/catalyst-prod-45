@@ -10,11 +10,13 @@ import {
   RefreshCw,
   FolderOpen,
   Layers,
+  Link2,
 } from '@/lib/atlaskit-icons';
 import {
   NavDashboardIcon,
   NavKanbanIcon,
   NavFiltersIcon,
+  NavTimelineIcon,
 } from '@/lib/nav-icons';
 import { HUB_ICON_REGISTRY } from '@/components/icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
@@ -36,6 +38,8 @@ const sections: SidebarSection[] = [
       { id: 'repository',   title: 'Repository',   path: '/testhub/repository',    icon: FolderOpen,       exact: false },
       { id: 'sets',         title: 'Test Sets',    path: '/testhub/sets',          icon: Layers,           exact: false },
       { id: 'cycles',       title: 'Cycles',       path: '/testhub/cycles',        icon: RefreshCw,        exact: false },
+      { id: 'timeline',     title: 'Timeline',     path: '/testhub/timeline',      icon: NavTimelineIcon,  exact: false },
+      { id: 'dependencies', title: 'Dependencies', path: '/testhub/dependencies',  icon: Link2,            exact: false },
       { id: 'defects',      title: 'Defects',      path: '/testhub/defects',       icon: AlertTriangle,    exact: false },
       { id: 'traceability', title: 'Traceability', path: '/testhub/traceability',  icon: GitMerge,         exact: false },
       { id: 'reports',      title: 'Reports',      path: '/testhub/reports',       icon: FileText,         exact: false },

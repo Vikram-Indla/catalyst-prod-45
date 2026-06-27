@@ -22,6 +22,7 @@ import Textfield from '@atlaskit/textfield';
 import { Play, CheckCircle, Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { TMCycleScope, RunStatus } from '@/types/test-management';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
+import { Breadcrumbs } from '@/components/ads/Breadcrumbs';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 

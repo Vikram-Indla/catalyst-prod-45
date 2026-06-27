@@ -34,6 +34,9 @@ interface HuddleStore {
   ticketsWindow: TicketsWindowMode;
   /** Whether the tickets window already auto-opened once (5s after connect). */
   ticketsAutoOpened: boolean;
+  /** Is MY annotation pen enabled (lets me draw on the shared screen)? */
+  markerPen: boolean;
+  setMarkerPen: (on: boolean) => void;
   enter: (args: EnterArgs) => Promise<void>;
   leave: () => void;
   toggleMute: () => void;
@@ -54,6 +57,18 @@ let localScreenStream: MediaStream | null = null;
 let remoteScreenStream: MediaStream | null = null;
 let selfIdRef: string | null = null;
 let huddleIdRef: string | null = null;
+let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+
+/** Bump my participant row so the huddle reads as live. A dropped client stops
+ *  beating → its row goes stale → the UI stops showing a phantom "Rejoin". */
+async function beat(huddleId: string | null, userId: string | null) {
+  if (!huddleId || !userId) return;
+  try {
+    await db.from('chat_huddle_participants')
+      .update({ is_connected: true })
+      .eq('huddle_id', huddleId).eq('user_id', userId).is('left_at', null);
+  } catch { /* best-effort */ }
+}
 
 /** Live remote MediaStream — used by HuddleFab to drive the audio-level equalizer.
  *  Kept as a module ref (not store state) since it changes outside React. */
@@ -63,6 +78,14 @@ export function getHuddleRemoteStream(): MediaStream | null {
 /** Screen-share streams (module refs — change outside React). */
 export function getHuddleLocalScreen(): MediaStream | null { return localScreenStream; }
 export function getHuddleRemoteScreen(): MediaStream | null { return remoteScreenStream; }
+
+/** Screen-share markers — sent/received over the WebRTC data channel (P2P). */
+const markerListeners = new Set<(m: unknown) => void>();
+export function onHuddleMarker(cb: (m: unknown) => void): () => void {
+  markerListeners.add(cb);
+  return () => { markerListeners.delete(cb); };
+}
+export function sendHuddleMarker(m: unknown): void { connection?.sendMarker(m); }
 
 function attachRemote(stream: MediaStream) {
   remoteStream = stream;
@@ -83,6 +106,17 @@ function detachRemote() {
     remoteAudioEl.remove();
     remoteAudioEl = null;
   }
+}
+
+/** Global on-call flag so a DM list elsewhere can show "X is on a huddle". */
+async function setOnCall(userId: string | null, huddleId: string | null) {
+  if (!userId) return;
+  try {
+    await db.from('user_presence').upsert(
+      { user_id: userId, active_huddle_id: huddleId, last_seen_at: new Date().toISOString(), state: 'onsite' },
+      { onConflict: 'user_id' },
+    );
+  } catch { /* best-effort */ }
 }
 
 async function markLeft(huddleId: string | null, userId: string | null) {
@@ -110,6 +144,8 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
   ticketsAutoOpened: false,
   setTicketsWindow: (m) => set({ ticketsWindow: m }),
   markTicketsAutoOpened: () => set({ ticketsAutoOpened: true }),
+  markerPen: false,
+  setMarkerPen: (on) => set({ markerPen: on }),
 
   enter: async ({ conversationId, huddleId, conversationName, selfId }) => {
     // Tear down any existing call first (one huddle at a time).
@@ -130,6 +166,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
         const a = get().active;
         if (a) set({ active: { ...a, screenSharing: false } });
       },
+      onMarker: (m) => { markerListeners.forEach((l) => l(m)); },
     });
     selfIdRef = selfId;
     huddleIdRef = huddleId;
@@ -138,20 +175,29 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
       screenWindow: 'normal',
       ticketsWindow: 'closed',
       ticketsAutoOpened: false,
+      markerPen: false,
     });
     await connection.start();
+    void setOnCall(selfId, huddleId);
+    // heartbeat: keep my participant row fresh so the huddle reads as live;
+    // stopping (drop/leave) lets it go stale and clears the phantom Rejoin.
+    if (heartbeatTimer) clearInterval(heartbeatTimer);
+    void beat(huddleId, selfId);
+    heartbeatTimer = setInterval(() => void beat(huddleId, selfId), 5000);
   },
 
   leave: () => {
+    if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
     connection?.close();
     connection = null;
     detachRemote();
     localScreenStream = null;
     remoteScreenStream = null;
     void markLeft(huddleIdRef, selfIdRef);
+    void setOnCall(selfIdRef, null);
     selfIdRef = null;
     huddleIdRef = null;
-    set({ active: null, screenWindow: 'normal', ticketsWindow: 'closed', ticketsAutoOpened: false });
+    set({ active: null, screenWindow: 'normal', ticketsWindow: 'closed', ticketsAutoOpened: false, markerPen: false });
   },
 
   toggleMute: () => {

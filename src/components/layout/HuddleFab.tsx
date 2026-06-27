@@ -5,6 +5,7 @@ import Avatar from '@atlaskit/avatar';
 import Spinner from '@atlaskit/spinner';
 import { useHuddleStore, getHuddleRemoteStream } from '@/store/huddleStore';
 import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
+import { buildSharedTicketsPath } from '@/lib/chat/huddle/sharedTickets';
 
 /**
  * HuddleFab — draggable floating call widget (replaces the old header strip).
@@ -35,12 +36,11 @@ export function HuddleFab() {
   const stopScreen = useHuddleStore((s) => s.stopScreen);
   const screenWindow = useHuddleStore((s) => s.screenWindow);
   const setScreenWindow = useHuddleStore((s) => s.setScreenWindow);
-  const setTicketsWindow = useHuddleStore((s) => s.setTicketsWindow);
   const { huddle } = useActiveHuddle(active?.conversationId ?? null);
   const participants = huddle?.participants ?? [];
   const navigate = useNavigate();
 
-  const [hovered, setHovered] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [pos, setPos] = useState<Pos>(loadPos);
   const [seconds, setSeconds] = useState(0);
 
@@ -51,7 +51,9 @@ export function HuddleFab() {
   const connecting = !!active && active.connectionState !== 'connected';
   const muted = !!active?.micMuted;
   const sharing = !!active?.screenSharing;
-  const screenMinimized = !!active && (active.screenSharing || active.remoteSharing) && screenWindow === 'minimized';
+  const remoteSharing = !!active?.remoteSharing;
+  const screenActive = !!active && (active.screenSharing || active.remoteSharing);
+  const screenMinimized = screenActive && screenWindow === 'minimized';
 
   // call duration timer (resets each huddle)
   useEffect(() => {
@@ -151,8 +153,9 @@ export function HuddleFab() {
     const el = wrapRef.current;
     dragRef.current = null;
     el?.classList.remove('huddle-fab-dragging');
-    if (!d || !d.moved || !el) return;
-    // snap to nearest horizontal edge so hover grows inward
+    if (!d || !el) return;
+    if (!d.moved) { setExpanded((v) => !v); return; } // click (no drag) → toggle expand
+    // snap to nearest horizontal edge so the panel grows inward
     const r = el.getBoundingClientRect();
     const center = r.left + r.width / 2;
     let next: Pos;
@@ -174,6 +177,38 @@ export function HuddleFab() {
   const ss = String(seconds % 60).padStart(2, '0');
   const green = 'var(--ds-icon-success, #22A06B)';
 
+  // Screen-share toggle — disabled while the remote peer is sharing (only one
+  // screen at a time). Reused in both the collapsed strip and expanded panel.
+  const screenShareBtn = !connecting ? (
+    <button
+      type="button"
+      data-huddle-btn
+      disabled={remoteSharing}
+      onClick={() => { if (!remoteSharing) void (sharing ? stopScreen() : startScreen()); }}
+      aria-pressed={sharing}
+      title={remoteSharing ? 'Other participant is sharing' : sharing ? 'Stop sharing screen' : 'Share screen'}
+      style={{
+        ...iconBtnStyle(sharing ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)', sharing ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)'),
+        opacity: remoteSharing ? 0.45 : 1,
+        cursor: remoteSharing ? 'not-allowed' : 'pointer',
+      }}
+    >
+      <ScreenIcon />
+    </button>
+  ) : null;
+
+  const declineBtn = (
+    <button
+      type="button"
+      data-huddle-btn
+      onClick={leave}
+      title="Leave huddle"
+      style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', '#FFFFFF')}
+    >
+      <PhoneDownIcon />
+    </button>
+  );
+
   return (
     <div
       ref={wrapRef}
@@ -183,8 +218,6 @@ export function HuddleFab() {
       onPointerMove={onPointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
         position: 'fixed',
         top: pos.top,
@@ -195,10 +228,10 @@ export function HuddleFab() {
         cursor: 'grab',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: hovered ? 12 : 0,
+        gap: expanded ? 12 : 0,
         height: 56,
-        padding: hovered ? '0 12px 0 8px' : '0 8px',
-        borderRadius: hovered ? 16 : 999,
+        padding: expanded ? '0 12px 0 8px' : '0 8px',
+        borderRadius: expanded ? 16 : 999,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: `1.5px solid ${connecting ? 'var(--ds-border, #DFE1E6)' : 'var(--ds-border-success, #4BCE97)'}`,
         boxShadow: '0 8px 28px rgba(9,30,66,.18), 0 2px 6px rgba(9,30,66,.12)',
@@ -228,16 +261,19 @@ export function HuddleFab() {
         )}
       </span>
 
-      {/* connecting spinner OR live waveform (CatyPulseIcon-style, green) */}
-      {connecting ? (
+      {/* connecting spinner (both states) */}
+      {connecting && (
         <span style={{ margin: '0 10px', display: 'inline-flex' }}><Spinner size="small" /></span>
-      ) : (
+      )}
+
+      {/* live waveform — only when expanded (collapsed strip shows quick actions instead) */}
+      {!connecting && expanded && (
         <span style={{ display: 'inline-flex', alignItems: 'center', height: 24, margin: '0 8px 0 12px' }}>
           <svg width={40} height={24} viewBox="0 0 40 24" fill="none" aria-hidden style={{ overflow: 'visible' }}>
             <path
               ref={waveRef}
               d="M0,12 L40,12"
-              stroke={muted ? 'var(--ds-text-subtlest, #6B778C)' : green}
+              stroke={muted ? 'var(--ds-text-subtlest, #6B778C)' : 'var(--ds-icon-accent-magenta, #CD519D)'}
               strokeWidth={2}
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -253,14 +289,22 @@ export function HuddleFab() {
           data-huddle-btn
           onClick={() => setScreenWindow('normal')}
           title="Show shared screen"
-          style={{ ...iconBtnStyle('var(--ds-background-selected, #E9F2FE)', 'var(--ds-text-selected, #0C66E4)'), marginRight: hovered ? 0 : 4 }}
+          style={{ ...iconBtnStyle('var(--ds-background-selected, #E9F2FE)', 'var(--ds-text-selected, #0C66E4)'), marginRight: expanded ? 0 : 4 }}
         >
           <ScreenIcon />
         </button>
       )}
 
-      {/* meta + actions — only when hovered */}
-      {hovered && (
+      {/* collapsed strip quick actions — screen share + decline (no waveform) */}
+      {!expanded && (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
+          {screenShareBtn}
+          {declineBtn}
+        </span>
+      )}
+
+      {/* meta + actions — only when expanded */}
+      {expanded && (
         <>
           <span style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', whiteSpace: 'nowrap', maxWidth: 160, overflow: 'hidden' }}>
             <button
@@ -288,38 +332,17 @@ export function HuddleFab() {
             >
               {muted ? <MicOffIcon /> : <MicIcon />}
             </button>
-            {!connecting && (
-              <button
-                type="button"
-                data-huddle-btn
-                onClick={() => { void (sharing ? stopScreen() : startScreen()); }}
-                aria-pressed={sharing}
-                title={sharing ? 'Stop sharing screen' : 'Share screen'}
-                style={iconBtnStyle(sharing ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)', sharing ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)')}
-              >
-                <ScreenIcon />
-              </button>
-            )}
-            {!connecting && (
-              <button
-                type="button"
-                data-huddle-btn
-                onClick={() => setTicketsWindow('open')}
-                title="Shared tickets"
-                style={iconBtnStyle('var(--ds-surface-sunken, #F7F8F9)')}
-              >
-                <TicketsIcon />
-              </button>
-            )}
             <button
               type="button"
               data-huddle-btn
-              onClick={leave}
-              title="Leave huddle"
-              style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', '#FFFFFF')}
+              onClick={() => navigate(buildSharedTicketsPath(participants.map((p) => p.name).filter(Boolean)))}
+              title="Shared tickets — refresh & open"
+              style={iconBtnStyle('var(--ds-surface-sunken, #F7F8F9)')}
             >
-              <PhoneDownIcon />
+              <TicketsIcon />
             </button>
+            {screenShareBtn}
+            {declineBtn}
           </span>
         </>
       )}
@@ -352,7 +375,7 @@ const ScreenIcon = () => (
 );
 const TicketsIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 7h16M4 12h16M4 17h10" />
+    <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V7z" /><path d="M13 5v14" />
   </svg>
 );
 const PhoneDownIcon = () => (
