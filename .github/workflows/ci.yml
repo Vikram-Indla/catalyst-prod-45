@@ -69,6 +69,11 @@ jobs:
         # not block; regressions do. CAT-ADS-COMPLIANCE-20260627-001.
         run: npm run lint:colors:gate
 
+      - name: ADS audit ratchet (blocks on NEW tokens/typography/spacing violations)
+        # Per-category fail-on-increase over the design-governance audit vs
+        # design-governance/audit-baseline.json. CAT-ADS-COMPLIANCE-20260627-001.
+        run: npm run audit:ads:gate
+
       - name: Build
         run: npx vite build
         env:

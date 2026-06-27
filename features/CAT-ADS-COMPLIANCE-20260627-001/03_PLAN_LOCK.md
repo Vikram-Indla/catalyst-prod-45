@@ -97,5 +97,64 @@ After one correction loop: accept / split / rebuild / stop+revert.
 Stage explicit files only. Commit message references CAT-ADS-COMPLIANCE-20260627-001. Branch off main first.
 
 ## Plan Lock status
-SLICE 1 LOCKED = CI / pre-commit enforcement wiring (JK chose 2026-06-27). Alternative (ADS-13 Finding 3) deferred to a later slice.
-Awaiting explicit "proceed" from JK before implementation. No app code until then.
+SLICE 1 LOCKED = CI / pre-commit enforcement wiring (JK chose 2026-06-27). SHIPPED — PR #289.
+Alternative (ADS-13 Finding 3) deferred to a later slice.
+
+---
+
+# SLICE 2 — Extend the ratchet to the full design-governance audit
+
+> Status: SLICE CHOSEN (JK, 2026-06-27). Awaiting "proceed". NO CODE until then.
+
+## Timebox
+≤ 2 hours, one slice. Tooling only.
+
+## Objective
+Add a per-category fail-on-increase ratchet over `npm run audit:ads` (design-governance: tokens, typography, spacing, fontImports) and wire it blocking into pre-commit + CI — so NEW Tailwind color utilities / hardcoded font sizes / off-grid spacing cannot land. Extends Slice 1's proven pattern beyond the hex scanner.
+
+## Business outcome
+Catches the ~200 Tailwind color violations (and typography/spacing drift) the hex scanner does not see. Stops all-category drift at near-zero risk.
+
+## Exact slice
+1. `scripts/ads-audit-gate.cjs` (NEW) — spawn `node design-governance/rules/audit.js src`, parse the per-category summary (`tokens|typography|spacing|fontImports: N`), compare each to baseline, fail if ANY category exceeds its baseline. Ignore the audit's own exit code (it always exits 1 in STRICT mode); rely on parsed counts. `--update` rewrites baselines down.
+2. `design-governance/audit-baseline.json` (NEW) — committed per-category baselines (tokens 28913, typography 2201, spacing 1118, fontImports 0 — re-measured at implementation time).
+3. `package.json` — add `audit:ads:gate` → `node scripts/ads-audit-gate.cjs`.
+4. `.husky/pre-commit` — add the audit ratchet as BLOCKING (alongside the color ratchet).
+5. `.github/workflows/ci.yml` — add `audit:ads:gate` blocking step.
+6. `CLAUDE.md` — document `audit:ads:gate` + per-category ratchet under the enforcement subsection.
+
+## Non-scope (Slice 2)
+- No remediation of any violation (no count reduction; pure regression guard).
+- No change to rendered UI / `.css` / `.tsx` components.
+- Not touching the noisy `tokens` false positives — the ratchet is increase-only, so noise is inert.
+
+## Files to modify
+- `scripts/ads-audit-gate.cjs` (new), `design-governance/audit-baseline.json` (new), `package.json`, `.husky/pre-commit`, `.github/workflows/ci.yml`, `CLAUDE.md`.
+
+## Files forbidden
+- Any `src/**` component/CSS. Protected colors. `design-governance/rules/*` validators (do not change detection logic this slice).
+
+## UI/UX rules
+No UI change.
+
+## Validation commands
+```bash
+node scripts/ads-audit-gate.cjs                  # PASS at baseline
+# inject a Tailwind color util in a temp src file → gate FAILS (exit 1)
+# remove → gate PASSES
+node scripts/ads-audit-gate.cjs --update         # ratchet down
+```
+
+## Regression risks
+- A flaky/slow audit in pre-commit annoys contributors → audit already runs in pre-commit today (informational); we only add a parse+compare, no extra full run if we reuse output. Mitigate: single audit invocation.
+- Category parse breaks if audit output format changes → gate fails loudly (exit 1, prints raw) rather than silently passing.
+
+## Stop conditions
+- Any rendered UI/CSS touched → stop (out of scope).
+- Audit output unparseable → stop, do not weaken the gate to pass-through.
+
+## Commit rules
+Stage explicit files only. Same branch (`feature/ads-compliance-ci-enforcement`) → same PR #289, or new branch if JK prefers a separate PR.
+
+## Slice 2 status
+EXECUTED (JK proceed, 2026-06-27). Shipped to PR #289. Validated: baseline pass, Tailwind-color-util injection → fail (exit 1), cleanup pass.

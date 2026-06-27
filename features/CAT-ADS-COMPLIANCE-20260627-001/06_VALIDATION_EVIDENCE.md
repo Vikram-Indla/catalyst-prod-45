@@ -32,3 +32,27 @@
 ### Not run (and why)
 - `npm run test:visual` / screenshots: N/A — Slice 1 changes no rendered UI.
 - vitest: broken on Node 20 (known) — not relevant; no app logic changed.
+
+---
+
+## Slice 2 — design-governance audit ratchet (2026-06-27)
+
+### Baseline (from `node design-governance/rules/audit.js src`)
+- tokens 28913, typography 2201, spacing 1118, fontImports 0 (total 32232; audit exits 1 in STRICT mode — gate parses counts, ignores exit code).
+
+### Gate behaviour test (raw)
+```
+=== 1. baseline ===
+✅ ads-audit-gate: no category above baseline — tokens 28913/28913, typography 2201/2201, spacing 1118/1118, fontImports 0/0.  (exit 0)
+
+=== 2. inject Tailwind color util (text-red-500 bg-blue-100) in temp .tsx ===
+❌ ads-audit-gate: design-governance violations INCREASED:
+   tokens: 28914 (baseline 28913, +1)                                          (exit 1)
+
+=== 3. probe removed ===
+✅ ads-audit-gate: no category above baseline — tokens 28913/28913, ...        (exit 0)
+```
+**Functional proof:** per-category ratchet blocks a NEW Tailwind color utility (which the hex scanner cannot see) while leaving existing debt non-blocking.
+
+### Robustness note
+First regression run hit an incomplete-audit-output transient (~8.6 MB across thousands of file reads) → parse miss. Hardened: retry-once + fail-safe (block on unparseable) + maxBuffer 256 MB. Re-validated reliable across reruns. No rendered-UI change → no screenshots.
