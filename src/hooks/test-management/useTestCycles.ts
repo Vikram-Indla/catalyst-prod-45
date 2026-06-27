@@ -483,15 +483,19 @@ export function useAddCasesToScope() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { 
-      cycle_id: string; 
+    mutationFn: async (input: {
+      cycle_id: string;
       case_ids: string[];
+      lockedVersions?: Record<string, number>;
     }): Promise<void> => {
       const scopeToInsert = input.case_ids.map((caseId, index) => ({
         cycle_id: input.cycle_id,
         test_case_id: caseId,
         current_status: 'not_run' as const,
         sort_order: index,
+        ...(input.lockedVersions?.[caseId] != null
+          ? { locked_version: input.lockedVersions[caseId] }
+          : {}),
       }));
 
       const { error } = await supabase

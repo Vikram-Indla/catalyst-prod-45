@@ -35,7 +35,7 @@ import {
   CatalystSidebarDetails,
 } from '../shared/sections';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
-import { useTestCaseVersions } from '@/hooks/test-management/useTestCaseVersions';
+import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 /* ═══════════════════════════════════════════
@@ -216,8 +216,9 @@ export default function CatalystViewTestCase({
     [testCase?.objective],
   );
 
-  /* Versions (read-only list). */
+  /* Versions (list + restore). */
   const { data: versions = [] } = useTestCaseVersions(isOpen ? itemId : undefined);
+  const restoreVersion = useRestoreTestCaseVersion();
 
   /* ── Write paths — direct tm_test_cases updates, no version churn. ── */
   const handleTitleChange = useCallback(async (newTitle: string) => {
@@ -337,28 +338,51 @@ export default function CatalystViewTestCase({
   const versionsPanel = (
     <div style={{ padding: '8px 16px' }}>
       {versions.length === 0 ? (
-        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, margin: 0 }}>No version history.</p>
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, margin: 0 }}>No version history. Use "New version" in the repository to create a snapshot.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {versions.map((v: any) => (
+          {versions.map((v: any, idx: number) => (
             <div key={v.id} style={{
-              display: 'flex', alignItems: 'baseline', gap: 10,
-              padding: '8px 12px',
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '10px 12px',
               border: '1px solid var(--ds-border)', borderRadius: 6,
-              background: 'var(--ds-surface-raised)',
+              background: idx === 0 ? 'var(--ds-background-selected)' : 'var(--ds-surface-raised)',
             }}>
               <span style={{
                 fontSize: 12, fontWeight: 700, color: 'var(--ds-text)',
                 fontFamily: 'var(--ds-font-family-code, monospace)',
+                minWidth: 28,
               }}>
                 v{v.version_number}
               </span>
               <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)', flex: 1 }}>
                 {v.change_summary || '—'}
               </span>
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
+              {v.changed_by_profile?.full_name && (
+                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
+                  {v.changed_by_profile.full_name}
+                </span>
+              )}
+              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
                 {v.created_at ? new Date(v.created_at).toLocaleDateString() : ''}
               </span>
+              {idx > 0 && (
+                <button
+                  onClick={() => restoreVersion.mutate({ testCaseId: itemId!, versionNumber: v.version_number })}
+                  disabled={restoreVersion.isPending}
+                  style={{
+                    padding: '3px 10px', fontSize: 12,
+                    border: '1px solid var(--ds-border)', borderRadius: 4,
+                    background: 'none', cursor: 'pointer',
+                    color: 'var(--ds-text)', whiteSpace: 'nowrap',
+                  }}
+                >
+                  Restore
+                </button>
+              )}
+              {idx === 0 && (
+                <span style={{ fontSize: 11, color: 'var(--ds-text-brand)', fontWeight: 600 }}>Current</span>
+              )}
             </div>
           ))}
         </div>

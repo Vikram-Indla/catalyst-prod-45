@@ -1015,7 +1015,35 @@ function AddCasesModal({
   const allCases = casesResult?.cases ?? [];
   const available = allCases.filter(c => !existingCaseIds.includes(c.id));
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  // locked version per case: null = latest (default)
+  const [lockedVersions, setLockedVersions] = useState<Record<string, number | null>>({});
   const addCases = useAddCasesToScope();
+
+  // Batch-load version numbers for all available cases (just id + version_number — no snapshot)
+  const availableIds = available.map(c => c.id);
+  const { data: versionRows = [] } = useQuery({
+    queryKey: ['case-version-numbers', availableIds.join(',')],
+    queryFn: async () => {
+      if (availableIds.length === 0) return [];
+      const { data } = await supabase
+        .from('tm_test_case_versions')
+        .select('test_case_id, version_number')
+        .in('test_case_id', availableIds)
+        .order('version_number', { ascending: false });
+      return data ?? [];
+    },
+    enabled: availableIds.length > 0,
+  });
+
+  // Map: caseId → sorted-desc version numbers
+  const versionsByCase = React.useMemo(() => {
+    const m: Record<string, number[]> = {};
+    for (const r of versionRows as Array<{ test_case_id: string; version_number: number }>) {
+      if (!m[r.test_case_id]) m[r.test_case_id] = [];
+      m[r.test_case_id].push(r.version_number);
+    }
+    return m;
+  }, [versionRows]);
 
   const toggle = (id: string) => {
     setSelected(prev => {
@@ -1028,7 +1056,18 @@ function AddCasesModal({
 
   const handleAdd = async () => {
     if (selected.size === 0) return;
-    await addCases.mutateAsync({ cycle_id: cycleId, case_ids: Array.from(selected) });
+    const caseIds = Array.from(selected);
+    // Build lockedVersions map (only for cases where user picked a specific version)
+    const locked: Record<string, number> = {};
+    for (const id of caseIds) {
+      const v = lockedVersions[id];
+      if (v != null) locked[id] = v;
+    }
+    await addCases.mutateAsync({
+      cycle_id: cycleId,
+      case_ids: caseIds,
+      lockedVersions: Object.keys(locked).length > 0 ? locked : undefined,
+    });
     onClose();
   };
 
@@ -1036,66 +1075,86 @@ function AddCasesModal({
     <>
       <div
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.32))', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 300 }}
       />
       <div style={{
         position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 560,
+        width: 620,
         maxHeight: '80vh',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        background: 'var(--ds-surface-overlay)',
         borderRadius: 8,
-        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.32))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         zIndex: 301,
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border)' }}>
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: 'var(--ds-text)' }}>
             Add cases to scope
           </h2>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
           {available.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
+            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 14 }}>
               No cases available to add
             </p>
           ) : (
-            available.map(c => (
-              <label
-                key={c.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '8px 0',
-                  cursor: 'pointer',
-                  borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-                }}
-              >
-                <input type="checkbox" checked={selected.has(c.id)} onChange={() => toggle(c.id)} />
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)' }}>
-                  {c.key}
-                </span>
-                <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{c.title}</span>
-              </label>
-            ))
+            available.map(c => {
+              const versions = versionsByCase[c.id] ?? [];
+              const latestVer = versions[0];
+              const versionOptions = [
+                { label: latestVer ? `Latest (v${latestVer})` : 'Latest', value: null as number | null },
+                ...versions.map(v => ({ label: `v${v}`, value: v })),
+              ];
+              const isSelected = selected.has(c.id);
+              return (
+                <div
+                  key={c.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '8px 0',
+                    borderBottom: '1px solid var(--ds-border)',
+                  }}
+                >
+                  <input type="checkbox" checked={isSelected} onChange={() => toggle(c.id)} style={{ flexShrink: 0 }} />
+                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code)', flexShrink: 0 }}>
+                    {c.key}
+                  </span>
+                  <span style={{ fontSize: 14, color: 'var(--ds-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {c.title}
+                  </span>
+                  {isSelected && versions.length > 1 && (
+                    <div style={{ minWidth: 130, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+                      <Select
+                        menuPosition="fixed"
+                        value={versionOptions.find(o => o.value === (lockedVersions[c.id] ?? null)) ?? versionOptions[0]}
+                        options={versionOptions}
+                        onChange={opt => setLockedVersions(prev => ({ ...prev, [c.id]: opt?.value ?? null }))}
+                        menuPortalTarget={document.body}
+                      />
+                    </div>
+                  )}
+                  {isSelected && versions.length <= 1 && latestVer && (
+                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', flexShrink: 0 }}>v{latestVer}</span>
+                  )}
+                </div>
+              );
+            })
           )}
         </div>
-        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ds-border, #DFE1E6)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ds-border)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
           <button
             onClick={onClose}
             style={{
-              padding: '8px 16px',
-              background: 'none',
-              border: '1px solid var(--ds-border, #DFE1E6)',
-              borderRadius: 4,
-              cursor: 'pointer',
-              fontSize: 14,
-              color: 'var(--ds-text, #172B4D)',
+              padding: '8px 16px', background: 'none',
+              border: '1px solid var(--ds-border)', borderRadius: 4,
+              cursor: 'pointer', fontSize: 14, color: 'var(--ds-text)',
             }}
           >
             Cancel
@@ -1105,13 +1164,11 @@ function AddCasesModal({
             disabled={selected.size === 0 || addCases.isPending}
             style={{
               padding: '8px 20px',
-              background: 'var(--ds-background-brand-bold, #0052CC)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
-              border: 'none',
-              borderRadius: 4,
+              background: 'var(--ds-background-brand-bold)',
+              color: 'var(--ds-text-inverse)',
+              border: 'none', borderRadius: 4,
               cursor: selected.size === 0 || addCases.isPending ? 'not-allowed' : 'pointer',
-              fontSize: 14,
-              fontWeight: 500,
+              fontSize: 14, fontWeight: 500,
               opacity: selected.size === 0 ? 0.7 : 1,
             }}
           >

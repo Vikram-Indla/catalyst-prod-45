@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, DragEvent } from 'react';
+import React, { useState, useEffect, useRef, useCallback, DragEvent, useSyncExternalStore } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import ModalDialog, { ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/standard-button';
@@ -14,6 +14,96 @@ import { TMCycleScope, TMCaseStep, RunStatus } from '@/types/test-management';
 import { catalystToast } from '@/lib/catalystToast';
 
 const ATTACHMENT_BUCKET = 'testhub-attachments';
+const OFFLINE_QUEUE_KEY = 'testhub_offline_queue';
+
+// ── Online status hook ────────────────────────────────────────────────────────
+function subscribe(cb: () => void) {
+  window.addEventListener('online', cb);
+  window.addEventListener('offline', cb);
+  return () => { window.removeEventListener('online', cb); window.removeEventListener('offline', cb); };
+}
+function useOnlineStatus(): boolean {
+  return useSyncExternalStore(subscribe, () => navigator.onLine, () => true);
+}
+
+// ── Offline queue helpers ─────────────────────────────────────────────────────
+interface OfflineQueueItem {
+  id: string;
+  queuedAt: string;
+  scopeId: string;
+  executedBy: string;
+  runStatus: string;
+  notes: string | null;
+  durationSeconds: number;
+  stepResults: Array<{ test_step_id: string; step_number: number; status: string; actual_result: string | null }>;
+  scopeStatus: string;
+}
+
+function readQueue(): OfflineQueueItem[] {
+  try { return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) ?? '[]'); }
+  catch { return []; }
+}
+
+function writeQueue(items: OfflineQueueItem[]) {
+  localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(items));
+}
+
+async function flushOfflineQueue(qc: { invalidateQueries: (opts: { queryKey: string[] }) => void }): Promise<void> {
+  const items = readQueue();
+  if (items.length === 0) return;
+
+  const now = new Date().toISOString();
+  const failed: OfflineQueueItem[] = [];
+
+  for (const item of items) {
+    try {
+      // Compute next run number fresh from DB
+      const { data: maxRow } = await supabase
+        .from('tm_test_runs')
+        .select('run_number')
+        .eq('cycle_scope_id', item.scopeId)
+        .order('run_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const nextRunNumber = (maxRow?.run_number ?? 0) + 1;
+      const isTerminal = item.runStatus !== 'not_run' && item.runStatus !== 'in_progress';
+
+      const { data: run, error: runErr } = await supabase
+        .from('tm_test_runs')
+        .insert({
+          cycle_scope_id: item.scopeId,
+          run_number: nextRunNumber,
+          status: item.runStatus,
+          executed_by: item.executedBy,
+          notes: item.notes,
+          duration_seconds: item.durationSeconds,
+          started_at: item.queuedAt,
+          completed_at: isTerminal ? now : null,
+        })
+        .select()
+        .single();
+
+      if (runErr) throw runErr;
+
+      if (run && item.stepResults.length > 0) {
+        await supabase.from('tm_step_results').insert(
+          item.stepResults.map(sr => ({ ...sr, test_run_id: run.id, executed_at: item.queuedAt }))
+        );
+      }
+
+      await supabase.from('tm_cycle_scope').update({ current_status: item.scopeStatus }).eq('id', item.scopeId);
+      qc.invalidateQueries({ queryKey: ['tm-cycle-scope'] });
+    } catch {
+      failed.push(item);
+    }
+  }
+
+  writeQueue(failed);
+  if (failed.length < items.length) {
+    const flushed = items.length - failed.length;
+    catalystToast.success(`Synced ${flushed} offline result${flushed > 1 ? 's' : ''}`);
+  }
+}
 
 type StepStatus = 'NOT_RUN' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'SKIPPED';
 
@@ -272,6 +362,17 @@ function StepRunner({
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [completedRunCount, setCompletedRunCount] = useState(0);
   const timer = useTimer();
+  const isOnline = useOnlineStatus();
+  const queryClient = useQueryClient();
+  const [offlineQueueCount, setOfflineQueueCount] = useState(() => readQueue().length);
+
+  // Flush offline queue when coming back online
+  useEffect(() => {
+    if (!isOnline) return;
+    const q = readQueue();
+    if (q.length === 0) return;
+    flushOfflineQueue(queryClient).then(() => setOfflineQueueCount(readQueue().length));
+  }, [isOnline]);
 
   // Load existing run count for this scope (to display run number)
   useEffect(() => {
@@ -321,6 +422,37 @@ function StepRunner({
 
       const runStatus = computeRunStatus(stepStates);
       const dbStatus = runStatus.toLowerCase() as 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
+
+      // ── Offline path ──────────────────────────────────────────────────────────
+      if (!isOnline) {
+        const item: OfflineQueueItem = {
+          id: `${scope.id}-${Date.now()}`,
+          queuedAt: new Date().toISOString(),
+          scopeId: scope.id,
+          executedBy: user.id,
+          runStatus: dbStatus,
+          notes: notes || null,
+          durationSeconds: timer.elapsed,
+          stepResults: stepStates.map((ss, i) => ({
+            test_step_id: ss.stepId,
+            step_number: i + 1,
+            status: ss.status.toLowerCase(),
+            actual_result: ss.actualResult || null,
+          })),
+          scopeStatus: dbStatus,
+        };
+        const q = readQueue();
+        q.push(item);
+        writeQueue(q);
+        setOfflineQueueCount(q.length);
+        setShowSaveModal(false);
+        setPendingFiles([]);
+        timer.reset();
+        catalystToast.success('Offline — result queued. Will sync on reconnect.');
+        onSaved();
+        return;
+      }
+      // ─────────────────────────────────────────────────────────────────────────
       const isTerminal = runStatus !== 'NOT_RUN' && runStatus !== 'IN_PROGRESS';
 
       // Compute next run number
@@ -424,6 +556,24 @@ function StepRunner({
 
   return (
     <div style={{ padding: 24 }}>
+      {/* Offline banner */}
+      {(!isOnline || offlineQueueCount > 0) && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '8px 14px', marginBottom: 12, borderRadius: 6,
+          background: isOnline
+            ? 'var(--ds-background-warning)'
+            : 'var(--ds-background-danger)',
+          border: `1px solid ${isOnline ? 'var(--ds-border)' : 'var(--ds-border-danger)'}`,
+          fontSize: 13, color: isOnline ? 'var(--ds-text-warning)' : 'var(--ds-text-danger)',
+          fontWeight: 500,
+        }}>
+          {isOnline
+            ? `Back online — syncing ${offlineQueueCount} queued result${offlineQueueCount !== 1 ? 's' : ''}…`
+            : `You're offline — results will be queued and synced when connection is restored${offlineQueueCount > 0 ? ` (${offlineQueueCount} queued)` : ''}`
+          }
+        </div>
+      )}
       {/* Timer bar */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16,
