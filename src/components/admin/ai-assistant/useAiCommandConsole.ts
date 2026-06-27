@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { COMMANDS, filterCommands, matchCommand, groupCommands } from './aiCommands.catalog';
 import { supabase } from '@/integrations/supabase/client';
 import type {
@@ -28,6 +29,7 @@ export function useAiCommandConsole() {
   const [confirm, setConfirm] = useState<ConfirmState | null>(null);
   const [history, setHistory] = useState<ConfirmationEntry[]>([]);
 
+  const qc = useQueryClient();
   const learnedRef = useRef<LearnedCommand[]>([]);
   const pickRef = useRef<{ text: string; cmd: Command } | null>(null);
   const planRef = useRef<CommandPlan | null>(null);
@@ -70,7 +72,7 @@ export function useAiCommandConsole() {
     planRef.current = null;
   }, []);
 
-  // Phase 2: execute the confirmed plan, animate steps, call edge function
+  // Phase 2: execute the confirmed plan, animate steps, call edge function, invalidate caches
   const executePlan = useCallback(async (
     plan: CommandPlan, q: string, cmd: Command | null, novel: boolean, labels: string[], bulk: boolean,
   ) => {
@@ -89,13 +91,20 @@ export function useAiCommandConsole() {
     setRunning(r => r ? { ...r, cur: labels.length, count: successCount } : r);
     await new Promise(res => setTimeout(res, 250));
 
+    // Invalidate all RBAC + access query caches so live pages reflect the change
+    void qc.invalidateQueries({ queryKey: ['admin-access-people'] });
+    void qc.invalidateQueries({ queryKey: ['user-role-assignments'] });
+    void qc.invalidateQueries({ queryKey: ['user-access-resources'] });
+    void qc.invalidateQueries({ queryKey: ['product-roles'] });
+    void qc.invalidateQueries({ queryKey: ['ai-admin-recent-activity'] });
+
     finish({
       phase: 'steps',
       title: cmd?.title ?? `"${q.slice(0, 30)}${q.length > 30 ? '…' : ''}"`,
       request: q, risk: cmd?.risk ?? 'Medium',
       bulk, count: successCount, labels, cur: labels.length, novel, cmd,
     });
-  }, [finish]);
+  }, [finish, qc]);
 
   // Phase 1: parse intent, get plan, decide confirm vs auto-execute
   const execute = useCallback(async (q: string, cmd: Command | null, novel: boolean) => {
@@ -125,21 +134,21 @@ export function useAiCommandConsole() {
 
     const labels = plan.steps.map((s: CommandStep) => s.label);
     const stepBulk = plan.steps.length > 1 || bulk;
-    const needsConfirm = plan.warnings.length > 0 ||
+    const isDestructive = plan.warnings.length > 0 ||
       plan.steps.some((s: CommandStep) => s.action_type === 'delete_user' || s.action_type === 'deactivate_role');
 
     setRunning(r => r ? { ...r, phase: 'steps', labels, cur: 0, bulk: stepBulk, count: plan.steps.length } : r);
 
-    if (needsConfirm) {
-      setConfirm({
-        risk: 'High', destructive: true,
-        title: `${cmd?.title ?? 'Request'} — confirmation required`,
-        body: (data.text as string) ?? plan.summary ?? 'Review and confirm before applying.',
-      });
-      return;
-    }
-
-    await executePlan(plan, q, cmd, novel, labels, stepBulk);
+    // Always require confirmation — show plan steps before any execution
+    setConfirm({
+      risk: isDestructive ? 'High' : 'Low',
+      destructive: isDestructive,
+      title: isDestructive
+        ? `${cmd?.title ?? 'Request'} — confirmation required`
+        : `${cmd?.title ?? 'Plan ready'} — review before running`,
+      body: (data.text as string) ?? plan.summary ?? 'Review the steps below and confirm to execute.',
+      steps: labels,
+    });
   }, [executePlan]);
 
   const run = useCallback(() => {

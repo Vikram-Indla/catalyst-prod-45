@@ -45,6 +45,7 @@ export interface ConfirmState {
   destructive: boolean;
   title: string;
   body: string;
+  steps?: string[];
 }
 
 export interface ConfirmationEntry {

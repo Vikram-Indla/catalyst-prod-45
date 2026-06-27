@@ -1,9 +1,10 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Textfield } from '@/components/ads';
+import { supabase } from '@/integrations/supabase/client';
 import { T, AVATAR } from './tokens';
 import { Icon, ICONS, catIcon } from './icons';
 import { RiskLozenge, ResultLozenge, BulkTag } from './RiskLozenge';
-import type { ActivityItem } from './aiAdminConsole.types';
 
 type Console = ReturnType<typeof import('./useAiCommandConsole').useAiCommandConsole>;
 
@@ -55,33 +56,75 @@ export function AiCommandLibrary({ c }: { c: Console }) {
   );
 }
 
-// Demo data — wire to admin_audit_log (latest N entries, user-centric) in a future PR.
-const RECENT: ActivityItem[] = [
-  { initials: 'VI', avatarBg: AVATAR.purple, name: 'Vikram Indla', action: 'Product Owner role added', meta: 'by A. Rao · just now', result: 'Done' },
-  { initials: 'MK', avatarBg: AVATAR.teal, name: 'Maria Kapoor', action: 'Invited as Viewer', meta: 'by A. Rao · 11:38', result: 'Done' },
-  { initials: 'TL', avatarBg: AVATAR.blue, name: 'Team Lead · role', action: 'Allowed to edit releases', meta: 'by D. Mehta · 11:02', result: 'Done' },
-  { initials: 'JM', avatarBg: AVATAR.amber, name: 'Jon Mathers', action: 'Invitation sent', meta: 'by D. Mehta · 10:47', result: 'Pending' },
-  { initials: 'SD', avatarBg: AVATAR.red, name: 'Senior Developer · role', action: 'Sprint permission change stopped', meta: 'by A. Rao · Yesterday', result: 'Stopped' },
-];
+const AVATAR_COLORS = [AVATAR.purple, AVATAR.teal, AVATAR.blue, AVATAR.red, AVATAR.amber];
+
+function initials(name: string) {
+  return name.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('');
+}
+function avatarBg(name: string) {
+  let h = 0;
+  for (const c of name) h = (h << 5) - h + c.charCodeAt(0);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+function relTime(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  return `${Math.floor(diff / 86400000)}d ago`;
+}
 
 export function AiRecentActivity() {
+  const { data: rows = [], isLoading } = useQuery({
+    queryKey: ['ai-admin-recent-activity'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('user_product_roles')
+        .select('created_at, user_id, role_id')
+        .order('created_at', { ascending: false })
+        .limit(8);
+      if (!data?.length) return [];
+      const userIds = [...new Set(data.map(r => r.user_id))];
+      const roleIds = [...new Set(data.map(r => r.role_id))];
+      const [{ data: profiles }, { data: roles }] = await Promise.all([
+        supabase.from('profiles').select('id, full_name').in('id', userIds),
+        supabase.from('product_roles').select('id, name').in('id', roleIds),
+      ]);
+      const pMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p.full_name ?? '']));
+      const rMap = Object.fromEntries((roles ?? []).map(r => [r.id, r.name ?? '']));
+      return data.map(row => ({
+        name: pMap[row.user_id] ?? 'Unknown user',
+        action: `${rMap[row.role_id] ?? 'role'} assigned`,
+        time: relTime(row.created_at),
+      }));
+    },
+    staleTime: 0,
+    refetchInterval: 30000,
+  });
+
   return (
     <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px', borderBottom: `1px solid ${T.borderSubtle}` }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Recent activity</span>
-        <a style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: T.link, textDecoration: 'none', cursor: 'pointer' }}>View all</a>
+        {isLoading && <span style={{ fontSize: 11, color: T.subtlest }}>Loading…</span>}
+        <a href="/admin/access" style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: T.link, textDecoration: 'none', cursor: 'pointer' }}>View all</a>
       </div>
       <div style={{ padding: '4px 6px 8px' }}>
-        {RECENT.map((a, i) => (
+        {!isLoading && rows.length === 0 && (
+          <div style={{ padding: '16px 8px', textAlign: 'center', fontSize: 12, color: T.subtlest }}>No role changes yet.</div>
+        )}
+        {rows.map((a, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 8px', borderRadius: 6 }}
             onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ width: 28, height: 28, borderRadius: '50%', background: a.avatarBg, color: T.inverse, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 10, flex: '0 0 auto' }}>{a.initials}</span>
+            <span style={{ width: 28, height: 28, borderRadius: '50%', background: avatarBg(a.name), color: T.inverse, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 10, flex: '0 0 auto' }}>
+              {initials(a.name)}
+            </span>
             <span style={{ minWidth: 0, flex: 1 }}>
               <span style={{ display: 'block', fontSize: 13, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
               <span style={{ display: 'block', fontSize: 12, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action}</span>
-              <span style={{ display: 'block', fontSize: 11, color: T.disabled, marginTop: 1 }}>{a.meta}</span>
+              <span style={{ display: 'block', fontSize: 11, color: T.disabled, marginTop: 1 }}>{a.time}</span>
             </span>
-            <ResultLozenge result={a.result} />
+            <ResultLozenge result="Done" />
           </div>
         ))}
       </div>

@@ -40,19 +40,36 @@ function Palette({ groups, empty, query }: { groups: CommandGroup[]; empty: bool
   );
 }
 
-/** Inline confirm bar for High-risk / destructive runs (replaces the modal). */
+/** Plan preview + confirm bar. Always shown before any execution. */
 function InlineConfirm({ confirm, onCancel, onConfirm }: { confirm: ConfirmState; onCancel: () => void; onConfirm: () => void }) {
   const high = confirm.risk === 'High';
+  const bg = high ? T.bgDanger : T.bgInfo;
+  const accent = high ? T.textDanger : T.textDiscovery;
+  const iconPath = high ? ICONS.warn : ICONS.spark;
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginTop: 12, padding: '12px 14px', borderRadius: 6, background: high ? T.bgDanger : T.bgWarning }}>
-      <span style={{ color: high ? T.textDanger : T.textWarning, flex: '0 0 auto', marginTop: 1 }}><Icon path={ICONS.warn} size={16} w={2} /></span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{confirm.title}</div>
-        <div style={{ fontSize: 12, color: T.subtle, marginTop: 2 }}>{confirm.body}</div>
-      </div>
-      <div style={{ display: 'flex', gap: 8, flex: '0 0 auto' }}>
-        <Button appearance="subtle" onClick={onCancel}>Cancel</Button>
-        <Button appearance={high ? 'danger' : 'primary'} onClick={onConfirm}>{high ? 'Confirm & run' : 'Run'}</Button>
+    <div style={{ marginTop: 12, padding: '12px 14px', borderRadius: 6, background: bg, border: `1px solid ${high ? T.textDanger : T.borderSubtle}` }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+        <span style={{ color: accent, flex: '0 0 auto', marginTop: 1 }}>
+          <Icon path={iconPath} size={16} w={2} fill={high ? undefined : accent} />
+        </span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{confirm.title}</div>
+          <div style={{ fontSize: 12, color: T.subtle, marginTop: 2, lineHeight: 1.4 }}>{confirm.body}</div>
+          {confirm.steps && confirm.steps.length > 0 && (
+            <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {confirm.steps.map((s, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: T.text }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: accent, flex: '0 0 auto' }} />
+                  {s}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: 8, flex: '0 0 auto', alignSelf: 'flex-start' }}>
+          <Button appearance="subtle" onClick={onCancel}>Cancel</Button>
+          <Button appearance={high ? 'danger' : 'primary'} onClick={onConfirm}>Confirm & run</Button>
+        </div>
       </div>
     </div>
   );
