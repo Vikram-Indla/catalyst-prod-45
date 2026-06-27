@@ -67,6 +67,19 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/release-ops',
   },
   {
+    id: 'test-hub',
+    label: 'Test Hub',
+    iconName: 'FlaskConical',
+    path: '/admin/test',
+    children: [
+      { label: 'Priorities',    path: '/admin/test/priorities' },
+      { label: 'Case Types',    path: '/admin/test/case-types' },
+      { label: 'Case Statuses', path: '/admin/test/case-statuses' },
+      { label: 'Run Statuses',  path: '/admin/test/run-statuses' },
+      { label: 'Permissions',   path: '/admin/test/permissions' },
+    ],
+  },
+  {
     // 2026-06-21 — Generalised from "Jira" pocket to "Connections" so all
     // third-party integrations live under one section. Jira routes migrated
     // from /admin/workhub/* → /admin/connections/*. Slack, Notion, and Vercel
@@ -112,6 +125,11 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/connections/vercel',
   '/admin/ai-governance/translations',
   '/admin/ai-assistant',
+  '/admin/test/priorities',
+  '/admin/test/case-types',
+  '/admin/test/case-statuses',
+  '/admin/test/run-statuses',
+  '/admin/test/permissions',
 ]);
 
 /** Returns all leaf navigation paths (children only; section-level paths excluded). */

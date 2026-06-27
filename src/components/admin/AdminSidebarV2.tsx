@@ -28,6 +28,7 @@ import RoadmapIcon from '@atlaskit/icon/glyph/roadmap';
 import ShipIcon from '@atlaskit/icon/glyph/ship';
 import LinkIcon from '@atlaskit/icon/glyph/link';
 import LockIcon from '@atlaskit/icon/glyph/lock';
+import ComponentIcon from '@atlaskit/icon/glyph/component';
 import SearchIcon from '@atlaskit/icon/core/search';
 import Textfield from '@atlaskit/textfield';
 import {
@@ -71,6 +72,7 @@ const POCKET_ICONS: Record<string, SBIcon> = {
   'release-ops':   adaptGlyph(ShipIcon),
   'connections':   adaptGlyph(LinkIcon),
   'ai-governance': adaptGlyph(LockIcon),
+  'test-hub':      adaptGlyph(ComponentIcon),
 };
 
 // ---------------------------------------------------------------------------
