@@ -1,0 +1,9 @@
+# CONSENT GATES
+
+> Every invasive change needs explicit, logged user consent BEFORE it happens.
+
+| Gate ID | Change | Class | Why | Risk | Rollback | Requested | Consent | Evidence |
+|---------|--------|-------|-----|------|----------|-----------|---------|----------|
+| G-001 | Seed realistic tm_* test data in **cyij (dev)** | data write | D-004: reports need data to demonstrate | overwrites/adds demo rows in cyij tm_*; dev only, never prod | delete seeded rows by tag/batch id | 2026-06-27 | **approved-in-principle (D-004); HOLD actual write until SEED_PLAN reviewed** | pending |
+
+> No prod writes ever. cyij only. Seed rows must be tagged (e.g. a batch marker) for clean rollback.
