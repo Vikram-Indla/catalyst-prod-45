@@ -23,6 +23,8 @@ interface HuddleConnectionOpts {
   onLocalScreenEnded?: () => void;
   /** The other participant left — in a 2-person call this ends the call. */
   onPeerLeft?: () => void;
+  /** A marker/annotation message arrived from the peer over the data channel. */
+  onMarker?: (m: unknown) => void;
 }
 
 export class HuddleConnection {
@@ -38,6 +40,8 @@ export class HuddleConnection {
   private makingOffer = false;
   private joinTimer: ReturnType<typeof setInterval> | null = null;
   private joinAttempts = 0;
+  /** P2P data channel for screen-share markers/annotations. */
+  private markerChannel: RTCDataChannel | null = null;
 
   constructor(private opts: HuddleConnectionOpts) {}
 
@@ -65,6 +69,21 @@ export class HuddleConnection {
 
   setMicMuted(muted: boolean): void {
     this.localStream?.getAudioTracks().forEach((t) => { t.enabled = !muted; });
+  }
+
+  private wireMarkerChannel(): void {
+    const ch = this.markerChannel;
+    if (!ch) return;
+    ch.onmessage = (e) => {
+      try { this.opts.onMarker?.(JSON.parse(e.data as string)); } catch { /* ignore */ }
+    };
+  }
+
+  /** Send a marker/annotation message to the peer (no-op until channel open). */
+  sendMarker(data: unknown): void {
+    if (this.markerChannel?.readyState === 'open') {
+      try { this.markerChannel.send(JSON.stringify(data)); } catch { /* ignore */ }
+    }
   }
 
   isScreenSharing(): boolean {
@@ -105,6 +124,8 @@ export class HuddleConnection {
     this.screenStream?.getTracks().forEach((t) => t.stop());
     this.screenStream = null;
     this.screenSender = null;
+    try { this.markerChannel?.close(); } catch { /* ignore */ }
+    this.markerChannel = null;
     this.pc?.close();
     this.pc = null;
     this.unsub?.();
@@ -138,6 +159,8 @@ export class HuddleConnection {
       if (st === 'connecting' || st === 'connected' || st === 'completed') this.stopAnnounce();
       this.opts.onConnectionState(st);
     };
+    // Answerer receives the marker data channel the offerer created.
+    pc.ondatachannel = (e) => { this.markerChannel = e.channel; this.wireMarkerChannel(); };
     this.pc = pc;
     return pc;
   }
@@ -190,7 +213,13 @@ export class HuddleConnection {
         this.remoteId = sig.from;
         chatRealtime.sendHuddleSignal(this.opts.conversationId, { kind: 'join', from: this.opts.selfId });
         if (this.amOfferer() && !this.pc) {
-          await this.sendOffer(this.ensurePc());
+          const pc = this.ensurePc();
+          // Offerer creates the marker data channel (must exist before the offer).
+          if (typeof pc.createDataChannel === 'function') {
+            this.markerChannel = pc.createDataChannel('huddle-markers');
+            this.wireMarkerChannel();
+          }
+          await this.sendOffer(pc);
         }
         break;
       }

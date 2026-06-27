@@ -1,6 +1,12 @@
 // src/components/layout/HuddleScreenView.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen } from '@/store/huddleStore';
+import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen, sendHuddleMarker, onHuddleMarker } from '@/store/huddleStore';
+
+/** A drawn annotation stroke. Points are normalized (0..1) to the video area. */
+interface MarkerStroke { id: string; color: string; points: { x: number; y: number }[]; t: number; }
+const LOCAL_HEX = '#22A06B';   // my strokes = green; remote strokes use the sender's color
+const FADE_HOLD = 2500;        // ms at full opacity after last update
+const FADE_OUT = 700;          // ms fade-out duration
 
 /**
  * HuddleScreenView — the shared-screen window during a huddle.
@@ -26,6 +32,7 @@ export function HuddleScreenView() {
   const mode = useHuddleStore((s) => s.screenWindow);
   const setMode = useHuddleStore((s) => s.setScreenWindow);
   const stopScreen = useHuddleStore((s) => s.stopScreen);
+  const markerPen = useHuddleStore((s) => s.markerPen);
 
   const remoteSharing = !!active?.remoteSharing;
   const localSharing = !!active?.screenSharing;
@@ -37,6 +44,85 @@ export function HuddleScreenView() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const strokesRef = useRef<MarkerStroke[]>([]);
+  const drawingRef = useRef<MarkerStroke | null>(null);
+  const lastSendRef = useRef(0);
+
+  // receive remote markers → upsert by stroke id
+  useEffect(() => onHuddleMarker((m) => {
+    const s = m as MarkerStroke;
+    if (!s || !s.id || !Array.isArray(s.points)) return;
+    const arr = strokesRef.current;
+    const i = arr.findIndex((x) => x.id === s.id);
+    const next: MarkerStroke = { id: s.id, color: s.color || '#C9372C', points: s.points, t: Date.now() };
+    if (i >= 0) arr[i] = next; else arr.push(next);
+  }), []);
+
+  // redraw loop — draw all strokes scaled to the canvas, fade out old ones
+  useEffect(() => {
+    let raf = 0;
+    const loop = () => {
+      const cv = canvasRef.current;
+      if (cv) {
+        const w = cv.clientWidth, h = cv.clientHeight;
+        if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+        const ctx = cv.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, w, h);
+          const now = Date.now();
+          strokesRef.current = strokesRef.current.filter((s) => now - s.t < FADE_HOLD + FADE_OUT);
+          for (const s of strokesRef.current) {
+            const age = now - s.t;
+            const op = age < FADE_HOLD ? 1 : Math.max(0, 1 - (age - FADE_HOLD) / FADE_OUT);
+            ctx.globalAlpha = op;
+            ctx.strokeStyle = s.color;
+            ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.beginPath();
+            s.points.forEach((p, idx) => {
+              const x = p.x * w, y = p.y * h;
+              if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1;
+        }
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const normPt = (e: React.PointerEvent) => {
+    const cv = canvasRef.current!;
+    const r = cv.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height };
+  };
+  const onCanvasDown = useCallback((e: React.PointerEvent) => {
+    if (!markerPen) return;
+    e.stopPropagation();
+    const id = `${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+    const stroke: MarkerStroke = { id, color: LOCAL_HEX, points: [normPt(e)], t: Date.now() };
+    drawingRef.current = stroke;
+    strokesRef.current.push(stroke);
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* ignore */ }
+  }, [markerPen]);
+  const onCanvasMove = useCallback((e: React.PointerEvent) => {
+    const d = drawingRef.current;
+    if (!markerPen || !d || e.buttons === 0) return;
+    d.points.push(normPt(e));
+    d.t = Date.now();
+    const now = Date.now();
+    if (now - lastSendRef.current > 50) {
+      lastSendRef.current = now;
+      sendHuddleMarker({ id: d.id, color: d.color, points: d.points });
+    }
+  }, [markerPen]);
+  const onCanvasUp = useCallback(() => {
+    const d = drawingRef.current;
+    if (d) { sendHuddleMarker({ id: d.id, color: d.color, points: d.points }); drawingRef.current = null; }
+  }, []);
 
   // bind the right stream to the <video>
   useEffect(() => {
@@ -93,13 +179,29 @@ export function HuddleScreenView() {
   const maximized = mode === 'maximized';
 
   const videoEl = (
-    <video
-      ref={videoRef}
-      autoPlay
-      playsInline
-      muted
-      style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }}
-    />
+    <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex' }}>
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }}
+      />
+      {/* annotation overlay — captures pointer only when MY pen is enabled */}
+      <canvas
+        ref={canvasRef}
+        onPointerDown={onCanvasDown}
+        onPointerMove={onCanvasMove}
+        onPointerUp={onCanvasUp}
+        onPointerCancel={onCanvasUp}
+        style={{
+          position: 'absolute', inset: 0, width: '100%', height: '100%',
+          pointerEvents: markerPen ? 'auto' : 'none',
+          cursor: markerPen ? 'crosshair' : 'default',
+          touchAction: 'none',
+        }}
+      />
+    </div>
   );
 
   const titleBar = (

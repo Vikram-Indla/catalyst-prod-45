@@ -34,6 +34,9 @@ interface HuddleStore {
   ticketsWindow: TicketsWindowMode;
   /** Whether the tickets window already auto-opened once (5s after connect). */
   ticketsAutoOpened: boolean;
+  /** Is MY annotation pen enabled (lets me draw on the shared screen)? */
+  markerPen: boolean;
+  setMarkerPen: (on: boolean) => void;
   enter: (args: EnterArgs) => Promise<void>;
   leave: () => void;
   toggleMute: () => void;
@@ -63,6 +66,14 @@ export function getHuddleRemoteStream(): MediaStream | null {
 /** Screen-share streams (module refs — change outside React). */
 export function getHuddleLocalScreen(): MediaStream | null { return localScreenStream; }
 export function getHuddleRemoteScreen(): MediaStream | null { return remoteScreenStream; }
+
+/** Screen-share markers — sent/received over the WebRTC data channel (P2P). */
+const markerListeners = new Set<(m: unknown) => void>();
+export function onHuddleMarker(cb: (m: unknown) => void): () => void {
+  markerListeners.add(cb);
+  return () => { markerListeners.delete(cb); };
+}
+export function sendHuddleMarker(m: unknown): void { connection?.sendMarker(m); }
 
 function attachRemote(stream: MediaStream) {
   remoteStream = stream;
@@ -121,6 +132,8 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
   ticketsAutoOpened: false,
   setTicketsWindow: (m) => set({ ticketsWindow: m }),
   markTicketsAutoOpened: () => set({ ticketsAutoOpened: true }),
+  markerPen: false,
+  setMarkerPen: (on) => set({ markerPen: on }),
 
   enter: async ({ conversationId, huddleId, conversationName, selfId }) => {
     // Tear down any existing call first (one huddle at a time).
@@ -141,6 +154,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
         const a = get().active;
         if (a) set({ active: { ...a, screenSharing: false } });
       },
+      onMarker: (m) => { markerListeners.forEach((l) => l(m)); },
     });
     selfIdRef = selfId;
     huddleIdRef = huddleId;
@@ -149,6 +163,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
       screenWindow: 'normal',
       ticketsWindow: 'closed',
       ticketsAutoOpened: false,
+      markerPen: false,
     });
     await connection.start();
     void setOnCall(selfId, huddleId);
@@ -164,7 +179,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     void setOnCall(selfIdRef, null);
     selfIdRef = null;
     huddleIdRef = null;
-    set({ active: null, screenWindow: 'normal', ticketsWindow: 'closed', ticketsAutoOpened: false });
+    set({ active: null, screenWindow: 'normal', ticketsWindow: 'closed', ticketsAutoOpened: false, markerPen: false });
   },
 
   toggleMute: () => {
