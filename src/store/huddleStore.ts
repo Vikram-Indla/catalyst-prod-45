@@ -24,17 +24,24 @@ interface EnterArgs {
 }
 
 export type ScreenWindowMode = 'normal' | 'minimized' | 'maximized';
+export type TicketsWindowMode = 'closed' | 'open' | 'collapsed';
 
 interface HuddleStore {
   active: ActiveHuddle | null;
   /** Screen-share window display mode. */
   screenWindow: ScreenWindowMode;
+  /** Common-tickets window display mode. */
+  ticketsWindow: TicketsWindowMode;
+  /** Whether the tickets window already auto-opened once (5s after connect). */
+  ticketsAutoOpened: boolean;
   enter: (args: EnterArgs) => Promise<void>;
   leave: () => void;
   toggleMute: () => void;
   startScreen: () => Promise<void>;
   stopScreen: () => Promise<void>;
   setScreenWindow: (m: ScreenWindowMode) => void;
+  setTicketsWindow: (m: TicketsWindowMode) => void;
+  markTicketsAutoOpened: () => void;
   _setConnectionState: (s: RTCPeerConnectionState) => void;
 }
 
@@ -99,6 +106,10 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
   active: null,
   screenWindow: 'normal',
   setScreenWindow: (m) => set({ screenWindow: m }),
+  ticketsWindow: 'closed',
+  ticketsAutoOpened: false,
+  setTicketsWindow: (m) => set({ ticketsWindow: m }),
+  markTicketsAutoOpened: () => set({ ticketsAutoOpened: true }),
 
   enter: async ({ conversationId, huddleId, conversationName, selfId }) => {
     // Tear down any existing call first (one huddle at a time).
@@ -125,6 +136,8 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     set({
       active: { conversationId, huddleId, conversationName, micMuted: false, connectionState: 'new', screenSharing: false, remoteSharing: false },
       screenWindow: 'normal',
+      ticketsWindow: 'closed',
+      ticketsAutoOpened: false,
     });
     await connection.start();
   },
@@ -138,7 +151,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     void markLeft(huddleIdRef, selfIdRef);
     selfIdRef = null;
     huddleIdRef = null;
-    set({ active: null, screenWindow: 'normal' });
+    set({ active: null, screenWindow: 'normal', ticketsWindow: 'closed', ticketsAutoOpened: false });
   },
 
   toggleMute: () => {

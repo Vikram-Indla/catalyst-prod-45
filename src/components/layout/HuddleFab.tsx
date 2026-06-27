@@ -35,6 +35,7 @@ export function HuddleFab() {
   const stopScreen = useHuddleStore((s) => s.stopScreen);
   const screenWindow = useHuddleStore((s) => s.screenWindow);
   const setScreenWindow = useHuddleStore((s) => s.setScreenWindow);
+  const setTicketsWindow = useHuddleStore((s) => s.setTicketsWindow);
   const { huddle } = useActiveHuddle(active?.conversationId ?? null);
   const participants = huddle?.participants ?? [];
   const navigate = useNavigate();
@@ -292,6 +293,17 @@ export function HuddleFab() {
                 <ScreenIcon />
               </button>
             )}
+            {!connecting && (
+              <button
+                type="button"
+                data-huddle-btn
+                onClick={() => setTicketsWindow('open')}
+                title="Shared tickets"
+                style={iconBtnStyle('var(--ds-surface-sunken, #F7F8F9)')}
+              >
+                <TicketsIcon />
+              </button>
+            )}
             <button
               type="button"
               data-huddle-btn
@@ -329,6 +341,11 @@ const MicOffIcon = () => (
 const ScreenIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" />
+  </svg>
+);
+const TicketsIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 7h16M4 12h16M4 17h10" />
   </svg>
 );
 const PhoneDownIcon = () => (
