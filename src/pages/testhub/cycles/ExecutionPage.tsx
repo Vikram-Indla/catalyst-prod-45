@@ -292,7 +292,18 @@ function StepRunner({
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [completedRunCount, setCompletedRunCount] = useState(0);
   const timer = useTimer();
+
+  // Load existing run count for this scope (to display run number)
+  useEffect(() => {
+    if (!scope.id) return;
+    supabase
+      .from('tm_test_runs')
+      .select('id', { count: 'exact', head: true })
+      .eq('cycle_scope_id', scope.id)
+      .then(({ count }) => setCompletedRunCount(count ?? 0));
+  }, [scope.id]);
 
   // Init step states when case loads
   useEffect(() => {
@@ -334,14 +345,22 @@ function StepRunner({
       const dbStatus = runStatus.toLowerCase() as 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
       const isTerminal = runStatus !== 'NOT_RUN' && runStatus !== 'IN_PROGRESS';
 
+      // Compute next run number
+      const { data: maxRow } = await supabase
+        .from('tm_test_runs')
+        .select('run_number')
+        .eq('cycle_scope_id', scope.id)
+        .order('run_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const nextRunNumber = (maxRow?.run_number ?? 0) + 1;
+
       // Insert run record
-      // tm_test_runs keys on cycle_scope_id (NOT NULL) — case + cycle are
-      // derived via tm_cycle_scope. There is no cycle_id/scope_id/case_id column.
       const { data: run, error: runError } = await supabase
         .from('tm_test_runs')
         .insert({
           cycle_scope_id: scope.id,
-          run_number: 1,
+          run_number: nextRunNumber,
           status: dbStatus,
           executed_by: user.id,
           notes: notes || null,
@@ -401,7 +420,8 @@ function StepRunner({
 
       setShowSaveModal(false);
       setPendingFiles([]);
-      catalystToast.success(`Saved: ${runStatus}`);
+      setCompletedRunCount(nextRunNumber);
+      catalystToast.success(`Run #${nextRunNumber} saved: ${runStatus}`);
       timer.reset();
       onSaved();
     } catch (err: unknown) {
@@ -608,7 +628,12 @@ function StepRunner({
       />
 
       {/* Action row */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+        {completedRunCount > 0 && (
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            {completedRunCount} prior {completedRunCount === 1 ? 'run' : 'runs'} · saving as Run #{completedRunCount + 1}
+          </span>
+        )}
         <button
           onClick={() => setShowSaveModal(true)}
           style={{
@@ -619,7 +644,7 @@ function StepRunner({
             cursor: 'pointer',
           }}
         >
-          Save execution
+          {completedRunCount === 0 ? 'Save execution' : 'Add run'}
         </button>
       </div>
 
