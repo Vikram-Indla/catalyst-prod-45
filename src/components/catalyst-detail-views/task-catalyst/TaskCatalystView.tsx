@@ -48,6 +48,8 @@ import {
 } from '@/modules/tasks/hooks/useTaskDetails';
 import { ChecklistSection } from '@/modules/tasks/components/TaskDetailDrawer/ChecklistSection';
 import { AttachmentsSection } from '@/modules/tasks/components/TaskDetailDrawer/AttachmentsSection';
+// CAT-TASKS-20260627-001 Slice 6: task <-> work-item linking section.
+import { TaskLinkedItemsSection } from '@/modules/tasks/components/TaskLinkedItemsSection';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
@@ -576,6 +578,11 @@ export default function TaskCatalystView({
             </div>
           </section>
         )}
+
+        {/* Linked items — task <-> work-item links (Slice 6). Mirrors the Story
+            view's Linked Work Items placement (after content, before Activity).
+            Excludes the sub-task category in the picker (rule #1). */}
+        <TaskLinkedItemsSection taskId={itemId} />
 
         {/* Activity — canonical ActivityPanel (no worklog tab). */}
         <section style={{ marginTop: 8 }}>
