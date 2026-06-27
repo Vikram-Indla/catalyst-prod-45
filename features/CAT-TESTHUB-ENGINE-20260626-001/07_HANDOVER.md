@@ -11,9 +11,11 @@
 - **1c REMAINING (deferred, small):** Classic/BDD toggle, version-list is read-only display (works; create-version still via CaseDrawer), case_key format (TC-0001 vs TC-001). + deferred folder Move/drag.
 - **Phase 2 (Sets) — DONE & PROVEN (2026-06-27):** Sets surface pre-existed but was dead. Fixed: TestSetsPage missing react-router-dom import (page crashed); D10 repoint tm_test_sets FK projects→tm_projects (Set create FK-failed); D11 add tm_set_cases RLS policies (membership 403); SetDetailPage wrong tm_set_cases columns (set_id/order_index → test_set_id/sort_order); list shows live member count (not stale test_count). Proven live: SET-001 "Smoke Suite v1" + 3 members (TC-0001/001/002) persist; detail "Cases (3)"; list count 3. tsc clean.
   - **Phase 2 OPEN FLAG (raise before sign-off):** "version-pinned" membership NOT schema-supported (tm_set_cases has no version col). tm_cycle_sets table missing (Phase 3). 5 other tm_* FK outliers → projects (later).
-- **Active slice:** none (Phase 1 + Phase 2 sign-off gate).
-- **Execution authorization:** Phase 1 + Phase 2 done this session. Next: Phase 3 (Cycles) or 1c leftovers, on sign-off.
-- **Branch:** main. **DB:** staging cyij (verified). Migrations applied via MCP: 20260627120000 (D9), 130000 (D10), 140000 (D11).
+- **Phase 3a (Cycles: CRUD + scope) — DONE & PROVEN (2026-06-27):** CyclesPage/CycleDetailPage/ExecutionPage pre-existed + render fine. Proven live: CYC-001 "Regression Cycle Q3" created (cycle_key app-gen, status enum lowercase, project_id→tm_projects ✓); 3 cases persist in tm_cycle_scope; counters correct after D12. **D12:** dropped 3 redundant increment counter triggers on tm_cycle_scope (were double-counting with the recompute triggers → total 4 vs real 3); kept recompute (sync_cycle_scope_counters + cycle_scope_stats); backfilled. Proven: insert→4, delete→3.
+  - **Phase 3 OPEN FLAGS:** (1) app status filters use UPPERCASE 'PLANNED'/'IN_PROGRESS' but enum is lowercase → "Add to cycle" matches 0 cycles (SetDetailPage:427; check CyclesPage) — NOT fixed. (2) sets-to-cycle: tm_cycle_sets table missing on cyij. (3) Phase 3b (assignees day-bucket plan) not started — tm_cycle_scope.assigned_to exists, untested.
+- **Active slice:** none (sign-off gate; Phases 1, 2, 3a done).
+- **Execution authorization:** Phases 1/2/3a done this session. Next: Phase 3b (assignees) or Phase 4 (Execution — KEY) or 1c leftovers, on sign-off.
+- **Branch:** main. **DB:** staging cyij. Migrations via MCP: 20260627120000 (D9), 130000 (D10), 140000 (D11), 150000 (D12).
 - **Context health:** GREEN.
 
 ## WHAT'S DONE IN P0
