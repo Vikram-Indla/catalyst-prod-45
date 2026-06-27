@@ -137,7 +137,7 @@ export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiC
             onChange={e => c.setComposer(e.target.value)}
             onFocus={c.onFocus} onBlur={c.onBlur}
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); c.run(); } if (e.key === 'Escape') (e.target as HTMLInputElement).blur(); }}
-            placeholder="e.g. Make Vikram a Product Owner   ·   Reset password for maria@catalyst.io"
+            placeholder="e.g. Make Vikram Indla a Product Owner   ·   Reset password for Sikander Ahmad"
             aria-label="Admin request"
             style={{ flex: 1, alignSelf: 'stretch', border: 'none', outline: 'none', background: 'transparent', font: 'inherit', fontSize: 15, color: T.text, minWidth: 0 }}
           />
