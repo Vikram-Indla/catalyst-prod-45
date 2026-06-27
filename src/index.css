@@ -6702,18 +6702,14 @@ html.dark .cp-feed-type-tile,
 [data-theme="dark"] [data-radix-popover-content],
 .dark [role="dialog"],
 [data-theme="dark"] [role="dialog"] {
-  /* 2026-06-18 (Vikram): popovers / global search / dialogs match the
-     main-viewport reference (var(--ds-surface, #FFFFFF)), not the near-black --cp-ink-1 scheme. */
-  background: var(--cp-bg-elevated, var(--ds-surface, #ffffff)) !important;
-  /* 2026-06-27: was `var(--cp-bg-neutral …)` — a faint *background* token wrongly
-     used as TEXT color (≈7% alpha) → invisible menu/dialog text in dark mode.
-     Use the readable text token so all dark popovers/dropdowns/dialogs inherit
-     legible text. */
+  /* 2026-06-27 ADS parity (Task 03): popovers / menus / dialogs are floating
+     surfaces → ADS overlay tone (#282E33 dark / #FFFFFF light), one step above
+     the raised chrome (#22272B). Was --cp-bg-elevated (raised) which sat flat. */
+  background: var(--ds-surface-overlay, var(--cp-bg-overlay, #ffffff)) !important;
+  /* readable text token so all dark popovers/dropdowns/dialogs inherit legible text */
   color: var(--ds-text, #CECFD2) !important;
-  border-color: var(
-    --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
-  ) !important;
+  /* ADS alpha border (was --cp-bg-neutral = ~7% alpha, near-invisible) */
+  border-color: var(--ds-border, rgba(9,30,66,0.14)) !important;
 }
 
 .dark [data-radix-popper-content-wrapper] > div *,

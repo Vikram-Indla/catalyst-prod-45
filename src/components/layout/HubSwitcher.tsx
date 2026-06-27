@@ -220,7 +220,7 @@ export function HubSwitcher() {
                   ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
                   : 'transparent',
                 cursor: 'pointer',
-                color: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+                color: 'var(--ds-icon, #44546F)',
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => {
@@ -249,7 +249,9 @@ export function HubSwitcher() {
         className="z-[1000]"
         style={{
           width: 343,
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          border: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+          boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
           borderRadius: 8,
           padding: 0,
           maxHeight: 'none',
@@ -258,12 +260,7 @@ export function HubSwitcher() {
       >
         <style>{`
           [data-hub-switcher-section] [class*="SectionTitle"] {
-            color: var(--ds-text-subtle, #505258) !important;
-          }
-          @media (prefers-color-scheme: dark) {
-            [data-hub-switcher-section] [class*="SectionTitle"] {
-              color: var(--ds-text-subtle, #e0e0e0) !important;
-            }
+            color: var(--ds-text-subtle, #44546F) !important;
           }
         `}</style>
         <div
