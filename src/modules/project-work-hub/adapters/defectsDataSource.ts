@@ -13,14 +13,16 @@ import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
 import { BIZ_SOURCE, type BacklogDataSource } from './backlogDataSource';
 
+// Values MUST match the tm_defect_status enum exactly (lowercase): the chosen
+// value is written straight to tm_defects.status via onUpdate. The prior list
+// used UPPERCASE + invalid values (FIXED/VERIFIED/WONT_FIX/DUPLICATE) that the
+// enum rejects (400), and was missing resolved/reopened.
 const DEFECT_STATUSES: Array<{ value: string; label: string; appearance: LozengeAppearance }> = [
-  { value: 'OPEN',        label: 'Open',        appearance: 'new'        },
-  { value: 'IN_PROGRESS', label: 'In progress', appearance: 'inprogress' },
-  { value: 'FIXED',       label: 'Fixed',       appearance: 'success'    },
-  { value: 'VERIFIED',    label: 'Verified',    appearance: 'success'    },
-  { value: 'CLOSED',      label: 'Closed',      appearance: 'default'    },
-  { value: 'WONT_FIX',    label: "Won't fix",   appearance: 'removed'    },
-  { value: 'DUPLICATE',   label: 'Duplicate',   appearance: 'moved'      },
+  { value: 'open',        label: 'Open',        appearance: 'new'        },
+  { value: 'in_progress', label: 'In progress', appearance: 'inprogress' },
+  { value: 'resolved',    label: 'Resolved',    appearance: 'success'    },
+  { value: 'closed',      label: 'Closed',      appearance: 'default'    },
+  { value: 'reopened',    label: 'Reopened',    appearance: 'moved'      },
 ];
 const STATUS_BY_VALUE = new Map(DEFECT_STATUSES.map((s) => [s.value, s]));
 
@@ -91,14 +93,14 @@ export function useDefectsSource(): BacklogDataSource | null {
   const resolvedStatusAppearance = useCallback(
     (status: string | null | undefined): LozengeAppearance => {
       if (!status) return 'default';
-      return STATUS_BY_VALUE.get(status.toUpperCase())?.appearance ?? 'default';
+      return STATUS_BY_VALUE.get(status.toLowerCase())?.appearance ?? 'default';
     },
     [],
   );
   const resolvedStatusLabel = useCallback(
     (status: string | null | undefined): string => {
       if (!status) return '—';
-      return STATUS_BY_VALUE.get(status.toUpperCase())?.label ?? status;
+      return STATUS_BY_VALUE.get(status.toLowerCase())?.label ?? status;
     },
     [],
   );
