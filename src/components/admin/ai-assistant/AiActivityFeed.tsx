@@ -9,9 +9,9 @@ type Kind = 'done' | 'active' | 'pending';
 
 function StepDot({ kind }: { kind: Kind }) {
   const base: React.CSSProperties = { display: 'flex', width: 18, height: 18, borderRadius: '50%', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' };
-  if (kind === 'done') return <span style={{ ...base, background: T.textSuccess, color: '#fff' }}><Icon path={ICONS.check} size={11} w={3} /></span>;
+  if (kind === 'done') return <span style={{ ...base, background: T.textSuccess, color: T.inverse }}><Icon path={ICONS.check} size={11} w={3} /></span>;
   if (kind === 'active') return <span style={{ ...base, border: `2px solid ${T.link}`, color: T.link, animation: 'cc-spin 1s linear infinite' }}><Icon path={ICONS.spinner} size={11} w={3} /></span>;
-  return <span style={{ ...base, border: `2px solid var(--ds-border-bold, #758195)` }} />;
+  return <span style={{ ...base, border: `2px solid ${T.borderBold}` }} />;
 }
 
 /** Live checkpoint card: thinking (indeterminate) → steps (determinate). */

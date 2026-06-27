@@ -42,7 +42,7 @@ export default function AiAccessPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.subtlest }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ds-background-warning-bold, #D97706)' }} />Staging</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ds-background-warning-bold)' }} />Staging</span>
               <span style={{ opacity: .5 }}>·</span><span>Super Admin</span>
               <span style={{ opacity: .5 }}>·</span><span>Plan-first</span>
             </div>

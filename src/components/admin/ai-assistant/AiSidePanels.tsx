@@ -75,7 +75,7 @@ export function AiRecentActivity() {
         {RECENT.map((a, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 8px', borderRadius: 6 }}
             onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ width: 28, height: 28, borderRadius: '50%', background: a.avatarBg, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 10, flex: '0 0 auto' }}>{a.initials}</span>
+            <span style={{ width: 28, height: 28, borderRadius: '50%', background: a.avatarBg, color: T.inverse, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 10, flex: '0 0 auto' }}>{a.initials}</span>
             <span style={{ minWidth: 0, flex: 1 }}>
               <span style={{ display: 'block', fontSize: 13, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
               <span style={{ display: 'block', fontSize: 12, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action}</span>
