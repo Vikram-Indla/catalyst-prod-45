@@ -47,6 +47,32 @@ export function useActiveHuddleIds(): Set<string> {
   return new Set((data ?? []).map((h) => h.conversation_id));
 }
 
+/** User ids currently in ANY huddle (global via user_presence.active_huddle_id).
+ *  Drives the DM-list "on a call" indicator. */
+export function useUsersOnCall(): Set<string> {
+  const qc = useQueryClient();
+  const instanceId = useId();
+  const { data } = useQuery({
+    queryKey: ['chat', 'users-on-call'],
+    staleTime: 10 * 1000,
+    queryFn: async () => {
+      try {
+        const { data } = await db.from('user_presence').select('user_id').not('active_huddle_id', 'is', null);
+        return ((data ?? []) as { user_id: string }[]).map((r) => r.user_id);
+      } catch { return []; }
+    },
+  });
+  useEffect(() => {
+    const ch = supabase
+      .channel(`users-on-call-${instanceId}`)
+      .on('postgres_changes' as 'system', { event: '*', schema: 'public', table: 'user_presence' } as never,
+        () => qc.invalidateQueries({ queryKey: ['chat', 'users-on-call'] }))
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [qc, instanceId]);
+  return new Set(data ?? []);
+}
+
 /** The active huddle (if any) for one conversation, with participants + full flag. */
 export function useActiveHuddle(conversationId: string | null) {
   const qc = useQueryClient();

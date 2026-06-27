@@ -18,6 +18,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useChatPeople } from '@/hooks/chat/useChatPeople';
 import { useStartDm } from '@/hooks/chat/useStartDm';
+import { useUsersOnCall } from '@/hooks/chat/useHuddleData';
 import { useStartProjectChannel } from '@/hooks/chat/useStartProjectChannel';
 import { useChatSearch, groupSearchHits } from '@/hooks/chat/useChatSearch';
 import { useChatArchive, useChatUnarchive, useChatTogglePin } from '@/hooks/chat/useChatActions';
@@ -180,21 +181,39 @@ function SectionHeader({ label, count, collapsed, unreadInSection, onToggle, act
 // Group-DM avatar: stack the first two members' avatars (face or single
 // initial via resolveAvatarUrl) instead of mashing both people's initials into
 // one tile. Mirrors the chat-v2 DmRichRow pattern. Single DMs keep one avatar.
-function DmStackAvatar({ c }: { c: ChatConversation }) {
+function DmStackAvatar({ c, onCall = false }: { c: ChatConversation; onCall?: boolean }) {
   const names = c.dmMemberNames ?? [];
-  if (c.kind === 'group_dm' && names.length >= 2) {
-    return (
-      <span aria-label={c.title} className="cc-dir__dm-stack">
-        <span className="cc-dir__dm-stack__top">
-          <AtlaskitAvatar name={names[0]} seed={names[0]} pixelSize={18} />
-        </span>
-        <span className="cc-dir__dm-stack__bottom">
-          <AtlaskitAvatar name={names[1]} seed={names[1]} pixelSize={18} />
-        </span>
+  const inner = (c.kind === 'group_dm' && names.length >= 2) ? (
+    <span aria-label={c.title} className="cc-dir__dm-stack">
+      <span className="cc-dir__dm-stack__top">
+        <AtlaskitAvatar name={names[0]} seed={names[0]} pixelSize={18} />
       </span>
-    );
-  }
-  return <AtlaskitAvatar name={c.title} seed={c.id} className="cc-dir__avatar" />;
+      <span className="cc-dir__dm-stack__bottom">
+        <AtlaskitAvatar name={names[1]} seed={names[1]} pixelSize={18} />
+      </span>
+    </span>
+  ) : (
+    <AtlaskitAvatar name={c.title} seed={c.id} className="cc-dir__avatar" />
+  );
+  if (!onCall) return inner;
+  return (
+    <span style={{ position: 'relative', display: 'inline-flex' }}>
+      {inner}
+      <span
+        title="On a huddle"
+        style={{
+          position: 'absolute', insetInlineEnd: -2, insetBlockEnd: -2, width: 15, height: 15,
+          borderRadius: '50%', background: 'var(--ds-icon-success, #22A06B)',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 0 0 2px var(--ds-surface-overlay, #FFFFFF)',
+        }}
+      >
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14h3v6H6a2 2 0 0 1-2-2zM20 14h-3v6h1a2 2 0 0 0 2-2z" />
+        </svg>
+      </span>
+    </span>
+  );
 }
 
 interface ConvRowProps {
@@ -304,6 +323,8 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
   const { user } = useAuth();
   const { role } = useUserRole();
   const isAdmin = role === 'admin';
+  const usersOnCall = useUsersOnCall();
+  const dmOnCall = (c: ChatConversation) => (c.dmMemberIds ?? []).some((id) => usersOnCall.has(id));
   const { groups, isLoading } = useChatPeople();
   const startDm = useStartDm();
   const startChannel = useStartProjectChannel();
@@ -558,7 +579,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
     if (c.kind === 'channel') {
       return <ProjectIcon projectKey={c.projectKey ?? ''} size="medium" />;
     }
-    return <DmStackAvatar c={c} />;
+    return <DmStackAvatar c={c} onCall={dmOnCall(c)} />;
   };
 
   const renderMixedRow = (c: ChatConversation) => (
@@ -837,7 +858,7 @@ export function DockDirectory({ conversations, activeId, onSelectConversation, f
             onArchive={(id) => archive.mutate(id)}
             onTogglePin={handleTogglePin}
 
-            glyph={<DmStackAvatar c={c} />}
+            glyph={<DmStackAvatar c={c} onCall={dmOnCall(c)} />}
           />
         ))}
         {!collapsed['dms'] && !query && filtered.dms.length === 0 && (

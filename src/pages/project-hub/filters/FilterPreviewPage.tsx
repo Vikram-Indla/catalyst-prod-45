@@ -650,6 +650,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const urlFilterId = searchParams.get('filterId');
+  const urlJql = searchParams.get('jql');
 
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
   // When opened from a saved filter, this holds the raw saved JQL and name.
@@ -779,6 +780,16 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
       }
     }
   }, [loadedFilter]);
+
+  // Ad-hoc JQL passed via ?jql= (used by the huddle "shared tickets" deep-link).
+  useEffect(() => {
+    if (!urlJql) return;
+    setFilterMode('jql');
+    setJqlText(urlJql);
+    setSavedFilterJql(urlJql);
+    const parsed = jqlToFilterState(urlJql);
+    if (hasActiveFacets(parsed)) setFilters({ ...EMPTY_FILTERS, ...parsed });
+  }, [urlJql]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const facetOptions = useMemo(() => {
     const ALL_FACETS = ['workType', 'status', 'assignee', ...MORE_FILTERS_FACETS] as const;

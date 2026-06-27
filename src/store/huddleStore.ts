@@ -85,6 +85,17 @@ function detachRemote() {
   }
 }
 
+/** Global on-call flag so a DM list elsewhere can show "X is on a huddle". */
+async function setOnCall(userId: string | null, huddleId: string | null) {
+  if (!userId) return;
+  try {
+    await db.from('user_presence').upsert(
+      { user_id: userId, active_huddle_id: huddleId, last_seen_at: new Date().toISOString(), state: 'onsite' },
+      { onConflict: 'user_id' },
+    );
+  } catch { /* best-effort */ }
+}
+
 async function markLeft(huddleId: string | null, userId: string | null) {
   if (!huddleId || !userId) return;
   try {
@@ -140,6 +151,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
       ticketsAutoOpened: false,
     });
     await connection.start();
+    void setOnCall(selfId, huddleId);
   },
 
   leave: () => {
@@ -149,6 +161,7 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     localScreenStream = null;
     remoteScreenStream = null;
     void markLeft(huddleIdRef, selfIdRef);
+    void setOnCall(selfIdRef, null);
     selfIdRef = null;
     huddleIdRef = null;
     set({ active: null, screenWindow: 'normal', ticketsWindow: 'closed', ticketsAutoOpened: false });
