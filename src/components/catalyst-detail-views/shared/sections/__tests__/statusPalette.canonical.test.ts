@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { STATUS_BG, STATUS_TEXT, statusBg, categoryToAppearance } from '../statusPalette';
+import { STATUS_BG, STATUS_TEXT, statusBg, statusFg, categoryToAppearance } from '../statusPalette';
 
 const ROOT = resolve(__dirname, '../../../../..'); // → src/
 
@@ -20,16 +20,27 @@ function read(rel: string) {
 }
 
 describe('canonical status palette', () => {
-  it('pins the done/success background to the bright lime var(--ds-background-success-bold, #6A9A23)', () => {
-    expect(STATUS_BG.success).toBe('var(--ds-background-success-bold, #6A9A23)');
-    expect(statusBg('success')).toBe('var(--ds-background-success-bold, #6A9A23)');
+  // 2026-06-27 — migrated to ADS semantic subtle bg + matching text PAIRS
+  // (references/ads-token-map.md §STATUS BACKGROUNDS). Pairs are theme-aware:
+  // ADS resolves both bg and text correctly in light AND dark mode, so contrast
+  // passes WCAG in both. Replaces the prior non-theme-aware Jira hex that went
+  // light-on-light (invisible) in dark mode.
+  it('pins each status to its ADS subtle background token', () => {
+    expect(STATUS_BG.success).toBe('var(--ds-background-success, #DFFCF0)');
+    expect(statusBg('success')).toBe('var(--ds-background-success, #DFFCF0)');
     expect(STATUS_TEXT).toBe('var(--ds-text, #172B4D)');
   });
 
-  it('maps done category to the canonical success bg', () => {
-    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success-bold, #6A9A23)');
+  it('maps each category to its canonical ADS subtle bg', () => {
+    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success, #DFFCF0)');
     expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information, #E9F2FF)');
-    expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-border, #DFE1E6)');
+    expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-background-neutral, #F1F2F4)');
+  });
+
+  it('pairs each status bg with its matching ADS text token (WCAG in both themes)', () => {
+    expect(statusFg('success')).toBe('var(--ds-text-success, #216E4E)');
+    expect(statusFg('inprogress')).toBe('var(--ds-text-information, #0055CC)');
+    expect(statusFg('default')).toBe('var(--ds-text, #172B4D)');
   });
 });
 
