@@ -80,3 +80,30 @@ export interface CommandGroup {
   count: number;
   items: CommandView[];
 }
+
+// Edge function types (mirrors supabase/functions/ai-admin-assistant/index.ts)
+export type ActionType =
+  | 'invite_user' | 'assign_product_role' | 'remove_from_role'
+  | 'create_role' | 'update_permissions' | 'deactivate_role'
+  | 'delete_user' | 'reset_password';
+
+export interface CommandStep {
+  id: string;
+  label: string;
+  action_type: ActionType;
+  params: Record<string, unknown>;
+  rollback_label?: string;
+}
+
+export interface CommandPlan {
+  summary: string;
+  steps: CommandStep[];
+  warnings: string[];
+}
+
+export interface StepResult {
+  id: string;
+  label: string;
+  status: 'success' | 'failed' | 'rolled_back' | 'skipped';
+  error?: string;
+}

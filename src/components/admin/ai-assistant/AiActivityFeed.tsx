@@ -9,7 +9,7 @@ type Kind = 'done' | 'active' | 'pending';
 
 function StepDot({ kind }: { kind: Kind }) {
   const base: React.CSSProperties = { display: 'flex', width: 18, height: 18, borderRadius: '50%', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' };
-  if (kind === 'done') return <span style={{ ...base, background: T.textSuccess, color: T.inverse }}><Icon path={ICONS.check} size={11} w={3} /></span>;
+  if (kind === 'done') return <span style={{ ...base, background: T.bgSuccessBold, color: T.inverse }}><Icon path={ICONS.check} size={11} w={3} /></span>;
   if (kind === 'active') return <span style={{ ...base, border: `2px solid ${T.link}`, color: T.link, animation: 'cc-spin 1s linear infinite' }}><Icon path={ICONS.spinner} size={11} w={3} /></span>;
   return <span style={{ ...base, border: `2px solid ${T.borderBold}` }} />;
 }
@@ -69,7 +69,7 @@ function RunningCard({ r, onCancel }: { r: RunState; onCancel: () => void }) {
 
 function HistoryCard({ h, onAgain, onBulk }: { h: ConfirmationEntry; onAgain: () => void; onBulk: () => void }) {
   return (
-    <div style={{ border: `1px solid ${T.border}`, borderLeft: `3px solid ${T.textSuccess}`, borderRadius: 8, overflow: 'hidden', marginBottom: 12 }}>
+    <div style={{ border: `1px solid ${T.border}`, borderLeft: `3px solid ${T.bgSuccessBold}`, borderRadius: 8, overflow: 'hidden', marginBottom: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 14px', background: T.bgSuccess, borderBottom: `1px solid ${T.borderSubtle}`, flexWrap: 'wrap' }}>
         <span style={{ color: T.textSuccess, display: 'inline-flex' }}><Icon path={ICONS.checkC} size={16} w={2.2} /></span>
         <span style={{ fontSize: 13, fontWeight: 600, color: T.textSuccess }}>{h.headline}</span>

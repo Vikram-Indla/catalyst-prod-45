@@ -1,6 +1,6 @@
 import React from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Button } from '@/components/ads';
+import { Button, CatalystBreadcrumbs } from '@/components/ads';
 import { T } from '@/components/admin/ai-assistant/tokens';
 import { Icon, ICONS } from '@/components/admin/ai-assistant/icons';
 import { useAiCommandConsole } from '@/components/admin/ai-assistant/useAiCommandConsole';
@@ -26,11 +26,10 @@ export default function AiAccessPage() {
       <style>{CSS}</style>
       <div style={{ padding: '20px 32px 48px', minHeight: '100%' }}>
         {/* breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: T.subtlest, marginBottom: 8 }}>
-          <span style={{ color: T.link, cursor: 'pointer' }}>Administration</span>
-          <Icon path="M9 18l6-6-6-6" size={12} w={2} />
-          <span>AI assistant</span>
-        </div>
+        <CatalystBreadcrumbs items={[
+          { label: 'Administration', href: '/admin' },
+          { label: 'AI assistant' },
+        ]} />
 
         {/* header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 20 }}>

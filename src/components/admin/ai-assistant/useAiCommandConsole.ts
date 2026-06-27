@@ -1,8 +1,10 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { COMMANDS, filterCommands, matchCommand, groupCommands } from './aiCommands.catalog';
-import type { Command, CommandView, ConfirmationEntry, ConfirmState, LearnedCommand, RunState } from './aiAdminConsole.types';
-
-const DESTRUCTIVE = /delete|deny|deactivate|revoke|reset permissions|remove (a )?permission/i;
+import { supabase } from '@/integrations/supabase/client';
+import type {
+  Command, CommandView, ConfirmationEntry, ConfirmState, LearnedCommand, RunState,
+  CommandPlan, CommandStep, StepResult,
+} from './aiAdminConsole.types';
 
 function makeEntry(
   cmd: { title: string; risk: string; bulk?: boolean },
@@ -17,14 +19,6 @@ function makeEntry(
   };
 }
 
-/**
- * Drives the whole console. The run() flow here SIMULATES execution with
- * timers so the UI is fully demonstrable. To go live, replace execute() with
- * the real two-call contract:
- *   1) POST /functions/v1/ai-admin-assistant { message } -> { plan_id, plan }
- *   2) on confirm: POST { plan_id, confirmed: true }      -> step results + audit id
- * Re-check live DB state server-side; a 409 should surface a failure card.
- */
 export function useAiCommandConsole() {
   const [composer, setComposerRaw] = useState('');
   const [focused, setFocused] = useState(false);
@@ -36,14 +30,11 @@ export function useAiCommandConsole() {
 
   const learnedRef = useRef<LearnedCommand[]>([]);
   const pickRef = useRef<{ text: string; cmd: Command } | null>(null);
-  const tick = useRef<number>();
-  const think = useRef<number>();
+  const planRef = useRef<CommandPlan | null>(null);
   const blur = useRef<number>();
 
   useEffect(() => {
-    // Seed one prior action so Activity isn't empty on first load.
-    setHistory([makeEntry({ title: 'Invite a new user', risk: 'Low' }, 'Invitation email sent to maria@catalyst.io.', false, 1, '11:38', 'Invite maria@catalyst.io as Viewer')]);
-    return () => { window.clearInterval(tick.current); window.clearTimeout(think.current); window.clearTimeout(blur.current); };
+    return () => { window.clearTimeout(blur.current); };
   }, []);
 
   const all = useCallback(() => [...learnedRef.current, ...COMMANDS], []);
@@ -74,54 +65,102 @@ export function useAiCommandConsole() {
       ? `${r.count} of ${r.count} updated successfully · 0 failed.`
       : 'Completed and recorded in the audit log.';
     setHistory(h => [makeEntry(r.cmd ?? { title: r.title, risk: r.risk, bulk: r.bulk }, summary, r.novel, h.length + 2, 'just now', r.request), ...h].slice(0, 6));
+    setRunning(null);
     setComposerRaw('');
+    planRef.current = null;
   }, []);
 
-  const execute = useCallback((q: string, cmd: Command | null, novel: boolean) => {
-    window.clearInterval(tick.current); window.clearTimeout(think.current);
-    const bulk = cmd ? !!cmd.bulk : ((q.match(/@/g) || []).length > 1 || /\b(everyone|all|multiple|many)\b/i.test(q));
-    const count = bulk ? Math.max((q.match(/@/g) || []).length, (q.match(/,/g) || []).length + 1, 3) : 1;
-    const labels = ['Checking current access', `Applying the change${bulk ? 's' : ''}`, 'Recording in the audit log', 'Confirming the result'];
-    setConfirm(null); setFocused(false);
-    setRunning({ phase: 'thinking', title: cmd ? cmd.title : `"${q}"`, request: q, risk: cmd ? cmd.risk : 'Medium', bulk, count, labels, cur: 0, novel, cmd });
-    think.current = window.setTimeout(() => {
-      setRunning(r => (r ? { ...r, phase: 'steps', cur: 0 } : r));
-      tick.current = window.setInterval(() => {
-        setRunning(r => {
-          if (!r) { window.clearInterval(tick.current); return r; }
-          const cur = r.cur + 1;
-          if (cur > r.labels.length) { window.clearInterval(tick.current); finish(r); return null; }
-          return { ...r, cur };
-        });
-      }, 600);
-    }, 850);
+  // Phase 2: execute the confirmed plan, animate steps, call edge function
+  const executePlan = useCallback(async (
+    plan: CommandPlan, q: string, cmd: Command | null, novel: boolean, labels: string[], bulk: boolean,
+  ) => {
+    for (let i = 0; i < labels.length; i++) {
+      setRunning(r => r ? { ...r, cur: i } : r);
+      await new Promise(res => setTimeout(res, 400));
+    }
+
+    const { data, error } = await supabase.functions.invoke('ai-admin-assistant', {
+      body: { action: 'execute', plan },
+    });
+
+    if (error || !data) { setRunning(null); planRef.current = null; return; }
+
+    const successCount = (data.steps as StepResult[])?.filter(s => s.status === 'success').length ?? labels.length;
+    setRunning(r => r ? { ...r, cur: labels.length, count: successCount } : r);
+    await new Promise(res => setTimeout(res, 250));
+
+    finish({
+      phase: 'steps',
+      title: cmd?.title ?? `"${q.slice(0, 30)}${q.length > 30 ? '…' : ''}"`,
+      request: q, risk: cmd?.risk ?? 'Medium',
+      bulk, count: successCount, labels, cur: labels.length, novel, cmd,
+    });
   }, [finish]);
+
+  // Phase 1: parse intent, get plan, decide confirm vs auto-execute
+  const execute = useCallback(async (q: string, cmd: Command | null, novel: boolean) => {
+    planRef.current = null;
+    const bulk = cmd ? !!cmd.bulk : ((q.match(/@/g) || []).length > 1 || /\b(everyone|all|multiple|many)\b/i.test(q));
+    setConfirm(null); setFocused(false);
+    setRunning({
+      phase: 'thinking',
+      title: cmd ? cmd.title : `"${q.length > 30 ? q.slice(0, 30) + '…' : q}"`,
+      request: q, risk: cmd ? cmd.risk : 'Medium', bulk, count: 1, labels: [], cur: 0, novel, cmd,
+    });
+
+    const { data, error } = await supabase.functions.invoke('ai-admin-assistant', {
+      body: { message: q },
+    });
+
+    if (error || !data) { setRunning(null); return; }
+
+    if (data.type !== 'plan' || !data.plan) {
+      // respond_only or clarify — AI replied but nothing to execute
+      setRunning(null);
+      return;
+    }
+
+    const plan = data.plan as CommandPlan;
+    planRef.current = plan;
+
+    const labels = plan.steps.map((s: CommandStep) => s.label);
+    const stepBulk = plan.steps.length > 1 || bulk;
+    const needsConfirm = plan.warnings.length > 0 ||
+      plan.steps.some((s: CommandStep) => s.action_type === 'delete_user' || s.action_type === 'deactivate_role');
+
+    setRunning(r => r ? { ...r, phase: 'steps', labels, cur: 0, bulk: stepBulk, count: plan.steps.length } : r);
+
+    if (needsConfirm) {
+      setConfirm({
+        risk: 'High', destructive: true,
+        title: `${cmd?.title ?? 'Request'} — confirmation required`,
+        body: (data.text as string) ?? plan.summary ?? 'Review and confirm before applying.',
+      });
+      return;
+    }
+
+    await executePlan(plan, q, cmd, novel, labels, stepBulk);
+  }, [executePlan]);
 
   const run = useCallback(() => {
     const q = composer.trim();
     if (!q || running) return;
     const cmd = match(q);
-    const novel = !cmd;
-    const risk = cmd ? cmd.risk : 'Medium';
-    const destructive = !!cmd && DESTRUCTIVE.test(cmd.title);
-    if ((risk === 'High' || destructive) && !confirm) {
-      setConfirm({
-        risk, destructive,
-        title: `${cmd ? cmd.title : 'Run request'} — confirmation required`,
-        body: risk === 'High'
-          ? 'High-risk change. The live state is re-checked before it runs; nothing is applied if the data changed.'
-          : 'This affects access. The live state is re-checked before it runs.',
-      });
-      return;
-    }
-    execute(q, cmd, novel);
-  }, [composer, running, confirm, match, execute]);
+    void execute(q, cmd, !cmd);
+  }, [composer, running, match, execute]);
 
-  const confirmRun = useCallback(() => { const q = composer.trim(); execute(q, match(q), !match(q)); }, [composer, match, execute]);
+  const confirmRun = useCallback(async () => {
+    const plan = planRef.current;
+    if (!plan || !running) return;
+    setConfirm(null);
+    const { request, bulk, novel, cmd } = running;
+    const labels = plan.steps.map(s => s.label);
+    await executePlan(plan, request, cmd, novel, labels, bulk);
+  }, [running, executePlan]);
+
   const cancelConfirm = useCallback(() => setConfirm(null), []);
   const cancelRun = useCallback(() => {
-    window.clearInterval(tick.current);
-    window.clearTimeout(think.current);
+    planRef.current = null;
     setRunning(null);
     setConfirm(null);
   }, []);

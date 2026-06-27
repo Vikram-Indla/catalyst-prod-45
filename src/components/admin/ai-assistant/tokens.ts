@@ -20,6 +20,7 @@ export const T = {
   selected:     'var(--ds-background-selected)',
   bgInfo:       'var(--ds-background-information)',
   bgSuccess:    'var(--ds-background-success)',
+  bgSuccessBold:'var(--ds-background-success-bold)',
   bgWarning:    'var(--ds-background-warning)',
   bgDanger:     'var(--ds-background-danger)',
   bgDiscovery:  'var(--ds-background-discovery)',
