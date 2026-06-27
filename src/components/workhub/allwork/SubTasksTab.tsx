@@ -155,7 +155,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         padding: '48px 24px', textAlign: 'center', gap: 8,
       }}>
-        <ListTree size={28} color="#A1A1AA" strokeWidth={1.5} />
+        <ListTree size={28} color="var(--ds-icon-subtle, #A1A1AA)" strokeWidth={1.5} />
         <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
           No sub-tasks found for this item.
         </span>

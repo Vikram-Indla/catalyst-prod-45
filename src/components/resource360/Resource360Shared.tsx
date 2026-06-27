@@ -33,7 +33,7 @@ export function StaleBadge({ ageDays, status, statusCategory }: { ageDays: numbe
 export function InlineExpansionPanel({ item, onOpenDetail }: { item: Resource360Item; onOpenDetail: () => void }) {
   return (
     <div style={{
-      padding: '10px 16px 10px 28px', background: '#FAF8F5',
+      padding: '10px 16px 10px 28px', background: 'var(--ds-surface-sunken, #FAF8F5)',
       borderBottom: '1px solid var(--divider)', borderLeft: '4px solid var(--cp-blue)',
       animation: 'expandIn 200ms ease-out',
     }}>

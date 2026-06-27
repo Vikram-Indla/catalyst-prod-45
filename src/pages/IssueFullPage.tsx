@@ -164,7 +164,7 @@ export default function IssueFullPage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         height: '100%', minHeight: 400, fontFamily: 'var(--cp-font-body)', gap: 12,
       }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>
+        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #344054)' }}>
           {notFound ? 'Issue not found' : 'Error loading issue'}
         </span>
         <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>

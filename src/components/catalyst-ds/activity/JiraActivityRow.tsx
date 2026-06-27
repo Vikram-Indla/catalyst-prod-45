@@ -177,10 +177,10 @@ function useUserByNames(names: Array<string | null | undefined>) {
 // ─── Value renderers ────────────────────────────────────────────────
 
 const PRIORITY_GLYPH: Record<string, { glyph: string; color: string }> = {
-  Highest: { glyph: '↑↑', color: '#CD1316' },
-  High:    { glyph: '↑',  color: '#E2483D' },
-  Medium:  { glyph: '=',  color: '#E1A20B' },
-  Low:     { glyph: '↓',  color: '#2884FF' },
+  Highest: { glyph: '↑↑', color: 'var(--ds-text-danger, #CD1316)' },
+  High:    { glyph: '↑',  color: 'var(--ds-text-danger, #E2483D)' },
+  Medium:  { glyph: '=',  color: 'var(--ds-text-warning, #E1A20B)' },
+  Low:     { glyph: '↓',  color: 'var(--ds-link, #2884FF)' },
   Lowest:  { glyph: '↓↓', color: 'var(--ds-link, #0C66E4)' },
 };
 

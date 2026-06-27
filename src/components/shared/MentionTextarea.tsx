@@ -323,8 +323,8 @@ export function MentionText({ text, className }: MentionTextProps) {
               key={i}
               className="font-medium rounded px-1"
               style={{
-                color: '#2A6DF4',
-                backgroundColor: 'rgba(42, 109, 244, 0.1)',
+                color: 'var(--ds-link, #2A6DF4)',
+                backgroundColor: 'var(--ds-background-information, rgba(42, 109, 244, 0.1))',
               }}
             >
               {part}

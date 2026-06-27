@@ -52,7 +52,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             width: 36, height: 36, borderRadius: 8,
             background: 'var(--ds-background-danger, #FFEBEE)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Trash2 size={18} color="#D32F2F" />
+            <Trash2 size={18} color="var(--ds-icon-danger, #D32F2F)" />
           </div>
           <div>
             <div style={{ fontSize: 15, fontWeight: 600, color: tk.textPrimary }}>Delete work item?</div>
@@ -75,7 +75,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
               border: `1px solid ${tk.inputBorder}`, background: tk.inputBg,
               color: tk.textPrimary, outline: 'none', fontFamily: 'var(--cp-font-mono)',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#D32F2F'; }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-danger, #D32F2F)'; }}
             onBlur={e => { e.currentTarget.style.borderColor = tk.inputBorder; }}
           />
         </div>
