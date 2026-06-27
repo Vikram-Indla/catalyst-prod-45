@@ -52,3 +52,17 @@
 
 ## ANSWERED
 - (process) New feature vs continue lab → new feature. See DECISION_LOG D-000.
+
+---
+
+## OPEN — surfaced in 2nd probe (2026-06-27)
+
+### Q-007 | Defect & Incident reporting source
+**Found:** Real defects = `ph_issues` issue_type='QA Bug' (788) + 'Defect' (3). Real incidents = issue_type='Production Incident' (152). `tm_defects` = 1 (test-linked model). Standalone defects/incidents tables = 0.
+**Unknown:** Defect/Incident reports read from ph_issues (real volume) vs tm_defects (test-linked) vs both?
+**Why:** D-001 set tm_* as test schema, but the real defect/incident data is in ph_issues.
+**Options:** A. ph_issues for volume + tm_defects for test-linked detail (hybrid) · B. ph_issues only · C. tm_defects only (needs seeding).
+**Blocks:** Defects & Incidents report group (taxonomy B1), seed plan defect rows.
+
+### Q-004 | Coverage denominator (still open)
+Coverage % = covered ÷ ? → stories (ph_issues Story=683) / requirements / test cases / executions. Blocks all coverage formulas.
