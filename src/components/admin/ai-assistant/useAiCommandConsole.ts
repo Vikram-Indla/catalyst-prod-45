@@ -2,6 +2,8 @@ import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { COMMANDS, filterCommands, matchCommand, groupCommands } from './aiCommands.catalog';
 import { supabase } from '@/integrations/supabase/client';
+import { useEntitySearch } from './useEntitySearch';
+import type { EntitySuggestion } from './useEntitySearch';
 import type {
   Command, CommandView, ConfirmationEntry, ConfirmState, LearnedCommand, RunState,
   CommandPlan, CommandStep, StepResult,
@@ -17,6 +19,7 @@ function makeEntry(
     request, summary, novel, time,
     auditId: `AUD-2026-${1040 + n}`,
     bulk: !!cmd.bulk,
+    type: 'done',
   };
 }
 
@@ -50,6 +53,20 @@ export function useAiCommandConsole() {
     if (pickRef.current && v !== pickRef.current.text) pickRef.current = null;
     setComposerRaw(v); setConfirm(null);
   }, []);
+
+  // Entity autocomplete — replaces the last word in composer with entity's insert value
+  const pickEntity = useCallback((s: EntitySuggestion) => {
+    setComposerRaw(prev => {
+      const words = prev.split(/(\s+)/);
+      // Replace last non-empty segment
+      let last = words.length - 1;
+      while (last > 0 && words[last].trim() === '') last--;
+      words[last] = s.insert;
+      return words.join('') + ' ';
+    });
+    pickRef.current = null;
+  }, []);
+
   const onFocus = () => setFocused(true);
   const onBlur = () => { window.clearTimeout(blur.current); blur.current = window.setTimeout(() => setFocused(false), 160); };
 
@@ -106,7 +123,7 @@ export function useAiCommandConsole() {
     });
   }, [finish, qc]);
 
-  // Phase 1: parse intent, get plan, decide confirm vs auto-execute
+  // Phase 1: parse intent, get plan; if AI responds without a plan → log as training instance
   const execute = useCallback(async (q: string, cmd: Command | null, novel: boolean) => {
     planRef.current = null;
     const bulk = cmd ? !!cmd.bulk : ((q.match(/@/g) || []).length > 1 || /\b(everyone|all|multiple|many)\b/i.test(q));
@@ -124,8 +141,27 @@ export function useAiCommandConsole() {
     if (error || !data) { setRunning(null); return; }
 
     if (data.type !== 'plan' || !data.plan) {
-      // respond_only or clarify — AI replied but nothing to execute
+      // Log as self-training instance so future model improvements can reference it
+      void supabase.from('ai_command_training').insert({
+        message: q,
+        intent_type: (data.type as string) ?? 'unknown',
+        response_text: (data.text as string) ?? '',
+      });
       setRunning(null);
+      // Show AI's text response in the activity feed
+      if (data.text) {
+        setHistory(h => [{
+          id: `h${h.length + 1}-${Date.now()}`,
+          headline: 'AI response',
+          request: q,
+          summary: data.text as string,
+          novel: false,
+          time: 'just now',
+          auditId: '',
+          bulk: false,
+          type: 'clarify',
+        }, ...h].slice(0, 6));
+      }
       return;
     }
 
@@ -190,6 +226,8 @@ export function useAiCommandConsole() {
   const paletteOpen = focused && !running;
   const paletteEmpty = paletteOpen && composer.trim() !== '' && paletteFiltered.length === 0;
 
+  const entitySuggestions = useEntitySearch(composer);
+
   const railGroups = useMemo(() => {
     const base = all().filter(c => railTab === 'All' || (railTab === 'Single' ? !c.bulk : !!c.bulk));
     const s = search.trim().toLowerCase();
@@ -208,5 +246,6 @@ export function useAiCommandConsole() {
     running, confirm, history, run, confirmRun, cancelConfirm, cancelRun,
     statusKind, paletteOpen, paletteEmpty, paletteGroups, railGroups, chips,
     libCount: railGroups.reduce((s, g) => s + g.items.length, 0),
+    entitySuggestions, pickEntity,
   };
 }

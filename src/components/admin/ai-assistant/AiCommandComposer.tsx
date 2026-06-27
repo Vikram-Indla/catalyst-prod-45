@@ -5,10 +5,49 @@ import { Icon, ICONS, catIcon } from './icons';
 import { RiskLozenge, BulkTag } from './RiskLozenge';
 import type { CommandGroup, ConfirmState } from './aiAdminConsole.types';
 
+const ENTITY_BADGE: Record<string, { color: string; label: string }> = {
+  person:     { color: 'var(--ds-background-information-bold)', label: 'P' },
+  role:       { color: 'var(--ds-background-success-bold)',     label: 'R' },
+  department: { color: 'var(--ds-background-warning-bold)',     label: 'D' },
+};
+
+type Console = ReturnType<typeof import('./useAiCommandConsole').useAiCommandConsole>;
+
 /** Autocomplete palette — renders IN-FLOW under the input (never absolute). */
-function Palette({ groups, empty, query }: { groups: CommandGroup[]; empty: boolean; query: string }) {
+function Palette({ groups, empty, query, entitySuggestions, onPickEntity }: {
+  groups: CommandGroup[];
+  empty: boolean;
+  query: string;
+  entitySuggestions: Console['entitySuggestions'];
+  onPickEntity: Console['pickEntity'];
+}) {
+  const hasEntities = entitySuggestions.length > 0;
   return (
-    <div style={{ marginTop: 8, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, maxHeight: 330, overflowY: 'auto', padding: 6 }}>
+    <div style={{ marginTop: 8, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, maxHeight: 360, overflowY: 'auto', padding: 6 }}>
+      {hasEntities && (
+        <div>
+          <div style={{ padding: '6px 8px 2px', fontSize: 10, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>People, roles &amp; departments</div>
+          {entitySuggestions.map((s, i) => {
+            const badge = ENTITY_BADGE[s.type] ?? ENTITY_BADGE.department;
+            return (
+              <button key={i} onMouseDown={() => onPickEntity(s)}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', border: 'none', background: 'transparent', borderRadius: 5, padding: '8px 10px', cursor: 'pointer', font: 'inherit' }}
+                onMouseEnter={e => (e.currentTarget.style.background = T.selected)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <span style={{ width: 22, height: 22, borderRadius: '50%', background: badge.color, color: 'var(--ds-text-inverse)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flex: '0 0 auto' }}>
+                  {badge.label}
+                </span>
+                <span style={{ minWidth: 0, flex: 1 }}>
+                  <span style={{ display: 'block', fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.label}</span>
+                  <span style={{ display: 'block', fontSize: 12, color: T.subtlest }}>{s.subtitle}</span>
+                </span>
+                <span style={{ fontSize: 11, color: T.disabled, textTransform: 'capitalize', flex: '0 0 auto' }}>{s.type}</span>
+              </button>
+            );
+          })}
+          {groups.length > 0 && <div style={{ height: 1, background: T.borderSubtle, margin: '4px 8px' }} />}
+        </div>
+      )}
       {empty && (
         <div style={{ padding: 14, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
           <span style={{ color: T.textDiscovery, flex: '0 0 auto', marginTop: 1 }}><Icon path={ICONS.spark} size={16} fill={T.textDiscovery} /></span>
@@ -75,9 +114,7 @@ function InlineConfirm({ confirm, onCancel, onConfirm }: { confirm: ConfirmState
   );
 }
 
-type Console = ReturnType<typeof import('./useAiCommandConsole').useAiCommandConsole>;
-
-export function AiCommandComposer({ c }: { c: Console }) {
+export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiCommandConsole').useAiCommandConsole> }) {
   const [hoverClear, setHoverClear] = useState(false);
   const statusLoz =
     c.statusKind === 'ready' ? <Lozenge appearance="default">Ready</Lozenge>
@@ -111,7 +148,15 @@ export function AiCommandComposer({ c }: { c: Console }) {
           <Button appearance="primary" onClick={c.run} iconAfter={<Icon path={ICONS.send} size={14} w={2} />}>Run</Button>
         </div>
 
-        {c.paletteOpen && !c.confirm && <Palette groups={c.paletteGroups} empty={c.paletteEmpty} query={c.composer} />}
+        {c.paletteOpen && !c.confirm && (
+          <Palette
+            groups={c.paletteGroups}
+            empty={c.paletteEmpty}
+            query={c.composer}
+            entitySuggestions={c.entitySuggestions}
+            onPickEntity={c.pickEntity}
+          />
+        )}
         {c.confirm && <InlineConfirm confirm={c.confirm} onCancel={c.cancelConfirm} onConfirm={c.confirmRun} />}
 
         {c.composer.trim() === '' && !c.focused && !c.running && (

@@ -57,6 +57,7 @@ export interface ConfirmationEntry {
   time: string;
   auditId: string;
   bulk: boolean;
+  type?: 'done' | 'clarify';
 }
 
 export interface ActivityItem {

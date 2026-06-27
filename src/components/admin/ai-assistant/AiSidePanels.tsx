@@ -74,29 +74,98 @@ function relTime(iso: string) {
   return `${Math.floor(diff / 86400000)}d ago`;
 }
 
+type ActivityKind = 'role' | 'failed_login' | 'pending_invite';
+interface ActivityRow {
+  sortKey: string;
+  name: string;
+  action: string;
+  time: string;
+  kind: ActivityKind;
+}
+
 export function AiRecentActivity() {
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ['ai-admin-recent-activity'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('user_product_roles')
-        .select('created_at, user_id, role_id')
-        .order('created_at', { ascending: false })
-        .limit(8);
-      if (!data?.length) return [];
-      const userIds = [...new Set(data.map(r => r.user_id))];
-      const roleIds = [...new Set(data.map(r => r.role_id))];
-      const [{ data: profiles }, { data: roles }] = await Promise.all([
-        supabase.from('profiles').select('id, full_name').in('id', userIds),
-        supabase.from('product_roles').select('id, name').in('id', roleIds),
+    queryFn: async (): Promise<ActivityRow[]> => {
+      const cutoff7d = new Date(Date.now() - 7 * 86400000).toISOString();
+      const cutoff24h = new Date(Date.now() - 86400000).toISOString();
+
+      const [{ data: roleAssignments }, { data: failedLogins }, { data: pendingInvites }] = await Promise.all([
+        supabase
+          .from('user_product_roles')
+          .select('created_at, user_id, role_id')
+          .order('created_at', { ascending: false })
+          .limit(6),
+        supabase
+          .from('login_audit_log')
+          .select('email, created_at')
+          .eq('success', false)
+          .gte('created_at', cutoff7d)
+          .order('created_at', { ascending: false })
+          .limit(30),
+        supabase
+          .from('user_invitations')
+          .select('email, full_name, created_at')
+          .is('accepted_at', null)
+          .lt('created_at', cutoff24h)
+          .order('created_at', { ascending: false })
+          .limit(15),
       ]);
+
+      // Resolve profile + role names for role assignments
+      const userIds = [...new Set((roleAssignments ?? []).map(r => r.user_id))];
+      const roleIds = [...new Set((roleAssignments ?? []).map(r => r.role_id))];
+      const [{ data: profiles }, { data: roles }] = userIds.length
+        ? await Promise.all([
+            supabase.from('profiles').select('id, full_name').in('id', userIds),
+            supabase.from('product_roles').select('id, name').in('id', roleIds),
+          ])
+        : [{ data: [] }, { data: [] }];
+
       const pMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p.full_name ?? '']));
       const rMap = Object.fromEntries((roles ?? []).map(r => [r.id, r.name ?? '']));
-      return data.map(row => ({
-        name: pMap[row.user_id] ?? 'Unknown user',
-        action: `${rMap[row.role_id] ?? 'role'} assigned`,
-        time: relTime(row.created_at),
-      }));
+
+      // Group failed logins by email — one row per email showing total count
+      const loginMap: Record<string, { count: number; latest: string }> = {};
+      for (const l of (failedLogins ?? [])) {
+        if (!loginMap[l.email]) loginMap[l.email] = { count: 0, latest: l.created_at };
+        loginMap[l.email].count++;
+        if (l.created_at > loginMap[l.email].latest) loginMap[l.email].latest = l.created_at;
+      }
+
+      // Deduplicate pending invites by email (keep most recent per email)
+      const inviteMap: Record<string, string> = {};
+      for (const i of (pendingInvites ?? [])) {
+        if (!inviteMap[i.email] || i.created_at > inviteMap[i.email]) {
+          inviteMap[i.email] = i.created_at;
+        }
+      }
+
+      const items: ActivityRow[] = [
+        ...(roleAssignments ?? []).map(row => ({
+          sortKey: row.created_at,
+          name: pMap[row.user_id] ?? 'Unknown user',
+          action: `${rMap[row.role_id] ?? 'role'} assigned`,
+          time: relTime(row.created_at),
+          kind: 'role' as const,
+        })),
+        ...Object.entries(loginMap).map(([email, info]) => ({
+          sortKey: info.latest,
+          name: email,
+          action: info.count > 1 ? `${info.count} failed login attempts` : 'Failed login attempt',
+          time: relTime(info.latest),
+          kind: 'failed_login' as const,
+        })),
+        ...Object.entries(inviteMap).map(([email, createdAt]) => ({
+          sortKey: createdAt,
+          name: email,
+          action: 'Invite not accepted',
+          time: relTime(createdAt),
+          kind: 'pending_invite' as const,
+        })),
+      ];
+
+      return items.sort((a, b) => b.sortKey.localeCompare(a.sortKey)).slice(0, 12);
     },
     staleTime: 0,
     refetchInterval: 30000,
@@ -111,22 +180,38 @@ export function AiRecentActivity() {
       </div>
       <div style={{ padding: '4px 6px 8px' }}>
         {!isLoading && rows.length === 0 && (
-          <div style={{ padding: '16px 8px', textAlign: 'center', fontSize: 12, color: T.subtlest }}>No role changes yet.</div>
+          <div style={{ padding: '16px 8px', textAlign: 'center', fontSize: 12, color: T.subtlest }}>No recent activity.</div>
         )}
-        {rows.map((a, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 8px', borderRadius: 6 }}
-            onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <span style={{ width: 28, height: 28, borderRadius: '50%', background: avatarBg(a.name), color: T.inverse, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 10, flex: '0 0 auto' }}>
-              {initials(a.name)}
-            </span>
-            <span style={{ minWidth: 0, flex: 1 }}>
-              <span style={{ display: 'block', fontSize: 13, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
-              <span style={{ display: 'block', fontSize: 12, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action}</span>
-              <span style={{ display: 'block', fontSize: 11, color: T.disabled, marginTop: 1 }}>{a.time}</span>
-            </span>
-            <ResultLozenge result="Done" />
-          </div>
-        ))}
+        {rows.map((a, i) => {
+          const isFailedLogin = a.kind === 'failed_login';
+          const isPendingInvite = a.kind === 'pending_invite';
+          const avatarBgColor = isFailedLogin
+            ? AVATAR.red
+            : isPendingInvite
+            ? AVATAR.amber
+            : avatarBg(a.name);
+          const avatarText = isFailedLogin ? '!' : isPendingInvite ? '~' : initials(a.name);
+          const result: 'Done' | 'Pending' | 'Stopped' = isFailedLogin
+            ? 'Stopped'
+            : isPendingInvite
+            ? 'Pending'
+            : 'Done';
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 8px', borderRadius: 6 }}
+              onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <span style={{ width: 28, height: 28, borderRadius: '50%', background: avatarBgColor, color: T.inverse, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: isFailedLogin || isPendingInvite ? 14 : 10, flex: '0 0 auto' }}>
+                {avatarText}
+              </span>
+              <span style={{ minWidth: 0, flex: 1 }}>
+                <span style={{ display: 'block', fontSize: 13, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
+                <span style={{ display: 'block', fontSize: 12, color: isFailedLogin ? T.textDanger : isPendingInvite ? T.textWarning : T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action}</span>
+                <span style={{ display: 'block', fontSize: 11, color: T.disabled, marginTop: 1 }}>{a.time}</span>
+              </span>
+              <ResultLozenge result={result} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

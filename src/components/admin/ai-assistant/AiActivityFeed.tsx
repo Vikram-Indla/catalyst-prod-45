@@ -67,6 +67,21 @@ function RunningCard({ r, onCancel }: { r: RunState; onCancel: () => void }) {
   );
 }
 
+function ClarifyCard({ h }: { h: ConfirmationEntry }) {
+  return (
+    <div style={{ border: `1px solid ${T.borderSubtle}`, borderLeft: `3px solid ${T.link}`, borderRadius: 8, overflow: 'hidden', marginBottom: 12, padding: '12px 14px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        <span style={{ color: T.textDiscovery, flex: '0 0 auto', marginTop: 1 }}><Icon path={ICONS.spark} size={15} fill={T.textDiscovery} /></span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 12, color: T.subtle, fontStyle: 'italic', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>"{h.request}"</div>
+          <div style={{ fontSize: 13, color: T.text, lineHeight: 1.5 }}>{h.summary}</div>
+        </div>
+        <span style={{ fontSize: 11, color: T.disabled, flex: '0 0 auto' }}>{h.time}</span>
+      </div>
+    </div>
+  );
+}
+
 function HistoryCard({ h, onAgain, onBulk }: { h: ConfirmationEntry; onAgain: () => void; onBulk: () => void }) {
   return (
     <div style={{ border: `1px solid ${T.border}`, borderLeft: `3px solid ${T.bgSuccessBold}`, borderRadius: 8, overflow: 'hidden', marginBottom: 12 }}>
@@ -116,9 +131,11 @@ export function AiActivityFeed({ c }: { c: Console }) {
             <p style={{ fontSize: 13, color: T.subtle, margin: '5px auto 0', maxWidth: 400, lineHeight: 1.5 }}>Describe a change above, or pick one from the library. Each request shows live progress here, then a clear confirmation of what changed.</p>
           </div>
         )}
-        {c.history.map(h => (
-          <HistoryCard key={h.id} h={h} onAgain={() => c.setComposer(h.request)} onBulk={() => c.setComposer(h.request)} />
-        ))}
+        {c.history.map(h =>
+          h.type === 'clarify'
+            ? <ClarifyCard key={h.id} h={h} />
+            : <HistoryCard key={h.id} h={h} onAgain={() => c.setComposer(h.request)} onBulk={() => c.setComposer(h.request)} />
+        )}
       </div>
     </div>
   );
