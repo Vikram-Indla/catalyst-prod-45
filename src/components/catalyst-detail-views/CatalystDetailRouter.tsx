@@ -34,6 +34,11 @@ const TaskCatalystView = lazy(() => import('./task-catalyst/TaskCatalystView'));
 // REUSE-FIRST pattern as TaskCatalystView (no fork of a CatalystView* type).
 const CatalystViewTestCase = lazy(() => import('./test-case/CatalystViewTestCase'));
 
+// Test Hub cycle detail. Reads from tm_test_cycles (UUID-keyed) — NOT ph_issues.
+// Routed when callers pass entityKind='test_cycle' (timeline side panel). Mirrors
+// the test_case short-circuit. 2026-06-28.
+const CatalystViewTestCycle = lazy(() => import('./test-cycle/CatalystViewTestCycle'));
+
 /** Normalize various issue_type strings to a canonical CatalystItemType */
 function resolveItemType(raw: string | undefined | null): 'story' | 'epic' | 'feature' | 'defect' | 'incident' | 'task' | 'business_request' | 'subtask' | 'idea' | null {
   if (!raw) return null;
@@ -96,6 +101,30 @@ export default function CatalystDetailRouter({
     return (
       <Suspense fallback={null}>
         <CatalystViewTestCase
+          isOpen={isOpen}
+          onClose={onClose}
+          itemId={itemId}
+          projectId={projectId}
+          projectKey={projectKey}
+          onOpenItem={onOpenItem}
+          panelMode={panelMode}
+          fullPageMode={fullPageMode}
+          onTogglePanelMode={onTogglePanelMode}
+          navigationItems={navigationItems}
+          onNavigate={onNavigate}
+          hideSidebar={hideSidebar}
+        />
+      </Suspense>
+    );
+  }
+
+  // Test Hub cycle (2026-06-28) — tm_test_cycles keyed by UUID; no itemType
+  // lookup needed (route is unambiguous).
+  if (entityKind === 'test_cycle') {
+    if (!isOpen) return null;
+    return (
+      <Suspense fallback={null}>
+        <CatalystViewTestCycle
           isOpen={isOpen}
           onClose={onClose}
           itemId={itemId}

@@ -209,7 +209,7 @@ export default function TimelineView(props: TimelineViewProps) {
       // For release entities the detail panel reads from `rh_releases` by row UUID.
       // For ph_issue entities (default) the lookup token is `issue_key`.
       const id =
-        detailEntityKind === "task" || detailEntityKind === "release"
+        detailEntityKind === "task" || detailEntityKind === "release" || detailEntityKind === "test_cycle"
           ? issue.id
           : issue.issueKey;
       setPanelItem({ id, itemType, displayType: issue.issueType ?? "Story" });

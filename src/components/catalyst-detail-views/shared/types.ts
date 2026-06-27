@@ -66,6 +66,9 @@ export interface CatalystDetailRouterProps extends CatalystViewBaseProps {
    * - 'test_case': itemId is a tm_test_cases.id (UUID). Routes through
    *   CatalystViewTestCase (Test Hub). Added 2026-06-27 (D4,
    *   CAT-TESTHUB-ENGINE-20260626-001) — same coexist pattern as tasks.
+   *
+   * - 'test_cycle': itemId is a tm_test_cycles.id (UUID). Routes through
+   *   CatalystViewTestCycle (Test Hub timeline side panel). Added 2026-06-28.
    */
-  entityKind?: 'ph_issue' | 'task' | 'test_case';
+  entityKind?: 'ph_issue' | 'task' | 'test_case' | 'test_cycle';
 }

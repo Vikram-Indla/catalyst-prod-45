@@ -47,7 +47,7 @@ export type Hierarchy = Record<string, HierarchyNode>;
    storage table is `ph_issue_dependencies` for ALL hubs (Vikram 2026-06-25 —
    "project jaisa"), only the META source differs (ph_issues vs business_requests). */
 
-export type HubType = 'project' | 'product' | 'incident';
+export type HubType = 'project' | 'product' | 'incident' | 'test';
 
 export type ProjectOption = {
   project_key: string;
